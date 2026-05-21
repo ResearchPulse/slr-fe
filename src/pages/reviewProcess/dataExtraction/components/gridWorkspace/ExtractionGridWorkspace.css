@@ -1,0 +1,40 @@
+/* Grouped Header Styling */
+.ag-theme-quartz .ag-header-group-cell {
+  background-color: #f0fdf4;
+  border-right: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.ag-theme-quartz .ag-header-group-cell:hover {
+  background-color: #dcfce7;
+}
+
+.ag-theme-quartz .ag-header-cell {
+  background-color: #ffffff;
+}
+
+/* Ensure proper spacing and alignment for grouped headers */
+.ag-theme-quartz .ag-header-row {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.ag-theme-quartz .ag-header-row:first-of-type {
+  border-bottom: 2px solid #cbd5e1;
+}
+
+/* Pinned column header styling */
+.ag-theme-quartz .ag-pinned-left-header {
+  background-color: #f8fafc;
+  border-right: 2px solid #e2e8f0;
+}
+
+.ag-theme-quartz .ag-pinned-left-header .ag-header-cell {
+  background-color: #f8fafc;
+}
+
+/* Cell borders for better visual separation */
+.ag-theme-quartz .ag-header-cell-text {
+  white-space: normal;
+  word-wrap: break-word;
+}
