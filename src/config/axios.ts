@@ -7,7 +7,7 @@ import { authService } from "../services/authService";
 
 import { toastWarning } from "../utils/toast";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
 const TIMEOUT = 1000000;
 
 const api = axios.create({
