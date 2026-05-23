@@ -17,10 +17,13 @@ interface SnowballingCandidatesPageProps {
   projectId: string;
 }
 
-const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ projectId }) => {
+const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
+  projectId,
+}) => {
   const [view, setView] = useState<"list" | "workspace">("list");
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
-  const [selectedCandidate, setSelectedCandidate] = useState<MockCandidate | null>(null);
+  const [selectedCandidate, setSelectedCandidate] =
+    useState<MockCandidate | null>(null);
 
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
@@ -30,8 +33,13 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
   const rejectMutation = useRejectCandidates();
 
   // Fetch papers if needed for Workspace metadata fallback
-  const { data: response } = usePapersWithCandidates(projectId, { pageNumber: 1, pageSize: 100 });
-  const activePaper = response?.items?.find((p: PaperWithCandidateDto) => p.id === selectedPaperId);
+  const { data: response } = usePapersWithCandidates(projectId, {
+    pageNumber: 1,
+    pageSize: 100,
+  });
+  const activePaper = response?.items?.find(
+    (p: PaperWithCandidateDto) => p.id === selectedPaperId,
+  );
 
   const handlePaperClick = (id: string) => {
     setSelectedPaperId(id);
@@ -44,7 +52,10 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
     setSelectedCandidate(null);
   };
 
-  const handleDetailAction = async (id: string, action: "select" | "reject") => {
+  const handleDetailAction = async (
+    id: string,
+    action: "select" | "reject",
+  ) => {
     try {
       if (action === "select") {
         await selectMutation.mutateAsync({ candidateIds: [id] });
@@ -52,7 +63,9 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
         await rejectMutation.mutateAsync({ candidateIds: [id] });
       }
       setSelectedCandidate(null);
-      toast.success(`Candidate successfully ${action === "select" ? "promoted" : "rejected"}.`);
+      toast.success(
+        `Candidate successfully ${action === "select" ? "promoted" : "rejected"}.`,
+      );
     } catch (err: any) {
       toast.error(err.message || "Failed to update candidate.");
     }
@@ -62,34 +75,36 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
 
   if (!isLeader) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-20 bg-white rounded-3xl shadow-sm border border-slate-100">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+      <div className="flex flex-col items-center justify-center h-full p-20 bg-surface-white rounded-[4px] shadow-none border border-border">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[4px] bg-amber-100 text-amber-600">
           <FiAlertCircle className="h-8 w-8" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Access Restricted</h2>
-        <p className="mt-2 text-slate-600 text-center max-w-md">
-          Only project leaders can manage snowballing candidates and review reference discovery
-          workflows.
+        <h2 className="text-xl font-bold text-text-primary">
+          Access Restricted
+        </h2>
+        <p className="mt-2 text-text-secondary text-center max-w-md">
+          Only project leaders can manage snowballing candidates and review
+          reference discovery workflows.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-white rounded-3xl shadow-sm border border-slate-100 relative">
+    <div className="flex flex-col h-full overflow-hidden bg-surface-white rounded-[4px] shadow-none border border-border relative">
       {/* Dynamic Header based on view */}
-      <div className="bg-white border-b border-slate-50 p-8 shadow-sm relative z-20">
+      <div className="bg-surface-white border-b border-slate-50 p-8 shadow-none relative z-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 max-w-7xl mx-auto w-full">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-600 flex items-center justify-center border border-indigo-700 shadow-xl shadow-indigo-100">
+              <div className="w-10 h-10 rounded-[4px] bg-accent flex items-center justify-center border border-indigo-700 shadow-none shadow-indigo-100">
                 <FileText className="w-5 h-5 text-white" />
               </div>
-              <h2 className="text-xl font-black text-slate-900 tracking-tight">
+              <h2 className="text-xl font-black text-text-primary tracking-tight">
                 Snowballing Candidates
               </h2>
             </div>
-            <p className="text-xs text-slate-400 font-bold uppercase tracking-[0.2em] pl-14">
+            <p className="text-xs text-text-secondary font-bold uppercase tracking-[0.2em] pl-14">
               {view === "list"
                 ? "Select a source paper to review references"
                 : "Focused Paper Workspace"}
@@ -101,7 +116,10 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
       {/* Main Transitions */}
       <div className="flex-1 overflow-hidden relative">
         {view === "list" ? (
-          <SnowballingPaperList projectId={projectId} onPaperClick={handlePaperClick} />
+          <SnowballingPaperList
+            projectId={projectId}
+            onPaperClick={handlePaperClick}
+          />
         ) : activePaper ? (
           <SnowballingPaperWorkspace
             projectId={projectId}
@@ -115,9 +133,9 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({ p
             isProcessing={isProcessing}
           />
         ) : (
-          <div className="h-full flex flex-col items-center justify-center p-20 bg-white">
+          <div className="h-full flex flex-col items-center justify-center p-20 bg-surface-white">
             <Loader2 className="w-10 h-10 animate-spin text-primary/40 mb-4" />
-            <p className="text-sm font-black uppercase tracking-widest text-slate-400">
+            <p className="text-sm font-black uppercase tracking-widest text-text-secondary">
               Loading Workspace...
             </p>
           </div>

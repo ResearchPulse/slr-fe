@@ -38,42 +38,44 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-4 sm:px-6 shrink-0 z-20">
+    <header className="h-16 bg-surface-white border-b border-border flex items-center justify-between px-4 sm:px-6 shrink-0 z-20">
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className="p-2 -ml-2 text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all lg:hidden"
+          className="p-2 -ml-2 text-text-secondary hover:text-accent hover:bg-bg-primary rounded-[4px] transition-all lg:hidden"
           aria-label="Toggle Menu"
         >
           <FiMenu className="w-6 h-6" />
         </button>
-        <h2 className="text-lg sm:text-xl font-bold text-gray-800">{pageTitle}</h2>
+        <h2 className="font-cormorant text-2xl font-normal text-text-primary tracking-tight">
+          {pageTitle}
+        </h2>
       </div>
 
       <div className="flex items-center gap-4">
         {/* <div className="hidden md:flex relative group">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-indigo-600 transition-colors" />
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-accent transition-colors" />
           <input
             type="text"
             placeholder="Search anything..."
-            className="pl-10 pr-4 py-2 bg-slate-50 border-transparent focus:border-indigo-100 focus:bg-white focus:ring-4 focus:ring-indigo-50/50 rounded-xl text-sm transition-all outline-none border w-64"
+            className="pl-10 pr-4 py-2 bg-slate-50 border-transparent focus:border-indigo-100 focus:bg-surface-white focus:ring-4 focus:ring-indigo-50/50 rounded-[4px] text-sm transition-all outline-none border w-64"
           />
         </div> */}
 
         <AdminNotification />
 
-        <div className="h-8 w-px bg-gray-200 mx-1"></div>
+        <div className="h-8 w-px bg-bg-secondary mx-1"></div>
 
         <div className="flex items-center gap-3 p-1">
           <div className="hidden sm:block text-right ml-2">
-            <p className="text-sm font-bold text-gray-800 leading-tight">
+            <p className="text-[13px] font-medium text-text-primary leading-tight tracking-wide">
               {user?.name || "Admin Account"}
             </p>
-            <p className="text-[10px] uppercase font-bold text-indigo-600 tracking-wider">
+            <p className="text-[10px] uppercase font-medium text-text-secondary tracking-[0.2em] mt-0.5">
               {user?.role || "Super Admin"}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-sm shadow-lg shadow-indigo-100 ring-2 ring-white">
+          <div className="h-9 w-9 rounded-[4px] bg-accent text-bg-primary flex items-center justify-center font-medium text-sm shadow-none ring-1 ring-border">
             {user?.name ? getUserInitials(user.name) : "AD"}
           </div>
         </div>

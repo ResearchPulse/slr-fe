@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Modal } from "../../../../components/ui/Modal";
 import Button from "../../../../components/ui/Button";
-import { FiSearch, FiAlertTriangle, FiInfo, FiArrowRight } from "react-icons/fi";
+import {
+  FiSearch,
+  FiAlertTriangle,
+  FiInfo,
+  FiArrowRight,
+} from "react-icons/fi";
 import { useUniquePapers } from "../../../../hooks/useUniquePapers";
 import type { PaperResponse } from "../../../../types/paper";
 import PaperComparisonCard from "../../../../components/paperPool/deduplication/PaperComparisonCard";
@@ -24,7 +29,8 @@ export default function ManualDeduplicationModal({
   onConfirm,
 }: ManualDeduplicationModalProps) {
   const [step, setStep] = useState<"search" | "compare">("search");
-  const [selectedOriginal, setSelectedOriginal] = useState<PaperResponse | null>(null);
+  const [selectedOriginal, setSelectedOriginal] =
+    useState<PaperResponse | null>(null);
   const [reason, setReason] = useState("");
   const [isConfirming, setIsConfirming] = useState(false);
   const [showDiffs, setShowDiffs] = useState(true);
@@ -61,7 +67,10 @@ export default function ManualDeduplicationModal({
   const isSyncingRef = useRef(false);
 
   const handleScroll = useCallback(
-    (source: React.RefObject<HTMLDivElement | null>, target: React.RefObject<HTMLDivElement | null>) => {
+    (
+      source: React.RefObject<HTMLDivElement | null>,
+      target: React.RefObject<HTMLDivElement | null>,
+    ) => {
       if (!isSyncingRef.current && source.current && target.current) {
         isSyncingRef.current = true;
         target.current.scrollTop = source.current.scrollTop;
@@ -119,9 +128,9 @@ export default function ManualDeduplicationModal({
         {step === "search" ? (
           <div className="space-y-6">
             {/* Source Paper Preview */}
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-[4px]">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-amber-100 rounded-xl">
+                <div className="p-2 bg-amber-100 rounded-[4px]">
                   <FiAlertTriangle className="w-5 h-5 text-amber-600" />
                 </div>
                 <div>
@@ -137,13 +146,13 @@ export default function ManualDeduplicationModal({
 
             {/* Search Input */}
             <div className="relative">
-              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary" />
               <input
                 type="text"
                 placeholder="Search original paper by title or DOI..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 border border-slate-200 rounded-3xl focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-lg font-medium"
+                className="w-full pl-12 pr-4 py-4 bg-bg-secondary border border-border rounded-[4px] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-lg font-medium"
                 autoFocus
               />
             </div>
@@ -153,7 +162,9 @@ export default function ManualDeduplicationModal({
               {searchLoading ? (
                 <div className="flex flex-col items-center justify-center py-12">
                   <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
-                  <p className="text-slate-500 font-medium">Searching project papers...</p>
+                  <p className="text-text-secondary font-medium">
+                    Searching project papers...
+                  </p>
                 </div>
               ) : searchResults.length > 0 ? (
                 searchResults
@@ -161,21 +172,21 @@ export default function ManualDeduplicationModal({
                   .map((paper) => (
                     <div
                       key={paper.id}
-                      className="group flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all"
+                      className="group flex items-center justify-between p-4 bg-surface-white border border-border rounded-[4px] hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all"
                     >
                       <div className="flex-1 min-w-0 pr-4">
-                        <h5 className="font-bold text-slate-900 truncate group-hover:text-indigo-600 transition-colors">
+                        <h5 className="font-bold text-text-primary truncate group-hover:text-accent transition-colors">
                           {paper.title}
                         </h5>
                         <div className="flex items-center gap-3 mt-1">
-                          <span className="text-xs font-semibold text-slate-400">
+                          <span className="text-xs font-semibold text-text-secondary">
                             {paper.publicationYear || "N/A"}
                           </span>
-                          <span className="text-xs text-slate-400 truncate max-w-[200px]">
+                          <span className="text-xs text-text-secondary truncate max-w-[200px]">
                             {paper.authors || "Unknown Authors"}
                           </span>
                           {paper.doi && (
-                            <span className="text-xs font-mono text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-lg">
+                            <span className="text-xs font-mono text-accent bg-bg-secondary px-2 py-0.5 rounded-[4px]">
                               {paper.doi}
                             </span>
                           )}
@@ -185,19 +196,21 @@ export default function ManualDeduplicationModal({
                         variant="secondary"
                         size="sm"
                         onClick={() => handleSelectOriginal(paper)}
-                        className="rounded-xl font-bold"
+                        className="rounded-[4px] font-bold"
                       >
                         Select <FiArrowRight className="ml-2" />
                       </Button>
                     </div>
                   ))
               ) : searchInput ? (
-                <div className="text-center py-12 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                <div className="text-center py-12 bg-bg-secondary rounded-[4px] border border-dashed border-border">
                   <FiInfo className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                  <p className="text-slate-500 font-medium">No results found for "{searchInput}"</p>
+                  <p className="text-text-secondary font-medium">
+                    No results found for "{searchInput}"
+                  </p>
                 </div>
               ) : (
-                <div className="text-center py-12 text-slate-400 italic">
+                <div className="text-center py-12 text-text-secondary italic">
                   Start typing to find the original paper...
                 </div>
               )}
@@ -205,22 +218,22 @@ export default function ManualDeduplicationModal({
 
             {/* Pagination for results */}
             {searchResults.length > 0 && totalPages > 1 && (
-              <div className="flex items-center justify-between px-2 pt-2 border-t border-slate-100">
-                <span className="text-xs font-medium text-slate-500">
+              <div className="flex items-center justify-between px-2 pt-2 border-t border-border">
+                <span className="text-xs font-medium text-text-secondary">
                   Page {pageNumber} of {totalPages}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
                     onClick={previousPage}
                     disabled={!hasPreviousPage || searchLoading}
-                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg transition-all"
+                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-[4px] transition-all"
                   >
                     <FiArrowRight className="rotate-180" />
                   </button>
                   <button
                     onClick={nextPage}
                     disabled={!hasNextPage || searchLoading}
-                    className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-slate-50 disabled:opacity-30 disabled:hover:bg-transparent rounded-lg transition-all"
+                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-[4px] transition-all"
                   >
                     <FiArrowRight />
                   </button>
@@ -231,11 +244,12 @@ export default function ManualDeduplicationModal({
         ) : (
           <div className="flex flex-col grow gap-6 overflow-hidden">
             {/* Warning Banner & Toggle */}
-            <div className="flex items-center justify-between gap-3 p-3 bg-red-50 border border-red-100 rounded-2xl">
+            <div className="flex items-center justify-between gap-3 p-3 bg-surface-white border border-red-100 rounded-[4px]">
               <div className="flex items-center gap-3">
                 <FiAlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
                 <p className="text-xs font-medium text-red-700">
-                  Warning: Marking this paper as a duplicate will exclude it from the final screening snapshot.
+                  Warning: Marking this paper as a duplicate will exclude it
+                  from the final screening snapshot.
                 </p>
               </div>
               <Switch
@@ -252,11 +266,11 @@ export default function ManualDeduplicationModal({
               <div className="flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider">
+                  <h4 className="text-sm font-black text-text-primary uppercase tracking-wider">
                     Original Paper (Keep)
                   </h4>
                 </div>
-                <div 
+                <div
                   ref={leftScrollRef}
                   onScroll={() => handleScroll(leftScrollRef, rightScrollRef)}
                   className="grow overflow-y-auto pr-2 custom-scrollbar"
@@ -265,22 +279,24 @@ export default function ManualDeduplicationModal({
                     label="SELECTED ORIGINAL"
                     labelColor="text-green-600"
                     paper={{
-                       id: selectedOriginal!.id,
-                       title: selectedOriginal!.title,
-                       authors: selectedOriginal!.authors || "N/A",
-                       year: selectedOriginal!.publicationYear?.toString() || "N/A",
-                       doi: selectedOriginal!.doi || undefined,
-                       source: selectedOriginal!.source || "N/A",
-                       abstract: selectedOriginal!.abstract || "No abstract available"
+                      id: selectedOriginal!.id,
+                      title: selectedOriginal!.title,
+                      authors: selectedOriginal!.authors || "N/A",
+                      year:
+                        selectedOriginal!.publicationYear?.toString() || "N/A",
+                      doi: selectedOriginal!.doi || undefined,
+                      source: selectedOriginal!.source || "N/A",
+                      abstract:
+                        selectedOriginal!.abstract || "No abstract available",
                     }}
                     otherPaper={{
-                        id: sourcePaper.id,
-                        title: sourcePaper.title,
-                        authors: sourcePaper.authors || "N/A",
-                        year: sourcePaper.publicationYear?.toString() || "N/A",
-                        doi: sourcePaper.doi || undefined,
-                        source: sourcePaper.source || "N/A",
-                        abstract: sourcePaper.abstract || "No abstract available"
+                      id: sourcePaper.id,
+                      title: sourcePaper.title,
+                      authors: sourcePaper.authors || "N/A",
+                      year: sourcePaper.publicationYear?.toString() || "N/A",
+                      doi: sourcePaper.doi || undefined,
+                      source: sourcePaper.source || "N/A",
+                      abstract: sourcePaper.abstract || "No abstract available",
                     }}
                     isResolved={false}
                     side="original"
@@ -293,11 +309,11 @@ export default function ManualDeduplicationModal({
               <div className="flex flex-col min-h-0">
                 <div className="flex items-center gap-2 mb-3">
                   <div className="w-2 h-2 rounded-full bg-red-500" />
-                  <h4 className="text-sm font-black text-slate-900 uppercase tracking-wider">
+                  <h4 className="text-sm font-black text-text-primary uppercase tracking-wider">
                     Potential Duplicate (Remove)
                   </h4>
                 </div>
-                <div 
+                <div
                   ref={rightScrollRef}
                   onScroll={() => handleScroll(rightScrollRef, leftScrollRef)}
                   className="grow overflow-y-auto pr-2 custom-scrollbar"
@@ -306,22 +322,24 @@ export default function ManualDeduplicationModal({
                     label="PAPER TO REMOVE"
                     labelColor="text-red-600"
                     paper={{
-                        id: sourcePaper.id,
-                        title: sourcePaper.title,
-                        authors: sourcePaper.authors || "N/A",
-                        year: sourcePaper.publicationYear?.toString() || "N/A",
-                        doi: sourcePaper.doi || undefined,
-                        source: sourcePaper.source || "N/A",
-                        abstract: sourcePaper.abstract || "No abstract available"
+                      id: sourcePaper.id,
+                      title: sourcePaper.title,
+                      authors: sourcePaper.authors || "N/A",
+                      year: sourcePaper.publicationYear?.toString() || "N/A",
+                      doi: sourcePaper.doi || undefined,
+                      source: sourcePaper.source || "N/A",
+                      abstract: sourcePaper.abstract || "No abstract available",
                     }}
                     otherPaper={{
-                        id: selectedOriginal!.id,
-                        title: selectedOriginal!.title,
-                        authors: selectedOriginal!.authors || "N/A",
-                        year: selectedOriginal!.publicationYear?.toString() || "N/A",
-                        doi: selectedOriginal!.doi || undefined,
-                        source: selectedOriginal!.source || "N/A",
-                        abstract: selectedOriginal!.abstract || "No abstract available"
+                      id: selectedOriginal!.id,
+                      title: selectedOriginal!.title,
+                      authors: selectedOriginal!.authors || "N/A",
+                      year:
+                        selectedOriginal!.publicationYear?.toString() || "N/A",
+                      doi: selectedOriginal!.doi || undefined,
+                      source: selectedOriginal!.source || "N/A",
+                      abstract:
+                        selectedOriginal!.abstract || "No abstract available",
                     }}
                     isResolved={false}
                     side="duplicate"
@@ -332,25 +350,25 @@ export default function ManualDeduplicationModal({
             </div>
 
             {/* Footer Actions */}
-            <div className="flex flex-col gap-4 pt-6 border-t border-slate-100">
+            <div className="flex flex-col gap-4 pt-6 border-t border-border">
               <div className="space-y-2">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest pl-1">
+                <label className="text-xs font-black text-text-secondary uppercase tracking-widest pl-1">
                   Reason for Manual Deduplication
                 </label>
                 <textarea
                   placeholder="E.g., Same study, different title translation or corrected authors list."
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full p-4 bg-slate-50 border border-slate-200 rounded-[1.25rem] focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
+                  className="w-full p-4 bg-bg-secondary border border-border rounded-[1.25rem] focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
                 />
               </div>
-              
+
               <div className="flex items-center justify-end gap-3">
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   onClick={() => setStep("search")}
                   disabled={isConfirming}
-                  className="px-8 rounded-2xl font-bold"
+                  className="px-8 rounded-[4px] font-bold"
                 >
                   Back to Search
                 </Button>
@@ -358,7 +376,7 @@ export default function ManualDeduplicationModal({
                   variant="danger"
                   onClick={handleConfirm}
                   isLoading={isConfirming}
-                  className="px-10 rounded-2xl font-black shadow-xl shadow-red-500/20"
+                  className="px-10 rounded-[4px] font-black shadow-xl shadow-red-500/20"
                 >
                   Confirm Duplicate
                 </Button>

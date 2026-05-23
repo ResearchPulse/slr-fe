@@ -46,7 +46,12 @@ function StatBadge({
   config: StatusStyle;
 }) {
   return (
-    <div className={cn("flex items-center gap-1.5 px-2.5 py-1 rounded-full", config.bg)}>
+    <div
+      className={cn(
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-full",
+        config.bg,
+      )}
+    >
       <span className={cn("w-1.5 h-1.5 rounded-full", config.dot)} />
       <span className={cn("font-medium text-xs", config.text)}>{value}</span>
       <span className={cn("text-[10px] opacity-70", config.text)}>{label}</span>
@@ -69,13 +74,13 @@ export default function StudySelectionProcessHeader({
   const completedPercent = Math.round(stats.completionPercentage);
 
   return (
-    <div className="bg-white border-b border-gray-200 sticky top-0 z-20">
+    <div className="bg-surface-white border-b border-border sticky top-0 z-20">
       <div className="max-w-full mx-auto px-6 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
               title="Back to Review Process"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -84,25 +89,45 @@ export default function StudySelectionProcessHeader({
             <div className="flex items-center gap-2">
               <div
                 className={cn(
-                  "w-8 h-8 rounded-lg flex items-center justify-center",
+                  "w-8 h-8 rounded-[4px] flex items-center justify-center",
                   phaseIconBgClass,
                 )}
               >
                 <PhaseIcon className={cn("w-4 h-4", phaseIconTextClass)} />
               </div>
               <div>
-                <h1 className="text-sm font-semibold text-gray-900">Study Selection Process</h1>
-                <p className="text-[10px] text-gray-500">{processName || phaseLabel}</p>
+                <h1 className="text-sm font-semibold text-text-primary">
+                  Study Selection Process
+                </h1>
+                <p className="text-[10px] text-text-secondary">
+                  {processName || phaseLabel}
+                </p>
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3 text-sm">
-              <StatBadge label="Total" value={stats.total} config={statusConfig.pending} />
-              <StatBadge label="Included" value={stats.included} config={statusConfig.included} />
-              <StatBadge label="Excluded" value={stats.excluded} config={statusConfig.excluded} />
-              <StatBadge label="Pending" value={stats.pending} config={statusConfig.pending} />
+              <StatBadge
+                label="Total"
+                value={stats.total}
+                config={statusConfig.pending}
+              />
+              <StatBadge
+                label="Included"
+                value={stats.included}
+                config={statusConfig.included}
+              />
+              <StatBadge
+                label="Excluded"
+                value={stats.excluded}
+                config={statusConfig.excluded}
+              />
+              <StatBadge
+                label="Pending"
+                value={stats.pending}
+                config={statusConfig.pending}
+              />
               {stats.conflicted > 0 && (
                 <StatBadge
                   label="Conflict"
@@ -113,7 +138,7 @@ export default function StudySelectionProcessHeader({
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="w-32 h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="w-32 h-2 bg-bg-secondary rounded-full overflow-hidden">
                 <div
                   className={cn(
                     "h-full rounded-full transition-all duration-500",
@@ -122,23 +147,25 @@ export default function StudySelectionProcessHeader({
                   style={{ width: `${completedPercent}%` }}
                 />
               </div>
-              <span className="text-xs font-medium text-gray-500">{completedPercent}%</span>
+              <span className="text-xs font-medium text-text-secondary">
+                {completedPercent}%
+              </span>
             </div>
           </div>
 
           <div className="flex items-center gap-4">
             {rightControls}
 
-            <div className="flex items-center gap-2 text-xs text-gray-400">
-              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200">
+            <div className="flex items-center gap-2 text-xs text-text-secondary">
+              <kbd className="px-1.5 py-0.5 bg-bg-secondary rounded text-[10px] font-mono border border-border">
                 1
               </kbd>
               <span>Include</span>
-              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200 ml-2">
+              <kbd className="px-1.5 py-0.5 bg-bg-secondary rounded text-[10px] font-mono border border-border ml-2">
                 2
               </kbd>
               <span>Exclude</span>
-              <kbd className="px-1.5 py-0.5 bg-gray-100 rounded text-[10px] font-mono border border-gray-200 ml-2">
+              <kbd className="px-1.5 py-0.5 bg-bg-secondary rounded text-[10px] font-mono border border-border ml-2">
                 ↑↓
               </kbd>
               <span>Navigate</span>

@@ -2,7 +2,11 @@ import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import store, { type RootState } from "./redux/store";
-import { updateAccessToken, setInitialized, logout } from "./redux/slices/authSlice";
+import {
+  updateAccessToken,
+  setInitialized,
+  logout,
+} from "./redux/slices/authSlice";
 import { isTokenExpired } from "./utils/auth";
 import "./App.css";
 import AuthRoutes from "./routes/AuthRoutes";
@@ -14,7 +18,9 @@ import { authService } from "./services/authService";
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { isAuthenticated, accessTokenExpiresAt, isInitialized } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, accessTokenExpiresAt, isInitialized } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   useEffect(() => {
     // 3. Handle Expiration on App Initialization
@@ -28,7 +34,9 @@ function App() {
               const { accessToken, accessTokenExpiresAt } = response.data;
 
               // Update the store, after this all requests will use the new token (axios apply access token from store before each request)
-              store.dispatch(updateAccessToken({ accessToken, accessTokenExpiresAt }));
+              store.dispatch(
+                updateAccessToken({ accessToken, accessTokenExpiresAt }),
+              );
             } else {
               dispatch(logout());
               console.log("Session expired.");
@@ -50,7 +58,9 @@ function App() {
       <div className="flex h-screen w-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
           <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-lg font-medium text-muted-foreground animate-pulse">Initializing application...</p>
+          <p className="text-lg font-medium text-muted-foreground animate-pulse">
+            Initializing application...
+          </p>
         </div>
       </div>
     );

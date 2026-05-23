@@ -20,7 +20,11 @@ interface StrategiesTabContentProps {
   onDeleteStrategy: (strategyId: string) => Promise<void>;
   onViewImportPapers: (importBatchId: string) => void;
   onDeleteImportBatch: (importBatchId: string) => Promise<void>;
-  onQuickImport: (file: File, source: string, strategyId?: string) => Promise<void>;
+  onQuickImport: (
+    file: File,
+    source: string,
+    strategyId?: string,
+  ) => Promise<void>;
   canEdit: boolean;
 }
 
@@ -39,12 +43,11 @@ export default function StrategiesTabContent({
   onDeleteImportBatch,
   canEdit,
 }: StrategiesTabContentProps) {
-
   return (
     <div className="space-y-8">
       {/* Error State */}
       {listError && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
+        <div className="bg-surface-white border border-border rounded-[4px] p-4 flex items-start gap-3">
           <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-red-900 mb-1">
@@ -76,7 +79,6 @@ export default function StrategiesTabContent({
         onDeleteImportBatch={onDeleteImportBatch}
         canEdit={canEdit}
       />
-
 
       {/* SECONDARY: Quick Import Card */}
       {/* <QuickImportCard

@@ -47,8 +47,14 @@ const Dropdown: React.FC<DropdownProps> = ({
   };
 
   return (
-    <div className={cn("relative inline-block text-left", className)} ref={dropdownRef}>
-      <div onClick={() => setIsOpen(!isOpen)} className="cursor-pointer font-inherit">
+    <div
+      className={cn("relative inline-block text-left", className)}
+      ref={dropdownRef}
+    >
+      <div
+        onClick={() => setIsOpen(!isOpen)}
+        className="cursor-pointer font-inherit"
+      >
         {trigger}
       </div>
 
@@ -59,11 +65,12 @@ const Dropdown: React.FC<DropdownProps> = ({
             !contentClassName?.includes("bg-") && "bg-white",
             !contentClassName?.includes("w-") && "w-56",
             !contentClassName?.includes("shadow-") && "shadow-lg",
-            !contentClassName?.includes("ring-") && "ring-1 ring-black ring-opacity-5",
+            !contentClassName?.includes("ring-") &&
+              "ring-1 ring-black ring-opacity-5",
             !contentClassName?.includes("p-") && "py-1",
             alignments[align],
             positions[position],
-            contentClassName
+            contentClassName,
           )}
         >
           {children}
@@ -88,11 +95,15 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
     <button
       className={cn(
         "flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors",
-        className
+        className,
       )}
       {...props}
     >
-      {icon && <span className="mr-3 text-gray-400 group-hover:text-blue-500">{icon}</span>}
+      {icon && (
+        <span className="mr-3 text-gray-400 group-hover:text-blue-500">
+          {icon}
+        </span>
+      )}
       {children}
     </button>
   );

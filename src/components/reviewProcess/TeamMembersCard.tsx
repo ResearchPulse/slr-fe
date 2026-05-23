@@ -20,13 +20,14 @@ const AVATAR_COLOR_CLASSES = {
 export default function TeamMembersCard({ teamMembers }: TeamMembersCardProps) {
   const getAvatarClass = (color: string): string => {
     return (
-      AVATAR_COLOR_CLASSES[color as keyof typeof AVATAR_COLOR_CLASSES] || AVATAR_COLOR_CLASSES.blue
+      AVATAR_COLOR_CLASSES[color as keyof typeof AVATAR_COLOR_CLASSES] ||
+      AVATAR_COLOR_CLASSES.blue
     );
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-5">
-      <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+    <div className="bg-surface-white border border-border rounded-[4px] p-5">
+      <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
         <FiUsers className="w-5 h-5 text-blue-600" />
         Review Team
       </h3>
@@ -39,8 +40,10 @@ export default function TeamMembersCard({ teamMembers }: TeamMembersCardProps) {
               {member.initials}
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">{member.name}</p>
-              <p className="text-xs text-gray-500">{member.role}</p>
+              <p className="text-sm font-medium text-text-primary">
+                {member.name}
+              </p>
+              <p className="text-xs text-text-secondary">{member.role}</p>
             </div>
           </div>
         ))}

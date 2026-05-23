@@ -20,17 +20,17 @@ interface PhaseCardProps {
 }
 
 const CARD_STYLES: Record<string, string> = {
-  Completed: "border-green-200 bg-green-50/40",
-  InProgress: "border-blue-300 bg-blue-50/30 shadow-md ring-1 ring-blue-100",
-  NotStarted: "border-gray-200 bg-white",
-  Locked: "border-gray-200 bg-gray-50/80 opacity-70",
+  Completed: "border-border bg-surface-white/40",
+  InProgress: "border-blue-300 bg-blue-50/30 shadow-none ring-1 ring-blue-100",
+  NotStarted: "border-border bg-surface-white",
+  Locked: "border-border bg-bg-primary/80 opacity-70",
 };
 
 const ICON_BG: Record<string, string> = {
   Completed: "bg-green-100 text-green-600",
   InProgress: "bg-blue-100 text-blue-600",
-  NotStarted: "bg-gray-100 text-gray-500",
-  Locked: "bg-gray-100 text-gray-400",
+  NotStarted: "bg-bg-secondary text-text-secondary",
+  Locked: "bg-bg-secondary text-text-secondary",
 };
 
 export default function PhaseCard({
@@ -48,13 +48,13 @@ export default function PhaseCard({
 }: PhaseCardProps) {
   return (
     <div
-      className={`relative border-2 rounded-xl p-5 transition-all duration-200 min-w-[200px] max-w-60 w-full print:break-inside-avoid ${CARD_STYLES[phase.status]}`}
+      className={`relative border-2 rounded-[4px] p-5 transition-all duration-200 min-w-[200px] max-w-60 w-full print:break-inside-avoid ${CARD_STYLES[phase.status]}`}
     >
       {/* Header: Icon + Name + Badge */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2.5">
           <div
-            className={`w-9 h-9 rounded-lg flex items-center justify-center ${ICON_BG[phase.status]}`}
+            className={`w-9 h-9 rounded-[4px] flex items-center justify-center ${ICON_BG[phase.status]}`}
           >
             {phase.status === "Locked" ? (
               <FiLock className="w-4 h-4" />
@@ -62,7 +62,9 @@ export default function PhaseCard({
               <Icon className="w-4.5 h-4.5" />
             )}
           </div>
-          <h3 className="text-sm font-semibold text-gray-900 leading-tight">{phase.name}</h3>
+          <h3 className="text-sm font-semibold text-text-primary leading-tight">
+            {phase.name}
+          </h3>
         </div>
       </div>
 
@@ -71,7 +73,9 @@ export default function PhaseCard({
 
       {/* Lock Reason */}
       {phase.status === "Locked" && phase.lockReason && (
-        <p className="mt-2 text-xs text-gray-400 italic">{phase.lockReason}</p>
+        <p className="mt-2 text-xs text-text-secondary italic">
+          {phase.lockReason}
+        </p>
       )}
 
       {/* Statistics */}

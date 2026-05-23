@@ -38,20 +38,20 @@ export default function ReviewerSidebar({
   onSubmitExtraction,
 }: ReviewerSidebarProps) {
   return (
-    <aside className="h-full w-[20%] overflow-y-auto border-x border-slate-200 bg-white p-4 pb-24">
+    <aside className="h-full w-[20%] overflow-y-auto border-x border-border bg-surface-white p-4 pb-24">
       <Button
         type="button"
         onClick={onAutoExtract}
         isLoading={isAutoExtracting}
         disabled={!canAutoExtract}
-        className="mb-4 w-full border-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-lg shadow-violet-500/30 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500"
+        className="mb-4 w-full border-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-none shadow-violet-500/30 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500"
       >
         ✨ Auto-Extract with AI
       </Button>
 
-      <div className="mb-4 border-b border-slate-100 pb-4">
+      <div className="mb-4 border-b border-border pb-4">
         <h2 className="text-2xl font-semibold text-slate-800">Sections</h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-text-secondary">
           {selectedTemplateName || "Extraction Template"}
         </p>
       </div>
@@ -68,13 +68,13 @@ export default function ReviewerSidebar({
               onClick={() => onSectionChange(sectionId)}
               className={
                 isActive
-                  ? "w-full rounded-xl border border-blue-500 bg-blue-50 px-4 py-3 text-left text-xl font-semibold text-blue-700"
-                  : "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-left text-xl font-semibold text-slate-600"
+                  ? "w-full rounded-[4px] border border-blue-500 bg-blue-50 px-4 py-3 text-left text-xl font-semibold text-blue-700"
+                  : "w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-left text-xl font-semibold text-text-secondary"
               }
             >
               <div className="flex items-center justify-between gap-3">
                 <span>{section.name}</span>
-                <span className="text-xs font-medium uppercase tracking-wide text-slate-400">
+                <span className="text-xs font-medium uppercase tracking-wide text-text-secondary">
                   {section.sectionType === SectionTypeEnum.MatrixGrid
                     ? "Matrix"
                     : "Flat"}
@@ -104,7 +104,9 @@ export default function ReviewerSidebar({
           disabled={!canSubmit}
           onClick={onSubmitExtraction}
         >
-          {isReadOnly ? "Submitted (Locked)" : submitButtonLabel ?? "Submit Extraction"}
+          {isReadOnly
+            ? "Submitted (Locked)"
+            : (submitButtonLabel ?? "Submit Extraction")}
         </Button>
       </div>
     </aside>

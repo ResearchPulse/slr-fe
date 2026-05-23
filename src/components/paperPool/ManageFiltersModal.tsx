@@ -45,7 +45,9 @@ export default function ManageFiltersModal({
 }: ManageFiltersModalProps) {
   const [activeFilterId, setActiveFilterId] = useState<string | null>(null);
   const [draft, setDraft] = useState<PaperPoolFilterSetting | null>(null);
-  const [isConfirmingDelete, setIsConfirmingDelete] = useState<string | null>(null);
+  const [isConfirmingDelete, setIsConfirmingDelete] = useState<string | null>(
+    null,
+  );
 
   useEffect(() => {
     if (detailFilter) {
@@ -62,36 +64,39 @@ export default function ManageFiltersModal({
 
   const modalContent = (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-      <div className="relative w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300">
-        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+      <div className="relative w-full max-w-5xl bg-surface-white rounded-[4px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300">
+        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
           <div>
-            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+            <h3 className="text-xl font-black text-text-primary uppercase tracking-tight">
               Manage Filter Collections
             </h3>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-text-secondary mt-0.5">
               Edit, clone or remove your saved filter configurations
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-bg-secondary rounded-full transition-colors"
           >
-            <FiX className="w-5 h-5 text-gray-400" />
+            <FiX className="w-5 h-5 text-text-secondary" />
           </button>
         </div>
 
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar: Filter List */}
-          <div className="w-80 border-r border-gray-100 bg-gray-50/30 flex flex-col">
-            <div className="p-4 border-b border-gray-100">
+          <div className="w-80 border-r border-border bg-bg-primary/30 flex flex-col">
+            <div className="p-4 border-b border-border">
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-4 h-4" />
                 <input
                   type="text"
                   placeholder="Search collections..."
-                  className="w-full bg-white border border-gray-200 rounded-xl pl-9 pr-4 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="w-full bg-surface-white border border-border rounded-[4px] pl-9 pr-4 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
                 />
               </div>
             </div>
@@ -100,19 +105,19 @@ export default function ManageFiltersModal({
                 <button
                   key={filter.id}
                   onClick={() => handleSelectFilter(filter.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
+                  className={`w-full flex items-center justify-between p-3 rounded-[4px] transition-all ${
                     activeFilterId === filter.id
-                      ? "bg-white border-2 border-blue-500 shadow-sm"
-                      : "border-2 border-transparent hover:bg-gray-100/50"
+                      ? "bg-surface-white border-2 border-blue-500 shadow-sm"
+                      : "border-2 border-transparent hover:bg-bg-secondary/50"
                   }`}
                 >
                   <div className="text-left overflow-hidden">
                     <div
-                      className={`text-sm font-bold truncate ${activeFilterId === filter.id ? "text-blue-600" : "text-gray-900"}`}
+                      className={`text-sm font-bold truncate ${activeFilterId === filter.id ? "text-blue-600" : "text-text-primary"}`}
                     >
                       {filter.name}
                     </div>
-                    <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-0.5">
+                    <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-0.5">
                       {new Date(filter.createdAt).toLocaleDateString()}
                     </div>
                   </div>
@@ -125,10 +130,10 @@ export default function ManageFiltersModal({
               ))}
               {savedFilters.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mb-4 text-gray-300">
+                  <div className="w-12 h-12 bg-bg-secondary rounded-[4px] flex items-center justify-center mb-4 text-gray-300">
                     <FiFilter className="w-6 h-6" />
                   </div>
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">
+                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
                     No collections
                   </p>
                 </div>
@@ -137,17 +142,18 @@ export default function ManageFiltersModal({
           </div>
 
           {/* Right Content: Filter Details/Editor */}
-          <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-white">
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-8 bg-surface-white">
             {!activeFilterId ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-40">
-                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
+                <div className="w-20 h-20 bg-bg-primary rounded-full flex items-center justify-center mb-6">
                   <FiSettings className="w-10 h-10 text-gray-300" />
                 </div>
-                <h4 className="text-lg font-black text-gray-400 uppercase tracking-widest">
+                <h4 className="text-lg font-black text-text-secondary uppercase tracking-widest">
                   Select a collection
                 </h4>
-                <p className="text-sm text-gray-400 max-w-xs mt-2">
-                  Choose a saved filter from the list on the left to view and edit its details.
+                <p className="text-sm text-text-secondary max-w-xs mt-2">
+                  Choose a saved filter from the list on the left to view and
+                  edit its details.
                 </p>
               </div>
             ) : isLoadingDetail ? (
@@ -158,20 +164,22 @@ export default function ManageFiltersModal({
               <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-400">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-2xl font-black text-gray-900 tracking-tight">
+                    <h4 className="text-2xl font-black text-text-primary tracking-tight">
                       {draft.name}
                     </h4>
-                    <p className="text-xs font-black text-gray-400 uppercase tracking-widest mt-1">
+                    <p className="text-xs font-black text-text-secondary uppercase tracking-widest mt-1">
                       Filter Identity & Rules
                     </p>
                   </div>
                   <div className="flex gap-2">
                     {isConfirmingDelete === draft.id ? (
                       <div className="flex items-center gap-2 animate-in slide-in-from-right-4 duration-300">
-                        <span className="text-xs font-bold text-red-600 px-3">Confirm delete?</span>
+                        <span className="text-xs font-bold text-red-600 px-3">
+                          Confirm delete?
+                        </span>
                         <Button
                           size="sm"
-                          className="bg-red-600 hover:bg-red-700 rounded-xl"
+                          className="bg-red-600 hover:bg-red-700 rounded-[4px]"
                           onClick={() => onDelete(draft.id)}
                           isLoading={isDeleting}
                         >
@@ -180,7 +188,7 @@ export default function ManageFiltersModal({
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-xl border-gray-200"
+                          className="rounded-[4px] border-border"
                           onClick={() => setIsConfirmingDelete(null)}
                         >
                           Cancel
@@ -190,7 +198,7 @@ export default function ManageFiltersModal({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-red-600 border-red-100 hover:bg-red-50 rounded-xl"
+                        className="text-red-600 border-red-100 hover:bg-surface-white rounded-[4px]"
                         onClick={() => setIsConfirmingDelete(draft.id)}
                       >
                         <FiTrash2 className="w-4 h-4 mr-2" />
@@ -202,7 +210,7 @@ export default function ManageFiltersModal({
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
                       Collection Name
                     </label>
                     <div className="relative group">
@@ -210,13 +218,15 @@ export default function ManageFiltersModal({
                       <input
                         type="text"
                         value={draft.name}
-                        onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                        className="w-full bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-gray-900 transition-all outline-none"
+                        onChange={(e) =>
+                          setDraft({ ...draft, name: e.target.value })
+                        }
+                        className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                    <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
                       Search Keyword
                     </label>
                     <div className="relative group">
@@ -224,24 +234,28 @@ export default function ManageFiltersModal({
                       <input
                         type="text"
                         value={draft.searchText || ""}
-                        onChange={(e) => setDraft({ ...draft, searchText: e.target.value })}
+                        onChange={(e) =>
+                          setDraft({ ...draft, searchText: e.target.value })
+                        }
                         placeholder="All papers"
-                        className="w-full bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-500 rounded-2xl pl-11 pr-4 py-3 text-sm font-bold text-gray-900 transition-all outline-none"
+                        className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-4">
-                  <h5 className="text-[10px] font-black text-gray-400 uppercase tracking-widest px-1">
+                  <h5 className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
                     Detailed Filter Rules
                   </h5>
                   <div className="grid grid-cols-2 gap-4">
                     {/* Years */}
-                    <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
+                    <div className="bg-bg-primary rounded-[4px] p-4 border border-border flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <FiCalendar className="text-gray-400" />
-                        <span className="text-xs font-bold text-gray-600">Year Range</span>
+                        <FiCalendar className="text-text-secondary" />
+                        <span className="text-xs font-bold text-text-secondary">
+                          Year Range
+                        </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <input
@@ -252,14 +266,16 @@ export default function ManageFiltersModal({
                               ...draft,
                               filters: {
                                 ...draft.filters,
-                                yearFrom: e.target.value ? Number(e.target.value) : null,
+                                yearFrom: e.target.value
+                                  ? Number(e.target.value)
+                                  : null,
                               },
                             })
                           }
                           placeholder="Start"
-                          className="w-16 bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="w-16 bg-surface-white border border-border rounded-[4px] px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
-                        <span className="text-gray-400 font-bold">-</span>
+                        <span className="text-text-secondary font-bold">-</span>
                         <input
                           type="number"
                           value={draft.filters.yearTo ?? ""}
@@ -268,28 +284,35 @@ export default function ManageFiltersModal({
                               ...draft,
                               filters: {
                                 ...draft.filters,
-                                yearTo: e.target.value ? Number(e.target.value) : null,
+                                yearTo: e.target.value
+                                  ? Number(e.target.value)
+                                  : null,
                               },
                             })
                           }
                           placeholder="End"
-                          className="w-16 bg-white border border-gray-200 rounded-lg px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="w-16 bg-surface-white border border-border rounded-[4px] px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                         />
                       </div>
                     </div>
 
                     {/* Source */}
-                    <div className="bg-gray-50 rounded-2xl p-4 border border-gray-100 flex items-center justify-between">
+                    <div className="bg-bg-primary rounded-[4px] p-4 border border-border flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <FiDatabase className="text-gray-400" />
-                        <span className="text-xs font-bold text-gray-600">Source</span>
+                        <FiDatabase className="text-text-secondary" />
+                        <span className="text-xs font-bold text-text-secondary">
+                          Source
+                        </span>
                       </div>
                       <select
                         value={draft.filters.searchSourceId}
                         onChange={(e) =>
                           setDraft({
                             ...draft,
-                            filters: { ...draft.filters, searchSourceId: e.target.value as any },
+                            filters: {
+                              ...draft.filters,
+                              searchSourceId: e.target.value as any,
+                            },
                           })
                         }
                         className="bg-transparent text-xs font-bold text-blue-600 focus:outline-none"
@@ -305,8 +328,8 @@ export default function ManageFiltersModal({
 
                     {/* DOI/FullText Toggles */}
                     <div className="col-span-2 grid grid-cols-3 gap-4">
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border">
+                        <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           DOI Status
                         </div>
                         <select
@@ -314,18 +337,21 @@ export default function ManageFiltersModal({
                           onChange={(e) =>
                             setDraft({
                               ...draft,
-                              filters: { ...draft.filters, doiState: e.target.value as any },
+                              filters: {
+                                ...draft.filters,
+                                doiState: e.target.value as any,
+                              },
                             })
                           }
-                          className="w-full bg-transparent text-xs font-bold text-gray-900 focus:outline-none"
+                          className="w-full bg-transparent text-xs font-bold text-text-primary focus:outline-none"
                         >
                           <option value="all">Any Status</option>
                           <option value="has">Has DOI</option>
                           <option value="missing">Missing DOI</option>
                         </select>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border">
+                        <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           Full Text
                         </div>
                         <select
@@ -333,18 +359,21 @@ export default function ManageFiltersModal({
                           onChange={(e) =>
                             setDraft({
                               ...draft,
-                              filters: { ...draft.filters, fullTextState: e.target.value as any },
+                              filters: {
+                                ...draft.filters,
+                                fullTextState: e.target.value as any,
+                              },
                             })
                           }
-                          className="w-full bg-transparent text-xs font-bold text-gray-900 focus:outline-none"
+                          className="w-full bg-transparent text-xs font-bold text-text-primary focus:outline-none"
                         >
                           <option value="all">Any Status</option>
                           <option value="has">Has PDF</option>
                           <option value="missing">Missing PDF</option>
                         </select>
                       </div>
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between">
-                        <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border flex items-center justify-between">
+                        <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                           Unused Only
                         </div>
                         <input
@@ -353,20 +382,23 @@ export default function ManageFiltersModal({
                           onChange={(e) =>
                             setDraft({
                               ...draft,
-                              filters: { ...draft.filters, onlyUnused: e.target.checked },
+                              filters: {
+                                ...draft.filters,
+                                onlyUnused: e.target.checked,
+                              },
                             })
                           }
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600"
+                          className="w-4 h-4 rounded border-border text-blue-600"
                         />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-gray-100 flex justify-end gap-3">
+                <div className="pt-6 border-t border-border flex justify-end gap-3">
                   <Button
                     variant="outline"
-                    className="rounded-2xl px-6 py-3 font-bold uppercase tracking-wider text-xs border-gray-200"
+                    className="rounded-[4px] px-6 py-3 font-bold uppercase tracking-wider text-xs border-border"
                     onClick={() => onSaveAsNew(draft)}
                     isLoading={isCreating}
                   >

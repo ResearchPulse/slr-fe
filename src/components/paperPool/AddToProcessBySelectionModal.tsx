@@ -28,7 +28,9 @@ export default function AddToProcessBySelectionModal({
   insertResult,
   isLeader = false,
 }: AddToProcessBySelectionModalProps) {
-  const [selectedProcessId, setSelectedProcessId] = useState<string | null>(null);
+  const [selectedProcessId, setSelectedProcessId] = useState<string | null>(
+    null,
+  );
 
   const selectedProcess = useMemo(
     () => processSnapshots.find((p) => p.processId === selectedProcessId),
@@ -49,19 +51,19 @@ export default function AddToProcessBySelectionModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+      <div className="relative w-full max-w-2xl bg-surface-white rounded-[4px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
           <div>
-            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+            <h3 className="text-xl font-black text-text-primary uppercase tracking-tight">
               Add Selected to Process
             </h3>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-text-secondary mt-0.5">
               Transfer your selected papers to a review process
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-gray-900"
+            className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
           >
             <FiX className="w-5 h-5" />
           </button>
@@ -73,23 +75,28 @@ export default function AddToProcessBySelectionModal({
               <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
                 <FiCheckCircle className="w-10 h-10 text-emerald-500" />
               </div>
-              <h4 className="text-2xl font-black text-gray-900 mb-2">Transfer Successful</h4>
-              <p className="text-gray-500 max-w-md mx-auto mb-8 font-medium">
+              <h4 className="text-2xl font-black text-text-primary mb-2">
+                Transfer Successful
+              </h4>
+              <p className="text-text-secondary max-w-md mx-auto mb-8 font-medium">
                 We've processed the paper transfer to{" "}
-                <span className="text-blue-600 font-bold">{selectedProcess?.processName}</span>.
+                <span className="text-blue-600 font-bold">
+                  {selectedProcess?.processName}
+                </span>
+                .
               </p>
 
               <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                <div className="bg-bg-primary p-4 rounded-[4px] border border-border">
+                  <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Added
                   </div>
                   <div className="text-2xl font-black text-emerald-600">
                     {insertResult.inserted}
                   </div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-2xl border border-gray-100">
-                  <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">
+                <div className="bg-bg-primary p-4 rounded-[4px] border border-border">
+                  <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Skipped
                   </div>
                   <div className="text-2xl font-black text-amber-500">
@@ -102,7 +109,7 @@ export default function AddToProcessBySelectionModal({
                 <Button
                   variant="outline"
                   onClick={onClose}
-                  className="px-8 rounded-xl font-bold uppercase tracking-wider text-xs"
+                  className="px-8 rounded-[4px] font-bold uppercase tracking-wider text-xs"
                 >
                   Close
                 </Button>
@@ -113,7 +120,7 @@ export default function AddToProcessBySelectionModal({
                     }
                     onClose();
                   }}
-                  className="px-8 rounded-xl font-bold uppercase tracking-wider text-xs"
+                  className="px-8 rounded-[4px] font-bold uppercase tracking-wider text-xs"
                 >
                   View Process
                 </Button>
@@ -123,7 +130,7 @@ export default function AddToProcessBySelectionModal({
             <div className="space-y-8">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h4 className="text-xs font-black text-gray-400 uppercase tracking-widest">
+                  <h4 className="text-xs font-black text-text-secondary uppercase tracking-widest">
                     1. Select Destination Process
                   </h4>
                 </div>
@@ -142,24 +149,26 @@ export default function AddToProcessBySelectionModal({
                 </div>
               </div>
 
-              <div className="bg-blue-50/50 border border-blue-100 rounded-2xl p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="bg-blue-50/50 border border-blue-100 rounded-[4px] p-4 flex items-center justify-between animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-3 text-blue-700">
                   <FiLayers className="w-5 h-5" />
                   <span className="text-sm font-bold">Papers to Add</span>
                 </div>
-                <div className="text-xl font-black text-blue-700">{selectedPaperIds.length}</div>
+                <div className="text-xl font-black text-blue-700">
+                  {selectedPaperIds.length}
+                </div>
               </div>
             </div>
           )}
         </div>
 
         {!insertResult && (
-          <div className="px-8 py-6 border-t border-gray-100 bg-gray-50 flex items-center justify-end gap-3 sticky bottom-0 z-10">
+          <div className="px-8 py-6 border-t border-border bg-bg-primary flex items-center justify-end gap-3 sticky bottom-0 z-10">
             <Button
               variant="outline"
               onClick={onClose}
               disabled={isAdding}
-              className="px-6 rounded-xl font-bold uppercase tracking-wider text-xs border-gray-200"
+              className="px-6 rounded-[4px] font-bold uppercase tracking-wider text-xs border-border"
             >
               Cancel
             </Button>
@@ -167,7 +176,7 @@ export default function AddToProcessBySelectionModal({
               onClick={handleConfirm}
               isLoading={isAdding}
               disabled={!selectedProcessId || selectedPaperIds.length === 0}
-              className="px-10 rounded-xl font-bold uppercase tracking-wider text-xs shadow-lg shadow-blue-500/20"
+              className="px-10 rounded-[4px] font-bold uppercase tracking-wider text-xs shadow-lg shadow-blue-500/20"
             >
               Confirm Transfer
             </Button>

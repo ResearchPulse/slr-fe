@@ -38,19 +38,28 @@ const CompletionProgress: React.FC<CompletionProgressProps> = ({
     <div className={cn("w-full", className)}>
       {showLabel && (
         <div className="flex justify-between items-center mb-2">
-          <span className={cn("font-medium text-gray-700", labelClasses[size])}>Completion</span>
+          <span
+            className={cn("font-medium text-text-primary", labelClasses[size])}
+          >
+            Completion
+          </span>
           <span
             className={cn(
               "font-semibold",
               labelClasses[size],
-              isComplete ? "text-emerald-600" : "text-indigo-600",
+              isComplete ? "text-emerald-600" : "text-accent",
             )}
           >
             {percentage}% ({completed}/{total})
           </span>
         </div>
       )}
-      <div className={cn("w-full bg-gray-200 rounded-full overflow-hidden", heightClasses[size])}>
+      <div
+        className={cn(
+          "w-full bg-bg-secondary rounded-full overflow-hidden",
+          heightClasses[size],
+        )}
+      >
         <div
           className={cn(
             "h-full transition-all duration-500 ease-out",
@@ -62,7 +71,7 @@ const CompletionProgress: React.FC<CompletionProgressProps> = ({
         />
       </div>
       {size === "lg" && (
-        <div className="mt-3 text-sm text-gray-600">
+        <div className="mt-3 text-sm text-text-secondary">
           <p>
             {completed} of {total} items completed
             {total - completed > 0 ? ` • ${total - completed} remaining` : " ✓"}

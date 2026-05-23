@@ -28,7 +28,9 @@ interface PaperViewerModalProps {
  * Adapter to convert a PaperPoolItem (list data) to the ScreeningPaper format
  * required by the PaperViewer component.
  */
-function adaptPaperPoolItemToScreening(paper: PaperPoolItem | null): ScreeningPaper | null {
+function adaptPaperPoolItemToScreening(
+  paper: PaperPoolItem | null,
+): ScreeningPaper | null {
   if (!paper) return null;
   return {
     id: paper.id,
@@ -73,7 +75,9 @@ function adaptPaperPoolItemToScreening(paper: PaperPoolItem | null): ScreeningPa
  * Adapter to convert full PaperDetailsResponse (detailed data) to the
  * ScreeningPaper format required by the PaperViewer component.
  */
-function adaptPaperDetailsToScreening(paper: PaperDetailsResponse | null): ScreeningPaper | null {
+function adaptPaperDetailsToScreening(
+  paper: PaperDetailsResponse | null,
+): ScreeningPaper | null {
   if (!paper) return null;
   return {
     id: paper.id,
@@ -81,7 +85,8 @@ function adaptPaperDetailsToScreening(paper: PaperDetailsResponse | null): Scree
     authors: paper.authors || null,
     doi: paper.doi || null,
     publicationYear:
-      paper.publicationYearInt || (paper.publicationYear ? parseInt(paper.publicationYear) : null),
+      paper.publicationYearInt ||
+      (paper.publicationYear ? parseInt(paper.publicationYear) : null),
     publicationDate: paper.publicationDate || null,
     abstract: paper.abstract || null,
     journal: paper.journal || null,
@@ -135,7 +140,9 @@ export default function PaperViewerModal({
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
 
   // Use the details hook to fetch full metadata when modal is open
-  const { data: detailedPaper, isLoading } = usePaperDetails(isOpen ? paper?.id : undefined);
+  const { data: detailedPaper, isLoading } = usePaperDetails(
+    isOpen ? paper?.id : undefined,
+  );
 
   // Use detailed data if available, otherwise fall back to the list item data
   const adaptedPaper = detailedPaper
@@ -147,7 +154,11 @@ export default function PaperViewerModal({
   const handleApplySuggestion = async (selectedFields: string[]) => {
     if (!onApplyMetadataSuggestion || !suggestion || !paper) return;
     try {
-      await onApplyMetadataSuggestion(paper.id, suggestion.sourceMetadataId, selectedFields);
+      await onApplyMetadataSuggestion(
+        paper.id,
+        suggestion.sourceMetadataId,
+        selectedFields,
+      );
       setIsSuggestionModalOpen(false);
     } catch (error) {
       console.error("Failed to apply metadata suggestion:", error);
@@ -166,9 +177,9 @@ export default function PaperViewerModal({
         <div className="relative -mx-8 -mb-8 -mt-2 w-[calc(100%+4rem)] overflow-hidden rounded-b-[2rem]">
           {/* Suggestion Alert Bar */}
           {suggestion && (
-            <div className="flex items-center justify-between border-b border-indigo-100 bg-indigo-50 px-6 py-3">
+            <div className="flex items-center justify-between border-b border-indigo-100 bg-bg-secondary px-6 py-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-indigo-600 shadow-sm">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-accent shadow-sm">
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <p className="text-xs font-black text-indigo-900 uppercase tracking-tight">
@@ -177,28 +188,32 @@ export default function PaperViewerModal({
               </div>
               <button
                 onClick={() => setIsSuggestionModalOpen(true)}
-                className="rounded-xl bg-indigo-600 px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-900/20 transition-all hover:bg-indigo-700 active:scale-95"
+                className="rounded-[4px] bg-accent px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-900/20 transition-all hover:bg-indigo-700 active:scale-95"
               >
                 View & Apply
               </button>
             </div>
           )}
 
-          <div className="h-[80vh] overflow-hidden bg-slate-50">
+          <div className="h-[80vh] overflow-hidden bg-bg-secondary">
             {isLoading && (
-              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/60 backdrop-blur-md">
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-surface-white/60 backdrop-blur-md">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-3xl bg-white shadow-2xl flex items-center justify-center">
+                  <div className="w-16 h-16 rounded-[4px] bg-surface-white shadow-2xl flex items-center justify-center">
                     <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
                   </div>
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] animate-pulse">
+                  <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] animate-pulse">
                     Synchronizing Metadata...
                   </p>
                 </div>
               </div>
             )}
 
-            <PaperViewer paper={adaptedPaper} isLeaderView={true} hideActions={true} />
+            <PaperViewer
+              paper={adaptedPaper}
+              isLeaderView={true}
+              hideActions={true}
+            />
           </div>
         </div>
       </Modal>

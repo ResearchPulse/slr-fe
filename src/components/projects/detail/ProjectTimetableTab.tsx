@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import Button from "../../ui/Button";
-import Card from "../../ui/Card";
 import { toDateInputValue } from "../../../utils/dateUtils";
 
 interface ProjectTimetableTabProps {
@@ -40,7 +39,14 @@ export default function ProjectTimetableTab({
       !isSaving &&
       !hasInvalidRange &&
       (formStartDate !== initialStartDate || formEndDate !== initialEndDate),
-    [formStartDate, formEndDate, hasInvalidRange, isSaving, initialStartDate, initialEndDate],
+    [
+      formStartDate,
+      formEndDate,
+      hasInvalidRange,
+      isSaving,
+      initialStartDate,
+      initialEndDate,
+    ],
   );
 
   const handleSave = async () => {
@@ -52,15 +58,15 @@ export default function ProjectTimetableTab({
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-2xl font-bold text-gray-900 tracking-tight">Project Date Window</h2>
-      </div>
+    <div>
+      <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mb-5">
+        Project Date Window
+      </p>
 
-      <Card className="border border-gray-100 shadow-sm p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="border border-border bg-surface-white p-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] uppercase tracking-[0.15em] text-text-secondary font-medium mb-2">
               Expected Start Date
             </label>
             <input
@@ -68,12 +74,12 @@ export default function ProjectTimetableTab({
               value={formStartDate}
               onChange={(event) => setFormStartDate(event.target.value)}
               disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-[#A0998C] outline-none transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-[11px] uppercase tracking-[0.15em] text-text-secondary font-medium mb-2">
               Expected End Date
             </label>
             <input
@@ -81,29 +87,32 @@ export default function ProjectTimetableTab({
               value={formEndDate}
               onChange={(event) => setFormEndDate(event.target.value)}
               disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:text-gray-500"
+              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-[#A0998C] outline-none transition-colors"
             />
           </div>
         </div>
 
         {hasInvalidRange && (
-          <p className="text-sm text-red-600 mt-3">
+          <p className="text-sm text-accent mt-3">
             End Date must be the same as or after Start Date.
           </p>
         )}
 
         {!isLeader && (
-          <p className="text-sm text-gray-500 mt-3">
+          <p className="text-sm text-text-secondary mt-3">
             Only project leaders can update project dates.
           </p>
         )}
 
-        <div className="flex justify-end mt-6">
-          <Button onClick={() => void handleSave()} disabled={!isLeader || !canSave}>
+        <div className="flex justify-end mt-5 pt-4 border-t border-border">
+          <Button
+            onClick={() => void handleSave()}
+            disabled={!isLeader || !canSave}
+          >
             {isSaving ? "Saving..." : "Save Dates"}
           </Button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 }

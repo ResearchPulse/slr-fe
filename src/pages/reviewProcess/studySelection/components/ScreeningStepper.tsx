@@ -28,9 +28,9 @@ function getStepClasses(state: StepItem["state"]): string {
     case "completed":
       return "bg-emerald-50 border-emerald-200 text-emerald-700";
     case "locked":
-      return "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed";
+      return "bg-bg-secondary border-border text-text-secondary cursor-not-allowed";
     default:
-      return "bg-white border-gray-200 text-gray-600 hover:bg-gray-50";
+      return "bg-surface-white border-border text-text-secondary hover:bg-bg-primary";
   }
 }
 
@@ -41,9 +41,9 @@ function getDotClasses(state: StepItem["state"]): string {
     case "completed":
       return "bg-emerald-600 text-white border-emerald-600";
     case "locked":
-      return "bg-white text-gray-400 border-gray-300";
+      return "bg-surface-white text-text-secondary border-border";
     default:
-      return "bg-white text-gray-500 border-gray-300";
+      return "bg-surface-white text-text-secondary border-border";
   }
 }
 
@@ -51,7 +51,7 @@ function StepCard({ id, title, count, state, onClick, disabled }: StepItem) {
   const content = (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-lg border px-3 py-2 min-w-[200px] transition-colors",
+        "flex items-center gap-2.5 rounded-[4px] border px-3 py-2 min-w-[200px] transition-colors",
         getStepClasses(state),
       )}
     >
@@ -118,7 +118,7 @@ export default function ScreeningStepper({
         onClick={onGoToTitleAbstract}
       />
 
-      <FiChevronRight className="h-4 w-4 text-gray-400" />
+      <FiChevronRight className="h-4 w-4 text-text-secondary" />
 
       <StepCard
         id={2}

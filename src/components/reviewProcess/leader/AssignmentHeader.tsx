@@ -1,12 +1,14 @@
-import React from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React from "react";
+import { ArrowLeft } from "lucide-react";
+import { useNavigate, useParams } from "react-router-dom";
 
 interface AssignmentHeaderProps {
   currentPhaseText?: string;
 }
 
-const AssignmentHeader: React.FC<AssignmentHeaderProps> = ({ currentPhaseText }) => {
+const AssignmentHeader: React.FC<AssignmentHeaderProps> = ({
+  currentPhaseText,
+}) => {
   const navigate = useNavigate();
   const { projectId, processId } = useParams();
 
@@ -15,18 +17,18 @@ const AssignmentHeader: React.FC<AssignmentHeaderProps> = ({ currentPhaseText })
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-8">
+    <header className="bg-surface-white border-b border-border px-6 py-8">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <button
             onClick={handleBack}
-            className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors"
+            className="p-2 hover:bg-bg-secondary rounded-full text-text-secondary hover:text-text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+              <h1 className="text-2xl font-bold text-text-primary tracking-tight">
                 Assign Papers to Reviewers
               </h1>
               {currentPhaseText && (
@@ -35,7 +37,7 @@ const AssignmentHeader: React.FC<AssignmentHeaderProps> = ({ currentPhaseText })
                 </span>
               )}
             </div>
-            <p className="text-gray-500 mt-1">
+            <p className="text-text-secondary mt-1">
               Bulk assign screening papers to project reviewers
             </p>
           </div>

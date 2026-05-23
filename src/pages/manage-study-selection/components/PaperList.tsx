@@ -21,7 +21,10 @@ import {
 } from "../../../hooks/useStudySelection";
 import type { SelectionPhase } from "../components/StuSePhaseHeaderController";
 import { PaperPhase } from "../../../types/studySelection";
-import type { GetAssignmentPapersParams, AssignedReviewer } from "../../../types/studySelection";
+import type {
+  GetAssignmentPapersParams,
+  AssignedReviewer,
+} from "../../../types/studySelection";
 import AssignedReviewersModal from "./AssignedReviewersModal";
 import { useParams } from "react-router-dom";
 import { useProjectMember } from "../../../hooks/useProjectMember";
@@ -46,9 +49,9 @@ const statusConfig: Record<
 > = {
   Pending: {
     icon: HelpCircle,
-    color: "text-slate-400",
-    bgColor: "bg-slate-50",
-    borderColor: "border-slate-200",
+    color: "text-text-secondary",
+    bgColor: "bg-bg-secondary",
+    borderColor: "border-border",
   },
   Included: {
     icon: CheckCircle2,
@@ -70,8 +73,8 @@ const statusConfig: Record<
   },
   Resolved: {
     icon: CheckCircle2,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-50",
+    color: "text-accent",
+    bgColor: "bg-bg-secondary",
     borderColor: "border-indigo-200",
   },
 };
@@ -107,7 +110,9 @@ export const PaperList: React.FC<PaperListProps> = ({
   const queryClient = useQueryClient();
 
   const phaseNum =
-    currentPhase === "TITLE_ABSTRACT" ? PaperPhase.TitleAbstract : PaperPhase.FullText;
+    currentPhase === "TITLE_ABSTRACT"
+      ? PaperPhase.TitleAbstract
+      : PaperPhase.FullText;
 
   // Map filters to API params
   const params: GetAssignmentPapersParams = useMemo(
@@ -115,7 +120,11 @@ export const PaperList: React.FC<PaperListProps> = ({
       search: searchQuery || undefined,
       year: yearFilter !== "all" ? parseInt(yearFilter) : undefined,
       assignmentStatus:
-        assignmentFilter === "assigned" ? 1 : assignmentFilter === "not_assigned" ? 2 : 0,
+        assignmentFilter === "assigned"
+          ? 1
+          : assignmentFilter === "not_assigned"
+            ? 2
+            : 0,
       decisionStatus: parseInt(decisionFilter),
       pageSize,
     }),
@@ -128,16 +137,31 @@ export const PaperList: React.FC<PaperListProps> = ({
     params,
   );
 
-  const fullTextQuery = useInfiniteFullTextAssignmentPapers(studySelectionProcessId, params);
+  const fullTextQuery = useInfiniteFullTextAssignmentPapers(
+    studySelectionProcessId,
+    params,
+  );
 
-  const query = currentPhase === "TITLE_ABSTRACT" ? titleAbstractQuery : fullTextQuery;
-  const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = query;
+  const query =
+    currentPhase === "TITLE_ABSTRACT" ? titleAbstractQuery : fullTextQuery;
+  const {
+    data,
+    isLoading,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = query;
 
   // Conflict Status Polling
-  const { data: conflictStatusList } = useConflictStatus(studySelectionProcessId, phaseNum, {
-    enabled: !!studySelectionProcessId && isLeader,
-    refetchInterval: 10000, // 10 seconds
-  });
+  const { data: conflictStatusList } = useConflictStatus(
+    studySelectionProcessId,
+    phaseNum,
+    {
+      enabled: !!studySelectionProcessId && isLeader,
+      refetchInterval: 10000, // 10 seconds
+    },
+  );
 
   const conflictMap = useMemo(() => {
     const map = new Map<string, boolean>();
@@ -153,24 +177,35 @@ export const PaperList: React.FC<PaperListProps> = ({
     }));
   }, [data, conflictMap]);
 
-  const isAllSelected = papers.length > 0 && papers.every((p) => selectedIds.includes(p.id));
-  const isSomeSelected = papers.some((p) => selectedIds.includes(p.id)) && !isAllSelected;
+  const isAllSelected =
+    papers.length > 0 && papers.every((p) => selectedIds.includes(p.id));
+  const isSomeSelected =
+    papers.some((p) => selectedIds.includes(p.id)) && !isAllSelected;
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       const allIds = papers
-        .filter((p) => !["Included", "Excluded", "Resolved"].includes(p.status) && !p.isAssigned)
+        .filter(
+          (p) =>
+            !["Included", "Excluded", "Resolved"].includes(p.status) &&
+            !p.isAssigned,
+        )
         .map((p) => p.id);
       const newSelectedIds = Array.from(new Set([...selectedIds, ...allIds]));
       onSelectionChange(newSelectedIds);
     } else {
       const currentIds = papers.map((p) => p.id);
-      const newSelectedIds = selectedIds.filter((id) => !currentIds.includes(id));
+      const newSelectedIds = selectedIds.filter(
+        (id) => !currentIds.includes(id),
+      );
       onSelectionChange(newSelectedIds);
     }
   };
 
-  const handleSelectPaper = (e: React.ChangeEvent<HTMLInputElement>, id: string) => {
+  const handleSelectPaper = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    id: string,
+  ) => {
     e.stopPropagation();
     if (e.target.checked) {
       onSelectionChange([...selectedIds, id]);
@@ -203,21 +238,28 @@ export const PaperList: React.FC<PaperListProps> = ({
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
     // Fetch more when we are within 200px of the bottom
-    if (scrollHeight - scrollTop <= clientHeight + 200 && hasNextPage && !isFetchingNextPage) {
+    if (
+      scrollHeight - scrollTop <= clientHeight + 200 &&
+      hasNextPage &&
+      !isFetchingNextPage
+    ) {
       fetchNextPage();
       // Invalidate conflict status on page change to keep it somewhat in sync
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.studySelection.conflictStatus(studySelectionProcessId, phaseNum),
+        queryKey: QUERY_KEYS.studySelection.conflictStatus(
+          studySelectionProcessId,
+          phaseNum,
+        ),
       });
     }
   };
 
   if (isCollapsed) {
     return (
-      <div className="flex flex-col items-center py-6 h-full bg-slate-50 border-r border-slate-100 animate-in fade-in slide-in-from-left-4 duration-300">
+      <div className="flex flex-col items-center py-6 h-full bg-bg-secondary border-r border-border animate-in fade-in slide-in-from-left-4 duration-300">
         <button
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-white hover:shadow-md rounded-xl transition-all text-slate-400 hover:text-indigo-600 mb-8 border border-transparent hover:border-indigo-100"
+          className="p-2 hover:bg-surface-white hover:shadow-none rounded-[4px] transition-all text-text-secondary hover:text-accent mb-8 border border-transparent hover:border-indigo-100"
           title="Expand List"
         >
           <PanelLeftOpen className="w-5 h-5" />
@@ -238,7 +280,9 @@ export const PaperList: React.FC<PaperListProps> = ({
     return (
       <div className="flex flex-col items-center justify-center h-full p-4 text-center">
         <AlertCircle className="w-8 h-8 text-rose-500 mb-2" />
-        <p className="text-sm font-medium text-slate-600">Failed to load papers</p>
+        <p className="text-sm font-medium text-text-secondary">
+          Failed to load papers
+        </p>
         <button
           onClick={() => query.refetch()}
           className="mt-2 text-xs font-bold text-blue-600 hover:underline"
@@ -250,9 +294,9 @@ export const PaperList: React.FC<PaperListProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-white overflow-hidden">
+    <div className="flex flex-col h-full bg-surface-white overflow-hidden">
       {/* Header & Search */}
-      <div className="p-4 space-y-4 bg-slate-50/50 border-b border-slate-200">
+      <div className="p-4 space-y-4 bg-bg-secondary/50 border-b border-border">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isAssignmentMode && (
@@ -273,14 +317,14 @@ export const PaperList: React.FC<PaperListProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 hover:bg-white hover:shadow-sm rounded-lg transition-all text-slate-400 hover:text-indigo-600 border border-transparent hover:border-indigo-100"
+              className="p-1.5 hover:bg-surface-white hover:shadow-none rounded-[4px] transition-all text-text-secondary hover:text-accent border border-transparent hover:border-indigo-100"
               title="Collapse List"
             >
               <PanelLeftClose className="w-4 h-4" />
             </button>
             {isAssignmentMode && selectedIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
+                <span className="text-[10px] font-black text-accent bg-bg-secondary px-2 py-0.5 rounded-full uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
                   {selectedIds.length} Selected
                 </span>
               </div>
@@ -289,10 +333,10 @@ export const PaperList: React.FC<PaperListProps> = ({
         </div>
 
         <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
           <Input
             placeholder="Search title or authors..."
-            className="pl-10 bg-white border-slate-200 focus:ring-blue-500 focus:border-blue-500 rounded-xl transition-all"
+            className="pl-10 bg-surface-white border-border focus:ring-blue-500 focus:border-blue-500 rounded-[4px] transition-all"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -300,7 +344,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
         <div className="grid grid-cols-2 gap-2">
           <select
-            className="text-[11px] font-bold p-2 bg-white border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-blue-500"
+            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
             value={yearFilter}
             onChange={(e) => handleFilterChange(setYearFilter, e.target.value)}
           >
@@ -316,9 +360,11 @@ export const PaperList: React.FC<PaperListProps> = ({
           </select>
 
           <select
-            className="text-[11px] font-bold p-2 bg-white border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-blue-500"
+            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
             value={decisionFilter}
-            onChange={(e) => handleFilterChange(setDecisionFilter, e.target.value)}
+            onChange={(e) =>
+              handleFilterChange(setDecisionFilter, e.target.value)
+            }
           >
             <option value="0">All Decisions</option>
             <option value="1">Not Decided</option>
@@ -327,9 +373,11 @@ export const PaperList: React.FC<PaperListProps> = ({
           </select>
 
           <select
-            className="text-[11px] font-bold p-2 bg-white border border-slate-200 rounded-lg outline-none focus:ring-1 focus:ring-blue-500"
+            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
             value={assignmentFilter}
-            onChange={(e) => handleFilterChange(setAssignmentFilter, e.target.value)}
+            onChange={(e) =>
+              handleFilterChange(setAssignmentFilter, e.target.value)
+            }
           >
             <option value="all">All Assignment</option>
             <option value="assigned">Assigned</option>
@@ -340,18 +388,22 @@ export const PaperList: React.FC<PaperListProps> = ({
 
       {/* List */}
       <div
-        className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2 bg-slate-50/30"
+        className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2 bg-bg-secondary/30"
         onScroll={handleScroll}
       >
         {isLoading ? (
           <div className="space-y-2">
             {[...Array(5)].map((_, i) => (
-              <div key={i} className="h-32 bg-slate-100 animate-pulse rounded-2xl" />
+              <div
+                key={i}
+                className="h-32 bg-bg-secondary animate-pulse rounded-[4px]"
+              />
             ))}
           </div>
         ) : papers.length > 0 ? (
           papers.map((paper) => {
-            const status = statusConfig[paper.status] || statusConfig["Pending"];
+            const status =
+              statusConfig[paper.status] || statusConfig["Pending"];
             const StatusIcon = status.icon;
             const isPaperActive = selectedPaperId === paper.id;
             const isPaperSelected = selectedIds.includes(paper.id);
@@ -361,10 +413,10 @@ export const PaperList: React.FC<PaperListProps> = ({
                 key={paper.id}
                 onClick={() => onSelectPaper(paper.id)}
                 className={cn(
-                  "group relative p-4 rounded-2xl border transition-all cursor-pointer flex gap-4",
+                  "group relative p-4 rounded-[4px] border transition-all cursor-pointer flex gap-4",
                   isPaperActive
-                    ? "bg-white border-blue-200 shadow-md ring-1 ring-blue-500/10"
-                    : "bg-white border-slate-200 hover:border-blue-100 hover:shadow-sm",
+                    ? "bg-surface-white border-blue-200 shadow-none ring-1 ring-blue-500/10"
+                    : "bg-surface-white border-border hover:border-blue-100 hover:shadow-none",
                 )}
               >
                 {isPaperActive && (
@@ -378,8 +430,9 @@ export const PaperList: React.FC<PaperListProps> = ({
                       className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       checked={isPaperSelected}
                       disabled={
-                        ["Included", "Excluded", "Resolved"].includes(paper.status) ||
-                        paper.isAssigned
+                        ["Included", "Excluded", "Resolved"].includes(
+                          paper.status,
+                        ) || paper.isAssigned
                       }
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => handleSelectPaper(e, paper.id)}
@@ -391,21 +444,25 @@ export const PaperList: React.FC<PaperListProps> = ({
                   <h3
                     className={cn(
                       "text-sm font-bold leading-snug line-clamp-2 transition-colors",
-                      isPaperActive ? "text-blue-700" : "text-slate-800 group-hover:text-blue-600",
+                      isPaperActive
+                        ? "text-blue-700"
+                        : "text-slate-800 group-hover:text-blue-600",
                     )}
                   >
                     {paper.title}
                   </h3>
 
-                  <p className="text-xs font-medium text-slate-500 line-clamp-1">{paper.author}</p>
+                  <p className="text-xs font-medium text-text-secondary line-clamp-1">
+                    {paper.author}
+                  </p>
 
                   <div className="flex flex-col gap-2 pt-1">
                     <div className="flex items-center gap-3 overflow-hidden">
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 shrink-0">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-text-secondary shrink-0">
                         <Calendar className="w-3 h-3" />
                         {paper.year}
                       </span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-slate-400 truncate">
+                      <span className="inline-flex items-center gap-1 text-[10px] font-bold text-text-secondary truncate">
                         <Database className="w-3 h-3 shrink-0" />
                         {paper.source}
                       </span>
@@ -428,8 +485,8 @@ export const PaperList: React.FC<PaperListProps> = ({
                         className={cn(
                           "flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider",
                           paper.isAssigned
-                            ? "bg-indigo-50 text-indigo-600 border-indigo-100"
-                            : "bg-slate-50 text-slate-400 border-slate-200",
+                            ? "bg-bg-secondary text-accent border-indigo-100"
+                            : "bg-bg-secondary text-text-secondary border-border",
                         )}
                       >
                         <Users className="w-3 h-3" />
@@ -437,7 +494,11 @@ export const PaperList: React.FC<PaperListProps> = ({
                         {paper.isAssigned && (
                           <button
                             onClick={(e) =>
-                              handleViewReviewers(e, paper.title, paper.assignedReviewers || [])
+                              handleViewReviewers(
+                                e,
+                                paper.title,
+                                paper.assignedReviewers || [],
+                              )
                             }
                             className="ml-1 p-0.5 hover:bg-indigo-200 rounded-md transition-colors"
                             title="View Reviewers"
@@ -449,7 +510,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                     </div>
 
                     {paper.hasConflict && (
-                      <div className="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-600 text-[9px] font-black uppercase tracking-wider animate-blink shadow-sm">
+                      <div className="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-600 text-[9px] font-black uppercase tracking-wider animate-blink shadow-none">
                         <AlertCircle className="w-3 h-3" />! Conflict
                       </div>
                     )}
@@ -460,10 +521,10 @@ export const PaperList: React.FC<PaperListProps> = ({
           })
         ) : (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-            <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+            <div className="w-12 h-12 bg-bg-secondary rounded-full flex items-center justify-center mb-4">
               <Search className="w-6 h-6 text-slate-300" />
             </div>
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-text-secondary">
               No papers found matching your filters
             </p>
             <button
@@ -492,7 +553,9 @@ export const PaperList: React.FC<PaperListProps> = ({
 
       <AssignedReviewersModal
         isOpen={reviewersModal.isOpen}
-        onClose={() => setReviewersModal((prev) => ({ ...prev, isOpen: false }))}
+        onClose={() =>
+          setReviewersModal((prev) => ({ ...prev, isOpen: false }))
+        }
         paperTitle={reviewersModal.paperTitle}
         reviewers={reviewersModal.reviewers}
       />

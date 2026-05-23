@@ -2,7 +2,12 @@ import React, { useState } from "react";
 import ProjectSetupSection from "./ProjectSetupSection";
 import BusinessJustificationSection from "./BusinessJustificationSection";
 import type { Project } from "../../../types/project";
-import { FiChevronDown, FiChevronUp, FiSettings, FiBriefcase } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiChevronUp,
+  FiSettings,
+  FiBriefcase,
+} from "react-icons/fi";
 
 interface OverviewTabContentProps {
   project: Project;
@@ -13,7 +18,11 @@ interface OverviewTabContentProps {
   reviewNeeds: any[];
   documents: any[];
   isUpdatingDates: boolean;
-  handleSaveProjectDates: (payload: { id: string; startDate: string | null; endDate: string | null }) => Promise<void>;
+  handleSaveProjectDates: (payload: {
+    id: string;
+    startDate: string | null;
+    endDate: string | null;
+  }) => Promise<void>;
   setIsNeedModalOpen: (open: boolean) => void;
   setIsDocModalOpen: (open: boolean) => void;
   onSetupSaved: () => void;
@@ -24,32 +33,39 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
   const [isBJExpanded, setIsBJExpanded] = useState(false);
 
   return (
-    <div className="space-y-8 pb-12 animate-in fade-in duration-700">
+    <div className="space-y-4 pb-12">
       {/* Project Setup Section */}
-      <section className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+      <section className="border border-border bg-surface-white overflow-hidden">
         <button
           onClick={() => setIsSetupExpanded(!isSetupExpanded)}
-          className="w-full flex items-center justify-between p-6 text-left bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+          className="w-full flex items-center justify-between px-6 py-4 text-left bg-bg-primary hover:bg-bg-secondary transition-colors border-b border-border"
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-100 flex items-center justify-center text-indigo-600 shadow-inner">
-              <FiSettings className="w-6 h-6" />
+            <div className="w-8 h-8 border border-border flex items-center justify-center text-text-secondary">
+              <FiSettings className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Project Setup</h2>
-              <p className="text-sm text-slate-500">Research scope, PICO-C and Questions</p>
+              <h2 className="text-[13px] font-medium uppercase tracking-[0.1em] text-text-primary">
+                Project Setup
+              </h2>
+              <p className="text-[12px] text-text-secondary">
+                Research scope, PICO-C and Questions
+              </p>
             </div>
           </div>
-          <div className="text-slate-400">
-            {isSetupExpanded ? <FiChevronUp size={24} /> : <FiChevronDown size={24} />}
+          <div className="text-text-secondary">
+            {isSetupExpanded ? (
+              <FiChevronUp size={18} />
+            ) : (
+              <FiChevronDown size={18} />
+            )}
           </div>
         </button>
 
         <div
-          className={`transition-all duration-500 ease-in-out ${isSetupExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden`}
+          className={`transition-all duration-500 ease-in-out ${isSetupExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
         >
-          <div className="p-6 border-t border-slate-100">
+          <div className="p-6">
             <ProjectSetupSection
               projectId={props.projectId}
               isProjectSetupReady={props.isProjectSetupReady}
@@ -62,30 +78,37 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
       </section>
 
       {/* Business Justification Section */}
-      <section className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+      <section className="border border-border bg-surface-white overflow-hidden">
         <button
           onClick={() => setIsBJExpanded(!isBJExpanded)}
-          className="w-full flex items-center justify-between p-6 text-left bg-slate-50/50 hover:bg-slate-100/50 transition-colors"
+          className="w-full flex items-center justify-between px-6 py-4 text-left bg-bg-primary hover:bg-bg-secondary transition-colors border-b border-border"
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-amber-100 flex items-center justify-center text-amber-600 shadow-inner">
-              <FiBriefcase className="w-6 h-6" />
+            <div className="w-8 h-8 border border-border flex items-center justify-center text-text-secondary">
+              <FiBriefcase className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Business Justification</h2>
-              <p className="text-sm text-slate-500">Governance, Review Needs and Documents</p>
+              <h2 className="text-[13px] font-medium uppercase tracking-[0.1em] text-text-primary">
+                Business Justification
+              </h2>
+              <p className="text-[12px] text-text-secondary">
+                Governance, Review Needs and Documents
+              </p>
             </div>
           </div>
-          <div className="text-slate-400">
-            {isBJExpanded ? <FiChevronUp size={24} /> : <FiChevronDown size={24} />}
+          <div className="text-text-secondary">
+            {isBJExpanded ? (
+              <FiChevronUp size={18} />
+            ) : (
+              <FiChevronDown size={18} />
+            )}
           </div>
         </button>
 
         <div
-          className={`transition-all duration-500 ease-in-out ${isBJExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
-            } overflow-hidden`}
+          className={`transition-all duration-500 ease-in-out ${isBJExpanded ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"} overflow-hidden`}
         >
-          <div className="p-6 border-t border-slate-100">
+          <div className="p-6">
             <BusinessJustificationSection
               project={props.project}
               projectId={props.projectId}

@@ -47,8 +47,12 @@ export default function UpdateNotesModal({
   return (
     <Modal isOpen={isOpen} onClose={handleCancel} title="Update Process Notes">
       <div className="mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{process.name || "Unnamed Process"}</h3>
-        <p className="text-sm text-gray-600">Phase: {process.currentPhaseText}</p>
+        <h3 className="text-lg font-semibold text-text-primary">
+          {process.name || "Unnamed Process"}
+        </h3>
+        <p className="text-sm text-text-secondary">
+          Phase: {process.currentPhaseText}
+        </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -63,8 +67,13 @@ export default function UpdateNotesModal({
           required
         />
 
-        <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
-          <Button type="button" variant="secondary" onClick={handleCancel} disabled={isLoading}>
+        <div className="flex gap-3 justify-end pt-4 border-t border-border">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>

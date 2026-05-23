@@ -13,11 +13,11 @@ interface PreviewPanelProps {
   allowImportCriterias?: boolean;
 }
 
-export const PreviewPanel: React.FC<PreviewPanelProps> = ({ 
+export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   localDraft,
   onImport,
   screeningProcessId,
-  allowImportCriterias
+  allowImportCriterias,
 }) => {
   const draft = localDraft;
   const [isExportOpen, setIsExportOpen] = useState(false);
@@ -29,23 +29,25 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
             <Eye className="w-4 h-4 text-gray-500" />
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Live Preview</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+              Live Preview
+            </span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          <Button 
-            size="sm" 
-            variant="ghost" 
-            className="h-8 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 px-3"
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-accent hover:bg-bg-secondary px-3"
             onClick={() => setIsImportOpen(true)}
           >
             <Upload className="w-3.5 h-3.5 mr-1.5" /> Import
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="ghost"
-            className="h-8 text-[10px] font-black uppercase tracking-wider text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3"
+            className="h-8 text-[10px] font-black uppercase tracking-wider text-accent bg-bg-secondary hover:bg-indigo-100 px-3"
             onClick={() => setIsExportOpen(true)}
           >
             <Download className="w-3.5 h-3.5 mr-1.5" /> Export
@@ -56,9 +58,9 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
         <PreviewDocument draft={draft} />
       </div>
 
-      <ExportDialog 
-        isOpen={isExportOpen} 
-        onClose={() => setIsExportOpen(false)} 
+      <ExportDialog
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
       />
       <ImportDialog
         isOpen={isImportOpen}
@@ -70,4 +72,3 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
     </div>
   );
 };
-

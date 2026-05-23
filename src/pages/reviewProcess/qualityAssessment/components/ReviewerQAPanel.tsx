@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
-import { FiCheck, FiX, FiHelpCircle, FiZap, FiMessageSquare } from "react-icons/fi";
-import type { 
-  QAPaperResponse, 
+import {
+  FiCheck,
+  FiX,
+  FiHelpCircle,
+  FiZap,
+  FiMessageSquare,
+} from "react-icons/fi";
+import type {
+  QAPaperResponse,
   QualityAssessmentStrategy,
-  AutomateQualityAssessmentResponse
+  AutomateQualityAssessmentResponse,
 } from "../../../../types/qualityAssessment";
 
 export interface ReviewerDecisionPayload {
   /** this is protocol.qualityCriterionId */
   criterionId: string;
-  /** 
+  /**
    * this is the decision.decisionItem.Id
    * */
   itemId?: string;
@@ -30,26 +36,53 @@ interface ReviewerQAPanelProps {
   canEdit?: boolean;
 }
 
-export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze, isSaving, activeCriterionId, onSelectCriterion, highlightsByCriterion, canEdit = true }: ReviewerQAPanelProps) {
-  
-  const [answers, setAnswers] = useState<Record<string, { value: number, comment?: string, id?: string, pdfHighlightCoordinates?: string }>>({});
+export default function ReviewerQAPanel({
+  paper,
+  strategies,
+  onSave,
+  onAiAnalyze,
+  isSaving,
+  activeCriterionId,
+  onSelectCriterion,
+  highlightsByCriterion,
+  canEdit = true,
+}: ReviewerQAPanelProps) {
+  const [answers, setAnswers] = useState<
+    Record<
+      string,
+      {
+        value: number;
+        comment?: string;
+        id?: string;
+        pdfHighlightCoordinates?: string;
+      }
+    >
+  >({});
   const [notes, setNotes] = useState<string>("");
   const [isAiLoading, setIsAiLoading] = useState(false);
 
   // Pre-fill existing decisions
   useEffect(() => {
     if (!paper) return;
-    const initialAnswers: Record<string, { value: number, comment?: string, id?: string, pdfHighlightCoordinates?: string }> = {};
-    
+    const initialAnswers: Record<
+      string,
+      {
+        value: number;
+        comment?: string;
+        id?: string;
+        pdfHighlightCoordinates?: string;
+      }
+    > = {};
+
     // We assume the reviewer sees their own decision (probably the first/only one in the array for their view)
     const myDecision = paper.decisions?.[0];
-    myDecision?.decisionItems?.forEach(item => {
+    myDecision?.decisionItems?.forEach((item) => {
       if (item.qualityCriterionId && item.value !== null) {
         initialAnswers[item.qualityCriterionId] = {
           value: Number(item.value),
           comment: item.comment || "",
           id: item.id || undefined,
-          pdfHighlightCoordinates: item.pdfHighlightCoordinates || undefined
+          pdfHighlightCoordinates: item.pdfHighlightCoordinates || undefined,
         };
       }
     });
@@ -64,20 +97,20 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
       setIsAiLoading(true);
       const aiResponse = await onAiAnalyze(paper.paperId);
       const { pageWidth, pageHeight, decisionItems } = aiResponse;
-      
+
       if (decisionItems && decisionItems.length > 0) {
-        setAnswers(prev => {
+        setAnswers((prev) => {
           const newAnswers = { ...prev };
-          decisionItems.forEach(item => {
+          decisionItems.forEach((item) => {
             // Normalize pdfHighlightCoordinates using pageWidth/pageHeight
             let normalizedCoords = item.pdfHighlightCoordinates;
             if (normalizedCoords && pageWidth && pageHeight) {
               normalizedCoords = normalizedCoords
-                .split(';')
+                .split(";")
                 .filter(Boolean)
-                .map(segment => {
+                .map((segment) => {
                   // Grobid gave coords in pdf units and started page index at 1, reactpdfviewer using 0-based page index and persentages
-                  const [page, x, y, h, w] = segment.split(',').map(Number);
+                  const [page, x, y, h, w] = segment.split(",").map(Number);
                   const normPage = page - 1; // Convert to 0-based page index
                   const normX = (x / pageWidth) * 100;
                   const normY = (y / pageHeight) * 100;
@@ -85,14 +118,14 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
                   const normW = (w / pageWidth) * 100;
                   return `${normPage},${normX},${normY},${normH},${normW}`;
                 })
-                .join(';');
+                .join(";");
             }
 
             newAnswers[item.qualityCriterionId] = {
               ...newAnswers[item.qualityCriterionId],
               value: item.value,
               comment: item.comment,
-              pdfHighlightCoordinates: normalizedCoords
+              pdfHighlightCoordinates: normalizedCoords,
             };
           });
           return newAnswers;
@@ -106,67 +139,78 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
   };
 
   const handleSelect = (criterionId: string, val: number) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [criterionId]: { ...prev[criterionId], value: val }
+      [criterionId]: { ...prev[criterionId], value: val },
     }));
   };
 
   const handleCommentChange = (criterionId: string, txt: string) => {
-    setAnswers(prev => ({
+    setAnswers((prev) => ({
       ...prev,
-      [criterionId]: { ...prev[criterionId], comment: txt }
+      [criterionId]: { ...prev[criterionId], comment: txt },
     }));
   };
 
   const handleSave = () => {
-    const payload: ReviewerDecisionPayload[] = Object.keys(answers).map(critId => {
-      let highlightStr = answers[critId].pdfHighlightCoordinates;
-      if (highlightsByCriterion?.[critId]) {
-        // Flatten the areas and map to format: page,x,y,height,width
-        highlightStr = highlightsByCriterion[critId]
-          .flatMap(r => r.areas)
-          .map(a => `${a.pageIndex},${a.left},${a.top},${a.height},${a.width}`)
-          .join(';');
-      }
-      return {
-        criterionId: critId,
-        itemId: answers[critId].id,
-        value: answers[critId].value,
-        comment: answers[critId].comment,
-        pdfHighlightCoordinates: highlightStr,
-      };
-    });
+    const payload: ReviewerDecisionPayload[] = Object.keys(answers).map(
+      (critId) => {
+        let highlightStr = answers[critId].pdfHighlightCoordinates;
+        if (highlightsByCriterion?.[critId]) {
+          // Flatten the areas and map to format: page,x,y,height,width
+          highlightStr = highlightsByCriterion[critId]
+            .flatMap((r) => r.areas)
+            .map(
+              (a) => `${a.pageIndex},${a.left},${a.top},${a.height},${a.width}`,
+            )
+            .join(";");
+        }
+        return {
+          criterionId: critId,
+          itemId: answers[critId].id,
+          value: answers[critId].value,
+          comment: answers[critId].comment,
+          pdfHighlightCoordinates: highlightStr,
+        };
+      },
+    );
     onSave(notes || null, payload);
   };
 
   // Extract all criteria from strategies
-  const criteriaList = strategies.flatMap(s => 
-    s.checklists.flatMap(cl => 
-      cl.criteria.map(c => ({...c, checklistName: cl.name, strategyName: s.description}))
-    )
+  const criteriaList = strategies.flatMap((s) =>
+    s.checklists.flatMap((cl) =>
+      cl.criteria.map((c) => ({
+        ...c,
+        checklistName: cl.name,
+        strategyName: s.description,
+      })),
+    ),
   );
 
   const hasResolution = !!paper.resolution;
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <div className="flex flex-col h-full bg-surface-white relative">
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
-        
         {/* AI Advertisement Banner */}
-        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-lg p-4 flex items-start gap-4">
+        <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 rounded-[4px] p-4 flex items-start gap-4">
           <div className="bg-purple-100 rounded-full p-2 mt-1">
             <FiZap className="w-5 h-5 text-purple-600" />
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-purple-900 mb-1">Stuck on a tricky paper?</h3>
+            <h3 className="text-sm font-semibold text-purple-900 mb-1">
+              Stuck on a tricky paper?
+            </h3>
             <p className="text-xs text-purple-700 mb-3">
-              Use our AI Assistant to evaluate this paper against established criteria automatically.
+              Use our AI Assistant to evaluate this paper against established
+              criteria automatically.
             </p>
-            <button 
+            <button
               onClick={handleAiAnalyze}
               disabled={isAiLoading || hasResolution}
-              className="text-xs bg-white text-purple-700 border border-purple-200 px-3 py-1.5 rounded-md font-medium hover:bg-purple-50 transition disabled:opacity-50 disabled:cursor-not-allowed">
+              className="text-xs bg-surface-white text-purple-700 border border-purple-200 px-3 py-1.5 rounded-md font-medium hover:bg-purple-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {isAiLoading ? "Analyzing..." : "Analyze with AI Helper"}
             </button>
           </div>
@@ -182,35 +226,39 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
             const isActive = activeCriterionId === crit.criterionId;
 
             return (
-              <div 
-                key={crit.criterionId} 
+              <div
+                key={crit.criterionId}
                 onClick={() => onSelectCriterion?.(crit.criterionId)}
-                className={`space-y-3 p-4 rounded-lg border transition-colors cursor-pointer ${isActive ? 'bg-indigo-50 border-indigo-200' : 'bg-gray-50 border-gray-100 hover:border-indigo-100'}`}
+                className={`space-y-3 p-4 rounded-[4px] border transition-colors cursor-pointer ${isActive ? "bg-bg-secondary border-indigo-200" : "bg-bg-primary border-border hover:border-indigo-100"}`}
               >
                 <div className="flex gap-2">
-                  <span className="text-sm font-semibold text-gray-500">{idx + 1}.</span>
-                  <p className="text-sm font-medium text-gray-800">{crit.question}</p>
+                  <span className="text-sm font-semibold text-text-secondary">
+                    {idx + 1}.
+                  </span>
+                  <p className="text-sm font-medium text-text-primary">
+                    {crit.question}
+                  </p>
                 </div>
-                
+
                 <div className="flex gap-2 pl-5">
-                  <button 
+                  <button
                     onClick={() => handleSelect(crit.criterionId, 0)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isYes ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isYes ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiCheck /> Yes
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleSelect(crit.criterionId, 1)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isNo ? "bg-rose-50 border-rose-500 text-rose-700" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isNo ? "bg-rose-50 border-rose-500 text-rose-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiX /> No
                   </button>
-                  <button 
+                  <button
                     onClick={() => handleSelect(crit.criterionId, 2)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isUnclear ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-white border-gray-200 text-gray-600 hover:bg-gray-50"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isUnclear ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiHelpCircle /> Unclear
                   </button>
@@ -218,14 +266,16 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
 
                 <div className="pl-5 pt-1">
                   <div className="relative">
-                    <FiMessageSquare className="absolute top-2.5 left-2.5 text-gray-400 w-3.5 h-3.5" />
-                    <input 
-                      type="text" 
-                      placeholder="Add a comment..." 
+                    <FiMessageSquare className="absolute top-2.5 left-2.5 text-text-secondary w-3.5 h-3.5" />
+                    <input
+                      type="text"
+                      placeholder="Add a comment..."
                       value={currentAns?.comment || ""}
-                      onChange={(e) => handleCommentChange(crit.criterionId, e.target.value)}
+                      onChange={(e) =>
+                        handleCommentChange(crit.criterionId, e.target.value)
+                      }
                       disabled={hasResolution}
-                      className={`w-full pl-8 pr-3 py-1.5 text-xs border border-gray-200 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 ${hasResolution ? "opacity-50 cursor-not-allowed bg-gray-50" : ""}`}
+                      className={`w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 ${hasResolution ? "opacity-50 cursor-not-allowed bg-bg-primary" : ""}`}
                     />
                   </div>
                 </div>
@@ -235,11 +285,11 @@ export default function ReviewerQAPanel({ paper, strategies, onSave, onAiAnalyze
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <button 
+      <div className="absolute bottom-0 left-0 right-0 p-4 bg-surface-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button
           onClick={handleSave}
           disabled={isSaving || !canEdit || hasResolution}
-          className="w-full py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center"
+          className="w-full py-2.5 bg-accent text-white text-sm font-medium rounded-[4px] hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center"
         >
           {isSaving ? "Saving..." : "Save Assessment"}
         </button>

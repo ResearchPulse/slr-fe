@@ -24,42 +24,42 @@ interface CustomToastProps {
 
 const toastStyles: Record<
   ToastType,
-  { bg: string; border: string; iconColor: string; icon: React.ReactNode; barColor: string }
+  {
+    bg: string;
+    border: string;
+    iconColor: string;
+    icon: React.ReactNode;
+  }
 > = {
   success: {
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    iconColor: "text-emerald-600",
-    icon: <HiCheckCircle className="w-6 h-6" />,
-    barColor: "bg-emerald-500",
+    bg: "bg-surface-white",
+    border: "border-border",
+    iconColor: "text-[#556B2F]", // muted olive
+    icon: <HiCheckCircle className="w-5 h-5" />,
   },
   error: {
-    bg: "bg-red-50",
-    border: "border-red-200",
-    iconColor: "text-red-600",
-    icon: <HiXCircle className="w-6 h-6" />,
-    barColor: "bg-red-500",
+    bg: "bg-surface-white",
+    border: "border-border",
+    iconColor: "text-accent", // muted burgundy
+    icon: <HiXCircle className="w-5 h-5" />,
   },
   warning: {
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    iconColor: "text-amber-600",
-    icon: <HiExclamationTriangle className="w-6 h-6" />,
-    barColor: "bg-amber-500",
+    bg: "bg-surface-white",
+    border: "border-border",
+    iconColor: "text-[#B8860B]", // muted amber
+    icon: <HiExclamationTriangle className="w-5 h-5" />,
   },
   info: {
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    iconColor: "text-blue-600",
-    icon: <HiInformationCircle className="w-6 h-6" />,
-    barColor: "bg-blue-500",
+    bg: "bg-surface-white",
+    border: "border-border",
+    iconColor: "text-text-secondary",
+    icon: <HiInformationCircle className="w-5 h-5" />,
   },
   loading: {
-    bg: "bg-slate-50",
-    border: "border-slate-200",
-    iconColor: "text-slate-600",
-    icon: <CgSpinner className="w-6 h-6 animate-spin" />,
-    barColor: "bg-slate-400",
+    bg: "bg-surface-white",
+    border: "border-border",
+    iconColor: "text-accent",
+    icon: <CgSpinner className="w-5 h-5 animate-spin" />,
   },
 };
 
@@ -90,36 +90,37 @@ export const CustomToast: React.FC<CustomToastProps> = ({
             scale: 1,
             duration: 0.45,
             ease: "power3.out",
-          }
+          },
         );
 
         // Icon pop effect
         gsap.fromTo(
           iconRef.current,
           { scale: 0.8, opacity: 0 },
-          { scale: 1, opacity: 1, duration: 0.35, ease: "back.out(1.7)", delay: 0.1 }
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.35,
+            ease: "back.out(1.7)",
+            delay: 0.1,
+          },
         );
 
         // Staggered text appearance
         gsap.fromTo(
           contentRef.current?.children || [],
           { y: 5, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.3, stagger: 0.05, ease: "power2.out", delay: 0.15 }
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.3,
+            stagger: 0.05,
+            ease: "power2.out",
+            delay: 0.15,
+          },
         );
 
-        // Progress bar animation
-        if (type !== 'loading' && t.duration !== Infinity) {
-          gsap.fromTo(
-            progressBarRef.current,
-            { scaleX: 1 },
-            {
-              scaleX: 0,
-              duration: (t.duration || 4000) / 1000,
-              ease: "none",
-              transformOrigin: "left",
-            }
-          );
-        }
+        // Removed Progress bar animation per editorial requirements
       } else {
         // Exit sequence
         gsap.to(containerRef.current, {
@@ -139,7 +140,8 @@ export const CustomToast: React.FC<CustomToastProps> = ({
   const handleMouseEnter = () => {
     gsap.to(containerRef.current, {
       scale: 1.02,
-      boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+      boxShadow:
+        "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
       duration: 0.15,
       ease: "power2.out",
     });
@@ -160,51 +162,38 @@ export const CustomToast: React.FC<CustomToastProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "max-w-md w-full pointer-events-auto flex flex-col rounded-lg border shadow-sm overflow-hidden",
+        "max-w-sm w-full pointer-events-auto flex flex-col rounded-[4px] border shadow-none overflow-hidden",
         style.bg,
-        style.border
+        style.border,
       )}
     >
-      <div className="flex flex-1 w-full">
-        <div className="flex-1 w-0 p-4">
-          <div className="flex items-start">
-            <div ref={iconRef} className={cn("flex-shrink-0 pt-0.5", style.iconColor)}>
-              {style.icon}
-            </div>
-            <div ref={contentRef} className="ml-3 flex-1">
-              <p className="text-sm font-semibold text-slate-900 line-clamp-1">
-                {title}
-              </p>
-              {message && (
-                <p className="mt-1 text-sm text-slate-600 line-clamp-2">
-                  {message}
-                </p>
-              )}
-            </div>
-          </div>
+      <div className="flex flex-1 w-full items-center p-3">
+        <div
+          ref={iconRef}
+          className={cn("flex-shrink-0 mr-3", style.iconColor)}
+        >
+          {style.icon}
         </div>
-        <div className="flex border-l border-slate-200">
-          <button
-            onClick={() => {
-              if (onClose) onClose();
-              toast.dismiss(t.id);
-            }}
-            className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-slate-400 hover:text-slate-600 focus:outline-none transition-colors"
-          >
-            <HiXMark className="w-5 h-5" />
-          </button>
+        <div ref={contentRef} className="flex-1">
+          <p className="text-[13px] font-medium text-text-primary tracking-wide line-clamp-1">
+            {title}
+          </p>
+          {message && (
+            <p className="mt-0.5 text-xs text-text-secondary line-clamp-2">
+              {message}
+            </p>
+          )}
         </div>
+        <button
+          onClick={() => {
+            if (onClose) onClose();
+            toast.dismiss(t.id);
+          }}
+          className="ml-4 flex-shrink-0 text-text-secondary hover:text-text-primary focus:outline-none transition-colors"
+        >
+          <HiXMark className="w-4 h-4" />
+        </button>
       </div>
-      
-      {/* Progress Bar (Auto-dismiss timer) */}
-      {type !== 'loading' && t.duration !== Infinity && (
-        <div className="h-0.5 w-full bg-slate-200/50">
-          <div
-            ref={progressBarRef}
-            className={cn("h-full w-full origin-left", style.barColor)}
-          />
-        </div>
-      )}
     </div>
   );
 };

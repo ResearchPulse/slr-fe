@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, useImperativeHandle, forwardRef } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { usePdfHighlights, type HighlightArea } from "./hooks/usePdfHighlights";
 
@@ -58,7 +64,10 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       if (!pdf) return;
 
       const renderPages = async () => {
-        const info: Record<number, { viewport: any; offset: { x: number; y: number } }> = {};
+        const info: Record<
+          number,
+          { viewport: any; offset: { x: number; y: number } }
+        > = {};
 
         for (let i = 1; i <= numPages; i++) {
           const page = await pdf.getPage(i);
@@ -71,7 +80,9 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           };
           info[i - 1] = { viewport, offset };
 
-          const canvas = document.getElementById(`pdf-canvas-${i}`) as HTMLCanvasElement;
+          const canvas = document.getElementById(
+            `pdf-canvas-${i}`,
+          ) as HTMLCanvasElement;
           if (canvas) {
             const context = canvas.getContext("2d");
             if (context) {
@@ -134,7 +145,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
     if (!pdf) {
       return (
-        <div className="flex items-center justify-center h-full bg-slate-50 text-slate-400 font-medium">
+        <div className="flex items-center justify-center h-full bg-bg-secondary text-text-secondary font-medium">
           Loading document...
         </div>
       );
@@ -148,7 +159,9 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         {Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => {
           const pageIndex = pageNum - 1;
           const viewport = pageInfoMap[pageIndex]?.viewport;
-          const pageHighlights = highlights.filter((h) => h.pageIndex === pageIndex);
+          const pageHighlights = highlights.filter(
+            (h) => h.pageIndex === pageIndex,
+          );
 
           return (
             <div
@@ -156,7 +169,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               ref={(el) => {
                 pageRefs.current[pageIndex] = el;
               }}
-              className="relative mx-auto shadow-2xl bg-white transition-all duration-300"
+              className="relative mx-auto shadow-2xl bg-surface-white transition-all duration-300"
               style={{
                 width: viewport?.width || "auto",
                 height: viewport?.height || "auto",
@@ -172,7 +185,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                     ref={(el) => {
                       highlightRefs.current[h.id] = el;
                     }}
-                    className="absolute bg-blue-600/30 border border-blue-500/40 rounded-sm shadow-sm transition-opacity duration-300"
+                    className="absolute bg-blue-600/30 border border-blue-500/40 rounded-sm shadow-none transition-opacity duration-300"
                     style={{
                       left: h.left,
                       top: h.top,

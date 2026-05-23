@@ -7,10 +7,10 @@ import ManageStudySelectionPage from "../../manage-study-selection/ManageStudySe
 
 /**
  * Routes based on roles for the Screening Phase.
- * 
+ *
  * - Leader (role = 1) -> Leads to the StudySelectionDashboard (Sidebar + Content)
  * - Member (role = 2) -> Leads to the TitleAbstractScreeningWorkspace (Full App Container)
- * 
+ *
  * This avoids duplicate paths and handles redirect loops in a centralized way.
  */
 const ScreeningPhaseRouter: React.FC = () => {
@@ -32,14 +32,14 @@ const ScreeningPhaseRouter: React.FC = () => {
     return <Navigate to="/projects" replace />;
   }
 
-  // Role: Leader (1) 
+  // Role: Leader (1)
   // Renders the Dashboard layout which contains an <Outlet /> for nested routes (Overview, Assignments, etc.)
   if (member.role === 1) {
     return <ManageStudySelectionPage />;
   }
 
   // Role: Member (2)
-  // Renders the full screening workspace directly. 
+  // Renders the full screening workspace directly.
   // Nested routes (like 'dashboard') won't apply here because this component doesn't have an <Outlet />.
   return <TitleAbstractScreeningWorkspace />;
 };

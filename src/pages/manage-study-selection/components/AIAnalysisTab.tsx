@@ -1,8 +1,8 @@
-import React from 'react';
-import type { SelectionPhase } from './StuSePhaseHeaderController';
-import type { AiAnalysisResult } from '../../reviewProcess/studySelection/titleAbstractScreening/types';
-import TitleAbstractAiPanel from '../../reviewProcess/studySelection/titleAbstractScreening/components/AiAnalysisPanel';
-import FullTextAiPanel from '../../reviewProcess/studySelection/fullTextScreening/components/AiAnalysisPanel';
+import React from "react";
+import type { SelectionPhase } from "./StuSePhaseHeaderController";
+import type { AiAnalysisResult } from "../../reviewProcess/studySelection/titleAbstractScreening/types";
+import TitleAbstractAiPanel from "../../reviewProcess/studySelection/titleAbstractScreening/components/AiAnalysisPanel";
+import FullTextAiPanel from "../../reviewProcess/studySelection/fullTextScreening/components/AiAnalysisPanel";
 
 interface AIAnalysisTabProps {
   currentPhase: SelectionPhase;
@@ -21,7 +21,7 @@ export const AIAnalysisTab: React.FC<AIAnalysisTabProps> = ({
   runAiAnalysis,
   isDisabled,
 }) => {
-  if (currentPhase === 'TITLE_ABSTRACT') {
+  if (currentPhase === "TITLE_ABSTRACT") {
     return (
       <div className="h-full animate-in fade-in duration-300">
         <TitleAbstractAiPanel

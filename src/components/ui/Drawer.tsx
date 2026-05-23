@@ -52,7 +52,8 @@ const Drawer: React.FC<DrawerProps> = ({
 
   // Handle Animations
   useEffect(() => {
-    if (!containerRef.current || !backdropRef.current || !drawerRef.current) return;
+    if (!containerRef.current || !backdropRef.current || !drawerRef.current)
+      return;
 
     if (isOpen) {
       // Entrance Animation
@@ -62,13 +63,13 @@ const Drawer: React.FC<DrawerProps> = ({
         .fromTo(
           backdropRef.current,
           { opacity: 0 },
-          { opacity: 1, duration: 0.4, ease: "power2.out" }
+          { opacity: 1, duration: 0.4, ease: "power2.out" },
         )
         .fromTo(
           drawerRef.current,
           { x: side === "left" ? "-100%" : "100%" },
           { x: "0%", duration: 0.5, ease: "power3.out" },
-          "-=0.3"
+          "-=0.3",
         );
     } else if (shouldRender) {
       // Exit Animation
@@ -85,12 +86,11 @@ const Drawer: React.FC<DrawerProps> = ({
         x: side === "left" ? "-100%" : "100%",
         duration: 0.4,
         ease: "power3.in",
-      })
-        .to(
-          backdropRef.current,
-          { opacity: 0, duration: 0.3, ease: "power2.in" },
-          "-=0.2"
-        );
+      }).to(
+        backdropRef.current,
+        { opacity: 0, duration: 0.3, ease: "power2.in" },
+        "-=0.2",
+      );
     }
   }, [isOpen, shouldRender, side]);
 
@@ -99,7 +99,10 @@ const Drawer: React.FC<DrawerProps> = ({
   return createPortal(
     <div
       ref={containerRef}
-      className={cn("fixed inset-0 z-[var(--z-index-drawer)] overflow-hidden", className)}
+      className={cn(
+        "fixed inset-0 z-[var(--z-index-drawer)] overflow-hidden",
+        className,
+      )}
       style={{ visibility: "hidden" }}
     >
       {/* Backdrop */}
@@ -110,15 +113,17 @@ const Drawer: React.FC<DrawerProps> = ({
       />
 
       {/* Drawer Container */}
-      <div className={cn(
-        "fixed inset-y-0 flex max-w-full outline-none",
-        side === "left" ? "left-0 pr-10" : "right-0 pl-10"
-      )}>
+      <div
+        className={cn(
+          "fixed inset-y-0 flex max-w-full outline-none",
+          side === "left" ? "left-0 pr-10" : "right-0 pl-10",
+        )}
+      >
         <div
           ref={drawerRef}
           className={cn(
             "pointer-events-auto w-screen bg-[#F4F0E8] shadow-2xl",
-            maxWidth
+            maxWidth,
           )}
         >
           <div className="flex h-full flex-col overflow-y-auto">
@@ -137,9 +142,7 @@ const Drawer: React.FC<DrawerProps> = ({
             </div>
 
             {/* Drawer Content */}
-            <div className="flex-1 py-8 px-6">
-              {children}
-            </div>
+            <div className="flex-1 py-8 px-6">{children}</div>
 
             {/* Drawer Footer */}
             {footer && (
@@ -151,7 +154,7 @@ const Drawer: React.FC<DrawerProps> = ({
         </div>
       </div>
     </div>,
-    document.body
+    document.body,
   );
 };
 

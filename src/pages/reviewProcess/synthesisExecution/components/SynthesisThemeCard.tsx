@@ -1,6 +1,9 @@
 import { useDroppable } from "@dnd-kit/core";
 import { Layers3, Pencil, Tags, Trash2 } from "lucide-react";
-import type { SynthesisThemeDto, ThemeEvidenceDto } from "../../../../types/synthesisExecution";
+import type {
+  SynthesisThemeDto,
+  ThemeEvidenceDto,
+} from "../../../../types/synthesisExecution";
 
 interface SynthesisThemeCardProps {
   theme: SynthesisThemeDto;
@@ -28,8 +31,10 @@ export default function SynthesisThemeCard({
   return (
     <article
       ref={setNodeRef}
-      className={`relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-        isOver ? "scale-[1.01] ring-2 ring-blue-500 bg-blue-50/30 shadow-lg shadow-blue-100" : ""
+      className={`relative overflow-hidden rounded-[4px] border border-border bg-surface-white p-5 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-none ${
+        isOver
+          ? "scale-[1.01] ring-2 ring-blue-500 bg-blue-50/30 shadow-none shadow-blue-100"
+          : ""
       } ${disabled ? "opacity-80" : ""}`}
     >
       <div
@@ -42,12 +47,18 @@ export default function SynthesisThemeCard({
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-center gap-2">
             <Layers3 className="h-4 w-4 text-blue-600" />
-            <h4 className="text-sm font-semibold text-gray-900">{theme.name}</h4>
+            <h4 className="text-sm font-semibold text-text-primary">
+              {theme.name}
+            </h4>
           </div>
           {theme.description ? (
-            <p className="text-sm leading-6 text-gray-600">{theme.description}</p>
+            <p className="text-sm leading-6 text-text-secondary">
+              {theme.description}
+            </p>
           ) : (
-            <p className="text-sm italic text-gray-400">No description provided.</p>
+            <p className="text-sm italic text-text-secondary">
+              No description provided.
+            </p>
           )}
         </div>
 
@@ -57,7 +68,7 @@ export default function SynthesisThemeCard({
               Drop to link
             </span>
           ) : null}
-          <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-500">
+          <span className="rounded-full border border-border bg-bg-primary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
             Theme card
           </span>
           {canManageTheme ? (
@@ -79,7 +90,7 @@ export default function SynthesisThemeCard({
                   type="button"
                   onClick={() => onDeleteTheme(theme)}
                   disabled={disabled}
-                  className="inline-flex items-center justify-center rounded-full border border-red-200 bg-red-50 p-1.5 text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-full border border-border bg-surface-white p-1.5 text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Delete theme"
                   title="Delete theme"
                 >
@@ -88,7 +99,7 @@ export default function SynthesisThemeCard({
               ) : null}
             </div>
           ) : null}
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
+          <span className="rounded-full bg-bg-secondary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
             {theme.colorCode ?? "No color"}
           </span>
           <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-700">
@@ -100,19 +111,24 @@ export default function SynthesisThemeCard({
 
       <div className="mt-4 space-y-2">
         {theme.evidences.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-500">
+          <p className="rounded-[4px] border border-dashed border-border bg-bg-primary px-4 py-3 text-sm text-text-secondary">
             No linked evidence yet.
           </p>
         ) : (
           theme.evidences.map((evidence) => (
-            <div key={evidence.id} className="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+            <div
+              key={evidence.id}
+              className="rounded-[4px] border border-border bg-bg-primary px-4 py-3"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
                     {evidence.paperTitle}
                   </p>
                   {evidence.fieldName ? (
-                    <p className="mt-1 text-xs font-medium text-gray-500">Field: {evidence.fieldName}</p>
+                    <p className="mt-1 text-xs font-medium text-text-secondary">
+                      Field: {evidence.fieldName}
+                    </p>
                   ) : null}
                 </div>
                 {onUnlinkEvidence ? (
@@ -122,12 +138,20 @@ export default function SynthesisThemeCard({
                     disabled={disabled || unlinkingEvidenceId === evidence.id}
                     className="text-[11px] font-semibold uppercase tracking-[0.14em] text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
                   >
-                    {unlinkingEvidenceId === evidence.id ? "Unlinking..." : "Unlink"}
+                    {unlinkingEvidenceId === evidence.id
+                      ? "Unlinking..."
+                      : "Unlink"}
                   </button>
                 ) : null}
               </div>
-              <p className="mt-1 text-sm text-gray-700">{evidence.displayValue}</p>
-              {evidence.notes ? <p className="mt-2 text-xs text-gray-500">{evidence.notes}</p> : null}
+              <p className="mt-1 text-sm text-text-primary">
+                {evidence.displayValue}
+              </p>
+              {evidence.notes ? (
+                <p className="mt-2 text-xs text-text-secondary">
+                  {evidence.notes}
+                </p>
+              ) : null}
             </div>
           ))
         )}

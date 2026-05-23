@@ -47,7 +47,9 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
     validationNote,
   } = candidate;
 
-  const isLowQuality = validationNote?.toLowerCase().includes("low extraction quality");
+  const isLowQuality = validationNote
+    ?.toLowerCase()
+    .includes("low extraction quality");
 
   const getQualityColor = (score: number) => {
     if (score < 0.4) return "bg-red-500";
@@ -58,30 +60,30 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
   const getMatchColor = (score: number) => {
     if (score === 0) return "bg-slate-300";
     if (score < 0.6) return "bg-blue-400";
-    return "bg-purple-500";
+    return "bg-accent";
   };
 
   return (
     <div
       className={cn(
-        "flex flex-col bg-white overflow-hidden",
+        "flex flex-col bg-surface-white overflow-hidden",
         !isModal &&
-          "h-full border-l border-slate-200 shadow-2xl animate-in slide-in-from-right duration-300 w-full lg:w-[450px]",
+          "h-full border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 w-full lg:w-[450px]",
       )}
     >
       {!isModal && (
-        <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="px-6 py-5 border-b border-border flex items-center justify-between bg-bg-secondary/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-[4px] bg-blue-50 flex items-center justify-center">
               <FileText className="w-4 h-4 text-blue-600" />
             </div>
-            <h3 className="font-black text-slate-900 uppercase tracking-widest text-[11px]">
+            <h3 className="font-black text-text-primary uppercase tracking-widest text-[11px]">
               Candidate Details
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 rounded-xl transition-all text-slate-400 hover:text-slate-600"
+            className="p-2 hover:bg-slate-200 rounded-[4px] transition-all text-text-secondary hover:text-text-secondary"
           >
             <X className="w-5 h-5" />
           </button>
@@ -92,17 +94,19 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
         <div className="p-8 space-y-8">
           {/* Main Title Section */}
           <section>
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+            <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
               Paper Title
             </label>
-            <h2 className="text-lg font-bold text-blue-700 mt-2 leading-tight">{title}</h2>
+            <h2 className="text-lg font-bold text-blue-700 mt-2 leading-tight">
+              {title}
+            </h2>
             <div className="mt-4 flex flex-wrap gap-2">
               {isSelectedInProjectRepository && (
                 <>
                   <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-amber-50 text-amber-700 border-amber-200">
                     Duplicate
                   </span>
-                  <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-slate-50 text-slate-700 border-slate-200">
+                  <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-bg-secondary text-text-primary border-border">
                     Already in repository
                   </span>
                 </>
@@ -117,7 +121,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
                   href={`https://doi.org/${doi}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 flex items-center gap-2 transition-all"
+                  className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border border-border bg-surface-white text-text-secondary hover:bg-bg-secondary flex items-center gap-2 transition-all"
                 >
                   DOI: {doi}
                   <ExternalLink className="w-3 h-3" />
@@ -128,13 +132,15 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             {validationNote && (
               <div
                 className={cn(
-                  "mt-4 p-3 rounded-lg flex items-start gap-2 text-xs",
+                  "mt-4 p-3 rounded-[4px] flex items-start gap-2 text-xs",
                   isLowQuality
                     ? "bg-amber-50 text-amber-700 italic border border-amber-100"
-                    : "bg-slate-50 text-slate-600 border border-slate-100",
+                    : "bg-bg-secondary text-text-secondary border border-border",
                 )}
               >
-                {isLowQuality && <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />}
+                {isLowQuality && (
+                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                )}
                 <span>{validationNote}</span>
               </div>
             )}
@@ -142,25 +148,27 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
 
           {/* Authors & Year */}
           <section className="grid grid-cols-2 gap-4">
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border">
+              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
                 Authors
               </label>
-              <p className="text-sm mt-2 text-slate-900 font-bold leading-relaxed line-clamp-3">
+              <p className="text-sm mt-2 text-text-primary font-bold leading-relaxed line-clamp-3">
                 {authors || "Unknown Authors"}
               </p>
             </div>
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border">
+              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
                 Year
               </label>
-              <p className="text-xl mt-1 text-slate-900 font-black">{publicationYear || "N/A"}</p>
+              <p className="text-xl mt-1 text-text-primary font-black">
+                {publicationYear || "N/A"}
+              </p>
             </div>
           </section>
 
           {/* Double Progress Bars */}
           <section className="space-y-6">
-            <div className="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm space-y-5">
+            <div className="p-5 bg-surface-white border border-border rounded-[4px] shadow-none space-y-5">
               {/* Extraction Quality */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -168,18 +176,20 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
                     <ShieldCheck
                       className={cn(
                         "w-4 h-4",
-                        extractionQualityScore > 0.7 ? "text-emerald-500" : "text-amber-500",
+                        extractionQualityScore > 0.7
+                          ? "text-emerald-500"
+                          : "text-amber-500",
                       )}
                     />
-                    <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
                       Data Quality
                     </span>
                   </div>
-                  <span className="text-sm font-black text-slate-900">
+                  <span className="text-sm font-black text-text-primary">
                     {Math.round(extractionQualityScore * 100)}%
                   </span>
                 </div>
-                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all duration-1000",
@@ -197,27 +207,32 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
                     <ShieldAlert
                       className={cn(
                         "w-4 h-4",
-                        matchConfidenceScore > 0.6 ? "text-purple-500" : "text-blue-500",
+                        matchConfidenceScore > 0.6
+                          ? "text-accent"
+                          : "text-blue-500",
                       )}
                     />
-                    <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">
+                    <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
                       Identity Match
                     </span>
                   </div>
-                  <span className="text-sm font-black text-slate-900">
+                  <span className="text-sm font-black text-text-primary">
                     {matchConfidenceScore === 0
                       ? "New Entry"
                       : `${Math.round(matchConfidenceScore * 100)}%`}
                   </span>
                 </div>
-                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden">
                   <div
                     className={cn(
                       "h-full rounded-full transition-all duration-1000",
                       getMatchColor(matchConfidenceScore),
                     )}
                     style={{
-                      width: matchConfidenceScore === 0 ? "100%" : `${matchConfidenceScore * 100}%`,
+                      width:
+                        matchConfidenceScore === 0
+                          ? "100%"
+                          : `${matchConfidenceScore * 100}%`,
                     }}
                   />
                 </div>
@@ -227,12 +242,14 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
 
           {/* Origin Paper Context */}
           <section>
-            <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+            <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
               Extracted From (Origin)
             </label>
-            <div className="mt-4 p-5 bg-blue-50/50 border border-blue-100 rounded-2xl">
-              <h4 className="text-sm font-bold text-slate-900 leading-tight">{originPaperTitle}</h4>
-              <div className="mt-3 inline-flex items-center gap-2 px-2 py-1 rounded-lg bg-white border border-blue-100 text-[10px] font-bold text-blue-600 uppercase">
+            <div className="mt-4 p-5 bg-blue-50/50 border border-blue-100 rounded-[4px]">
+              <h4 className="text-sm font-bold text-text-primary leading-tight">
+                {originPaperTitle}
+              </h4>
+              <div className="mt-3 inline-flex items-center gap-2 px-2 py-1 rounded-[4px] bg-surface-white border border-blue-100 text-[10px] font-bold text-blue-600 uppercase">
                 <FileText className="w-3 h-3" />
                 Origin Paper
               </div>
@@ -242,12 +259,12 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
           {/* Raw Reference */}
           <section>
             <div className="flex items-center justify-between">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em]">
+              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
                 Raw Extracted Text
               </label>
               <Quote className="w-4 h-4 text-slate-200" />
             </div>
-            <div className="mt-4 p-5 bg-amber-50/30 border border-amber-100 rounded-2xl text-[13px] text-amber-900 italic leading-relaxed font-serif shadow-inner">
+            <div className="mt-4 p-5 bg-amber-50/30 border border-amber-100 rounded-[4px] text-[13px] text-amber-900 italic leading-relaxed font-serif shadow-inner">
               {rawReference || "No raw reference text available."}
             </div>
           </section>
@@ -255,11 +272,11 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="p-6 border-t border-slate-100 bg-slate-50/50 space-y-3">
+      <div className="p-6 border-t border-border bg-bg-secondary/50 space-y-3">
         {isSelectedInProjectRepository ? (
           <button
             disabled
-            className="w-full px-6 py-4 bg-slate-100 text-slate-400 font-bold text-sm uppercase tracking-widest rounded-2xl border border-slate-200 flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-[4px] border border-border flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <BookmarkCheck className="w-4 h-4" />
             Already in repository
@@ -267,7 +284,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
         ) : statusText === "Rejected" ? (
           <button
             disabled
-            className="w-full px-6 py-4 bg-slate-100 text-slate-400 font-bold text-sm uppercase tracking-widest rounded-2xl border border-slate-200 flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-[4px] border border-border flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <XCircle className="w-4 h-4" />
             Rejected Candidate
@@ -277,7 +294,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <button
               onClick={() => onAction(candidateId, "select")}
               disabled={isProcessing}
-              className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-sm uppercase tracking-widest rounded-2xl hover:bg-blue-700 transition shadow-lg shadow-blue-200 flex justify-center items-center gap-2 disabled:opacity-70 disabled:shadow-none"
+              className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-sm uppercase tracking-widest rounded-[4px] hover:bg-blue-700 transition shadow-none shadow-blue-200 flex justify-center items-center gap-2 disabled:opacity-70 disabled:shadow-none"
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               {!isProcessing && <Plus className="w-4 h-4" />}
@@ -286,7 +303,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <button
               onClick={() => onAction(candidateId, "reject")}
               disabled={isProcessing}
-              className="w-full px-6 py-3.5 bg-white border-2 border-slate-200 text-rose-600 font-bold text-sm uppercase tracking-widest rounded-2xl hover:bg-rose-50 hover:border-rose-200 transition flex justify-center items-center gap-2 disabled:opacity-70"
+              className="w-full px-6 py-3.5 bg-surface-white border-2 border-border text-rose-600 font-bold text-sm uppercase tracking-widest rounded-[4px] hover:bg-rose-50 hover:border-rose-200 transition flex justify-center items-center gap-2 disabled:opacity-70"
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               Reject Candidate

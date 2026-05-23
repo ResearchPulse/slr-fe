@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
@@ -38,7 +45,10 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../components/ui/Table";
-import type { ExtractionPaperStatus, UseDataExtractionWorkspaceReturn } from "../types";
+import type {
+  ExtractionPaperStatus,
+  UseDataExtractionWorkspaceReturn,
+} from "../types";
 import type { PaperResponse } from "../../../../types/paper";
 import {
   TargetReviewer,
@@ -94,7 +104,10 @@ function normalizeStatus(status: string): ExtractionPaperStatus {
     return "in-progress";
   }
 
-  if (normalized === "awaiting-consensus" || normalized === "awaitingconsensus") {
+  if (
+    normalized === "awaiting-consensus" ||
+    normalized === "awaitingconsensus"
+  ) {
     return "awaiting-consensus";
   }
 
@@ -168,7 +181,9 @@ export default function DataExtractionDashboard({
       { value: "", label: "Unassigned" },
       ...ws.reviewerOptions.map((reviewer) => ({
         value: reviewer.id,
-        label: reviewer.name.startsWith("@") ? reviewer.name : `@${reviewer.name}`,
+        label: reviewer.name.startsWith("@")
+          ? reviewer.name
+          : `@${reviewer.name}`,
       })),
     ],
     [ws.reviewerOptions],
@@ -190,13 +205,19 @@ export default function DataExtractionDashboard({
       })),
     [ws.dashboardTasks],
   );
-  const [selectedPaper, setSelectedPaper] = useState<PaperResponse | null>(null);
+  const [selectedPaper, setSelectedPaper] = useState<PaperResponse | null>(
+    null,
+  );
   const [selectedPaperIds, setSelectedPaperIds] = useState<string[]>([]);
   const [isPaperDetailsOpen, setIsPaperDetailsOpen] = useState(false);
-  const [reopenModalPaper, setReopenModalPaper] = useState<DashboardTask | null>(null);
-  const [assignModalTask, setAssignModalTask] = useState<DashboardTask | null>(null);
+  const [reopenModalPaper, setReopenModalPaper] =
+    useState<DashboardTask | null>(null);
+  const [assignModalTask, setAssignModalTask] = useState<DashboardTask | null>(
+    null,
+  );
   const [activeViewTab, setActiveViewTab] = useState<DashboardViewTab>("queue");
-  const [isCompletePhaseModalOpen, setIsCompletePhaseModalOpen] = useState(false);
+  const [isCompletePhaseModalOpen, setIsCompletePhaseModalOpen] =
+    useState(false);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isTemplateWizardOpen, setIsTemplateWizardOpen] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
@@ -215,7 +236,8 @@ export default function DataExtractionDashboard({
 
   const canCompletePhase = useMemo(
     () =>
-      (ws.extractionProcessStatus.trim().toLowerCase() === "inprogress" || ws.extractionProcessStatus.trim().toLowerCase() === "reopened") &&
+      (ws.extractionProcessStatus.trim().toLowerCase() === "inprogress" ||
+        ws.extractionProcessStatus.trim().toLowerCase() === "reopened") &&
       ws.summary.totalIncluded > 0,
 
     [ws.extractionProcessStatus, ws.summary.totalIncluded],
@@ -358,7 +380,10 @@ export default function DataExtractionDashboard({
     setIsExportMenuOpen(false);
 
     try {
-      const blob = await dataExtractionConductingService.exportExtractedData(extractionProcessId);
+      const blob =
+        await dataExtractionConductingService.exportExtractedData(
+          extractionProcessId,
+        );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -387,7 +412,9 @@ export default function DataExtractionDashboard({
 
     try {
       const blob =
-        await dataExtractionConductingService.exportExtractedDataCsv(extractionProcessId);
+        await dataExtractionConductingService.exportExtractedDataCsv(
+          extractionProcessId,
+        );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -492,25 +519,34 @@ export default function DataExtractionDashboard({
   );
 
   const isDirectExtraction =
-    !!reopenModalPaper && !reopenModalPaper.reviewer1Id && !reopenModalPaper.reviewer2Id;
+    !!reopenModalPaper &&
+    !reopenModalPaper.reviewer1Id &&
+    !reopenModalPaper.reviewer2Id;
 
   const tableColSpan = ws.isCurrentUserLeader ? 5 : 4;
 
   const queryClient = useQueryClient();
 
   const eligiblePaperIds = useMemo(() => {
-    return tasks.filter((t) => !t.reviewer1Id && !t.reviewer2Id).map((t) => t.paperId);
+    return tasks
+      .filter((t) => !t.reviewer1Id && !t.reviewer2Id)
+      .map((t) => t.paperId);
   }, [tasks]);
 
-  const handleToggleSelectPaper = useCallback((paperId: string) => {
-    if (isProcessCompleted) {
-      return;
-    }
+  const handleToggleSelectPaper = useCallback(
+    (paperId: string) => {
+      if (isProcessCompleted) {
+        return;
+      }
 
-    setSelectedPaperIds((current) =>
-      current.includes(paperId) ? current.filter((id) => id !== paperId) : [...current, paperId],
-    );
-  }, [isProcessCompleted]);
+      setSelectedPaperIds((current) =>
+        current.includes(paperId)
+          ? current.filter((id) => id !== paperId)
+          : [...current, paperId],
+      );
+    },
+    [isProcessCompleted],
+  );
 
   const handleSelectAllOnPage = useCallback(() => {
     if (isProcessCompleted) {
@@ -519,17 +555,19 @@ export default function DataExtractionDashboard({
 
     const currentPagePaperIds = eligiblePaperIds;
     setSelectedPaperIds((current) => {
-      const allSelected = currentPagePaperIds.every((id) => current.includes(id));
+      const allSelected = currentPagePaperIds.every((id) =>
+        current.includes(id),
+      );
       if (allSelected) {
         return current.filter((id) => !currentPagePaperIds.includes(id));
       }
       // add those that are not yet selected
-      const combined = Array.from(new Set([...current, ...currentPagePaperIds]));
+      const combined = Array.from(
+        new Set([...current, ...currentPagePaperIds]),
+      );
       return combined;
     });
   }, [eligiblePaperIds, isProcessCompleted]);
-
-  
 
   const handleOpenCreateTemplate = useCallback(() => {
     if (isProcessCompleted) {
@@ -567,31 +605,34 @@ export default function DataExtractionDashboard({
   const selectedTemplateLabel = ws.selectedTemplate
     ? ws.selectedTemplate.name || "Untitled template"
     : "No template selected";
-  const templateActionLabel = ws.selectedTemplate ? "Edit Template" : "Define Template";
+  const templateActionLabel = ws.selectedTemplate
+    ? "Edit Template"
+    : "Define Template";
 
   return (
-    <div className="flex min-h-full flex-col bg-slate-50">
+    <div className="flex min-h-full flex-col bg-bg-secondary">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 px-6 py-3 grid grid-cols-3 items-center flex-shrink-0 z-50 shadow-sm sticky top-16 sm:top-20">
+      <div className="bg-surface-white border-b border-border px-6 py-3 grid grid-cols-3 items-center flex-shrink-0 z-50 shadow-none sticky top-16 sm:top-20">
         <div className="flex items-center gap-4">
           <button
             onClick={ws.handleBack}
-            className="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-500 hover:text-slate-900"
+            className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
             title="Back to Process Workspace"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
 
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-lg">
+            <div className="p-2 bg-blue-50 rounded-[4px]">
               <FileSpreadsheet className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-900 leading-none mb-1">
+              <h1 className="text-lg font-bold text-text-primary leading-none mb-1">
                 Data Extraction Dashboard
               </h1>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                Conducting Phase • {ws.isCurrentUserLeader ? "Leader View" : "Reviewer View"}
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
+                Conducting Phase •{" "}
+                {ws.isCurrentUserLeader ? "Leader View" : "Reviewer View"}
               </p>
             </div>
           </div>
@@ -602,12 +643,12 @@ export default function DataExtractionDashboard({
         </div>
 
         <div className="flex items-center gap-4 justify-self-end">
-          <div className="hidden md:flex items-center gap-3 px-4 py-1.5 bg-slate-50 rounded-xl border border-slate-200">
+          <div className="hidden md:flex items-center gap-3 px-4 py-1.5 bg-bg-secondary rounded-[4px] border border-border">
             <div className="text-right">
-              <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">
+              <p className="text-[9px] font-bold text-text-secondary uppercase tracking-widest leading-none mb-1">
                 Visible Studies
               </p>
-              <p className="text-sm font-black text-slate-900 leading-none">
+              <p className="text-sm font-black text-text-primary leading-none">
                 {ws.dashboardTotalCount}
               </p>
             </div>
@@ -619,36 +660,46 @@ export default function DataExtractionDashboard({
       <div className="flex-1 overflow-y-auto custom-scrollbar pb-24">
         <div className="mx-auto max-w-7xl px-6 py-8 space-y-6">
           <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold text-slate-900">Manage Extraction Tasks</h2>
-            <p className="text-sm text-slate-500 max-w-3xl">
-              Assign reviewers, monitor double extraction progress, and move each included study
-              into the extraction workspace.
+            <h2 className="text-2xl font-bold text-text-primary">
+              Manage Extraction Tasks
+            </h2>
+            <p className="text-sm text-text-secondary max-w-3xl">
+              Assign reviewers, monitor double extraction progress, and move
+              each included study into the extraction workspace.
             </p>
           </div>
 
           {ws.isCurrentUserLeader && (
             <div className="space-y-4">
-              <Card className="rounded-2xl border border-indigo-100 bg-white/90 shadow-lg shadow-indigo-100/40">
+              <Card className="rounded-[4px] border border-indigo-100 bg-surface-white/90 shadow-none shadow-indigo-100/40">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-600">
+                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
                       Extraction Template
                     </p>
-                    <h2 className="mt-1 text-lg font-semibold text-slate-900">
+                    <h2 className="mt-1 text-lg font-semibold text-text-primary">
                       {selectedTemplateLabel}
                     </h2>
-                    <p className="mt-1 text-sm text-slate-500">
-                      Leaders define and maintain the extraction template used by reviewers.
+                    <p className="mt-1 text-sm text-text-secondary">
+                      Leaders define and maintain the extraction template used
+                      by reviewers.
                     </p>
                   </div>
 
                   <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
-                    <div className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600 sm:w-80">
-                      <div className="font-medium text-slate-900">Current template</div>
-                      <div className="mt-1 truncate">{selectedTemplateLabel}</div>
+                    <div className="w-full rounded-[4px] border border-border bg-bg-secondary px-4 py-3 text-sm text-text-secondary sm:w-80">
+                      <div className="font-medium text-text-primary">
+                        Current template
+                      </div>
+                      <div className="mt-1 truncate">
+                        {selectedTemplateLabel}
+                      </div>
                     </div>
 
-                    <Button onClick={handleOpenCreateTemplate} disabled={isProcessCompleted}>
+                    <Button
+                      onClick={handleOpenCreateTemplate}
+                      disabled={isProcessCompleted}
+                    >
                       {templateActionLabel}
                     </Button>
                   </div>
@@ -661,7 +712,7 @@ export default function DataExtractionDashboard({
                   value={ws.summary.totalIncluded}
                   subtitle="Studies ready for data extraction"
                   icon={<Files className="h-5 w-5" />}
-                  iconClassName="bg-slate-100 text-slate-700"
+                  iconClassName="bg-bg-secondary text-text-primary"
                 />
                 <MetricCard
                   title="In Progress"
@@ -683,19 +734,21 @@ export default function DataExtractionDashboard({
                   value={ws.summary.completed}
                   subtitle="Extraction finalized"
                   icon={<CheckCircle2 className="h-5 w-5" />}
-                  iconClassName="bg-green-50 text-green-700"
+                  iconClassName="bg-surface-white text-green-700"
                 />
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-white/85 p-4 shadow-lg shadow-slate-200/40">
+              <div className="rounded-[4px] border border-border bg-surface-white/85 p-4 shadow-none shadow-slate-200/40">
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-slate-600">
+                  <p className="text-sm text-text-secondary">
                     Complete this phase to lock all extraction data.
                   </p>
                   <Button
                     variant="success"
                     onClick={() => setIsCompletePhaseModalOpen(true)}
-                    disabled={isProcessCompleted || !canCompletePhase || ws.isCompleting}
+                    disabled={
+                      isProcessCompleted || !canCompletePhase || ws.isCompleting
+                    }
                     isLoading={ws.isCompleting}
                   >
                     Complete Phase
@@ -705,16 +758,16 @@ export default function DataExtractionDashboard({
             </div>
           )}
 
-          <Card className="rounded-2xl border border-white/70 bg-white/85 p-2 shadow-xl shadow-slate-200/50 backdrop-blur">
-            <div className="inline-flex w-full rounded-xl bg-slate-100 p-1">
+          <Card className="rounded-[4px] border border-white/70 bg-surface-white/85 p-2 shadow-none shadow-slate-200/50 backdrop-blur">
+            <div className="inline-flex w-full rounded-[4px] bg-bg-secondary p-1">
               <button
                 type="button"
                 onClick={() => setActiveViewTab("queue")}
                 disabled={isProcessCompleted}
-                className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                className={`flex-1 rounded-[4px] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                   activeViewTab === "queue"
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-surface-white text-text-primary shadow-none"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 Studies Queue
@@ -722,10 +775,10 @@ export default function DataExtractionDashboard({
               <button
                 type="button"
                 onClick={() => setActiveViewTab("workload")}
-                className={`flex-1 rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-200 ${
+                className={`flex-1 rounded-[4px] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
                   activeViewTab === "workload"
-                    ? "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-surface-white text-text-primary shadow-none"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 Workload Summary
@@ -744,13 +797,15 @@ export default function DataExtractionDashboard({
 
           {activeViewTab === "queue" ? (
             <>
-              <Card className="relative z-30 rounded-2xl border border-white/70 bg-white/85 shadow-xl shadow-slate-200/50 backdrop-blur">
+              <Card className="relative z-30 rounded-[4px] border border-white/70 bg-surface-white/85 shadow-none shadow-slate-200/50 backdrop-blur">
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                   <div className="relative flex-1">
-                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                    <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
                     <Input
                       value={ws.searchQuery}
-                      onChange={(event) => handleSearchChange(event.target.value)}
+                      onChange={(event) =>
+                        handleSearchChange(event.target.value)
+                      }
                       placeholder="Search by study title or author"
                       disabled={isProcessCompleted}
                       className="pl-11"
@@ -761,7 +816,9 @@ export default function DataExtractionDashboard({
                     <Select
                       value={ws.statusFilter}
                       onChange={(event) =>
-                        handleStatusFilterChange(event.target.value as DashboardStatusFilter)
+                        handleStatusFilterChange(
+                          event.target.value as DashboardStatusFilter,
+                        )
                       }
                       options={STATUS_FILTER_OPTIONS}
                       disabled={isProcessCompleted}
@@ -773,17 +830,26 @@ export default function DataExtractionDashboard({
                       <Button
                         variant="outline"
                         onClick={handleOpenGridWorkspace}
-                          disabled={isProcessCompleted}
+                        disabled={isProcessCompleted}
                         className="w-full lg:w-auto"
                       >
                         <Eye className="mr-2 h-4 w-4" />
                         Open Grid
                       </Button>
 
-                      <div className="relative z-50 w-full lg:w-auto" ref={exportMenuRef}>
+                      <div
+                        className="relative z-50 w-full lg:w-auto"
+                        ref={exportMenuRef}
+                      >
                         <Button
-                          onClick={() => setIsExportMenuOpen((current) => !current)}
-                          disabled={isProcessCompleted || isExporting || !extractionProcessId}
+                          onClick={() =>
+                            setIsExportMenuOpen((current) => !current)
+                          }
+                          disabled={
+                            isProcessCompleted ||
+                            isExporting ||
+                            !extractionProcessId
+                          }
                           className="w-full lg:w-auto"
                         >
                           {isExporting ? (
@@ -799,7 +865,7 @@ export default function DataExtractionDashboard({
                           ? createPortal(
                               <div
                                 ref={exportMenuPanelRef}
-                                className="fixed z-[9999] rounded-xl border border-gray-200 bg-white p-1.5 shadow-2xl"
+                                className="fixed z-[9999] rounded-[4px] border border-border bg-surface-white p-1.5 shadow-2xl"
                                 style={{
                                   top: `${exportMenuPosition.top}px`,
                                   left: `${exportMenuPosition.left}px`,
@@ -810,22 +876,24 @@ export default function DataExtractionDashboard({
                                   type="button"
                                   onClick={handleDownloadExcel}
                                   disabled={isExporting}
-                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
-                                  <span className="truncate">Excel (.xlsx)</span>
+                                  <span className="truncate">
+                                    Excel (.xlsx)
+                                  </span>
                                 </button>
                                 <button
                                   type="button"
                                   onClick={handleDownloadCsv}
                                   disabled={isExporting}
-                                  className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   <FileText className="h-4 w-4 flex-shrink-0 text-blue-600" />
                                   <span className="truncate">CSV (.csv)</span>
                                 </button>
                               </div>,
-                              document.body
+                              document.body,
                             )
                           : null}
                       </div>
@@ -834,40 +902,52 @@ export default function DataExtractionDashboard({
                 </div>
               </Card>
 
-              <Card className="overflow-hidden rounded-2xl border border-white/70 bg-white/90 p-0 shadow-xl shadow-slate-200/50 backdrop-blur">
-                <div className="flex flex-col gap-2 border-b border-slate-100 px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+              <Card className="overflow-hidden rounded-[4px] border border-white/70 bg-surface-white/90 p-0 shadow-none shadow-slate-200/50 backdrop-blur">
+                <div className="flex flex-col gap-2 border-b border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
                   <div>
-                    <h2 className="text-lg font-semibold text-slate-900">
-                      {ws.isCurrentUserLeader ? "Included Studies Queue" : "My Assigned Studies"}
+                    <h2 className="text-lg font-semibold text-text-primary">
+                      {ws.isCurrentUserLeader
+                        ? "Included Studies Queue"
+                        : "My Assigned Studies"}
                     </h2>
-                    <p className="text-sm text-slate-500">
+                    <p className="text-sm text-text-secondary">
                       {ws.isCurrentUserLeader
                         ? "Assign reviewers and launch the extraction workspace for each paper."
                         : "Extract data from your assigned studies."}
                     </p>
                   </div>
-                  <p className="text-sm text-slate-500">
-                    Showing {visibleRange.start}-{visibleRange.end} of {ws.dashboardTotalCount}{" "}
-                    filtered studies
+                  <p className="text-sm text-text-secondary">
+                    Showing {visibleRange.start}-{visibleRange.end} of{" "}
+                    {ws.dashboardTotalCount} filtered studies
                   </p>
                 </div>
 
                 <div className="overflow-x-auto pb-32">
                   <Table className="min-w-[1060px]">
-                    <TableHeader className="bg-slate-50/80">
+                    <TableHeader className="bg-bg-secondary/80">
                       <tr>
                         {ws.isCurrentUserLeader && (
                           <TableHead>
                             <Checkbox
                               aria-label="Select all unassigned papers on page"
-                              disabled={isProcessCompleted || eligiblePaperIds.length === 0}
-                              checked={eligiblePaperIds.length > 0 && eligiblePaperIds.every((id) => selectedPaperIds.includes(id))}
+                              disabled={
+                                isProcessCompleted ||
+                                eligiblePaperIds.length === 0
+                              }
+                              checked={
+                                eligiblePaperIds.length > 0 &&
+                                eligiblePaperIds.every((id) =>
+                                  selectedPaperIds.includes(id),
+                                )
+                              }
                               onChange={handleSelectAllOnPage}
                             />
                           </TableHead>
                         )}
                         <TableHead>Study</TableHead>
-                        {ws.isCurrentUserLeader && <TableHead>Reviewers</TableHead>}
+                        {ws.isCurrentUserLeader && (
+                          <TableHead>Reviewers</TableHead>
+                        )}
                         <TableHead>Status</TableHead>
                         <TableHead className="text-right">Action</TableHead>
                       </tr>
@@ -878,48 +958,63 @@ export default function DataExtractionDashboard({
                         <TableRow className="cursor-default hover:bg-transparent">
                           <TableCell
                             colSpan={tableColSpan}
-                            className="px-6 py-16 text-center text-sm text-slate-500"
+                            className="px-6 py-16 text-center text-sm text-text-secondary"
                           >
                             Loading dashboard data...
                           </TableCell>
                         </TableRow>
                       ) : tasks.length === 0 ? (
                         <TableRow className="cursor-default hover:bg-transparent">
-                          <TableCell colSpan={tableColSpan} className="px-6 py-16 text-center">
+                          <TableCell
+                            colSpan={tableColSpan}
+                            className="px-6 py-16 text-center"
+                          >
                             <div className="mx-auto max-w-md">
-                              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-slate-500">
+                              <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-text-secondary">
                                 <Search className="h-5 w-5" />
                               </div>
-                              <h3 className="mt-4 text-base font-semibold text-slate-900">
+                              <h3 className="mt-4 text-base font-semibold text-text-primary">
                                 No studies match the current filters
                               </h3>
-                              <p className="mt-2 text-sm text-slate-500">
-                                Try a different search term or switch the status filter to see more
-                                studies.
+                              <p className="mt-2 text-sm text-text-secondary">
+                                Try a different search term or switch the status
+                                filter to see more studies.
                               </p>
                             </div>
                           </TableCell>
                         </TableRow>
                       ) : (
                         tasks.map((task) => {
-                          const assignedReviewerIds = [task.reviewer1Id, task.reviewer2Id].filter(
-                            (id): id is string => Boolean(id),
+                          const assignedReviewerIds = [
+                            task.reviewer1Id,
+                            task.reviewer2Id,
+                          ].filter((id): id is string => Boolean(id));
+
+                          const canExtractTask = ws.canCurrentUserExtractPaper(
+                            task.paperId,
                           );
-                          
-                          const canExtractTask = ws.canCurrentUserExtractPaper(task.paperId);
 
                           return (
                             <TableRow
                               key={task.taskId || task.paperId}
-                              className="cursor-default hover:bg-slate-50/80"
+                              className="cursor-default hover:bg-bg-secondary/80"
                             >
                               {ws.isCurrentUserLeader && (
                                 <TableCell className="w-12">
                                   <Checkbox
                                     aria-label={`Select paper ${task.title}`}
-                                    checked={selectedPaperIds.includes(task.paperId)}
-                                    onChange={() => handleToggleSelectPaper(task.paperId)}
-                                    disabled={isProcessCompleted || Boolean(task.reviewer1Id || task.reviewer2Id)}
+                                    checked={selectedPaperIds.includes(
+                                      task.paperId,
+                                    )}
+                                    onChange={() =>
+                                      handleToggleSelectPaper(task.paperId)
+                                    }
+                                    disabled={
+                                      isProcessCompleted ||
+                                      Boolean(
+                                        task.reviewer1Id || task.reviewer2Id,
+                                      )
+                                    }
                                     title={
                                       task.reviewer1Id || task.reviewer2Id
                                         ? "Already assigned — bulk assign only unassigned papers"
@@ -931,8 +1026,10 @@ export default function DataExtractionDashboard({
 
                               <TableCell className="min-w-[320px]">
                                 <div>
-                                  <p className="font-semibold text-slate-900">{task.title}</p>
-                                  <p className="mt-1 text-sm text-slate-500">
+                                  <p className="font-semibold text-text-primary">
+                                    {task.title}
+                                  </p>
+                                  <p className="mt-1 text-sm text-text-secondary">
                                     {task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
                                   </p>
@@ -944,28 +1041,46 @@ export default function DataExtractionDashboard({
                                   {assignedReviewerIds.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
                                       {[
-                                        { id: task.reviewer1Id, status: task.reviewer1Status },
-                                        { id: task.reviewer2Id, status: task.reviewer2Status },
+                                        {
+                                          id: task.reviewer1Id,
+                                          status: task.reviewer1Status,
+                                        },
+                                        {
+                                          id: task.reviewer2Id,
+                                          status: task.reviewer2Status,
+                                        },
                                       ]
                                         .filter((r) => r.id)
                                         .map(({ id, status }) => {
                                           const reviewerId = id as string;
-                                          const reviewerName = reviewerLabelById[reviewerId] ?? "@unknown";
-                                          const isCompleted = (status ?? "").toLowerCase() === "completed";
+                                          const reviewerName =
+                                            reviewerLabelById[reviewerId] ??
+                                            "@unknown";
+                                          const isCompleted =
+                                            (status ?? "").toLowerCase() ===
+                                            "completed";
 
                                           return (
                                             <span
                                               key={reviewerId}
-                                              title={isCompleted ? "Completed" : "In Progress"}
-                                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-semibold shadow-sm max-w-[220px] truncate ${
+                                              title={
                                                 isCompleted
-                                                  ? "bg-green-50 text-green-700 border border-green-200"
-                                                  : "bg-slate-50 text-slate-600 border border-slate-200 opacity-60"
+                                                  ? "Completed"
+                                                  : "In Progress"
+                                              }
+                                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-semibold shadow-none max-w-[220px] truncate ${
+                                                isCompleted
+                                                  ? "bg-surface-white text-green-700 border border-border"
+                                                  : "bg-bg-secondary text-text-secondary border border-border opacity-60"
                                               }`}
                                             >
-                                              <span className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
-                                                isCompleted ? "bg-green-100 text-green-700" : "bg-indigo-100 text-indigo-700"
-                                              }`}>
+                                              <span
+                                                className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
+                                                  isCompleted
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-indigo-100 text-indigo-700"
+                                                }`}
+                                              >
                                                 {getInitials(reviewerName)}
                                               </span>
                                               <span className="max-w-[140px] truncate">
@@ -976,7 +1091,9 @@ export default function DataExtractionDashboard({
                                         })}
                                     </div>
                                   ) : (
-                                    <span className="text-sm text-slate-400">Unassigned</span>
+                                    <span className="text-sm text-text-secondary">
+                                      Unassigned
+                                    </span>
                                   )}
                                 </TableCell>
                               )}
@@ -991,7 +1108,9 @@ export default function DataExtractionDashboard({
                                     variant="outline"
                                     size="sm"
                                     className="!px-2"
-                                    onClick={() => handleOpenPaperDetails(task.paperId)}
+                                    onClick={() =>
+                                      handleOpenPaperDetails(task.paperId)
+                                    }
                                     disabled={isProcessCompleted}
                                     title="View paper details"
                                   >
@@ -1004,7 +1123,11 @@ export default function DataExtractionDashboard({
                                         <Button
                                           size="sm"
                                           variant="outline"
-                                          onClick={() => ws.handleOpenDirectWorkspace(task.paperId)}
+                                          onClick={() =>
+                                            ws.handleOpenDirectWorkspace(
+                                              task.paperId,
+                                            )
+                                          }
                                           disabled={isProcessCompleted}
                                           title="Directly Extract Data (Bypass Reviewers)"
                                         >
@@ -1013,17 +1136,18 @@ export default function DataExtractionDashboard({
                                         </Button>
                                       </>
                                     ) : (
-                                      <span className="text-sm font-medium text-slate-400">
+                                      <span className="text-sm font-medium text-text-secondary">
                                         Leader assigns reviewers
                                       </span>
                                     )
                                   ) : task.status === "in-progress" ? (
-                                    canExtractTask && ws.hasCurrentUserSubmitted(task.paperId) ? (
+                                    canExtractTask &&
+                                    ws.hasCurrentUserSubmitted(task.paperId) ? (
                                       <Button
                                         size="sm"
                                         variant="outline"
                                         disabled
-                                        className="border-slate-300 bg-slate-100 text-slate-500"
+                                        className="border-slate-300 bg-bg-secondary text-text-secondary"
                                       >
                                         Submitted (Locked)
                                       </Button>
@@ -1032,15 +1156,24 @@ export default function DataExtractionDashboard({
                                         <Button
                                           size="sm"
                                           variant="outline"
-                                          onClick={() => setReopenModalPaper(task)}
-                                          disabled={isProcessCompleted || ws.isReopeningExtraction}
+                                          onClick={() =>
+                                            setReopenModalPaper(task)
+                                          }
+                                          disabled={
+                                            isProcessCompleted ||
+                                            ws.isReopeningExtraction
+                                          }
                                         >
                                           Reopen
                                         </Button>
                                         <Button
                                           size="sm"
                                           variant="outline"
-                                          onClick={() => ws.handleOpenDirectWorkspace(task.paperId)}
+                                          onClick={() =>
+                                            ws.handleOpenDirectWorkspace(
+                                              task.paperId,
+                                            )
+                                          }
                                           disabled={isProcessCompleted}
                                           title="Directly Extract Data"
                                         >
@@ -1051,8 +1184,12 @@ export default function DataExtractionDashboard({
                                     ) : (
                                       <Button
                                         size="sm"
-                                        onClick={() => handleOpenWorkspace(task.paperId)}
-                                        disabled={isProcessCompleted || !canExtractTask}
+                                        onClick={() =>
+                                          handleOpenWorkspace(task.paperId)
+                                        }
+                                        disabled={
+                                          isProcessCompleted || !canExtractTask
+                                        }
                                       >
                                         Extract Data
                                       </Button>
@@ -1061,7 +1198,11 @@ export default function DataExtractionDashboard({
                                     <>
                                       <Button
                                         size="sm"
-                                        onClick={() => handleOpenConsensusWorkspace(task.paperId)}
+                                        onClick={() =>
+                                          handleOpenConsensusWorkspace(
+                                            task.paperId,
+                                          )
+                                        }
                                         disabled={isProcessCompleted}
                                         className="bg-amber-500 text-white shadow-amber-500/20 hover:bg-amber-600 hover:shadow-amber-500/30"
                                       >
@@ -1073,8 +1214,13 @@ export default function DataExtractionDashboard({
                                           <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setReopenModalPaper(task)}
-                                            disabled={isProcessCompleted || ws.isReopeningExtraction}
+                                            onClick={() =>
+                                              setReopenModalPaper(task)
+                                            }
+                                            disabled={
+                                              isProcessCompleted ||
+                                              ws.isReopeningExtraction
+                                            }
                                           >
                                             Reopen
                                           </Button>
@@ -1086,7 +1232,11 @@ export default function DataExtractionDashboard({
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => handleOpenConsensusWorkspace(task.paperId)}
+                                        onClick={() =>
+                                          handleOpenConsensusWorkspace(
+                                            task.paperId,
+                                          )
+                                        }
                                         disabled={isProcessCompleted}
                                       >
                                         Final
@@ -1097,8 +1247,13 @@ export default function DataExtractionDashboard({
                                           <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() => setReopenModalPaper(task)}
-                                            disabled={isProcessCompleted || ws.isReopeningExtraction}
+                                            onClick={() =>
+                                              setReopenModalPaper(task)
+                                            }
+                                            disabled={
+                                              isProcessCompleted ||
+                                              ws.isReopeningExtraction
+                                            }
                                           >
                                             Reopen
                                           </Button>
@@ -1106,7 +1261,11 @@ export default function DataExtractionDashboard({
                                       ) : null}
                                     </>
                                   ) : (
-                                    <Button size="sm" variant="outline" disabled>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled
+                                    >
                                       Completed
                                     </Button>
                                   )}
@@ -1120,10 +1279,11 @@ export default function DataExtractionDashboard({
                   </Table>
                 </div>
 
-                <div className="flex flex-col gap-4 border-t border-slate-100 px-6 py-4 md:flex-row md:items-center md:justify-between">
-                  <p className="text-sm text-slate-500">
-                    Page {safeCurrentPage} of {totalPages} • Showing {visibleRange.start}-
-                    {visibleRange.end} of {ws.dashboardTotalCount} studies
+                <div className="flex flex-col gap-4 border-t border-border px-6 py-4 md:flex-row md:items-center md:justify-between">
+                  <p className="text-sm text-text-secondary">
+                    Page {safeCurrentPage} of {totalPages} • Showing{" "}
+                    {visibleRange.start}-{visibleRange.end} of{" "}
+                    {ws.dashboardTotalCount} studies
                   </p>
 
                   <div className="flex flex-wrap items-center justify-end gap-2">
@@ -1131,7 +1291,9 @@ export default function DataExtractionDashboard({
                       variant="outline"
                       size="sm"
                       disabled={isProcessCompleted || safeCurrentPage === 1}
-                      onClick={() => ws.setPageNumber(Math.max(safeCurrentPage - 1, 1))}
+                      onClick={() =>
+                        ws.setPageNumber(Math.max(safeCurrentPage - 1, 1))
+                      }
                     >
                       <ChevronLeft className="mr-1 h-4 w-4" />
                       Previous
@@ -1140,7 +1302,9 @@ export default function DataExtractionDashboard({
                     {pageNumbers.map((pageNumber) => (
                       <Button
                         key={pageNumber}
-                        variant={pageNumber === safeCurrentPage ? "primary" : "outline"}
+                        variant={
+                          pageNumber === safeCurrentPage ? "primary" : "outline"
+                        }
                         size="sm"
                         className="min-w-10"
                         disabled={isProcessCompleted}
@@ -1153,8 +1317,14 @@ export default function DataExtractionDashboard({
                     <Button
                       variant="outline"
                       size="sm"
-                      disabled={isProcessCompleted || safeCurrentPage === totalPages}
-                      onClick={() => ws.setPageNumber(Math.min(safeCurrentPage + 1, totalPages))}
+                      disabled={
+                        isProcessCompleted || safeCurrentPage === totalPages
+                      }
+                      onClick={() =>
+                        ws.setPageNumber(
+                          Math.min(safeCurrentPage + 1, totalPages),
+                        )
+                      }
                     >
                       Next
                       <ChevronRight className="ml-1 h-4 w-4" />
@@ -1171,10 +1341,13 @@ export default function DataExtractionDashboard({
         <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
           <div className="w-full max-w-7xl px-6 pointer-events-auto">
             <div className="flex items-center justify-between mb-2">
-              <div className="text-xs text-slate-500">
-                Note: papers that already have assigned reviewers are excluded from bulk assignment.
+              <div className="text-xs text-text-secondary">
+                Note: papers that already have assigned reviewers are excluded
+                from bulk assignment.
               </div>
-              <div className="text-xs text-slate-400">Only unassigned papers can be selected</div>
+              <div className="text-xs text-text-secondary">
+                Only unassigned papers can be selected
+              </div>
             </div>
             <BulkAssignmentPanelDataExtraction
               selectedPaperIds={selectedPaperIds}
@@ -1182,168 +1355,202 @@ export default function DataExtractionDashboard({
               onAssignmentComplete={() => {
                 // clear selection and refresh dashboard queries
                 setSelectedPaperIds([]);
-                queryClient.invalidateQueries({ queryKey: ["data-extraction-conducting", "dashboard"] });
-                queryClient.invalidateQueries({ queryKey: ["data-extraction-conducting", "workload-summary"] });
+                queryClient.invalidateQueries({
+                  queryKey: ["data-extraction-conducting", "dashboard"],
+                });
+                queryClient.invalidateQueries({
+                  queryKey: ["data-extraction-conducting", "workload-summary"],
+                });
               }}
             />
           </div>
         </div>
       ) : null}
 
-        <PaperViewerModal
-          paper={selectedPaper}
-          isOpen={isPaperDetailsOpen}
-          onClose={handleClosePaperDetails}
-        />
+      <PaperViewerModal
+        paper={selectedPaper}
+        isOpen={isPaperDetailsOpen}
+        onClose={handleClosePaperDetails}
+      />
 
-        <AssignReviewersModal
-          key={assignModalTask?.paperId ?? "assign-reviewers-modal"}
-          isOpen={!!assignModalTask}
-          onClose={() => setAssignModalTask(null)}
-          task={assignModalTask}
-          reviewerOptions={reviewerOptions}
-          onAssign={({ reviewer1Id, reviewer2Id }) => {
-            if (!assignModalTask) {
-              return;
-            }
-
-            handleAssign(assignModalTask.paperId, reviewer1Id, reviewer2Id);
-          }}
-        />
-
-        <Modal
-          isOpen={isCompletePhaseModalOpen}
-          onClose={() => setIsCompletePhaseModalOpen(false)}
-          title="Complete Data Extraction Phase"
-          description="Are you sure you want to complete this phase? All extraction data will be locked and cannot be edited without reopening."
-          size="md"
-        >
-          <div className="space-y-4">
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              This action locks extraction submissions for this phase.
-            </div>
-
-            <div className="flex justify-end gap-3 pt-1">
-              <Button
-                variant="outline"
-                onClick={() => setIsCompletePhaseModalOpen(false)}
-                disabled={isProcessCompleted || ws.isCompleting}
-              >
-                Cancel
-              </Button>
-              <Button
-                variant="success"
-                onClick={handleConfirmCompletePhase}
-                isLoading={ws.isCompleting}
-                disabled={isProcessCompleted || !canCompletePhase || ws.isCompleting}
-              >
-                Confirm Complete
-              </Button>
-            </div>
-          </div>
-        </Modal>
-
-        <Modal
-          isOpen={!!reopenModalPaper}
-          onClose={() => setReopenModalPaper(null)}
-          title="Reopen Extraction Workspace"
-          description={
-            reopenModalPaper
-              ? `Study: ${reopenModalPaper.title}`
-              : "Select which reviewer extraction should be reopened."
+      <AssignReviewersModal
+        key={assignModalTask?.paperId ?? "assign-reviewers-modal"}
+        isOpen={!!assignModalTask}
+        onClose={() => setAssignModalTask(null)}
+        task={assignModalTask}
+        reviewerOptions={reviewerOptions}
+        onAssign={({ reviewer1Id, reviewer2Id }) => {
+          if (!assignModalTask) {
+            return;
           }
-          size="md"
-        >
-          <div className="space-y-4">
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Warning: Reopening an extraction will delete any previously saved consensus decisions
-              for this study.
-            </div>
 
-            <div className="space-y-2">
-              {isDirectExtraction ? (
+          handleAssign(assignModalTask.paperId, reviewer1Id, reviewer2Id);
+        }}
+      />
+
+      <Modal
+        isOpen={isCompletePhaseModalOpen}
+        onClose={() => setIsCompletePhaseModalOpen(false)}
+        title="Complete Data Extraction Phase"
+        description="Are you sure you want to complete this phase? All extraction data will be locked and cannot be edited without reopening."
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            This action locks extraction submissions for this phase.
+          </div>
+
+          <div className="flex justify-end gap-3 pt-1">
+            <Button
+              variant="outline"
+              onClick={() => setIsCompletePhaseModalOpen(false)}
+              disabled={isProcessCompleted || ws.isCompleting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="success"
+              onClick={handleConfirmCompletePhase}
+              isLoading={ws.isCompleting}
+              disabled={
+                isProcessCompleted || !canCompletePhase || ws.isCompleting
+              }
+            >
+              Confirm Complete
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={!!reopenModalPaper}
+        onClose={() => setReopenModalPaper(null)}
+        title="Reopen Extraction Workspace"
+        description={
+          reopenModalPaper
+            ? `Study: ${reopenModalPaper.title}`
+            : "Select which reviewer extraction should be reopened."
+        }
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            Warning: Reopening an extraction will delete any previously saved
+            consensus decisions for this study.
+          </div>
+
+          <div className="space-y-2">
+            {isDirectExtraction ? (
+              <Button
+                className="w-full"
+                // NOTE: `ws.reopenExtraction(paperId, target)` is the place to call
+                // backend logic that resets reviewer completion flags (e.g., isCompleted)
+                // so the UI will pick up the updated reviewer status after refresh.
+                onClick={() =>
+                  reopenModalPaper
+                    ? handleReopenExtraction(
+                        reopenModalPaper.paperId,
+                        TargetReviewer.Direct,
+                      )
+                    : undefined
+                }
+                disabled={
+                  isProcessCompleted ||
+                  !reopenModalPaper ||
+                  ws.isReopeningExtraction
+                }
+                isLoading={ws.isReopeningExtraction}
+              >
+                Reopen Direct Extraction
+              </Button>
+            ) : (
+              <>
                 <Button
                   className="w-full"
-                          // NOTE: `ws.reopenExtraction(paperId, target)` is the place to call
-                          // backend logic that resets reviewer completion flags (e.g., isCompleted)
-                          // so the UI will pick up the updated reviewer status after refresh.
-                          onClick={() =>
-                            reopenModalPaper
-                              ? handleReopenExtraction(reopenModalPaper.paperId, TargetReviewer.Direct)
-                              : undefined
-                          }
-                          disabled={isProcessCompleted || !reopenModalPaper || ws.isReopeningExtraction}
+                  // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer1)` should
+                  // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer1
+                  // as not completed (e.g., isCompleted = false) so the dashboard tags
+                  // will update to the pending state after refresh.
+                  onClick={() =>
+                    reopenModalPaper
+                      ? handleReopenExtraction(
+                          reopenModalPaper.paperId,
+                          TargetReviewer.Reviewer1,
+                        )
+                      : undefined
+                  }
+                  disabled={
+                    isProcessCompleted ||
+                    !reopenModalPaper ||
+                    ws.isReopeningExtraction
+                  }
                   isLoading={ws.isReopeningExtraction}
                 >
-                  Reopen Direct Extraction
+                  Reopen Reviewer 1
                 </Button>
-              ) : (
-                <>
-                  <Button
-                    className="w-full"
-                    // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer1)` should
-                    // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer1
-                    // as not completed (e.g., isCompleted = false) so the dashboard tags
-                    // will update to the pending state after refresh.
-                    onClick={() =>
-                      reopenModalPaper
-                        ? handleReopenExtraction(reopenModalPaper.paperId, TargetReviewer.Reviewer1)
-                        : undefined
-                    }
-                    disabled={isProcessCompleted || !reopenModalPaper || ws.isReopeningExtraction}
-                    isLoading={ws.isReopeningExtraction}
-                  >
-                    Reopen Reviewer 1
-                  </Button>
 
-                  <Button
-                    className="w-full"
-                    // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer2)` should
-                    // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer2
-                    // as not completed (e.g., isCompleted = false) so the dashboard tags
-                    // will update to the pending state after refresh.
-                    onClick={() =>
-                      reopenModalPaper
-                        ? handleReopenExtraction(reopenModalPaper.paperId, TargetReviewer.Reviewer2)
-                        : undefined
-                    }
-                    disabled={isProcessCompleted || !reopenModalPaper || ws.isReopeningExtraction}
-                    isLoading={ws.isReopeningExtraction}
-                  >
-                    Reopen Reviewer 2
-                  </Button>
+                <Button
+                  className="w-full"
+                  // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer2)` should
+                  // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer2
+                  // as not completed (e.g., isCompleted = false) so the dashboard tags
+                  // will update to the pending state after refresh.
+                  onClick={() =>
+                    reopenModalPaper
+                      ? handleReopenExtraction(
+                          reopenModalPaper.paperId,
+                          TargetReviewer.Reviewer2,
+                        )
+                      : undefined
+                  }
+                  disabled={
+                    isProcessCompleted ||
+                    !reopenModalPaper ||
+                    ws.isReopeningExtraction
+                  }
+                  isLoading={ws.isReopeningExtraction}
+                >
+                  Reopen Reviewer 2
+                </Button>
 
-                  <Button
-                    className="w-full"
-                    // Calling `handleReopenExtraction(..., TargetReviewer.Both)` should
-                    // invoke backend logic (via `ws.reopenExtraction`) that marks both
-                    // reviewers as not completed so the dashboard tags will update to
-                    // pending state after refresh.
-                    onClick={() =>
-                      reopenModalPaper
-                        ? handleReopenExtraction(reopenModalPaper.paperId, TargetReviewer.Both)
-                        : undefined
-                    }
-                    disabled={isProcessCompleted || !reopenModalPaper || ws.isReopeningExtraction}
-                    isLoading={ws.isReopeningExtraction}
-                  >
-                    Reopen Both
-                  </Button>
-                </>
-              )}
-            </div>
-
-            <div className="flex justify-end pt-1">
-              <Button
-                variant="outline"
-                onClick={() => setReopenModalPaper(null)}
-                disabled={isProcessCompleted || ws.isReopeningExtraction}
-              >
-                Cancel
-              </Button>
-            </div>
+                <Button
+                  className="w-full"
+                  // Calling `handleReopenExtraction(..., TargetReviewer.Both)` should
+                  // invoke backend logic (via `ws.reopenExtraction`) that marks both
+                  // reviewers as not completed so the dashboard tags will update to
+                  // pending state after refresh.
+                  onClick={() =>
+                    reopenModalPaper
+                      ? handleReopenExtraction(
+                          reopenModalPaper.paperId,
+                          TargetReviewer.Both,
+                        )
+                      : undefined
+                  }
+                  disabled={
+                    isProcessCompleted ||
+                    !reopenModalPaper ||
+                    ws.isReopeningExtraction
+                  }
+                  isLoading={ws.isReopeningExtraction}
+                >
+                  Reopen Both
+                </Button>
+              </>
+            )}
           </div>
-        </Modal>
+
+          <div className="flex justify-end pt-1">
+            <Button
+              variant="outline"
+              onClick={() => setReopenModalPaper(null)}
+              disabled={isProcessCompleted || ws.isReopeningExtraction}
+            >
+              Cancel
+            </Button>
+          </div>
+        </div>
+      </Modal>
 
       <Modal
         isOpen={isTemplateWizardOpen}
@@ -1377,19 +1584,28 @@ interface MetricCardProps {
   className?: string;
 }
 
-function MetricCard({ title, value, subtitle, icon, iconClassName, className }: MetricCardProps) {
+function MetricCard({
+  title,
+  value,
+  subtitle,
+  icon,
+  iconClassName,
+  className,
+}: MetricCardProps) {
   return (
     <Card
-      className={`rounded-2xl border border-white/70 bg-white/90 shadow-xl shadow-slate-200/50 ${className ?? ""}`}
+      className={`rounded-[4px] border border-white/70 bg-surface-white/90 shadow-none shadow-slate-200/50 ${className ?? ""}`}
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium text-slate-500">{title}</p>
-          <p className="mt-3 text-3xl font-bold text-slate-900">{value}</p>
-          <p className="mt-2 text-sm text-slate-500">{subtitle}</p>
+          <p className="text-sm font-medium text-text-secondary">{title}</p>
+          <p className="mt-3 text-3xl font-bold text-text-primary">{value}</p>
+          <p className="mt-2 text-sm text-text-secondary">{subtitle}</p>
         </div>
 
-        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconClassName}`}>
+        <div
+          className={`flex h-11 w-11 items-center justify-center rounded-[4px] ${iconClassName}`}
+        >
           {icon}
         </div>
       </div>

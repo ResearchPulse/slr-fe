@@ -23,7 +23,7 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const hasError = !!errorMessage;
 
@@ -42,13 +42,21 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
           {...props}
         />
         {hasError ? (
-          <HelperText message={errorMessage} variant="error" id={`${id}-error`} />
+          <HelperText
+            message={errorMessage}
+            variant="error"
+            id={`${id}-error`}
+          />
         ) : helperText ? (
-          <HelperText message={helperText} variant="default" id={`${id}-helper`} />
+          <HelperText
+            message={helperText}
+            variant="default"
+            id={`${id}-helper`}
+          />
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 FormSelect.displayName = "FormSelect";

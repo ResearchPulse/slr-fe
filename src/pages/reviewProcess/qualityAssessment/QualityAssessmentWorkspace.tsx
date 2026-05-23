@@ -8,7 +8,11 @@ import { QAAssignModal } from "./components/QAAssignModal";
 import { QAAutoResolveModal } from "./components/QAAutoResolveModal";
 import { ReviewerProgressPanel } from "./components/ReviewerProgressPanel";
 import { useProject, useProjectMembers } from "../../../hooks/useProjects";
-import type { QAPaperResponse, LeaderQAPaperResponse, QualityAssessmentResolutionRequest } from "../../../types/qualityAssessment";
+import type {
+  QAPaperResponse,
+  LeaderQAPaperResponse,
+  QualityAssessmentResolutionRequest,
+} from "../../../types/qualityAssessment";
 import { ProjectRole } from "../../../types/project";
 import type { ReviewerDecisionPayload } from "./components/ReviewerQAPanel";
 import { useSelector } from "react-redux";
@@ -26,12 +30,18 @@ const dummyStats = {
 };
 
 export default function QualityAssessmentWorkspace() {
-  const { projectId, qualityAssessmentId, processId } = useParams<{ projectId: string; qualityAssessmentId: string, processId: string }>();
+  const { projectId, qualityAssessmentId, processId } = useParams<{
+    projectId: string;
+    qualityAssessmentId: string;
+    processId: string;
+  }>();
   const navigate = useNavigate();
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
   const [viewMode, setViewMode] = useState<"list" | "edit">("list");
-  const [assignPopupPaperId, setAssignPopupPaperId] = useState<string | null>(null);
+  const [assignPopupPaperId, setAssignPopupPaperId] = useState<string | null>(
+    null,
+  );
   const [isAutoResolveOpen, setIsAutoResolveOpen] = useState(false);
 
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
@@ -42,7 +52,8 @@ export default function QualityAssessmentWorkspace() {
 
   const { members: projectMembers } = useProjectMembers(projectId);
   // TODO: casi role nay co phai isLeader ko wtf :)?
-  const members = projectMembers?.filter(m => m.role !== ProjectRole.Leader) || [];
+  const members =
+    projectMembers?.filter((m) => m.role !== ProjectRole.Leader) || [];
 
   const {
     assignedPapers,
@@ -67,20 +78,23 @@ export default function QualityAssessmentWorkspace() {
     updateResolution,
     autoResolve,
     aiDecision,
-    exportExcel
+    exportExcel,
   } = useQualityAssessment(qualityAssessmentId, project?.isLeader, {
     pageNumber: qaPage,
     pageSize: 10,
-    search: searchQuery || undefined
+    search: searchQuery || undefined,
   });
 
   const canEdit = phaseStatus !== "Completed" && phaseStatus !== "Cancelled";
 
   const totalCriteria = useMemo(() => {
     return strategies.reduce((acc, strategy) => {
-      return acc + strategy.checklists.reduce((acc2, checklist) => {
-        return acc2 + checklist.criteria.length;
-      }, 0);
+      return (
+        acc +
+        strategy.checklists.reduce((acc2, checklist) => {
+          return acc2 + checklist.criteria.length;
+        }, 0)
+      );
     }, 0);
   }, [strategies]);
 
@@ -119,7 +133,8 @@ export default function QualityAssessmentWorkspace() {
       if (pa !== pb) return pa - pb;
 
       // Tie-breaker within same group: prefer higher completion percentage, then title
-      const pctDiff = (b.completionPercentage ?? 0) - (a.completionPercentage ?? 0);
+      const pctDiff =
+        (b.completionPercentage ?? 0) - (a.completionPercentage ?? 0);
       if (pctDiff !== 0) return pctDiff;
       return (a.title || "").localeCompare(b.title || "");
     });
@@ -127,7 +142,7 @@ export default function QualityAssessmentWorkspace() {
 
   const selectedPaper = useMemo(
     () => activePapers.find((p) => p.paperId === selectedPaperId) ?? null,
-    [activePapers, selectedPaperId]
+    [activePapers, selectedPaperId],
   );
 
   const stats = useMemo(() => {
@@ -159,9 +174,15 @@ export default function QualityAssessmentWorkspace() {
 
     if (!activePapers.length) return dummyStats;
     const total = activePapers.length;
-    const completed = activePapers.filter(p => p.completionPercentage === 100).length;
-    const inProgress = activePapers.filter(p => p.completionPercentage > 0 && p.completionPercentage < 100).length;
-    const notStarted = activePapers.filter(p => p.completionPercentage === 0).length;
+    const completed = activePapers.filter(
+      (p) => p.completionPercentage === 100,
+    ).length;
+    const inProgress = activePapers.filter(
+      (p) => p.completionPercentage > 0 && p.completionPercentage < 100,
+    ).length;
+    const notStarted = activePapers.filter(
+      (p) => p.completionPercentage === 0,
+    ).length;
 
     return {
       ...dummyStats,
@@ -195,7 +216,9 @@ export default function QualityAssessmentWorkspace() {
   const handleSaveAssignments = (selectedUserIds: string[]) => {
     if (assignPopupPaperId && qualityAssessmentId) {
       // Ensure we don't overwrite/remove previously assigned users if the backend fully replaces the array
-      const allUserIdsToAssign = Array.from(new Set([...assignedUserIds, ...selectedUserIds]));
+      const allUserIdsToAssign = Array.from(
+        new Set([...assignedUserIds, ...selectedUserIds]),
+      );
 
       assign({
         qualityAssessmentProcessId: qualityAssessmentId,
@@ -206,10 +229,15 @@ export default function QualityAssessmentWorkspace() {
     }
   };
 
-  const currentAssignPaper = activePapers.find(p => p.paperId === assignPopupPaperId) as LeaderQAPaperResponse | undefined;
-  const assignedUserIds = currentAssignPaper?.reviewers?.map(r => r.id) || [];
+  const currentAssignPaper = activePapers.find(
+    (p) => p.paperId === assignPopupPaperId,
+  ) as LeaderQAPaperResponse | undefined;
+  const assignedUserIds = currentAssignPaper?.reviewers?.map((r) => r.id) || [];
 
-  const handleReviewerSave = (notes: string | null, decisionitems: ReviewerDecisionPayload[]) => {
+  const handleReviewerSave = (
+    notes: string | null,
+    decisionitems: ReviewerDecisionPayload[],
+  ) => {
     if (selectedPaperId && qualityAssessmentId) {
       const sp = selectedPaper as QAPaperResponse;
       const myDecision = sp?.decisions?.[0]; // Get current decision record
@@ -218,64 +246,69 @@ export default function QualityAssessmentWorkspace() {
         updateDecisions({
           id: myDecision.id,
           notes,
-          decisionItems: decisionitems.map(item => ({
+          decisionItems: decisionitems.map((item) => ({
             id: item.itemId || null,
             qualityCriterionId: item.criterionId,
             value: item.value,
             comment: item.comment,
-            pdfHighlightCoordinates: item.pdfHighlightCoordinates
-          }))
+            pdfHighlightCoordinates: item.pdfHighlightCoordinates,
+          })),
         });
       } else {
         submitDecisions({
           paperId: selectedPaperId,
           qualityAssessmentProcessId: qualityAssessmentId,
           notes,
-          decisionItems: decisionitems.map(item => ({
+          decisionItems: decisionitems.map((item) => ({
             qualityCriterionId: item.criterionId,
             value: item.value,
             comment: item.comment,
-            pdfHighlightCoordinates: item.pdfHighlightCoordinates
-          }))
+            pdfHighlightCoordinates: item.pdfHighlightCoordinates,
+          })),
         });
       }
     }
   };
 
   const handleLeaderResolve = (
-    data: Omit<QualityAssessmentResolutionRequest, "qualityAssessmentProcessId" | "paperId">,
-    decisionData?: { notes: string | null; items: ReviewerDecisionPayload[] }
+    data: Omit<
+      QualityAssessmentResolutionRequest,
+      "qualityAssessmentProcessId" | "paperId"
+    >,
+    decisionData?: { notes: string | null; items: ReviewerDecisionPayload[] },
   ) => {
     if (selectedPaperId && qualityAssessmentId) {
       const sp = selectedPaper as LeaderQAPaperResponse;
-      
+
       // Optionally submit or update leader's own decisions
       if (decisionData && currentUser) {
-        const myDecision = sp?.decisions?.find(d => d.reviewerId === currentUser.id);
+        const myDecision = sp?.decisions?.find(
+          (d) => d.reviewerId === currentUser.id,
+        );
 
         if (myDecision?.id) {
           updateDecisions({
             id: myDecision.id,
             notes: decisionData.notes,
-            decisionItems: decisionData.items.map(item => ({
+            decisionItems: decisionData.items.map((item) => ({
               id: item.itemId || null,
               qualityCriterionId: item.criterionId,
               value: item.value,
               comment: item.comment,
-              pdfHighlightCoordinates: item.pdfHighlightCoordinates
-            }))
+              pdfHighlightCoordinates: item.pdfHighlightCoordinates,
+            })),
           });
         } else {
           submitDecisions({
             paperId: selectedPaperId,
             qualityAssessmentProcessId: qualityAssessmentId,
             notes: decisionData.notes,
-            decisionItems: decisionData.items.map(item => ({
+            decisionItems: decisionData.items.map((item) => ({
               qualityCriterionId: item.criterionId,
               value: item.value,
               comment: item.comment,
-              pdfHighlightCoordinates: item.pdfHighlightCoordinates
-            }))
+              pdfHighlightCoordinates: item.pdfHighlightCoordinates,
+            })),
           });
         }
       }
@@ -285,33 +318,39 @@ export default function QualityAssessmentWorkspace() {
           id: sp.resolution.id,
           finalDecision: data.finalDecision,
           finalScore: data.finalScore,
-          resolutionNotes: data.resolutionNotes
+          resolutionNotes: data.resolutionNotes,
         });
       } else {
         submitResolution({
           qualityAssessmentProcessId: qualityAssessmentId,
           paperId: selectedPaperId,
-          ...data
+          ...data,
         });
       }
     }
   };
 
   const handleAiAnalyze = async (paperId: string) => {
-    if (!qualityAssessmentId) return { pageWidth: null, pageHeight: null, decisionItems: [] };
+    if (!qualityAssessmentId)
+      return { pageWidth: null, pageHeight: null, decisionItems: [] };
     try {
       const result = await aiDecision({
         qualityAssessmentProcessId: qualityAssessmentId,
         paperId: paperId,
       });
-      return result.data ?? { pageWidth: null, pageHeight: null, decisionItems: [] };
+      return (
+        result.data ?? { pageWidth: null, pageHeight: null, decisionItems: [] }
+      );
     } catch (error) {
       console.error(error);
       return { pageWidth: null, pageHeight: null, decisionItems: [] };
     }
   };
 
-  const handleAutoResolve = async (data: { score?: number | null; percentage?: number | null }) => {
+  const handleAutoResolve = async (data: {
+    score?: number | null;
+    percentage?: number | null;
+  }) => {
     if (!qualityAssessmentId) return;
     try {
       await autoResolve({
@@ -326,17 +365,18 @@ export default function QualityAssessmentWorkspace() {
   };
 
   return (
-    <div className="flex h-screen flex-col bg-gray-50 relative">
+    <div className="flex h-screen flex-col bg-bg-primary relative">
       <QAHeader
         onBack={viewMode === "edit" ? closeEditSpace : handleBack}
         stats={stats}
         onExport={project?.isLeader ? exportExcel : undefined}
         isLeader={project?.isLeader}
         rightControls={
-          project?.isLeader && canEdit && (
+          project?.isLeader &&
+          canEdit && (
             <button
               onClick={() => setIsAutoResolveOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-700 bg-bg-secondary border border-indigo-200 rounded-[4px] hover:bg-indigo-100 transition-colors"
             >
               Auto-Resolve
             </button>
@@ -347,21 +387,39 @@ export default function QualityAssessmentWorkspace() {
       {viewMode === "list" ? (
         <main className="flex-1 overflow-auto p-6 space-y-6 mx-auto w-full max-w-[1600px]">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-1">Quality Assessment Overview</h1>
-            <p className="text-sm text-slate-500">
-              Manage quality assessments, assign reviewers, and monitor team progress.
+            <h1 className="text-2xl font-bold text-text-primary mb-1">
+              Quality Assessment Overview
+            </h1>
+            <p className="text-sm text-text-secondary">
+              Manage quality assessments, assign reviewers, and monitor team
+              progress.
             </p>
           </div>
-          
-          <div className={project?.isLeader && memberProgresses.length > 0 ? "grid grid-cols-1 lg:grid-cols-4 gap-6" : "block"}>
-            <div className={project?.isLeader && memberProgresses.length > 0 ? "col-span-1 lg:col-span-3" : "w-full"}>
+
+          <div
+            className={
+              project?.isLeader && memberProgresses.length > 0
+                ? "grid grid-cols-1 lg:grid-cols-4 gap-6"
+                : "block"
+            }
+          >
+            <div
+              className={
+                project?.isLeader && memberProgresses.length > 0
+                  ? "col-span-1 lg:col-span-3"
+                  : "w-full"
+              }
+            >
               <AssignMembersTabContent
                 papers={activePapers}
                 isLeader={project?.isLeader}
                 onPaperClick={openEditSpace}
                 onAssignClick={handleAssignClick}
                 searchQuery={searchQuery}
-                onSearchChange={(q) => { setSearchQuery(q); setQaPage(1); }}
+                onSearchChange={(q) => {
+                  setSearchQuery(q);
+                  setQaPage(1);
+                }}
                 currentPage={qaPage}
                 totalPages={totalPagesList ?? 1}
                 totalItems={totalItemsList ?? 0}
@@ -377,7 +435,7 @@ export default function QualityAssessmentWorkspace() {
           </div>
         </main>
       ) : (
-        <main className="flex-1 min-h-0 flex flex-col pt-0 w-full overflow-hidden bg-white">
+        <main className="flex-1 min-h-0 flex flex-col pt-0 w-full overflow-hidden bg-surface-white">
           <QAPapersTabContent
             papers={activePapers}
             strategies={strategies}
@@ -386,7 +444,10 @@ export default function QualityAssessmentWorkspace() {
             selectedPaperId={selectedPaperId}
             setSelectedPaperId={setSelectedPaperId}
             searchQuery={searchQuery}
-            setSearchQuery={(q) => { setSearchQuery(q); setQaPage(1); }}
+            setSearchQuery={(q) => {
+              setSearchQuery(q);
+              setQaPage(1);
+            }}
             currentPage={qaPage}
             totalPages={totalPagesList ?? 1}
             totalItems={totalItemsList ?? 0}
@@ -394,7 +455,12 @@ export default function QualityAssessmentWorkspace() {
             onReviewerSave={handleReviewerSave}
             onLeaderResolve={handleLeaderResolve}
             onAiAnalyze={handleAiAnalyze}
-            isSaving={isSubmittingDecisions || isUpdatingDecisions || isSubmittingResolution || isUpdatingResolution}
+            isSaving={
+              isSubmittingDecisions ||
+              isUpdatingDecisions ||
+              isSubmittingResolution ||
+              isUpdatingResolution
+            }
             canEdit={canEdit}
           />
         </main>

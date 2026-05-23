@@ -21,7 +21,8 @@ export default function TitleAbstractScreeningWorkspace() {
   const [activeTab, setActiveTab] = useState("ai");
 
   const { data: processDetails } = useStudySelectionDetails(screeningProcessId);
-  const isCompleted = processDetails?.status === SelectionProcessStatus.Completed;
+  const isCompleted =
+    processDetails?.status === SelectionProcessStatus.Completed;
 
   const navigateToFullText = () => {
     if (projectId && processId && screeningProcessId) {
@@ -47,7 +48,10 @@ export default function TitleAbstractScreeningWorkspace() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <p className="text-red-600 text-sm">{ws.error}</p>
-        <button onClick={ws.handleBack} className="text-sm text-blue-600 hover:underline">
+        <button
+          onClick={ws.handleBack}
+          className="text-sm text-blue-600 hover:underline"
+        >
           Back to Review Process
         </button>
       </div>
@@ -55,7 +59,7 @@ export default function TitleAbstractScreeningWorkspace() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 overflow-hidden">
+    <div className="flex flex-col h-screen bg-bg-primary overflow-hidden">
       {/* Integrated Pipeline Header */}
       <ScreeningHeader
         processName={processId || "Screening Process"}
@@ -103,11 +107,11 @@ export default function TitleAbstractScreeningWorkspace() {
         </div>
 
         {/* Right Panel — AI Analysis & Checklist */}
-        <div className="w-96 shrink-0 border-l border-gray-200 bg-white">
+        <div className="w-96 shrink-0 border-l border-border bg-surface-white">
           <Tabs
             className="h-full flex flex-col gap-0"
             contentClassName="flex-1 overflow-hidden"
-            listClassName="w-[calc(100%-1rem)] mx-2 mt-2 gap-0.5 p-1 bg-slate-100/80"
+            listClassName="w-[calc(100%-1rem)] mx-2 mt-2 gap-0.5 p-1 bg-bg-secondary/80"
             itemClassName="flex-1 px-2 py-2 gap-1.5 text-[11px] justify-center"
             activeTabId={activeTab}
             onTabChange={setActiveTab}
@@ -119,7 +123,10 @@ export default function TitleAbstractScreeningWorkspace() {
           >
             {activeTab === "criteria" && (
               <div className="h-full overflow-y-auto p-4 custom-scrollbar">
-                <CriteriaTab projectId={projectId} screeningProcessId={screeningProcessId} />
+                <CriteriaTab
+                  projectId={projectId}
+                  screeningProcessId={screeningProcessId}
+                />
               </div>
             )}
             {activeTab === "ai" && (
@@ -132,9 +139,9 @@ export default function TitleAbstractScreeningWorkspace() {
               />
             )}
             {activeTab === "checklist" && (
-              <SelectionChecklist 
-                paper={ws.selectedPaper} 
-                processId={screeningProcessId!} 
+              <SelectionChecklist
+                paper={ws.selectedPaper}
+                processId={screeningProcessId!}
                 onClose={() => setActiveTab("ai")}
               />
             )}

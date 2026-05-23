@@ -1,7 +1,21 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeft, ChevronDown, Download, FileSpreadsheet, FileText, RefreshCw } from "lucide-react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
 import type {
@@ -60,60 +74,76 @@ function normalizeGridPayload(payload: unknown): ExtractionEditableGridDto {
   const rawColumns = (data.columns ?? data.Columns) as unknown[] | undefined;
   const rawRows = (data.rows ?? data.Rows) as unknown[] | undefined;
 
-  const columns: ExtractionGridColumnMetaDto[] = (rawColumns ?? []).map((rawColumn) => {
-    const column = rawColumn as Record<string, unknown>;
-    const rawOptions = (column.options ?? column.Options ?? []) as unknown[];
+  const columns: ExtractionGridColumnMetaDto[] = (rawColumns ?? []).map(
+    (rawColumn) => {
+      const column = rawColumn as Record<string, unknown>;
+      const rawOptions = (column.options ?? column.Options ?? []) as unknown[];
 
-    return {
-      fieldId: String(column.fieldId ?? column.FieldId ?? ""),
-      headerName: String(column.headerName ?? column.HeaderName ?? ""),
-      sectionName: String(column.sectionName ?? column.SectionName ?? ""),
-      displayFieldName: String(column.displayFieldName ?? column.DisplayFieldName ?? ""),
-      fieldType: String(column.fieldType ?? column.FieldType ?? "Text"),
-      options: rawOptions.map((rawOption) => {
-        const option = rawOption as Record<string, unknown>;
+      return {
+        fieldId: String(column.fieldId ?? column.FieldId ?? ""),
+        headerName: String(column.headerName ?? column.HeaderName ?? ""),
+        sectionName: String(column.sectionName ?? column.SectionName ?? ""),
+        displayFieldName: String(
+          column.displayFieldName ?? column.DisplayFieldName ?? "",
+        ),
+        fieldType: String(column.fieldType ?? column.FieldType ?? "Text"),
+        options: rawOptions.map((rawOption) => {
+          const option = rawOption as Record<string, unknown>;
 
-        return {
-          optionId: String(option.optionId ?? option.OptionId ?? ""),
-          value: String(option.value ?? option.Value ?? ""),
-        };
-      }),
-    };
-  });
+          return {
+            optionId: String(option.optionId ?? option.OptionId ?? ""),
+            value: String(option.value ?? option.Value ?? ""),
+          };
+        }),
+      };
+    },
+  );
 
-  const rows: ExtractionGridRowDto[] = (rawRows ?? []).map((rawRow, rowIndex) => {
-    const row = rawRow as Record<string, unknown>;
-    const rowId = String(row.rowId ?? row.RowId ?? `row-${rowIndex}`);
-    const paperTitle = String(row.paperTitle ?? row.PaperTitle ?? "");
-    const citation = String(row.citation ?? row.Citation ?? "");
-    const rawCells = (row.cells ?? row.Cells ?? {}) as Record<string, unknown>;
+  const rows: ExtractionGridRowDto[] = (rawRows ?? []).map(
+    (rawRow, rowIndex) => {
+      const row = rawRow as Record<string, unknown>;
+      const rowId = String(row.rowId ?? row.RowId ?? `row-${rowIndex}`);
+      const paperTitle = String(row.paperTitle ?? row.PaperTitle ?? "");
+      const citation = String(row.citation ?? row.Citation ?? "");
+      const rawCells = (row.cells ?? row.Cells ?? {}) as Record<
+        string,
+        unknown
+      >;
 
-    const cells = Object.entries(rawCells).reduce<Record<string, ExtractionGridCellDto>>(
-      (accumulator, [header, rawCell]) => {
+      const cells = Object.entries(rawCells).reduce<
+        Record<string, ExtractionGridCellDto>
+      >((accumulator, [header, rawCell]) => {
         const cell = (rawCell ?? {}) as Record<string, unknown>;
 
         accumulator[header] = {
           paperId: (cell.paperId ?? cell.PaperId ?? null) as string | null,
           fieldId: (cell.fieldId ?? cell.FieldId ?? null) as string | null,
-          matrixColumnId: (cell.matrixColumnId ?? cell.MatrixColumnId ?? null) as string | null,
-          matrixRowIndex: (cell.matrixRowIndex ?? cell.MatrixRowIndex ?? null) as number | null,
+          matrixColumnId: (cell.matrixColumnId ??
+            cell.MatrixColumnId ??
+            null) as string | null,
+          matrixRowIndex: (cell.matrixRowIndex ??
+            cell.MatrixRowIndex ??
+            null) as number | null,
           value: (cell.value ?? cell.Value ?? "") as string | null,
-          isNotReported: Boolean(cell.isNotReported ?? cell.IsNotReported ?? false),
-          fieldType: (cell.fieldType ?? cell.FieldType ?? null) as string | null,
+          isNotReported: Boolean(
+            cell.isNotReported ?? cell.IsNotReported ?? false,
+          ),
+          fieldType: (cell.fieldType ?? cell.FieldType ?? null) as
+            | string
+            | null,
         };
 
         return accumulator;
-      },
-      {}
-    );
+      }, {});
 
-    return {
-      rowId,
-      paperTitle,
-      citation,
-      cells,
-    };
-  });
+      return {
+        rowId,
+        paperTitle,
+        citation,
+        cells,
+      };
+    },
+  );
 
   return {
     columns,
@@ -121,14 +151,20 @@ function normalizeGridPayload(payload: unknown): ExtractionEditableGridDto {
   };
 }
 
-function getColumnFieldKey(column: ExtractionGridColumnMetaDto, columnIndex: number): string {
+function getColumnFieldKey(
+  column: ExtractionGridColumnMetaDto,
+  columnIndex: number,
+): string {
   return `${column.fieldId || "field"}_${columnIndex}`;
 }
 
 function groupColumnsBySection(
-  columns: ExtractionGridColumnMetaDto[]
+  columns: ExtractionGridColumnMetaDto[],
 ): Map<string, Array<{ column: ExtractionGridColumnMetaDto; index: number }>> {
-  const groups = new Map<string, Array<{ column: ExtractionGridColumnMetaDto; index: number }>>();
+  const groups = new Map<
+    string,
+    Array<{ column: ExtractionGridColumnMetaDto; index: number }>
+  >();
 
   columns.forEach((column, index) => {
     const sectionKey = column.sectionName || "Ungrouped";
@@ -148,7 +184,9 @@ function groupColumnsBySection(
  */
 function enrichColumnsWithTemplateOptions(
   columns: ExtractionGridColumnMetaDto[],
-  selectedTemplate: (ExtractionTemplateDto | ExtractionTemplateResponseDto) | null
+  selectedTemplate:
+    | (ExtractionTemplateDto | ExtractionTemplateResponseDto)
+    | null,
 ): ExtractionGridColumnMetaDto[] {
   if (!selectedTemplate) {
     return columns;
@@ -199,11 +237,15 @@ function enrichColumnsWithTemplateOptions(
 
 export default function ExtractionGridWorkspace() {
   const navigate = useNavigate();
-  const { projectId, processId } = useParams<{ projectId: string; processId: string }>();
+  const { projectId, processId } = useParams<{
+    projectId: string;
+    processId: string;
+  }>();
   const { process } = useReviewProcess(processId);
   const { selectedTemplate } = useDataExtractionWorkspace();
   const extractionProcessId = process?.dataExtractionProcess?.id;
-  const [gridData, setGridData] = useState<ExtractionEditableGridDto>(createEmptyGrid);
+  const [gridData, setGridData] =
+    useState<ExtractionEditableGridDto>(createEmptyGrid);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const [isExportingExcel, setIsExportingExcel] = useState(false);
   const [isExportingCsv, setIsExportingCsv] = useState(false);
@@ -230,10 +272,15 @@ export default function ExtractionGridWorkspace() {
     queryKey: [...GRID_QUERY_KEY, extractionProcessId],
     queryFn: async () => {
       if (!extractionProcessId) {
-        throw new Error("Data extraction process ID is required to load editable grid");
+        throw new Error(
+          "Data extraction process ID is required to load editable grid",
+        );
       }
 
-      const response = await dataExtractionConductingService.getEditableGrid(extractionProcessId);
+      const response =
+        await dataExtractionConductingService.getEditableGrid(
+          extractionProcessId,
+        );
 
       if (!response.isSuccess || !response.data) {
         throw new Error(response.message || "Failed to load editable grid");
@@ -254,12 +301,14 @@ export default function ExtractionGridWorkspace() {
   const updateGridCellMutation = useMutation({
     mutationFn: async (payload: UpdateGridCellRequestDto) => {
       if (!extractionProcessId) {
-        throw new Error("Data extraction process ID is required to update editable grid cells");
+        throw new Error(
+          "Data extraction process ID is required to update editable grid cells",
+        );
       }
 
       const response = await dataExtractionConductingService.updateGridCell(
         extractionProcessId,
-        payload
+        payload,
       );
 
       if (!response.isSuccess) {
@@ -269,13 +318,19 @@ export default function ExtractionGridWorkspace() {
       return response;
     },
     onError: (error) => {
-      toastError("Failed to save cell", getErrorMessage(error, "Unable to save this cell right now."));
+      toastError(
+        "Failed to save cell",
+        getErrorMessage(error, "Unable to save this cell right now."),
+      );
     },
   });
 
   // Enrich grid data with template field options
   const enrichedGridData = useMemo(() => {
-    const enrichedColumns = enrichColumnsWithTemplateOptions(gridData.columns, selectedTemplate);
+    const enrichedColumns = enrichColumnsWithTemplateOptions(
+      gridData.columns,
+      selectedTemplate,
+    );
     return {
       ...gridData,
       columns: enrichedColumns,
@@ -299,7 +354,9 @@ export default function ExtractionGridWorkspace() {
           fieldType: column.fieldType,
         };
 
-        dynamicValues[fieldKey] = cell.isNotReported ? "NR" : (cell.value ?? "");
+        dynamicValues[fieldKey] = cell.isNotReported
+          ? "NR"
+          : (cell.value ?? "");
         cellMeta[fieldKey] = cell;
       });
 
@@ -322,12 +379,15 @@ export default function ExtractionGridWorkspace() {
       minWidth: 140,
       flex: 1,
     }),
-    []
+    [],
   );
 
-  const buildSavingCellKey = useCallback((rowId: string, fieldKey: string): string => {
-    return `${rowId}::${fieldKey}`;
-  }, []);
+  const buildSavingCellKey = useCallback(
+    (rowId: string, fieldKey: string): string => {
+      return `${rowId}::${fieldKey}`;
+    },
+    [],
+  );
 
   const handleRefreshGrid = useCallback(async () => {
     await gridQuery.refetch();
@@ -340,7 +400,7 @@ export default function ExtractionGridWorkspace() {
       headerName: string,
       nextValue: string,
       isNotReported: boolean,
-      cell: ExtractionGridCellDto
+      cell: ExtractionGridCellDto,
     ) => {
       if (!cell.paperId || !cell.fieldId) {
         return;
@@ -400,7 +460,7 @@ export default function ExtractionGridWorkspace() {
         });
       }
     },
-    [buildSavingCellKey, updateGridCellMutation]
+    [buildSavingCellKey, updateGridCellMutation],
   );
 
   const columnDefs = useMemo<ColDef<AgGridRowData>[]>(() => {
@@ -424,7 +484,7 @@ export default function ExtractionGridWorkspace() {
     // Helper function to create a column definition for a single field
     const createFieldColDef = (
       column: ExtractionGridColumnMetaDto,
-      columnIndex: number
+      columnIndex: number,
     ): ColDef<AgGridRowData> => {
       const fieldKey = getColumnFieldKey(column, columnIndex);
       const fieldType = (column.fieldType || "Text").trim().toLowerCase();
@@ -442,7 +502,9 @@ export default function ExtractionGridWorkspace() {
             return null;
           }
 
-          const isSaving = Boolean(savingCells[buildSavingCellKey(rowId, fieldKey)]);
+          const isSaving = Boolean(
+            savingCells[buildSavingCellKey(rowId, fieldKey)],
+          );
 
           return (
             <EditableGridCell
@@ -458,7 +520,7 @@ export default function ExtractionGridWorkspace() {
                   column.headerName,
                   nextValue,
                   isNotReported,
-                  targetCell
+                  targetCell,
                 )
               }
             />
@@ -474,7 +536,9 @@ export default function ExtractionGridWorkspace() {
         return {
           ...baseColDef,
           valueFormatter: (params: ValueFormatterParams<AgGridRowData>) => {
-            const value = String(params.value ?? "").trim().toLowerCase();
+            const value = String(params.value ?? "")
+              .trim()
+              .toLowerCase();
             if (value === "true" || value === "yes") {
               return "True";
             }
@@ -497,17 +561,24 @@ export default function ExtractionGridWorkspace() {
     const columnsBySection = groupColumnsBySection(enrichedGridData.columns);
 
     // Build grouped column definitions
-    const groupedColumnDefs: ColDef<AgGridRowData>[] = Array.from(columnsBySection.entries()).map(
-      ([sectionName, columnsInSection]) => ({
-        headerName: sectionName,
-        children: columnsInSection.map(({ column, index }) =>
-          createFieldColDef(column, index)
-        ),
-      })
-    );
+    const groupedColumnDefs: ColDef<AgGridRowData>[] = Array.from(
+      columnsBySection.entries(),
+    ).map(([sectionName, columnsInSection]) => ({
+      headerName: sectionName,
+      children: columnsInSection.map(({ column, index }) =>
+        createFieldColDef(column, index),
+      ),
+    }));
 
     return [pinnedColumn, ...groupedColumnDefs];
-  }, [buildSavingCellKey, extractionProcessId, enrichedGridData.columns, handleSaveCell, rowHeight, savingCells]);
+  }, [
+    buildSavingCellKey,
+    extractionProcessId,
+    enrichedGridData.columns,
+    handleSaveCell,
+    rowHeight,
+    savingCells,
+  ]);
 
   const handleDownloadExcel = useCallback(async () => {
     if (!extractionProcessId) {
@@ -518,7 +589,10 @@ export default function ExtractionGridWorkspace() {
     setIsExportMenuOpen(false);
 
     try {
-      const blob = await dataExtractionConductingService.exportExtractedData(extractionProcessId);
+      const blob =
+        await dataExtractionConductingService.exportExtractedData(
+          extractionProcessId,
+        );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -530,7 +604,10 @@ export default function ExtractionGridWorkspace() {
     } catch (error) {
       toastError(
         "Download failed",
-        getErrorMessage(error, "Unable to download the extraction file right now.")
+        getErrorMessage(
+          error,
+          "Unable to download the extraction file right now.",
+        ),
       );
     } finally {
       setIsExportingExcel(false);
@@ -546,7 +623,10 @@ export default function ExtractionGridWorkspace() {
     setIsExportMenuOpen(false);
 
     try {
-      const blob = await dataExtractionConductingService.exportExtractedDataCsv(extractionProcessId);
+      const blob =
+        await dataExtractionConductingService.exportExtractedDataCsv(
+          extractionProcessId,
+        );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
@@ -558,7 +638,10 @@ export default function ExtractionGridWorkspace() {
     } catch (error) {
       toastError(
         "Download failed",
-        getErrorMessage(error, "Unable to download the extraction CSV file right now.")
+        getErrorMessage(
+          error,
+          "Unable to download the extraction CSV file right now.",
+        ),
       );
     } finally {
       setIsExportingCsv(false);
@@ -634,14 +717,17 @@ export default function ExtractionGridWorkspace() {
     };
   }, [isExportMenuOpen]);
 
-  const hasData = enrichedGridData.columns.length > 0 && enrichedGridData.rows.length > 0;
+  const hasData =
+    enrichedGridData.columns.length > 0 && enrichedGridData.rows.length > 0;
 
   if (gridQuery.isLoading && !gridQuery.data) {
     return (
-      <div className="min-h-screen bg-slate-50 px-6 py-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-center rounded-2xl border border-slate-200 bg-white py-24 shadow-sm">
+      <div className="min-h-screen bg-bg-secondary px-6 py-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[4px] border border-border bg-surface-white py-24 shadow-none">
           <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
-          <span className="ml-3 text-sm text-slate-600">Loading editable grid...</span>
+          <span className="ml-3 text-sm text-text-secondary">
+            Loading editable grid...
+          </span>
         </div>
       </div>
     );
@@ -650,12 +736,15 @@ export default function ExtractionGridWorkspace() {
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] px-6 py-8">
       <div className="mx-auto max-w-[96rem] space-y-4">
-        <div className="relative z-50 rounded-2xl border border-white/70 bg-white/85 px-5 py-4 shadow-lg shadow-slate-200/40 backdrop-blur">
+        <div className="relative z-50 rounded-[4px] border border-white/70 bg-surface-white/85 px-5 py-4 shadow-none shadow-slate-200/40 backdrop-blur">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Extraction Grid Workspace</h1>
-              <p className="mt-1 text-sm text-slate-500">
-                Review and standardize extracted values directly before moving to synthesis.
+              <h1 className="text-2xl font-bold text-text-primary">
+                Extraction Grid Workspace
+              </h1>
+              <p className="mt-1 text-sm text-text-secondary">
+                Review and standardize extracted values directly before moving
+                to synthesis.
               </p>
             </div>
 
@@ -665,13 +754,19 @@ export default function ExtractionGridWorkspace() {
                 Back to Dashboard
               </Button>
 
-              <Button variant="outline" onClick={handleRefreshGrid} disabled={gridQuery.isLoading}>
-                <RefreshCw className={`mr-2 h-4 w-4 ${gridQuery.isLoading ? "animate-spin" : ""}`} />
+              <Button
+                variant="outline"
+                onClick={handleRefreshGrid}
+                disabled={gridQuery.isLoading}
+              >
+                <RefreshCw
+                  className={`mr-2 h-4 w-4 ${gridQuery.isLoading ? "animate-spin" : ""}`}
+                />
                 Refresh Grid
               </Button>
 
-              <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <div className="flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-3 py-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                   Row Height
                 </span>
                 <input
@@ -686,18 +781,18 @@ export default function ExtractionGridWorkspace() {
                 <button
                   type="button"
                   onClick={() => setRowHeight(72)}
-                  className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  className="rounded-md border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
                 >
                   Comfort
                 </button>
                 <button
                   type="button"
                   onClick={() => setRowHeight(DEFAULT_GRID_ROW_HEIGHT)}
-                  className="rounded-md border border-slate-200 px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50"
+                  className="rounded-md border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
                 >
                   Reset
                 </button>
-                <span className="min-w-8 text-right text-xs font-semibold text-slate-700">
+                <span className="min-w-8 text-right text-xs font-semibold text-text-primary">
                   {rowHeight}px
                 </span>
               </div>
@@ -720,7 +815,7 @@ export default function ExtractionGridWorkspace() {
                   ? createPortal(
                       <div
                         ref={exportMenuPanelRef}
-                        className="fixed z-[9999] rounded-xl border border-gray-200 bg-white p-1.5 shadow-2xl"
+                        className="fixed z-[9999] rounded-[4px] border border-border bg-surface-white p-1.5 shadow-2xl"
                         style={{
                           top: `${exportMenuPosition.top}px`,
                           left: `${exportMenuPosition.left}px`,
@@ -731,7 +826,7 @@ export default function ExtractionGridWorkspace() {
                           type="button"
                           onClick={handleDownloadExcel}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
                           <span className="truncate">Excel (.xlsx)</span>
@@ -740,13 +835,13 @@ export default function ExtractionGridWorkspace() {
                           type="button"
                           onClick={handleDownloadCsv}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-medium text-slate-700 transition-colors hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FileText className="h-4 w-4 flex-shrink-0 text-blue-600" />
                           <span className="truncate">CSV (.csv)</span>
                         </button>
                       </div>,
-                      document.body
+                      document.body,
                     )
                   : null}
               </div>
@@ -755,12 +850,15 @@ export default function ExtractionGridWorkspace() {
         </div>
 
         {gridQuery.error ? (
-          <div className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4 text-sm text-red-700">
+          <div className="rounded-[4px] border border-border bg-surface-white px-5 py-4 text-sm text-red-700">
             {getErrorMessage(gridQuery.error, "Unable to load editable grid.")}
           </div>
         ) : null}
 
-        <div className="rounded-2xl border border-slate-200 bg-white shadow-sm" style={{ height: "calc(100vh - 200px)" }}>
+        <div
+          className="rounded-[4px] border border-border bg-surface-white shadow-none"
+          style={{ height: "calc(100vh - 200px)" }}
+        >
           {hasData ? (
             <div className="ag-theme-quartz h-full w-full">
               <AgGridReact<AgGridRowData>
@@ -779,9 +877,12 @@ export default function ExtractionGridWorkspace() {
           ) : (
             <div className="flex h-full items-center justify-center px-6 text-center">
               <div>
-                <p className="text-base font-semibold text-slate-800">No grid data available</p>
-                <p className="mt-1 text-sm text-slate-500">
-                  Complete extraction tasks first, then open this workspace to standardize values.
+                <p className="text-base font-semibold text-slate-800">
+                  No grid data available
+                </p>
+                <p className="mt-1 text-sm text-text-secondary">
+                  Complete extraction tasks first, then open this workspace to
+                  standardize values.
                 </p>
               </div>
             </div>

@@ -25,7 +25,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
 }) => {
   const cyRef = useRef<cytoscape.Core | null>(null);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("timeline");
-  
+
   // Cache for radial positions to prevent re-calculating on every mode switch
   const radialPositionsRef = useRef<Record<string, cytoscape.Position>>({});
 
@@ -43,9 +43,11 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
     const validYears = data.nodes
       .map((n) => n.year)
       .filter((y) => y && y > 0) as number[];
-    
-    const minYear = validYears.length > 0 ? Math.min(...validYears) : currentYear - 5;
-    const maxYear = validYears.length > 0 ? Math.max(...validYears) : currentYear;
+
+    const minYear =
+      validYears.length > 0 ? Math.min(...validYears) : currentYear - 5;
+    const maxYear =
+      validYears.length > 0 ? Math.max(...validYears) : currentYear;
 
     const yearSpacing = 300;
     const ySpacing = 100;
@@ -67,7 +69,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
           fullTitle: node.title,
           year: year,
           isRoot: node.id === rootPaperId,
-          timelinePos: { x, y } // Store timeline position in scratch data
+          timelinePos: { x, y }, // Store timeline position in scratch data
         },
         // IMPORTANT: We don't set 'position' here to keep the elements object stable.
         // We'll apply positions manually or via layout-specific methods.
@@ -87,108 +89,115 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   }, [data, rootPaperId]);
 
   // Stable Stylesheet with conditional classes for edges
-  const stylesheet = useMemo<any>(() => [
-    {
-      selector: "node",
-      style: {
-        "background-color": "#ffffff",
-        "border-width": 2,
-        "border-color": "#3b82f6",
-        width: 42,
-        height: 42,
-        label: "data(label)",
-        "font-size": "10px",
-        "text-valign": "bottom",
-        "text-halign": "center",
-        "text-margin-y": 8,
-        color: "#4b5563",
-        "transition-property": "background-color border-color border-width width height opacity",
-        "transition-duration": 300,
-        "text-wrap": "wrap",
-        "text-max-width": "100px",
+  const stylesheet = useMemo<any>(
+    () => [
+      {
+        selector: "node",
+        style: {
+          "background-color": "#ffffff",
+          "border-width": 2,
+          "border-color": "#3b82f6",
+          width: 42,
+          height: 42,
+          label: "data(label)",
+          "font-size": "10px",
+          "text-valign": "bottom",
+          "text-halign": "center",
+          "text-margin-y": 8,
+          color: "#4b5563",
+          "transition-property":
+            "background-color border-color border-width width height opacity",
+          "transition-duration": 300,
+          "text-wrap": "wrap",
+          "text-max-width": "100px",
+        },
       },
-    },
-    {
-      selector: "node[?isRoot]",
-      style: {
-        "background-color": "#2563eb",
-        "border-color": "#1d4ed8",
-        "border-width": 4,
-        width: 58,
-        height: 58,
-        color: "#111827",
-        "font-weight": "bold",
+      {
+        selector: "node[?isRoot]",
+        style: {
+          "background-color": "#2563eb",
+          "border-color": "#1d4ed8",
+          "border-width": 4,
+          width: 58,
+          height: 58,
+          color: "#111827",
+          "font-weight": "bold",
+        },
       },
-    },
-    {
-      selector: "node.selected",
-      style: {
-        "border-width": 6,
-        "border-color": "#2563eb",
-        "background-color": "#eff6ff",
+      {
+        selector: "node.selected",
+        style: {
+          "border-width": 6,
+          "border-color": "#2563eb",
+          "background-color": "#eff6ff",
+        },
       },
-    },
-    {
-      selector: "edge",
-      style: {
-        width: 1.5,
-        "line-color": "#cbd5e1",
-        opacity: 0.5,
-        "curve-style": "bezier", // Default
-        "target-arrow-shape": "triangle",
-        "target-arrow-color": "#cbd5e1",
-        "target-arrow-fill": "filled",
-        "arrow-scale": 1,
-        "transition-property": "line-color opacity width",
-        "transition-duration": 300,
+      {
+        selector: "edge",
+        style: {
+          width: 1.5,
+          "line-color": "#cbd5e1",
+          opacity: 0.5,
+          "curve-style": "bezier", // Default
+          "target-arrow-shape": "triangle",
+          "target-arrow-color": "#cbd5e1",
+          "target-arrow-fill": "filled",
+          "arrow-scale": 1,
+          "transition-property": "line-color opacity width",
+          "transition-duration": 300,
+        },
       },
-    },
-    {
-      selector: "edge.timeline-curve",
-      style: {
-        "curve-style": "taxi",
-        "taxi-direction": "horizontal",
-        "taxi-turn": 40,
-      }
-    },
-    {
-      selector: "node.highlight",
-      style: {
-        "border-color": "#2563eb",
-        "border-width": 3,
+      {
+        selector: "edge.timeline-curve",
+        style: {
+          "curve-style": "taxi",
+          "taxi-direction": "horizontal",
+          "taxi-turn": 40,
+        },
       },
-    },
-    {
-      selector: "node.semitransparent",
-      style: {
-        opacity: 0.15,
+      {
+        selector: "node.highlight",
+        style: {
+          "border-color": "#2563eb",
+          "border-width": 3,
+        },
       },
-    },
-    {
-      selector: "edge.highlight",
-      style: {
-        opacity: 1,
-        width: 3,
-        "line-color": "#3b82f6",
-        "target-arrow-color": "#3b82f6",
+      {
+        selector: "node.semitransparent",
+        style: {
+          opacity: 0.15,
+        },
       },
-    },
-    {
-      selector: "edge.semitransparent",
-      style: {
-        opacity: 0.05,
+      {
+        selector: "edge.highlight",
+        style: {
+          opacity: 1,
+          width: 3,
+          "line-color": "#3b82f6",
+          "target-arrow-color": "#3b82f6",
+        },
       },
-    },
-  ], []); // No dependencies for maximum stability
+      {
+        selector: "edge.semitransparent",
+        style: {
+          opacity: 0.05,
+        },
+      },
+    ],
+    [],
+  ); // No dependencies for maximum stability
 
   // Centralized Layout Trigger logic
-  const triggerLayout = (mode: LayoutMode, forceRegenerateRadial: boolean = false) => {
+  const triggerLayout = (
+    mode: LayoutMode,
+    forceRegenerateRadial: boolean = false,
+  ) => {
     const cy = cyRef.current;
     if (!cy) return;
 
     if (mode === "timeline") {
       cy.edges().removeClass("bezier").addClass("timeline-curve");
-      
+
       cy.layout({
         name: "preset",
         animate: true,
@@ -201,7 +210,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       cy.edges().removeClass("timeline-curve");
 
       const hasCache = Object.keys(radialPositionsRef.current).length > 0;
-      
+
       if (hasCache && !forceRegenerateRadial) {
         // Use cached radial positions
         cy.layout({
@@ -245,10 +254,10 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
 
     cy.elements().remove();
     cy.add(elements);
-    
+
     // Clear cache whenever data truly changes
     radialPositionsRef.current = {};
-    
+
     triggerLayout("timeline");
   }, [elements]);
 
@@ -273,16 +282,19 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         const neighborhood = selectedNode.neighborhood();
         neighborhood.add(selectedNode).removeClass("semitransparent");
         neighborhood.addClass("highlight");
-        selectedNode.connectedEdges().removeClass("semitransparent").addClass("highlight");
+        selectedNode
+          .connectedEdges()
+          .removeClass("semitransparent")
+          .addClass("highlight");
 
         cy.animate({
           center: { eles: selectedNode },
           zoom: {
             level: Math.max(cy.zoom(), 0.8),
-            position: selectedNode.position()
+            position: selectedNode.position(),
           },
           duration: 500,
-          easing: "ease-in-out-cubic"
+          easing: "ease-in-out-cubic",
         });
       }
     }
@@ -306,7 +318,10 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       const neighborhood = node.neighborhood().add(node);
       cy.elements().addClass("semitransparent");
       neighborhood.removeClass("semitransparent");
-      node.connectedEdges().removeClass("semitransparent").addClass("highlight");
+      node
+        .connectedEdges()
+        .removeClass("semitransparent")
+        .addClass("highlight");
     });
 
     cy.on("mouseout", "node", () => {
@@ -316,7 +331,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   };
 
   return (
-    <div className="w-full h-full bg-slate-50 relative group">
+    <div className="w-full h-full bg-bg-secondary relative group">
       <CytoscapeComponent
         elements={[]}
         style={{ width: "100%", height: "100%" }}
@@ -326,13 +341,13 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       />
 
       {/* Primary Mode Switcher */}
-      <div className="absolute top-4 left-4 flex items-center p-1 bg-white/90 backdrop-blur-md rounded-xl border border-slate-200 shadow-xl z-20">
+      <div className="absolute top-4 left-4 flex items-center p-1 bg-surface-white/90 backdrop-blur-md rounded-[4px] border border-border shadow-none z-20">
         <button
           onClick={() => setLayoutMode("timeline")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3 py-2 rounded-[4px] text-[11px] font-bold transition-all ${
             layoutMode === "timeline"
-              ? "bg-blue-600 text-white shadow-md"
-              : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              ? "bg-blue-600 text-white shadow-none"
+              : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
           <GitBranch className="h-4 w-4" />
@@ -340,25 +355,25 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         </button>
         <button
           onClick={() => setLayoutMode("radial")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-lg text-[11px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3 py-2 rounded-[4px] text-[11px] font-bold transition-all ${
             layoutMode === "radial"
-              ? "bg-blue-600 text-white shadow-md"
-              : "text-slate-500 hover:text-slate-700 hover:bg-slate-100"
+              ? "bg-blue-600 text-white shadow-none"
+              : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
           <BoxSelect className="h-4 w-4" />
           Radial Cluster
         </button>
-        
+
         {layoutMode === "radial" && (
           <div className="mx-1 h-4 w-[1px] bg-slate-200" />
         )}
-        
+
         {layoutMode === "radial" && (
           <button
             onClick={() => triggerLayout("radial", true)}
             title="Regenerate Radial Layout"
-            className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 rounded-lg transition-all"
+            className="p-2 text-text-secondary hover:text-blue-500 hover:bg-blue-50 rounded-[4px] transition-all"
           >
             <RefreshCw className="h-4 w-4" />
           </button>
@@ -367,11 +382,13 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
 
       {/* Help Legend - Autohide */}
       <div className="absolute bottom-6 left-6 pointer-events-none transition-all duration-500 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
-        <div className="px-4 py-2 bg-slate-900/90 text-white backdrop-blur rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
-          <div className={`w-2 h-2 rounded-full animate-pulse ${layoutMode === 'timeline' ? 'bg-blue-400' : 'bg-purple-400'}`} />
+        <div className="px-4 py-2 bg-slate-900/90 text-white backdrop-blur rounded-[4px] shadow-2xl flex items-center gap-3 border border-white/10">
+          <div
+            className={`w-2 h-2 rounded-full animate-pulse ${layoutMode === "timeline" ? "bg-blue-400" : "bg-purple-400"}`}
+          />
           <span className="text-[11px] font-medium tracking-wide">
-            {layoutMode === "timeline" 
-              ? "Chronological Mapping: Papers are sorted by publication year (Left to Right)." 
+            {layoutMode === "timeline"
+              ? "Chronological Mapping: Papers are sorted by publication year (Left to Right)."
               : "Influence Mapping: Papers are clustered by citation strength and connectivity."}
           </span>
         </div>

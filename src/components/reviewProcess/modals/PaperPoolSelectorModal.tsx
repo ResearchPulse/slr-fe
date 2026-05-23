@@ -6,7 +6,10 @@ import PaperTable from "../../paperPool/PaperTable";
 import Button from "../../ui/Button";
 import { FiSearch, FiLayers, FiCheckCircle } from "react-icons/fi";
 import { useDebounce } from "../../../hooks/useDebounce";
-import type { PaperPoolItem, PaperPoolApiResponse } from "../../paperPool/types";
+import type {
+  PaperPoolItem,
+  PaperPoolApiResponse,
+} from "../../paperPool/types";
 import toast from "react-hot-toast";
 
 interface PaperPoolSelectorModalProps {
@@ -69,7 +72,10 @@ export default function PaperPoolSelectorModal({
 
   const { addSelectedPapers, isAdding, result } = useAddSelectedPapers();
 
-  const papers = useMemo(() => (papersPage?.items ?? []).map(mapPaperFromApi), [papersPage?.items]);
+  const papers = useMemo(
+    () => (papersPage?.items ?? []).map(mapPaperFromApi),
+    [papersPage?.items],
+  );
 
   const handleTogglePaper = (id: string, selected: boolean) => {
     if (selected) {
@@ -95,7 +101,9 @@ export default function PaperPoolSelectorModal({
         reviewProcessId: processId,
         data: { paperIds: selectedPaperIds },
       });
-      toast.success(`Successfully added ${res.inserted} papers to ${processName}`);
+      toast.success(
+        `Successfully added ${res.inserted} papers to ${processName}`,
+      );
       setSelectedPaperIds([]);
       // We don't close immediately if the user wants to see the result or add more?
       // Actually, the requirements imply a CTA that opens it, usually closing on success is fine.
@@ -105,7 +113,8 @@ export default function PaperPoolSelectorModal({
     }
   };
 
-  const allPageSelected = papers.length > 0 && papers.every((p) => selectedPaperIds.includes(p.id));
+  const allPageSelected =
+    papers.length > 0 && papers.every((p) => selectedPaperIds.includes(p.id));
 
   return (
     <Modal
@@ -119,18 +128,18 @@ export default function PaperPoolSelectorModal({
         {/* Search and Selection Status */}
         <div className="flex items-center justify-between gap-4">
           <div className="relative flex-1 group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search by title, authors, or DOI..."
-              className="w-full bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-500 rounded-2xl pl-12 pr-4 py-3 text-sm font-bold text-gray-900 transition-all outline-none shadow-sm"
+              className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-12 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none shadow-sm"
             />
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="px-4 py-2 bg-blue-50 rounded-2xl border border-blue-100 flex items-center gap-3">
+            <div className="px-4 py-2 bg-blue-50 rounded-[4px] border border-blue-100 flex items-center gap-3">
               <FiLayers className="text-blue-600 w-4 h-4" />
               <span className="text-xs font-black text-blue-700 uppercase tracking-wider">
                 {selectedPaperIds.length} Selected
@@ -143,7 +152,7 @@ export default function PaperPoolSelectorModal({
               disabled={selectedPaperIds.length === 0 || isAdding}
               isLoading={isAdding}
               onClick={handleConfirmAdd}
-              className="rounded-2xl px-6 shadow-lg shadow-blue-500/20"
+              className="rounded-[4px] px-6 shadow-lg shadow-blue-500/20"
             >
               Add to Review
             </Button>
@@ -153,7 +162,7 @@ export default function PaperPoolSelectorModal({
         {/* Results Container */}
         <div className="min-h-[500px] flex flex-col">
           {result && (
-            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-between animate-in fade-in slide-in-from-top-2">
+            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-[4px] flex items-center justify-between animate-in fade-in slide-in-from-top-2">
               <div className="flex items-center gap-3 text-emerald-700">
                 <FiCheckCircle className="w-5 h-5" />
                 <div className="text-sm font-bold">

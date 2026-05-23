@@ -50,7 +50,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
               label: qt.name,
             }))}
             required
-            className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all rounded-lg"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
           />
         </div>
 
@@ -64,7 +64,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
             placeholder="e.g., What is the long-term impact of mindfulness-based cognitive therapy on relapse rates in adults with recurrent depression?"
             rows={4}
             required
-            className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all rounded-lg"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
           />
         </div>
 
@@ -78,17 +78,17 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
             placeholder="e.g., Despite the popularity of MBCT, its long-term efficacy (beyond 12 months) remains under-studied compared to traditional therapy..."
             rows={4}
             required
-            className="bg-gray-50/50 border-gray-200 focus:bg-white transition-all rounded-lg"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
           />
         </div>
       </div>
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-3 pt-6 border-t border-gray-100">
+      <div className="flex items-center gap-3 pt-6 border-t border-border">
         <Button
           type="submit"
           isLoading={isLoading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-none rounded-lg h-12"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-none rounded-[4px] h-12"
         >
           Add Question
         </Button>
@@ -96,7 +96,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
           type="button"
           variant="secondary"
           onClick={onCancel}
-          className="px-6 border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 shadow-none rounded-lg h-12"
+          className="px-6 border border-border bg-surface-white hover:bg-bg-primary text-text-primary shadow-none rounded-[4px] h-12"
         >
           Cancel
         </Button>

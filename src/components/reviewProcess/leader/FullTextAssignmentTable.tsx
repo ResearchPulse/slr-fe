@@ -26,21 +26,31 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
   const [search, setSearch] = useState("");
   const [year, setYear] = useState<number | undefined>(undefined);
   const [searchSourceId, setSearchSourceId] = useState("");
-  const [assignmentStatus, setAssignmentStatus] = useState<number>(AssignmentFilterStatus.All);
-  const [decisionStatus, setDecisionStatus] = useState<number>(ResolutionFilterStatus.All);
+  const [assignmentStatus, setAssignmentStatus] = useState<number>(
+    AssignmentFilterStatus.All,
+  );
+  const [decisionStatus, setDecisionStatus] = useState<number>(
+    ResolutionFilterStatus.All,
+  );
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize] = useState(10);
 
-  const { data: assignmentData, isLoading } = useFullTextAssignmentPapers(studySelectionProcessId, {
-    search,
-    year,
-    searchSourceId: searchSourceId || undefined,
-    assignmentStatus,
-    decisionStatus,
-    pageNumber,
-    pageSize,
-  });
-  const paperActions = usePaperActions(studySelectionProcessId, PaperPhase.FullText);
+  const { data: assignmentData, isLoading } = useFullTextAssignmentPapers(
+    studySelectionProcessId,
+    {
+      search,
+      year,
+      searchSourceId: searchSourceId || undefined,
+      assignmentStatus,
+      decisionStatus,
+      pageNumber,
+      pageSize,
+    },
+  );
+  const paperActions = usePaperActions(
+    studySelectionProcessId,
+    PaperPhase.FullText,
+  );
   const rawPapers = assignmentData?.items || [];
   const papers = useMemo(
     () =>
@@ -54,7 +64,12 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
           modifiedAt: (p as any).modifiedAt || new Date().toISOString(),
           assignedReviewers: members.map((r: any) => ({
             id: r.reviewerId || r.id || r.userId || "",
-            name: r.reviewerName || r.name || r.fullName || r.reviewerFullName || "Unknown",
+            name:
+              r.reviewerName ||
+              r.name ||
+              r.fullName ||
+              r.reviewerFullName ||
+              "Unknown",
           })),
         };
       }) as PaperResponse[],
@@ -156,13 +171,14 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
         </div>
         <div className="flex-1">
           <p className="text-sm text-amber-800">
-            <span className="font-bold">PDF Required for Assignment</span>: In the Full-Text phase,
-            project policy requires all papers to have an attached PDF before they can be assigned
-            to reviewers.
+            <span className="font-bold">PDF Required for Assignment</span>: In
+            the Full-Text phase, project policy requires all papers to have an
+            attached PDF before they can be assigned to reviewers.
           </p>
           <p className="text-xs text-amber-700 mt-0.5">
-            Papers missing a PDF will have their selection checkbox disabled. Use the{" "}
-            <span className="inline-flex items-center gap-1 mx-1 px-1 py-0.5 bg-white border border-amber-200 rounded text-[10px] text-amber-800 font-bold">
+            Papers missing a PDF will have their selection checkbox disabled.
+            Use the{" "}
+            <span className="inline-flex items-center gap-1 mx-1 px-1 py-0.5 bg-surface-white border border-amber-200 rounded text-[10px] text-amber-800 font-bold">
               Attach PDF
             </span>{" "}
             action to upload missing files.
@@ -171,15 +187,17 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
       </div>
 
       {/* Table Section */}
-      <div className="flex-1 overflow-auto bg-gray-50/30 relative">
+      <div className="flex-1 overflow-auto bg-bg-primary/30 relative">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
           </div>
         ) : papers.length === 0 ? (
-          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-gray-400">
+          <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-text-secondary">
             <p className="font-medium text-lg">No papers found</p>
-            <p className="text-sm mt-1">Try adjusting your search or filters.</p>
+            <p className="text-sm mt-1">
+              Try adjusting your search or filters.
+            </p>
           </div>
         ) : (
           <div className="">
@@ -191,7 +209,9 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
               onUploadPdf={paperActions.uploadPaperPdf}
               isUploadingPdf={paperActions.isUploadingPdf}
               onApplyMetadataSuggestion={paperActions.applyMetadataSuggestion}
-              isApplyingMetadataSuggestion={paperActions.isApplyingMetadataSuggestion}
+              isApplyingMetadataSuggestion={
+                paperActions.isApplyingMetadataSuggestion
+              }
               onRemovePdf={paperActions.removePaperPdf}
               isRemovingPdf={paperActions.isRemovingPdf}
               onRetryExtraction={paperActions.retryMetadataExtraction}
@@ -209,21 +229,22 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
       </div>
 
       {/* Pagination Footer */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-between text-sm text-gray-500">
+      <div className="bg-surface-white border-t border-border px-6 py-4 flex items-center justify-between text-sm text-text-secondary">
         <div>
           Showing{" "}
-          <span className="font-medium text-gray-900">
+          <span className="font-medium text-text-primary">
             {totalCount === 0 ? 0 : (pageNumber - 1) * pageSize + 1}
           </span>{" "}
           to{" "}
-          <span className="font-medium text-gray-900">
+          <span className="font-medium text-text-primary">
             {Math.min(pageNumber * pageSize, totalCount)}
           </span>{" "}
-          of <span className="font-medium text-gray-900">{totalCount}</span> papers
+          of <span className="font-medium text-text-primary">{totalCount}</span>{" "}
+          papers
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+            className="px-3 py-1 border border-border rounded hover:bg-bg-primary disabled:opacity-50"
             disabled={pageNumber === 1 || isLoading}
             onClick={() => handlePageChange(pageNumber - 1)}
           >
@@ -236,10 +257,11 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
                 <button
                   key={page}
                   onClick={() => handlePageChange(page)}
-                  className={`px-3 py-1 border rounded ${pageNumber === page
-                    ? "bg-blue-50 text-blue-600 border-blue-100"
-                    : "hover:bg-gray-50"
-                    }`}
+                  className={`px-3 py-1 border rounded ${
+                    pageNumber === page
+                      ? "bg-blue-50 text-blue-600 border-blue-100"
+                      : "hover:bg-bg-primary"
+                  }`}
                 >
                   {page}
                 </button>
@@ -247,8 +269,10 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
             })}
           </div>
           <button
-            className="px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
-            disabled={pageNumber === totalPages || isLoading || totalPages === 0}
+            className="px-3 py-1 border border-border rounded hover:bg-bg-primary disabled:opacity-50"
+            disabled={
+              pageNumber === totalPages || isLoading || totalPages === 0
+            }
             onClick={() => handlePageChange(pageNumber + 1)}
           >
             Next

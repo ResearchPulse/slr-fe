@@ -106,9 +106,11 @@ const HttpExample: React.FC = () => {
         </div>
         {createError && <p style={{ color: "red" }}>Error: {createError}</p>}
       </section>
-      
-       {/* DELETE Error Display */}
-       {deleteError && <p style={{ color: "red" }}>Delete Error: {deleteError}</p>}
+
+      {/* DELETE Error Display */}
+      {deleteError && (
+        <p style={{ color: "red" }}>Delete Error: {deleteError}</p>
+      )}
     </div>
   );
 };

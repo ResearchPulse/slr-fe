@@ -16,12 +16,15 @@ export function getSectionId(section: ExtractionSectionDto): string {
 }
 
 export function toDomId(value: string): string {
-  return value.trim().toLowerCase().replace(/[^a-z0-9_-]/g, "-");
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]/g, "-");
 }
 
 export function getMatrixFieldKey(
   field: ExtractionFieldDto,
-  fieldIndex: number
+  fieldIndex: number,
 ): string {
   if (field.fieldId) {
     return field.fieldId;
@@ -33,7 +36,7 @@ export function getMatrixFieldKey(
 export function flattenTemplateFields(
   fields: ExtractionFieldDto[],
   depth = 0,
-  keyPrefix = ""
+  keyPrefix = "",
 ): FlattenedTemplateField[] {
   const sorted = [...fields].sort((a, b) => a.orderIndex - b.orderIndex);
 
@@ -43,7 +46,7 @@ export function flattenTemplateFields(
     const children = flattenTemplateFields(
       field.subFields ?? [],
       depth + 1,
-      `${fieldKey}-`
+      `${fieldKey}-`,
     );
 
     return [{ field, fieldKey, depth }, ...children];
@@ -56,7 +59,7 @@ export function mapFormValueToExtractedValue(
   matrixColumnId: string | null,
   matrixRowIndex: number | null,
   isNotReported = false,
-  evidenceCoordinates: string | null = null
+  evidenceCoordinates: string | null = null,
 ): ExtractedValueDto | null {
   if (!field.fieldId) {
     return null;
@@ -144,16 +147,14 @@ export function renderInputControl(
   value: FormFieldValue,
   onChange: (value: FormFieldValue) => void,
   controlId: string,
-  disabled = false
+  disabled = false,
 ) {
   if (
     field.fieldType === FieldTypeEnum.Integer ||
     field.fieldType === FieldTypeEnum.Decimal
   ) {
     const inputValue =
-      typeof value === "number" && Number.isFinite(value)
-        ? String(value)
-        : "";
+      typeof value === "number" && Number.isFinite(value) ? String(value) : "";
 
     return (
       <input
@@ -166,7 +167,7 @@ export function renderInputControl(
           const raw = event.target.value;
           onChange(raw === "" ? null : Number(raw));
         }}
-        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base text-slate-700 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+        className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
       />
     );
   }
@@ -176,8 +177,8 @@ export function renderInputControl(
       value === true ? "true" : value === false ? "false" : "";
 
     return (
-      <div className="rounded-xl border border-slate-300 bg-white px-3 py-2 disabled:border-slate-200 disabled:bg-slate-100">
-        <div className="flex flex-wrap items-center gap-5 text-sm text-slate-700">
+      <div className="rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 disabled:border-border disabled:bg-bg-secondary">
+        <div className="flex flex-wrap items-center gap-5 text-sm text-text-primary">
           <label className="inline-flex items-center gap-2">
             <input
               type="radio"
@@ -208,7 +209,7 @@ export function renderInputControl(
             type="button"
             disabled={disabled}
             onClick={() => onChange(null)}
-            className="text-xs font-medium text-slate-500 hover:text-slate-700"
+            className="text-xs font-medium text-text-secondary hover:text-text-primary"
           >
             Clear
           </button>
@@ -229,7 +230,7 @@ export function renderInputControl(
           const nextValue = event.target.value;
           onChange(nextValue === "" ? null : nextValue);
         }}
-        className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base text-slate-700 outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+        className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none focus:border-blue-500 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
       >
         <option value="">Select...</option>
         {(field.options ?? []).map((option, optionIndex) => (
@@ -248,23 +249,24 @@ export function renderInputControl(
     const selectedValues = Array.isArray(value)
       ? value.filter(
           (entry): entry is string =>
-            typeof entry === "string" && entry.trim().length > 0
+            typeof entry === "string" && entry.trim().length > 0,
         )
       : [];
 
     return (
-      <div className="space-y-2 rounded-xl border border-slate-300 bg-white px-3 py-2">
+      <div className="space-y-2 rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2">
         {(field.options ?? []).map((option, optionIndex) => {
           const key = option.optionId ?? `${controlId}-option-${optionIndex}`;
           const checkboxId = `${controlId}-checkbox-${optionIndex}`;
           const optionId = option.optionId ?? "";
-          const isChecked = optionId.length > 0 && selectedValues.includes(optionId);
+          const isChecked =
+            optionId.length > 0 && selectedValues.includes(optionId);
 
           return (
             <label
               key={key}
               htmlFor={checkboxId}
-              className="flex items-center gap-2 text-sm text-slate-700"
+              className="flex items-center gap-2 text-sm text-text-primary"
             >
               <input
                 id={checkboxId}
@@ -279,7 +281,7 @@ export function renderInputControl(
                   const updatedValues = event.target.checked
                     ? [...selectedValues, optionId]
                     : selectedValues.filter(
-                        (selected: string) => selected !== optionId
+                        (selected: string) => selected !== optionId,
                       );
                   onChange(updatedValues);
                 }}
@@ -304,7 +306,7 @@ export function renderInputControl(
       onChange={(event) => onChange(event.target.value)}
       placeholder={`Enter ${field.name.toLowerCase()}`}
       rows={3}
-      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-500 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+      className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
     />
   );
 }
@@ -312,11 +314,11 @@ export function renderInputControl(
 export function resolveOptionValue(
   field: ExtractionFieldDto,
   optionId: string | null,
-  fallbackStringValue: string | null
+  fallbackStringValue: string | null,
 ): string | null {
   if (optionId) {
     const matchedById = (field.options ?? []).find(
-      (option) => option.optionId === optionId
+      (option) => option.optionId === optionId,
     );
 
     if (matchedById) {
@@ -330,14 +332,14 @@ export function resolveOptionValue(
   }
 
   const matchedByValue = (field.options ?? []).find(
-    (option) => option.value === normalizedFallback
+    (option) => option.value === normalizedFallback,
   );
   if (matchedByValue) {
     return matchedByValue.value;
   }
 
   const matchedByFallbackId = (field.options ?? []).find(
-    (option) => option.optionId === normalizedFallback
+    (option) => option.optionId === normalizedFallback,
   );
   if (matchedByFallbackId) {
     return matchedByFallbackId.value;
@@ -348,7 +350,7 @@ export function resolveOptionValue(
 
 export function parseAutoExtractedMultiSelect(
   field: ExtractionFieldDto,
-  extractedValue: ExtractedValueDto
+  extractedValue: ExtractedValueDto,
 ): string[] {
   const normalizeEntry = (entry: unknown): string | null => {
     if (typeof entry !== "string") {
@@ -361,14 +363,14 @@ export function parseAutoExtractedMultiSelect(
     }
 
     const asOptionId = (field.options ?? []).find(
-      (option) => option.optionId === normalized
+      (option) => option.optionId === normalized,
     );
     if (asOptionId?.optionId) {
       return asOptionId.optionId;
     }
 
     const asOptionValue = (field.options ?? []).find(
-      (option) => option.value === normalized
+      (option) => option.value === normalized,
     );
     if (asOptionValue?.optionId) {
       return asOptionValue.optionId;
@@ -403,7 +405,7 @@ export function parseAutoExtractedMultiSelect(
   const singleOption = resolveOptionValue(
     field,
     extractedValue.optionId,
-    extractedValue.stringValue
+    extractedValue.stringValue,
   );
 
   if (extractedValue.optionId && extractedValue.optionId.trim().length > 0) {
@@ -415,7 +417,7 @@ export function parseAutoExtractedMultiSelect(
   }
 
   const asOption = (field.options ?? []).find(
-    (option) => option.value === singleOption
+    (option) => option.value === singleOption,
   );
 
   return asOption?.optionId ? [asOption.optionId] : [];
@@ -423,7 +425,7 @@ export function parseAutoExtractedMultiSelect(
 
 export function mapExtractedValueToFormValue(
   field: ExtractionFieldDto,
-  extractedValue: ExtractedValueDto
+  extractedValue: ExtractedValueDto,
 ): FormFieldValue {
   if (extractedValue.isNotReported) {
     return null;
@@ -473,14 +475,14 @@ export function mapExtractedValueToFormValue(
     }
 
     const matchedById = (field.options ?? []).find(
-      (option) => option.optionId === fallback
+      (option) => option.optionId === fallback,
     );
     if (matchedById?.optionId) {
       return matchedById.optionId;
     }
 
     const matchedByValue = (field.options ?? []).find(
-      (option) => option.value === fallback
+      (option) => option.value === fallback,
     );
 
     return matchedByValue?.optionId ?? null;

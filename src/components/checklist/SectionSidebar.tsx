@@ -24,14 +24,21 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
   onToggleCollapse,
   className,
 }) => {
-  const totalCompletedItems = sections.reduce((sum, section) => sum + section.completedItems, 0);
-  const totalItems = sections.reduce((sum, section) => sum + section.totalItems, 0);
-  const totalProgress = totalItems > 0 ? Math.round((totalCompletedItems / totalItems) * 100) : 0;
+  const totalCompletedItems = sections.reduce(
+    (sum, section) => sum + section.completedItems,
+    0,
+  );
+  const totalItems = sections.reduce(
+    (sum, section) => sum + section.totalItems,
+    0,
+  );
+  const totalProgress =
+    totalItems > 0 ? Math.round((totalCompletedItems / totalItems) * 100) : 0;
 
   return (
     <aside
       className={cn(
-        "relative z-30 flex h-screen flex-col border-r border-gray-200 bg-white ",
+        "relative z-30 flex h-screen flex-col border-r border-border bg-surface-white ",
         isCollapsed ? "w-20" : "w-64",
         className,
       )}
@@ -39,17 +46,21 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
       {onToggleCollapse && (
         <button
           onClick={onToggleCollapse}
-          className="absolute -right-4 top-8 z-40 flex h-8 w-8 items-center justify-center rounded-full border border-gray-100 bg-white text-gray-400 shadow-lg shadow-slate-200/50  hover:border-indigo-200 hover:text-indigo-600 active:scale-90"
+          className="absolute -right-4 top-8 z-40 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-none shadow-slate-200/50  hover:border-indigo-200 hover:text-accent active:scale-90"
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
-          {isCollapsed ? <FiChevronRight size={16} /> : <FiChevronLeft size={16} />}
+          {isCollapsed ? (
+            <FiChevronRight size={16} />
+          ) : (
+            <FiChevronLeft size={16} />
+          )}
         </button>
       )}
 
       <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4 no-scrollbar">
         {!isCollapsed && (
-          <h3 className="mb-3 px-3 text-xs font-bold uppercase tracking-wide text-gray-500">
+          <h3 className="mb-3 px-3 text-xs font-bold uppercase tracking-wide text-text-secondary">
             Sections
           </h3>
         )}
@@ -65,14 +76,18 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
               onClick={() => onSectionClick(section.section)}
               title={isCollapsed ? section.displayName : undefined}
               className={cn(
-                "group relative flex w-full items-center overflow-hidden rounded-xl border text-left transition-all",
-                isCollapsed ? "h-14 justify-center px-2" : "justify-between px-3 py-2.5",
+                "group relative flex w-full items-center overflow-hidden rounded-[4px] border text-left transition-all",
+                isCollapsed
+                  ? "h-14 justify-center px-2"
+                  : "justify-between px-3 py-2.5",
                 isActive
-                  ? "border-indigo-300 bg-indigo-50"
-                  : "border-transparent hover:border-gray-200 hover:bg-gray-50",
+                  ? "border-indigo-300 bg-bg-secondary"
+                  : "border-transparent hover:border-border hover:bg-bg-primary",
               )}
             >
-              {isActive && <div className="absolute left-0 top-0 bottom-0 w-1 bg-indigo-600" />}
+              {isActive && (
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-accent" />
+              )}
 
               <div
                 className={cn(
@@ -91,12 +106,14 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
                   <p
                     className={cn(
                       "truncate text-sm font-medium",
-                      isActive ? "text-indigo-900" : "text-gray-700 group-hover:text-gray-900",
+                      isActive
+                        ? "text-indigo-900"
+                        : "text-text-primary group-hover:text-text-primary",
                     )}
                   >
                     {section.displayName}
                   </p>
-                  <p className="mt-0.5 text-xs text-gray-500">
+                  <p className="mt-0.5 text-xs text-text-secondary">
                     {section.completedItems} of {section.totalItems} items
                   </p>
                 </div>
@@ -104,17 +121,21 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
                 <div className="flex shrink-0 items-center gap-2">
                   <div
                     className={cn(
-                      "flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-xs font-semibold",
+                      "flex h-8 w-8 items-center justify-center rounded-full bg-bg-secondary text-xs font-semibold",
                       isCollapsed && "bg-transparent",
                     )}
                   >
-                    <span className={cn(isComplete ? "text-emerald-600" : "text-indigo-600")}>
+                    <span
+                      className={cn(
+                        isComplete ? "text-emerald-600" : "text-accent",
+                      )}
+                    >
                       {percentage}%
                     </span>
                   </div>
 
                   {!isCollapsed && isActive && (
-                    <FiChevronRight className="h-4 w-4 text-indigo-600" />
+                    <FiChevronRight className="h-4 w-4 text-accent" />
                   )}
                 </div>
               </div>
@@ -123,20 +144,29 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
         })}
       </nav>
 
-      <div className={cn("border-t border-gray-100 bg-gray-50 px-4 py-3", isCollapsed && "px-3")}>
+      <div
+        className={cn(
+          "border-t border-border bg-bg-primary px-4 py-3",
+          isCollapsed && "px-3",
+        )}
+      >
         <div
           className={cn(
-            "space-y-2 text-xs text-gray-600 ",
-            isCollapsed ? "h-0 invisible overflow-hidden opacity-0" : "h-auto visible opacity-100",
+            "space-y-2 text-xs text-text-secondary ",
+            isCollapsed
+              ? "h-0 invisible overflow-hidden opacity-0"
+              : "h-auto visible opacity-100",
           )}
         >
           <div className="flex justify-between gap-3">
             <span>Total Progress:</span>
-            <span className="font-semibold text-gray-900">{totalProgress}%</span>
+            <span className="font-semibold text-text-primary">
+              {totalProgress}%
+            </span>
           </div>
           <div className="flex justify-between gap-3">
             <span>Items Done:</span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-text-primary">
               {totalCompletedItems}/{totalItems}
             </span>
           </div>
@@ -144,7 +174,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
 
         {isCollapsed && (
           <div className="flex justify-center">
-            <div className="rounded-full bg-white px-2 py-1 text-[10px] font-semibold text-gray-600 shadow-sm ring-1 ring-gray-200">
+            <div className="rounded-full bg-surface-white px-2 py-1 text-[10px] font-semibold text-text-secondary shadow-none ring-1 ring-gray-200">
               {totalProgress}%
             </div>
           </div>

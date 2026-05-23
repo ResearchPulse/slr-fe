@@ -15,7 +15,11 @@ interface LineChartComponentProps {
   yKey: string;
 }
 
-const LineChartComponent: React.FC<LineChartComponentProps> = ({ data, xKey, yKey }) => {
+const LineChartComponent: React.FC<LineChartComponentProps> = ({
+  data,
+  xKey,
+  yKey,
+}) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
@@ -24,33 +28,41 @@ const LineChartComponent: React.FC<LineChartComponentProps> = ({ data, xKey, yKe
       >
         <defs>
           <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1}/>
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
+            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-        <XAxis 
-          dataKey={xKey} 
-          axisLine={false} 
-          tickLine={false} 
+        <CartesianGrid
+          strokeDasharray="3 3"
+          vertical={false}
+          stroke="#f1f5f9"
+        />
+        <XAxis
+          dataKey={xKey}
+          axisLine={false}
+          tickLine={false}
           tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
           dy={10}
         />
-        <YAxis 
-          axisLine={false} 
-          tickLine={false} 
+        <YAxis
+          axisLine={false}
+          tickLine={false}
           tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
         />
         <Tooltip
-          contentStyle={{ borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)" }}
+          contentStyle={{
+            borderRadius: "12px",
+            border: "none",
+            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+          }}
         />
-        <Area 
-          type="monotone" 
-          dataKey={yKey} 
-          stroke="#3b82f6" 
+        <Area
+          type="monotone"
+          dataKey={yKey}
+          stroke="#3b82f6"
           strokeWidth={3}
-          fillOpacity={1} 
-          fill="url(#colorCount)" 
+          fillOpacity={1}
+          fill="url(#colorCount)"
         />
       </AreaChart>
     </ResponsiveContainer>

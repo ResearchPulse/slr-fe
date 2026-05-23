@@ -44,18 +44,24 @@ export default function ConfirmationModal({
       onClick={handleBackdropClick}
     >
       <div
-        className="w-full max-w-lg overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-[4px] border border-border bg-surface-white shadow-2xl"
         onClick={handleDialogClick}
       >
-        <div className="flex items-start justify-between gap-4 border-b border-gray-100 px-6 py-5">
+        <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
           <div className="flex items-start gap-3">
-            <div className="rounded-2xl bg-amber-50 p-3 text-amber-600 shadow-sm">
+            <div className="rounded-[4px] bg-amber-50 p-3 text-amber-600 shadow-sm">
               <AlertTriangle className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-400">Confirmation</p>
-              <h3 className="mt-1 text-xl font-semibold text-gray-900">{title}</h3>
-              <p className="mt-2 text-sm leading-6 text-gray-500">{description}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+                Confirmation
+              </p>
+              <h3 className="mt-1 text-xl font-semibold text-text-primary">
+                {title}
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
+                {description}
+              </p>
             </div>
           </div>
 
@@ -63,14 +69,14 @@ export default function ConfirmationModal({
             type="button"
             onClick={onClose}
             disabled={isConfirming}
-            className="rounded-full p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-full p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close confirmation"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
           <Button variant="outline" onClick={onClose} disabled={isConfirming}>
             Cancel
           </Button>

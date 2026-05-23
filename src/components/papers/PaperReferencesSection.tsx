@@ -7,7 +7,9 @@ interface PaperReferencesSectionProps {
   paper: PaperResponse;
 }
 
-const PaperReferencesSection: React.FC<PaperReferencesSectionProps> = ({ paper }) => {
+const PaperReferencesSection: React.FC<PaperReferencesSectionProps> = ({
+  paper,
+}) => {
   // TODO: Use actual extracted references count from API query
   const extractedReferencesCount = 35;
   const isFullTextAvailable = paper.fullTextAvailable || paper.pdfUrl;
@@ -27,7 +29,9 @@ const PaperReferencesSection: React.FC<PaperReferencesSectionProps> = ({ paper }
         <div>
           <div className="flex items-center gap-2">
             <Network className="w-5 h-5 text-blue-600" />
-            <span className="font-semibold text-gray-900">Backward Snowballing</span>
+            <span className="font-semibold text-gray-900">
+              Backward Snowballing
+            </span>
           </div>
           <p className="text-xs text-gray-600 mt-1">
             {extractedReferencesCount > 0

@@ -42,8 +42,8 @@ export default function UploadFullTextPdfModal({
 }: UploadFullTextPdfModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const extractWithGrobid = true;
-  const [isMetadataSectionExpanded, setIsMetadataSectionExpanded] = useState(() =>
-    typeof window === "undefined" ? true : window.innerWidth >= 768,
+  const [isMetadataSectionExpanded, setIsMetadataSectionExpanded] = useState(
+    () => (typeof window === "undefined" ? true : window.innerWidth >= 768),
   );
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -98,17 +98,19 @@ export default function UploadFullTextPdfModal({
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
                 Section 1
               </p>
-              <h4 className="text-lg font-semibold text-slate-900">PDF Upload</h4>
+              <h4 className="text-lg font-semibold text-text-primary">
+                PDF Upload
+              </h4>
             </div>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
+            <span className="rounded-full bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary">
               Required
             </span>
           </div>
 
-          <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-5">
+          <div className="rounded-[4px] border border-border bg-bg-secondary/80 p-5">
             <input
               ref={fileInputRef}
               type="file"
@@ -120,15 +122,16 @@ export default function UploadFullTextPdfModal({
             {selectedFile ? (
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="rounded-2xl bg-white p-3 text-indigo-600 shadow-sm">
+                  <div className="rounded-[4px] bg-surface-white p-3 text-accent shadow-sm">
                     <FiFileText className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-text-primary">
                       {selectedFile.name}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · PDF ready to upload
+                    <p className="text-xs text-text-secondary">
+                      {(selectedFile.size / (1024 * 1024)).toFixed(2)} MB · PDF
+                      ready to upload
                     </p>
                   </div>
                 </div>
@@ -137,7 +140,7 @@ export default function UploadFullTextPdfModal({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="rounded-2xl border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Replace File
                   </button>
@@ -145,7 +148,7 @@ export default function UploadFullTextPdfModal({
                     type="button"
                     onClick={() => setSelectedFile(null)}
                     disabled={isUploading}
-                    className="rounded-2xl border border-slate-200 bg-white p-2.5 text-slate-500 transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-[4px] border border-border bg-surface-white p-2.5 text-text-secondary transition-colors hover:border-border hover:bg-surface-white hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                     aria-label="Remove selected PDF"
                   >
                     <FiX className="h-4 w-4" />
@@ -157,13 +160,15 @@ export default function UploadFullTextPdfModal({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="flex w-full flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 bg-white px-6 py-10 text-center transition-colors hover:border-indigo-300 hover:bg-indigo-50/40 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 bg-surface-white px-6 py-10 text-center transition-colors hover:border-indigo-300 hover:bg-bg-secondary/40 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <div className="mb-4 rounded-2xl bg-indigo-50 p-4 text-indigo-600">
+                <div className="mb-4 rounded-[4px] bg-bg-secondary p-4 text-accent">
                   <FiUpload className="h-6 w-6" />
                 </div>
-                <p className="text-base font-semibold text-slate-900">Choose a PDF to upload</p>
-                <p className="mt-1 max-w-md text-sm text-slate-500">
+                <p className="text-base font-semibold text-text-primary">
+                  Choose a PDF to upload
+                </p>
+                <p className="mt-1 max-w-md text-sm text-text-secondary">
                   Select the full-text article PDF. Maximum file size: 20 MB.
                 </p>
               </button>
@@ -179,17 +184,19 @@ export default function UploadFullTextPdfModal({
             aria-expanded={isMetadataSectionExpanded}
           >
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
                 Section 2
               </p>
               <div className="flex items-center gap-2">
-                <h4 className="text-lg font-semibold text-slate-900">Metadata Enhancement</h4>
+                <h4 className="text-lg font-semibold text-text-primary">
+                  Metadata Enhancement
+                </h4>
                 <Tooltip
                   content="This feature uses machine learning to read the PDF header and extract bibliographic information."
                   position="top"
                 >
                   <span
-                    className="inline-flex rounded-full border border-slate-200 bg-white p-1.5 text-slate-500"
+                    className="inline-flex rounded-full border border-border bg-surface-white p-1.5 text-text-secondary"
                     aria-label="What AI metadata extraction does"
                     tabIndex={0}
                   >
@@ -198,10 +205,10 @@ export default function UploadFullTextPdfModal({
                 </Tooltip>
               </div>
             </div>
-            <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-700">
+            <span className="rounded-full bg-bg-secondary px-3 py-1 text-xs font-medium text-indigo-700">
               Enabled
             </span>
-            <span className="ml-auto rounded-full bg-slate-100 p-2 text-slate-500 md:hidden">
+            <span className="ml-auto rounded-full bg-bg-secondary p-2 text-text-secondary md:hidden">
               {isMetadataSectionExpanded ? (
                 <FiChevronUp className="h-4 w-4" />
               ) : (
@@ -212,46 +219,50 @@ export default function UploadFullTextPdfModal({
 
           <div
             className={cn(
-              "overflow-hidden rounded-3xl border border-indigo-100 bg-linear-to-br from-indigo-50 via-white to-sky-50 transition-all",
-              isMetadataSectionExpanded ? "max-h-[420px] p-5" : "max-h-0 p-0 border-transparent",
+              "overflow-hidden rounded-[4px] border border-indigo-100 bg-linear-to-br from-indigo-50 via-white to-sky-50 transition-all",
+              isMetadataSectionExpanded
+                ? "max-h-[420px] p-5"
+                : "max-h-0 p-0 border-transparent",
             )}
           >
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="rounded-2xl bg-white p-3 text-indigo-600 shadow-sm">
+                <div className="rounded-[4px] bg-surface-white p-3 text-accent shadow-sm">
                   <FiCpu className="h-5 w-5" />
                 </div>
                 <div>
-                  <h5 className="text-base font-semibold text-slate-900">
+                  <h5 className="text-base font-semibold text-text-primary">
                     Enhance Metadata with AI
                   </h5>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Automatically extract missing metadata (authors, abstract, DOI, journal
-                    information) from the uploaded PDF.
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">
+                    Automatically extract missing metadata (authors, abstract,
+                    DOI, journal information) from the uploaded PDF.
                   </p>
                 </div>
               </div>
 
               {incompleteMetadata && (
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-                  This paper has incomplete metadata. AI extraction may improve it.
+                <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                  This paper has incomplete metadata. AI extraction may improve
+                  it.
                 </div>
               )}
 
-              <div className="flex items-start gap-3 rounded-2xl border border-indigo-100 bg-white px-4 py-4 shadow-sm transition-colors">
-                <div className="mt-1 flex h-4 w-4 items-center justify-center rounded bg-indigo-600 text-white">
+              <div className="flex items-start gap-3 rounded-[4px] border border-indigo-100 bg-surface-white px-4 py-4 shadow-sm transition-colors">
+                <div className="mt-1 flex h-4 w-4 items-center justify-center rounded bg-accent text-white">
                   <FiCheckSquare className="h-3 w-3" />
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-slate-900">
+                    <span className="text-sm font-semibold text-text-primary">
                       AI metadata extraction enabled
                     </span>
                   </div>
-                  <p className="mt-1 text-sm leading-6 text-slate-600">
-                    Automatically extract missing metadata from the PDF to improve paper details.
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">
+                    Automatically extract missing metadata from the PDF to
+                    improve paper details.
                   </p>
-                  <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-slate-400">
+                  <p className="mt-2 text-xs font-medium uppercase tracking-[0.18em] text-text-secondary">
                     Estimated time: 3–6 seconds
                   </p>
                 </div>
@@ -260,23 +271,33 @@ export default function UploadFullTextPdfModal({
           </div>
         </section>
 
-        <section className="space-y-3 rounded-3xl border border-slate-200 bg-slate-50 p-5">
+        <section className="space-y-3 rounded-[4px] border border-border bg-bg-secondary p-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
               Section 3
             </p>
-            <h4 className="text-lg font-semibold text-slate-900">Upload Action</h4>
+            <h4 className="text-lg font-semibold text-text-primary">
+              Upload Action
+            </h4>
           </div>
 
-          <div className="rounded-2xl bg-white p-4" aria-live="polite" aria-busy={isUploading}>
+          <div
+            className="rounded-[4px] bg-surface-white p-4"
+            aria-live="polite"
+            aria-busy={isUploading}
+          >
             {isUploading ? (
               <div className="space-y-3">
                 <LoadingRow label="Uploading PDF..." />
-                <LoadingRow label="Queuing AI metadata extraction..." subdued={true} />
+                <LoadingRow
+                  label="Queuing AI metadata extraction..."
+                  subdued={true}
+                />
               </div>
             ) : (
-              <p className="text-sm text-slate-600">
-                Upload the PDF. Metadata extraction will happen automatically in the background.
+              <p className="text-sm text-text-secondary">
+                Upload the PDF. Metadata extraction will happen automatically in
+                the background.
               </p>
             )}
           </div>
@@ -286,7 +307,7 @@ export default function UploadFullTextPdfModal({
               type="button"
               onClick={onClose}
               disabled={isUploading}
-              className="rounded-2xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-[4px] border border-border bg-surface-white px-5 py-3 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
@@ -294,7 +315,7 @@ export default function UploadFullTextPdfModal({
               type="button"
               onClick={handleSubmit}
               disabled={!selectedFile || isUploading}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isUploading ? (
                 <FiLoader className="h-4 w-4 animate-spin" />
@@ -310,20 +331,26 @@ export default function UploadFullTextPdfModal({
   );
 }
 
-function LoadingRow({ label, subdued = false }: { label: string; subdued?: boolean }) {
+function LoadingRow({
+  label,
+  subdued = false,
+}: {
+  label: string;
+  subdued?: boolean;
+}) {
   return (
     <div className="flex items-center gap-3">
       <span className="flex items-center gap-1.5" aria-hidden="true">
         <span
           className={cn(
-            "h-2.5 w-2.5 animate-pulse rounded-full bg-indigo-600",
+            "h-2.5 w-2.5 animate-pulse rounded-full bg-accent",
             subdued && "bg-slate-400",
           )}
         />
         <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-indigo-400 [animation-delay:120ms]" />
         <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-sky-400 [animation-delay:240ms]" />
       </span>
-      <span className="text-sm font-medium text-slate-700">{label}</span>
+      <span className="text-sm font-medium text-text-primary">{label}</span>
     </div>
   );
 }

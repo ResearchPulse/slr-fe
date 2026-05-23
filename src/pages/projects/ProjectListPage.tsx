@@ -7,14 +7,19 @@ import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import ProjectUtilityBar from "../../components/projects/ProjectUtilityBar";
 import ProjectTable from "../../components/projects/ProjectTable";
-import { setCurrentProject, clearProjectMember } from "../../redux/slices/projectSlice";
+import {
+  setCurrentProject,
+  clearProjectMember,
+} from "../../redux/slices/projectSlice";
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>(undefined);
+  const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>(
+    undefined,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const pageSize = 10;
 
@@ -40,21 +45,23 @@ export default function ProjectListPage() {
 
   if (isLoading && !data) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#F4F0E8]">
+      <div className="flex justify-center items-center min-h-screen bg-bg-primary">
         <LoadingSpinner size="lg" />
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-[#F4F0E8]">
+    <div className="flex flex-col min-h-screen bg-bg-primary">
       {/* Utility Bar */}
       <ProjectUtilityBar onSearchChange={setSearchQuery} />
 
       <main className="flex-1 px-6 py-6">
         {/* Status Filter */}
         <div className="mb-6 flex gap-2 flex-wrap items-center">
-          <span className="text-[11px] uppercase tracking-[0.2em] text-[#5C5C5C] mr-2">Filter:</span>
+          <span className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mr-2">
+            Filter:
+          </span>
           <Button
             size="sm"
             variant={statusFilter === undefined ? "primary" : "outline"}
@@ -65,38 +72,42 @@ export default function ProjectListPage() {
           >
             All
           </Button>
-          {(["Draft", "Active", "Completed"] as ProjectStatus[]).map((status) => (
-            <Button
-              key={status}
-              size="sm"
-              variant={statusFilter === status ? "primary" : "outline"}
-              onClick={() => {
-                setStatusFilter(status);
-                setCurrentPage(1);
-              }}
-            >
-              {status}
-            </Button>
-          ))}
-          <div className="ml-auto text-[11px] uppercase tracking-[0.15em] text-[#5C5C5C]">
+          {(["Draft", "Active", "Completed"] as ProjectStatus[]).map(
+            (status) => (
+              <Button
+                key={status}
+                size="sm"
+                variant={statusFilter === status ? "primary" : "outline"}
+                onClick={() => {
+                  setStatusFilter(status);
+                  setCurrentPage(1);
+                }}
+              >
+                {status}
+              </Button>
+            ),
+          )}
+          <div className="ml-auto text-[11px] uppercase tracking-[0.15em] text-text-secondary">
             {totalCount} {totalCount === 1 ? "project" : "projects"}
           </div>
         </div>
 
         {error && (
-          <div className="bg-[#FDFCF9] border border-[#5B0000] text-[#5B0000] px-4 py-3 rounded-[4px] mb-6 text-sm">
+          <div className="bg-surface-white border border-accent text-accent px-4 py-3 rounded-[4px] mb-6 text-sm">
             {error}
           </div>
         )}
 
         {/* Project Table */}
-        <div className="border border-[#D8D2C8] rounded-[4px] overflow-hidden">
+        <div className="border border-border rounded-[4px] overflow-hidden">
           <ProjectTable
             projects={filteredProjects}
             onView={(id) => {
               const project = projects.find((p: Project) => p.id === id);
               if (project) {
-                dispatch(setCurrentProject({ id: project.id, title: project.title }));
+                dispatch(
+                  setCurrentProject({ id: project.id, title: project.title }),
+                );
                 // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
                 dispatch(clearProjectMember());
               }
@@ -119,33 +130,41 @@ export default function ProjectListPage() {
             </Button>
 
             <div className="flex gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                // Show first page, last page, current page, and pages around current
-                if (
-                  page === 1 ||
-                  page === totalPages ||
-                  (page >= currentPage - 1 && page <= currentPage + 1)
-                ) {
-                  return (
-                    <Button
-                      key={page}
-                      size="sm"
-                      variant={page === currentPage ? "primary" : "outline"}
-                      onClick={() => setCurrentPage(page)}
-                      disabled={isLoading}
-                    >
-                      {page}
-                    </Button>
-                  );
-                } else if (page === currentPage - 2 || page === currentPage + 2) {
-                  return (
-                    <span key={page} className="px-2 py-1 text-[#5C5C5C] text-sm">
-                      ...
-                    </span>
-                  );
-                }
-                return null;
-              })}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (page) => {
+                  // Show first page, last page, current page, and pages around current
+                  if (
+                    page === 1 ||
+                    page === totalPages ||
+                    (page >= currentPage - 1 && page <= currentPage + 1)
+                  ) {
+                    return (
+                      <Button
+                        key={page}
+                        size="sm"
+                        variant={page === currentPage ? "primary" : "outline"}
+                        onClick={() => setCurrentPage(page)}
+                        disabled={isLoading}
+                      >
+                        {page}
+                      </Button>
+                    );
+                  } else if (
+                    page === currentPage - 2 ||
+                    page === currentPage + 2
+                  ) {
+                    return (
+                      <span
+                        key={page}
+                        className="px-2 py-1 text-text-secondary text-sm"
+                      >
+                        ...
+                      </span>
+                    );
+                  }
+                  return null;
+                },
+              )}
             </div>
 
             <Button
@@ -157,7 +176,7 @@ export default function ProjectListPage() {
               Next →
             </Button>
 
-            <span className="ml-4 text-[11px] uppercase tracking-[0.15em] text-[#5C5C5C]">
+            <span className="ml-4 text-[11px] uppercase tracking-[0.15em] text-text-secondary">
               Page {currentPage} / {totalPages}
             </span>
           </div>

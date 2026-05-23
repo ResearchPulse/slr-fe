@@ -15,7 +15,11 @@ import UploadFullTextPdfModal from "../../pages/reviewProcess/studySelection/com
 
 interface PaperAccessPanelProps {
   paper: PaperResponse;
-  onUploadPdf?: (paperId: string, file: File, options: Record<string, unknown>) => Promise<void>;
+  onUploadPdf?: (
+    paperId: string,
+    file: File,
+    options: Record<string, unknown>,
+  ) => Promise<void>;
   isUploadingPdf?: boolean;
   onPreviewPdf?: (pdfUrl: string) => void;
 }
@@ -35,7 +39,8 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
   const [internalIsUploading, setInternalIsUploading] = useState(false);
 
   const isUploading = isUploadingPdf || internalIsUploading;
-  const hasAccessInfo = paper.fullTextAvailable != null || paper.accessTypeText || paper.pdfUrl;
+  const hasAccessInfo =
+    paper.fullTextAvailable != null || paper.accessTypeText || paper.pdfUrl;
 
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return null;
@@ -49,7 +54,10 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
     });
   };
 
-  const handleUploadSubmit = async (file: File, options: Record<string, unknown>) => {
+  const handleUploadSubmit = async (
+    file: File,
+    options: Record<string, unknown>,
+  ) => {
     if (onUploadPdf) {
       try {
         await onUploadPdf(paper.id, file, options);
@@ -97,7 +105,9 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                     ) : (
                       <FiLock className="w-3 h-3" />
                     )}
-                    {paper.fullTextAvailable ? "Full Text Available" : "No Full Text"}
+                    {paper.fullTextAvailable
+                      ? "Full Text Available"
+                      : "No Full Text"}
                   </span>
                   {!paper.fullTextAvailable && (
                     <>
@@ -144,7 +154,7 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                     href={paper.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-red-50 text-red-700 hover:bg-red-100 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-white text-red-700 hover:bg-red-100 transition-colors"
                   >
                     <FiExternalLink className="w-3 h-3" />
                     Open PDF
@@ -193,7 +203,9 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                   <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
                     Imported At
                   </p>
-                  <p className="text-xs text-gray-700">{formatDate(paper.importedAt)}</p>
+                  <p className="text-xs text-gray-700">
+                    {formatDate(paper.importedAt)}
+                  </p>
                 </div>
               </div>
             )}
@@ -217,7 +229,9 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                   <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
                     Created At
                   </p>
-                  <p className="text-xs text-gray-700">{formatDate(paper.createdAt)}</p>
+                  <p className="text-xs text-gray-700">
+                    {formatDate(paper.createdAt)}
+                  </p>
                 </div>
               </div>
             )}

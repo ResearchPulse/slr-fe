@@ -10,7 +10,9 @@ function getThemeColor(theme: SynthesisThemeDto): string {
   return theme.colorCode ?? "#2563eb";
 }
 
-export default function EvidenceMatrixView({ themes }: EvidenceMatrixViewProps) {
+export default function EvidenceMatrixView({
+  themes,
+}: EvidenceMatrixViewProps) {
   const paperTitles = React.useMemo(() => {
     const titles = new Set<string>();
 
@@ -27,7 +29,9 @@ export default function EvidenceMatrixView({ themes }: EvidenceMatrixViewProps) 
 
   const matrixRows = React.useMemo(() => {
     return themes.map((theme) => {
-      const evidencePaperTitles = new Set(theme.evidences.map((evidence) => evidence.paperTitle.trim()));
+      const evidencePaperTitles = new Set(
+        theme.evidences.map((evidence) => evidence.paperTitle.trim()),
+      );
 
       return {
         theme,
@@ -38,7 +42,7 @@ export default function EvidenceMatrixView({ themes }: EvidenceMatrixViewProps) 
 
   if (themes.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="rounded-[4px] border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
         No themes available for evidence matrix rendering.
       </div>
     );
@@ -46,21 +50,24 @@ export default function EvidenceMatrixView({ themes }: EvidenceMatrixViewProps) 
 
   if (paperTitles.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-sm text-slate-500">
+      <div className="rounded-[4px] border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
         No evidence papers available to build the matrix.
       </div>
     );
   }
 
-  const totalEvidenceLinks = themes.reduce((total, theme) => total + theme.evidences.length, 0);
+  const totalEvidenceLinks = themes.reduce(
+    (total, theme) => total + theme.evidences.length,
+    0,
+  );
 
   return (
     <div className="w-full">
       <div className="flex flex-wrap items-center justify-end gap-2">
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
           {themes.length} themes
         </span>
-        <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-600">
+        <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
           {paperTitles.length} papers
         </span>
         <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
@@ -68,81 +75,96 @@ export default function EvidenceMatrixView({ themes }: EvidenceMatrixViewProps) 
         </span>
       </div>
 
-      <div className="overflow-x-auto overflow-y-auto max-h-[75vh] rounded-3xl border border-slate-200 bg-white shadow-sm">
+      <div className="overflow-x-auto overflow-y-auto max-h-[75vh] rounded-[4px] border border-border bg-surface-white shadow-none">
         <table className="min-w-max border-separate border-spacing-0 text-sm">
-        <thead>
-          <tr>
-            <th
-              className="sticky left-0 top-0 z-30 border-b border-slate-200 bg-slate-100 px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-sm"
-              scope="col"
-            >
-              Theme / Paper
-            </th>
-            {paperTitles.map((paperTitle) => (
+          <thead>
+            <tr>
               <th
-                key={paperTitle}
-                className="sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 shadow-sm"
+                className="sticky left-0 top-0 z-30 border-b border-border bg-bg-secondary px-4 py-3 text-left text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary shadow-none"
                 scope="col"
               >
-                <span className="block min-w-40 max-w-64 truncate">{paperTitle}</span>
+                Theme / Paper
               </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {matrixRows.map(({ theme, evidencePaperTitles }) => {
-            const themeColor = getThemeColor(theme);
-
-            return (
-              <tr key={theme.id} className="group hover:bg-slate-50/50">
+              {paperTitles.map((paperTitle) => (
                 <th
-                  className="sticky left-0 z-10 border-b border-slate-100 bg-white px-4 py-3 text-left font-medium text-slate-900 group-hover:bg-slate-50/50"
-                  scope="row"
+                  key={paperTitle}
+                  className="sticky top-0 z-20 border-b border-border bg-bg-secondary px-4 py-3 text-center text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary shadow-none"
+                  scope="col"
                 >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="h-3 w-3 shrink-0 rounded-full"
-                      style={{ backgroundColor: themeColor }}
-                      aria-hidden="true"
-                    />
-                    <div className="min-w-0">
-                      <p className="truncate">{theme.name}</p>
-                      {theme.description ? <p className="mt-0.5 truncate text-xs text-slate-500">{theme.description}</p> : null}
-                    </div>
-                  </div>
+                  <span className="block min-w-40 max-w-64 truncate">
+                    {paperTitle}
+                  </span>
                 </th>
+              ))}
+            </tr>
+          </thead>
 
-                {paperTitles.map((paperTitle) => {
-                  const hasEvidence = evidencePaperTitles.has(paperTitle);
+          <tbody>
+            {matrixRows.map(({ theme, evidencePaperTitles }) => {
+              const themeColor = getThemeColor(theme);
 
-                  return (
-                    <td key={`${theme.id}-${paperTitle}`} className="border-b border-slate-100 px-4 py-3 text-center align-middle">
-                      {hasEvidence ? (
-                        <span
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full"
-                          style={{ color: themeColor, backgroundColor: `${themeColor}14` }}
-                          title={`${theme.name} has evidence from ${paperTitle}`}
-                          aria-label={`${theme.name} has evidence from ${paperTitle}`}
-                        >
-                          <CheckCircle2 className="h-5 w-5" />
-                        </span>
-                      ) : (
-                        <span
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-300"
-                          title={`${theme.name} has no evidence from ${paperTitle}`}
-                          aria-label={`${theme.name} has no evidence from ${paperTitle}`}
-                        >
-                          <span className="h-2.5 w-2.5 rounded-full bg-slate-200" aria-hidden="true" />
-                        </span>
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
-        </tbody>
+              return (
+                <tr key={theme.id} className="group hover:bg-bg-secondary/50">
+                  <th
+                    className="sticky left-0 z-10 border-b border-border bg-surface-white px-4 py-3 text-left font-medium text-text-primary group-hover:bg-bg-secondary/50"
+                    scope="row"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="h-3 w-3 shrink-0 rounded-full"
+                        style={{ backgroundColor: themeColor }}
+                        aria-hidden="true"
+                      />
+                      <div className="min-w-0">
+                        <p className="truncate">{theme.name}</p>
+                        {theme.description ? (
+                          <p className="mt-0.5 truncate text-xs text-text-secondary">
+                            {theme.description}
+                          </p>
+                        ) : null}
+                      </div>
+                    </div>
+                  </th>
+
+                  {paperTitles.map((paperTitle) => {
+                    const hasEvidence = evidencePaperTitles.has(paperTitle);
+
+                    return (
+                      <td
+                        key={`${theme.id}-${paperTitle}`}
+                        className="border-b border-border px-4 py-3 text-center align-middle"
+                      >
+                        {hasEvidence ? (
+                          <span
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full"
+                            style={{
+                              color: themeColor,
+                              backgroundColor: `${themeColor}14`,
+                            }}
+                            title={`${theme.name} has evidence from ${paperTitle}`}
+                            aria-label={`${theme.name} has evidence from ${paperTitle}`}
+                          >
+                            <CheckCircle2 className="h-5 w-5" />
+                          </span>
+                        ) : (
+                          <span
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-300"
+                            title={`${theme.name} has no evidence from ${paperTitle}`}
+                            aria-label={`${theme.name} has no evidence from ${paperTitle}`}
+                          >
+                            <span
+                              className="h-2.5 w-2.5 rounded-full bg-slate-200"
+                              aria-hidden="true"
+                            />
+                          </span>
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
     </div>

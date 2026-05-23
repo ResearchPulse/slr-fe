@@ -7,7 +7,13 @@ interface PaperMetadataGridProps {
 }
 
 /** Single metadata row */
-function MetadataRow({ label, value }: { label: string; value: React.ReactNode }) {
+function MetadataRow({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) {
   return (
     <div className="flex items-start gap-3 py-2">
       <dt className="text-xs font-medium text-gray-500 uppercase tracking-wider w-32 shrink-0 pt-0.5">
@@ -28,9 +34,11 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
   const publicationFields = useMemo(() => {
     const fields: { label: string; value: React.ReactNode }[] = [];
 
-    if (paper.publicationType) fields.push({ label: "Type", value: paper.publicationType });
+    if (paper.publicationType)
+      fields.push({ label: "Type", value: paper.publicationType });
     if (paper.journal) fields.push({ label: "Journal", value: paper.journal });
-    if (paper.journalIssn) fields.push({ label: "ISSN", value: paper.journalIssn });
+    if (paper.journalIssn)
+      fields.push({ label: "ISSN", value: paper.journalIssn });
 
     // Volume/Issue/Pages combined
     const vip = [
@@ -42,7 +50,8 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
       .join(", ");
     if (vip) fields.push({ label: "Volume / Issue", value: vip });
 
-    if (paper.publisher) fields.push({ label: "Publisher", value: paper.publisher });
+    if (paper.publisher)
+      fields.push({ label: "Publisher", value: paper.publisher });
 
     if (paper.publicationDate) {
       const date = new Date(paper.publicationDate);
@@ -56,7 +65,8 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
       fields.push({ label: "Year", value: paper.publicationYear });
     }
 
-    if (paper.language) fields.push({ label: "Language", value: paper.language });
+    if (paper.language)
+      fields.push({ label: "Language", value: paper.language });
 
     return fields;
   }, [paper]);
@@ -65,12 +75,16 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
   const conferenceFields = useMemo(() => {
     const fields: { label: string; value: React.ReactNode }[] = [];
 
-    if (paper.conferenceName) fields.push({ label: "Conference", value: paper.conferenceName });
+    if (paper.conferenceName)
+      fields.push({ label: "Conference", value: paper.conferenceName });
 
-    const location = [paper.conferenceLocation, paper.conferenceCountry].filter(Boolean).join(", ");
+    const location = [paper.conferenceLocation, paper.conferenceCountry]
+      .filter(Boolean)
+      .join(", ");
     if (location) fields.push({ label: "Location", value: location });
 
-    if (paper.conferenceYear) fields.push({ label: "Year", value: String(paper.conferenceYear) });
+    if (paper.conferenceYear)
+      fields.push({ label: "Year", value: String(paper.conferenceYear) });
 
     return fields;
   }, [paper]);
@@ -86,7 +100,11 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
           </h3>
           <div className="bg-gray-50/60 rounded-lg border border-gray-100 px-4 divide-y divide-gray-100">
             {publicationFields.map((field) => (
-              <MetadataRow key={field.label} label={field.label} value={field.value} />
+              <MetadataRow
+                key={field.label}
+                label={field.label}
+                value={field.value}
+              />
             ))}
           </div>
         </div>
@@ -101,7 +119,11 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
           </h3>
           <div className="bg-amber-50/40 rounded-lg border border-amber-100 px-4 divide-y divide-amber-100/60">
             {conferenceFields.map((field) => (
-              <MetadataRow key={field.label} label={field.label} value={field.value} />
+              <MetadataRow
+                key={field.label}
+                label={field.label}
+                value={field.value}
+              />
             ))}
           </div>
         </div>
@@ -111,7 +133,9 @@ const PaperMetadataGrid: React.FC<PaperMetadataGridProps> = ({ paper }) => {
       {publicationFields.length === 0 && conferenceFields.length === 0 && (
         <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/50 px-4 py-6 text-center">
           <FiCalendar className="w-5 h-5 text-gray-300 mx-auto mb-2" />
-          <p className="text-sm text-gray-400 italic">No bibliographic metadata available</p>
+          <p className="text-sm text-gray-400 italic">
+            No bibliographic metadata available
+          </p>
         </div>
       )}
     </section>

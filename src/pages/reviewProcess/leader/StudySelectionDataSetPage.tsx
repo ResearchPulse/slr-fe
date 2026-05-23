@@ -52,7 +52,7 @@ const BuildDatasetPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-[calc(100vh-10rem)]">
-      <div className="flex-1 flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="flex-1 flex flex-col bg-surface-white rounded-[4px] border border-border shadow-none overflow-hidden">
         <div className="h-full p-6">
           <SnapshotDatasetView
             papers={paginatedSnapshotPapers}
@@ -89,4 +89,3 @@ const BuildDatasetPage: React.FC = () => {
 };
 
 export default BuildDatasetPage;
-

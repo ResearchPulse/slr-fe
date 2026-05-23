@@ -3,20 +3,43 @@ import { cn } from "../../utils/cn";
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   isLoading?: boolean;
-  variant?: "primary" | "secondary" | "danger" | "success" | "outline" | "ghost";
+  variant?:
+    | "primary"
+    | "secondary"
+    | "danger"
+    | "success"
+    | "outline"
+    | "ghost";
   size?: "sm" | "md" | "lg";
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, children, disabled, isLoading, variant = "primary", size = "md", type = "button", ...props }, ref) => {
-    
+  (
+    {
+      className,
+      children,
+      disabled,
+      isLoading,
+      variant = "primary",
+      size = "md",
+      type = "button",
+      ...props
+    },
+    ref,
+  ) => {
     const variants = {
-      primary:   "bg-[#111111] text-[#F4F0E8] border border-transparent hover:bg-[#2a2a2a] focus:ring-[#111111]/20",
-      secondary: "bg-transparent border border-[#D8D2C8] text-[#111111] hover:bg-[#ECE8E1] focus:ring-[#D8D2C8]",
-      danger:    "bg-[#5B0000] text-[#F4F0E8] border border-transparent hover:bg-[#7a0000] focus:ring-[#5B0000]/20",
-      success:   "bg-[#2d5a2d] text-white border border-transparent hover:bg-[#1e3d1e] focus:ring-[#2d5a2d]/20",
-      outline:   "bg-transparent border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F4F0E8] focus:ring-[#111111]/20",
-      ghost:     "bg-transparent text-[#5C5C5C] hover:text-[#111111] focus:ring-[#D8D2C8] border border-transparent",
+      primary:
+        "bg-[#111111] text-[#F4F0E8] border border-transparent hover:bg-[#2a2a2a] focus:ring-[#111111]/20",
+      secondary:
+        "bg-transparent border border-[#D8D2C8] text-[#111111] hover:bg-[#ECE8E1] focus:ring-[#D8D2C8]",
+      danger:
+        "bg-[#5B0000] text-[#F4F0E8] border border-transparent hover:bg-[#7a0000] focus:ring-[#5B0000]/20",
+      success:
+        "bg-[#2d5a2d] text-white border border-transparent hover:bg-[#1e3d1e] focus:ring-[#2d5a2d]/20",
+      outline:
+        "bg-transparent border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F4F0E8] focus:ring-[#111111]/20",
+      ghost:
+        "bg-transparent text-[#5C5C5C] hover:text-[#111111] focus:ring-[#D8D2C8] border border-transparent",
     };
 
     const sizes = {
@@ -35,11 +58,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           "rounded-[4px] uppercase tracking-[0.1em] font-medium flex items-center justify-center transition-colors duration-200 whitespace-nowrap min-h-[44px] md:min-h-0",
           "focus:outline-none focus:ring-2",
           "disabled:opacity-40 disabled:cursor-not-allowed",
-          
+
           variants[variant],
           sizes[size],
 
-          className
+          className,
         )}
         {...props}
       >
@@ -72,7 +95,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         )}
       </button>
     );
-  }
+  },
 );
 
 Button.displayName = "Button";

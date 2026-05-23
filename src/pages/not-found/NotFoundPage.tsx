@@ -27,21 +27,21 @@ const NotFoundPage: React.FC = () => {
       gsap.fromTo(
         containerRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.8, ease: "power2.out" }
+        { opacity: 1, duration: 0.8, ease: "power2.out" },
       );
 
       // Content slide up and scale
       gsap.fromTo(
         contentRef.current,
-        { y: 30, opacity: 0, scale: 0.95 },
-        { y: 0, opacity: 1, scale: 1, duration: 1, delay: 0.2, ease: "back.out(1.7)" }
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, delay: 0.2, ease: "power3.out" },
       );
 
       // Icon float animation (continuous)
       gsap.fromTo(
         iconRef.current,
         { y: 0 },
-        { y: -15, duration: 2, repeat: -1, yoyo: true, ease: "sine.inOut" }
+        { y: -12, duration: 2.5, repeat: -1, yoyo: true, ease: "sine.inOut" },
       );
     }, containerRef);
 
@@ -51,32 +51,33 @@ const NotFoundPage: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8 opacity-0"
+      className="min-h-screen w-full flex items-center justify-center bg-[#F4F0E8] px-4 sm:px-6 lg:px-8 opacity-0"
     >
-      <div
-        ref={contentRef}
-        className="max-w-max w-full text-center space-y-8"
-      >
+      <div ref={contentRef} className="max-w-max w-full text-center space-y-8">
         {/* Animated Icon Section */}
         <div className="flex justify-center mb-6">
           <div
             ref={iconRef}
-            className="w-24 h-24 sm:w-32 sm:h-32 bg-primary/10 rounded-full flex items-center justify-center text-primary"
+            className="w-20 h-20 sm:w-24 sm:h-24 border border-[#D8D2C8] bg-[#ECE8E1] flex items-center justify-center text-[#5C5C5C]"
           >
-            <FiAlertCircle className="w-12 h-12 sm:w-16 sm:h-16" />
+            <FiAlertCircle className="w-10 h-10 sm:w-12 sm:h-12" />
           </div>
         </div>
 
         {/* Text Content */}
         <div className="space-y-4">
-          <h1 className="text-6xl sm:text-8xl font-extrabold text-gray-900 tracking-tight">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-[#5C5C5C]">
+            Error
+          </p>
+          <h1 className="font-cormorant text-[96px] sm:text-[128px] font-normal text-[#111111] leading-none tracking-tight">
             404
           </h1>
-          <h2 className="text-2xl sm:text-3xl font-semibold text-gray-800">
+          <h2 className="font-cormorant text-[28px] sm:text-[36px] font-normal text-[#111111]">
             Page Not Found
           </h2>
-          <p className="text-base sm:text-lg text-gray-600 max-w-md mx-auto">
-            Sorry, we couldn't find the page you're looking for. It might have been moved or deleted.
+          <p className="text-[15px] text-[#5C5C5C] max-w-md mx-auto leading-[1.7]">
+            Sorry, we couldn't find the page you're looking for. It might have
+            been moved or deleted.
           </p>
         </div>
 
@@ -88,14 +89,14 @@ const NotFoundPage: React.FC = () => {
             className="w-full sm:w-auto min-w-[160px]"
             onClick={handleGoHome}
           >
-            <FiHome className="mr-2 w-5 h-5" />
+            <FiHome className="mr-2 w-4 h-4" />
             Go to Home
           </Button>
 
           <Button
             variant="outline"
             size="lg"
-            className="w-full sm:w-auto min-w-[160px] bg-white"
+            className="w-full sm:w-auto min-w-[160px]"
           >
             Contact Support
           </Button>

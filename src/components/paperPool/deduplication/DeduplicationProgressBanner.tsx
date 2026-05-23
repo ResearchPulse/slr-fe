@@ -24,20 +24,27 @@ export default function DeduplicationProgressBanner({
   sessionResolvedCount,
 }: DeduplicationProgressBannerProps) {
   const total = duplicatePairs.length;
-  const progressPercent = total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
+  const progressPercent =
+    total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
 
   const stats = useMemo(() => {
     const highConfidence = duplicatePairs.filter(
-      (p) => p.status === "pending" && p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH,
+      (p) =>
+        p.status === "pending" &&
+        p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH,
     ).length;
 
-    const eta = estimateRemainingTime(sessionResolvedCount, total, sessionStartTime);
+    const eta = estimateRemainingTime(
+      sessionResolvedCount,
+      total,
+      sessionStartTime,
+    );
 
     return { highConfidence, eta };
   }, [duplicatePairs, sessionResolvedCount, total, sessionStartTime]);
 
   return (
-    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-lg p-6 mb-6 shadow-sm">
+    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-[4px] p-6 mb-6 shadow-none">
       <div className="flex items-center ">
         {/* Metrics row */}
         <div className="flex items-center  gap-8">
@@ -59,20 +66,22 @@ export default function DeduplicationProgressBanner({
 
           {/* Progress bar */}
           <div>
-            <div className="text-sm text-gray-700 font-medium mb-2 flex items-center gap-2">
+            <div className="text-sm text-text-primary font-medium mb-2 flex items-center gap-2">
               <FiTrendingUp className="w-3.5 h-3.5" />
               Progress
             </div>
-            <div className="w-48 bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="w-48 bg-bg-secondary rounded-full h-3 overflow-hidden">
               <div
                 className="bg-linear-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-700 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
             <div className="flex items-center justify-between mt-1">
-              <span className="text-xs text-gray-600">{progressPercent}% complete</span>
+              <span className="text-xs text-text-secondary">
+                {progressPercent}% complete
+              </span>
               {stats.eta && (
-                <span className="text-xs text-gray-500 flex items-center gap-1">
+                <span className="text-xs text-text-secondary flex items-center gap-1">
                   <FiClock className="w-3 h-3" />
                   {stats.eta} remaining
                 </span>
@@ -83,7 +92,7 @@ export default function DeduplicationProgressBanner({
 
         {/* <Button
           size="lg"
-          className="flex items-center gap-2 shadow-md"
+          className="flex items-center gap-2 shadow-none"
           onClick={onRunDeduplication}
         >
           <FiRefreshCw className="w-5 h-5" />
@@ -94,22 +103,23 @@ export default function DeduplicationProgressBanner({
       {/* Contextual tips */}
       {pendingCount > 0 && (
         <div className="mt-4 pt-4 border-t border-blue-200 flex items-center justify-between">
-          <p className="text-sm text-gray-700">
-            <span className="font-semibold">💡 Tip:</span> Use keyboard shortcuts{" "}
-            <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">
+          <p className="text-sm text-text-primary">
+            <span className="font-semibold">💡 Tip:</span> Use keyboard
+            shortcuts{" "}
+            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
               1
             </kbd>{" "}
-            <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">
+            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
               2
             </kbd>{" "}
             for faster review.{" "}
-            <kbd className="px-1.5 py-0.5 bg-white border border-gray-300 rounded text-xs font-mono">
+            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
               N
             </kbd>{" "}
             jumps to next unresolved pair.
           </p>
           {stats.highConfidence > 0 && (
-            <span className="text-xs text-red-600 font-medium bg-red-50 px-2.5 py-1 rounded-full">
+            <span className="text-xs text-red-600 font-medium bg-surface-white px-2.5 py-1 rounded-full">
               {stats.highConfidence} high-confidence pending
             </span>
           )}
@@ -124,7 +134,7 @@ export default function DeduplicationProgressBanner({
 function MetricBlock({
   value,
   label,
-  className = "text-gray-900",
+  className = "text-text-primary",
   emoji,
 }: {
   value: number;
@@ -135,7 +145,7 @@ function MetricBlock({
   return (
     <div>
       <div className={`text-3xl font-bold ${className}`}>{value}</div>
-      <div className="text-sm text-gray-600">
+      <div className="text-sm text-text-secondary">
         {emoji && <span className="mr-1">{emoji}</span>}
         {label}
       </div>

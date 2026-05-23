@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
-import { 
-  Plus, 
-  Trash2, 
-  Info,
-  ShieldCheck,
-  ChevronRight
-} from "lucide-react";
+import { Plus, Trash2, Info, ShieldCheck, ChevronRight } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import toast from "react-hot-toast";
 import { useQualityAssessment } from "../../../pages/reviewProcess/qualityAssessment/hooks/useQualityAssessment";
@@ -48,19 +42,16 @@ const DEFAULT_QA_CRITERIA = [
 //   "Nghiên cứu này có giá trị đối với công tác nghiên cứu hoặc thực hành không?",
 // ];
 
-const QualityAssessmentCriteriaModal: React.FC<QualityAssessmentCriteriaModalProps> = ({
-  isOpen,
-  onClose,
-  qualityAssessmentProcessId,
-}) => {
-  const { 
-    upsertStrategy, 
-    bulkChecklists, 
-    bulkCriteria, 
-  } = useQualityAssessment(qualityAssessmentProcessId, true);
-  
+const QualityAssessmentCriteriaModal: React.FC<
+  QualityAssessmentCriteriaModalProps
+> = ({ isOpen, onClose, qualityAssessmentProcessId }) => {
+  const { upsertStrategy, bulkChecklists, bulkCriteria } = useQualityAssessment(
+    qualityAssessmentProcessId,
+    true,
+  );
+
   const [criteria, setCriteria] = useState<{ id: string; text: string }[]>(
-    DEFAULT_QA_CRITERIA.map((text) => ({ id: uuidv4(), text }))
+    DEFAULT_QA_CRITERIA.map((text) => ({ id: uuidv4(), text })),
   );
   const [isSaving, setIsSaving] = useState(false);
 
@@ -89,9 +80,9 @@ const QualityAssessmentCriteriaModal: React.FC<QualityAssessmentCriteriaModalPro
         qaStrategyId: null!,
         qualityAssessmentProcessId: qualityAssessmentProcessId,
         description: "Default Quality Assessment Strategy",
-        checklists: []
+        checklists: [],
       });
-      
+
       const strategyId = strategyResponse.data?.qaStrategyId;
       if (!strategyId) throw new Error("Failed to get Strategy ID");
 
@@ -101,27 +92,29 @@ const QualityAssessmentCriteriaModal: React.FC<QualityAssessmentCriteriaModalPro
           checklistId: null!,
           qaStrategyId: strategyId,
           name: "Default Quality Checklist",
-          criteria: []
-        }
+          criteria: [],
+        },
       ]);
-      
+
       const checklistId = checklistResponse.data?.[0]?.checklistId;
       if (!checklistId) throw new Error("Failed to get Checklist ID");
 
       // 3. Upsert Criteria
-      const criteriaPayload = criteria.map(c => ({
+      const criteriaPayload = criteria.map((c) => ({
         criterionId: null!,
         checklistId: checklistId,
         question: c.text,
-        weight: 1.0
+        weight: 1.0,
       }));
 
       await bulkCriteria(criteriaPayload);
-    
+
       onClose();
     } catch (error) {
       console.error("Failed to save QA configuration:", error);
-      toast.error("Failed to save Quality Assessment configuration. Please try again.");
+      toast.error(
+        "Failed to save Quality Assessment configuration. Please try again.",
+      );
     } finally {
       setIsSaving(false);
     }
@@ -136,51 +129,57 @@ const QualityAssessmentCriteriaModal: React.FC<QualityAssessmentCriteriaModalPro
     >
       <div className="flex flex-col gap-6 py-2 h-[75vh]">
         {/* Header Section */}
-        <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-white rounded-2xl border border-blue-100 shadow-sm shrink-0">
-          <div className="p-3 bg-white rounded-xl shadow-sm border border-blue-50 shrink-0">
+        <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-white rounded-[4px] border border-blue-100 shadow-sm shrink-0">
+          <div className="p-3 bg-surface-white rounded-[4px] shadow-sm border border-blue-50 shrink-0">
             <ShieldCheck className="w-6 h-6 text-blue-600" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-900">Configure Quality Assessment</h3>
-            <p className="text-sm text-slate-600 mt-1 max-w-2xl">
-              Define the criteria used to evaluate the methodological quality and risk of bias for included studies.
-              These questions will be presented to reviewers during the Quality Assessment phase.
+            <h3 className="text-xl font-bold text-text-primary">
+              Configure Quality Assessment
+            </h3>
+            <p className="text-sm text-text-secondary mt-1 max-w-2xl">
+              Define the criteria used to evaluate the methodological quality
+              and risk of bias for included studies. These questions will be
+              presented to reviewers during the Quality Assessment phase.
             </p>
           </div>
         </div>
 
         {/* Info Card */}
-        <div className="px-5 py-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-3 shrink-0">
+        <div className="px-5 py-3 bg-amber-50 border border-amber-100 rounded-[4px] flex items-center gap-3 shrink-0">
           <Info className="w-4 h-4 text-amber-600" />
           <p className="text-xs text-amber-800 font-medium">
-            Reviewers will rate each criterion for every paper. You can add, edit, or remove criteria below.
+            Reviewers will rate each criterion for every paper. You can add,
+            edit, or remove criteria below.
           </p>
         </div>
 
         {/* Scrollable Criteria List */}
         <div className="flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
           {criteria.map((criterion, index) => (
-            <div 
+            <div
               key={criterion.id}
-              className="group flex items-start gap-3 p-4 bg-white border border-slate-100 rounded-2xl transition-all hover:border-blue-200 hover:shadow-md hover:shadow-blue-50/50 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              className="group flex items-start gap-3 p-4 bg-surface-white border border-border rounded-[4px] transition-all hover:border-blue-200 hover:shadow-md hover:shadow-blue-50/50 animate-in fade-in slide-in-from-bottom-2 duration-300"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="mt-2.5 flex items-center justify-center w-6 h-6 rounded-lg bg-slate-50 text-[10px] font-black text-slate-400 border border-slate-100 group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
+              <div className="mt-2.5 flex items-center justify-center w-6 h-6 rounded-[4px] bg-bg-secondary text-[10px] font-black text-text-secondary border border-border group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
                 {index + 1}
               </div>
-              
+
               <div className="flex-1">
                 <textarea
                   value={criterion.text}
-                  onChange={(e) => handleUpdateCriterion(criterion.id, e.target.value)}
+                  onChange={(e) =>
+                    handleUpdateCriterion(criterion.id, e.target.value)
+                  }
                   placeholder="Enter assessment question..."
-                  className="w-full bg-transparent border-none focus:ring-0 text-sm text-slate-700 placeholder:text-slate-300 min-h-[60px] resize-none font-medium leading-relaxed"
+                  className="w-full bg-transparent border-none focus:ring-0 text-sm text-text-primary placeholder:text-slate-300 min-h-[60px] resize-none font-medium leading-relaxed"
                 />
               </div>
 
               <button
                 onClick={() => handleRemoveCriterion(criterion.id)}
-                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-[4px] transition-all opacity-0 group-hover:opacity-100"
                 title="Remove Criterion"
               >
                 <Trash2 className="w-4 h-4" />
@@ -190,22 +189,28 @@ const QualityAssessmentCriteriaModal: React.FC<QualityAssessmentCriteriaModalPro
 
           <button
             onClick={handleAddCriterion}
-            className="w-full py-4 border-2 border-dashed border-slate-100 rounded-2xl flex items-center justify-center gap-2 text-slate-400 hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50/30 transition-all group"
+            className="w-full py-4 border-2 border-dashed border-border rounded-[4px] flex items-center justify-center gap-2 text-text-secondary hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50/30 transition-all group"
           >
             <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
-            <span className="text-xs font-black uppercase tracking-widest">Add Custom Criterion</span>
+            <span className="text-xs font-black uppercase tracking-widest">
+              Add Custom Criterion
+            </span>
           </button>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 shrink-0">
-          <Button variant="secondary" onClick={onClose} className="px-6 rounded-xl">
+        <div className="flex justify-end gap-3 pt-6 border-t border-border shrink-0">
+          <Button
+            variant="secondary"
+            onClick={onClose}
+            className="px-6 rounded-[4px]"
+          >
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={handleApplyCriteria}
-            className="px-8 rounded-xl shadow-lg shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 border-none"
+            className="px-8 rounded-[4px] shadow-lg shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 border-none"
             disabled={criteria.length === 0 || isSaving}
             isLoading={isSaving}
           >

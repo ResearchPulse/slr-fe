@@ -2,7 +2,13 @@ import { useCallback, useEffect, useMemo } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
-import { Bold, Italic, List, ListOrdered, Underline as UnderlineIcon } from "lucide-react";
+import {
+  Bold,
+  Italic,
+  List,
+  ListOrdered,
+  Underline as UnderlineIcon,
+} from "lucide-react";
 
 interface RichTextEditorProps {
   value: string;
@@ -35,7 +41,12 @@ function normalizeEditorValue(value: string): string {
   return `<p>${escapedValue}</p>`;
 }
 
-export default function RichTextEditor({ value, onChange, readOnly = false, className = "" }: RichTextEditorProps) {
+export default function RichTextEditor({
+  value,
+  onChange,
+  readOnly = false,
+  className = "",
+}: RichTextEditorProps) {
   const editorValue = useMemo(() => normalizeEditorValue(value), [value]);
 
   const editor = useEditor({
@@ -45,7 +56,8 @@ export default function RichTextEditor({ value, onChange, readOnly = false, clas
     immediatelyRender: false,
     editorProps: {
       attributes: {
-        class: "min-h-[500px] px-6 py-5 text-base leading-7 text-gray-900 focus:outline-none prose max-w-none",
+        class:
+          "min-h-[500px] px-6 py-5 text-base leading-7 text-text-primary focus:outline-none prose max-w-none",
       },
     },
     onUpdate: ({ editor: currentEditor }) => {
@@ -65,7 +77,9 @@ export default function RichTextEditor({ value, onChange, readOnly = false, clas
   }, [editor, editorValue]);
 
   const applyFormat = useCallback(
-    (format: "bold" | "italic" | "underline" | "bulletList" | "orderedList") => {
+    (
+      format: "bold" | "italic" | "underline" | "bulletList" | "orderedList",
+    ) => {
       if (!editor || readOnly) {
         return;
       }
@@ -99,30 +113,57 @@ export default function RichTextEditor({ value, onChange, readOnly = false, clas
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-gray-200 ${className}`}
+      className={`overflow-hidden rounded-[4px] bg-surface-white shadow-none ring-1 ring-gray-200 ${className}`}
     >
-      <div className={`flex flex-wrap items-center gap-2 border-b border-gray-200 bg-gray-50 px-4 py-3 ${readOnly ? "pointer-events-none opacity-60" : ""}`}>
+      <div
+        className={`flex flex-wrap items-center gap-2 border-b border-border bg-bg-primary px-4 py-3 ${readOnly ? "pointer-events-none opacity-60" : ""}`}
+      >
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => applyFormat("bold")} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:bg-gray-100 ${editor?.isActive("bold") ? "border-blue-300 text-blue-700" : "border-gray-200 text-gray-700"}`} aria-label="Bold">
+          <button
+            type="button"
+            onClick={() => applyFormat("bold")}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-[4px] border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("bold") ? "border-blue-300 text-blue-700" : "border-border text-text-primary"}`}
+            aria-label="Bold"
+          >
             <span className="sr-only">Bold</span>
             <Bold className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => applyFormat("italic")} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:bg-gray-100 ${editor?.isActive("italic") ? "border-blue-300 text-blue-700" : "border-gray-200 text-gray-700"}`} aria-label="Italic">
+          <button
+            type="button"
+            onClick={() => applyFormat("italic")}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-[4px] border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("italic") ? "border-blue-300 text-blue-700" : "border-border text-text-primary"}`}
+            aria-label="Italic"
+          >
             <span className="sr-only">Italic</span>
             <Italic className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => applyFormat("underline")} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:bg-gray-100 ${editor?.isActive("underline") ? "border-blue-300 text-blue-700" : "border-gray-200 text-gray-700"}`} aria-label="Underline">
+          <button
+            type="button"
+            onClick={() => applyFormat("underline")}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-[4px] border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("underline") ? "border-blue-300 text-blue-700" : "border-border text-text-primary"}`}
+            aria-label="Underline"
+          >
             <span className="sr-only">Underline</span>
             <UnderlineIcon className="h-4 w-4" />
           </button>
         </div>
 
         <div className="flex items-center gap-1">
-          <button type="button" onClick={() => applyFormat("bulletList")} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:bg-gray-100 ${editor?.isActive("bulletList") ? "border-blue-300 text-blue-700" : "border-gray-200 text-gray-700"}`} aria-label="Bullet list">
+          <button
+            type="button"
+            onClick={() => applyFormat("bulletList")}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-[4px] border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("bulletList") ? "border-blue-300 text-blue-700" : "border-border text-text-primary"}`}
+            aria-label="Bullet list"
+          >
             <span className="sr-only">Bullet list</span>
             <List className="h-4 w-4" />
           </button>
-          <button type="button" onClick={() => applyFormat("orderedList")} className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition hover:bg-gray-100 ${editor?.isActive("orderedList") ? "border-blue-300 text-blue-700" : "border-gray-200 text-gray-700"}`} aria-label="Numbered list">
+          <button
+            type="button"
+            onClick={() => applyFormat("orderedList")}
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-[4px] border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("orderedList") ? "border-blue-300 text-blue-700" : "border-border text-text-primary"}`}
+            aria-label="Numbered list"
+          >
             <span className="sr-only">Numbered list</span>
             <ListOrdered className="h-4 w-4" />
           </button>

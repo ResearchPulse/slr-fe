@@ -1,6 +1,11 @@
 // Drawer to view papers from a specific import batch
 
-import { FiFileText, FiDatabase, FiRefreshCw, FiAlertCircle } from "react-icons/fi";
+import {
+  FiFileText,
+  FiDatabase,
+  FiRefreshCw,
+  FiAlertCircle,
+} from "react-icons/fi";
 import Drawer from "../../../../components/ui/Drawer";
 import Button from "../../../../components/ui/Button";
 import type { PaperResponse } from "../../../../types/paper";
@@ -43,7 +48,7 @@ export default function ImportBatchPapersDrawer({
       {papersLoading ? (
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-          <span className="ml-3 text-gray-600">Loading papers...</span>
+          <span className="ml-3 text-text-secondary">Loading papers...</span>
         </div>
       ) : papersError ? (
         <div className="flex flex-col items-center py-12 px-4">
@@ -57,15 +62,24 @@ export default function ImportBatchPapersDrawer({
       ) : papers.length === 0 ? (
         <div className="flex flex-col items-center py-12 px-4">
           <FiFileText className="w-12 h-12 text-gray-300 mb-3" />
-          <p className="text-gray-500 text-sm">No papers found in this import batch.</p>
+          <p className="text-text-secondary text-sm">
+            No papers found in this import batch.
+          </p>
         </div>
       ) : (
         <div className="divide-y divide-gray-100">
           {papers.map((paper) => (
-            <div key={paper.id} className="py-4 px-2 hover:bg-gray-50 transition-colors rounded-lg">
-              <h4 className="font-medium text-gray-900 text-sm line-clamp-2 mb-1">{paper.title}</h4>
-              <p className="text-xs text-gray-600 mb-1">{paper.authors || "Unknown authors"}</p>
-              <div className="flex items-center gap-3 text-xs text-gray-500">
+            <div
+              key={paper.id}
+              className="py-4 px-2 hover:bg-bg-primary transition-colors rounded-[4px]"
+            >
+              <h4 className="font-medium text-text-primary text-sm line-clamp-2 mb-1">
+                {paper.title}
+              </h4>
+              <p className="text-xs text-text-secondary mb-1">
+                {paper.authors || "Unknown authors"}
+              </p>
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 {paper.publicationYear && (
                   <span className="font-medium">{paper.publicationYear}</span>
                 )}
@@ -88,12 +102,13 @@ export default function ImportBatchPapersDrawer({
                 )}
                 {paper.selectionStatusText && (
                   <span
-                    className={`px-1.5 py-0.5 rounded text-xs font-medium ${paper.selectionStatusText === "Included"
+                    className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                      paper.selectionStatusText === "Included"
                         ? "bg-green-100 text-green-700"
                         : paper.selectionStatusText === "Excluded"
                           ? "bg-red-100 text-red-700"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
+                          : "bg-bg-secondary text-text-secondary"
+                    }`}
                   >
                     {paper.selectionStatusText}
                   </span>

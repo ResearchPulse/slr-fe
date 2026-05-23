@@ -12,7 +12,11 @@ import SynthesisStrategyModal from "./components/SynthesisStrategyModal";
 import StrategyGuidelinesModal from "./components/StrategyGuidelinesModal";
 import SynthesisWorkspaceErrorBoundary from "./components/SynthesisWorkspaceErrorBoundary";
 
-type SynthesisSectionKey = "overview" | "descriptive-charts" | "thematic-analysis" | "rq-reporting";
+type SynthesisSectionKey =
+  | "overview"
+  | "descriptive-charts"
+  | "thematic-analysis"
+  | "rq-reporting";
 
 const SECTION_LABELS: Record<SynthesisSectionKey, string> = {
   overview: "Overview",
@@ -40,22 +44,40 @@ function resolveSection(pathname: string): SynthesisSectionKey {
 export default function SynthesisPhaseWorkspace() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { projectId, processId } = useParams<{ projectId: string; processId: string }>();
+  const { projectId, processId } = useParams<{
+    projectId: string;
+    processId: string;
+  }>();
   const workspace = useSynthesisWorkspace();
-  const [filterHighQualityOnly, setFilterHighQualityOnly] = useState<boolean>(false);
-  const [thematicViewMode, setThematicViewMode] = useState<"cards" | "matrix" | "subgroup">("cards");
-  const [isStrategyGuidelinesOpen, setIsStrategyGuidelinesOpen] = useState(false);
+  const [filterHighQualityOnly, setFilterHighQualityOnly] =
+    useState<boolean>(false);
+  const [thematicViewMode, setThematicViewMode] = useState<
+    "cards" | "matrix" | "subgroup"
+  >("cards");
+  const [isStrategyGuidelinesOpen, setIsStrategyGuidelinesOpen] =
+    useState(false);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
   const synthesisBasePath = `/projects/${projectId}/processes/${processId}/synthesis`;
 
   const activeSection = resolveSection(location.pathname);
-  const phaseIsStarted = workspace.processStatus && workspace.processStatus !== "NotStarted";
+  const phaseIsStarted =
+    workspace.processStatus && workspace.processStatus !== "NotStarted";
 
   useEffect(() => {
-    if (phaseIsStarted && activeSection === "overview" && !location.pathname.endsWith("overview")) {
+    if (
+      phaseIsStarted &&
+      activeSection === "overview" &&
+      !location.pathname.endsWith("overview")
+    ) {
       navigate(`${synthesisBasePath}/overview`, { replace: true });
     }
-  }, [activeSection, location.pathname, navigate, phaseIsStarted, synthesisBasePath]);
+  }, [
+    activeSection,
+    location.pathname,
+    navigate,
+    phaseIsStarted,
+    synthesisBasePath,
+  ]);
 
   const handleBack = () => {
     if (!projectId || !processId) {
@@ -101,7 +123,7 @@ export default function SynthesisPhaseWorkspace() {
 
   if (workspace.isLoading) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center bg-slate-50">
+      <div className="flex min-h-[60vh] items-center justify-center bg-bg-secondary">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -109,12 +131,19 @@ export default function SynthesisPhaseWorkspace() {
 
   if (workspace.error || !workspace.workspace) {
     return (
-      <div className="min-h-screen bg-slate-50 px-6 py-10">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-red-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold text-red-900">Synthesis Workspace Error</h2>
-          <p className="mt-2 text-sm text-red-700">{workspace.error || "Unable to load synthesis workspace."}</p>
+      <div className="min-h-screen bg-bg-secondary px-6 py-10">
+        <div className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+          <h2 className="text-lg font-semibold text-red-900">
+            Synthesis Workspace Error
+          </h2>
+          <p className="mt-2 text-sm text-red-700">
+            {workspace.error || "Unable to load synthesis workspace."}
+          </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            <Button variant="outline" onClick={() => workspace.refetchWorkspace()}>
+            <Button
+              variant="outline"
+              onClick={() => workspace.refetchWorkspace()}
+            >
               Retry
             </Button>
             <Button variant="secondary" onClick={handleBack}>
@@ -128,26 +157,35 @@ export default function SynthesisPhaseWorkspace() {
 
   if (workspace.processStatus === "NotStarted") {
     return (
-      <div className="min-h-screen bg-slate-50 px-6 py-10">
-        <div className="mx-auto max-w-4xl rounded-3xl border border-gray-200 bg-white p-8 shadow-sm">
+      <div className="min-h-screen bg-bg-secondary px-6 py-10">
+        <div className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white p-8 shadow-none">
           <div className="flex items-center gap-3">
-            <div className="rounded-2xl bg-blue-50 p-3 text-blue-600">
+            <div className="rounded-[4px] bg-blue-50 p-3 text-blue-600">
               <Layers3 className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-400">Synthesis Phase</p>
-              <h1 className="text-2xl font-semibold text-gray-900">Start the synthesis workspace</h1>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+                Synthesis Phase
+              </p>
+              <h1 className="text-2xl font-semibold text-text-primary">
+                Start the synthesis workspace
+              </h1>
             </div>
           </div>
 
-          <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-6">
-            <p className="text-sm leading-6 text-gray-600">
-              The synthesis phase is not started yet. Once activated, the workspace will unlock thematic analysis and research question reporting.
+          <div className="mt-6 rounded-[4px] border border-border bg-bg-primary p-6">
+            <p className="text-sm leading-6 text-text-secondary">
+              The synthesis phase is not started yet. Once activated, the
+              workspace will unlock thematic analysis and research question
+              reporting.
             </p>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button onClick={() => setIsStrategyModalOpen(true)} isLoading={workspace.isStarting}>
+            <Button
+              onClick={() => setIsStrategyModalOpen(true)}
+              isLoading={workspace.isStarting}
+            >
               Start Synthesis Phase
             </Button>
             <Button variant="outline" onClick={handleBack}>
@@ -161,18 +199,24 @@ export default function SynthesisPhaseWorkspace() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="border-b border-gray-200 bg-white shadow-sm">
+    <div className="min-h-screen bg-bg-secondary">
+      <header className="border-b border-border bg-surface-white shadow-none">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-400">Synthesis Phase Workspace</p>
-            <h1 className="mt-1 text-lg font-semibold text-gray-900">{SECTION_LABELS[activeSection]}</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+              Synthesis Phase Workspace
+            </p>
+            <h1 className="mt-1 text-lg font-semibold text-text-primary">
+              {SECTION_LABELS[activeSection]}
+            </h1>
           </div>
 
           <div className="flex items-center gap-3">
-            
-            <div className="flex items-center gap-2 rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2">
-              <label htmlFor="sensitivity-toggle" className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500 mr-3">
+            <div className="flex items-center gap-2 rounded-[4px] border border-border bg-bg-primary px-3 py-2">
+              <label
+                htmlFor="sensitivity-toggle"
+                className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-secondary mr-3"
+              >
                 Sensitivity Analysis: Exclude Low Quality Studies
               </label>
               <button
@@ -180,14 +224,14 @@ export default function SynthesisPhaseWorkspace() {
                 role="switch"
                 aria-checked={filterHighQualityOnly}
                 onClick={() => setFilterHighQualityOnly((v) => !v)}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${filterHighQualityOnly ? "bg-blue-600" : "bg-gray-200"}`}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${filterHighQualityOnly ? "bg-blue-600" : "bg-bg-secondary"}`}
               >
                 <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`}
+                  className={`inline-block h-4 w-4 transform rounded-full bg-surface-white shadow-none transition-transform ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`}
                 />
               </button>
             </div>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-gray-600">
+            <span className="rounded-full border border-border bg-bg-primary px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
               {workspace.processStatus}
             </span>
             <Button variant="outline" onClick={handleBack}>
@@ -199,7 +243,7 @@ export default function SynthesisPhaseWorkspace() {
       </header>
 
       <main className="mx-auto max-w-7xl px-6 py-6">
-        <div className="mb-6 rounded-3xl border border-gray-200 bg-white p-2 shadow-sm">
+        <div className="mb-6 rounded-[4px] border border-border bg-surface-white p-2 shadow-none">
           <div className="grid gap-2 md:grid-cols-3">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -210,10 +254,10 @@ export default function SynthesisPhaseWorkspace() {
                   key={tab.key}
                   type="button"
                   onClick={() => navigate(`${synthesisBasePath}/${tab.key}`)}
-                  className={`inline-flex items-center justify-center gap-2 rounded-2xl px-4 py-3 text-sm font-semibold transition-colors ${
+                  className={`inline-flex items-center justify-center gap-2 rounded-[4px] px-4 py-3 text-sm font-semibold transition-colors ${
                     isActive
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                      ? "bg-blue-600 text-white shadow-none"
+                      : "bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                   }`}
                 >
                   <Icon className="h-4 w-4" />
@@ -246,7 +290,10 @@ export default function SynthesisPhaseWorkspace() {
               onViewStrategyGuidelines={() => setIsStrategyGuidelinesOpen(true)}
             />
           ) : activeSection === "descriptive-charts" ? (
-            <DescriptiveChartsWorkspace sourceDataGroups={workspace.sourceDataGroups} filterHighQualityOnly={filterHighQualityOnly} />
+            <DescriptiveChartsWorkspace
+              sourceDataGroups={workspace.sourceDataGroups}
+              filterHighQualityOnly={filterHighQualityOnly}
+            />
           ) : activeSection === "rq-reporting" ? (
             <RqReportingWorkspace
               workspace={workspace.workspace}
@@ -264,9 +311,15 @@ export default function SynthesisPhaseWorkspace() {
               canCompletePhase={canCompletePhase}
               isCompleting={workspace.isCompleting}
               isReadOnly={isReadOnly}
-              onNavigateToThematic={() => navigate(`${synthesisBasePath}/thematic-analysis`)}
-              onNavigateToDescriptiveCharts={() => navigate(`${synthesisBasePath}/descriptive-charts`)}
-              onNavigateToRqReporting={() => navigate(`${synthesisBasePath}/rq-reporting`)}
+              onNavigateToThematic={() =>
+                navigate(`${synthesisBasePath}/thematic-analysis`)
+              }
+              onNavigateToDescriptiveCharts={() =>
+                navigate(`${synthesisBasePath}/descriptive-charts`)
+              }
+              onNavigateToRqReporting={() =>
+                navigate(`${synthesisBasePath}/rq-reporting`)
+              }
               onCompletePhase={workspace.completeSynthesis}
             />
           )}

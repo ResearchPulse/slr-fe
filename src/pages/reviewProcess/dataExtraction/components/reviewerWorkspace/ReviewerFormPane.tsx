@@ -12,7 +12,11 @@ import {
   renderInputControl,
   toDomId,
 } from "./reviewerFormUtils";
-import type { FlattenedTemplateField, FormFieldState, FormFieldValue } from "./types";
+import type {
+  FlattenedTemplateField,
+  FormFieldState,
+  FormFieldValue,
+} from "./types";
 
 interface ReviewerFormPaneProps {
   activeSection: ExtractionSectionDto | null;
@@ -23,42 +27,45 @@ interface ReviewerFormPaneProps {
   fieldStates: Record<string, FormFieldState>;
   currentRows: Record<string, FormFieldState>[];
   flattenedFields: FlattenedTemplateField[];
-  renderFieldControl: (item: FlattenedTemplateField, disabled?: boolean) => ReactNode;
+  renderFieldControl: (
+    item: FlattenedTemplateField,
+    disabled?: boolean,
+  ) => ReactNode;
   isFieldNotReported: (fieldKey: string) => boolean;
   isMatrixFieldNotReported: (
     sectionId: string,
     rowIndex: number,
-    fieldKey: string
+    fieldKey: string,
   ) => boolean;
   isReadOnly?: boolean;
   isAskingAi: boolean;
   isEvidenceTargetActive: (
     fieldKey: string,
     sectionId: string | null,
-    rowIndex: number | null
+    rowIndex: number | null,
   ) => boolean;
   onAskAiField: (
     field: ExtractionFieldDto,
     matrixColumnId: string | null,
-    matrixRowIndex: number | null
+    matrixRowIndex: number | null,
   ) => void;
   onSelectEvidenceTarget: (
     fieldKey: string,
     sectionId: string | null,
-    rowIndex: number | null
+    rowIndex: number | null,
   ) => void;
   onSetMatrixFieldValue: (
     sectionId: string,
     rowIndex: number,
     fieldKey: string,
-    value: FormFieldValue
+    value: FormFieldValue,
   ) => void;
   onToggleFieldNotReported: (fieldKey: string, isNotReported: boolean) => void;
   onToggleMatrixFieldNotReported: (
     sectionId: string,
     rowIndex: number,
     fieldKey: string,
-    isNotReported: boolean
+    isNotReported: boolean,
   ) => void;
   onRemoveMatrixRow: (sectionId: string, rowIndex: number) => void;
   onAddMatrixRow: (sectionId: string) => void;
@@ -95,13 +102,15 @@ export default function ReviewerFormPane({
   renderCommentButton,
 }: ReviewerFormPaneProps) {
   return (
-    <section className="flex h-full min-h-0 w-[25%] flex-col bg-white">
-      <div className="flex h-full min-h-0 flex-col border-r border-slate-200">
-        <div className="shrink-0 border-b border-slate-200 px-5 py-4">
-          <h2 className="line-clamp-3 text-xl font-semibold text-slate-900">
+    <section className="flex h-full min-h-0 w-[25%] flex-col bg-surface-white">
+      <div className="flex h-full min-h-0 flex-col border-r border-border">
+        <div className="shrink-0 border-b border-border px-5 py-4">
+          <h2 className="line-clamp-3 text-xl font-semibold text-text-primary">
             {activeSection?.name ?? "Section"}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">{activeSectionDescription}</p>
+          <p className="mt-1 text-sm text-text-secondary">
+            {activeSectionDescription}
+          </p>
           {activeEvidenceTargetLabel ? (
             <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
               <span className="shrink-0">Target selected:</span>
@@ -114,19 +123,19 @@ export default function ReviewerFormPane({
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 pb-24">
           {!activeSection ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+            <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
               No section selected.
             </p>
           ) : activeSection.sectionType === SectionTypeEnum.MatrixGrid ? (
             <div className="space-y-4">
               {matrixFields.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
                   No matrix fields in this section yet.
                 </p>
               ) : null}
 
               {currentRows.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+                <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
                   No items added yet. Add your first item below.
                 </p>
               ) : null}
@@ -134,15 +143,16 @@ export default function ReviewerFormPane({
               {currentRows.map((row, rowIndex) => {
                 const isPredefinedRow = Object.prototype.hasOwnProperty.call(
                   row,
-                  MATRIX_COLUMN_ID_KEY
+                  MATRIX_COLUMN_ID_KEY,
                 );
                 const itemNameValue = row[MATRIX_ITEM_NAME_KEY]?.value;
-                const itemName = typeof itemNameValue === "string" ? itemNameValue : "";
+                const itemName =
+                  typeof itemNameValue === "string" ? itemNameValue : "";
 
                 return (
                   <div
                     key={`${activeSectionId}-row-${rowIndex}`}
-                    className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
+                    className="rounded-[4px] border border-border bg-bg-secondary p-4"
                   >
                     <div className="mb-4 flex items-center justify-between gap-2">
                       <h3 className="text-sm font-semibold text-slate-800">
@@ -153,9 +163,11 @@ export default function ReviewerFormPane({
                       {!isPredefinedRow && (
                         <button
                           type="button"
-                          onClick={() => onRemoveMatrixRow(activeSectionId, rowIndex)}
+                          onClick={() =>
+                            onRemoveMatrixRow(activeSectionId, rowIndex)
+                          }
                           disabled={isReadOnly}
-                          className="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-red-50 hover:text-red-700"
+                          className="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-surface-white hover:text-red-700"
                         >
                           Remove
                         </button>
@@ -173,11 +185,12 @@ export default function ReviewerFormPane({
 
                         {isPredefinedRow ? (
                           <>
-                            <div className="w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-base font-semibold text-slate-700">
+                            <div className="w-full rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-base font-semibold text-text-primary">
                               {itemName || "Predefined column"}
                             </div>
-                            <p className="mt-1 text-xs text-slate-500">
-                              This row is predefined by the template and cannot be renamed.
+                            <p className="mt-1 text-xs text-text-secondary">
+                              This row is predefined by the template and cannot
+                              be renamed.
                             </p>
                           </>
                         ) : (
@@ -191,32 +204,35 @@ export default function ReviewerFormPane({
                                 activeSectionId,
                                 rowIndex,
                                 MATRIX_ITEM_NAME_KEY,
-                                event.target.value
+                                event.target.value,
                               )
                             }
                             placeholder="e.g. Group A, Baseline Tool"
-                            className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-base text-slate-700 outline-none placeholder:text-slate-400 focus:border-blue-500"
+                            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500"
                           />
                         )}
                       </div>
 
                       {matrixFields.map((field, fieldIndex) => {
-                        const matrixFieldKey = getMatrixFieldKey(field, fieldIndex);
+                        const matrixFieldKey = getMatrixFieldKey(
+                          field,
+                          fieldIndex,
+                        );
                         const controlId = `matrix-${toDomId(activeSectionId)}-${rowIndex}-${toDomId(matrixFieldKey)}`;
                         const fieldState = row[matrixFieldKey] ?? null;
                         const currentValue = fieldState?.value ?? null;
                         const isNotReported = isMatrixFieldNotReported(
                           activeSectionId,
                           rowIndex,
-                          matrixFieldKey
+                          matrixFieldKey,
                         );
                         const hasLinkedEvidence = Boolean(
-                          fieldState?.evidenceCoordinates?.trim()
+                          fieldState?.evidenceCoordinates?.trim(),
                         );
                         const isTargetActive = isEvidenceTargetActive(
                           matrixFieldKey,
                           activeSectionId,
-                          rowIndex
+                          rowIndex,
                         );
 
                         return (
@@ -230,7 +246,9 @@ export default function ReviewerFormPane({
                                   >
                                     {field.name}
                                     {field.isRequired ? (
-                                      <span className="ml-1 text-red-500">*</span>
+                                      <span className="ml-1 text-red-500">
+                                        *
+                                      </span>
                                     ) : null}
                                   </label>
                                   {renderCommentButton
@@ -238,14 +256,15 @@ export default function ReviewerFormPane({
                                         field,
                                         sectionId: activeSectionId,
                                         matrixColumnId:
-                                          typeof row[MATRIX_COLUMN_ID_KEY]?.value === "string"
+                                          typeof row[MATRIX_COLUMN_ID_KEY]
+                                            ?.value === "string"
                                             ? row[MATRIX_COLUMN_ID_KEY].value
                                             : null,
                                         matrixRowIndex: rowIndex,
                                       })
                                     : null}
                                 </div>
-                                <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+                                <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-text-secondary">
                                   <input
                                     type="checkbox"
                                     checked={isNotReported}
@@ -255,10 +274,10 @@ export default function ReviewerFormPane({
                                         activeSectionId,
                                         rowIndex,
                                         matrixFieldKey,
-                                        event.target.checked
+                                        event.target.checked,
                                       )
                                     }
-                                    className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                                    className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
                                   />
                                   Not Reported
                                 </label>
@@ -269,14 +288,15 @@ export default function ReviewerFormPane({
                                 onClick={() =>
                                   onAskAiField(
                                     field,
-                                    typeof row[MATRIX_COLUMN_ID_KEY]?.value === "string"
+                                    typeof row[MATRIX_COLUMN_ID_KEY]?.value ===
+                                      "string"
                                       ? row[MATRIX_COLUMN_ID_KEY].value
                                       : null,
-                                    rowIndex
+                                    rowIndex,
                                   )
                                 }
                                 disabled={isReadOnly || isAskingAi}
-                                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <Sparkles className="h-3.5 w-3.5" />
                                 Ask AI
@@ -284,13 +304,13 @@ export default function ReviewerFormPane({
                             </div>
 
                             {field.instruction ? (
-                              <p className="mb-2 text-xs text-slate-500">
+                              <p className="mb-2 text-xs text-text-secondary">
                                 {field.instruction}
                               </p>
                             ) : null}
 
                             {isNotReported ? (
-                              <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+                              <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
                                 NR
                               </p>
                             ) : null}
@@ -305,10 +325,10 @@ export default function ReviewerFormPane({
                                       activeSectionId,
                                       rowIndex,
                                       matrixFieldKey,
-                                      value
+                                      value,
                                     ),
                                   controlId,
-                                  isReadOnly || isNotReported
+                                  isReadOnly || isNotReported,
                                 )}
                               </div>
 
@@ -318,7 +338,7 @@ export default function ReviewerFormPane({
                                   onSelectEvidenceTarget(
                                     matrixFieldKey,
                                     activeSectionId,
-                                    rowIndex
+                                    rowIndex,
                                   )
                                 }
                                 disabled={isReadOnly}
@@ -336,8 +356,8 @@ export default function ReviewerFormPane({
                                   isTargetActive
                                     ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
                                     : hasLinkedEvidence
-                                    ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
-                                    : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                                      ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                      : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 }
                               >
                                 <Crosshair className="h-4 w-4" />
@@ -355,13 +375,13 @@ export default function ReviewerFormPane({
                 type="button"
                 onClick={() => onAddMatrixRow(activeSectionId)}
                 disabled={isReadOnly}
-                className="w-full rounded-2xl border-2 border-dashed border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-blue-400 hover:text-blue-700"
+                className="w-full rounded-[4px] border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-blue-400 hover:text-blue-700"
               >
                 + Add New {activeSection.name} Item
               </button>
             </div>
           ) : flattenedFields.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-500">
+            <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
               No fields in this section yet.
             </p>
           ) : (
@@ -371,9 +391,13 @@ export default function ReviewerFormPane({
                 const isNotReported = isFieldNotReported(fieldKey);
                 const fieldState = fieldStates[fieldKey] ?? null;
                 const hasLinkedEvidence = Boolean(
-                  fieldState?.evidenceCoordinates?.trim()
+                  fieldState?.evidenceCoordinates?.trim(),
                 );
-                const isTargetActive = isEvidenceTargetActive(fieldKey, null, null);
+                const isTargetActive = isEvidenceTargetActive(
+                  fieldKey,
+                  null,
+                  null,
+                );
 
                 return (
                   <div key={fieldKey} style={{ marginLeft: depth * 14 }}>
@@ -398,15 +422,18 @@ export default function ReviewerFormPane({
                               })
                             : null}
                         </div>
-                        <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+                        <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-text-secondary">
                           <input
                             type="checkbox"
                             checked={isNotReported}
                             disabled={isReadOnly}
                             onChange={(event) =>
-                              onToggleFieldNotReported(fieldKey, event.target.checked)
+                              onToggleFieldNotReported(
+                                fieldKey,
+                                event.target.checked,
+                              )
                             }
-                            className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                            className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
                           />
                           Not Reported
                         </label>
@@ -416,7 +443,7 @@ export default function ReviewerFormPane({
                         type="button"
                         onClick={() => onAskAiField(field, null, null)}
                         disabled={isReadOnly || isAskingAi}
-                        className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <Sparkles className="h-3.5 w-3.5" />
                         Ask AI
@@ -424,11 +451,13 @@ export default function ReviewerFormPane({
                     </div>
 
                     {field.instruction ? (
-                      <p className="mb-2 text-xs text-slate-500">{field.instruction}</p>
+                      <p className="mb-2 text-xs text-text-secondary">
+                        {field.instruction}
+                      </p>
                     ) : null}
 
                     {isNotReported ? (
-                      <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+                      <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
                         NR
                       </p>
                     ) : null}
@@ -440,7 +469,9 @@ export default function ReviewerFormPane({
 
                       <button
                         type="button"
-                        onClick={() => onSelectEvidenceTarget(fieldKey, null, null)}
+                        onClick={() =>
+                          onSelectEvidenceTarget(fieldKey, null, null)
+                        }
                         disabled={isReadOnly}
                         title={
                           isTargetActive
@@ -456,8 +487,8 @@ export default function ReviewerFormPane({
                           isTargetActive
                             ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
                             : hasLinkedEvidence
-                            ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
-                            : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                              ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+                              : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         }
                       >
                         <Crosshair className="h-4 w-4" />

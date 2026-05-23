@@ -60,18 +60,18 @@ export default function ChecklistPdfPanel({
   }, [activeCoordinate, jumpToPage]);
 
   return (
-    <section className="flex h-full flex-col overflow-hidden border-l border-slate-200 bg-white">
+    <section className="flex h-full flex-col overflow-hidden border-l border-border bg-surface-white">
       {/* Panel Header */}
-      <div className="flex items-center justify-between gap-3 border-b border-slate-200 bg-slate-50 px-4 py-2 shrink-0">
+      <div className="flex items-center justify-between gap-3 border-b border-border bg-bg-secondary px-4 py-2 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <FiFileText className="w-4 h-4 text-indigo-600 shrink-0" />
-          <p className="text-xs font-medium text-slate-600 truncate">
+          <FiFileText className="w-4 h-4 text-accent shrink-0" />
+          <p className="text-xs font-medium text-text-secondary truncate">
             Source PDF
           </p>
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+          className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
           title="Close PDF panel"
         >
           <FiX className="w-4 h-4" />
@@ -79,7 +79,7 @@ export default function ChecklistPdfPanel({
       </div>
 
       {activeCoordinate && (
-        <div className="shrink-0 border-b border-indigo-100 bg-indigo-50/80 px-4 py-1.5">
+        <div className="shrink-0 border-b border-indigo-100 bg-bg-secondary/80 px-4 py-1.5">
           <p className="text-xs text-indigo-700 font-medium">
             Page {activeCoordinate.pageIndex + 1}
           </p>

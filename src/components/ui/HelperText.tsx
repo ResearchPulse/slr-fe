@@ -8,11 +8,11 @@ export interface HelperTextProps {
   className?: string;
 }
 
-const HelperText: React.FC<HelperTextProps> = ({ 
+const HelperText: React.FC<HelperTextProps> = ({
   id,
-  message, 
-  variant = "default", 
-  className 
+  message,
+  variant = "default",
+  className,
 }) => {
   if (!message) return null;
 
@@ -23,7 +23,7 @@ const HelperText: React.FC<HelperTextProps> = ({
         "text-sm font-medium mt-1.5 ml-1",
         variant === "default" && "text-text-muted",
         variant === "error" && "text-red-500",
-        className
+        className,
       )}
     >
       {message}

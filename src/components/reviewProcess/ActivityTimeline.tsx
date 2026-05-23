@@ -40,19 +40,23 @@ const getActivityIcon = (type: Activity["type"]) => {
     case "note_added":
       return <FiAlertCircle className="w-5 h-5 text-yellow-600" />;
     case "team_action":
-      return <FiUser className="w-5 h-5 text-indigo-600" />;
+      return <FiUser className="w-5 h-5 text-accent" />;
     default:
-      return <FiClock className="w-5 h-5 text-gray-600" />;
+      return <FiClock className="w-5 h-5 text-text-secondary" />;
   }
 };
 
 const formatTimestamp = (timestamp: string) => {
   const date = new Date(timestamp);
   const now = new Date();
-  const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  const diffInHours = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60),
+  );
 
   if (diffInHours < 1) {
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const diffInMinutes = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60),
+    );
     return `${diffInMinutes} minute${diffInMinutes !== 1 ? "s" : ""} ago`;
   }
   if (diffInHours < 24) {
@@ -69,22 +73,26 @@ const formatTimestamp = (timestamp: string) => {
   });
 };
 
-export default function ActivityTimeline({ activities }: ActivityTimelineProps) {
+export default function ActivityTimeline({
+  activities,
+}: ActivityTimelineProps) {
   if (activities.length === 0) {
     return (
-      <div className="bg-white border border-gray-200 rounded-lg p-8">
-        <div className="text-center text-gray-500">
-          <FiClock className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+      <div className="bg-surface-white border border-border rounded-[4px] p-8">
+        <div className="text-center text-text-secondary">
+          <FiClock className="w-12 h-12 mx-auto mb-3 text-text-secondary" />
           <p className="text-sm">No recent activities</p>
-          <p className="text-xs text-gray-400 mt-1">Activities will appear here as you work</p>
+          <p className="text-xs text-text-secondary mt-1">
+            Activities will appear here as you work
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+    <div className="bg-surface-white border border-border rounded-[4px] p-6">
+      <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
         <FiActivity className="w-5 h-5 text-blue-600" />
         Recent Activity
       </h3>
@@ -94,28 +102,32 @@ export default function ActivityTimeline({ activities }: ActivityTimelineProps) 
           <div key={activity.id} className="flex gap-4">
             {/* Timeline Line */}
             <div className="flex flex-col items-center">
-              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-gray-50 border-2 border-gray-200 flex items-center justify-center">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-bg-primary border-2 border-border flex items-center justify-center">
                 {getActivityIcon(activity.type)}
               </div>
               {index < activities.length - 1 && (
-                <div className="w-0.5 flex-1 bg-gray-200 mt-2 mb-2 min-h-[20px]" />
+                <div className="w-0.5 flex-1 bg-bg-secondary mt-2 mb-2 min-h-[20px]" />
               )}
             </div>
 
             {/* Content */}
             <div className="flex-1 pb-4">
               <div className="flex items-start justify-between mb-1">
-                <h4 className="font-medium text-gray-900 text-sm">{activity.title}</h4>
-                <span className="text-xs text-gray-500 flex-shrink-0 ml-4">
+                <h4 className="font-medium text-text-primary text-sm">
+                  {activity.title}
+                </h4>
+                <span className="text-xs text-text-secondary flex-shrink-0 ml-4">
                   {formatTimestamp(activity.timestamp)}
                 </span>
               </div>
 
               {activity.description && (
-                <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+                <p className="text-sm text-text-secondary mb-2">
+                  {activity.description}
+                </p>
               )}
 
-              <div className="flex items-center gap-3 text-xs text-gray-500">
+              <div className="flex items-center gap-3 text-xs text-text-secondary">
                 {activity.user && (
                   <span className="flex items-center gap-1">
                     <FiUser className="w-3 h-3" />

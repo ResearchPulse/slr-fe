@@ -1,7 +1,12 @@
 // Ready Papers Table — left panel in Build Dataset tab
 // Shows papers eligible for snapshot selection with checkboxes and filtering
 
-import { FiRefreshCw, FiAlertCircle, FiArrowRight, FiCheckSquare } from "react-icons/fi";
+import {
+  FiRefreshCw,
+  FiAlertCircle,
+  FiArrowRight,
+  FiCheckSquare,
+} from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
 import EmptyState from "../../../../components/ui/EmptyState";
 import IdentificationFilterBar from "./IdentificationFilterBar";
@@ -95,7 +100,9 @@ export default function ReadyPapersTable({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 rounded-full bg-emerald-500" />
-          <h3 className="text-sm font-semibold text-gray-900">Ready Papers</h3>
+          <h3 className="text-sm font-semibold text-text-primary">
+            Ready Papers
+          </h3>
           <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
             {totalCount.toLocaleString()}
           </span>
@@ -103,10 +110,12 @@ export default function ReadyPapersTable({
         <button
           onClick={onRefetch}
           disabled={fetching}
-          className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-md transition-colors"
           title="Refresh"
         >
-          <FiRefreshCw className={`w-3.5 h-3.5 ${fetching ? "animate-spin" : ""}`} />
+          <FiRefreshCw
+            className={`w-3.5 h-3.5 ${fetching ? "animate-spin" : ""}`}
+          />
         </button>
       </div>
 
@@ -134,11 +143,14 @@ export default function ReadyPapersTable({
           /* Loading skeleton */
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 animate-pulse">
-                <div className="w-4 h-4 bg-gray-200 rounded" />
+              <div
+                key={i}
+                className="flex items-center gap-3 p-3 animate-pulse"
+              >
+                <div className="w-4 h-4 bg-bg-secondary rounded" />
                 <div className="flex-1 space-y-2">
-                  <div className="h-4 bg-gray-200 rounded w-3/4" />
-                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                  <div className="h-4 bg-bg-secondary rounded w-3/4" />
+                  <div className="h-3 bg-bg-secondary rounded w-1/2" />
                 </div>
               </div>
             ))}
@@ -163,7 +175,7 @@ export default function ReadyPapersTable({
             )}
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-200">
+                <tr className="border-b border-border">
                   <th className="text-left py-2 px-3 w-8">
                     <input
                       type="checkbox"
@@ -172,20 +184,20 @@ export default function ReadyPapersTable({
                         if (el) el.indeterminate = someChecked;
                       }}
                       onChange={() => onToggleAll(pageIds)}
-                      className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
+                      className="rounded border-border text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
                       disabled={!canEdit}
                     />
                   </th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="text-left py-2 px-3 text-xs font-semibold text-text-secondary uppercase tracking-wider">
                     Title
                   </th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="text-left py-2 px-3 text-xs font-semibold text-text-secondary uppercase tracking-wider">
                     Authors
                   </th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="text-left py-2 px-3 text-xs font-semibold text-text-secondary uppercase tracking-wider">
                     Year
                   </th>
-                  <th className="text-left py-2 px-3 text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                  <th className="text-left py-2 px-3 text-xs font-semibold text-text-secondary uppercase tracking-wider">
                     DOI
                   </th>
                 </tr>
@@ -195,13 +207,13 @@ export default function ReadyPapersTable({
                   <tr
                     key={paper.id}
                     onClick={() => canEdit && onToggle(paper.id)}
-                    className={`border-b border-gray-100 transition-colors ${
+                    className={`border-b border-border transition-colors ${
                       canEdit ? "cursor-pointer" : "cursor-default"
                     } ${
                       isSelected(paper.id)
                         ? "bg-emerald-50 hover:bg-emerald-100"
                         : canEdit
-                          ? "hover:bg-gray-50"
+                          ? "hover:bg-bg-primary"
                           : ""
                     }`}
                   >
@@ -212,18 +224,18 @@ export default function ReadyPapersTable({
                         onChange={() => onToggle(paper.id)}
                         onClick={(e) => e.stopPropagation()}
                         disabled={!canEdit}
-                        className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
+                        className="rounded border-border text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
                       />
                     </td>
                     <td className="py-2.5 px-3">
-                      <p className="text-sm font-medium text-gray-900 line-clamp-2 max-w-xs">
+                      <p className="text-sm font-medium text-text-primary line-clamp-2 max-w-xs">
                         {paper.title}
                       </p>
                     </td>
-                    <td className="py-2.5 px-3 text-xs text-gray-600 max-w-[150px] truncate">
+                    <td className="py-2.5 px-3 text-xs text-text-secondary max-w-[150px] truncate">
                       {paper.authors || "—"}
                     </td>
-                    <td className="py-2.5 px-3 text-xs text-gray-600">
+                    <td className="py-2.5 px-3 text-xs text-text-secondary">
                       {paper.publicationYear || "—"}
                     </td>
                     <td className="py-2.5 px-3">
@@ -238,7 +250,7 @@ export default function ReadyPapersTable({
                           {paper.doi}
                         </a>
                       ) : (
-                        <span className="text-xs text-gray-400">—</span>
+                        <span className="text-xs text-text-secondary">—</span>
                       )}
                     </td>
                   </tr>
@@ -263,28 +275,29 @@ export default function ReadyPapersTable({
 
       {/* Footer: Pagination + Add button */}
       {papers.length > 0 && (
-        <div className="mt-4 pt-3 border-t border-gray-200 space-y-3">
+        <div className="mt-4 pt-3 border-t border-border space-y-3">
           {/* Pagination */}
           <div className="flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, totalCount)} of{" "}
+            <span className="text-xs text-text-secondary">
+              {(page - 1) * pageSize + 1}–
+              {Math.min(page * pageSize, totalCount)} of{" "}
               {totalCount.toLocaleString()}
             </span>
             <div className="flex items-center gap-1.5">
               <button
                 disabled={!hasPrev || fetching}
                 onClick={onPreviousPage}
-                className="px-2.5 py-1 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
-              <span className="text-xs text-gray-500 px-1">
+              <span className="text-xs text-text-secondary px-1">
                 {page}/{totalPages}
               </span>
               <button
                 disabled={!hasNext || fetching}
                 onClick={onNextPage}
-                className="px-2.5 py-1 text-xs font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -293,14 +306,17 @@ export default function ReadyPapersTable({
 
           {/* Add to Snapshot Action */}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700 font-medium">
+            <span className="text-sm text-text-primary font-medium">
               {selectedCount > 0 ? (
                 <>
-                  <span className="text-emerald-600">{selectedCount}</span> paper
+                  <span className="text-emerald-600">{selectedCount}</span>{" "}
+                  paper
                   {selectedCount !== 1 ? "s" : ""} selected
                 </>
               ) : (
-                <span className="text-gray-400">Select papers to add</span>
+                <span className="text-text-secondary">
+                  Select papers to add
+                </span>
               )}
             </span>
             <Button

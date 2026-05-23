@@ -1,7 +1,10 @@
 import React from "react";
 import Button from "../../ui/Button";
 import Card from "../../ui/Card";
-import type { ResearchQuestion, PICOCElement } from "../../../types/coreAndGovernance";
+import type {
+  ResearchQuestion,
+  PICOCElement,
+} from "../../../types/coreAndGovernance";
 
 interface ResearchQuestionsTabProps {
   questions: ResearchQuestion[];
@@ -24,14 +27,16 @@ const ResearchQuestionsTab: React.FC<ResearchQuestionsTabProps> = ({
         <h2 className="text-2xl font-bold items-center gap-2">
           Research Questions
         </h2>
-        {isLeader && <Button onClick={onAddQuestion}>Add Research Question</Button>}
+        {isLeader && (
+          <Button onClick={onAddQuestion}>Add Research Question</Button>
+        )}
       </div>
       <div className="space-y-4">
         {questions.map((question) => (
           <Card key={question.researchQuestionId}>
             <div className="mb-4">
               <p className="font-semibold mb-2">{question.questionText}</p>
-              <p className="text-sm text-gray-600 mb-2">
+              <p className="text-sm text-text-secondary mb-2">
                 <strong>Rationale:</strong> {question.rationale}
               </p>
             </div>
@@ -51,21 +56,30 @@ const ResearchQuestionsTab: React.FC<ResearchQuestionsTabProps> = ({
               </div>
               <div className="space-y-2">
                 {picocElements[question.researchQuestionId]?.map((element) => (
-                  <div key={element.picoc_id} className="text-sm bg-gray-50 p-2 rounded">
-                    <span className="font-medium capitalize">{element.element_type}:</span>{" "}
+                  <div
+                    key={element.picoc_id}
+                    className="text-sm bg-bg-primary p-2 rounded"
+                  >
+                    <span className="font-medium capitalize">
+                      {element.element_type}:
+                    </span>{" "}
                     {element.description}
                   </div>
                 ))}
                 {(!picocElements[question.researchQuestionId] ||
                   picocElements[question.researchQuestionId].length === 0) && (
-                    <p className="text-sm text-gray-500">No PICOC elements defined</p>
-                  )}
+                  <p className="text-sm text-text-secondary">
+                    No PICOC elements defined
+                  </p>
+                )}
               </div>
             </div>
           </Card>
         ))}
         {questions.length === 0 && (
-          <p className="text-center text-gray-500 py-8">No research questions added yet</p>
+          <p className="text-center text-text-secondary py-8">
+            No research questions added yet
+          </p>
         )}
       </div>
     </div>

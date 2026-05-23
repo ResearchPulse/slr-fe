@@ -3,7 +3,11 @@
 import TeamMembersCard from "./TeamMembersCard";
 import ProgressOverviewCard from "./ProgressOverviewCard";
 import AlertsCard from "./AlertsCard";
-import type { TeamMember, ProgressStats, Alert } from "../../types/reviewProcessWorkspace";
+import type {
+  TeamMember,
+  ProgressStats,
+  Alert,
+} from "../../types/reviewProcessWorkspace";
 
 interface ContextPanelProps {
   teamMembers: TeamMember[];

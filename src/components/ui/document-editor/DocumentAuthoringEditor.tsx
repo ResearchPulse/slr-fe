@@ -28,31 +28,35 @@ export const DocumentAuthoringEditor: React.FC = () => {
             <LayoutDashboard className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900 leading-tight">Document Authoring</h1>
-            <p className="text-xs text-gray-400 font-medium">Design your document structure</p>
+            <h1 className="text-lg font-bold text-gray-900 leading-tight">
+              Document Authoring
+            </h1>
+            <p className="text-xs text-gray-400 font-medium">
+              Design your document structure
+            </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="text-gray-500 hover:text-red-600 hover:bg-red-50"
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-gray-500 hover:text-red-600 hover:bg-surface-white"
             onClick={() => setIsResetConfirmOpen(true)}
           >
             <Trash2 className="w-4 h-4 mr-1" /> Clear Editor
           </Button>
           <div className="w-px h-6 bg-gray-100 mx-1"></div>
-          <Button 
-            size="sm" 
-            variant="outline" 
+          <Button
+            size="sm"
+            variant="outline"
             className="gap-2 border-gray-200"
             onClick={() => setIsExportOpen(true)}
           >
             <Settings2 className="w-4 h-4" /> Export Options
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             className="gap-2 bg-blue-600 hover:bg-blue-700 shadow-sm"
             onClick={() => setIsExportOpen(true)}
           >
@@ -66,30 +70,30 @@ export const DocumentAuthoringEditor: React.FC = () => {
         {/* Left Side: Editor */}
         <div className="w-full md:w-[45%] lg:w-[40%] border-r border-gray-100 h-full flex flex-col bg-slate-50/30">
           <div className="p-4 border-b border-gray-50 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">Editor Workspace</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+              Editor Workspace
+            </span>
           </div>
           <div className="flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 transition-colors">
             <div className="max-w-2xl mx-auto">
-               <EditorPanel 
-                  localDraft={localDraft}
-                  setLocalDraft={setLocalDraft}
-               />
+              <EditorPanel
+                localDraft={localDraft}
+                setLocalDraft={setLocalDraft}
+              />
             </div>
           </div>
         </div>
 
         {/* Right Side: Live Preview */}
         <div className="hidden md:block flex-1 h-full bg-slate-50/50">
-          <PreviewPanel 
-            localDraft={localDraft}
-          />
+          <PreviewPanel localDraft={localDraft} />
         </div>
       </main>
 
       {/* Export Dialog */}
-      <ExportDialog 
-        isOpen={isExportOpen} 
-        onClose={() => setIsExportOpen(false)} 
+      <ExportDialog
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
       />
 
       {/* Reset Confirmation */}
@@ -103,6 +107,3 @@ export const DocumentAuthoringEditor: React.FC = () => {
     </div>
   );
 };
-
-
-

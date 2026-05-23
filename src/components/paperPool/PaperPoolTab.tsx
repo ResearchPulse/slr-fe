@@ -83,7 +83,9 @@ function mapPaperFromApi(paper: PaperPoolApiResponse): PaperPoolItem {
   };
 }
 
-function mapFiltersForRequest(filters: PaperPoolFilters): FilterSettingRequest["filters"] {
+function mapFiltersForRequest(
+  filters: PaperPoolFilters,
+): FilterSettingRequest["filters"] {
   return {
     keyword: filters.keyword || undefined,
     yearFrom: filters.yearFrom ?? undefined,
@@ -119,18 +121,29 @@ function buildPaperQuery(
   };
 }
 
-function mapReviewProcessesToSnapshots(reviewProcesses: ReviewProcess[]): ProcessSnapshot[] {
+function mapReviewProcessesToSnapshots(
+  reviewProcesses: ReviewProcess[],
+): ProcessSnapshot[] {
   return reviewProcesses.map((process) => {
     const progressPercent =
       process.statusText === "Completed"
         ? 100
         : process.statusText === "InProgress"
-          ? Math.max(15, Math.min(95, Math.round((((process.currentPhase ?? 0) + 1) / 7) * 100)))
+          ? Math.max(
+              15,
+              Math.min(
+                95,
+                Math.round((((process.currentPhase ?? 0) + 1) / 7) * 100),
+              ),
+            )
           : 0;
 
     return {
       processId: process.id || process.processId || "",
-      processName: process.name?.trim() || process.processName?.trim() || "Untitled review process",
+      processName:
+        process.name?.trim() ||
+        process.processName?.trim() ||
+        "Untitled review process",
       statusText: process.statusText,
       progressPercent,
       existingPaperIds: [],
@@ -141,14 +154,23 @@ function mapReviewProcessesToSnapshots(reviewProcesses: ReviewProcess[]): Proces
   });
 }
 
-export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTabProps) {
+export default function PaperPoolTab({
+  projectId,
+  reviewProcesses,
+}: PaperPoolTabProps) {
   const navigate = useNavigate();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab =
-    (searchParams.get("subtab") as "library" | "deduplication" | "sources" | "snowballing" | "statistics") ||
-    "library";
-  const setActiveTab = (tab: "library" | "deduplication" | "sources" | "snowballing" | "statistics") => {
+    (searchParams.get("subtab") as
+      | "library"
+      | "deduplication"
+      | "sources"
+      | "snowballing"
+      | "statistics") || "library";
+  const setActiveTab = (
+    tab: "library" | "deduplication" | "sources" | "snowballing" | "statistics",
+  ) => {
     setSearchParams(
       (prev) => {
         prev.set("subtab", tab);
@@ -163,18 +185,26 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [selectedPaperIds, setSelectedPaperIds] = useState<string[]>([]);
   const [viewerPaper, setViewerPaper] = useState<PaperPoolItem | null>(null);
-  const [insertResult, setInsertResult] = useState<SelectionInsertResult | null>(null);
+  const [insertResult, setInsertResult] =
+    useState<SelectionInsertResult | null>(null);
   const [isAdding, setIsAdding] = useState(false);
-  const [selectedSavedFilterId, setSelectedSavedFilterId] = useState<string | null>(null);
+  const [selectedSavedFilterId, setSelectedSavedFilterId] = useState<
+    string | null
+  >(null);
   const [detailFilterId, setDetailFilterId] = useState<string | null>(null);
-  const [processSnapshots, setProcessSnapshots] = useState<ProcessSnapshot[]>([]);
+  const [processSnapshots, setProcessSnapshots] = useState<ProcessSnapshot[]>(
+    [],
+  );
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [isManageFiltersOpen, setIsManageFiltersOpen] = useState(false);
   const [isNameFilterModalOpen, setIsNameFilterModalOpen] = useState(false);
-  const [isAddToProcessBySelectionOpen, setIsAddToProcessBySelectionOpen] = useState(false);
-  const [isAddToProcessByFilterOpen, setIsAddToProcessByFilterOpen] = useState(false);
+  const [isAddToProcessBySelectionOpen, setIsAddToProcessBySelectionOpen] =
+    useState(false);
+  const [isAddToProcessByFilterOpen, setIsAddToProcessByFilterOpen] =
+    useState(false);
   const [isFilterPanelCollapsed, setIsFilterPanelCollapsed] = useState(false);
-  const [isCreateProcessModalOpen, setIsCreateProcessModalOpen] = useState(false);
+  const [isCreateProcessModalOpen, setIsCreateProcessModalOpen] =
+    useState(false);
   const { stepId } = useParams();
   const workflowStep = Number.parseInt(stepId || "1", 10);
   const dispatch = useDispatch();
@@ -195,7 +225,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
 
   const debouncedSearch = useDebounce(searchText.trim(), 250);
   const isYearRangeValid =
-    filters.yearFrom === null || filters.yearTo === null || filters.yearFrom <= filters.yearTo;
+    filters.yearFrom === null ||
+    filters.yearTo === null ||
+    filters.yearFrom <= filters.yearTo;
   // --- Hooks ---
   const activePaperQuery = useMemo(
     () => buildPaperQuery(debouncedSearch, filters, pageNumber, pageSize),
@@ -222,7 +254,12 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
           return false;
       }
     },
-    [setupState.topic, hasSearchSources, papersPage?.totalCount, reviewProcesses],
+    [
+      setupState.topic,
+      hasSearchSources,
+      papersPage?.totalCount,
+      reviewProcesses,
+    ],
   );
 
   const initialCheckPerformed = useRef(false);
@@ -250,7 +287,14 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
       // User is already on a later step or manually navigated
       initialCheckPerformed.current = true;
     }
-  }, [hasSearchSources, setupState.topic, workflowStep, isStepCompleted, papersPage?.totalCount, reviewProcesses]);
+  }, [
+    hasSearchSources,
+    setupState.topic,
+    workflowStep,
+    isStepCompleted,
+    papersPage?.totalCount,
+    reviewProcesses,
+  ]);
 
   // Reactive auto-advance from Step 3 to 4 when first papers are imported
   useEffect(() => {
@@ -284,7 +328,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
             primary: true,
             onClick: () => {
               if (!hasSearchSources) {
-                toast.error("Please add at least one search source before continuing");
+                toast.error(
+                  "Please add at least one search source before continuing",
+                );
                 return;
               }
               setWorkflowStep(3);
@@ -331,7 +377,7 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
               }, 100);
             },
           },
-          ...(reviewProcesses?.length ?? 0) > 0
+          ...((reviewProcesses?.length ?? 0) > 0
             ? [
                 {
                   label: "Continue to Assignment",
@@ -340,7 +386,7 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
                   icon: FiChevronRight,
                 },
               ]
-            : [],
+            : []),
         ];
       case 5:
         return [
@@ -349,7 +395,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
             primary: true,
             onClick: () => {
               setActiveTab("library");
-              toast.success("Select papers in the table and use the action bar or process panel");
+              toast.success(
+                "Select papers in the table and use the action bar or process panel",
+              );
             },
           },
         ];
@@ -382,32 +430,45 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
   const { filterDetail: detailFilter, isLoading: isLoadingDetailFilter } =
     usePaperPoolFilterSettingDetail(projectId, detailFilterId);
 
-  const { snapshots: reviewProcessSnapshotsFromApi } = useReviewProcessSnapshots(projectId);
+  const { snapshots: reviewProcessSnapshotsFromApi } =
+    useReviewProcessSnapshots(projectId);
   const { addSelectedPapers } = useAddSelectedPapers();
   const { addPapersFromFilterSetting } = useAddPapersFromFilterSetting();
-  const { createReviewProcess, isCreating: isCreatingProcess } = useReviewProcessMutations();
+  const { createReviewProcess, isCreating: isCreatingProcess } =
+    useReviewProcessMutations();
 
   const selectedSavedFilter = useMemo(
-    () => savedFilters.find((setting) => setting.id === selectedSavedFilterId) ?? null,
+    () =>
+      savedFilters.find((setting) => setting.id === selectedSavedFilterId) ??
+      null,
     [savedFilters, selectedSavedFilterId],
   );
 
   const selectedSavedFilterQuery = useMemo(
     () =>
       selectedSavedFilter
-        ? buildPaperQuery(selectedSavedFilter.searchText || "", selectedSavedFilter.filters, 1, 1)
+        ? buildPaperQuery(
+            selectedSavedFilter.searchText || "",
+            selectedSavedFilter.filters,
+            1,
+            1,
+          )
         : null,
     [selectedSavedFilter],
   );
 
-  const { totalCount: selectedSavedFilterMatchedCount } = useSavedFilterPreviewCount(
-    projectId,
-    selectedSavedFilterId,
-    selectedSavedFilterQuery,
-  );
+  const { totalCount: selectedSavedFilterMatchedCount } =
+    useSavedFilterPreviewCount(
+      projectId,
+      selectedSavedFilterId,
+      selectedSavedFilterQuery,
+    );
 
   // --- Mapped Data ---
-  const papers = useMemo(() => (papersPage?.items ?? []).map(mapPaperFromApi), [papersPage?.items]);
+  const papers = useMemo(
+    () => (papersPage?.items ?? []).map(mapPaperFromApi),
+    [papersPage?.items],
+  );
   const totalCount = papersPage?.totalCount ?? 0;
   const totalPages = papersPage?.totalPages ?? 1;
 
@@ -418,7 +479,8 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
         reviewProcessSnapshotsFromApi.map(
           (snapshot): ProcessSnapshot => ({
             processId: snapshot.processId || snapshot.id || "",
-            processName: snapshot.processName || snapshot.name || "Untitled process",
+            processName:
+              snapshot.processName || snapshot.name || "Untitled process",
             statusText: snapshot.statusText as ProcessSnapshot["statusText"],
             progressPercent: snapshot.progressPercent ?? 0,
             existingPaperIds: [],
@@ -435,7 +497,8 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
 
   useEffect(() => {
     if (!papersPage) return;
-    if (papersPage.pageNumber !== pageNumber) setPageNumber(papersPage.pageNumber);
+    if (papersPage.pageNumber !== pageNumber)
+      setPageNumber(papersPage.pageNumber);
     if (papersPage.pageSize !== pageSize) setPageSize(papersPage.pageSize);
   }, [pageNumber, pageSize, papersPage]);
 
@@ -511,19 +574,27 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
         setProcessSnapshots((prev) =>
           prev.map((p) =>
             p.processId === processId
-              ? { ...p, progressPercent: result.reviewProcessSnapshot.progressPercent }
+              ? {
+                  ...p,
+                  progressPercent: result.reviewProcessSnapshot.progressPercent,
+                }
               : p,
           ),
         );
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to add papers");
+      toast.error(
+        error instanceof Error ? error.message : "Failed to add papers",
+      );
     } finally {
       setIsAdding(false);
     }
   };
 
-  const handleAddFromFilterToProcess = async (processId: string, filterId: string) => {
+  const handleAddFromFilterToProcess = async (
+    processId: string,
+    filterId: string,
+  ) => {
     setIsAdding(true);
     setInsertResult(null);
     try {
@@ -539,13 +610,20 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
         setProcessSnapshots((prev) =>
           prev.map((p) =>
             p.processId === processId
-              ? { ...p, progressPercent: result.processSnapshot.progressPercent }
+              ? {
+                  ...p,
+                  progressPercent: result.processSnapshot.progressPercent,
+                }
               : p,
           ),
         );
       }
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Failed to add papers from filter");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to add papers from filter",
+      );
     } finally {
       setIsAdding(false);
     }
@@ -574,12 +652,12 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
 
       {workflowStep === 1 && (
         <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-10 shadow-xl shadow-slate-200/50">
-            <div className="mb-8 pb-8 border-b border-slate-100">
-              <h2 className="text-2xl font-black text-slate-900 mb-2 uppercase tracking-tight">
+          <div className="bg-surface-white rounded-[2.5rem] border border-border p-10 shadow-none shadow-slate-200/50">
+            <div className="mb-8 pb-8 border-b border-border">
+              <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Research <span className="text-blue-600">Context</span> Summary
               </h2>
-              <p className="text-slate-500 font-medium">
+              <p className="text-text-secondary font-medium">
                 Review your Research Questions and PICO-C definitions.
               </p>
             </div>
@@ -597,12 +675,12 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
 
       {workflowStep === 2 && (
         <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-white rounded-[2.5rem] border border-slate-200 p-10 shadow-xl shadow-slate-200/50">
-            <div className="mb-8 pb-8 border-b border-slate-100">
-              <h2 className="text-2xl font-black text-slate-900 mb-2 uppercase tracking-tight">
+          <div className="bg-surface-white rounded-[2.5rem] border border-border p-10 shadow-none shadow-slate-200/50">
+            <div className="mb-8 pb-8 border-b border-border">
+              <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Search <span className="text-blue-600">Strategy</span> Planning
               </h2>
-              <p className="text-slate-500 font-medium">
+              <p className="text-text-secondary font-medium">
                 Define the academic databases and sources for your search.
               </p>
             </div>
@@ -610,14 +688,15 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
           </div>
 
           {!hasSearchSources && (
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-3xl flex items-center gap-4 text-amber-800">
-              <div className="w-12 h-12 bg-amber-100 rounded-2xl flex items-center justify-center shrink-0">
+            <div className="p-6 bg-amber-50 border border-amber-200 rounded-[4px] flex items-center gap-4 text-amber-800">
+              <div className="w-12 h-12 bg-amber-100 rounded-[4px] flex items-center justify-center shrink-0">
                 <FiAlertCircle className="w-6 h-6" />
               </div>
               <div>
                 <p className="font-bold">Search sources required</p>
                 <p className="text-sm opacity-80 font-medium">
-                  You must add at least one search source to proceed to the paper repository.
+                  You must add at least one search source to proceed to the
+                  paper repository.
                 </p>
               </div>
             </div>
@@ -627,7 +706,11 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
 
       {workflowStep >= 3 && (
         <>
-          <HeroNav activeTab={activeTab} onChange={setActiveTab} isLeader={isLeader} />
+          <HeroNav
+            activeTab={activeTab}
+            onChange={setActiveTab}
+            isLeader={isLeader}
+          />
 
           {activeTab === "library" ? (
             <>
@@ -669,7 +752,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
                 isAdding={isAdding}
                 insertResult={insertResult}
                 setInsertResult={setInsertResult}
-                selectedSavedFilterMatchedCount={selectedSavedFilterMatchedCount}
+                selectedSavedFilterMatchedCount={
+                  selectedSavedFilterMatchedCount
+                }
                 viewerPaper={viewerPaper}
                 setViewerPaper={setViewerPaper}
                 isManageFiltersOpen={isManageFiltersOpen}
@@ -677,7 +762,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
                 isNameFilterModalOpen={isNameFilterModalOpen}
                 setIsNameFilterModalOpen={setIsNameFilterModalOpen}
                 isAddToProcessBySelectionOpen={isAddToProcessBySelectionOpen}
-                setIsAddToProcessBySelectionOpen={setIsAddToProcessBySelectionOpen}
+                setIsAddToProcessBySelectionOpen={
+                  setIsAddToProcessBySelectionOpen
+                }
                 isAddToProcessByFilterOpen={isAddToProcessByFilterOpen}
                 setIsAddToProcessByFilterOpen={setIsAddToProcessByFilterOpen}
                 isImportModalOpen={isImportModalOpen}
@@ -706,7 +793,9 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
                 isRemovingPdf={isRemovingPdf}
                 onDeletePaper={deletePaper}
                 isDeletingPaper={paperIdBeingDeleted}
-                onOpenCreateProcessModal={() => setIsCreateProcessModalOpen(true)}
+                onOpenCreateProcessModal={() =>
+                  setIsCreateProcessModalOpen(true)
+                }
                 isLeader={isLeader}
               />
 
@@ -722,9 +811,11 @@ export default function PaperPoolTab({ projectId, reviewProcesses }: PaperPoolTa
           ) : activeTab === "deduplication" ? (
             <DeduplicationPage projectId={projectId} />
           ) : activeTab === "statistics" ? (
-            <PaperStatisticsDashboard 
-              projectId={projectId} 
-              availableSources={metadata?.searchSources?.map(s => s.name) ?? []} 
+            <PaperStatisticsDashboard
+              projectId={projectId}
+              availableSources={
+                metadata?.searchSources?.map((s) => s.name) ?? []
+              }
             />
           ) : (
             <SearchSourcePage projectId={projectId} />

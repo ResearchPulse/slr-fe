@@ -1,5 +1,11 @@
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { FiCheckSquare, FiSave, FiSquare, FiMinusSquare, FiAlertCircle } from "react-icons/fi";
+import {
+  FiCheckSquare,
+  FiSave,
+  FiSquare,
+  FiMinusSquare,
+  FiAlertCircle,
+} from "react-icons/fi";
 import Modal from "../../../../components/ui/Modal";
 import type { ExtractionSuggestionResponse } from "../../../../types/paper";
 import { cn } from "../../../../utils/cn";
@@ -48,7 +54,11 @@ const SUGGESTION_FIELD_CONFIG: SuggestionFieldConfig[] = [
   { key: "pages", apiFieldName: "Pages", label: "Pages" },
   { key: "keywords", apiFieldName: "Keywords", label: "Keywords" },
   { key: "year", apiFieldName: "Year", label: "Year" },
-  { key: "publishedDate", apiFieldName: "Published Date", label: "Published Date" },
+  {
+    key: "publishedDate",
+    apiFieldName: "Published Date",
+    label: "Published Date",
+  },
   { key: "issn", apiFieldName: "ISSN", label: "ISSN" },
   { key: "eissn", apiFieldName: "EISSN", label: "EISSN" },
   { key: "language", apiFieldName: "Language", label: "Language" },
@@ -86,9 +96,11 @@ export default function MetadataSuggestionModal({
       );
       const suggestedValue = normalizeValue(suggestion[field.key] as string);
 
-      const isChanged = currentValue !== suggestedValue && suggestedValue.length > 0;
+      const isChanged =
+        currentValue !== suggestedValue && suggestedValue.length > 0;
       const isSmartDefault =
-        isChanged && (suggestion.suggestedFields?.includes(field.apiFieldName) ?? false);
+        isChanged &&
+        (suggestion.suggestedFields?.includes(field.apiFieldName) ?? false);
 
       return {
         ...field,
@@ -106,7 +118,9 @@ export default function MetadataSuggestionModal({
   // 3. Sync state whenever rows change (Alignment with Backend Logic)
   useEffect(() => {
     if (isOpen) {
-      const defaults = rows.filter((row) => row.isSmartDefault).map((row) => row.apiFieldName);
+      const defaults = rows
+        .filter((row) => row.isSmartDefault)
+        .map((row) => row.apiFieldName);
       setSelectedFields(defaults);
     }
   }, [rows, isOpen]);
@@ -115,7 +129,9 @@ export default function MetadataSuggestionModal({
 
   const handleToggle = useCallback((fieldName: string) => {
     setSelectedFields((prev) =>
-      prev.includes(fieldName) ? prev.filter((f) => f !== fieldName) : [...prev, fieldName],
+      prev.includes(fieldName)
+        ? prev.filter((f) => f !== fieldName)
+        : [...prev, fieldName],
     );
   }, []);
 
@@ -139,7 +155,9 @@ export default function MetadataSuggestionModal({
     }
   };
 
-  const allSelected = selectableRows.length > 0 && selectedFields.length === selectableRows.length;
+  const allSelected =
+    selectableRows.length > 0 &&
+    selectedFields.length === selectableRows.length;
   const noneSelected = selectedFields.length === 0;
 
   return (
@@ -154,21 +172,24 @@ export default function MetadataSuggestionModal({
     >
       <div className="space-y-6">
         {/* Info Banner */}
-        <div className="flex items-start gap-3 rounded-2xl border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
+        <div className="flex items-start gap-3 rounded-[4px] border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
           <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
           <p className="leading-relaxed">
             Suggested values are extracted via GROBID AI. Fields marked with
-            <span className="mx-1 font-bold text-indigo-600 italic">"Suggested"</span>
-            represent values that differ from your current metadata or fill in missing gaps.
+            <span className="mx-1 font-bold text-accent italic">
+              "Suggested"
+            </span>
+            represent values that differ from your current metadata or fill in
+            missing gaps.
           </p>
         </div>
 
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50/50 py-12 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-sm">
+          <div className="flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[4px] bg-surface-white shadow-sm">
               <FiMinusSquare className="h-6 w-6 text-slate-300" />
             </div>
-            <p className="text-sm font-medium text-slate-500">
+            <p className="text-sm font-medium text-text-secondary">
               No usable metadata suggestions found in the PDF.
             </p>
           </div>
@@ -177,15 +198,15 @@ export default function MetadataSuggestionModal({
             {/* Selection Controls */}
             <div className="flex items-center justify-between px-1">
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
                   Bulk Actions
                 </span>
-                <div className="h-px w-8 bg-slate-100" />
+                <div className="h-px w-8 bg-bg-secondary" />
                 <button
                   type="button"
                   onClick={handleSelectAll}
                   disabled={allSelected || isApplying}
-                  className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 transition-colors hover:text-indigo-800 disabled:text-slate-300"
+                  className="text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:text-indigo-800 disabled:text-slate-300"
                 >
                   Select All
                 </button>
@@ -194,32 +215,32 @@ export default function MetadataSuggestionModal({
                   type="button"
                   onClick={handleClearAll}
                   disabled={noneSelected || isApplying}
-                  className="text-[10px] font-bold uppercase tracking-wider text-slate-500 transition-colors hover:text-slate-700 disabled:text-slate-300"
+                  className="text-[10px] font-bold uppercase tracking-wider text-text-secondary transition-colors hover:text-text-primary disabled:text-slate-300"
                 >
                   Clear All
                 </button>
               </div>
 
-              <div className="text-[10px] font-bold uppercase tracking-widest text-slate-400">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                 {selectedFields.length} of {selectableRows.length} Selected
               </div>
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm">
+            <div className="overflow-hidden rounded-[1.5rem] border border-border bg-surface-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-100">
-                <thead className="bg-slate-50/80">
+                <thead className="bg-bg-secondary/80">
                   <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-slate-500">
+                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
                       Field Name
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-slate-500">
+                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
                       Current Metadata
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-slate-500">
+                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
                       AI Suggestion
                     </th>
-                    <th className="px-6 py-4 text-center text-[10px] font-black uppercase tracking-[0.15em] text-slate-500">
+                    <th className="px-6 py-4 text-center text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
                       Action
                     </th>
                   </tr>
@@ -235,23 +256,29 @@ export default function MetadataSuggestionModal({
                         key={row.apiFieldName}
                         className={cn(
                           "group transition-colors",
-                          !isSelectable ? "bg-slate-50/30" : "hover:bg-slate-50",
+                          !isSelectable
+                            ? "bg-bg-secondary/30"
+                            : "hover:bg-bg-secondary",
                         )}
                       >
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-xs font-bold text-slate-800">{row.label}</span>
+                            <span className="text-xs font-bold text-slate-800">
+                              {row.label}
+                            </span>
                             {!isSelectable && (
-                              <span className="text-[9px] font-black uppercase tracking-tighter text-slate-400">
+                              <span className="text-[9px] font-black uppercase tracking-tighter text-text-secondary">
                                 Unchanged
                               </span>
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                          <span className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
                             {row.currentValue || (
-                              <span className="italic text-slate-300">Empty</span>
+                              <span className="italic text-slate-300">
+                                Empty
+                              </span>
                             )}
                           </span>
                         </td>
@@ -260,7 +287,9 @@ export default function MetadataSuggestionModal({
                             <span
                               className={cn(
                                 "text-xs leading-relaxed font-medium line-clamp-3",
-                                isSelectable ? "text-slate-900" : "text-slate-400",
+                                isSelectable
+                                  ? "text-text-primary"
+                                  : "text-text-secondary",
                               )}
                             >
                               {row.suggestedValue}
@@ -280,12 +309,12 @@ export default function MetadataSuggestionModal({
                               disabled={!isSelectable || isApplying}
                               onClick={() => handleToggle(row.apiFieldName)}
                               className={cn(
-                                "flex items-center gap-2 rounded-lg px-3 py-1.5 transition-all",
+                                "flex items-center gap-2 rounded-[4px] px-3 py-1.5 transition-all",
                                 !isSelectable
                                   ? "cursor-not-allowed opacity-20"
                                   : isChecked
-                                    ? "bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 shadow-sm"
-                                    : "text-slate-400 hover:bg-slate-100 hover:text-slate-600",
+                                    ? "bg-bg-secondary text-indigo-700 ring-1 ring-indigo-200 shadow-sm"
+                                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-secondary",
                               )}
                             >
                               {isChecked ? (
@@ -314,15 +343,17 @@ export default function MetadataSuggestionModal({
             type="button"
             onClick={onClose}
             disabled={isApplying}
-            className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-slate-500 transition-all hover:bg-slate-50 hover:text-slate-800 disabled:opacity-50"
+            className="rounded-[4px] border border-border bg-surface-white px-6 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-text-secondary transition-all hover:bg-bg-secondary hover:text-slate-800 disabled:opacity-50"
           >
             Discard
           </button>
           <button
             type="button"
             onClick={handleApply}
-            disabled={selectedFields.length === 0 || isApplying || rows.length === 0}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-indigo-600 hover:shadow-indigo-600/30 active:scale-95 disabled:scale-100 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none"
+            disabled={
+              selectedFields.length === 0 || isApplying || rows.length === 0
+            }
+            className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-slate-900 px-8 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-accent hover:shadow-indigo-600/30 active:scale-95 disabled:scale-100 disabled:bg-slate-200 disabled:text-text-secondary disabled:shadow-none"
           >
             {isApplying ? (
               <>

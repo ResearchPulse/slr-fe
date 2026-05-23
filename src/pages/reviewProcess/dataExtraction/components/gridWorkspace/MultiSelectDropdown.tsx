@@ -31,7 +31,7 @@ export default function MultiSelectDropdown({
 }: MultiSelectDropdownProps) {
   const [isOpen, setIsOpen] = useState(true);
   const [selectedValues, setSelectedValues] = useState<Set<string>>(
-    new Set(parseCurrentValue(currentValue))
+    new Set(parseCurrentValue(currentValue)),
   );
   const [dropdownPosition, setDropdownPosition] = useState<{
     top: number;
@@ -66,8 +66,12 @@ export default function MultiSelectDropdown({
         return;
       }
 
-      const isClickOnTrigger = triggerRef.current.contains(event.target as Node);
-      const isClickOnContainer = containerRef.current.contains(event.target as Node);
+      const isClickOnTrigger = triggerRef.current.contains(
+        event.target as Node,
+      );
+      const isClickOnContainer = containerRef.current.contains(
+        event.target as Node,
+      );
 
       if (!isClickOnTrigger && !isClickOnContainer) {
         onCancel();
@@ -125,10 +129,12 @@ export default function MultiSelectDropdown({
       {/* Summary Display / Trigger */}
       <div
         ref={triggerRef}
-        className="flex items-center gap-1 rounded-md border border-blue-300 bg-white px-2 py-1 text-xs text-slate-700"
+        className="flex items-center gap-1 rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-text-primary"
       >
-        <ChevronDown className="h-3 w-3 flex-shrink-0 text-slate-400" />
-        <span className="min-w-0 flex-1 truncate text-slate-600">{displayLabel}</span>
+        <ChevronDown className="h-3 w-3 flex-shrink-0 text-text-secondary" />
+        <span className="min-w-0 flex-1 truncate text-text-secondary">
+          {displayLabel}
+        </span>
       </div>
 
       {/* Dropdown Menu - Portaled to document.body */}
@@ -136,7 +142,7 @@ export default function MultiSelectDropdown({
         createPortal(
           <div
             ref={containerRef}
-            className="fixed z-50 mt-1 rounded-md border border-slate-200 bg-white shadow-lg"
+            className="fixed z-50 mt-1 rounded-md border border-border bg-surface-white shadow-lg"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
@@ -145,38 +151,42 @@ export default function MultiSelectDropdown({
           >
             <div className="max-h-48 overflow-y-auto p-1">
               {/* Select All Option */}
-              <label className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-slate-50 cursor-pointer">
+              <label className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-bg-secondary cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={selectedValues.size === options.length && options.length > 0}
+                  checked={
+                    selectedValues.size === options.length && options.length > 0
+                  }
                   onChange={handleSelectAll}
                   disabled={disabled || options.length === 0}
-                  className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400 disabled:cursor-not-allowed"
+                  className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400 disabled:cursor-not-allowed"
                 />
-                <span className="text-xs font-semibold text-slate-600">Select All</span>
+                <span className="text-xs font-semibold text-text-secondary">
+                  Select All
+                </span>
               </label>
 
-              <div className="my-1 border-t border-slate-100" />
+              <div className="my-1 border-t border-border" />
 
               {/* Individual Options */}
               {options.length === 0 ? (
-                <div className="px-2 py-3 text-center text-xs text-slate-500">
+                <div className="px-2 py-3 text-center text-xs text-text-secondary">
                   No options available
                 </div>
               ) : (
                 options.map((option) => (
                   <label
                     key={option.optionId || option.value}
-                    className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-slate-50 cursor-pointer"
+                    className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-bg-secondary cursor-pointer"
                   >
                     <input
                       type="checkbox"
                       checked={selectedValues.has(option.value)}
                       onChange={() => handleToggleOption(option.value)}
                       disabled={disabled}
-                      className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400 disabled:cursor-not-allowed"
+                      className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400 disabled:cursor-not-allowed"
                     />
-                    <span className="min-w-0 flex-1 truncate text-xs text-slate-700">
+                    <span className="min-w-0 flex-1 truncate text-xs text-text-primary">
                       {option.value}
                     </span>
                   </label>
@@ -185,12 +195,12 @@ export default function MultiSelectDropdown({
             </div>
 
             {/* Footer Buttons */}
-            <div className="flex gap-1 border-t border-slate-100 bg-slate-50 p-2">
+            <div className="flex gap-1 border-t border-border bg-bg-secondary p-2">
               <button
                 type="button"
                 onClick={onCancel}
                 disabled={disabled}
-                className="flex-1 rounded px-2 py-1 text-xs font-medium text-slate-600 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 rounded px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -204,7 +214,7 @@ export default function MultiSelectDropdown({
               </button>
             </div>
           </div>,
-          document.body
+          document.body,
         )}
     </div>
   );

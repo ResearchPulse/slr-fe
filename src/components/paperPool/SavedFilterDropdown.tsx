@@ -1,5 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { FiChevronDown, FiFilter, FiSettings, FiCheck, FiPlus } from "react-icons/fi";
+import {
+  FiChevronDown,
+  FiFilter,
+  FiSettings,
+  FiCheck,
+  FiPlus,
+} from "react-icons/fi";
 import type { PaperPoolFilterSetting } from "./types";
 
 interface SavedFilterDropdownProps {
@@ -26,7 +32,10 @@ export default function SavedFilterDropdown({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -38,42 +47,42 @@ export default function SavedFilterDropdown({
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border-2 transition-all ${
+        className={`flex items-center gap-3 px-4 py-2.5 rounded-[4px] border-2 transition-all ${
           isOpen
             ? "border-blue-500 bg-blue-50 shadow-sm"
-            : "border-gray-100 bg-white hover:border-gray-200"
+            : "border-border bg-surface-white hover:border-border"
         }`}
       >
         <div
-          className={`w-8 h-8 rounded-lg flex items-center justify-center ${selectedFilter ? "bg-blue-500 text-white" : "bg-gray-100 text-gray-400"}`}
+          className={`w-8 h-8 rounded-[4px] flex items-center justify-center ${selectedFilter ? "bg-blue-500 text-white" : "bg-bg-secondary text-text-secondary"}`}
         >
           <FiFilter className="w-4 h-4" />
         </div>
         <div className="text-left">
-          <div className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
+          <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest leading-none mb-1">
             Active View
           </div>
-          <div className="text-sm font-bold text-gray-900 leading-none">
+          <div className="text-sm font-bold text-text-primary leading-none">
             {selectedFilter ? selectedFilter.name : "Unsaved View"}
           </div>
         </div>
         <FiChevronDown
-          className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-text-secondary transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-white rounded-2xl shadow-2xl border border-gray-100 overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="p-2 border-b border-gray-50 bg-gray-50/50">
+        <div className="absolute top-full right-0 mt-2 w-72 bg-surface-white rounded-[4px] shadow-2xl border border-border overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="p-2 border-b border-border bg-bg-primary/50">
             <button
               onClick={() => {
                 onSaveNew();
                 setIsOpen(false);
               }}
               disabled={isCreating}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-blue-600 hover:bg-blue-50 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-[4px] text-blue-600 hover:bg-blue-50 transition-colors"
             >
-              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-[4px] bg-blue-100 flex items-center justify-center">
                 <FiPlus className="w-4 h-4" />
               </div>
               <span className="text-xs font-black uppercase tracking-widest">
@@ -83,11 +92,11 @@ export default function SavedFilterDropdown({
           </div>
 
           <div className="max-h-64 overflow-y-auto custom-scrollbar p-2 space-y-1">
-            <div className="px-3 py-2 text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            <div className="px-3 py-2 text-[10px] font-black text-text-secondary uppercase tracking-widest">
               Saved Filter Collections
             </div>
             {savedFilters.length === 0 ? (
-              <div className="px-3 py-8 text-center text-xs text-gray-400 italic">
+              <div className="px-3 py-8 text-center text-xs text-text-secondary italic">
                 No saved filters yet
               </div>
             ) : (
@@ -98,36 +107,42 @@ export default function SavedFilterDropdown({
                     onSelect(filter);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-3 rounded-xl transition-colors ${
+                  className={`w-full flex items-center justify-between px-3 py-3 rounded-[4px] transition-colors ${
                     selectedFilterId === filter.id
                       ? "bg-blue-50 text-blue-700"
-                      : "hover:bg-gray-50 text-gray-700"
+                      : "hover:bg-bg-primary text-text-primary"
                   }`}
                 >
                   <div className="flex flex-col text-left overflow-hidden">
-                    <span className="text-sm font-bold truncate">{filter.name}</span>
-                    <span className="text-[10px] text-gray-400 truncate">
+                    <span className="text-sm font-bold truncate">
+                      {filter.name}
+                    </span>
+                    <span className="text-[10px] text-text-secondary truncate">
                       {filter.searchText || "No search term"}
                     </span>
                   </div>
-                  {selectedFilterId === filter.id && <FiCheck className="w-4 h-4 shrink-0" />}
+                  {selectedFilterId === filter.id && (
+                    <FiCheck className="w-4 h-4 shrink-0" />
+                  )}
                 </button>
               ))
             )}
           </div>
 
-          <div className="p-2 border-t border-gray-50 bg-gray-50/50">
+          <div className="p-2 border-t border-border bg-bg-primary/50">
             <button
               onClick={() => {
                 onManage();
                 setIsOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-gray-600 hover:bg-white hover:text-gray-900 hover:shadow-sm border border-transparent hover:border-gray-200 transition-all"
+              className="w-full flex items-center gap-3 px-3 py-3 rounded-[4px] text-text-secondary hover:bg-surface-white hover:text-text-primary hover:shadow-sm border border-transparent hover:border-border transition-all"
             >
-              <div className="w-8 h-8 rounded-lg bg-gray-200 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center">
                 <FiSettings className="w-4 h-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-widest">Manage Filters</span>
+              <span className="text-xs font-black uppercase tracking-widest">
+                Manage Filters
+              </span>
             </button>
           </div>
         </div>

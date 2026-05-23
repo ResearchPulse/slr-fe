@@ -15,19 +15,21 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={ref}
           className={cn(
             // Base styles
-            "w-full px-3 py-2.5 rounded-[4px] bg-[#FDFCF9] border appearance-none text-sm",
-            "text-[#111111]",
+            "w-full px-3 py-2.5 rounded-[4px] bg-surface-white border appearance-none text-sm",
+            "text-text-primary",
             "transition-colors duration-200",
-            "focus:bg-[#FDFCF9] focus:outline-none focus:ring-1",
+            "focus:bg-surface-white focus:outline-none focus:ring-1",
             "cursor-pointer",
 
             // Default state (no error)
-            !error && "border-[#D8D2C8] focus:ring-[#5B0000] focus:border-[#5B0000] hover:border-[#A0998C]",
+            !error &&
+              "border-border focus:ring-accent focus:border-accent hover:border-[#A0998C]",
 
             // Error state
-            error && "border-red-500 focus:ring-red-500/40 focus:border-red-500",
+            error &&
+              "border-red-500 focus:ring-red-500/40 focus:border-red-500",
 
-            className
+            className,
           )}
           {...props}
         >
@@ -44,13 +46,23 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         </select>
         {/* Custom Chevron */}
         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-          <svg className="w-4 h-4 text-[#5C5C5C]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 9l-7 7-7-7" />
+          <svg
+            className="w-4 h-4 text-text-secondary"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </div>
       </div>
     );
-  }
+  },
 );
 
 Select.displayName = "Select";

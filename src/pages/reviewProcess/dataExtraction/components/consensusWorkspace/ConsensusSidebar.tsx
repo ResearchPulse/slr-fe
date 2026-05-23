@@ -16,10 +16,12 @@ export default function ConsensusSidebar({
   onSectionChange,
 }: ConsensusSidebarProps) {
   return (
-    <aside className="w-[20%] overflow-y-auto border-r border-slate-200 bg-white p-4">
-      <div className="border-b border-slate-100 pb-4">
+    <aside className="w-[20%] overflow-y-auto border-r border-border bg-surface-white p-4">
+      <div className="border-b border-border pb-4">
         <h2 className="text-lg font-semibold text-slate-800">Sections</h2>
-        <p className="mt-1 text-sm text-slate-500">Extraction Adjudication</p>
+        <p className="mt-1 text-sm text-text-secondary">
+          Extraction Adjudication
+        </p>
       </div>
 
       <div className="mt-4 space-y-2">
@@ -34,28 +36,29 @@ export default function ConsensusSidebar({
               onClick={() => onSectionChange(section.sectionId)}
               className={
                 isActive
-                  ? "w-full rounded-xl border border-blue-500 bg-blue-50 px-4 py-3 text-left"
-                  : "w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-left hover:border-slate-300"
+                  ? "w-full rounded-[4px] border border-blue-500 bg-blue-50 px-4 py-3 text-left"
+                  : "w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-left hover:border-slate-300"
               }
             >
               <p
                 className={
                   isActive
                     ? "text-sm font-semibold text-blue-700"
-                    : "text-sm font-semibold text-slate-700"
+                    : "text-sm font-semibold text-text-primary"
                 }
               >
                 {section.name}
               </p>
-              <p className="mt-1 text-xs text-slate-500">
-                {section.fields.length} fields, {sectionConflictCount} remaining conflicts
+              <p className="mt-1 text-xs text-text-secondary">
+                {section.fields.length} fields, {sectionConflictCount} remaining
+                conflicts
               </p>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+      <div className="mt-6 rounded-[4px] border border-amber-200 bg-amber-50 px-3 py-2">
         <p className="text-xs font-medium uppercase tracking-wide text-amber-700">
           Remaining Conflicts
         </p>

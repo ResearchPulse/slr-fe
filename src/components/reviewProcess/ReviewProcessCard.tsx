@@ -29,7 +29,7 @@ const getStatusConfig = (statusText: string) => {
   switch (statusText) {
     case "Pending":
       return {
-        color: "text-gray-600 bg-gray-100",
+        color: "text-text-secondary bg-bg-secondary",
         icon: FiClock,
         label: "Pending",
       };
@@ -53,7 +53,7 @@ const getStatusConfig = (statusText: string) => {
       };
     default:
       return {
-        color: "text-gray-600 bg-gray-100",
+        color: "text-text-secondary bg-bg-secondary",
         icon: FiClock,
         label: statusText,
       };
@@ -94,13 +94,13 @@ export default function ReviewProcessCard({
   const createdAt = process.createdAt;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-6 hover:shadow-md transition-shadow">
+    <div className="bg-surface-white border border-border rounded-[4px] p-6 hover:shadow-none transition-shadow-none">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3
-              className="text-lg font-semibold text-gray-900 hover:text-blue-600 cursor-pointer transition-colors"
+              className="text-lg font-semibold text-text-primary hover:text-blue-600 cursor-pointer transition-colors"
               onClick={() => onOpen?.(id)}
             >
               {name}
@@ -112,7 +112,9 @@ export default function ReviewProcessCard({
               {statusConfig.label}
             </span>
           </div>
-          <p className="text-gray-600 text-sm mb-3">Phase: {currentPhaseText}</p>
+          <p className="text-text-secondary text-sm mb-3">
+            Phase: {currentPhaseText}
+          </p>
         </div>
       </div>
 
@@ -120,34 +122,45 @@ export default function ReviewProcessCard({
       <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
         {createdAt && (
           <div>
-            <span className="text-gray-500">Created:</span>
-            <p className="text-gray-900 font-medium">{formatDate(createdAt)}</p>
+            <span className="text-text-secondary">Created:</span>
+            <p className="text-text-primary font-medium">
+              {formatDate(createdAt)}
+            </p>
           </div>
         )}
         {startedAt && (
           <div>
-            <span className="text-gray-500">Started:</span>
-            <p className="text-gray-900 font-medium">{formatDate(startedAt)}</p>
+            <span className="text-text-secondary">Started:</span>
+            <p className="text-text-primary font-medium">
+              {formatDate(startedAt)}
+            </p>
           </div>
         )}
         {process.completedAt && (
           <div>
-            <span className="text-gray-500">Completed:</span>
-            <p className="text-gray-900 font-medium">{formatDate(process.completedAt)}</p>
+            <span className="text-text-secondary">Completed:</span>
+            <p className="text-text-primary font-medium">
+              {formatDate(process.completedAt)}
+            </p>
           </div>
         )}
       </div>
 
       {/* Progress & Stats */}
-      {(process.progressPercent !== undefined || process.totalPapersImported !== undefined) && (
+      {(process.progressPercent !== undefined ||
+        process.totalPapersImported !== undefined) && (
         <div className="mb-4 space-y-3">
           {process.progressPercent !== undefined && (
             <div>
               <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-medium text-gray-500">Progress</span>
-                <span className="text-xs font-bold text-blue-600">{process.progressPercent}%</span>
+                <span className="text-xs font-medium text-text-secondary">
+                  Progress
+                </span>
+                <span className="text-xs font-bold text-blue-600">
+                  {process.progressPercent}%
+                </span>
               </div>
-              <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+              <div className="w-full bg-bg-secondary rounded-full h-1.5 overflow-hidden">
                 <div
                   className="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${process.progressPercent}%` }}
@@ -156,16 +169,16 @@ export default function ReviewProcessCard({
             </div>
           )}
 
-          <div className="flex items-center gap-4 py-2 px-3 bg-gray-50 rounded-lg">
-            <div className="flex-1 text-center border-r border-gray-200">
-              <span className="block text-[10px] uppercase tracking-wider text-gray-500 font-bold mb-0.5">
+          <div className="flex items-center gap-4 py-2 px-3 bg-bg-primary rounded-[4px]">
+            <div className="flex-1 text-center border-r border-border">
+              <span className="block text-[10px] uppercase tracking-wider text-text-secondary font-bold mb-0.5">
                 Total
               </span>
-              <span className="text-sm font-bold text-gray-900">
+              <span className="text-sm font-bold text-text-primary">
                 {process.totalPapersImported ?? 0}
               </span>
             </div>
-            <div className="flex-1 text-center border-r border-gray-200">
+            <div className="flex-1 text-center border-r border-border">
               <span className="block text-[10px] uppercase tracking-wider text-green-600 font-bold mb-0.5">
                 Included
               </span>
@@ -186,7 +199,7 @@ export default function ReviewProcessCard({
       )}
 
       {/* Actions */}
-      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-200">
+      <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
         {onOpen && (
           <Button
             size="sm"
@@ -223,7 +236,8 @@ export default function ReviewProcessCard({
           </Button>
         )}
 
-        {(process.statusText === "NotStarted" || process.statusText === "InProgress") &&
+        {(process.statusText === "NotStarted" ||
+          process.statusText === "InProgress") &&
           onCancel && (
             <Button
               size="sm"
@@ -237,18 +251,20 @@ export default function ReviewProcessCard({
             </Button>
           )}
 
-        {(process.statusText === "NotStarted" || process.statusText === "InProgress") && onEdit && (
-          <Button
-            size="sm"
-            variant="secondary"
-            onClick={() => onEdit(process)}
-            disabled={isLoading}
-            className="flex items-center gap-1.5"
-          >
-            <FiEdit2 className="w-4 h-4" />
-            Edit Notes
-          </Button>
-        )}
+        {(process.statusText === "NotStarted" ||
+          process.statusText === "InProgress") &&
+          onEdit && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => onEdit(process)}
+              disabled={isLoading}
+              className="flex items-center gap-1.5"
+            >
+              <FiEdit2 className="w-4 h-4" />
+              Edit Notes
+            </Button>
+          )}
 
         {process.statusText !== "InProgress" && onDelete && (
           <Button
@@ -256,7 +272,7 @@ export default function ReviewProcessCard({
             variant="secondary"
             onClick={() => onDelete(id)}
             disabled={isLoading}
-            className="flex items-center gap-1.5 ml-auto text-red-600 hover:bg-red-50"
+            className="flex items-center gap-1.5 ml-auto text-red-600 hover:bg-surface-white"
           >
             <FiTrash2 className="w-4 h-4" />
             Delete

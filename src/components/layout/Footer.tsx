@@ -4,11 +4,11 @@ const Footer: React.FC = () => {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-white border-t border-border-default py-8 mt-auto">
+    <footer className="bg-bg-primary border-t border-border py-8 mt-auto">
       <div className="container mx-auto px-4">
-        <p className="text-center text-text-muted text-sm font-medium tracking-wide">
+        <p className="text-center text-text-secondary text-[11px] uppercase tracking-[0.2em] font-medium">
           © {currentYear} Systematic Review Support System
-          <span className="mx-3 text-border-default">|</span>
+          <span className="mx-3 text-border">|</span>
           Following PRISMA Framework
         </p>
       </div>

@@ -1,6 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, Grid3X3, LayoutGrid, NotebookPen, Plus } from "lucide-react";
-import { DndContext, DragOverlay, PointerSensor, type DragEndEvent, type DragStartEvent, useSensor, useSensors } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  type DragEndEvent,
+  type DragStartEvent,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import Button from "../../../components/ui/Button";
 import type {
   AddEvidenceRequest,
@@ -21,14 +29,14 @@ import SubgroupAnalysisMatrix from "./SubgroupAnalysisMatrix";
 
 type ThematicConfirmationAction =
   | {
-    type: "delete-theme";
-    themeId: string;
-    themeName: string;
-  }
+      type: "delete-theme";
+      themeId: string;
+      themeName: string;
+    }
   | {
-    type: "unlink-evidence";
-    evidenceId: string;
-  };
+      type: "unlink-evidence";
+      evidenceId: string;
+    };
 
 interface ThematicWorkspaceProps {
   workspace: SynthesisWorkspaceDto;
@@ -43,9 +51,15 @@ interface ThematicWorkspaceProps {
   isLinkingEvidence?: boolean;
   isUnlinkingEvidence?: boolean;
   onCreateTheme: (request: CreateThemeRequest) => Promise<void>;
-  onUpdateTheme: (themeId: string, request: UpdateThemeRequest) => Promise<void>;
+  onUpdateTheme: (
+    themeId: string,
+    request: UpdateThemeRequest,
+  ) => Promise<void>;
   onDeleteTheme: (themeId: string) => Promise<void>;
-  onLinkEvidence: (themeId: string, request: AddEvidenceRequest) => Promise<void>;
+  onLinkEvidence: (
+    themeId: string,
+    request: AddEvidenceRequest,
+  ) => Promise<void>;
   onUnlinkEvidence: (evidenceId: string) => Promise<void>;
   onViewStrategyGuidelines: () => void;
 }
@@ -71,13 +85,24 @@ export default function ThematicWorkspace({
 }: ThematicWorkspaceProps) {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [themeBeingEdited, setThemeBeingEdited] = useState<SynthesisThemeDto | null>(null);
+  const [themeBeingEdited, setThemeBeingEdited] =
+    useState<SynthesisThemeDto | null>(null);
   const [expandedGroupId, setExpandedGroupId] = useState<string | null>(null);
-  const [unlinkingEvidenceId, setUnlinkingEvidenceId] = useState<string | null>(null);
-  const [activeDragEvidence, setActiveDragEvidence] = useState<SourceDataValueDto | null>(null);
-  const [pendingConfirmation, setPendingConfirmation] = useState<ThematicConfirmationAction | null>(null);
+  const [unlinkingEvidenceId, setUnlinkingEvidenceId] = useState<string | null>(
+    null,
+  );
+  const [activeDragEvidence, setActiveDragEvidence] =
+    useState<SourceDataValueDto | null>(null);
+  const [pendingConfirmation, setPendingConfirmation] =
+    useState<ThematicConfirmationAction | null>(null);
   const [isConfirmingAction, setIsConfirmingAction] = useState(false);
-  const isBusy = isCreatingTheme || isUpdatingTheme || isDeletingTheme || isLinkingEvidence || isUnlinkingEvidence || isConfirmingAction;
+  const isBusy =
+    isCreatingTheme ||
+    isUpdatingTheme ||
+    isDeletingTheme ||
+    isLinkingEvidence ||
+    isUnlinkingEvidence ||
+    isConfirmingAction;
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -88,7 +113,11 @@ export default function ThematicWorkspace({
   );
 
   const evidenceCount = useMemo(
-    () => workspace.themes.reduce((total, theme) => total + theme.evidences.length, 0),
+    () =>
+      workspace.themes.reduce(
+        (total, theme) => total + theme.evidences.length,
+        0,
+      ),
     [workspace.themes],
   );
 
@@ -96,7 +125,9 @@ export default function ThematicWorkspace({
     return sourceDataGroups
       .map((group) => ({
         ...group,
-        values: group.values.filter((value) => (filterHighQualityOnly ? value.isHighQuality : true)),
+        values: group.values.filter((value) =>
+          filterHighQualityOnly ? value.isHighQuality : true,
+        ),
       }))
       .filter((group) => group.values.length > 0);
   }, [sourceDataGroups, filterHighQualityOnly]);
@@ -104,22 +135,36 @@ export default function ThematicWorkspace({
   const filteredThemes = useMemo<SynthesisThemeDto[]>(() => {
     return workspace.themes.map((theme) => ({
       ...theme,
-      evidences: theme.evidences.filter((evidence) => (filterHighQualityOnly ? evidence.isHighQuality : true)),
+      evidences: theme.evidences.filter((evidence) =>
+        filterHighQualityOnly ? evidence.isHighQuality : true,
+      ),
     }));
   }, [workspace.themes, filterHighQualityOnly]);
 
   const totalSourceValueCount = useMemo(() => {
-    return sourceDataGroups.reduce((total, group) => total + group.values.length, 0);
+    return sourceDataGroups.reduce(
+      (total, group) => total + group.values.length,
+      0,
+    );
   }, [sourceDataGroups]);
 
   const visibleSourceValueCount = useMemo(() => {
-    return filteredSourceDataGroups.reduce((total, group) => total + group.values.length, 0);
+    return filteredSourceDataGroups.reduce(
+      (total, group) => total + group.values.length,
+      0,
+    );
   }, [filteredSourceDataGroups]);
 
-  const hiddenSourceValueCount = Math.max(0, totalSourceValueCount - visibleSourceValueCount);
+  const hiddenSourceValueCount = Math.max(
+    0,
+    totalSourceValueCount - visibleSourceValueCount,
+  );
 
   const hiddenEvidenceCount = useMemo(() => {
-    const visibleEvidenceCount = filteredThemes.reduce((total, theme) => total + theme.evidences.length, 0);
+    const visibleEvidenceCount = filteredThemes.reduce(
+      (total, theme) => total + theme.evidences.length,
+      0,
+    );
     return Math.max(0, evidenceCount - visibleEvidenceCount);
   }, [evidenceCount, filteredThemes]);
 
@@ -144,7 +189,9 @@ export default function ThematicWorkspace({
     }
 
     const hasExpandedGroup = expandedGroupId
-      ? filteredSourceDataGroups.some((group) => group.fieldId === expandedGroupId)
+      ? filteredSourceDataGroups.some(
+          (group) => group.fieldId === expandedGroupId,
+        )
       : false;
 
     if (!hasExpandedGroup) {
@@ -153,7 +200,10 @@ export default function ThematicWorkspace({
   }, [expandedGroupId, filteredSourceDataGroups]);
 
   const handleDragStart = (event: DragStartEvent) => {
-    const draggedValue = (event.active.data.current?.value as SourceDataValueDto | undefined) ?? sourceDataValueLookup.get(String(event.active.id)) ?? null;
+    const draggedValue =
+      (event.active.data.current?.value as SourceDataValueDto | undefined) ??
+      sourceDataValueLookup.get(String(event.active.id)) ??
+      null;
     setActiveDragEvidence(draggedValue);
   };
 
@@ -170,7 +220,9 @@ export default function ThematicWorkspace({
     }
 
     const themeId = String(over.id);
-    const draggedValue = (active.data.current?.value as SourceDataValueDto | undefined) ?? sourceDataValueLookup.get(String(active.id));
+    const draggedValue =
+      (active.data.current?.value as SourceDataValueDto | undefined) ??
+      sourceDataValueLookup.get(String(active.id));
 
     if (!draggedValue) {
       return;
@@ -199,7 +251,10 @@ export default function ThematicWorkspace({
     setThemeBeingEdited(null);
   };
 
-  const handleLinkEvidence = async (themeId: string, value: SourceDataValueDto) => {
+  const handleLinkEvidence = async (
+    themeId: string,
+    value: SourceDataValueDto,
+  ) => {
     await onLinkEvidence(themeId, {
       extractedDataValueId: value.extractedDataValueId,
     });
@@ -253,35 +308,46 @@ export default function ThematicWorkspace({
     }
   };
 
-  const confirmationTitle = pendingConfirmation?.type === "delete-theme"
-    ? `Delete theme "${pendingConfirmation.themeName}"?`
-    : "Unlink evidence from theme?";
-  const confirmationDescription = pendingConfirmation?.type === "delete-theme"
-    ? "This will permanently remove the selected theme and its linked evidence connections from the synthesis workspace."
-    : "This evidence will be detached from the current theme and can be linked again later.";
-  const confirmationLabel = pendingConfirmation?.type === "delete-theme"
-    ? "Delete Theme"
-    : "Unlink Evidence";
+  const confirmationTitle =
+    pendingConfirmation?.type === "delete-theme"
+      ? `Delete theme "${pendingConfirmation.themeName}"?`
+      : "Unlink evidence from theme?";
+  const confirmationDescription =
+    pendingConfirmation?.type === "delete-theme"
+      ? "This will permanently remove the selected theme and its linked evidence connections from the synthesis workspace."
+      : "This evidence will be detached from the current theme and can be linked again later.";
+  const confirmationLabel =
+    pendingConfirmation?.type === "delete-theme"
+      ? "Delete Theme"
+      : "Unlink Evidence";
 
   return (
     <div className="space-y-6">
-      <div className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+      <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-gray-400">Thematic Analysis Workspace</p>
-            <h2 className="mt-2 text-2xl font-semibold text-gray-900">Link raw evidence to conceptual themes</h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-600">
-              Review extracted study data on the left, create themes on the right, and attach evidence to the best-fitting concept as you code the synthesis.
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+              Thematic Analysis Workspace
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-text-primary">
+              Link raw evidence to conceptual themes
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
+              Review extracted study data on the left, create themes on the
+              right, and attach evidence to the best-fitting concept as you code
+              the synthesis.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center rounded-xl bg-gray-50 p-1 shadow-sm ring-1 ring-gray-200">
+            <div className="flex items-center rounded-[4px] bg-bg-primary p-1 shadow-none ring-1 ring-gray-200">
               <button
                 type="button"
                 onClick={() => onViewModeChange("cards")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  viewMode === "cards" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                  viewMode === "cards"
+                    ? "bg-blue-600 text-white"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 <LayoutGrid className="h-4 w-4" />
@@ -290,8 +356,10 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("matrix")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  viewMode === "matrix" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                  viewMode === "matrix"
+                    ? "bg-blue-600 text-white"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 <Grid3X3 className="h-4 w-4" />
@@ -300,25 +368,35 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("subgroup")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
-                  viewMode === "subgroup" ? "bg-blue-600 text-white" : "text-gray-500 hover:text-gray-900"
+                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                  viewMode === "subgroup"
+                    ? "bg-blue-600 text-white"
+                    : "text-text-secondary hover:text-text-primary"
                 }`}
               >
                 <Grid3X3 className="h-4 w-4" />
                 Sub-group
               </button>
             </div>
-            <Button variant="ghost" size="sm" onClick={onViewStrategyGuidelines} className="text-gray-600 hover:text-gray-900">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onViewStrategyGuidelines}
+              className="text-text-secondary hover:text-text-primary"
+            >
               <BookOpen className="mr-2 h-4 w-4" />
               View Strategy Guidelines
             </Button>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700">
+            <span className="rounded-full border border-border bg-bg-primary px-4 py-2 text-sm font-semibold text-text-primary">
               {workspace.themes.length} themes
             </span>
-            <span className="rounded-full border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-semibold text-gray-700">
+            <span className="rounded-full border border-border bg-bg-primary px-4 py-2 text-sm font-semibold text-text-primary">
               {evidenceCount} evidences
             </span>
-            <Button onClick={() => setIsCreateModalOpen(true)} disabled={isReadOnly}>
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              disabled={isReadOnly}
+            >
               <Plus className="mr-2 h-4 w-4" />
               Create New Theme
             </Button>
@@ -327,72 +405,109 @@ export default function ThematicWorkspace({
       </div>
 
       {viewMode === "matrix" ? (
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Themes Matrix</h3>
-              <p className="mt-1 text-sm text-gray-500">A full-width evidence matrix for scanning themes across papers.</p>
+              <h3 className="text-lg font-semibold text-text-primary">
+                Themes Matrix
+              </h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                A full-width evidence matrix for scanning themes across papers.
+              </p>
               {hiddenEvidenceCount > 0 ? (
-                <p className="mt-2 text-xs font-semibold text-amber-700">{hiddenEvidenceCount} evidences hidden by QA filter</p>
+                <p className="mt-2 text-xs font-semibold text-amber-700">
+                  {hiddenEvidenceCount} evidences hidden by QA filter
+                </p>
               ) : null}
             </div>
             {isReadOnly ? (
-              <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-500">
+              <span className="rounded-full border border-border bg-bg-primary px-3 py-1 text-xs font-semibold text-text-secondary">
                 Read only
               </span>
             ) : null}
           </div>
 
           {workspace.themes.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-              <NotebookPen className="mx-auto h-8 w-8 text-gray-400" />
-              <p className="text-sm font-medium text-gray-600">No themes created yet.</p>
-              <p className="mt-1 text-sm text-gray-500">Create the first theme to begin qualitative coding.</p>
+            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+              <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
+              <p className="text-sm font-medium text-text-secondary">
+                No themes created yet.
+              </p>
+              <p className="mt-1 text-sm text-text-secondary">
+                Create the first theme to begin qualitative coding.
+              </p>
             </div>
           ) : filteredThemes.every((theme) => theme.evidences.length === 0) ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-              <NotebookPen className="mx-auto h-8 w-8 text-gray-400" />
-              <p className="text-sm font-medium text-gray-600">No evidence meets the current QA threshold.</p>
-              <p className="mt-1 text-sm text-gray-500">Lower the sensitivity filter to reveal hidden evidence.</p>
+            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+              <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
+              <p className="text-sm font-medium text-text-secondary">
+                No evidence meets the current QA threshold.
+              </p>
+              <p className="mt-1 text-sm text-text-secondary">
+                Lower the sensitivity filter to reveal hidden evidence.
+              </p>
             </div>
           ) : (
             <EvidenceMatrixView themes={filteredThemes} />
           )}
         </section>
       ) : viewMode === "subgroup" ? (
-        <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+        <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-semibold text-gray-900">Sub-group Analysis & Heterogeneity</h3>
-              <p className="mt-1 text-sm text-gray-500">Cross-tabulate themes against categorical study characteristics.</p>
+              <h3 className="text-lg font-semibold text-text-primary">
+                Sub-group Analysis & Heterogeneity
+              </h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                Cross-tabulate themes against categorical study characteristics.
+              </p>
             </div>
             {isReadOnly ? (
-              <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-500">
+              <span className="rounded-full border border-border bg-bg-primary px-3 py-1 text-xs font-semibold text-text-secondary">
                 Read only
               </span>
             ) : null}
           </div>
 
           {workspace.themes.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-              <NotebookPen className="mx-auto h-8 w-8 text-gray-400" />
-              <p className="text-sm font-medium text-gray-600">No themes created yet.</p>
-              <p className="mt-1 text-sm text-gray-500">Create the first theme to begin qualitative coding.</p>
+            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+              <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
+              <p className="text-sm font-medium text-text-secondary">
+                No themes created yet.
+              </p>
+              <p className="mt-1 text-sm text-text-secondary">
+                Create the first theme to begin qualitative coding.
+              </p>
             </div>
           ) : (
-            <SubgroupAnalysisMatrix themes={workspace.themes} sourceDataGroups={sourceDataGroups} />
+            <SubgroupAnalysisMatrix
+              themes={workspace.themes}
+              sourceDataGroups={sourceDataGroups}
+            />
           )}
         </section>
       ) : (
-        <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd} onDragCancel={handleDragCancel}>
+        <DndContext
+          sensors={sensors}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
           <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Raw Extracted Data</h3>
-                  <p className="mt-1 text-sm text-gray-500">Drag evidence from the left and drop it on a theme card.</p>
+                  <h3 className="text-lg font-semibold text-text-primary">
+                    Raw Extracted Data
+                  </h3>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Drag evidence from the left and drop it on a theme card.
+                  </p>
                   {hiddenSourceValueCount > 0 ? (
-                    <p className="mt-2 text-xs font-semibold text-amber-700">{hiddenSourceValueCount} extracted items hidden by QA filter</p>
+                    <p className="mt-2 text-xs font-semibold text-amber-700">
+                      {hiddenSourceValueCount} extracted items hidden by QA
+                      filter
+                    </p>
                   ) : null}
                 </div>
               </div>
@@ -406,27 +521,37 @@ export default function ThematicWorkspace({
               />
             </section>
 
-            <section className="rounded-3xl border border-gray-200 bg-white p-6 shadow-sm">
+            <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Themes</h3>
-                  <p className="mt-1 text-sm text-gray-500">Drop evidence directly onto a theme card to link it.</p>
+                  <h3 className="text-lg font-semibold text-text-primary">
+                    Themes
+                  </h3>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Drop evidence directly onto a theme card to link it.
+                  </p>
                   {hiddenEvidenceCount > 0 ? (
-                    <p className="mt-2 text-xs font-semibold text-amber-700">{hiddenEvidenceCount} evidences hidden by QA filter</p>
+                    <p className="mt-2 text-xs font-semibold text-amber-700">
+                      {hiddenEvidenceCount} evidences hidden by QA filter
+                    </p>
                   ) : null}
                 </div>
                 {isReadOnly ? (
-                  <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-500">
+                  <span className="rounded-full border border-border bg-bg-primary px-3 py-1 text-xs font-semibold text-text-secondary">
                     Read only
                   </span>
                 ) : null}
               </div>
 
               {workspace.themes.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-                  <NotebookPen className="mx-auto h-8 w-8 text-gray-400" />
-                  <p className="text-sm font-medium text-gray-600">No themes created yet.</p>
-                  <p className="mt-1 text-sm text-gray-500">Create the first theme to begin qualitative coding.</p>
+                <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+                  <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
+                  <p className="text-sm font-medium text-text-secondary">
+                    No themes created yet.
+                  </p>
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Create the first theme to begin qualitative coding.
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -435,9 +560,13 @@ export default function ThematicWorkspace({
                       key={theme.id}
                       theme={theme}
                       disabled={isReadOnly || isBusy}
-                      onEditTheme={isReadOnly ? undefined : handleOpenEditThemeModal}
+                      onEditTheme={
+                        isReadOnly ? undefined : handleOpenEditThemeModal
+                      }
                       onDeleteTheme={isReadOnly ? undefined : handleDeleteTheme}
-                      onUnlinkEvidence={isReadOnly ? undefined : handleUnlinkEvidence}
+                      onUnlinkEvidence={
+                        isReadOnly ? undefined : handleUnlinkEvidence
+                      }
                       unlinkingEvidenceId={unlinkingEvidenceId}
                     />
                   ))}
@@ -448,17 +577,23 @@ export default function ThematicWorkspace({
 
           <DragOverlay>
             {activeDragEvidence ? (
-              <div className="pointer-events-none w-[340px] overflow-hidden rounded-3xl border border-blue-200 bg-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
+              <div className="pointer-events-none w-[340px] overflow-hidden rounded-[4px] border border-blue-200 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
                 <div className="h-1.5 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-700">
                       Evidence
                     </span>
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-gray-400">Drop onto a theme</span>
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-secondary">
+                      Drop onto a theme
+                    </span>
                   </div>
-                  <p className="mt-3 text-sm font-semibold text-gray-900">{activeDragEvidence.paperTitle}</p>
-                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-gray-600">{activeDragEvidence.displayValue}</p>
+                  <p className="mt-3 text-sm font-semibold text-text-primary">
+                    {activeDragEvidence.paperTitle}
+                  </p>
+                  <p className="mt-1 line-clamp-2 text-sm leading-6 text-text-secondary">
+                    {activeDragEvidence.displayValue}
+                  </p>
                 </div>
               </div>
             ) : null}

@@ -48,22 +48,23 @@ export default function AIProjectSetupWizard({
       ].join(" ")}
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 rounded-3xl border border-indigo-100 bg-white/90 p-6 shadow-sm backdrop-blur">
-          <div className="mb-4 flex items-center gap-3 text-indigo-700">
-            <SparkleIcon className="h-6 w-6" />
-            <p className="text-sm font-semibold uppercase tracking-wider">AI-Assisted Wizard</p>
+        <div className="mb-8 rounded-[4px] border border-indigo-100 bg-surface-white/90 p-6 shadow-none backdrop-blur">
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 text-accent mb-4 ring-1 ring-accent/20">
+              <SparkleIcon className="w-6 h-6" />
+            </div>
+            <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">
+              Project Setup Wizard for SLRS
+            </h1>
+            <p className="mt-2 max-w-3xl text-sm text-text-secondary sm:text-base">
+              Transform your raw research idea into structured PICO-C elements and
+              finalized research questions with guided AI support.
+            </p>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">
-            Project Setup Wizard for PRISMA SLR
-          </h1>
-          <p className="mt-2 max-w-3xl text-sm text-slate-600 sm:text-base">
-            Transform your raw research idea into structured PICO-C elements and finalized research
-            questions with guided AI support.
-          </p>
         </div>
 
-        {state.viewMode === "wizard" && (
-          isLeader ? (
+        {state.viewMode === "wizard" &&
+          (isLeader ? (
             <SetupWizardFlow
               currentStep={state.currentStep}
               completionMap={state.completionMap}
@@ -106,21 +107,22 @@ export default function AIProjectSetupWizard({
               onSaveWizardSetup={() => void state.handleSaveWizardSetup()}
             />
           ) : (
-            <div className="rounded-3xl border border-amber-100 bg-amber-50 p-10 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-100 text-amber-600">
+            <div className="rounded-[4px] border border-amber-100 bg-amber-50 p-10 text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[4px] bg-amber-100 text-amber-600">
                 <FiAlertCircle className="h-8 w-8" />
               </div>
-              <h2 className="text-xl font-bold text-slate-900">Setup Required</h2>
-              <p className="mt-2 text-slate-600">
-                This project has not been set up yet. Only the project leader can perform the
-                initial AI-assisted setup.
+              <h2 className="text-xl font-bold text-text-primary">
+                Setup Required
+              </h2>
+              <p className="mt-2 text-text-secondary">
+                This project has not been set up yet. Only the project leader
+                can perform the initial AI-assisted setup.
               </p>
             </div>
-          )
-        )}
+          ))}
 
         {state.viewMode === "summary" && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
             <SetupSummaryView
               topic={state.topic}
               scopeForm={state.scopeForm}
@@ -136,7 +138,7 @@ export default function AIProjectSetupWizard({
         )}
 
         {state.viewMode === "edit" && isLeader && (
-          <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+          <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
             <SetupEditForm
               topic={state.topic}
               scopeForm={state.scopeForm}
@@ -162,7 +164,9 @@ export default function AIProjectSetupWizard({
               onEditNewRQInputChange={state.setEditNewRQInput}
               onAddEditRQ={state.handleAddEditRQ}
               onCancel={state.handleCancelEditMode}
-              onSave={() => void state.handleSaveSetup(state.editResearchQuestions)}
+              onSave={() =>
+                void state.handleSaveSetup(state.editResearchQuestions)
+              }
             />
           </div>
         )}

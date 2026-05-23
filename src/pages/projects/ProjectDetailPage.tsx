@@ -1,13 +1,24 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { ProjectRole } from "../../types/project";
-import { useNavigate, useParams, useSearchParams, useLocation, Routes, Route, Navigate } from "react-router";
+import {
+  useNavigate,
+  useParams,
+  useSearchParams,
+  useLocation,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router";
 import { useProject, useProjectMutations } from "../../hooks/useProjects";
 import { useReviewProcessesByProject } from "../../hooks/useReviewProcesses";
 import { useReviewNeeds, useDocuments } from "../../hooks/useProjectGovernance";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import ProjectHeader from "../../components/projects/detail/ProjectHeader";
 import StepProgressNav from "../../components/projects/detail/StepProgressNav";
-import type { WorkflowStep, StepStatus } from "../../components/projects/detail/StepProgressNav";
+import type {
+  WorkflowStep,
+  StepStatus,
+} from "../../components/projects/detail/StepProgressNav";
 import ActivateProjectStep from "../../components/projects/detail/ActivateProjectStep";
 import ProjectDrawers from "../../components/projects/detail/ProjectDrawers";
 import Button from "../../components/ui/Button";
@@ -21,7 +32,10 @@ import PaperPoolTab from "../../components/paperPool/PaperPoolTab";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 
-type WorkflowStepKey = "business-justification" | "project-setup" | "activate-project";
+type WorkflowStepKey =
+  | "business-justification"
+  | "project-setup"
+  | "activate-project";
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -45,8 +59,16 @@ export default function ProjectDetailPage() {
 
   const { processes } = useReviewProcessesByProject(id);
 
-  const { needs: reviewNeeds, addNeed, isSubmitting: isNeedSubmitting } = useReviewNeeds(id);
-  const { documents, addDocument, isSubmitting: isDocSubmitting } = useDocuments(id);
+  const {
+    needs: reviewNeeds,
+    addNeed,
+    isSubmitting: isNeedSubmitting,
+  } = useReviewNeeds(id);
+  const {
+    documents,
+    addDocument,
+    isSubmitting: isDocSubmitting,
+  } = useDocuments(id);
 
   const [isProjectSetupReady, setIsProjectSetupReady] = useState(false);
 
@@ -55,15 +77,20 @@ export default function ProjectDetailPage() {
     return project.isLeader === true || project.role === ProjectRole.Leader;
   }, [project]);
 
-  const isProjectActive = project?.statusText === "Active" || project?.statusText === "Completed";
+  const isProjectActive =
+    project?.statusText === "Active" || project?.statusText === "Completed";
 
   // ── Current step & workflow steps ────────────────────────────────────────
-  const selectedStep = (searchParams.get("step") as WorkflowStepKey) || "project-setup";
+  const selectedStep =
+    (searchParams.get("step") as WorkflowStepKey) || "project-setup";
   const setSelectedStep = (step: WorkflowStepKey) => {
-    setSearchParams((prev) => {
-      prev.set("step", step);
-      return prev;
-    }, { replace: true });
+    setSearchParams(
+      (prev) => {
+        prev.set("step", step);
+        return prev;
+      },
+      { replace: true },
+    );
   };
 
   const checkProjectSetupReady = useCallback(async () => {
@@ -129,15 +156,28 @@ export default function ProjectDetailPage() {
     };
 
     return [
-      { key: "project-setup", label: "Project Setup", status: getStatus("project-setup") },
+      {
+        key: "project-setup",
+        label: "Project Setup",
+        status: getStatus("project-setup"),
+      },
       {
         key: "business-justification",
         label: "Business Justification",
         status: getStatus("business-justification"),
       },
-      { key: "activate-project", label: "Activate Project", status: getStatus("activate-project") },
+      {
+        key: "activate-project",
+        label: "Activate Project",
+        status: getStatus("activate-project"),
+      },
     ];
-  }, [isProjectActive, isProjectSetupReady, reviewNeeds.length, documents.length]);
+  }, [
+    isProjectActive,
+    isProjectSetupReady,
+    reviewNeeds.length,
+    documents.length,
+  ]);
 
   // ── Step click handler ───────────────────────────────────────────────────
   const handleStepClick = (key: string) => {
@@ -154,7 +194,9 @@ export default function ProjectDetailPage() {
   const [isPICOCModalOpen, setIsPICOCModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
   const location = useLocation();
-  const activeMainSection = location.pathname.includes("/workspace") ? "paper-pool" : "overview";
+  const activeMainSection = location.pathname.includes("/workspace")
+    ? "paper-pool"
+    : "overview";
 
   const setActiveMainSection = (tab: "overview" | "paper-pool") => {
     if (tab === "overview") {
@@ -179,7 +221,11 @@ export default function ProjectDetailPage() {
 
   // ── Governance submission handlers ───────────────────────────────────────
   const handleAddNeedSubmit = useCallback(
-    async (data: { description: string; justification: string; identified_by: string }) => {
+    async (data: {
+      description: string;
+      justification: string;
+      identified_by: string;
+    }) => {
       if (!id) return;
       try {
         await addNeed({ project_id: id, ...data });
@@ -192,7 +238,12 @@ export default function ProjectDetailPage() {
   );
 
   const handleAddDocumentSubmit = useCallback(
-    async (data: { sponsor: string; scope: string; budget: number; document_url: string }) => {
+    async (data: {
+      sponsor: string;
+      scope: string;
+      budget: number;
+      document_url: string;
+    }) => {
       if (!id) return;
       try {
         await addDocument({ project_id: id, ...data });
@@ -217,7 +268,11 @@ export default function ProjectDetailPage() {
   }, []);
 
   const handleSaveProjectDates = useCallback(
-    async (payload: { id: string; startDate: string | null; endDate: string | null }) => {
+    async (payload: {
+      id: string;
+      startDate: string | null;
+      endDate: string | null;
+    }) => {
       if (!id) return;
       await updateProjectDates({ id, data: payload });
       await refetchProject();
@@ -228,7 +283,7 @@ export default function ProjectDetailPage() {
   // ── Render guards ────────────────────────────────────────────────────────
   if (projectLoading && !project) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-[#F4F0E8]">
+      <div className="flex justify-center items-center min-h-screen bg-bg-primary">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -240,7 +295,9 @@ export default function ProjectDetailPage() {
         <Card>
           <p className="text-center text-red-500">{projectError}</p>
           <div className="text-center mt-4">
-            <Button onClick={() => navigate("/projects")}>Back to Projects</Button>
+            <Button onClick={() => navigate("/projects")}>
+              Back to Projects
+            </Button>
           </div>
         </Card>
       </div>
@@ -250,11 +307,13 @@ export default function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-[#FDFCF9] rounded-[4px] border border-[#D8D2C8] p-8 text-center">
-          <p className="text-[#5C5C5C] mb-6 text-sm">Project not found (ID: {id || "none"})</p>
+        <div className="bg-surface-white rounded-[4px] border border-border p-8 text-center">
+          <p className="text-text-secondary mb-6 text-sm">
+            Project not found (ID: {id || "none"})
+          </p>
           <button
             onClick={() => navigate("/projects")}
-            className="px-6 py-2 bg-[#5B0000] text-[#F4F0E8] rounded-[4px] hover:bg-[#7a0000] transition-colors text-[12px] uppercase tracking-[0.1em]"
+            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-[#7a0000] transition-colors text-[12px] uppercase tracking-[0.1em]"
           >
             Back to Project List
           </button>
@@ -265,7 +324,11 @@ export default function ProjectDetailPage() {
 
   // ── Activation checklist ─────────────────────────────────────────────────
   const activationChecklist = [
-    { label: "Project setup defined (Required)", completed: isProjectSetupReady, required: true },
+    {
+      label: "Project setup defined (Required)",
+      completed: isProjectSetupReady,
+      required: true,
+    },
     {
       label: "Review needs identified (Optional)",
       completed: reviewNeeds.length > 0,
@@ -284,7 +347,9 @@ export default function ProjectDetailPage() {
   ];
 
   const WorkspaceRedirect = () => {
-    const savedStep = useSelector((state: RootState) => state.project.paperPoolSteps?.[id || ""]);
+    const savedStep = useSelector(
+      (state: RootState) => state.project.paperPoolSteps?.[id || ""],
+    );
     return <Navigate to={`workspace/${savedStep || 1}`} replace />;
   };
 
@@ -295,14 +360,14 @@ export default function ProjectDetailPage() {
       return (
         <div>
           {/* Review Processes Section */}
-          <div className="border-b border-[#D8D2C8] mb-8">
+          <div className="border-b border-border mb-8">
             <nav className="flex gap-8">
               <button
                 onClick={() => setActiveMainSection("overview")}
                 className={`pb-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all border-b-2 ${
                   activeMainSection === "overview"
-                    ? "text-[#5B0000] border-[#5B0000]"
-                    : "text-[#5C5C5C] border-transparent hover:text-[#111111]"
+                    ? "text-accent border-accent"
+                    : "text-text-secondary border-transparent hover:text-text-primary"
                 }`}
               >
                 Overview
@@ -312,8 +377,8 @@ export default function ProjectDetailPage() {
                 onClick={() => setActiveMainSection("paper-pool")}
                 className={`pb-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all border-b-2 ${
                   activeMainSection === "paper-pool"
-                    ? "text-[#5B0000] border-[#5B0000]"
-                    : "text-[#5C5C5C] border-transparent hover:text-[#111111]"
+                    ? "text-accent border-accent"
+                    : "text-text-secondary border-transparent hover:text-text-primary"
                 }`}
               >
                 Workspace
@@ -343,7 +408,15 @@ export default function ProjectDetailPage() {
                 </div>
               }
             />
-            <Route path="workspace/:stepId" element={<PaperPoolTab projectId={id || ""} reviewProcesses={processes} />} />
+            <Route
+              path="workspace/:stepId"
+              element={
+                <PaperPoolTab
+                  projectId={id || ""}
+                  reviewProcesses={processes}
+                />
+              }
+            />
             <Route path="workspace" element={<WorkspaceRedirect />} />
             <Route path="*" element={<Navigate to="overview" replace />} />
           </Routes>
@@ -416,7 +489,7 @@ export default function ProjectDetailPage() {
 
       {/* All-steps-complete banner for active projects */}
       {isProjectActive && (
-        <div className="border border-[#D8D2C8] bg-[#FDFCF9] rounded-[4px] p-4 mb-6 flex items-center gap-3">
+        <div className="border border-border bg-surface-white rounded-[4px] p-4 mb-6 flex items-center gap-3">
           <div className="w-7 h-7 rounded-full bg-[#2d5a2d] flex items-center justify-center shrink-0">
             <svg
               className="w-3.5 h-3.5 text-white"
@@ -425,14 +498,22 @@ export default function ProjectDetailPage() {
               stroke="currentColor"
               strokeWidth={3}
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5 13l4 4L19 7"
+              />
             </svg>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] font-medium text-[#2d5a2d]">Project Setup Complete</p>
-            <p className="text-xs text-[#5C5C5C] mt-0.5">
+            <p className="text-[11px] uppercase tracking-[0.2em] font-medium text-[#2d5a2d]">
+              Project Setup Complete
+            </p>
+            <p className="text-xs text-text-secondary mt-0.5">
               All preparation steps completed. Status:{" "}
-              <span className="font-semibold text-[#111111]">{project.statusText}</span>
+              <span className="font-semibold text-text-primary">
+                {project.statusText}
+              </span>
             </p>
           </div>
         </div>

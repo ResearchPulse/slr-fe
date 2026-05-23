@@ -47,20 +47,20 @@ export default function ReviewProcessRail({
       />
 
       {/* Sidebar Panel */}
-      <aside className="absolute top-0 right-0 h-full w-96 bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 border-l border-gray-100">
+      <aside className="absolute top-0 right-0 h-full w-96 bg-surface-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-500 border-l border-border">
         {/* Header */}
-        <div className="px-6 py-8 border-b border-gray-100 bg-white sticky top-0 z-10 flex items-center justify-between">
+        <div className="px-6 py-8 border-b border-border bg-surface-white sticky top-0 z-10 flex items-center justify-between">
           <div>
-            <h3 className="text-xl font-black text-gray-900 uppercase tracking-tight">
+            <h3 className="text-xl font-black text-text-primary uppercase tracking-tight">
               Review Context
             </h3>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">
+            <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-1">
               Review Processes Status
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-900"
+            className="p-2 hover:bg-bg-secondary rounded-[4px] transition-colors text-text-secondary hover:text-text-primary"
           >
             <FiX className="w-5 h-5" />
           </button>
@@ -69,7 +69,7 @@ export default function ReviewProcessRail({
         {/* List */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-4">
           <div className="px-2 pb-2">
-            <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+            <h4 className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
               Active Processes
             </h4>
           </div>
@@ -82,7 +82,11 @@ export default function ReviewProcessRail({
               onSelect={onSelectProcess}
               onNavigate={onNavigateToProcess}
               actionLabel={
-                isLeader ? (selectedProcessId === process.processId ? "Currently Target" : "Set as Target") : undefined
+                isLeader
+                  ? selectedProcessId === process.processId
+                    ? "Currently Target"
+                    : "Set as Target"
+                  : undefined
               }
               isLeader={isLeader}
             />
@@ -90,23 +94,27 @@ export default function ReviewProcessRail({
         </div>
 
         {/* Footer Summary */}
-        <div className="p-8 border-t border-gray-100 bg-gray-50">
+        <div className="p-8 border-t border-border bg-bg-primary">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                 Current Selection
               </span>
-              <span className="text-sm font-black text-gray-900">{selectedCount} Items</span>
+              <span className="text-sm font-black text-text-primary">
+                {selectedCount} Items
+              </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
+              <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                 Global Library
               </span>
-              <span className="text-sm font-black text-gray-900">{filteredCount} Items</span>
+              <span className="text-sm font-black text-text-primary">
+                {filteredCount} Items
+              </span>
             </div>
 
             <Button
-              className="w-full py-4 rounded-2xl font-black uppercase tracking-widest text-[10px]"
+              className="w-full py-4 rounded-[4px] font-black uppercase tracking-widest text-[10px]"
               onClick={onClose}
             >
               Confirm Selection

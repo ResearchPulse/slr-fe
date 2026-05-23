@@ -23,18 +23,29 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="mb-4">{icon}</div>
-      <h3 className="text-xl font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-gray-600 text-center max-w-md mb-6">{description}</p>
+      <div className="mb-6 opacity-80 text-text-secondary">{icon}</div>
+      <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-3 tracking-tight">
+        {title}
+      </h3>
+      <p className="text-text-secondary text-[13px] tracking-wide text-center max-w-md mb-8 leading-relaxed">
+        {description}
+      </p>
       <div className="flex items-center gap-3">
         {actionLabel && <Button onClick={onAction}>{actionLabel}</Button>}
         {secondaryLabel && (
-          <Button variant="secondary" onClick={() => console.log("Secondary action")}>
+          <Button
+            variant="secondary"
+            onClick={() => console.log("Secondary action")}
+          >
             {secondaryLabel}
           </Button>
         )}
       </div>
-      {helperText && <p className="text-sm text-gray-500 mt-4">{helperText}</p>}
+      {helperText && (
+        <p className="text-[11px] uppercase tracking-[0.1em] text-text-secondary mt-6">
+          {helperText}
+        </p>
+      )}
     </div>
   );
 }

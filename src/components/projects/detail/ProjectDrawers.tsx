@@ -22,11 +22,27 @@ interface ProjectDrawersProps {
   onClosePICOC: () => void;
   isSubmitting: boolean;
   questionTypes: QuestionType[];
-  onAddNeed: (data: { description: string; justification: string; identified_by: string }) => void;
-  onAddDocument: (data: { sponsor: string; scope: string; budget: number; document_url: string }) => void;
+  onAddNeed: (data: {
+    description: string;
+    justification: string;
+    identified_by: string;
+  }) => void;
+  onAddDocument: (data: {
+    sponsor: string;
+    scope: string;
+    budget: number;
+    document_url: string;
+  }) => void;
   onAddObjective: (data: { objective_statement: string }) => void;
-  onAddQuestion: (data: { question_type_id: string; question_text: string; rationale: string }) => void;
-  onAddPICOC: (data: { element_type: PICOCElementType; description: string }) => void;
+  onAddQuestion: (data: {
+    question_type_id: string;
+    question_text: string;
+    rationale: string;
+  }) => void;
+  onAddPICOC: (data: {
+    element_type: PICOCElementType;
+    description: string;
+  }) => void;
 }
 
 const ProjectDrawers: React.FC<ProjectDrawersProps> = ({
@@ -51,8 +67,13 @@ const ProjectDrawers: React.FC<ProjectDrawersProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const anyOpen = isNeedModalOpen || isDocModalOpen || isObjModalOpen || isQuestionModalOpen || isPICOCModalOpen;
-    
+    const anyOpen =
+      isNeedModalOpen ||
+      isDocModalOpen ||
+      isObjModalOpen ||
+      isQuestionModalOpen ||
+      isPICOCModalOpen;
+
     if (anyOpen) {
       // Delay slightly to wait for drawer to start opening
       const timer = setTimeout(() => {
@@ -60,19 +81,25 @@ const ProjectDrawers: React.FC<ProjectDrawersProps> = ({
         gsap.fromTo(
           ".drawer-stagger-item",
           { opacity: 0, y: 20 },
-          { 
-            opacity: 1, 
-            y: 0, 
-            duration: 0.5, 
-            stagger: 0.1, 
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.5,
+            stagger: 0.1,
             ease: "power2.out",
-            delay: 0.3 
-          }
+            delay: 0.3,
+          },
         );
       }, 100);
       return () => clearTimeout(timer);
     }
-  }, [isNeedModalOpen, isDocModalOpen, isObjModalOpen, isQuestionModalOpen, isPICOCModalOpen]);
+  }, [
+    isNeedModalOpen,
+    isDocModalOpen,
+    isObjModalOpen,
+    isQuestionModalOpen,
+    isPICOCModalOpen,
+  ]);
 
   return (
     <div ref={containerRef}>

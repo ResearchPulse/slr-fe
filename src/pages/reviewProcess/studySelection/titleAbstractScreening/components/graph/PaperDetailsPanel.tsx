@@ -26,15 +26,15 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
     : [];
 
   return (
-    <div className="flex flex-col h-full bg-white text-gray-900 border-l border-gray-100 shadow-sm animate-in slide-in-from-right duration-300">
+    <div className="flex flex-col h-full bg-surface-white text-text-primary border-l border-border shadow-none animate-in slide-in-from-right duration-300">
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
         {/* Header Section: Title & Year */}
         <header className="space-y-2">
           <div className="group">
-            <h2 className="text-base font-bold leading-snug text-gray-900 line-clamp-3 hover:text-blue-600 transition-colors cursor-pointer group-hover:underline decoration-blue-400 underline-offset-4 decoration-2">
+            <h2 className="text-base font-bold leading-snug text-text-primary line-clamp-3 hover:text-blue-600 transition-colors cursor-pointer group-hover:underline decoration-blue-400 underline-offset-4 decoration-2">
               {paper.title}
               {paper.year && (
-                <span className="ml-2 text-gray-400 font-medium no-underline inline-block">
+                <span className="ml-2 text-text-secondary font-medium no-underline inline-block">
                   ({paper.year})
                 </span>
               )}
@@ -43,14 +43,16 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
 
           <div className="flex items-center gap-1.5 text-blue-500/80">
             <FiExternalLink className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Open Source</span>
+            <span className="text-[10px] font-bold uppercase tracking-widest">
+              Open Source
+            </span>
           </div>
         </header>
 
         {/* Authors Section */}
         {authorList.length > 0 && (
           <div className="space-y-2">
-            <h3 className="text-[10px] uppercase tracking-wider font-bold text-gray-400">
+            <h3 className="text-[10px] uppercase tracking-wider font-bold text-text-secondary">
               Authors
             </h3>
             <div className="flex flex-wrap gap-1.5">
@@ -69,7 +71,9 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
         {/* DOI Section */}
         {paper.doi && (
           <div className="space-y-1.5">
-            <h3 className="text-[10px] uppercase tracking-wider font-bold text-gray-400">DOI</h3>
+            <h3 className="text-[10px] uppercase tracking-wider font-bold text-text-secondary">
+              DOI
+            </h3>
             <a
               href={`https://doi.org/${paper.doi}`}
               target="_blank"
@@ -84,19 +88,19 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
         {/* Abstract Section */}
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <FiFileText className="w-3 h-3 text-gray-400" />
-            <h3 className="text-[10px] uppercase tracking-wider font-bold text-gray-400">
+            <FiFileText className="w-3 h-3 text-text-secondary" />
+            <h3 className="text-[10px] uppercase tracking-wider font-bold text-text-secondary">
               Abstract
             </h3>
           </div>
-          <p className="text-xs leading-relaxed text-gray-500 line-clamp-[8] text-justify font-normal">
+          <p className="text-xs leading-relaxed text-text-secondary line-clamp-[8] text-justify font-normal">
             {paper.abstract || "No abstract available for this paper."}
           </p>
         </div>
       </div>
 
       {/* Footer Branding */}
-      <div className="p-4 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between">
+      <div className="p-4 bg-bg-primary/50 border-t border-border flex items-center justify-between">
         <span className="text-[9px] font-bold text-gray-300 uppercase tracking-tighter italic">
           LITMAPS STYLE VISUALIZER
         </span>

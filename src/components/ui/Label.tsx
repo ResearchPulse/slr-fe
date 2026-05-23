@@ -12,14 +12,14 @@ const Label = React.forwardRef<HTMLLabelElement, LabelProps>(
         ref={ref}
         className={cn(
           "block text-sm font-medium text-text-main ml-1",
-          className
+          className,
         )}
         {...props}
       >
         {children}
       </label>
     );
-  }
+  },
 );
 
 Label.displayName = "Label";

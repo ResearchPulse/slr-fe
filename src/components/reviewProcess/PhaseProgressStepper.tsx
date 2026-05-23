@@ -13,7 +13,12 @@ interface PhaseProgressStepperProps {
 }
 
 const PHASES = [
-  { id: 0, name: "Identification", shortName: "Identify", key: "identification" },
+  {
+    id: 0,
+    name: "Identification",
+    shortName: "Identify",
+    key: "identification",
+  },
   { id: 1, name: "Study Selection", shortName: "Selection", key: "screening" },
   { id: 2, name: "Quality Assessment", shortName: "Quality", key: "quality" },
   { id: 3, name: "Data Extraction", shortName: "Extract", key: "extraction" },
@@ -29,11 +34,15 @@ export default function PhaseProgressStepper({
   onPhaseOpen,
   showOpenAction = false,
 }: PhaseProgressStepperProps) {
-  const isPhaseCompleted = (phaseId: number) => completedPhases.includes(phaseId);
+  const isPhaseCompleted = (phaseId: number) =>
+    completedPhases.includes(phaseId);
   const isCurrentPhase = (phaseId: number) => phaseId === currentPhase;
   // PRISMA Report (phase 5) and Study Selection (phase 1) are always unlocked
   const isPhaseLocked = (phaseId: number) =>
-    phaseId !== 5 && phaseId !== 1 && phaseId > currentPhase && !isPhaseCompleted(phaseId);
+    phaseId !== 5 &&
+    phaseId !== 1 &&
+    phaseId > currentPhase &&
+    !isPhaseCompleted(phaseId);
 
   const getPhaseStatus = (phaseId: number) => {
     if (isPhaseCompleted(phaseId)) return "completed";
@@ -73,9 +82,9 @@ export default function PhaseProgressStepper({
       case "current":
         return `${baseClasses} text-blue-700`;
       case "locked":
-        return `${baseClasses} text-gray-400`;
+        return `${baseClasses} text-text-secondary`;
       default:
-        return `${baseClasses} text-gray-600`;
+        return `${baseClasses} text-text-secondary`;
     }
   };
 
@@ -87,13 +96,13 @@ export default function PhaseProgressStepper({
 
     switch (status) {
       case "completed":
-        return `${baseClasses} bg-green-100 border-green-600 text-green-700${clickable ? " hover:shadow-md cursor-pointer" : ""}`;
+        return `${baseClasses} bg-green-100 border-green-600 text-green-700${clickable ? " hover:shadow-none cursor-pointer" : ""}`;
       case "current":
-        return `${baseClasses} bg-blue-600 border-blue-600 text-white shadow-lg scale-110${clickable ? " cursor-pointer" : ""}`;
+        return `${baseClasses} bg-blue-600 border-blue-600 text-white shadow-none scale-110${clickable ? " cursor-pointer" : ""}`;
       case "locked":
-        return `${baseClasses} bg-gray-100 border-gray-300 text-gray-400 cursor-not-allowed`;
+        return `${baseClasses} bg-bg-secondary border-border text-text-secondary cursor-not-allowed`;
       default:
-        return `${baseClasses} bg-white border-gray-400 text-gray-600 hover:border-blue-500 hover:shadow-md cursor-pointer`;
+        return `${baseClasses} bg-surface-white border-gray-400 text-text-secondary hover:border-blue-500 hover:shadow-none cursor-pointer`;
     }
   };
 
@@ -130,7 +139,7 @@ export default function PhaseProgressStepper({
   };
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-8 mb-6 shadow-sm">
+    <div className="bg-surface-white border border-border rounded-[4px] p-8 mb-6 shadow-none">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         {PHASES.map((phase, index) => (
           <div key={phase.id} className="flex items-center flex-1">
@@ -152,11 +161,15 @@ export default function PhaseProgressStepper({
 
               {/* Label */}
               <div className="mt-3 text-center min-w-20">
-                <p className={`text-xs font-semibold ${getPhaseClasses(phase.id)}`}>
+                <p
+                  className={`text-xs font-semibold ${getPhaseClasses(phase.id)}`}
+                >
                   {phase.shortName}
                 </p>
                 {getPhaseStats(phase.id) && (
-                  <p className="text-[10px] text-gray-500 mt-1">{getPhaseStats(phase.id)}</p>
+                  <p className="text-[10px] text-text-secondary mt-1">
+                    {getPhaseStats(phase.id)}
+                  </p>
                 )}
                 {isCurrentPhase(phase.id) && (
                   <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
@@ -186,7 +199,7 @@ export default function PhaseProgressStepper({
 
       {/* Current Phase Description */}
       <div className="mt-8 text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-lg">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-[4px]">
           <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
           <p className="text-sm text-blue-900">
             <span className="font-semibold">Current Phase:</span>{" "}

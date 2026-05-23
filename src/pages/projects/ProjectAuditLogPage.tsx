@@ -41,9 +41,12 @@ interface SummaryCardProps {
   icon: React.ReactNode;
 }
 
-const summaryToneClasses: Record<SummaryCardProps["tone"], { container: string; icon: string }> = {
+const summaryToneClasses: Record<
+  SummaryCardProps["tone"],
+  { container: string; icon: string }
+> = {
   indigo: {
-    container: "border-indigo-100 bg-indigo-50",
+    container: "border-indigo-100 bg-bg-secondary",
     icon: "bg-linear-to-br from-indigo-500 to-blue-600",
   },
   emerald: {
@@ -60,28 +63,38 @@ const summaryToneClasses: Record<SummaryCardProps["tone"], { container: string; 
   },
 };
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, helperText, tone, icon }) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({
+  label,
+  value,
+  helperText,
+  tone,
+  icon,
+}) => {
   const classes = summaryToneClasses[tone];
   return (
     <article
       className={cn(
-        "rounded-3xl border bg-white p-5 shadow-sm transition-all hover:shadow-lg",
+        "rounded-[4px] border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
         classes.container,
       )}
     >
       <div
         className={cn(
-          "w-11 h-11 rounded-2xl flex items-center justify-center text-white mb-4",
+          "w-11 h-11 rounded-[4px] flex items-center justify-center text-white mb-4",
           classes.icon,
         )}
       >
         {icon}
       </div>
-      <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+      <div className="text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary">
         {label}
       </div>
-      <div className="mt-2 text-3xl font-black tracking-tight text-slate-900">{value}</div>
-      <p className="mt-2 text-sm font-medium text-slate-500">{helperText}</p>
+      <div className="mt-2 text-3xl font-black tracking-tight text-text-primary">
+        {value}
+      </div>
+      <p className="mt-2 text-sm font-medium text-text-secondary">
+        {helperText}
+      </p>
     </article>
   );
 };
@@ -110,7 +123,9 @@ const ProjectAuditLogPage: React.FC = () => {
   const [sortField, setSortField] = useState<AuditLogSortField>("timestamp");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
+    null,
+  );
   const [isExportOpen, setIsExportOpen] = useState(false);
   const [exportHistory, setExportHistory] = useState<ExportHistoryItem[]>([]);
 
@@ -127,7 +142,8 @@ const ProjectAuditLogPage: React.FC = () => {
     return params;
   }, [currentPage, filters]);
 
-  const { data: auditLogsResponse, isLoading: isLoadingLogs } = useProjectLeaderAuditLogs(projectId || "", queryParams);
+  const { data: auditLogsResponse, isLoading: isLoadingLogs } =
+    useProjectLeaderAuditLogs(projectId || "", queryParams);
 
   const isPageLoading = isLoading || isLoadingLogs;
 
@@ -136,11 +152,14 @@ const ProjectAuditLogPage: React.FC = () => {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const logs = useMemo(() => auditLogsResponse?.data?.items || auditLogMockData, [auditLogsResponse]);
+  const logs = useMemo(
+    () => auditLogsResponse?.data?.items || auditLogMockData,
+    [auditLogsResponse],
+  );
 
   const users = useMemo(() => {
-    return Array.from(new Set(logs.map((entry) => entry.user))).sort((left, right) =>
-      left.localeCompare(right),
+    return Array.from(new Set(logs.map((entry) => entry.user))).sort(
+      (left, right) => left.localeCompare(right),
     );
   }, [logs]);
 
@@ -148,19 +167,19 @@ const ProjectAuditLogPage: React.FC = () => {
     if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
     return filterAuditLogs(logs, filters);
   }, [filters, logs, auditLogsResponse]);
-  const sortedLogs = useMemo(
-    () => {
-      if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
-      return sortAuditLogs(filteredLogs, sortField, sortDirection);
-    },
-    [filteredLogs, sortDirection, sortField, auditLogsResponse],
-  );
+  const sortedLogs = useMemo(() => {
+    if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
+    return sortAuditLogs(filteredLogs, sortField, sortDirection);
+  }, [filteredLogs, sortDirection, sortField, auditLogsResponse]);
 
   const totalCount = auditLogsResponse?.data?.totalCount ?? sortedLogs.length;
-  const totalPages = auditLogsResponse?.data?.totalPages ?? Math.max(1, Math.ceil(totalCount / AUDIT_LOG_PAGE_SIZE));
+  const totalPages =
+    auditLogsResponse?.data?.totalPages ??
+    Math.max(1, Math.ceil(totalCount / AUDIT_LOG_PAGE_SIZE));
 
   const activePage = Math.min(currentPage, totalPages);
-  const pageStart = totalCount === 0 ? 0 : (activePage - 1) * AUDIT_LOG_PAGE_SIZE + 1;
+  const pageStart =
+    totalCount === 0 ? 0 : (activePage - 1) * AUDIT_LOG_PAGE_SIZE + 1;
   const pageEnd = Math.min(activePage * AUDIT_LOG_PAGE_SIZE, totalCount);
 
   const pageLogs = useMemo(() => {
@@ -186,7 +205,10 @@ const ProjectAuditLogPage: React.FC = () => {
     [filteredLogs],
   );
 
-  const handleFilterUpdate = (key: keyof AuditLogFiltersState, value: string) => {
+  const handleFilterUpdate = (
+    key: keyof AuditLogFiltersState,
+    value: string,
+  ) => {
     setFilters((current) => ({ ...current, [key]: value }));
     setCurrentPage(1);
   };
@@ -221,8 +243,15 @@ const ProjectAuditLogPage: React.FC = () => {
       throw new Error("No audit logs match the selected export range.");
     }
 
-    const { content, mimeType } = buildAuditLogExportContent(exportLogs, request.format);
-    const fileName = buildAuditLogFileName(request.format, request.startDate, request.endDate);
+    const { content, mimeType } = buildAuditLogExportContent(
+      exportLogs,
+      request.format,
+    );
+    const fileName = buildAuditLogFileName(
+      request.format,
+      request.startDate,
+      request.endDate,
+    );
 
     downloadFile(content, fileName, mimeType);
 
@@ -249,10 +278,12 @@ const ProjectAuditLogPage: React.FC = () => {
 
   if (isPageLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-slate-50">
+      <div className="flex h-screen items-center justify-center bg-bg-secondary">
         <div className="flex flex-col items-center gap-4">
-          <FiRefreshCw className="h-8 w-8 animate-spin text-slate-400" />
-          <p className="text-sm font-medium text-slate-500">Loading audit history...</p>
+          <FiRefreshCw className="h-8 w-8 animate-spin text-text-secondary" />
+          <p className="text-sm font-medium text-text-secondary">
+            Loading audit history...
+          </p>
         </div>
       </div>
     );
@@ -262,31 +293,35 @@ const ProjectAuditLogPage: React.FC = () => {
     <div className="max-w-[1600px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700 p-8">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
         <div className="space-y-3 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.22em]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-secondary text-accent text-[10px] font-black uppercase tracking-[0.22em]">
             <FiFilter className="w-3 h-3" />
             Project Audit Console
           </div>
           <div className="space-y-2">
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Project Audit Logs</h3>
-            <p className="text-slate-500 text-sm sm:text-base font-medium max-w-2xl">
-              Review project activity, inspect event metadata, and export compliance-ready audit
-              trails.
+            <h3 className="text-3xl font-black text-text-primary tracking-tight">
+              Project Audit Logs
+            </h3>
+            <p className="text-text-secondary text-sm sm:text-base font-medium max-w-2xl">
+              Review project activity, inspect event metadata, and export
+              compliance-ready audit trails.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <div className="rounded-[4px] border border-border bg-surface-white px-4 py-3 shadow-none">
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">
               Current range
             </div>
-            <div className="text-sm font-bold text-slate-700 mt-1">{activeRangeLabel}</div>
+            <div className="text-sm font-bold text-text-primary mt-1">
+              {activeRangeLabel}
+            </div>
           </div>
 
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-[4px] bg-accent text-white text-sm font-black hover:bg-indigo-700 hover:shadow-none hover:shadow-indigo-200 transition-all active:scale-95"
           >
             <FiDownload className="w-4 h-4" />
             Export Logs
@@ -295,7 +330,7 @@ const ProjectAuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 hover:text-indigo-600 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-[4px] bg-surface-white border border-border text-text-secondary text-sm font-bold hover:bg-bg-secondary hover:text-accent transition-all"
           >
             <FiRefreshCw className="w-4 h-4" />
             Clear Filters
@@ -344,7 +379,9 @@ const ProjectAuditLogPage: React.FC = () => {
         endDate={filters.endDate}
         onSearchTermChange={(value) => handleFilterUpdate("searchTerm", value)}
         onSelectedUserChange={(value) => handleFilterUpdate("user", value)}
-        onSelectedActionTypeChange={(value) => handleFilterUpdate("actionType", value)}
+        onSelectedActionTypeChange={(value) =>
+          handleFilterUpdate("actionType", value)
+        }
         onSelectedStatusChange={(value) => handleFilterUpdate("status", value)}
         onStartDateChange={(value) => handleFilterUpdate("startDate", value)}
         onEndDateChange={(value) => handleFilterUpdate("endDate", value)}
@@ -352,15 +389,19 @@ const ProjectAuditLogPage: React.FC = () => {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-4xl border border-slate-100 bg-white p-5 shadow-sm lg:col-span-2">
+        <div className="rounded-4xl border border-slate-100 bg-surface-white p-5 shadow-none lg:col-span-2">
           <div className="flex items-center justify-between gap-4 mb-4">
             <div>
-              <h4 className="text-base font-black text-slate-900">Export history</h4>
-              <p className="text-sm text-slate-500 font-medium">
+              <h4 className="text-base font-black text-text-primary">
+                Export history
+              </h4>
+              <p className="text-sm text-text-secondary font-medium">
                 Recent client-side exports generated from this view.
               </p>
             </div>
-            <div className="text-xs font-bold text-slate-400">Mock UI only</div>
+            <div className="text-xs font-bold text-text-secondary">
+              Mock UI only
+            </div>
           </div>
 
           {exportHistory.length > 0 ? (
@@ -368,38 +409,42 @@ const ProjectAuditLogPage: React.FC = () => {
               {exportHistory.map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex flex-col gap-3 rounded-2xl border border-slate-100 bg-slate-50/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-[4px] border border-slate-100 bg-bg-secondary/60 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.16em] bg-white border border-slate-200 text-slate-600">
+                      <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.16em] bg-surface-white border border-border text-text-secondary">
                         {entry.format}
                       </span>
-                      <span className="text-sm font-bold text-slate-900">
+                      <span className="text-sm font-bold text-text-primary">
                         {entry.recordCount} rows
                       </span>
                     </div>
-                    <p className="mt-1 text-sm text-slate-500">Range: {entry.rangeLabel}</p>
+                    <p className="mt-1 text-sm text-text-secondary">
+                      Range: {entry.rangeLabel}
+                    </p>
                   </div>
-                  <div className="text-xs font-medium text-slate-400">
+                  <div className="text-xs font-medium text-text-secondary">
                     {new Date(entry.createdAt).toLocaleString()}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/50 px-5 py-10 text-center">
+            <div className="rounded-[4px] border border-dashed border-border bg-bg-secondary/50 px-5 py-10 text-center">
               <FiClock className="w-10 h-10 mx-auto text-slate-300 mb-3" />
-              <h5 className="text-sm font-black text-slate-800">No export history yet</h5>
-              <p className="text-sm text-slate-500 mt-1">
+              <h5 className="text-sm font-black text-slate-800">
+                No export history yet
+              </h5>
+              <p className="text-sm text-text-secondary mt-1">
                 Run an export to track what was downloaded from this audit view.
               </p>
             </div>
           )}
         </div>
 
-        <div className="rounded-4xl border border-slate-100 bg-linear-to-br from-slate-950 to-slate-900 text-white p-5 shadow-xl shadow-slate-900/20">
-          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
+        <div className="rounded-4xl border border-slate-100 bg-linear-to-br from-slate-950 to-slate-900 text-white p-5 shadow-none shadow-slate-900/20">
+          <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary">
             <FiAlertTriangle className="w-3.5 h-3.5 text-amber-400" />
             High-risk activity
           </div>
@@ -407,19 +452,19 @@ const ProjectAuditLogPage: React.FC = () => {
             Deletes and export events are highlighted.
           </h4>
           <p className="mt-2 text-sm leading-6 text-slate-300">
-            This screen emphasizes risky actions so administrators can quickly spot destructive
-            operations or compliance-sensitive downloads.
+            This screen emphasizes risky actions so administrators can quickly
+            spot destructive operations or compliance-sensitive downloads.
           </p>
           <div className="mt-5 space-y-3 text-sm">
-            <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
               <FiDownload className="w-4 h-4 text-cyan-300" />
               Export actions in the filtered set: {exportCount}
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
               <FiCheckCircle className="w-4 h-4 text-emerald-400" />
               Success entries remain available for export and review.
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
               <FiXCircle className="w-4 h-4 text-rose-400" />
               Failed entries are easy to isolate with the status filter.
             </div>
@@ -442,7 +487,10 @@ const ProjectAuditLogPage: React.FC = () => {
         onRowClick={setSelectedEntry}
       />
 
-      <AuditLogDetailModal entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+      <AuditLogDetailModal
+        entry={selectedEntry}
+        onClose={() => setSelectedEntry(null)}
+      />
 
       <AuditLogExportDialog
         isOpen={isExportOpen}

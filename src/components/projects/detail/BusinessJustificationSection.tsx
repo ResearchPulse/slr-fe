@@ -13,13 +13,19 @@ interface BusinessJustificationSectionProps {
   reviewNeeds: any[];
   documents: any[];
   isUpdatingDates: boolean;
-  handleSaveProjectDates: (payload: { id: string; startDate: string | null; endDate: string | null }) => Promise<void>;
+  handleSaveProjectDates: (payload: {
+    id: string;
+    startDate: string | null;
+    endDate: string | null;
+  }) => Promise<void>;
   setIsNeedModalOpen: (open: boolean) => void;
   setIsDocModalOpen: (open: boolean) => void;
   onSkip?: () => void;
 }
 
-const BusinessJustificationSection: React.FC<BusinessJustificationSectionProps> = ({
+const BusinessJustificationSection: React.FC<
+  BusinessJustificationSectionProps
+> = ({
   project,
   projectId,
   isLeader,
@@ -32,7 +38,9 @@ const BusinessJustificationSection: React.FC<BusinessJustificationSectionProps> 
   setIsDocModalOpen,
   onSkip,
 }) => {
-  const [activeTab, setActiveTab] = useState<"needs" | "documents" | "dates">("needs");
+  const [activeTab, setActiveTab] = useState<"needs" | "documents" | "dates">(
+    "needs",
+  );
 
   const bjTabs = [
     { key: "needs", label: "Review Needs", count: reviewNeeds.length },
@@ -40,7 +48,7 @@ const BusinessJustificationSection: React.FC<BusinessJustificationSectionProps> 
     {
       key: "dates",
       label: "Project Dates",
-      count: project.startDate && project.endDate ? 1 : 0
+      count: project.startDate && project.endDate ? 1 : 0,
     },
   ] as const;
 
@@ -50,41 +58,49 @@ const BusinessJustificationSection: React.FC<BusinessJustificationSectionProps> 
         <div className="flex justify-end mb-4">
           <Button
             variant="ghost"
-            className="text-gray-400 hover:text-indigo-600 flex items-center gap-2 group text-sm font-medium"
+            className="text-text-secondary hover:text-text-primary flex items-center gap-2 group text-sm"
             onClick={onSkip}
           >
             Skip and go to Activation
             <svg
-              className="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+              className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 7l5 5m0 0l-5 5m5-5H6"
+              />
             </svg>
           </Button>
         </div>
       )}
 
       {/* Sub-tabs */}
-      <div className="border-b border-gray-200 mb-6">
-        <nav className="flex gap-6">
+      <div className="border-b border-border mb-6">
+        <nav className="flex gap-8">
           {bjTabs.map((tab) => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`
-                pb-2
-                text-sm font-medium
-                transition-colors
-                ${activeTab === tab.key
-                  ? "text-blue-600 border-b-2 border-blue-500"
-                  : "text-gray-500 hover:text-gray-700"
+                pb-3
+                text-[11px] uppercase tracking-[0.15em] font-medium
+                transition-colors border-b-2
+                ${
+                  activeTab === tab.key
+                    ? "text-accent border-accent"
+                    : "text-text-secondary border-transparent hover:text-text-primary"
                 }
               `}
             >
               {tab.label}
-              <span className="ml-1 text-xs text-gray-400">({tab.count})</span>
+              <span className="ml-1.5 text-[10px] text-[#A0998C]">
+                ({tab.count})
+              </span>
             </button>
           ))}
         </nav>

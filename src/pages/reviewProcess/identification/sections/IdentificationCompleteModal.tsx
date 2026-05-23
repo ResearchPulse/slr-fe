@@ -20,13 +20,9 @@ interface IdentificationCompleteModalProps {
   identificationPhaseId: string | undefined;
 }
 
-const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  isCompleting,
-  identificationPhaseId,
-}) => {
+const IdentificationCompleteModal: React.FC<
+  IdentificationCompleteModalProps
+> = ({ isOpen, onClose, onConfirm, isCompleting, identificationPhaseId }) => {
   const ds = useSnapshotDataset({
     identificationProcessId: identificationPhaseId,
     pageSize: 5, // Smaller page size for modal
@@ -54,25 +50,27 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
     >
       <div className="space-y-6">
         {/* Warning Section */}
-        <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 flex gap-3 text-amber-800">
+        <div className="bg-amber-50 border border-amber-100 rounded-[4px] p-4 flex gap-3 text-amber-800">
           <FiAlertCircle size={24} className="shrink-0 text-amber-500" />
           <div className="space-y-1">
             <p className="text-sm font-black">Ready to proceed?</p>
             <p className="text-xs font-medium leading-relaxed opacity-90">
-              Completing this phase will finalize the current set of unique papers. These papers
-              will be using for the <strong>Study Selection</strong> phase. Ensure all duplicates
-              are resolved and all relevant sources are imported.
+              Completing this phase will finalize the current set of unique
+              papers. These papers will be using for the{" "}
+              <strong>Study Selection</strong> phase. Ensure all duplicates are
+              resolved and all relevant sources are imported.
             </p>
             <p className="text-xs font-medium leading-relaxed opacity-90">
-              You can always come back and add more papers later if re-open this phase
+              You can always come back and add more papers later if re-open this
+              phase
             </p>
           </div>
         </div>
 
         {/* Papers Summary Header */}
-        <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-4">
+        <div className="bg-bg-secondary border border-border rounded-[4px] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-slate-900">
+            <div className="flex items-center gap-2 text-text-primary">
               <FiCheckCircle className="text-blue-600" />
               <span className="font-black text-lg">Snapshot Dataset</span>
             </div>
@@ -83,31 +81,35 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
 
           {/* Search Bar */}
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               placeholder="Search in snapshot..."
               value={snapshotSearch}
               onChange={(e) => setSnapshotSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+              className="w-full pl-10 pr-4 py-2 bg-surface-white border border-border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
             />
           </div>
 
           <div className="space-y-3 min-h-[200px] max-h-[300px] overflow-y-auto pr-2 custom-scrollbar relative">
             {snapshotLoading ? (
-              <div className="flex flex-col items-center justify-center py-12 text-slate-400">
+              <div className="flex flex-col items-center justify-center py-12 text-text-secondary">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
-                <p className="text-xs font-medium italic">Loading snapshot papers...</p>
+                <p className="text-xs font-medium italic">
+                  Loading snapshot papers...
+                </p>
               </div>
             ) : snapshotPapers.length > 0 ? (
               snapshotPapers.map((paper, index) => (
                 <div
                   key={paper.id || index}
-                  className="bg-white border border-slate-100 p-3 rounded-xl shadow-sm hover:border-blue-200 transition-colors"
+                  className="bg-surface-white border border-border p-3 rounded-[4px] shadow-sm hover:border-blue-200 transition-colors"
                 >
-                  <p className="text-sm font-bold text-slate-800 line-clamp-1">{paper.title}</p>
-                  <div className="flex items-center gap-3 mt-1 text-[10px] font-medium text-slate-500 uppercase tracking-wider">
-                    <span className="bg-slate-100 px-2 py-0.5 rounded-md">
+                  <p className="text-sm font-bold text-slate-800 line-clamp-1">
+                    {paper.title}
+                  </p>
+                  <div className="flex items-center gap-3 mt-1 text-[10px] font-medium text-text-secondary uppercase tracking-wider">
+                    <span className="bg-bg-secondary px-2 py-0.5 rounded-md">
                       {paper.publicationYear || "N/A"}
                     </span>
                     <span className="truncate max-w-[200px]">
@@ -117,7 +119,7 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
                 </div>
               ))
             ) : (
-              <div className="text-center py-12 text-slate-400">
+              <div className="text-center py-12 text-text-secondary">
                 <FiInfo size={32} className="mx-auto mb-2 opacity-20" />
                 <p className="text-xs font-medium italic">
                   {snapshotSearch
@@ -130,22 +132,24 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
 
           {/* Table Pagination */}
           {snapshotTotalPages > 1 && (
-            <div className="flex items-center justify-between pt-2 border-t border-slate-100">
-              <span className="text-[10px] font-medium text-slate-400">
+            <div className="flex items-center justify-between pt-2 border-t border-border">
+              <span className="text-[10px] font-medium text-text-secondary">
                 Page {snapshotPage} of {snapshotTotalPages}
               </span>
               <div className="flex gap-1">
                 <button
                   onClick={snapshotPrevPage}
                   disabled={snapshotPage === 1 || snapshotLoading}
-                  className="p-1 rounded hover:bg-white border border-transparent hover:border-slate-200 disabled:opacity-30 text-slate-600 transition-all"
+                  className="p-1 rounded hover:bg-surface-white border border-transparent hover:border-border disabled:opacity-30 text-text-secondary transition-all"
                 >
                   <FiChevronLeft />
                 </button>
                 <button
                   onClick={snapshotNextPage}
-                  disabled={snapshotPage === snapshotTotalPages || snapshotLoading}
-                  className="p-1 rounded hover:bg-white border border-transparent hover:border-slate-200 disabled:opacity-30 text-slate-600 transition-all"
+                  disabled={
+                    snapshotPage === snapshotTotalPages || snapshotLoading
+                  }
+                  className="p-1 rounded hover:bg-surface-white border border-transparent hover:border-border disabled:opacity-30 text-text-secondary transition-all"
                 >
                   <FiChevronRight />
                 </button>
@@ -159,7 +163,7 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
+            className="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-all"
             disabled={isCompleting}
           >
             Cancel
@@ -168,7 +172,7 @@ const IdentificationCompleteModal: React.FC<IdentificationCompleteModalProps> = 
             onClick={onConfirm}
             isLoading={isCompleting}
             variant="primary"
-            className="min-w-[160px] bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-transform active:scale-95"
+            className="min-w-[160px] bg-accent hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-transform active:scale-95"
           >
             Complete Phase
           </Button>

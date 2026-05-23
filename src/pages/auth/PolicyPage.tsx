@@ -5,107 +5,181 @@ import { FiX } from "react-icons/fi";
 const PolicyPage: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen w-full bg-surface-ground py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto bg-surface-card rounded-2xl shadow-sm border border-border-default overflow-hidden">
-        
+    <div className="min-h-screen w-full bg-bg-primary py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto border border-border overflow-hidden">
         {/* Header */}
-        <div className="bg-primary/5 px-8 py-10 border-b border-border-default relative">
-          <button 
-            onClick={() => navigate("/auth/signup")} 
-            className="absolute top-6 right-6 p-2 text-text-muted hover:text-primary transition-colors hover:bg-white/50 rounded-full"
+        <div className="bg-text-primary px-8 py-12 relative">
+          <button
+            onClick={() => navigate("/auth/signup")}
+            className="absolute top-6 right-6 p-2 text-bg-primary/40 hover:text-bg-primary transition-colors border border-bg-primary/10 hover:border-bg-primary/30"
             aria-label="Close"
           >
-            <FiX className="w-5 h-5" />
+            <FiX className="w-4 h-4" />
           </button>
-          <div className="mt-4">
-            <h1 className="text-3xl sm:text-4xl font-bold text-text-main tracking-tight mb-4">
-              Privacy Policy & Terms
+          <div className="mt-2">
+            <p className="text-[11px] uppercase tracking-[0.3em] text-bg-primary/40 mb-4">
+              Legal Information
+            </p>
+            <h1 className="font-cormorant text-[44px] sm:text-[52px] font-normal text-bg-primary leading-tight mb-3">
+              Privacy Policy &amp; Terms
             </h1>
-            <p className="text-text-muted text-lg">
+            <p className="text-bg-primary/50 text-sm">
               Last updated: January 11, 2026
             </p>
           </div>
         </div>
 
         {/* Content Body */}
-        <div className="px-8 py-10 sm:px-12 space-y-12">
-          
+        <div className="px-8 py-10 sm:px-12 space-y-10 bg-surface-white">
           {/* Section 1 */}
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-text-main border-b border-border-default pb-2">
-              1. Introduction
-            </h2>
-            <div className="text-text-muted leading-relaxed space-y-4">
+            <div className="border-b border-border pb-3 mb-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+                01
+              </p>
+              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+                Introduction
+              </h2>
+            </div>
+            <div className="text-text-secondary leading-[1.8] space-y-4 text-sm">
               <p>
-                Welcome to the Systematic Review Support System (PrismaSLR). We are committed to protecting your privacy and ensuring you have a positive experience on our website and in using our products and services.
+                Welcome to the Systematic Literature Review System (SLRS). We
+                are committed to protecting your privacy and ensuring you have a
+                positive experience on our website and in using our products and
+                services.
               </p>
               <p>
-                This policy outlines our handling practices and how we collect and use the personal data you provide during your interactions with us.
+                This policy outlines our handling practices and how we collect
+                and use the personal data you provide during your interactions
+                with us.
               </p>
             </div>
           </section>
+
+          <div className="h-[1px] bg-border" />
 
           {/* Section 2 */}
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-text-main border-b border-border-default pb-2">
-              2. Data Collection
-            </h2>
-            <div className="text-text-muted leading-relaxed space-y-4">
-              <p>
-                We collect information to provide better services to all our users. The types of information we collect include:
+            <div className="border-b border-border pb-3 mb-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+                02
               </p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>
-                  <strong className="text-text-main font-medium">Account Data:</strong> When you register, we collect information such as your name, email address, and professional affiliation.
+              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+                Data Collection
+              </h2>
+            </div>
+            <div className="text-text-secondary leading-[1.8] space-y-4 text-sm">
+              <p>
+                We collect information to provide better services to all our
+                users. The types of information we collect include:
+              </p>
+              <ul className="list-none space-y-3">
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    <strong className="text-text-primary font-medium">
+                      Account Data:
+                    </strong>{" "}
+                    When you register, we collect information such as your name,
+                    email address, and professional affiliation.
+                  </span>
                 </li>
-                <li>
-                  <strong className="text-text-main font-medium">Research Data:</strong> Data you input for systematic reviews is stored securely and is only accessible by you and your designated collaborators.
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    <strong className="text-text-primary font-medium">
+                      Research Data:
+                    </strong>{" "}
+                    Data you input for systematic reviews is stored securely and
+                    is only accessible by you and your designated collaborators.
+                  </span>
                 </li>
-                <li>
-                  <strong className="text-text-main font-medium">Usage Data:</strong> We gather data about how you interact with our services to improve system performance and user experience.
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    <strong className="text-text-primary font-medium">
+                      Usage Data:
+                    </strong>{" "}
+                    We gather data about how you interact with our services to
+                    improve system performance and user experience.
+                  </span>
                 </li>
               </ul>
             </div>
           </section>
+
+          <div className="h-[1px] bg-border" />
 
           {/* Section 3 */}
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-text-main border-b border-border-default pb-2">
-              3. User Responsibilities
-            </h2>
-            <div className="text-text-muted leading-relaxed space-y-4">
-              <p>
-                By using our services, you agree to:
+            <div className="border-b border-border pb-3 mb-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+                03
               </p>
-              <ul className="list-disc pl-6 space-y-2">
-                <li>Maintain the confidentiality of your account credentials.</li>
-                <li>Ensure that any data you upload complies with applicable laws and ethical guidelines.</li>
-                <li>Respect the intellectual property rights of others.</li>
+              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+                User Responsibilities
+              </h2>
+            </div>
+            <div className="text-text-secondary leading-[1.8] space-y-4 text-sm">
+              <p>By using our services, you agree to:</p>
+              <ul className="list-none space-y-3">
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    Maintain the confidentiality of your account credentials.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    Ensure that any data you upload complies with applicable
+                    laws and ethical guidelines.
+                  </span>
+                </li>
+                <li className="flex gap-3">
+                  <span className="text-accent shrink-0 mt-0.5">—</span>
+                  <span>
+                    Respect the intellectual property rights of others.
+                  </span>
+                </li>
               </ul>
               <p>
-                Violation of these terms may result in the suspension or termination of your account.
+                Violation of these terms may result in the suspension or
+                termination of your account.
               </p>
             </div>
           </section>
+
+          <div className="h-[1px] bg-border" />
 
           {/* Section 4 */}
           <section className="space-y-4">
-            <h2 className="text-2xl font-bold text-text-main border-b border-border-default pb-2">
-              4. Security Measures
-            </h2>
-            <div className="text-text-muted leading-relaxed space-y-4">
+            <div className="border-b border-border pb-3 mb-4">
+              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+                04
+              </p>
+              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+                Security Measures
+              </h2>
+            </div>
+            <div className="text-text-secondary leading-[1.8] space-y-4 text-sm">
               <p>
-                We implement industry-standard security measures to protect your data from unauthorized access, alteration, disclosure, or destruction. However, no method of transmission over the Internet or electronic storage is 100% secure.
+                We implement industry-standard security measures to protect your
+                data from unauthorized access, alteration, disclosure, or
+                destruction. However, no method of transmission over the
+                Internet or electronic storage is 100% secure.
               </p>
             </div>
           </section>
-
         </div>
 
         {/* Footer */}
-        <div className="bg-gray-50 px-8 py-6 border-t border-border-default text-center">
-          <p className="text-text-muted text-sm">
-            For questions about this policy, please contact us at <span className="text-primary font-medium hover:underline cursor-pointer">privacy@prismaslr.com</span>
+        <div className="bg-bg-secondary px-8 py-5 border-t border-border text-center">
+          <p className="text-text-secondary text-[12px]">
+            For questions about this policy, please contact us at{" "}
+            <span className="text-accent font-medium hover:underline cursor-pointer">
+              privacy@slrs.com
+            </span>
           </p>
         </div>
       </div>

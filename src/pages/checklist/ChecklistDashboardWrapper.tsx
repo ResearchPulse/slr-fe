@@ -9,7 +9,9 @@ import type {
 } from "../../types/checklistApi";
 import { toastError, toastSuccess } from "../../utils/toast";
 
-const mapReviewChecklistSummary = (checklist: ReviewChecklistSummaryDto): ReviewChecklist => ({
+const mapReviewChecklistSummary = (
+  checklist: ReviewChecklistSummaryDto,
+): ReviewChecklist => ({
   id: checklist.reviewChecklistId,
   projectId: checklist.reviewId,
   reviewId: checklist.reviewId,
@@ -23,7 +25,9 @@ const mapReviewChecklistSummary = (checklist: ReviewChecklistSummaryDto): Review
   responses: [],
   completionPercentage: checklist.completionPercentage,
   totalItems: checklist.itemCount,
-  completedItems: Math.round((checklist.itemCount * checklist.completionPercentage) / 100),
+  completedItems: Math.round(
+    (checklist.itemCount * checklist.completionPercentage) / 100,
+  ),
 });
 
 export default function ChecklistDashboardPageWrapper() {
@@ -53,18 +57,27 @@ export default function ChecklistDashboardPageWrapper() {
       return checklistApi.cloneTemplateToReview(reviewId, { templateId });
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["review-checklists", reviewId] });
-      toastSuccess("Checklist created", "The PRISMA checklist is ready for editing.");
+      await queryClient.invalidateQueries({
+        queryKey: ["review-checklists", reviewId],
+      });
+      toastSuccess(
+        "Checklist created",
+        "The PRISMA checklist is ready for editing.",
+      );
     },
     onError: (error) => {
       toastError(
         "Checklist creation failed",
-        error instanceof Error ? error.message : "Unable to create checklist from template",
+        error instanceof Error
+          ? error.message
+          : "Unable to create checklist from template",
       );
     },
   });
 
-  const checklistCards = (checklistQuery.data ?? []).map(mapReviewChecklistSummary);
+  const checklistCards = (checklistQuery.data ?? []).map(
+    mapReviewChecklistSummary,
+  );
 
   return (
     <ChecklistDashboardPage

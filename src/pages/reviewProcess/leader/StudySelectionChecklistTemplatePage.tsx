@@ -15,19 +15,19 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
     projectId: string;
     screeningProcessId: string;
   }>();
-  const {
-    templates,
-    isLoading,
-    error,
-    createTemplate,
-    isCreating,
-  } = useStudySelectionChecklistTemplate(projectId);
+  const { templates, isLoading, error, createTemplate, isCreating } =
+    useStudySelectionChecklistTemplate(projectId);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleCreateTemplate = async (data: CreateStudySelectionChecklistTemplateRequest | null) => {
+  const handleCreateTemplate = async (
+    data: CreateStudySelectionChecklistTemplateRequest | null,
+  ) => {
     if (!data) {
-      toastError("Creation Failed", "Please provide at least some information for the template.");
+      toastError(
+        "Creation Failed",
+        "Please provide at least some information for the template.",
+      );
       return;
     }
 
@@ -54,7 +54,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
 
   if (error && templates.length === 0) {
     return (
-      <div className="p-8 text-center bg-red-50 rounded-2xl border border-red-100">
+      <div className="p-8 text-center bg-surface-white rounded-[4px] border border-red-100">
         <p className="text-red-500 font-medium">{error}</p>
       </div>
     );
@@ -64,32 +64,32 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
       {templates.length > 0 ? (
         <div className="space-y-8">
-          <div className="bg-white rounded-[3rem] border border-slate-100/80 p-10 shadow-xl shadow-slate-200/20 relative overflow-hidden transition-all duration-500 min-h-[700px]">
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-50/30 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="bg-surface-white rounded-[3rem] border border-border/80 p-10 shadow-none shadow-slate-200/20 relative overflow-hidden transition-all duration-500 min-h-[700px]">
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/30 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="relative z-10">
-              <ChecklistTemplateVersions
-                projectId={projectId!}
-              />
+              <ChecklistTemplateVersions projectId={projectId!} />
             </div>
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto bg-white rounded-[3rem] border border-slate-100/80 p-20 shadow-sm shadow-indigo-100/10 relative overflow-hidden text-center flex flex-col items-center">
+        <div className="max-w-4xl mx-auto bg-surface-white rounded-[3rem] border border-border/80 p-20 shadow-none shadow-indigo-100/10 relative overflow-hidden text-center flex flex-col items-center">
           {/* Subtle Decorative Background Element */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl pointer-events-none"></div>
+          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/50 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="w-24 h-24 rounded-[2.5rem] bg-slate-50 flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-slate-200 relative group transition-all hover:bg-indigo-50 hover:border-indigo-200 hover:text-indigo-400">
+          <div className="w-24 h-24 rounded-[2.5rem] bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-indigo-200 hover:text-indigo-400">
             <RiFileList3Line size={48} />
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-white border-4 border-slate-50 flex items-center justify-center text-slate-400 group-hover:border-indigo-50 group-hover:text-indigo-500 shadow-sm transition-all">
+            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-surface-white border-4 border-slate-50 flex items-center justify-center text-text-secondary group-hover:border-indigo-50 group-hover:text-accent shadow-none transition-all">
               <RiAddLine size={18} />
             </div>
           </div>
-          <h2 className="text-3xl font-black text-slate-900 mb-4 tracking-tight">
+          <h2 className="text-3xl font-black text-text-primary mb-4 tracking-tight">
             Initialize Eligibility Framework
           </h2>
-          <p className="text-slate-500 mb-12 font-medium leading-relaxed text-lg">
-            Every robust systematic review starts with clear, pre-defined eligibility criteria. Your checklist template will serve as the single source of truth for all study screening decisions.
+          <p className="text-text-secondary mb-12 font-medium leading-relaxed text-lg">
+            Every robust systematic review starts with clear, pre-defined
+            eligibility criteria. Your checklist template will serve as the
+            single source of truth for all study screening decisions.
           </p>
           <Button
             onClick={() => {
@@ -118,6 +118,5 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
     </div>
   );
 };
-
 
 export default StudySelectionChecklistTemplatePage;

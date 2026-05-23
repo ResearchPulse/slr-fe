@@ -20,7 +20,10 @@ import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import type { SearchSourceDto } from "../../types/searchSource";
 import type { SearchStrategyDto } from "./types/search-strategy";
-import { useProjectPicocs, useProjectResearchQuestions } from "../../hooks/useProjects";
+import {
+  useProjectPicocs,
+  useProjectResearchQuestions,
+} from "../../hooks/useProjects";
 import { searchSourceService } from "../../services/searchSourceService";
 
 interface SearchStrategyFormProps {
@@ -48,7 +51,14 @@ const FIELD_OPTIONS = [
   { id: "mesh", label: "MeSH" },
 ];
 
-const LANGUAGE_OPTIONS = ["English", "Vietnamese", "Chinese", "French", "German", "Spanish"];
+const LANGUAGE_OPTIONS = [
+  "English",
+  "Vietnamese",
+  "Chinese",
+  "French",
+  "German",
+  "Spanish",
+];
 const STUDY_TYPE_OPTIONS = [
   "Randomized Controlled Trial",
   "Systematic Review",
@@ -118,7 +128,9 @@ export default function SearchStrategyForm({
     }));
   }, [keywords]);
 
-  const [newKeywordInputs, setNewKeywordInputs] = useState<Record<string, string>>({
+  const [newKeywordInputs, setNewKeywordInputs] = useState<
+    Record<string, string>
+  >({
     population: "",
     intervention: "",
     comparison: "",
@@ -155,7 +167,10 @@ export default function SearchStrategyForm({
         });
 
         if (result.data.generatedQuery) {
-          setStrategy((prev) => ({ ...prev, query: result.data.generatedQuery }));
+          setStrategy((prev) => ({
+            ...prev,
+            query: result.data.generatedQuery,
+          }));
         }
 
         setHasAnalyzed(true);
@@ -269,10 +284,10 @@ export default function SearchStrategyForm({
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="relative w-full max-w-2xl bg-white h-full shadow-2xl flex flex-col"
+        className="relative w-full max-w-2xl bg-surface-white h-full shadow-2xl flex flex-col"
       >
         {/* Header */}
-        <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
           <div className="flex-1">
             <div className="flex items-center gap-2 text-blue-600 mb-1">
               <FiDatabase className="w-4 h-4" />
@@ -280,27 +295,29 @@ export default function SearchStrategyForm({
                 Search Strategy Builder
               </span>
             </div>
-            <h2 className="text-2xl font-black text-gray-900">{source.name}</h2>
+            <h2 className="text-2xl font-black text-text-primary">
+              {source.name}
+            </h2>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex bg-gray-100 p-1 rounded-xl">
+            <div className="flex bg-bg-secondary p-1 rounded-[4px]">
               <button
                 onClick={() => setMode("guided")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${mode === "guided" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-1.5 rounded-[4px] text-xs font-bold transition-all ${mode === "guided" ? "bg-surface-white text-blue-600 shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Guided
               </button>
               <button
                 onClick={() => setMode("manual")}
-                className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${mode === "manual" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                className={`px-4 py-1.5 rounded-[4px] text-xs font-bold transition-all ${mode === "manual" ? "bg-surface-white text-blue-600 shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Manual
               </button>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-xl transition-colors text-gray-400 hover:text-gray-900"
+              className="p-2 hover:bg-bg-secondary rounded-[4px] transition-colors text-text-secondary hover:text-text-primary"
             >
               <FiX className="w-6 h-6" />
             </button>
@@ -314,33 +331,42 @@ export default function SearchStrategyForm({
               {/* Step 1: PICO Context Overview */}
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-gray-900 font-bold">
+                  <div className="flex items-center gap-2 text-text-primary font-bold">
                     <FiBookOpen className="text-blue-600" />
                     <h4>1. Project PICOC Framework</h4>
                   </div>
                   {(picocLoading || rqLoading) && (
-                    <div className="text-[10px] text-gray-400 animate-pulse">Loading...</div>
+                    <div className="text-[10px] text-text-secondary animate-pulse">
+                      Loading...
+                    </div>
                   )}
                 </div>
 
-                <div className="bg-blue-50/50 rounded-3xl p-6 border border-blue-100/50">
+                <div className="bg-blue-50/50 rounded-[4px] p-6 border border-blue-100/50">
                   {picocs.length > 0 ? (
                     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
-                      {["population", "intervention", "comparator", "outcome", "context"].map(
-                        (key) => (
-                          <div key={key} className={key === "context" ? "col-span-2" : ""}>
-                            <span className="text-[9px] font-black uppercase text-blue-400 block mb-1">
-                              {key}
-                            </span>
-                            <p className="text-xs font-medium text-blue-900 line-clamp-2 leading-relaxed">
-                              {(picocs[0] as any)[key] || "Not specified"}
-                            </p>
-                          </div>
-                        ),
-                      )}
+                      {[
+                        "population",
+                        "intervention",
+                        "comparator",
+                        "outcome",
+                        "context",
+                      ].map((key) => (
+                        <div
+                          key={key}
+                          className={key === "context" ? "col-span-2" : ""}
+                        >
+                          <span className="text-[9px] font-black uppercase text-blue-400 block mb-1">
+                            {key}
+                          </span>
+                          <p className="text-xs font-medium text-blue-900 line-clamp-2 leading-relaxed">
+                            {(picocs[0] as any)[key] || "Not specified"}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-400 italic text-center py-4">
+                    <p className="text-xs text-text-secondary italic text-center py-4">
                       No PICOC defined for this project.
                     </p>
                   )}
@@ -350,7 +376,7 @@ export default function SearchStrategyForm({
               {/* Step 2: Breakdown & Refinement */}
               <section className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-gray-900 font-bold">
+                  <div className="flex items-center gap-2 text-text-primary font-bold">
                     <FiZap className="text-blue-600" />
                     <h4>2. Keyword Breakdown</h4>
                   </div>
@@ -358,26 +384,36 @@ export default function SearchStrategyForm({
                   <button
                     onClick={handleAnalyzePicoc}
                     disabled={isAnalyzing || picocs.length === 0 || !isLeader}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 disabled:text-gray-400 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
+                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-[4px] text-xs font-bold transition-all shadow-none shadow-blue-500/20"
                   >
                     {isAnalyzing ? (
                       <FiRefreshCw className="animate-spin w-3 h-3" />
                     ) : (
                       <FiCpu className="w-3 h-3" />
                     )}
-                    {hasAnalyzed ? (isLeader ? "Re-generate with AI" : "AI Analyzed") : "AI Assist: Extract Keywords"}
+                    {hasAnalyzed
+                      ? isLeader
+                        ? "Re-generate with AI"
+                        : "AI Analyzed"
+                      : "AI Assist: Extract Keywords"}
                   </button>
                 </div>
 
                 <div className="space-y-6">
                   {(
-                    ["population", "intervention", "comparison", "outcome", "context"] as const
+                    [
+                      "population",
+                      "intervention",
+                      "comparison",
+                      "outcome",
+                      "context",
+                    ] as const
                   ).map((type) => (
                     <div
                       key={type}
-                      className="bg-white rounded-3xl p-5 border border-gray-100 hover:border-blue-200 transition-all shadow-sm"
+                      className="bg-surface-white rounded-[4px] p-5 border border-border hover:border-blue-200 transition-all shadow-none"
                     >
-                      <label className="text-[10px] font-black uppercase text-gray-400 mb-3 flex items-center gap-2">
+                      <label className="text-[10px] font-black uppercase text-text-secondary mb-3 flex items-center gap-2">
                         <FiArrowRight className="text-blue-500" />
                         {type} Terms
                       </label>
@@ -385,7 +421,7 @@ export default function SearchStrategyForm({
                         {keywords[type].map((word, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-xl border border-blue-100"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-[4px] border border-blue-100"
                           >
                             {word}
                             {isLeader && (
@@ -398,7 +434,7 @@ export default function SearchStrategyForm({
                             )}
                           </span>
                         ))}
-                         {isLeader && (
+                        {isLeader && (
                           <div className="flex items-center gap-2 flex-1 min-w-[140px]">
                             <input
                               type="text"
@@ -409,13 +445,15 @@ export default function SearchStrategyForm({
                                   [type]: e.target.value,
                                 }))
                               }
-                              onKeyDown={(e) => e.key === "Enter" && addKeyword(type)}
+                              onKeyDown={(e) =>
+                                e.key === "Enter" && addKeyword(type)
+                              }
                               placeholder="Add synonym..."
-                              className="flex-1 px-3 py-1.5 bg-gray-50 border-none rounded-xl text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                              className="flex-1 px-3 py-1.5 bg-bg-primary border-none rounded-[4px] text-xs outline-none focus:ring-1 focus:ring-blue-500"
                             />
                             <button
                               onClick={() => addKeyword(type)}
-                              className="p-1.5 bg-gray-100 rounded-lg hover:bg-gray-200"
+                              className="p-1.5 bg-bg-secondary rounded-[4px] hover:bg-bg-secondary"
                             >
                               <FiPlus className="w-3 h-3" />
                             </button>
@@ -429,7 +467,7 @@ export default function SearchStrategyForm({
 
               {/* Step 3: Logic & Query */}
               <section className="space-y-4">
-                <div className="flex items-center gap-2 text-gray-900 font-bold">
+                <div className="flex items-center gap-2 text-text-primary font-bold">
                   <FiLayers className="text-blue-600" />
                   <h4>
                     3. Preview logic{" "}
@@ -443,7 +481,7 @@ export default function SearchStrategyForm({
                     </a>
                   </h4>
                 </div>
-                <div className="p-6 bg-gray-900 rounded-3xl text-blue-100 space-y-4 font-mono text-xs">
+                <div className="p-6 bg-gray-900 rounded-[4px] text-blue-100 space-y-4 font-mono text-xs">
                   {Object.entries(keywords)
                     .filter(([_, terms]) => terms.length > 0)
                     .map(([key, terms], idx, arr) => {
@@ -452,7 +490,9 @@ export default function SearchStrategyForm({
                         <div key={key} className="group">
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex gap-2 min-w-0 flex-1">
-                              <span className="text-blue-500 shrink-0">{key.toUpperCase()}:</span>
+                              <span className="text-blue-500 shrink-0">
+                                {key.toUpperCase()}:
+                              </span>
                               <span className="break-all">{queryPart}</span>
                             </div>
                             <button
@@ -460,13 +500,15 @@ export default function SearchStrategyForm({
                                 navigator.clipboard.writeText(queryPart);
                                 toast.success(`Copied ${key} query!`);
                               }}
-                              className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-white/10 rounded transition-all text-blue-400 shrink-0"
+                              className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-surface-white/10 rounded transition-all text-blue-400 shrink-0"
                             >
                               <FiCopy className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           {idx < arr.length - 1 && (
-                            <div className="text-amber-500 my-2 font-black">AND</div>
+                            <div className="text-amber-500 my-2 font-black">
+                              AND
+                            </div>
                           )}
                         </div>
                       );
@@ -476,17 +518,22 @@ export default function SearchStrategyForm({
 
               {/* Step 4: Final Search Query */}
               <section className="space-y-4">
-                <div className="flex items-center gap-2 text-gray-900 font-bold">
+                <div className="flex items-center gap-2 text-text-primary font-bold">
                   <FiSearch className="text-blue-600" />
                   <h4>4. Final Search Query</h4>
                 </div>
                 <div className="relative group">
                   <textarea
                     value={strategy.query}
-                    onChange={(e) => setStrategy((prev) => ({ ...prev, query: e.target.value }))}
+                    onChange={(e) =>
+                      setStrategy((prev) => ({
+                        ...prev,
+                        query: e.target.value,
+                      }))
+                    }
                     disabled={!isLeader}
                     placeholder="The generated query will appear here..."
-                    className="w-full h-32 px-5 py-4 bg-gray-50 border border-gray-100 rounded-3xl text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner font-mono text-sm leading-relaxed disabled:opacity-75"
+                    className="w-full h-32 px-5 py-4 bg-bg-primary border border-border rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner font-mono text-sm leading-relaxed disabled:opacity-75"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
@@ -494,40 +541,43 @@ export default function SearchStrategyForm({
                         navigator.clipboard.writeText(strategy.query);
                         toast.success("Copied query!");
                       }}
-                      className="p-2 bg-white shadow-sm border border-gray-100 rounded-xl text-gray-400 hover:text-blue-600 transition-all opacity-0 group-hover:opacity-100"
+                      className="p-2 bg-surface-white shadow-none border border-border rounded-[4px] text-text-secondary hover:text-blue-600 transition-all opacity-0 group-hover:opacity-100"
                       title="Copy to clipboard"
                     >
                       <FiCopy className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
-                <p className="text-[10px] text-gray-400 px-2 italic">
-                  Note: This query is what will be saved to your search strategy.
+                <p className="text-[10px] text-text-secondary px-2 italic">
+                  Note: This query is what will be saved to your search
+                  strategy.
                 </p>
               </section>
             </>
           ) : (
             <section className="space-y-4">
-              <div className="flex items-center gap-2 text-gray-900 font-bold">
+              <div className="flex items-center gap-2 text-text-primary font-bold">
                 <FiEdit3 className="text-blue-600" />
                 <h4>Manual Query Input</h4>
               </div>
               <textarea
                 value={strategy.query}
-                onChange={(e) => setStrategy({ ...strategy, query: e.target.value })}
+                onChange={(e) =>
+                  setStrategy({ ...strategy, query: e.target.value })
+                }
                 disabled={!isLeader}
                 placeholder="Enter full search query..."
-                className="w-full h-64 px-5 py-4 bg-gray-50 border-none rounded-3xl text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
+                className="w-full h-64 px-5 py-4 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
               />
             </section>
           )}
 
-          <div className="h-px bg-gray-100 w-full" />
+          <div className="h-px bg-bg-secondary w-full" />
 
           {/* Common Fields */}
           <div className="grid grid-cols-2 gap-8">
             <section className="space-y-4">
-              <div className="flex items-center gap-2 text-gray-900 font-bold">
+              <div className="flex items-center gap-2 text-text-primary font-bold">
                 <FiLayers className="text-blue-600" />
                 <h4>Fields</h4>
               </div>
@@ -535,15 +585,19 @@ export default function SearchStrategyForm({
                 {FIELD_OPTIONS.map((option) => (
                   <label
                     key={option.id}
-                    className="flex items-center gap-3 p-3 rounded-2xl cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-[4px] cursor-pointer hover:bg-bg-primary transition-colors"
                   >
                     <div
-                      className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center ${strategy.fields.includes(option.id) ? "bg-blue-600 border-blue-600 text-white" : "border-gray-200"}`}
+                      className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center ${strategy.fields.includes(option.id) ? "bg-blue-600 border-blue-600 text-white" : "border-border"}`}
                       onClick={() => isLeader && toggleField(option.id)}
                     >
-                      {strategy.fields.includes(option.id) && <FiCheck className="w-3 h-3" />}
+                      {strategy.fields.includes(option.id) && (
+                        <FiCheck className="w-3 h-3" />
+                      )}
                     </div>
-                    <span className="text-sm font-medium text-gray-700">{option.label}</span>
+                    <span className="text-sm font-medium text-text-primary">
+                      {option.label}
+                    </span>
                     <input
                       type="checkbox"
                       className="hidden"
@@ -556,7 +610,7 @@ export default function SearchStrategyForm({
             </section>
 
             <section className="space-y-4">
-              <div className="flex items-center gap-2 text-gray-900 font-bold">
+              <div className="flex items-center gap-2 text-text-primary font-bold">
                 <FiCalendar className="text-blue-600" />
                 <h4>Metadata</h4>
               </div>
@@ -564,17 +618,21 @@ export default function SearchStrategyForm({
                 <input
                   type="date"
                   value={strategy.dateSearched}
-                  onChange={(e) => setStrategy({ ...strategy, dateSearched: e.target.value })}
+                  onChange={(e) =>
+                    setStrategy({ ...strategy, dateSearched: e.target.value })
+                  }
                   disabled={!isLeader}
-                  className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
+                  className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
                 />
                 <input
                   type="text"
                   value={strategy.version}
-                  onChange={(e) => setStrategy({ ...strategy, version: e.target.value })}
+                  onChange={(e) =>
+                    setStrategy({ ...strategy, version: e.target.value })
+                  }
                   disabled={!isLeader}
                   placeholder="Version (e.g. v1)"
-                  className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
+                  className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
                 />
               </div>
             </section>
@@ -582,26 +640,28 @@ export default function SearchStrategyForm({
 
           {/* Notes */}
           <section className="space-y-4">
-            <div className="flex items-center gap-2 text-gray-900 font-bold">
+            <div className="flex items-center gap-2 text-text-primary font-bold">
               <FiEdit3 className="text-blue-600" />
               <h4>Notes</h4>
             </div>
             <textarea
               value={strategy.notes || ""}
-              onChange={(e) => setStrategy({ ...strategy, notes: e.target.value })}
+              onChange={(e) =>
+                setStrategy({ ...strategy, notes: e.target.value })
+              }
               disabled={!isLeader}
               placeholder="Add any additional notes about this search strategy..."
-              className="w-full h-32 px-5 py-4 bg-gray-50 border-none rounded-3xl text-gray-900 focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
+              className="w-full h-32 px-5 py-4 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
             />
           </section>
 
           {/* Filters */}
           <section className="space-y-4">
-            <div className="flex items-center gap-2 text-gray-900 font-bold">
+            <div className="flex items-center gap-2 text-text-primary font-bold">
               <FiFilter className="text-blue-600" />
               <h4>Filters</h4>
             </div>
-            <div className="bg-gray-50 rounded-3xl p-6 grid grid-cols-2 gap-4 border border-gray-100">
+            <div className="bg-bg-primary rounded-[4px] p-6 grid grid-cols-2 gap-4 border border-border">
               <input
                 type="number"
                 value={strategy.filters.yearFrom || ""}
@@ -616,7 +676,7 @@ export default function SearchStrategyForm({
                 }
                 disabled={!isLeader}
                 placeholder="Year From"
-                className="px-4 py-3 bg-white border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm disabled:opacity-75"
+                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
               />
               <input
                 type="number"
@@ -624,12 +684,15 @@ export default function SearchStrategyForm({
                 onChange={(e) =>
                   setStrategy({
                     ...strategy,
-                    filters: { ...strategy.filters, yearTo: parseInt(e.target.value) || undefined },
+                    filters: {
+                      ...strategy.filters,
+                      yearTo: parseInt(e.target.value) || undefined,
+                    },
                   })
                 }
                 disabled={!isLeader}
                 placeholder="Year To"
-                className="px-4 py-3 bg-white border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm disabled:opacity-75"
+                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
               />
               <select
                 value={strategy.filters.language}
@@ -640,7 +703,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="px-4 py-3 bg-white border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm disabled:opacity-75"
+                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
               >
                 <option value="">Any Language</option>
                 {LANGUAGE_OPTIONS.map((lang) => (
@@ -658,7 +721,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="px-4 py-3 bg-white border-none rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none shadow-sm disabled:opacity-75"
+                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
               >
                 <option value="">Any Study Type</option>
                 {STUDY_TYPE_OPTIONS.map((type) => (
@@ -672,17 +735,17 @@ export default function SearchStrategyForm({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-6 border-t border-gray-100 bg-white sticky bottom-0 flex gap-4">
+        <div className="px-8 py-6 border-t border-border bg-surface-white sticky bottom-0 flex gap-4">
           <button
             onClick={onClose}
-            className="flex-1 py-4 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-2xl font-bold transition-all"
+            className="flex-1 py-4 bg-bg-primary hover:bg-bg-secondary text-text-secondary rounded-[4px] font-bold transition-all"
           >
             {isLeader ? "Cancel" : "Close"}
           </button>
           {isLeader && (
             <button
               onClick={handleSave}
-              className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+              className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[4px] font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
             >
               <FiCheck />
               Save Strategy

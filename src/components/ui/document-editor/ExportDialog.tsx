@@ -11,7 +11,10 @@ interface ExportDialogProps {
   onClose: () => void;
 }
 
-export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) => {
+export const ExportDialog: React.FC<ExportDialogProps> = ({
+  isOpen,
+  onClose,
+}) => {
   const { draft } = useSelector((state: RootState) => state.documentEditor);
   const [copied, setCopied] = useState(false);
 
@@ -56,12 +59,16 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({ isOpen, onClose }) =
               className="bg-gray-800 text-white border-gray-700 hover:bg-gray-700"
               onClick={handleCopy}
             >
-              {copied ? <Check className="w-4 h-4 mr-1" /> : <Copy className="w-4 h-4 mr-1" />}
+              {copied ? (
+                <Check className="w-4 h-4 mr-1" />
+              ) : (
+                <Copy className="w-4 h-4 mr-1" />
+              )}
               {copied ? "Copied" : "Copy"}
             </Button>
           </div>
         </div>
-        
+
         <div className="flex justify-end gap-3 mt-6">
           <Button variant="ghost" onClick={onClose}>
             Close

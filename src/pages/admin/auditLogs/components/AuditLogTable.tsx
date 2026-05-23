@@ -1,5 +1,11 @@
 import React from "react";
-import { FiArrowDown, FiArrowUp, FiClock, FiFileText, FiSearch } from "react-icons/fi";
+import {
+  FiArrowDown,
+  FiArrowUp,
+  FiClock,
+  FiFileText,
+  FiSearch,
+} from "react-icons/fi";
 import { cn } from "../../../../utils/cn";
 import Pagination from "../../../../components/ui/Pagination";
 import {
@@ -10,7 +16,10 @@ import {
   TableRow,
   TableCell,
 } from "../../../../components/ui/Table";
-import type { AuditLogEntry, AuditLogSortField } from "../../../../types/auditLog";
+import type {
+  AuditLogEntry,
+  AuditLogSortField,
+} from "../../../../types/auditLog";
 import { formatAuditDateTime } from "../utils";
 
 interface AuditLogTableProps {
@@ -29,18 +38,18 @@ interface AuditLogTableProps {
 }
 
 const statusClasses: Record<AuditLogEntry["status"], string> = {
-  Success: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  Failed: "bg-rose-50 text-rose-700 border-rose-100",
+  Success: "bg-surface-white text-[#2d5a2d] border-border shadow-sm",
+  Failed: "bg-surface-white text-[#7a0000] border-border shadow-sm",
 };
 
 const actionToneClasses: Record<AuditLogEntry["actionType"], string> = {
-  create: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  update: "bg-indigo-50 text-indigo-700 border-indigo-100",
-  delete: "bg-rose-50 text-rose-700 border-rose-100",
-  export: "bg-amber-50 text-amber-800 border-amber-100",
-  access: "bg-sky-50 text-sky-700 border-sky-100",
-  review: "bg-violet-50 text-violet-700 border-violet-100",
-  system: "bg-slate-100 text-slate-600 border-slate-200",
+  create: "bg-surface-white text-[#2d5a2d] border-border shadow-sm",
+  update: "bg-bg-secondary text-accent border-border shadow-sm",
+  delete: "bg-surface-white text-[#7a0000] border-border shadow-sm",
+  export: "bg-surface-white text-text-secondary border-border shadow-sm",
+  access: "bg-surface-white text-text-primary border-border shadow-sm",
+  review: "bg-bg-secondary text-accent border-border shadow-sm",
+  system: "bg-surface-white text-text-secondary border-border shadow-sm",
 };
 
 const SortHeader: React.FC<{
@@ -77,9 +86,12 @@ const SortHeader: React.FC<{
 const SkeletonRows = () => (
   <>
     {Array.from({ length: 6 }).map((_, index) => (
-      <TableRow key={index} className="animate-pulse hover:bg-transparent cursor-default">
+      <TableRow
+        key={index}
+        className="animate-pulse hover:bg-transparent cursor-default"
+      >
         <TableCell colSpan={6} className="px-6 py-5">
-          <div className="h-14 rounded-2xl bg-slate-100/80" />
+          <div className="h-14 rounded-md bg-slate-100/80" />
         </TableCell>
       </TableRow>
     ))}
@@ -88,12 +100,15 @@ const SkeletonRows = () => (
 
 const EmptyState = () => (
   <div className="py-20 flex flex-col items-center justify-center text-center px-6">
-    <div className="w-16 h-16 rounded-3xl bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
+    <div className="w-16 h-16 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
       <FiSearch className="w-7 h-7" />
     </div>
-    <h4 className="text-lg font-black text-slate-900">No audit records found</h4>
+    <h4 className="text-lg font-black text-slate-900">
+      No audit records found
+    </h4>
     <p className="text-sm text-slate-500 max-w-md mt-2">
-      Try widening the date range, clearing a filter, or searching with a different resource ID.
+      Try widening the date range, clearing a filter, or searching with a
+      different resource ID.
     </p>
   </div>
 );
@@ -113,17 +128,19 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
   onRowClick,
 }) => {
   return (
-    <section className="bg-white rounded-[2.25rem] border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] overflow-hidden">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-5 border-b border-slate-100 bg-slate-50/60">
+    <section className="bg-surface-white rounded-[2.25rem] border border-border shadow-sm overflow-hidden">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-5 border-b border-border bg-surface-white">
         <div>
-          <h3 className="text-lg font-black text-slate-900 tracking-tight">Audit log entries</h3>
-          <p className="text-sm text-slate-500 font-medium">
+          <h3 className="text-lg font-serif font-bold text-text-primary tracking-tight">
+            Audit log entries
+          </h3>
+          <p className="text-sm text-text-secondary font-medium">
             Showing {pageStart} - {pageEnd} of {totalCount} records
           </p>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-          <FiClock className="w-4 h-4 text-indigo-500" />
+        <div className="flex items-center gap-2 text-xs font-bold text-text-secondary">
+          <FiClock className="w-4 h-4 text-accent" />
           Last refreshed from mock data
         </div>
       </div>
@@ -199,18 +216,18 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   className={cn(
                     "group transition-all duration-200",
                     entry.importance === "high"
-                      ? "bg-rose-50/30 hover:bg-rose-50/60"
-                      : "hover:bg-indigo-50/40",
+                      ? "bg-[#7a0000]/5 hover:bg-[#7a0000]/10"
+                      : "hover:bg-bg-secondary/40",
                   )}
                 >
                   <TableCell className="px-6 py-5">
-                    <div className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                    <div className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">
                       {formatAuditDateTime(entry.timestamp)}
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <div className="space-y-1">
-                      <div className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">
+                      <div className="text-sm font-bold text-slate-800 group-hover:text-accent transition-colors">
                         {entry.user}
                       </div>
                       <div className="text-[11px] font-semibold text-slate-400">
@@ -234,7 +251,9 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                     </div>
                   </TableCell>
                   <TableCell className="px-6 py-5">
-                    <div className="text-sm font-semibold text-slate-700">{entry.resourceType}</div>
+                    <div className="text-sm font-semibold text-slate-700">
+                      {entry.resourceType}
+                    </div>
                   </TableCell>
                   <TableCell className="px-6 py-5">
                     <div className="font-mono text-sm font-semibold text-slate-700">
@@ -268,7 +287,10 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
         {isLoading ? (
           <div className="p-4 space-y-4">
             {Array.from({ length: 5 }).map((_, index) => (
-              <div key={index} className="rounded-3xl bg-slate-100/80 animate-pulse h-36" />
+              <div
+                key={index}
+                className="rounded-md bg-slate-100/80 animate-pulse h-36"
+              />
             ))}
           </div>
         ) : logs.length > 0 ? (
@@ -280,8 +302,8 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
               className={cn(
                 "w-full text-left px-5 py-4 transition-all",
                 entry.importance === "high"
-                  ? "bg-rose-50/40 hover:bg-rose-50/70"
-                  : "bg-white hover:bg-indigo-50/30",
+                  ? "bg-[#7a0000]/5 hover:bg-[#7a0000]/10"
+                  : "bg-surface-white hover:bg-bg-secondary/30",
               )}
             >
               <div className="flex items-start justify-between gap-4">

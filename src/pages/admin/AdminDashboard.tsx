@@ -39,8 +39,16 @@ const AdminDashboard: React.FC = () => {
     { icon: FiGrid, label: "Overview", path: "/admin" },
     { icon: FiFileText, label: "Audit Logs", path: "/admin/audit-logs" },
     { icon: SiTask, label: "SLR Projects", path: "/admin/projects" },
-    { icon: FiDatabase, label: "Search Sources", path: "/admin/master-sources" },
-    { icon: MdChecklist, label: "Checklist Templates", path: "/admin/templates" },
+    {
+      icon: FiDatabase,
+      label: "Search Sources",
+      path: "/admin/master-sources",
+    },
+    {
+      icon: MdChecklist,
+      label: "Checklist Templates",
+      path: "/admin/templates",
+    },
     { icon: FiUsers, label: "Users Management", path: "/admin/users" },
     { icon: FiSettings, label: "System Settings", path: "/admin/settings" },
   ];
@@ -67,11 +75,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <SectionGuard section="admin">
-      <div className="flex h-screen bg-slate-50 overflow-hidden relative">
-        {/* Background decorative elements */}
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/5 rounded-full blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[30%] h-[30%] bg-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
-
+      <div className="flex h-screen bg-bg-primary overflow-hidden relative">
         {/* Mobile Sidebar (Drawer) */}
         <Drawer
           isOpen={isMobileMenuOpen}
@@ -81,7 +85,7 @@ const AdminDashboard: React.FC = () => {
           title={
             <SystemSignature
               primaryClassName="text-indigo-900"
-              accentClassName="text-indigo-500"
+              accentClassName="text-accent"
               className="mb-0 text-xl"
             />
           }
@@ -98,7 +102,7 @@ const AdminDashboard: React.FC = () => {
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-4 w-full p-4 text-base font-bold text-gray-700 hover:text-indigo-600 hover:bg-indigo-50 rounded-2xl transition-all"
+                    className="flex items-center gap-4 w-full p-4 text-base font-bold text-gray-700 hover:text-accent hover:bg-bg-secondary rounded-md transition-all"
                   >
                     <Icon className="w-5 h-5 opacity-50" />
                     {item.label}
@@ -106,7 +110,7 @@ const AdminDashboard: React.FC = () => {
                 );
               })}
             </nav>
-            <div className="p-4 border-t border-gray-100 space-y-2">
+            <div className="p-4 border-t border-border space-y-2">
               {footerItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -117,7 +121,7 @@ const AdminDashboard: React.FC = () => {
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex items-center gap-4 w-full p-4 text-sm font-bold text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all"
+                    className="flex items-center gap-4 w-full p-4 text-sm font-bold text-text-secondary hover:text-red-600 hover:bg-surface-white rounded-md transition-all"
                   >
                     <Icon className="w-5 h-5 opacity-50" />
                     {item.label}

@@ -7,7 +7,7 @@ import SignalRConnectionManager from "../components/SignalRConnectionManager";
 
 export default function MainLayout() {
   return (
-    <div className="min-h-screen bg-[#F4F0E8] flex flex-col">
+    <div className="min-h-screen bg-bg-primary flex flex-col">
       <SignalRConnectionManager />
       <Header />
       <main className="flex-grow">

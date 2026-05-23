@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
 import { useParams } from "react-router";
-import { useProjectPicocs, useProjectResearchQuestions } from "../../../hooks/useProjects";
-import { useGenerateAiCriteria, useSaveAiCriteria } from "../../../hooks/useSelectionCriteria";
+import {
+  useProjectPicocs,
+  useProjectResearchQuestions,
+} from "../../../hooks/useProjects";
+import {
+  useGenerateAiCriteria,
+  useSaveAiCriteria,
+} from "../../../hooks/useSelectionCriteria";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import { ClipboardList, ChevronDown, ChevronUp } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
@@ -23,16 +29,16 @@ interface StudySelectionCriteriaModalProps {
   studySelectionProcessId: string; // Required for AI generation
 }
 
-const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = ({
-  isOpen,
-  onClose,
-  studySelectionProcessId,
-}) => {
+const StudySelectionCriteriaModal: React.FC<
+  StudySelectionCriteriaModalProps
+> = ({ isOpen, onClose, studySelectionProcessId }) => {
   const { projectId } = useParams<{ projectId: string }>();
   const { picocs, isLoading: picocLoading } = useProjectPicocs(projectId);
-  const { researchQuestions, isLoading: rqLoading } = useProjectResearchQuestions(projectId);
+  const { researchQuestions, isLoading: rqLoading } =
+    useProjectResearchQuestions(projectId);
 
-  const { mutate: generateAi, isPending: isGenerating } = useGenerateAiCriteria();
+  const { mutate: generateAi, isPending: isGenerating } =
+    useGenerateAiCriteria();
   const { mutate: saveCriteria, isPending: isSaving } = useSaveAiCriteria();
 
   const [criteriaGroups, setCriteriaGroups] = useState<CriteriaGroup[]>([]);
@@ -47,7 +53,8 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
       onSuccess: (data) => {
         // Capture rawJson - fallback to stringified criteria if rawJson field is missing
         const jsonContent =
-          data.rawJson || JSON.stringify({ criteriaGroups: data.criteriaGroups }, null, 2);
+          data.rawJson ||
+          JSON.stringify({ criteriaGroups: data.criteriaGroups }, null, 2);
         setRawJson(jsonContent);
 
         const newGroups: CriteriaGroup[] = data.criteriaGroups.map((group) => ({
@@ -55,8 +62,14 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
           localId: uuidv4(),
           isAiGenerated: true,
           isExpanded: true,
-          inclusionCriteria: group.inclusionCriteria.map((c) => ({ ...c, localId: uuidv4() })),
-          exclusionCriteria: group.exclusionCriteria.map((c) => ({ ...c, localId: uuidv4() })),
+          inclusionCriteria: group.inclusionCriteria.map((c) => ({
+            ...c,
+            localId: uuidv4(),
+          })),
+          exclusionCriteria: group.exclusionCriteria.map((c) => ({
+            ...c,
+            localId: uuidv4(),
+          })),
         }));
 
         setCriteriaGroups((prev) => [...prev, ...newGroups]);
@@ -64,7 +77,9 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
         setShowRawJson(true); // Automatically show JSON when generated
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to generate AI criteria. Please try again.");
+        toast.error(
+          error.message || "Failed to generate AI criteria. Please try again.",
+        );
       },
     });
   };
@@ -95,17 +110,27 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
   };
 
   // Add Criterion
-  const addCriterion = (groupLocalId: string, type: "inclusion" | "exclusion") => {
+  const addCriterion = (
+    groupLocalId: string,
+    type: "inclusion" | "exclusion",
+  ) => {
     setCriteriaGroups((prev) =>
       prev.map((g) => {
         if (g.localId === groupLocalId) {
-          const newItem: CriterionItem = { localId: uuidv4(), text: "", sources: [] };
+          const newItem: CriterionItem = {
+            localId: uuidv4(),
+            text: "",
+            sources: [],
+          };
           return {
             ...g,
-            [type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria"]: [
-              ...(type === "inclusion" ? g.inclusionCriteria : g.exclusionCriteria),
-              newItem,
-            ],
+            [type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria"]:
+              [
+                ...(type === "inclusion"
+                  ? g.inclusionCriteria
+                  : g.exclusionCriteria),
+                newItem,
+              ],
           };
         }
         return g;
@@ -122,10 +147,13 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
     setCriteriaGroups((prev) =>
       prev.map((g) => {
         if (g.localId === groupLocalId) {
-          const listName = type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria";
+          const listName =
+            type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria";
           return {
             ...g,
-            [listName]: g[listName].filter((c) => c.localId !== criterionLocalId),
+            [listName]: g[listName].filter(
+              (c) => c.localId !== criterionLocalId,
+            ),
           };
         }
         return g;
@@ -143,7 +171,8 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
     setCriteriaGroups((prev) =>
       prev.map((g) => {
         if (g.localId === groupLocalId) {
-          const listName = type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria";
+          const listName =
+            type === "inclusion" ? "inclusionCriteria" : "exclusionCriteria";
           return {
             ...g,
             [listName]: g[listName].map((c) =>
@@ -183,27 +212,35 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
         onClose();
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to save criteria. Please try again.");
+        toast.error(
+          error.message || "Failed to save criteria. Please try again.",
+        );
       },
     });
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Study Selection Criteria" size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Study Selection Criteria"
+      size="xl"
+    >
       <div className="flex flex-col gap-6 py-2 h-[80vh]">
         {/* Header Section */}
-        <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-100 shadow-sm shrink-0">
+        <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-indigo-50 to-white rounded-[4px] border border-indigo-100 shadow-sm shrink-0">
           <div className="flex gap-4">
-            <div className="p-3 bg-white rounded-xl shadow-sm border border-indigo-50 shrink-0">
-              <ClipboardList className="w-6 h-6 text-indigo-600" />
+            <div className="p-3 bg-surface-white rounded-[4px] shadow-sm border border-indigo-50 shrink-0">
+              <ClipboardList className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-slate-900">
+              <h3 className="text-xl font-bold text-text-primary">
                 Define Your Study Selection Criteria
               </h3>
-              <p className="text-sm text-slate-600 mt-1 max-w-2xl">
-                Translate your project's PICOC and Research Questions into clear Inclusion and
-                Exclusion criteria. Use AI to jumpstart the process or build your own custom groups.
+              <p className="text-sm text-text-secondary mt-1 max-w-2xl">
+                Translate your project's PICOC and Research Questions into clear
+                Inclusion and Exclusion criteria. Use AI to jumpstart the
+                process or build your own custom groups.
               </p>
             </div>
           </div>
@@ -234,7 +271,9 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
               ) : (
                 <>
                   <ProjectPICOCElement picocs={picocs} />
-                  <ProjectResearchQuestions researchQuestions={researchQuestions} />
+                  <ProjectResearchQuestions
+                    researchQuestions={researchQuestions}
+                  />
                 </>
               )}
             </div>
@@ -257,7 +296,7 @@ const StudySelectionCriteriaModal: React.FC<StudySelectionCriteriaModalProps> = 
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-slate-100 shrink-0">
+        <div className="flex justify-end gap-3 pt-6 border-t border-border shrink-0">
           <Button variant="secondary" onClick={onClose} className="px-6">
             Cancel
           </Button>

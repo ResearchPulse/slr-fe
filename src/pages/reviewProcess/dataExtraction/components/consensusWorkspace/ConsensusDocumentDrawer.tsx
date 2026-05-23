@@ -1,6 +1,9 @@
 import { useCallback, useEffect } from "react";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
-import { highlightPlugin, type RenderHighlightsProps } from "@react-pdf-viewer/highlight";
+import {
+  highlightPlugin,
+  type RenderHighlightsProps,
+} from "@react-pdf-viewer/highlight";
 import { ExternalLink } from "lucide-react";
 import Button from "../../../../../components/ui/Button";
 import Drawer from "../../../../../components/ui/Drawer";
@@ -26,34 +29,37 @@ export default function ConsensusDocumentDrawer({
   activeHighlights,
   onClose,
 }: ConsensusDocumentDrawerProps) {
-  const renderHighlights = useCallback((renderProps: RenderHighlightsProps) => {
-    const { pageIndex, getCssProperties } = renderProps;
-    const pageNumber = pageIndex + 1;
+  const renderHighlights = useCallback(
+    (renderProps: RenderHighlightsProps) => {
+      const { pageIndex, getCssProperties } = renderProps;
+      const pageNumber = pageIndex + 1;
 
-    return (
-      <>
-        {activeHighlights
-          .filter((coordinate) => coordinate.page === pageNumber)
-          .map((coordinate, index) => {
-            const highlightArea = {
-              pageIndex,
-              left: (coordinate.x / PAGE_WIDTH) * 100,
-              top: (coordinate.y / PAGE_HEIGHT) * 100,
-              width: (coordinate.w / PAGE_WIDTH) * 100,
-              height: (coordinate.h / PAGE_HEIGHT) * 100,
-            };
+      return (
+        <>
+          {activeHighlights
+            .filter((coordinate) => coordinate.page === pageNumber)
+            .map((coordinate, index) => {
+              const highlightArea = {
+                pageIndex,
+                left: (coordinate.x / PAGE_WIDTH) * 100,
+                top: (coordinate.y / PAGE_HEIGHT) * 100,
+                width: (coordinate.w / PAGE_WIDTH) * 100,
+                height: (coordinate.h / PAGE_HEIGHT) * 100,
+              };
 
-            return (
-              <div
-                key={`consensus-evidence-${pageNumber}-${index}`}
-                className="pointer-events-none absolute bg-yellow-300/60 mix-blend-multiply"
-                style={getCssProperties(highlightArea, 1)}
-              />
-            );
-          })}
-      </>
-    );
-  }, [activeHighlights]);
+              return (
+                <div
+                  key={`consensus-evidence-${pageNumber}-${index}`}
+                  className="pointer-events-none absolute bg-yellow-300/60 mix-blend-multiply"
+                  style={getCssProperties(highlightArea, 1)}
+                />
+              );
+            })}
+        </>
+      );
+    },
+    [activeHighlights],
+  );
 
   const highlightPluginInstance = highlightPlugin({ renderHighlights });
 
@@ -114,12 +120,13 @@ export default function ConsensusDocumentDrawer({
     >
       <div className="flex h-full flex-col gap-3">
         {isUsingFallbackDocument ? (
-          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-            This study has no PDF URL yet, so a mock PDF is shown for UI testing.
+          <p className="rounded-[4px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+            This study has no PDF URL yet, so a mock PDF is shown for UI
+            testing.
           </p>
         ) : null}
 
-        <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-slate-200 bg-white">
+        <div className="min-h-0 flex-1 overflow-hidden rounded-[4px] border border-border bg-surface-white">
           <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
             <Viewer
               fileUrl={effectiveDocumentUrl}

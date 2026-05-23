@@ -86,7 +86,7 @@ function isValueEmpty(value: FormFieldValue | undefined | null): boolean {
 
 function resolveMetadataFieldValue(
   fieldName: string,
-  paper: PaperWithDecisionsResponse
+  paper: PaperWithDecisionsResponse,
 ): FormFieldValue {
   const normalizedFieldName = fieldName.trim().toLowerCase();
 
@@ -130,7 +130,7 @@ function resolveMetadataFieldValue(
 
 function createFieldState(
   value: FormFieldValue,
-  evidenceCoordinates: string | null = null
+  evidenceCoordinates: string | null = null,
 ): FormFieldState {
   return {
     value,
@@ -142,7 +142,7 @@ function buildCommentKey(
   sectionId: string,
   fieldId: string,
   matrixColumnId: string | null,
-  matrixRowIndex: number | null
+  matrixRowIndex: number | null,
 ): string {
   return `${sectionId}::${fieldId}::${matrixColumnId ?? "root"}::${
     matrixRowIndex === null || matrixRowIndex === undefined
@@ -173,7 +173,9 @@ export default function DataExtractionReviewerWorkspace({
   const isUsingFallbackDocument = normalizedDocumentUrl.length === 0;
 
   const [activeSectionIdState, setActiveSectionIdState] = useState("");
-  const [formValues, setFormValues] = useState<Record<string, FormFieldState>>({});
+  const [formValues, setFormValues] = useState<Record<string, FormFieldState>>(
+    {},
+  );
   const [notReportedFields, setNotReportedFields] =
     useState<FieldNotReportedState>({});
   const [matrixValues, setMatrixValues] = useState<
@@ -191,7 +193,7 @@ export default function DataExtractionReviewerWorkspace({
 
   const sections = useMemo<ExtractionSectionDto[]>(
     () => ws.selectedTemplate?.sections ?? [],
-    [ws.selectedTemplate]
+    [ws.selectedTemplate],
   );
 
   const sectionById = useMemo(() => {
@@ -222,7 +224,7 @@ export default function DataExtractionReviewerWorkspace({
             section.sectionId,
             field.fieldId,
             answerGroup.matrixColumnId ?? null,
-            answerGroup.matrixRowIndex ?? null
+            answerGroup.matrixRowIndex ?? null,
           );
 
           map.set(key, answerGroup.answer?.comments ?? []);
@@ -283,7 +285,7 @@ export default function DataExtractionReviewerWorkspace({
       sections.find((section) => getSectionId(section) === activeSectionId) ??
       sections[0] ??
       null,
-    [activeSectionId, sections]
+    [activeSectionId, sections],
   );
 
   const fieldById = useMemo(() => {
@@ -345,7 +347,10 @@ export default function DataExtractionReviewerWorkspace({
   }, [sections]);
 
   const flattenedFields = useMemo(() => {
-    if (!activeSection || activeSection.sectionType !== SectionTypeEnum.FlatForm) {
+    if (
+      !activeSection ||
+      activeSection.sectionType !== SectionTypeEnum.FlatForm
+    ) {
       return [];
     }
 
@@ -364,8 +369,8 @@ export default function DataExtractionReviewerWorkspace({
       return;
     }
 
-    const hasAnyUserValue = Object.values(formValues).some((state) =>
-      !isValueEmpty(state.value)
+    const hasAnyUserValue = Object.values(formValues).some(
+      (state) => !isValueEmpty(state.value),
     );
 
     if (hasAnyUserValue) {
@@ -382,7 +387,10 @@ export default function DataExtractionReviewerWorkspace({
         continue;
       }
 
-      const metadataValue = resolveMetadataFieldValue(field.name, selectedPaper);
+      const metadataValue = resolveMetadataFieldValue(
+        field.name,
+        selectedPaper,
+      );
       if (isValueEmpty(metadataValue)) {
         continue;
       }
@@ -431,7 +439,7 @@ export default function DataExtractionReviewerWorkspace({
         field: ExtractionFieldDto,
         answer: AnswerDetailDto,
         matrixColumnId: string | null,
-        matrixRowIndex: number | null
+        matrixRowIndex: number | null,
       ): ExtractedValueDto => ({
         fieldId: field.fieldId as string,
         optionId: answer.optionId ?? null,
@@ -458,8 +466,8 @@ export default function DataExtractionReviewerWorkspace({
                 field as unknown as ExtractionFieldDto,
                 answer,
                 answerGroup.matrixColumnId ?? null,
-                answerGroup.matrixRowIndex ?? null
-              )
+                answerGroup.matrixRowIndex ?? null,
+              ),
             );
 
             if (
@@ -468,9 +476,11 @@ export default function DataExtractionReviewerWorkspace({
             ) {
               flatFormUpdates[field.fieldId] = createFieldState(
                 parsedValue,
-                answer.evidenceCoordinates ?? null
+                answer.evidenceCoordinates ?? null,
               );
-              nextNotReportedFields[field.fieldId] = Boolean(answer.isNotReported);
+              nextNotReportedFields[field.fieldId] = Boolean(
+                answer.isNotReported,
+              );
               return;
             }
 
@@ -483,10 +493,11 @@ export default function DataExtractionReviewerWorkspace({
               matrixUpdatesBySection[section.sectionId][rowIndex] = {};
             }
 
-            const targetRow = matrixUpdatesBySection[section.sectionId][rowIndex];
+            const targetRow =
+              matrixUpdatesBySection[section.sectionId][rowIndex];
             targetRow[field.fieldId] = createFieldState(
               parsedValue,
-              answer.evidenceCoordinates ?? null
+              answer.evidenceCoordinates ?? null,
             );
 
             if (!nextMatrixNotReportedFields[section.sectionId]) {
@@ -497,19 +508,24 @@ export default function DataExtractionReviewerWorkspace({
               nextMatrixNotReportedFields[section.sectionId][rowIndex] = {};
             }
 
-            nextMatrixNotReportedFields[section.sectionId][rowIndex][field.fieldId] =
-              Boolean(answer.isNotReported);
+            nextMatrixNotReportedFields[section.sectionId][rowIndex][
+              field.fieldId
+            ] = Boolean(answer.isNotReported);
 
             if (answerGroup.matrixColumnId) {
-              targetRow[MATRIX_COLUMN_ID_KEY] = createFieldState(answerGroup.matrixColumnId);
+              targetRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
+                answerGroup.matrixColumnId,
+              );
 
               if (!targetRow[MATRIX_ITEM_NAME_KEY]?.value) {
                 const matchedColumn = (section.matrixColumns ?? []).find(
-                  (column) => column.columnId === answerGroup.matrixColumnId
+                  (column) => column.columnId === answerGroup.matrixColumnId,
                 );
 
                 if (matchedColumn?.name) {
-                  targetRow[MATRIX_ITEM_NAME_KEY] = createFieldState(matchedColumn.name);
+                  targetRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
+                    matchedColumn.name,
+                  );
                 }
               }
             }
@@ -535,48 +551,68 @@ export default function DataExtractionReviewerWorkspace({
         setMatrixValues((previous) => {
           const nextMatrixValues = { ...previous };
 
-          Object.entries(matrixUpdatesBySection).forEach(([sectionId, rowUpdates]) => {
-            const section = sectionById[sectionId];
-            const existingRows = [...(nextMatrixValues[sectionId] ?? [])];
+          Object.entries(matrixUpdatesBySection).forEach(
+            ([sectionId, rowUpdates]) => {
+              const section = sectionById[sectionId];
+              const existingRows = [...(nextMatrixValues[sectionId] ?? [])];
 
-            Object.entries(rowUpdates)
-              .map(([rowIndex, values]) => [Number(rowIndex), values] as const)
-              .sort((left, right) => left[0] - right[0])
-              .forEach(([rowIndex, values]) => {
-                while (existingRows.length <= rowIndex) {
-                  const fallbackColumn = section?.matrixColumns?.[existingRows.length];
+              Object.entries(rowUpdates)
+                .map(
+                  ([rowIndex, values]) => [Number(rowIndex), values] as const,
+                )
+                .sort((left, right) => left[0] - right[0])
+                .forEach(([rowIndex, values]) => {
+                  while (existingRows.length <= rowIndex) {
+                    const fallbackColumn =
+                      section?.matrixColumns?.[existingRows.length];
 
-                  existingRows.push({
-                    ...(fallbackColumn?.name
-                      ? { [MATRIX_ITEM_NAME_KEY]: createFieldState(fallbackColumn.name) }
-                      : {}),
-                    ...(fallbackColumn?.columnId
-                      ? { [MATRIX_COLUMN_ID_KEY]: createFieldState(fallbackColumn.columnId) }
-                      : {}),
-                  });
-                }
-
-                existingRows[rowIndex] = {
-                  ...(existingRows[rowIndex] ?? {}),
-                  ...values,
-                };
-
-                const mergedRow = existingRows[rowIndex];
-                if (!mergedRow[MATRIX_COLUMN_ID_KEY]?.value) {
-                  const fallbackColumn = section?.matrixColumns?.[rowIndex];
-
-                  if (fallbackColumn?.columnId) {
-                    mergedRow[MATRIX_COLUMN_ID_KEY] = createFieldState(fallbackColumn.columnId);
+                    existingRows.push({
+                      ...(fallbackColumn?.name
+                        ? {
+                            [MATRIX_ITEM_NAME_KEY]: createFieldState(
+                              fallbackColumn.name,
+                            ),
+                          }
+                        : {}),
+                      ...(fallbackColumn?.columnId
+                        ? {
+                            [MATRIX_COLUMN_ID_KEY]: createFieldState(
+                              fallbackColumn.columnId,
+                            ),
+                          }
+                        : {}),
+                    });
                   }
 
-                  if (!mergedRow[MATRIX_ITEM_NAME_KEY]?.value && fallbackColumn?.name) {
-                    mergedRow[MATRIX_ITEM_NAME_KEY] = createFieldState(fallbackColumn.name);
-                  }
-                }
-              });
+                  existingRows[rowIndex] = {
+                    ...(existingRows[rowIndex] ?? {}),
+                    ...values,
+                  };
 
-            nextMatrixValues[sectionId] = existingRows;
-          });
+                  const mergedRow = existingRows[rowIndex];
+                  if (!mergedRow[MATRIX_COLUMN_ID_KEY]?.value) {
+                    const fallbackColumn = section?.matrixColumns?.[rowIndex];
+
+                    if (fallbackColumn?.columnId) {
+                      mergedRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
+                        fallbackColumn.columnId,
+                      );
+                    }
+
+                    if (
+                      !mergedRow[MATRIX_ITEM_NAME_KEY]?.value &&
+                      fallbackColumn?.name
+                    ) {
+                      mergedRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
+                        fallbackColumn.name,
+                      );
+                    }
+                  }
+                });
+
+              nextMatrixValues[sectionId] = existingRows;
+            },
+          );
 
           return nextMatrixValues;
         });
@@ -599,7 +635,7 @@ export default function DataExtractionReviewerWorkspace({
     (
       fieldKey: string,
       value: FormFieldValue,
-      evidenceCoordinates?: string | null
+      evidenceCoordinates?: string | null,
     ) => {
       setFormValues((previous) => {
         const existingState = previous[fieldKey] ?? createFieldState(null);
@@ -610,13 +646,13 @@ export default function DataExtractionReviewerWorkspace({
             value,
             evidenceCoordinates:
               evidenceCoordinates === undefined
-                ? existingState.evidenceCoordinates ?? null
+                ? (existingState.evidenceCoordinates ?? null)
                 : evidenceCoordinates,
           },
         };
       });
     },
-    []
+    [],
   );
 
   const setFieldNotReported = useCallback(
@@ -630,7 +666,7 @@ export default function DataExtractionReviewerWorkspace({
         setFieldState(fieldKey, null);
       }
     },
-    [setFieldState]
+    [setFieldState],
   );
 
   const addMatrixRow = useCallback((sectionId: string) => {
@@ -664,7 +700,7 @@ export default function DataExtractionReviewerWorkspace({
       sectionId: string,
       rowIndex: number,
       fieldKey: string,
-      value: FormFieldValue
+      value: FormFieldValue,
     ) => {
       setMatrixValues((previous) => {
         const currentRows = previous[sectionId] ?? [];
@@ -683,7 +719,7 @@ export default function DataExtractionReviewerWorkspace({
                     row[fieldKey]?.evidenceCoordinates ?? null,
                 },
               }
-            : row
+            : row,
         );
 
         return {
@@ -692,7 +728,7 @@ export default function DataExtractionReviewerWorkspace({
         };
       });
     },
-    []
+    [],
   );
 
   const setMatrixFieldNotReported = useCallback(
@@ -700,7 +736,7 @@ export default function DataExtractionReviewerWorkspace({
       sectionId: string,
       rowIndex: number,
       fieldKey: string,
-      isNotReported: boolean
+      isNotReported: boolean,
     ) => {
       setMatrixNotReportedFields((previous) => {
         const sectionState = previous[sectionId] ?? {};
@@ -722,18 +758,18 @@ export default function DataExtractionReviewerWorkspace({
         setMatrixFieldValue(sectionId, rowIndex, fieldKey, null);
       }
     },
-    [setMatrixFieldValue]
+    [setMatrixFieldValue],
   );
 
   const isFieldNotReported = useCallback(
     (fieldKey: string) => Boolean(notReportedFields[fieldKey]),
-    [notReportedFields]
+    [notReportedFields],
   );
 
   const isMatrixFieldNotReported = useCallback(
     (sectionId: string, rowIndex: number, fieldKey: string) =>
       Boolean(matrixNotReportedFields[sectionId]?.[rowIndex]?.[fieldKey]),
-    [matrixNotReportedFields]
+    [matrixNotReportedFields],
   );
 
   const getEvidenceCoordinatesForTarget = useCallback(
@@ -751,7 +787,7 @@ export default function DataExtractionReviewerWorkspace({
 
       return formValues[target.fieldKey]?.evidenceCoordinates ?? null;
     },
-    [formValues, matrixValues]
+    [formValues, matrixValues],
   );
 
   const handleSelectEvidenceTarget = useCallback(
@@ -778,11 +814,14 @@ export default function DataExtractionReviewerWorkspace({
       const parsedHighlights = parseEvidenceCoordinates(linkedEvidence);
       ws.setActiveHighlights(parsedHighlights);
     },
-    [activeEvidenceTarget, getEvidenceCoordinatesForTarget, ws]
+    [activeEvidenceTarget, getEvidenceCoordinatesForTarget, ws],
   );
 
   const setEvidenceForTarget = useCallback(
-    (target: EvidenceTargetState | null, evidenceCoordinates: string | null) => {
+    (
+      target: EvidenceTargetState | null,
+      evidenceCoordinates: string | null,
+    ) => {
       if (!target) {
         return;
       }
@@ -808,7 +847,7 @@ export default function DataExtractionReviewerWorkspace({
                     evidenceCoordinates,
                   },
                 }
-              : row
+              : row,
           );
 
           return {
@@ -820,7 +859,8 @@ export default function DataExtractionReviewerWorkspace({
       }
 
       setFormValues((previous) => {
-        const existingState = previous[target.fieldKey] ?? createFieldState(null);
+        const existingState =
+          previous[target.fieldKey] ?? createFieldState(null);
 
         return {
           ...previous,
@@ -831,7 +871,7 @@ export default function DataExtractionReviewerWorkspace({
         };
       });
     },
-    []
+    [],
   );
 
   const handleUseEvidenceSelection = useCallback(
@@ -840,15 +880,21 @@ export default function DataExtractionReviewerWorkspace({
         return;
       }
 
-      const currentEvidenceCoordinates = getEvidenceCoordinatesForTarget(activeEvidenceTarget);
+      const currentEvidenceCoordinates =
+        getEvidenceCoordinatesForTarget(activeEvidenceTarget);
       const serializedCoordinates = mergeEvidenceCoordinates(
         currentEvidenceCoordinates,
-        coordinates
+        coordinates,
       );
       setEvidenceForTarget(activeEvidenceTarget, serializedCoordinates);
       ws.setActiveHighlights(parseEvidenceCoordinates(serializedCoordinates));
     },
-    [activeEvidenceTarget, getEvidenceCoordinatesForTarget, setEvidenceForTarget, ws]
+    [
+      activeEvidenceTarget,
+      getEvidenceCoordinatesForTarget,
+      setEvidenceForTarget,
+      ws,
+    ],
   );
 
   const handleRemoveEvidenceForTarget = useCallback(() => {
@@ -861,15 +907,20 @@ export default function DataExtractionReviewerWorkspace({
   }, [activeEvidenceTarget, setEvidenceForTarget, ws]);
 
   const isEvidenceTargetActive = useCallback(
-    (fieldKey: string, sectionId: string | null, rowIndex: number | null): boolean =>
+    (
+      fieldKey: string,
+      sectionId: string | null,
+      rowIndex: number | null,
+    ): boolean =>
       activeEvidenceTarget?.fieldKey === fieldKey &&
       activeEvidenceTarget?.sectionId === sectionId &&
       activeEvidenceTarget?.rowIndex === rowIndex,
-    [activeEvidenceTarget]
+    [activeEvidenceTarget],
   );
 
   const hasActiveTargetEvidence = useMemo(() => {
-    const linkedEvidence = getEvidenceCoordinatesForTarget(activeEvidenceTarget);
+    const linkedEvidence =
+      getEvidenceCoordinatesForTarget(activeEvidenceTarget);
     return Boolean(linkedEvidence?.trim());
   }, [activeEvidenceTarget, getEvidenceCoordinatesForTarget]);
 
@@ -879,11 +930,16 @@ export default function DataExtractionReviewerWorkspace({
     }
 
     const fieldName =
-      fieldById.get(activeEvidenceTarget.fieldKey)?.name ?? activeEvidenceTarget.fieldKey;
+      fieldById.get(activeEvidenceTarget.fieldKey)?.name ??
+      activeEvidenceTarget.fieldKey;
 
-    if (activeEvidenceTarget.sectionId && activeEvidenceTarget.rowIndex !== null) {
+    if (
+      activeEvidenceTarget.sectionId &&
+      activeEvidenceTarget.rowIndex !== null
+    ) {
       const sectionName =
-        sectionById[activeEvidenceTarget.sectionId]?.name ?? activeEvidenceTarget.sectionId;
+        sectionById[activeEvidenceTarget.sectionId]?.name ??
+        activeEvidenceTarget.sectionId;
       return `${sectionName} - ${fieldName} (Row ${activeEvidenceTarget.rowIndex + 1})`;
     }
 
@@ -901,22 +957,30 @@ export default function DataExtractionReviewerWorkspace({
         currentValue,
         (value) => setFieldState(fieldKey, value),
         controlId,
-        isWorkspaceLocked || disabled
+        isWorkspaceLocked || disabled,
       );
     },
-    [formValues, isWorkspaceLocked, setFieldState]
+    [formValues, isWorkspaceLocked, setFieldState],
   );
 
   const matrixFields = useMemo(() => {
-    if (!activeSection || activeSection.sectionType !== SectionTypeEnum.MatrixGrid) {
+    if (
+      !activeSection ||
+      activeSection.sectionType !== SectionTypeEnum.MatrixGrid
+    ) {
       return [];
     }
 
-    return [...(activeSection.fields ?? [])].sort((a, b) => a.orderIndex - b.orderIndex);
+    return [...(activeSection.fields ?? [])].sort(
+      (a, b) => a.orderIndex - b.orderIndex,
+    );
   }, [activeSection]);
 
   const currentRows = useMemo(() => {
-    if (!activeSection || activeSection.sectionType !== SectionTypeEnum.MatrixGrid) {
+    if (
+      !activeSection ||
+      activeSection.sectionType !== SectionTypeEnum.MatrixGrid
+    ) {
       return [];
     }
 
@@ -959,7 +1023,7 @@ export default function DataExtractionReviewerWorkspace({
           null,
           null,
           true,
-          fieldState?.evidenceCoordinates ?? null
+          fieldState?.evidenceCoordinates ?? null,
         );
 
         if (notReportedValue) {
@@ -994,7 +1058,7 @@ export default function DataExtractionReviewerWorkspace({
         null,
         null,
         false,
-        fieldState?.evidenceCoordinates ?? null
+        fieldState?.evidenceCoordinates ?? null,
       );
 
       if (extractedValue) {
@@ -1006,7 +1070,8 @@ export default function DataExtractionReviewerWorkspace({
       rows.forEach((row, rowIndex) => {
         const matrixColumnIdRaw = row[MATRIX_COLUMN_ID_KEY]?.value;
         const matrixColumnId =
-          typeof matrixColumnIdRaw === "string" && matrixColumnIdRaw.trim().length > 0
+          typeof matrixColumnIdRaw === "string" &&
+          matrixColumnIdRaw.trim().length > 0
             ? matrixColumnIdRaw
             : null;
 
@@ -1018,7 +1083,10 @@ export default function DataExtractionReviewerWorkspace({
         ]);
 
         rowFieldKeys.forEach((fieldKey) => {
-          if (fieldKey === MATRIX_ITEM_NAME_KEY || fieldKey === MATRIX_COLUMN_ID_KEY) {
+          if (
+            fieldKey === MATRIX_ITEM_NAME_KEY ||
+            fieldKey === MATRIX_COLUMN_ID_KEY
+          ) {
             return;
           }
 
@@ -1038,7 +1106,7 @@ export default function DataExtractionReviewerWorkspace({
               matrixColumnId,
               rowIndex,
               true,
-              row[fieldKey]?.evidenceCoordinates ?? null
+              row[fieldKey]?.evidenceCoordinates ?? null,
             );
 
             if (notReportedValue) {
@@ -1050,7 +1118,7 @@ export default function DataExtractionReviewerWorkspace({
 
           if (field.fieldType === FieldTypeEnum.MultiSelect) {
             const selectedOptionIds = normalizeMultiSelectIds(
-              rawValue as FormFieldValue
+              rawValue as FormFieldValue,
             );
 
             selectedOptionIds.forEach((selectedId) => {
@@ -1075,7 +1143,7 @@ export default function DataExtractionReviewerWorkspace({
             matrixColumnId,
             rowIndex,
             false,
-            row[fieldKey]?.evidenceCoordinates ?? null
+            row[fieldKey]?.evidenceCoordinates ?? null,
           );
 
           if (extractedValue) {
@@ -1086,7 +1154,13 @@ export default function DataExtractionReviewerWorkspace({
     }
 
     return { values };
-  }, [fieldById, formValues, matrixNotReportedFields, matrixValues, notReportedFields]);
+  }, [
+    fieldById,
+    formValues,
+    matrixNotReportedFields,
+    matrixValues,
+    notReportedFields,
+  ]);
 
   const handleSubmitExtraction = useCallback(() => {
     if (!selectedPaperId) {
@@ -1122,7 +1196,7 @@ export default function DataExtractionReviewerWorkspace({
                 isValueEmpty(row[fieldKey]?.value)
               ) {
                 missingRequiredFields.push(
-                  `${section.name} - ${field.name} (Row ${rowIndex + 1})`
+                  `${section.name} - ${field.name} (Row ${rowIndex + 1})`,
                 );
               }
             }
@@ -1136,7 +1210,7 @@ export default function DataExtractionReviewerWorkspace({
 
       toastError(
         "Validation Failed",
-        `Please fill in all required fields:\n${uniqueMissingFields.join("\n")}`
+        `Please fill in all required fields:\n${uniqueMissingFields.join("\n")}`,
       );
       return;
     }
@@ -1162,7 +1236,10 @@ export default function DataExtractionReviewerWorkspace({
     }
 
     try {
-      const extractedValues = await ws.autoExtractWithAI(selectedPaperId, templateId);
+      const extractedValues = await ws.autoExtractWithAI(
+        selectedPaperId,
+        templateId,
+      );
 
       if (!extractedValues.length) {
         return;
@@ -1184,7 +1261,9 @@ export default function DataExtractionReviewerWorkspace({
 
         const isNotReported = Boolean(extractedValue.isNotReported);
         const evidenceCoordinates =
-          extractedValue.evidenceCoordinates ?? extractedValue.EvidenceCoordinates ?? null;
+          extractedValue.evidenceCoordinates ??
+          extractedValue.EvidenceCoordinates ??
+          null;
         const parsedValue = isNotReported
           ? null
           : mapExtractedValueToFormValue(fieldContext.field, extractedValue);
@@ -1195,7 +1274,7 @@ export default function DataExtractionReviewerWorkspace({
         ) {
           flatFormUpdates[fieldContext.field.fieldId] = createFieldState(
             parsedValue,
-            evidenceCoordinates
+            evidenceCoordinates,
           );
           nextNotReportedFields[fieldContext.field.fieldId] = isNotReported;
           return;
@@ -1214,10 +1293,11 @@ export default function DataExtractionReviewerWorkspace({
           matrixUpdatesBySection[fieldContext.sectionId][rowIndex] = {};
         }
 
-        const targetRow = matrixUpdatesBySection[fieldContext.sectionId][rowIndex];
+        const targetRow =
+          matrixUpdatesBySection[fieldContext.sectionId][rowIndex];
         targetRow[fieldContext.field.fieldId] = createFieldState(
           parsedValue,
-          evidenceCoordinates
+          evidenceCoordinates,
         );
 
         if (!nextMatrixNotReportedFields[fieldContext.sectionId]) {
@@ -1234,17 +1314,19 @@ export default function DataExtractionReviewerWorkspace({
 
         if (extractedValue.matrixColumnId) {
           targetRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
-            extractedValue.matrixColumnId
+            extractedValue.matrixColumnId,
           );
 
           if (!targetRow[MATRIX_ITEM_NAME_KEY]?.value) {
             const section = sectionById[fieldContext.sectionId];
             const matchedColumn = (section?.matrixColumns ?? []).find(
-              (column) => column.columnId === extractedValue.matrixColumnId
+              (column) => column.columnId === extractedValue.matrixColumnId,
             );
 
             if (matchedColumn?.name) {
-              targetRow[MATRIX_ITEM_NAME_KEY] = createFieldState(matchedColumn.name);
+              targetRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
+                matchedColumn.name,
+              );
             }
           }
         }
@@ -1268,48 +1350,68 @@ export default function DataExtractionReviewerWorkspace({
         setMatrixValues((previous) => {
           const nextMatrixValues = { ...previous };
 
-          Object.entries(matrixUpdatesBySection).forEach(([sectionId, rowUpdates]) => {
-            const section = sectionById[sectionId];
-            const existingRows = [...(nextMatrixValues[sectionId] ?? [])];
+          Object.entries(matrixUpdatesBySection).forEach(
+            ([sectionId, rowUpdates]) => {
+              const section = sectionById[sectionId];
+              const existingRows = [...(nextMatrixValues[sectionId] ?? [])];
 
-            Object.entries(rowUpdates)
-              .map(([rowIndex, values]) => [Number(rowIndex), values] as const)
-              .sort((left, right) => left[0] - right[0])
-              .forEach(([rowIndex, values]) => {
-                while (existingRows.length <= rowIndex) {
-                  const fallbackColumn = section?.matrixColumns?.[existingRows.length];
+              Object.entries(rowUpdates)
+                .map(
+                  ([rowIndex, values]) => [Number(rowIndex), values] as const,
+                )
+                .sort((left, right) => left[0] - right[0])
+                .forEach(([rowIndex, values]) => {
+                  while (existingRows.length <= rowIndex) {
+                    const fallbackColumn =
+                      section?.matrixColumns?.[existingRows.length];
 
-                  existingRows.push({
-                    ...(fallbackColumn?.name
-                      ? { [MATRIX_ITEM_NAME_KEY]: createFieldState(fallbackColumn.name) }
-                      : {}),
-                    ...(fallbackColumn?.columnId
-                      ? { [MATRIX_COLUMN_ID_KEY]: createFieldState(fallbackColumn.columnId) }
-                      : {}),
-                  });
-                }
-
-                existingRows[rowIndex] = {
-                  ...(existingRows[rowIndex] ?? {}),
-                  ...values,
-                };
-
-                const mergedRow = existingRows[rowIndex];
-                if (!mergedRow[MATRIX_COLUMN_ID_KEY]?.value) {
-                  const fallbackColumn = section?.matrixColumns?.[rowIndex];
-
-                  if (fallbackColumn?.columnId) {
-                    mergedRow[MATRIX_COLUMN_ID_KEY] = createFieldState(fallbackColumn.columnId);
+                    existingRows.push({
+                      ...(fallbackColumn?.name
+                        ? {
+                            [MATRIX_ITEM_NAME_KEY]: createFieldState(
+                              fallbackColumn.name,
+                            ),
+                          }
+                        : {}),
+                      ...(fallbackColumn?.columnId
+                        ? {
+                            [MATRIX_COLUMN_ID_KEY]: createFieldState(
+                              fallbackColumn.columnId,
+                            ),
+                          }
+                        : {}),
+                    });
                   }
 
-                  if (!mergedRow[MATRIX_ITEM_NAME_KEY]?.value && fallbackColumn?.name) {
-                    mergedRow[MATRIX_ITEM_NAME_KEY] = createFieldState(fallbackColumn.name);
-                  }
-                }
-              });
+                  existingRows[rowIndex] = {
+                    ...(existingRows[rowIndex] ?? {}),
+                    ...values,
+                  };
 
-            nextMatrixValues[sectionId] = existingRows;
-          });
+                  const mergedRow = existingRows[rowIndex];
+                  if (!mergedRow[MATRIX_COLUMN_ID_KEY]?.value) {
+                    const fallbackColumn = section?.matrixColumns?.[rowIndex];
+
+                    if (fallbackColumn?.columnId) {
+                      mergedRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
+                        fallbackColumn.columnId,
+                      );
+                    }
+
+                    if (
+                      !mergedRow[MATRIX_ITEM_NAME_KEY]?.value &&
+                      fallbackColumn?.name
+                    ) {
+                      mergedRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
+                        fallbackColumn.name,
+                      );
+                    }
+                  }
+                });
+
+              nextMatrixValues[sectionId] = existingRows;
+            },
+          );
 
           return nextMatrixValues;
         });
@@ -1325,7 +1427,7 @@ export default function DataExtractionReviewerWorkspace({
                 ...(next[sectionId] ?? {}),
                 ...rowStates,
               };
-            }
+            },
           );
 
           return next;
@@ -1340,12 +1442,12 @@ export default function DataExtractionReviewerWorkspace({
     async (
       field: ExtractionFieldDto,
       matrixColumnId: string | null,
-      matrixRowIndex: number | null
+      matrixRowIndex: number | null,
     ) => {
       const askAiResult = await ws.handleAskAiForField(
         field,
         matrixColumnId,
-        matrixRowIndex
+        matrixRowIndex,
       );
 
       if (!askAiResult || !field.fieldId) {
@@ -1364,7 +1466,7 @@ export default function DataExtractionReviewerWorkspace({
         setFieldState(
           field.fieldId,
           askAiIsNotReported ? null : targetValue,
-          askAiResult.evidenceCoordinates ?? null
+          askAiResult.evidenceCoordinates ?? null,
         );
         return;
       }
@@ -1405,10 +1507,16 @@ export default function DataExtractionReviewerWorkspace({
 
           existingRows.push({
             ...(fallbackColumn?.name
-              ? { [MATRIX_ITEM_NAME_KEY]: createFieldState(fallbackColumn.name) }
+              ? {
+                  [MATRIX_ITEM_NAME_KEY]: createFieldState(fallbackColumn.name),
+                }
               : {}),
             ...(fallbackColumn?.columnId
-              ? { [MATRIX_COLUMN_ID_KEY]: createFieldState(fallbackColumn.columnId) }
+              ? {
+                  [MATRIX_COLUMN_ID_KEY]: createFieldState(
+                    fallbackColumn.columnId,
+                  ),
+                }
               : {}),
           });
         }
@@ -1418,20 +1526,24 @@ export default function DataExtractionReviewerWorkspace({
           ...row,
           [fieldId]: createFieldState(
             askAiIsNotReported ? null : targetValue,
-            askAiResult.evidenceCoordinates ?? null
+            askAiResult.evidenceCoordinates ?? null,
           ),
         };
 
         if (askAiResult.matrixColumnId) {
-          nextRow[MATRIX_COLUMN_ID_KEY] = createFieldState(askAiResult.matrixColumnId);
+          nextRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
+            askAiResult.matrixColumnId,
+          );
 
           if (!nextRow[MATRIX_ITEM_NAME_KEY]?.value) {
-            const matchedColumn = (sectionById[targetSectionId]?.matrixColumns ?? []).find(
-              (column) => column.columnId === askAiResult.matrixColumnId
-            );
+            const matchedColumn = (
+              sectionById[targetSectionId]?.matrixColumns ?? []
+            ).find((column) => column.columnId === askAiResult.matrixColumnId);
 
             if (matchedColumn?.name) {
-              nextRow[MATRIX_ITEM_NAME_KEY] = createFieldState(matchedColumn.name);
+              nextRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
+                matchedColumn.name,
+              );
             }
           }
         }
@@ -1452,7 +1564,7 @@ export default function DataExtractionReviewerWorkspace({
       setFieldState,
       setMatrixNotReportedFields,
       ws,
-    ]
+    ],
   );
 
   const renderCommentButton = useCallback(
@@ -1466,7 +1578,8 @@ export default function DataExtractionReviewerWorkspace({
         return null;
       }
 
-      const threadOwnerId = ws.reviewerWorkspace?.reviewerId ?? ws.currentUserId ?? "";
+      const threadOwnerId =
+        ws.reviewerWorkspace?.reviewerId ?? ws.currentUserId ?? "";
       if (!threadOwnerId) {
         return null;
       }
@@ -1475,13 +1588,14 @@ export default function DataExtractionReviewerWorkspace({
         params.sectionId,
         params.field.fieldId,
         params.matrixColumnId,
-        params.matrixRowIndex
+        params.matrixRowIndex,
       );
       const scopedLocalKey = `${selectedPaperId ?? "paper"}::${key}`;
 
       const serverComments = commentMap.get(key) ?? [];
       const localComments = localCommentsByKey[scopedLocalKey] ?? [];
-      const comments = serverComments.length > 0 ? serverComments : localComments;
+      const comments =
+        serverComments.length > 0 ? serverComments : localComments;
 
       return (
         <FieldComments
@@ -1514,18 +1628,22 @@ export default function DataExtractionReviewerWorkspace({
             }
 
             try {
-              await ws.addFieldComment(selectedPaperId, params.field.fieldId as string, {
-                threadOwnerId,
-                content,
-                matrixColumnId: params.matrixColumnId,
-                matrixRowIndex: params.matrixRowIndex,
-              });
+              await ws.addFieldComment(
+                selectedPaperId,
+                params.field.fieldId as string,
+                {
+                  threadOwnerId,
+                  content,
+                  matrixColumnId: params.matrixColumnId,
+                  matrixRowIndex: params.matrixRowIndex,
+                },
+              );
             } catch (error) {
               if (shouldUseLocalFallback) {
                 setLocalCommentsByKey((previous) => ({
                   ...previous,
                   [scopedLocalKey]: (previous[scopedLocalKey] ?? []).filter(
-                    (comment) => comment.id !== optimisticCommentId
+                    (comment) => comment.id !== optimisticCommentId,
                   ),
                 }));
               }
@@ -1536,18 +1654,18 @@ export default function DataExtractionReviewerWorkspace({
         />
       );
     },
-    [commentMap, localCommentsByKey, selectedPaperId, ws]
+    [commentMap, localCommentsByKey, selectedPaperId, ws],
   );
 
   if (!ws.selectedTemplate) {
     return (
-      <div className="h-[calc(100vh-5rem)] overflow-hidden bg-slate-100 p-6">
-        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-2xl border border-slate-200 bg-white p-8">
+      <div className="h-[calc(100vh-5rem)] overflow-hidden bg-bg-secondary p-6">
+        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-[4px] border border-border bg-surface-white p-8">
           <div className="text-center">
-            <h2 className="text-xl font-semibold text-slate-900">
+            <h2 className="text-xl font-semibold text-text-primary">
               {ws.isLoading ? "Loading template..." : "No template found"}
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-text-secondary">
               {ws.isLoading
                 ? "Please wait while extraction template data is loaded."
                 : "Assign an extraction template to this process to continue."}
@@ -1573,9 +1691,9 @@ export default function DataExtractionReviewerWorkspace({
       : "Capture extraction values for this section.";
 
   return (
-    <div className="h-[calc(100vh-5rem)] bg-slate-100 pb-16">
+    <div className="h-[calc(100vh-5rem)] bg-bg-secondary pb-16">
       {ws.isDirectMode ? (
-        <div className="border-b border-indigo-200 bg-indigo-50 px-6 py-3 text-sm font-semibold text-indigo-800">
+        <div className="border-b border-indigo-200 bg-bg-secondary px-6 py-3 text-sm font-semibold text-indigo-800">
           ⚡️ Direct Extraction Mode (Leader). Submitting this will finalize the
           data and skip the consensus phase.
         </div>
@@ -1594,7 +1712,9 @@ export default function DataExtractionReviewerWorkspace({
           activeHighlights={ws.activeHighlights}
           activeEvidenceTargetLabel={activeEvidenceTargetLabel}
           canUseEvidenceSelection={Boolean(activeEvidenceTarget)}
-          canRemoveEvidence={Boolean(activeEvidenceTarget) && hasActiveTargetEvidence}
+          canRemoveEvidence={
+            Boolean(activeEvidenceTarget) && hasActiveTargetEvidence
+          }
           onUseEvidenceSelection={handleUseEvidenceSelection}
           onRemoveEvidence={handleRemoveEvidenceForTarget}
         />
@@ -1606,7 +1726,9 @@ export default function DataExtractionReviewerWorkspace({
           isAutoExtracting={ws.isAutoExtracting}
           isSubmittingExtraction={isSubmittingExtraction}
           canAutoExtract={
-            !!selectedPaperId && !!ws.selectedTemplate?.templateId && !isWorkspaceLocked
+            !!selectedPaperId &&
+            !!ws.selectedTemplate?.templateId &&
+            !isWorkspaceLocked
           }
           canSubmit={!!selectedPaperId && !isWorkspaceLocked}
           isReadOnly={isWorkspaceLocked}

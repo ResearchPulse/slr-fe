@@ -5,10 +5,16 @@ import Modal from "../../ui/Modal";
 import ReviewerDecisionsSection from "./ReviewerDecisionsSection";
 import ResolutionFormPanel from "./ResolutionFormPanel";
 import ThirdReviewerAssignment from "./ThirdReviewerAssignment";
-import { useConflictDetail, useResolveConflict } from "../../../hooks/useStudySelection";
+import {
+  useConflictDetail,
+  useResolveConflict,
+} from "../../../hooks/useStudySelection";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
-import { ScreeningDecisionType, PaperPhase } from "../../../types/studySelection";
+import {
+  ScreeningDecisionType,
+  PaperPhase,
+} from "../../../types/studySelection";
 import { useReviewerSubmission } from "../../../hooks/useStudySelectionChecklistSubmission";
 import { PreviewDocument } from "../../ui/document-editor/PreviewDocument";
 import { Check, X, Loader2 } from "lucide-react";
@@ -64,11 +70,16 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
   processId,
   phase,
 }) => {
-  const [_activeTab, setActiveTab] = useState<"abstract" | "full-text" | "metadata">("abstract");
-  const [resolution, setResolution] = useState<"Include" | "Exclude" | null>(null);
+  const [_activeTab, setActiveTab] = useState<
+    "abstract" | "full-text" | "metadata"
+  >("abstract");
+  const [resolution, setResolution] = useState<"Include" | "Exclude" | null>(
+    null,
+  );
   const [exclusionReason, setExclusionReason] = useState("");
   const [resolutionNotes, setResolutionNotes] = useState("");
-  const [isAssigningThirdReviewer, setIsAssigningThirdReviewer] = useState(false);
+  const [isAssigningThirdReviewer, setIsAssigningThirdReviewer] =
+    useState(false);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
   const [submissionParams, setSubmissionParams] = useState<{
     processId: string;
@@ -82,7 +93,11 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
 
   const submission = submissionResponse?.data;
 
-  const { data: detailData, isLoading } = useConflictDetail(processId, paperId || undefined, phase);
+  const { data: detailData, isLoading } = useConflictDetail(
+    processId,
+    paperId || undefined,
+    phase,
+  );
   const resolveMutation = useResolveConflict();
   const currentUser = useSelector((state: RootState) => state.auth.user);
 
@@ -90,9 +105,12 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
     if (!detailData) return null;
 
     // A reviewer is pending if they are in assignedMembers but haven't submitted a decision yet.
-    const assignedIds = detailData.assignedMembers?.map((r) => r.reviewerId) || [];
+    const assignedIds =
+      detailData.assignedMembers?.map((r) => r.reviewerId) || [];
     const decisionIds = detailData.decisions?.map((d) => d.reviewerId) || [];
-    const hasPendingReviewer = assignedIds.some((id) => !decisionIds.includes(id));
+    const hasPendingReviewer = assignedIds.some(
+      (id) => !decisionIds.includes(id),
+    );
 
     return {
       id: detailData.paperId,
@@ -101,7 +119,9 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
       authors: detailData.authors || "",
       year: Number(detailData.publicationYear) || 0,
       source: detailData.source || "",
-      phase: (phase === 0 ? "Title/Abstract" : "Full-Text") as "Title/Abstract" | "Full-Text",
+      phase: (phase === 0 ? "Title/Abstract" : "Full-Text") as
+        | "Title/Abstract"
+        | "Full-Text",
       abstract: detailData.abstract || "",
       fullText: detailData.pdfUrl || "",
       metadata: {
@@ -120,13 +140,17 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
       })),
       resolution: detailData.resolution
         ? {
-            finalDecision: detailData.resolution.finalDecisionText as "Include" | "Exclude",
+            finalDecision: detailData.resolution.finalDecisionText as
+              | "Include"
+              | "Exclude",
             resolutionNotes: detailData.resolution.resolutionNotes || "",
             resolverName: detailData.resolution.resolverName || "",
           }
         : undefined,
       isFinishReview: detailData.isFinishReview && !hasPendingReviewer,
-      assignedReviewerIds: Array.from(new Set([...assignedIds, ...decisionIds])),
+      assignedReviewerIds: Array.from(
+        new Set([...assignedIds, ...decisionIds]),
+      ),
     };
   }, [detailData, phase]);
 
@@ -176,31 +200,39 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
       onClose={onClose}
       title="Conflict Resolution"
       description={
-        paper ? `Resolving conflict for Paper ID: ${paper.id}` : "Loading paper details..."
+        paper
+          ? `Resolving conflict for Paper ID: ${paper.id}`
+          : "Loading paper details..."
       }
       size="md"
     >
-      <div className="flex flex-col -m-8 bg-white overflow-hidden min-h-[400px]">
+      <div className="flex flex-col -m-8 bg-surface-white overflow-hidden min-h-[400px]">
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-12">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-              <p className="text-sm font-bold text-gray-400 uppercase tracking-widest leading-none">
+              <p className="text-sm font-bold text-text-secondary uppercase tracking-widest leading-none">
                 Fetching details...
               </p>
             </div>
           </div>
         ) : !paper ? (
           <div className="flex-1 flex items-center justify-center p-12">
-            <p className="text-sm font-bold text-gray-400">No data found.</p>
+            <p className="text-sm font-bold text-text-secondary">
+              No data found.
+            </p>
           </div>
         ) : (
           <main className="flex flex-1 overflow-hidden">
             <div className="flex flex-col w-full relative overflow-hidden h-full">
               <ReviewerDecisionsSection
                 decisions={paper.decisions}
-                includeCount={paper.decisions.filter((d) => d.decision === "Include").length}
-                excludeCount={paper.decisions.filter((d) => d.decision === "Exclude").length}
+                includeCount={
+                  paper.decisions.filter((d) => d.decision === "Include").length
+                }
+                excludeCount={
+                  paper.decisions.filter((d) => d.decision === "Exclude").length
+                }
                 onViewSubmission={(reviewerId) => {
                   if (processId && paperId) {
                     setSubmissionParams({
@@ -256,16 +288,18 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
         {isLoadingSubmission ? (
           <div className="flex flex-col items-center justify-center p-20 gap-4">
             <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
-            <p className="text-slate-400 animate-pulse font-medium">Loading submission data...</p>
+            <p className="text-text-secondary animate-pulse font-medium">
+              Loading submission data...
+            </p>
           </div>
         ) : submission ? (
-          <div className="bg-slate-50/50 p-6 rounded-3xl border border-slate-100 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-bg-secondary/50 p-6 rounded-[4px] border border-border max-h-[70vh] overflow-y-auto custom-scrollbar">
             <PreviewDocument
               template={submission as any}
               renderItem={(item) => (
                 <div className="flex items-center">
                   {item.isChecked ? (
-                    <div className="w-5 h-5 rounded-md bg-green-100 border border-green-200 flex items-center justify-center text-green-600 shadow-sm">
+                    <div className="w-5 h-5 rounded-md bg-green-100 border border-border flex items-center justify-center text-green-600 shadow-sm">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                   ) : (
@@ -278,11 +312,11 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
               renderSectionTitle={(section) => (
                 <div className="flex items-center">
                   {section.isChecked ? (
-                    <div className="w-6 h-6 rounded-lg bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-600 shadow-sm">
+                    <div className="w-6 h-6 rounded-[4px] bg-indigo-100 border border-indigo-200 flex items-center justify-center text-accent shadow-sm">
                       <Check className="w-4 h-4 stroke-[3]" />
                     </div>
                   ) : (
-                    <div className="w-6 h-6 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 shadow-sm">
+                    <div className="w-6 h-6 rounded-[4px] bg-bg-secondary border border-border flex items-center justify-center text-text-secondary shadow-sm">
                       <X className="w-4 h-4 stroke-[3]" />
                     </div>
                   )}
@@ -291,8 +325,10 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
             />
           </div>
         ) : (
-          <div className="text-center py-20 text-slate-400 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-            <p className="italic">No submission data available for this reviewer.</p>
+          <div className="text-center py-20 text-text-secondary bg-bg-secondary rounded-[4px] border border-dashed border-border">
+            <p className="italic">
+              No submission data available for this reviewer.
+            </p>
           </div>
         )}
       </Modal>

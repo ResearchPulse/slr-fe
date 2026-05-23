@@ -21,7 +21,7 @@ export default function DataExtractionPhaseWorkspace() {
 
   if (ws.isLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+      <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
       </div>
     );
@@ -29,8 +29,8 @@ export default function DataExtractionPhaseWorkspace() {
 
   if (ws.error) {
     return (
-      <div className="min-h-screen bg-slate-50 px-6 py-10">
-        <Card className="mx-auto max-w-4xl rounded-2xl border border-red-200 bg-red-50 shadow-lg shadow-red-100/50">
+      <div className="min-h-screen bg-bg-secondary px-6 py-10">
+        <Card className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white shadow-none shadow-red-100/50">
           <h2 className="text-lg font-semibold text-red-900">
             Data Extraction Error
           </h2>
@@ -52,7 +52,7 @@ export default function DataExtractionPhaseWorkspace() {
     selectedStudyStatus === "completed";
 
   return (
-    <div className="min-h-full bg-slate-50 flex flex-col">
+    <div className="min-h-full bg-bg-secondary flex flex-col">
       {/* Main Content */}
       <div className="pt-0">
         {studyId && isConsensusRouteTarget ? (

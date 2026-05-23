@@ -23,7 +23,9 @@ export default function CreateProcessModal({
     notes: "",
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -62,8 +64,13 @@ export default function CreateProcessModal({
           rows={5}
         />
 
-        <div className="flex gap-3 justify-end pt-4 border-t border-gray-200">
-          <Button type="button" variant="secondary" onClick={handleCancel} disabled={isLoading}>
+        <div className="flex gap-3 justify-end pt-4 border-t border-border">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleCancel}
+            disabled={isLoading}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>

@@ -8,12 +8,15 @@ interface ReviewLayoutProps {
   notesPanel?: React.ReactNode;
 }
 
-const ReviewLayout: React.FC<ReviewLayoutProps> = ({ children, notesPanel }) => {
+const ReviewLayout: React.FC<ReviewLayoutProps> = ({
+  children,
+  notesPanel,
+}) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notesOpen, setNotesOpen] = useState(false);
 
   return (
-    <div className="flex flex-col h-screen bg-surface-ground overflow-hidden">
+    <div className="flex flex-col h-screen bg-bg-primary overflow-hidden">
       {/* <TopHeader 
         projectName="First Project" 
         onMenuClick={() => setSidebarOpen(true)} 
@@ -31,21 +34,25 @@ const ReviewLayout: React.FC<ReviewLayoutProps> = ({ children, notesPanel }) => 
             side="left"
             maxWidth="max-w-[280px]"
           >
-            <div className="-m-6 h-full bg-surface-card">{/* <SidebarNavigation /> */}</div>
+            <div className="-m-6 h-full bg-surface-white">
+              {/* <SidebarNavigation /> */}
+            </div>
           </Drawer>
         </div>
 
         {/* Main Content Area */}
         <main className="flex-1 overflow-hidden flex flex-col min-w-0">
           <div className="flex-1 overflow-hidden p-3 md:p-6 scroll-smooth">
-            <div className="max-w-5xl mx-auto h-full overflow-hidden flex flex-col">{children}</div>
+            <div className="max-w-5xl mx-auto h-full overflow-hidden flex flex-col">
+              {children}
+            </div>
           </div>
 
           {/* Floating Action Button for Notes on Mobile */}
           {notesPanel && (
             <button
               onClick={() => setNotesOpen(true)}
-              className="xl:hidden fixed bottom-6 right-6 z-40 bg-brand-600 text-white p-3 rounded-full shadow-lg hover:bg-brand-700 transition-transform active:scale-90"
+              className="xl:hidden fixed bottom-6 right-6 z-40 bg-accent text-bg-primary p-3 rounded-[4px] shadow-none border border-border hover:bg-text-primary transition-transform active:scale-90"
               aria-label="Toggle notes"
             >
               <svg
@@ -68,7 +75,7 @@ const ReviewLayout: React.FC<ReviewLayoutProps> = ({ children, notesPanel }) => 
 
         {/* Notes Panel Column (Desktop) */}
         {notesPanel && (
-          <div className="hidden xl:block w-80 2xl:w-96 border-l border-border-default bg-surface-card overflow-hidden">
+          <div className="hidden xl:block w-80 2xl:w-96 border-l border-border bg-surface-white overflow-hidden">
             {notesPanel}
           </div>
         )}

@@ -24,7 +24,10 @@ interface SearchSourcePageProps {
   hideHeader?: boolean;
 }
 
-export default function SearchSourcePage({ projectId, hideHeader = false }: SearchSourcePageProps) {
+export default function SearchSourcePage({
+  projectId,
+  hideHeader = false,
+}: SearchSourcePageProps) {
   const {
     searchSources: initialSources,
     availableMasterSources,
@@ -39,7 +42,9 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
 
   const [sources, setSources] = useState<SearchSourceDto[]>([]);
   const [selectedMasterId, setSelectedMasterId] = useState<string>("");
-  const [configuringSourceIndex, setConfiguringSourceIndex] = useState<number | null>(null);
+  const [configuringSourceIndex, setConfiguringSourceIndex] = useState<
+    number | null
+  >(null);
 
   useEffect(() => {
     if (initialSources) {
@@ -53,7 +58,9 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
       return;
     }
 
-    const master = availableMasterSources.find((m) => m.id === selectedMasterId);
+    const master = availableMasterSources.find(
+      (m) => m.id === selectedMasterId,
+    );
     if (!master) return;
 
     // Check if already added
@@ -125,7 +132,9 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
-        <p className="text-gray-500 font-medium">Loading search sources...</p>
+        <p className="text-text-secondary font-medium">
+          Loading search sources...
+        </p>
       </div>
     );
   }
@@ -134,9 +143,12 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
     <div className={`px-4 ${hideHeader ? "" : "pb-20"}`}>
       {!hideHeader && (
         <div className="mb-8">
-          <h1 className="text-3xl font-black text-gray-900 mb-2">Search Sources</h1>
-          <p className="text-gray-500">
-            Define the academic databases and repositories you used for your search.
+          <h1 className="text-3xl font-black text-text-primary mb-2">
+            Search Sources
+          </h1>
+          <p className="text-text-secondary">
+            Define the academic databases and repositories you used for your
+            search.
           </p>
         </div>
       )}
@@ -145,24 +157,25 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
         {/* Add Source Section */}
         {isLeader && (
           <div className="md:col-span-1">
-            <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 sticky top-24">
-              <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <div className="bg-surface-white rounded-[4px] p-6 shadow-none border border-border sticky top-24">
+              <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
                 <FiPlus className="text-blue-600" />
                 Add Source
               </h3>
-              <p className="text-sm text-gray-500 mb-6">
-                Choose a source from the available master list to add to your project.
+              <p className="text-sm text-text-secondary mb-6">
+                Choose a source from the available master list to add to your
+                project.
               </p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs font-black uppercase tracking-widest text-gray-400 mb-2 block">
+                  <label className="text-xs font-black uppercase tracking-widest text-text-secondary mb-2 block">
                     Select Master Source
                   </label>
                   <select
                     value={selectedMasterId}
                     onChange={(e) => setSelectedMasterId(e.target.value)}
-                    className="w-full px-4 py-3 bg-gray-50 border-none rounded-2xl text-gray-900 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                    className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 transition-all outline-none"
                   >
                     <option value="">Select a source...</option>
                     {availableMasterSources.map((m) => (
@@ -176,19 +189,19 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
                 <button
                   onClick={handleAddSource}
                   disabled={!selectedMasterId}
-                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-100 disabled:text-gray-400 text-white rounded-2xl font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-[4px] font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
                 >
                   <FiPlus />
                   Add to Project
                 </button>
               </div>
 
-              <div className="mt-8 p-4 bg-blue-50 rounded-2xl border border-blue-100">
+              <div className="mt-8 p-4 bg-blue-50 rounded-[4px] border border-blue-100">
                 <div className="flex gap-3">
                   <FiInfo className="text-blue-600 shrink-0 mt-1" />
                   <p className="text-xs text-blue-800 leading-relaxed">
-                    Adding a source here allows you to associate imported papers with their original
-                    database.
+                    Adding a source here allows you to associate imported papers
+                    with their original database.
                   </p>
                 </div>
               </div>
@@ -197,9 +210,13 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
         )}
 
         {/* List Section */}
-        <div className={isLeader ? "md:col-span-2 space-y-4" : "md:col-span-3 space-y-4"}>
+        <div
+          className={
+            isLeader ? "md:col-span-2 space-y-4" : "md:col-span-3 space-y-4"
+          }
+        >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+            <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
               <FiSearch className="text-blue-600" />
               Search Strategies
               <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
@@ -211,7 +228,7 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
               <button
                 onClick={handleSave}
                 disabled={isUpserting}
-                className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full font-bold text-sm transition-all shadow-lg shadow-green-500/20"
+                className="flex items-center gap-2 px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full font-bold text-sm transition-all shadow-none shadow-green-500/20"
               >
                 {isUpserting ? (
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -229,21 +246,27 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-white border-2 border-dashed border-gray-200 rounded-3xl p-12 text-center"
+                className="bg-surface-white border-2 border-dashed border-border rounded-[4px] p-12 text-center"
               >
-                <div className="w-16 h-16 bg-gray-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-bg-primary rounded-[4px] flex items-center justify-center mx-auto mb-4">
                   <FiAlertCircle className="w-8 h-8 text-gray-300" />
                 </div>
-                <h4 className="text-lg font-bold text-gray-900 mb-1">No sources added yet</h4>
-                <p className="text-gray-500 max-w-xs mx-auto">
-                  Add search sources to keep track of where your papers came from.
+                <h4 className="text-lg font-bold text-text-primary mb-1">
+                  No sources added yet
+                </h4>
+                <p className="text-text-secondary max-w-xs mx-auto">
+                  Add search sources to keep track of where your papers came
+                  from.
                 </p>
               </motion.div>
             ) : (
               <div className="grid grid-cols-1 gap-3">
                 {sources.map((source, index) => {
-                  const hasStrategy = source.strategies && source.strategies.length > 0;
-                  const querySnippet = hasStrategy ? source.strategies![0].query : null;
+                  const hasStrategy =
+                    source.strategies && source.strategies.length > 0;
+                  const querySnippet = hasStrategy
+                    ? source.strategies![0].query
+                    : null;
 
                   return (
                     <motion.div
@@ -252,15 +275,17 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="group bg-white rounded-2xl p-4 border border-gray-100 hover:border-blue-200 hover:shadow-md transition-all flex items-center justify-between"
+                      className="group bg-surface-white rounded-[4px] p-4 border border-border hover:border-blue-200 hover:shadow-none transition-all flex items-center justify-between"
                     >
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                        <div className="w-12 h-12 bg-blue-50 rounded-[4px] flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
                           {source.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <h4 className="font-bold text-gray-900 truncate">{source.name}</h4>
+                            <h4 className="font-bold text-text-primary truncate">
+                              {source.name}
+                            </h4>
                             {hasStrategy && (
                               <div className="flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-600 rounded-full text-[10px] font-black uppercase tracking-tighter">
                                 <FiCheckCircle className="w-3 h-3" />
@@ -269,11 +294,11 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
                             )}
                           </div>
                           {querySnippet ? (
-                            <p className="text-xs text-gray-400 truncate max-w-md italic">
+                            <p className="text-xs text-text-secondary truncate max-w-md italic">
                               "{querySnippet}"
                             </p>
                           ) : (
-                            <p className="text-xs text-gray-400">
+                            <p className="text-xs text-text-secondary">
                               {source.sourceId
                                 ? `ID: ${source.sourceId.substring(0, 8)}...`
                                 : "New Source"}
@@ -285,19 +310,27 @@ export default function SearchSourcePage({ projectId, hideHeader = false }: Sear
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setConfiguringSourceIndex(index)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${
+                          className={`flex items-center gap-2 px-4 py-2 rounded-[4px] font-bold text-xs transition-all ${
                             hasStrategy
                               ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
-                              : "bg-gray-50 text-gray-500 hover:bg-gray-100"
+                              : "bg-bg-primary text-text-secondary hover:bg-bg-secondary"
                           }`}
                         >
-                          <FiSettings className={hasStrategy ? "animate-spin-slow" : ""} />
-                          {hasStrategy ? (isLeader ? "Configure" : "View Strategy") : (isLeader ? "Setup Strategy" : "No Strategy")}
+                          <FiSettings
+                            className={hasStrategy ? "animate-spin-slow" : ""}
+                          />
+                          {hasStrategy
+                            ? isLeader
+                              ? "Configure"
+                              : "View Strategy"
+                            : isLeader
+                              ? "Setup Strategy"
+                              : "No Strategy"}
                         </button>
                         {isLeader && (
                           <button
                             onClick={() => handleRemoveSource(index)}
-                            className="p-2 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                            className="p-2 text-gray-300 hover:text-red-600 hover:bg-surface-white rounded-[4px] transition-all"
                             title="Remove source"
                           >
                             <FiTrash2 />

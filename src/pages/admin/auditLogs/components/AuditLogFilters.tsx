@@ -2,7 +2,10 @@ import React from "react";
 import { FiFilter, FiRefreshCw, FiSearch } from "react-icons/fi";
 import { cn } from "../../../../utils/cn";
 import Select from "../../../../components/ui/Select";
-import { AUDIT_LOG_ACTION_OPTIONS, AUDIT_LOG_STATUS_OPTIONS } from "../constants";
+import {
+  AUDIT_LOG_ACTION_OPTIONS,
+  AUDIT_LOG_STATUS_OPTIONS,
+} from "../constants";
 
 interface AuditLogFiltersProps {
   searchTerm: string;
@@ -22,7 +25,7 @@ interface AuditLogFiltersProps {
 }
 
 const fieldClassName =
-  "w-full px-4 py-3 rounded-xl bg-white border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all";
+  "w-full px-4 py-3 rounded-[4px] bg-surface-white border border-border text-sm font-medium text-text-primary outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all shadow-sm";
 
 const DateField: React.FC<{
   label: string;
@@ -61,14 +64,14 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
   const userOptions = users.map((user) => ({ value: user, label: user }));
 
   return (
-    <section className="bg-white rounded-4xl border border-slate-100 shadow-[0_20px_50px_rgba(15,23,42,0.06)] p-5 sm:p-6 space-y-5">
+    <section className="bg-surface-white rounded-4xl border border-border shadow-sm p-5 sm:p-6 space-y-5">
       <div className="flex items-center justify-between gap-4">
         <div className="space-y-1">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.22em]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-secondary text-accent text-[10px] font-black uppercase tracking-[0.22em]">
             <FiFilter className="w-3 h-3" />
             Filters
           </div>
-          <h3 className="text-lg font-black text-slate-900 tracking-tight">
+          <h3 className="text-lg font-serif font-bold text-text-primary tracking-tight">
             Search and narrow audit activity
           </h3>
         </div>
@@ -77,8 +80,8 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
           type="button"
           onClick={onReset}
           className={cn(
-            "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-bold transition-all border",
-            "border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 hover:border-indigo-200",
+            "inline-flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-sm font-bold transition-all border",
+            "border-border text-text-primary hover:bg-bg-secondary hover:text-accent hover:border-accent shadow-sm",
           )}
         >
           <FiRefreshCw className="w-4 h-4" />
@@ -141,11 +144,15 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-[1fr_1fr_auto] xl:items-end">
-        <DateField label="Date from" value={startDate} onChange={onStartDateChange} />
+        <DateField
+          label="Date from"
+          value={startDate}
+          onChange={onStartDateChange}
+        />
         <DateField label="Date to" value={endDate} onChange={onEndDateChange} />
 
         <div className="flex items-center gap-3 xl:justify-end">
-          <div className="px-4 py-3 rounded-2xl bg-slate-50 border border-slate-100 text-xs font-medium text-slate-500">
+          <div className="px-4 py-3 rounded-md bg-bg-secondary border border-border text-xs font-medium text-text-secondary shadow-sm">
             Filters are applied locally to mock data.
           </div>
         </div>

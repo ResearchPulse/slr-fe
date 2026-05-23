@@ -65,7 +65,10 @@ interface PaperRepositoryPageProps {
   // Process Transfer
   processSnapshots: ProcessSnapshot[];
   onAddSelectedToProcess: (processId: string) => Promise<void>;
-  onAddFromFilterToProcess: (processId: string, filterId: string) => Promise<void>;
+  onAddFromFilterToProcess: (
+    processId: string,
+    filterId: string,
+  ) => Promise<void>;
   isAdding: boolean;
   insertResult: SelectionInsertResult | null;
   setInsertResult: (res: SelectionInsertResult | null) => void;
@@ -185,14 +188,19 @@ export default function PaperRepositoryPage({
   isLeader = false,
 }: PaperRepositoryPageProps) {
   const [isReviewRailOpen, setIsReviewRailOpen] = React.useState(false);
-  const allPageSelected = papers.length > 0 && papers.every((p) => selectedPaperIds.includes(p.id));
+  const allPageSelected =
+    papers.length > 0 && papers.every((p) => selectedPaperIds.includes(p.id));
 
   const handleToggleAllPage = (checked: boolean) => {
     const pageIds = papers.map((p) => p.id);
     if (checked) {
-      setSelectedPaperIds(Array.from(new Set([...selectedPaperIds, ...pageIds])));
+      setSelectedPaperIds(
+        Array.from(new Set([...selectedPaperIds, ...pageIds])),
+      );
     } else {
-      setSelectedPaperIds(selectedPaperIds.filter((id) => !pageIds.includes(id)));
+      setSelectedPaperIds(
+        selectedPaperIds.filter((id) => !pageIds.includes(id)),
+      );
     }
   };
 
@@ -205,36 +213,37 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-slate-50/30 p-2 rounded-[2.5rem]">
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[2.5rem]">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-8 rounded-[2rem] border border-gray-100 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-8 rounded-[2rem] border border-border shadow-none">
         <div className="flex items-center gap-5">
-          <div className="w-14 h-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-slate-200">
+          <div className="w-14 h-14 bg-surface-white border border-border text-accent rounded-[4px] flex items-center justify-center shadow-sm">
             <FiLayers className="w-7 h-7" />
           </div>
           <div>
-            <h2 className="text-2xl font-black text-gray-900 uppercase tracking-tight">
-              Paper <span className="text-blue-600">Identification</span> Repository
+            <h2 className="text-2xl font-serif text-text-primary uppercase tracking-tight">
+              Paper <span className="text-accent italic font-medium">Identification</span>{" "}
+              Repository
             </h2>
-            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mt-1 max-w-md leading-relaxed">
-              Centralized repository of all imported papers. Select and assign papers to review
-              processes below.
+            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mt-1 max-w-md leading-relaxed">
+              Centralized repository of all imported papers. Select and assign
+              papers to review processes below.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="h-8 w-px bg-gray-100 mx-1 hidden md:block" />
+          <div className="h-8 w-px bg-bg-secondary mx-1 hidden md:block" />
 
           {/* Search Box */}
           <div className="relative group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search title, DOI, authors..."
-              className="w-64 bg-gray-50 border-2 border-transparent focus:bg-white focus:border-blue-500 rounded-xl pl-11 pr-4 py-2.5 text-sm font-bold text-gray-900 transition-all outline-none"
+              className="w-64 bg-surface-white border border-border focus:border-accent rounded-[4px] pl-11 pr-4 py-2.5 text-sm font-medium text-text-primary transition-all outline-none shadow-sm"
             />
           </div>
 
@@ -250,7 +259,7 @@ export default function PaperRepositoryPage({
           {isLeader && (
             <Button
               variant="outline"
-              className="rounded-xl border-gray-200 hover:border-blue-500 hover:text-blue-600 px-5"
+              className="rounded-[4px] border-border hover:border-accent hover:text-accent px-5"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FiUpload className="w-4 h-4 mr-2" />
@@ -267,7 +276,9 @@ export default function PaperRepositoryPage({
           availableSources={metadata?.searchSources ?? []}
           availableBatches={metadata?.importBatches ?? []}
           isCollapsed={isFilterPanelCollapsed}
-          onToggleCollapse={() => setIsFilterPanelCollapsed(!isFilterPanelCollapsed)}
+          onToggleCollapse={() =>
+            setIsFilterPanelCollapsed(!isFilterPanelCollapsed)
+          }
           onChange={setFilters}
           onReset={onResetFilters}
           onSaveCurrent={onOpenSaveModal}
@@ -308,12 +319,12 @@ export default function PaperRepositoryPage({
       <div className="flex items-center gap-6 my-4 px-4">
         <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
         <div className="flex flex-col items-center gap-2">
-          <div className="bg-white border border-gray-100 px-6 py-2.5 rounded-full shadow-sm flex items-center gap-3">
-            <FiPlus className="w-4 h-4 text-blue-500" />
-            <span className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">
+          <div className="bg-surface-white border border-border px-6 py-2.5 rounded-full shadow-sm flex items-center gap-3">
+            <FiPlus className="w-4 h-4 text-accent" />
+            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em]">
               Assign papers to review processes
             </span>
-            <FiArrowDown className="w-4 h-4 text-blue-500 animate-bounce" />
+            <FiArrowDown className="w-4 h-4 text-accent animate-bounce" />
           </div>
         </div>
         <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
@@ -422,7 +433,10 @@ export default function PaperRepositoryPage({
         processSnapshots={processSnapshots}
         selectedCount={selectedPaperIds.length}
         filteredCount={totalCount}
-        savedFilterOptions={savedFilters.map((f) => ({ id: f.id, name: f.name }))}
+        savedFilterOptions={savedFilters.map((f) => ({
+          id: f.id,
+          name: f.name,
+        }))}
         selectedSavedFilterId={selectedSavedFilterId}
         selectedSavedFilterMatchedCount={selectedSavedFilterMatchedCount}
         selectedProcessId={null} // Controlled by modal or state if needed
@@ -431,7 +445,9 @@ export default function PaperRepositoryPage({
         onSelectSavedFilter={() => {}}
         onCreateSavedFilterFromCurrent={onOpenSaveModal}
         onAddToSelectedProcess={() => setIsAddToProcessBySelectionOpen(true)}
-        onAddAllFilteredToSelectedProcess={() => setIsAddToProcessByFilterOpen(true)}
+        onAddAllFilteredToSelectedProcess={() =>
+          setIsAddToProcessByFilterOpen(true)
+        }
         onNavigateToProcess={onNavigateToProcess}
         isAdding={isAdding}
         isLeader={isLeader}

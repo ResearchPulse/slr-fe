@@ -21,7 +21,7 @@ export default function IdentificationPhaseWorkspace() {
   const ws = useIdentificationWorkspace();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-bg-primary">
       {/* Page Header */}
       <IdentificationHeader
         phaseStatus={ws.phaseStatus}
@@ -44,7 +44,7 @@ export default function IdentificationPhaseWorkspace() {
         />
 
         {/* Tab Container */}
-        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+        <div className="bg-surface-white border border-border rounded-[4px] shadow-none overflow-hidden">
           <TabNavigation
             activeTab={ws.activeTab}
             onTabChange={ws.setActiveTab}

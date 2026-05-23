@@ -11,7 +11,9 @@ import { mergeChecklistDrafts } from "../../../utils/documentEditorHelpers";
 interface DocumentAuthoringModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit?: (data: CreateStudySelectionChecklistTemplateRequest | null) => void;
+  onSubmit?: (
+    data: CreateStudySelectionChecklistTemplateRequest | null,
+  ) => void;
   isSubmitting?: boolean;
   title?: string;
   description?: string;
@@ -23,8 +25,8 @@ interface DocumentAuthoringModalProps {
 
 const emptyDraft: DocumentDraft = { title: "", paragraphs: [], sections: [] };
 
-export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({ 
-  isOpen, 
+export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
+  isOpen,
   onClose,
   onSubmit,
   isSubmitting,
@@ -33,7 +35,7 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
   submitText,
   template,
   screeningProcessId,
-  allowImportCriterias
+  allowImportCriterias,
 }) => {
   // Initialize local state
   const [localDraft, setLocalDraft] = React.useState<DocumentDraft>(emptyDraft);
@@ -54,9 +56,9 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
             items: s.items.map((i, iIdx) => ({
               id: uuidv4(),
               text: i.text,
-              order: iIdx + 1
-            }))
-          }))
+              order: iIdx + 1,
+            })),
+          })),
         };
         setLocalDraft(initialFromTemplate);
       } else {
@@ -64,13 +66,13 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
       }
     }
   }, [isOpen, template]);
- 
+
   const handleImport = (importData: any) => {
     // Always append imported data to the current draft
     const merged = mergeChecklistDrafts(localDraft, importData);
     setLocalDraft(merged);
   };
-   return (
+  return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
@@ -83,14 +85,16 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
         {/* Left Side: Editor */}
         <div className="w-full md:w-[45%] lg:w-[40%] border-r border-slate-100 h-full flex flex-col bg-slate-50/30">
           <div className="p-4 border-b border-slate-100/50 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Editor Workspace</span>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+              Editor Workspace
+            </span>
           </div>
           <div className="flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 transition-colors">
             <div className="max-w-2xl mx-auto">
-              <EditorPanel 
-                onSubmit={onSubmit} 
-                isSubmitting={isSubmitting} 
-                submitText={submitText} 
+              <EditorPanel
+                onSubmit={onSubmit}
+                isSubmitting={isSubmitting}
+                submitText={submitText}
                 localDraft={localDraft}
                 setLocalDraft={setLocalDraft}
               />
@@ -100,8 +104,8 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
 
         {/* Right Side: Live Preview */}
         <div className="hidden md:block flex-1 h-full bg-slate-50/50">
-          <PreviewPanel 
-            localDraft={localDraft} 
+          <PreviewPanel
+            localDraft={localDraft}
             onImport={handleImport}
             screeningProcessId={screeningProcessId}
             allowImportCriterias={allowImportCriterias}

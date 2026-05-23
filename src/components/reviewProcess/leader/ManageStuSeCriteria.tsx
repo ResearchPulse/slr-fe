@@ -5,12 +5,16 @@ import {
   Trash2,
   Sparkles,
   FileText,
-  Tag
+  Tag,
 } from "lucide-react";
 import { clsx } from "clsx";
 import Button from "../../ui/Button";
 import LoadingSpinner from "../../ui/LoadingSpinner";
-import type { CriteriaGroup, CriterionItem, CriterionSource } from "../../../types/selectionCriteria";
+import type {
+  CriteriaGroup,
+  CriterionItem,
+  CriterionSource,
+} from "../../../types/selectionCriteria";
 
 interface ManageStuSeCriteriaProps {
   criteriaGroups: CriteriaGroup[];
@@ -19,9 +23,21 @@ interface ManageStuSeCriteriaProps {
   onAddCustomGroup: () => void;
   onDeleteGroup: (localId: string) => void;
   onUpdateGroupDescription: (localId: string, description: string) => void;
-  onAddCriterion: (groupLocalId: string, type: "inclusion" | "exclusion") => void;
-  onDeleteCriterion: (groupLocalId: string, criterionLocalId: string, type: "inclusion" | "exclusion") => void;
-  onUpdateCriterion: (groupLocalId: string, criterionLocalId: string, type: "inclusion" | "exclusion", text: string) => void;
+  onAddCriterion: (
+    groupLocalId: string,
+    type: "inclusion" | "exclusion",
+  ) => void;
+  onDeleteCriterion: (
+    groupLocalId: string,
+    criterionLocalId: string,
+    type: "inclusion" | "exclusion",
+  ) => void;
+  onUpdateCriterion: (
+    groupLocalId: string,
+    criterionLocalId: string,
+    type: "inclusion" | "exclusion",
+    text: string,
+  ) => void;
 }
 
 const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
@@ -48,7 +64,7 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
             size="sm"
             onClick={onAiSuggest}
             disabled={isGenerating}
-            className="bg-indigo-600 hover:bg-indigo-700 shadow-md shadow-indigo-100"
+            className="bg-accent hover:bg-indigo-700 shadow-none shadow-indigo-100"
           >
             {isGenerating ? (
               <LoadingSpinner size="sm" className="mr-2" />
@@ -65,13 +81,16 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
       </div>
 
       {criteriaGroups.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
-          <div className="w-16 h-16 bg-white rounded-2xl shadow-sm border border-slate-100 flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-border rounded-[4px] bg-bg-secondary/50">
+          <div className="w-16 h-16 bg-surface-white rounded-[4px] shadow-none border border-border flex items-center justify-center mb-4">
             <ClipboardList className="w-8 h-8 text-slate-300" />
           </div>
-          <h4 className="text-slate-900 font-bold">No criteria groups yet</h4>
-          <p className="text-slate-500 text-sm mt-1 max-w-sm">
-            Click the buttons above to let AI suggest criteria based on your project goals or start manually by adding a custom group.
+          <h4 className="text-text-primary font-bold">
+            No criteria groups yet
+          </h4>
+          <p className="text-text-secondary text-sm mt-1 max-w-sm">
+            Click the buttons above to let AI suggest criteria based on your
+            project goals or start manually by adding a custom group.
           </p>
         </div>
       ) : (
@@ -82,10 +101,16 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
               group={group}
               index={index}
               onDelete={() => onDeleteGroup(group.localId!)}
-              onUpdateDescription={(desc) => onUpdateGroupDescription(group.localId!, desc)}
+              onUpdateDescription={(desc) =>
+                onUpdateGroupDescription(group.localId!, desc)
+              }
               onAddCriterion={(type) => onAddCriterion(group.localId!, type)}
-              onDeleteCriterion={(cid, type) => onDeleteCriterion(group.localId!, cid, type)}
-              onUpdateCriterion={(cid, type, text) => onUpdateCriterion(group.localId!, cid, type, text)}
+              onDeleteCriterion={(cid, type) =>
+                onDeleteCriterion(group.localId!, cid, type)
+              }
+              onUpdateCriterion={(cid, type, text) =>
+                onUpdateCriterion(group.localId!, cid, type, text)
+              }
             />
           ))}
         </div>
@@ -102,8 +127,15 @@ interface CriteriaGroupCardProps {
   onDelete: () => void;
   onUpdateDescription: (description: string) => void;
   onAddCriterion: (type: "inclusion" | "exclusion") => void;
-  onDeleteCriterion: (criterionId: string, type: "inclusion" | "exclusion") => void;
-  onUpdateCriterion: (criterionId: string, type: "inclusion" | "exclusion", text: string) => void;
+  onDeleteCriterion: (
+    criterionId: string,
+    type: "inclusion" | "exclusion",
+  ) => void;
+  onUpdateCriterion: (
+    criterionId: string,
+    type: "inclusion" | "exclusion",
+    text: string,
+  ) => void;
 }
 
 const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
@@ -116,24 +148,34 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
   onUpdateCriterion,
 }) => {
   return (
-    <div className={clsx(
-      "group bg-white rounded-2xl border transition-all duration-300 overflow-hidden shadow-sm hover:shadow-md",
-      group.isAiGenerated ? "border-indigo-100" : "border-slate-200"
-    )}>
+    <div
+      className={clsx(
+        "group bg-surface-white rounded-[4px] border transition-all duration-300 overflow-hidden shadow-none hover:shadow-none",
+        group.isAiGenerated ? "border-indigo-100" : "border-border",
+      )}
+    >
       {/* Group Header */}
-      <div className={clsx(
-        "px-6 py-4 flex items-center justify-between border-b",
-        group.isAiGenerated ? "bg-indigo-50/50 border-indigo-100" : "bg-slate-50/50 border-slate-200"
-      )}>
+      <div
+        className={clsx(
+          "px-6 py-4 flex items-center justify-between border-b",
+          group.isAiGenerated
+            ? "bg-bg-secondary/50 border-indigo-100"
+            : "bg-bg-secondary/50 border-border",
+        )}
+      >
         <div className="flex items-center gap-3">
-          <div className={clsx(
-            "w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-sm",
-            group.isAiGenerated ? "bg-indigo-600 text-white" : "bg-white text-slate-600 border border-slate-200"
-          )}>
+          <div
+            className={clsx(
+              "w-8 h-8 rounded-[4px] flex items-center justify-center font-bold text-xs shadow-none",
+              group.isAiGenerated
+                ? "bg-accent text-white"
+                : "bg-surface-white text-text-secondary border border-border",
+            )}
+          >
             {index + 1}
           </div>
           <div>
-            <h4 className="text-slate-900 font-bold flex items-center gap-2">
+            <h4 className="text-text-primary font-bold flex items-center gap-2">
               Criteria Group {index + 1}
               {group.isAiGenerated && (
                 <span className="flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
@@ -146,7 +188,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
         </div>
         <button
           onClick={onDelete}
-          className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+          className="p-2 text-text-secondary hover:text-rose-600 hover:bg-rose-50 rounded-[4px] transition-colors"
           title="Delete Group"
         >
           <Trash2 className="w-4 h-4" />
@@ -157,14 +199,14 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
       <div className="p-6 space-y-6">
         {/* Description Field */}
         <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+          <label className="text-xs font-bold text-text-secondary uppercase tracking-widest flex items-center gap-2">
             Group Theme / Description
           </label>
           <textarea
             value={group.description}
             onChange={(e) => onUpdateDescription(e.target.value)}
             placeholder="Describe the theme or focus of this criteria group..."
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none min-h-[80px]"
+            className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-[4px] text-text-primary text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none min-h-[80px]"
           />
         </div>
 
@@ -187,7 +229,9 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
             </div>
             <div className="space-y-3">
               {group.inclusionCriteria.length === 0 ? (
-                <p className="text-xs text-slate-400 italic py-2">No inclusion criteria added.</p>
+                <p className="text-xs text-text-secondary italic py-2">
+                  No inclusion criteria added.
+                </p>
               ) : (
                 group.inclusionCriteria.map((c) => (
                   <CriterionItemRow
@@ -195,7 +239,9 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
                     criterion={c}
                     type="inclusion"
                     onDelete={() => onDeleteCriterion(c.localId!, "inclusion")}
-                    onUpdate={(text) => onUpdateCriterion(c.localId!, "inclusion", text)}
+                    onUpdate={(text) =>
+                      onUpdateCriterion(c.localId!, "inclusion", text)
+                    }
                   />
                 ))
               )}
@@ -219,7 +265,9 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
             </div>
             <div className="space-y-3">
               {group.exclusionCriteria.length === 0 ? (
-                <p className="text-xs text-slate-400 italic py-2">No exclusion criteria added.</p>
+                <p className="text-xs text-text-secondary italic py-2">
+                  No exclusion criteria added.
+                </p>
               ) : (
                 group.exclusionCriteria.map((c) => (
                   <CriterionItemRow
@@ -227,7 +275,9 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
                     criterion={c}
                     type="exclusion"
                     onDelete={() => onDeleteCriterion(c.localId!, "exclusion")}
-                    onUpdate={(text) => onUpdateCriterion(c.localId!, "exclusion", text)}
+                    onUpdate={(text) =>
+                      onUpdateCriterion(c.localId!, "exclusion", text)
+                    }
                   />
                 ))
               )}
@@ -243,21 +293,21 @@ const CriterionItemRow = ({
   criterion,
   type,
   onDelete,
-  onUpdate
+  onUpdate,
 }: {
-  criterion: CriterionItem,
-  type: "inclusion" | "exclusion",
-  onDelete: () => void,
-  onUpdate: (text: string) => void
+  criterion: CriterionItem;
+  type: "inclusion" | "exclusion";
+  onDelete: () => void;
+  onUpdate: (text: string) => void;
 }) => {
   return (
-    <div className="group/item relative bg-slate-50 hover:bg-white border border-transparent hover:border-slate-200 rounded-xl p-3 transition-all">
+    <div className="group/item relative bg-bg-secondary hover:bg-surface-white border border-transparent hover:border-border rounded-[4px] p-3 transition-all">
       <div className="flex gap-3">
         <textarea
           value={criterion.text}
           onChange={(e) => onUpdate(e.target.value)}
           placeholder={`Enter ${type} criterion...`}
-          className="flex-1 bg-transparent border-none text-slate-700 text-sm resize-none outline-none focus:ring-0 p-0 leading-relaxed min-h-[40px]"
+          className="flex-1 bg-transparent border-none text-text-primary text-sm resize-none outline-none focus:ring-0 p-0 leading-relaxed min-h-[40px]"
         />
         <button
           onClick={onDelete}
@@ -282,12 +332,14 @@ const CriterionItemRow = ({
 const SourceBadge = ({ source }: { source: CriterionSource }) => {
   const isPicoc = source.sourceType === "PICOC";
   return (
-    <span className={clsx(
-      "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-sm",
-      isPicoc
-        ? "bg-blue-50 text-blue-700 border-blue-100"
-        : "bg-indigo-50 text-indigo-700 border-indigo-100"
-    )}>
+    <span
+      className={clsx(
+        "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-none",
+        isPicoc
+          ? "bg-blue-50 text-blue-700 border-blue-100"
+          : "bg-bg-secondary text-indigo-700 border-indigo-100",
+      )}
+    >
       <Tag className="w-2.5 h-2.5 opacity-60" />
       <span className="opacity-60">{source.sourceType}:</span>
       {source.sourceId}

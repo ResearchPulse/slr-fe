@@ -46,7 +46,9 @@ export default function DuplicateQueuePanel({
         result = result.filter((p) => p.status === "resolved");
         break;
       case "high-confidence":
-        result = result.filter((p) => p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH);
+        result = result.filter(
+          (p) => p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH,
+        );
         break;
     }
 
@@ -78,8 +80,12 @@ export default function DuplicateQueuePanel({
   }, [duplicatePairs, filter, sort, searchQuery]);
 
   const filterCounts = useMemo(() => {
-    const unresolved = duplicatePairs.filter((p) => p.status === "pending").length;
-    const resolved = duplicatePairs.filter((p) => p.status === "resolved").length;
+    const unresolved = duplicatePairs.filter(
+      (p) => p.status === "pending",
+    ).length;
+    const resolved = duplicatePairs.filter(
+      (p) => p.status === "resolved",
+    ).length;
     const highConf = duplicatePairs.filter(
       (p) => p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH,
     ).length;
@@ -90,7 +96,11 @@ export default function DuplicateQueuePanel({
     setFilter(newFilter);
   }, []);
 
-  const FILTER_BUTTONS: { key: DuplicateFilterType; label: string; count: number }[] = [
+  const FILTER_BUTTONS: {
+    key: DuplicateFilterType;
+    label: string;
+    count: number;
+  }[] = [
     { key: "all", label: "All", count: filterCounts.all },
     { key: "unresolved", label: "Pending", count: filterCounts.unresolved },
     { key: "resolved", label: "Done", count: filterCounts.resolved },
@@ -101,16 +111,18 @@ export default function DuplicateQueuePanel({
     <div className="lg:col-span-1 flex flex-col min-h-0">
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
-        <h3 className="font-semibold text-gray-900">
+        <h3 className="font-semibold text-text-primary">
           Duplicate Pairs
-          <span className="ml-2 text-sm font-normal text-gray-500">({filteredPairs.length})</span>
+          <span className="ml-2 text-sm font-normal text-text-secondary">
+            ({filteredPairs.length})
+          </span>
         </h3>
         <button
           onClick={() => setShowFilters((prev) => !prev)}
-          className={`p-1.5 rounded-lg transition-colors ${
+          className={`p-1.5 rounded-[4px] transition-colors ${
             showFilters
               ? "bg-blue-100 text-blue-600"
-              : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+              : "text-text-secondary hover:text-text-secondary hover:bg-bg-secondary"
           }`}
           title="Toggle filters"
         >
@@ -120,19 +132,19 @@ export default function DuplicateQueuePanel({
 
       {/* Search */}
       <div className="relative mb-3">
-        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by paper title..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+          className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
       </div>
 
       {/* Filter & Sort controls */}
       {showFilters && (
-        <div className="space-y-2 mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100">
+        <div className="space-y-2 mb-3 p-3 bg-bg-primary rounded-[4px] border border-border">
           {/* Filter pills */}
           <div className="flex flex-wrap gap-1.5">
             {FILTER_BUTTONS.map(({ key, label, count }) => (
@@ -142,7 +154,7 @@ export default function DuplicateQueuePanel({
                 className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                   filter === key
                     ? "bg-blue-100 text-blue-700 border border-blue-200"
-                    : "bg-white text-gray-600 border border-gray-200 hover:bg-gray-50"
+                    : "bg-surface-white text-text-secondary border border-border hover:bg-bg-primary"
                 }`}
               >
                 {label}
@@ -155,7 +167,7 @@ export default function DuplicateQueuePanel({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as DuplicateSortType)}
-            className="w-full px-2 py-1.5 text-xs border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full px-2 py-1.5 text-xs border border-border rounded-[4px] bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           >
             <option value="similarity-desc">Highest similarity first</option>
             <option value="similarity-asc">Lowest similarity first</option>
@@ -177,12 +189,12 @@ export default function DuplicateQueuePanel({
               <button
                 key={pair.id}
                 onClick={() => onSelectPair(pair)}
-                className={`w-full text-left p-3.5 rounded-lg border-2 transition-all group ${
+                className={`w-full text-left p-3.5 rounded-[4px] border-2 transition-all group ${
                   isSelected
-                    ? "border-blue-500 bg-blue-50 shadow-md"
+                    ? "border-blue-500 bg-blue-50 shadow-none"
                     : isResolved
-                      ? "border-gray-100 bg-gray-50 hover:border-gray-200"
-                      : "border-gray-200 hover:border-gray-300 bg-white"
+                      ? "border-border bg-bg-primary hover:border-border"
+                      : "border-border hover:border-border bg-surface-white"
                 }`}
               >
                 {/* Top row: score + confidence + status */}
@@ -213,7 +225,9 @@ export default function DuplicateQueuePanel({
                       </span>
                     )
                   ) : (
-                    <span className={`text-xs font-medium ${confidenceInfo.color}`}>
+                    <span
+                      className={`text-xs font-medium ${confidenceInfo.color}`}
+                    >
                       {confidenceInfo.label}
                     </span>
                   )}
@@ -222,7 +236,7 @@ export default function DuplicateQueuePanel({
                 {/* Paper title (Original) */}
                 <p
                   className={`text-sm font-medium line-clamp-2 mb-1.5 ${
-                    isResolved ? "text-gray-500" : "text-gray-900"
+                    isResolved ? "text-text-secondary" : "text-text-primary"
                   }`}
                 >
                   {pair.originalPaper.title}
@@ -233,7 +247,7 @@ export default function DuplicateQueuePanel({
                   <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded">
                     {pair.originalPaper.source}
                   </span>
-                  <span className="text-gray-400">vs</span>
+                  <span className="text-text-secondary">vs</span>
                   <span className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded">
                     {pair.duplicatePaper.source}
                   </span>
@@ -242,7 +256,7 @@ export default function DuplicateQueuePanel({
             );
           })
         ) : (
-          <div className="text-center py-8 text-gray-500">
+          <div className="text-center py-8 text-text-secondary">
             <FiSearch className="w-8 h-8 mx-auto mb-2 text-gray-300" />
             <p className="text-sm">No pairs match your filters</p>
             <button

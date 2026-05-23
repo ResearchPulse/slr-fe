@@ -38,8 +38,8 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       confirmBtn: "bg-amber-600 hover:bg-amber-700 shadow-amber-100",
     },
     info: {
-      iconBg: "bg-indigo-50",
-      iconColor: "text-indigo-600",
+      iconBg: "bg-bg-secondary",
+      iconColor: "text-accent",
       confirmBtn: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100",
     },
   };
@@ -47,17 +47,14 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const style = variantStyles[variant];
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={title}
-      size="sm"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
       <div className="flex flex-col items-center text-center space-y-6">
-        <div className={`w-20 h-20 ${style.iconBg} rounded-full flex items-center justify-center`}>
+        <div
+          className={`w-20 h-20 ${style.iconBg} rounded-full flex items-center justify-center`}
+        >
           <FiAlertTriangle className={`w-10 h-10 ${style.iconColor}`} />
         </div>
-        
+
         <div className="space-y-2">
           <p className="text-slate-600 font-medium leading-relaxed">
             {message}

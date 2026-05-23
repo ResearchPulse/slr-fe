@@ -22,18 +22,23 @@ interface SearchesTabContentProps {
   searchExecutions: SearchExecutionResponse[];
 }
 
-export default function SearchesTabContent({ searchExecutions }: SearchesTabContentProps) {
+export default function SearchesTabContent({
+  searchExecutions,
+}: SearchesTabContentProps) {
   return (
     <div>
       {/* Info Banner */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6">
+      <div className="bg-bg-primary border border-border rounded-[4px] p-4 mb-6">
         <div className="flex items-start gap-3">
-          <FiFileText className="w-5 h-5 text-gray-600 mt-0.5" />
+          <FiFileText className="w-5 h-5 text-text-secondary mt-0.5" />
           <div>
-            <h4 className="font-semibold text-gray-900 mb-1">Search Strategy Documentation</h4>
-            <p className="text-sm text-gray-600">
-              This section is for documenting your literature search strategies for audit and
-              reporting purposes. Records are imported via RIS files in the Import Batches tab.
+            <h4 className="font-semibold text-text-primary mb-1">
+              Search Strategy Documentation
+            </h4>
+            <p className="text-sm text-text-secondary">
+              This section is for documenting your literature search strategies
+              for audit and reporting purposes. Records are imported via RIS
+              files in the Import Batches tab.
             </p>
           </div>
         </div>
@@ -43,21 +48,25 @@ export default function SearchesTabContent({ searchExecutions }: SearchesTabCont
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
             <input
               type="text"
               placeholder="Filter documented searches..."
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[300px]"
+              className="pl-10 pr-4 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[300px]"
             />
           </div>
-          <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500">
+          <select className="px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500">
             <option>All Databases</option>
             <option>PubMed</option>
             <option>IEEE Xplore</option>
             <option>ACM Digital Library</option>
           </select>
         </div>
-        <Button variant="secondary" size="sm" className="flex items-center gap-2">
+        <Button
+          variant="secondary"
+          size="sm"
+          className="flex items-center gap-2"
+        >
           <FiFileText className="w-4 h-4" />
           Document Search Strategy
         </Button>
@@ -67,17 +76,23 @@ export default function SearchesTabContent({ searchExecutions }: SearchesTabCont
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Source</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">
+              <tr className="border-b border-border">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Source
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
                   Query Summary
                 </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
                   Executed Date
                 </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Results</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Type</th>
-                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-900">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Results
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Type
+                </th>
+                <th className="text-right py-3 px-4 text-sm font-semibold text-text-primary">
                   Actions
                 </th>
               </tr>
@@ -86,18 +101,20 @@ export default function SearchesTabContent({ searchExecutions }: SearchesTabCont
               {searchExecutions.map((search) => (
                 <tr
                   key={search.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  className="border-b border-border hover:bg-bg-primary transition-colors"
                 >
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <FiDatabase className="w-4 h-4 text-blue-600" />
-                      <span className="font-medium text-gray-900">{search.searchSource}</span>
+                      <span className="font-medium text-text-primary">
+                        {search.searchSource}
+                      </span>
                     </div>
                   </td>
                   <td className="py-4 px-4">
                     <div className="max-w-md">
                       <p
-                        className="text-sm text-gray-700 truncate"
+                        className="text-sm text-text-primary truncate"
                         title={search.searchQuery || ""}
                       >
                         {search.searchQuery}
@@ -108,7 +125,7 @@ export default function SearchesTabContent({ searchExecutions }: SearchesTabCont
                       </button>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-600">
+                  <td className="py-4 px-4 text-sm text-text-secondary">
                     {formatRelativeTime(search.executedAt)}
                   </td>
                   <td className="py-4 px-4">
@@ -128,16 +145,16 @@ export default function SearchesTabContent({ searchExecutions }: SearchesTabCont
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
+                      <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors">
                         <FiEye className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
+                      <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors">
                         <FiRefreshCw className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
+                      <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors">
                         <FiDownload className="w-4 h-4" />
                       </button>
-                      <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
+                      <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors">
                         <FiMoreVertical className="w-4 h-4" />
                       </button>
                     </div>

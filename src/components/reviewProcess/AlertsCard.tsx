@@ -13,17 +13,21 @@ export default function AlertsCard({ alerts }: AlertsCardProps) {
   }
 
   return (
-    <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-5">
-      <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-        <FiAlertTriangle className="w-5 h-5 text-yellow-600" />
+    <div className="bg-surface-white border border-border rounded-[4px] p-6 shadow-none">
+      <h3 className="font-cormorant text-xl font-normal text-text-primary mb-4 flex items-center gap-2">
+        <FiAlertTriangle className="w-5 h-5 text-[#B8860B]" />
         Alerts
       </h3>
-      <div className="space-y-3 text-sm">
+      <div className="space-y-4 text-[13px]">
         {alerts.map((alert) => (
-          <div key={alert.id} className="flex gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 mt-1.5 flex-shrink-0" />
-            <p className="text-gray-700">
-              {alert.highlight && <span className="font-medium">{alert.highlight}</span>}{" "}
+          <div key={alert.id} className="flex gap-3 items-start">
+            <div className="w-1.5 h-1.5 rounded-full bg-[#B8860B] mt-1.5 flex-shrink-0 opacity-80" />
+            <p className="text-text-secondary leading-relaxed">
+              {alert.highlight && (
+                <span className="font-medium text-text-primary">
+                  {alert.highlight}
+                </span>
+              )}{" "}
               {alert.message}
             </p>
           </div>

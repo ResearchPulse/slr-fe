@@ -73,7 +73,11 @@ export default function PapersLibraryTabContent({
   onChangeTab,
   canEdit = true,
 }: PapersLibraryTabContentProps) {
-  const hasFilters = !!(librarySearchInput || yearFilterInput || searchSourceFilterInput);
+  const hasFilters = !!(
+    librarySearchInput ||
+    yearFilterInput ||
+    searchSourceFilterInput
+  );
 
   return (
     <div>
@@ -96,7 +100,7 @@ export default function PapersLibraryTabContent({
           />
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-text-secondary">
             {readyPapersTotalCount.toLocaleString()} ready paper
             {readyPapersTotalCount !== 1 ? "s" : ""}
           </span>
@@ -106,7 +110,9 @@ export default function PapersLibraryTabContent({
             onClick={onRefetch}
             disabled={readyPapersLoading}
           >
-            <FiRefreshCw className={`w-4 h-4 ${readyPapersLoading ? "animate-spin" : ""}`} />
+            <FiRefreshCw
+              className={`w-4 h-4 ${readyPapersLoading ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
           <Button variant="secondary" className="flex items-center gap-2">
@@ -120,7 +126,7 @@ export default function PapersLibraryTabContent({
       {readyPapersLoading && readyPapers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
           <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4" />
-          <p className="text-gray-600">Loading papers...</p>
+          <p className="text-text-secondary">Loading papers...</p>
         </div>
       ) : readyPapersError ? (
         /* Error State */
@@ -143,17 +149,29 @@ export default function PapersLibraryTabContent({
           )}
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200">
+              <tr className="border-b border-border">
                 <th className="text-left py-3 px-4 w-8">
-                  <input type="checkbox" className="rounded border-gray-300" />
+                  <input type="checkbox" className="rounded border-border" />
                 </th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">ID</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Title</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Authors</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Year</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Source</th>
-                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-900">Journal</th>
-                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-900">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  ID
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Title
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Authors
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Year
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Source
+                </th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-text-primary">
+                  Journal
+                </th>
+                <th className="text-right py-3 px-4 text-sm font-semibold text-text-primary">
                   Actions
                 </th>
               </tr>
@@ -162,17 +180,21 @@ export default function PapersLibraryTabContent({
               {readyPapers.map((paper) => (
                 <tr
                   key={paper.id}
-                  className="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+                  className="border-b border-border hover:bg-bg-primary transition-colors"
                 >
                   <td className="py-4 px-4">
-                    <input type="checkbox" className="rounded border-gray-300" />
+                    <input type="checkbox" className="rounded border-border" />
                   </td>
                   <td className="py-4 px-4">
-                    <span className="text-xs text-slate-400 font-bold">{paper.id}</span>
+                    <span className="text-xs text-text-secondary font-bold">
+                      {paper.id}
+                    </span>
                   </td>
                   <td className="py-4 px-4">
                     <div className="max-w-md">
-                      <p className="font-medium text-gray-900 line-clamp-2">{paper.title}</p>
+                      <p className="font-medium text-text-primary line-clamp-2">
+                        {paper.title}
+                      </p>
                       {paper.doi && (
                         <a
                           href={`https://doi.org/${paper.doi}`}
@@ -185,22 +207,28 @@ export default function PapersLibraryTabContent({
                       )}
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-700">{paper.authors || "N/A"}</td>
-                  <td className="py-4 px-4 text-sm text-gray-700">
+                  <td className="py-4 px-4 text-sm text-text-primary">
+                    {paper.authors || "N/A"}
+                  </td>
+                  <td className="py-4 px-4 text-sm text-text-primary">
                     {paper.publicationYear || "N/A"}
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
                       <FiDatabase className="w-4 h-4 text-blue-600" />
-                      <span className="text-sm text-gray-700">{paper.source || "Unknown"}</span>
+                      <span className="text-sm text-text-primary">
+                        {paper.source || "Unknown"}
+                      </span>
                     </div>
                   </td>
-                  <td className="py-4 px-4 text-sm text-gray-700">{paper.journal || "N/A"}</td>
+                  <td className="py-4 px-4 text-sm text-text-primary">
+                    {paper.journal || "N/A"}
+                  </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => onViewPaper(paper)}
-                        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors"
+                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors"
                         title="View paper details"
                       >
                         <FiEye className="w-4 h-4" />
@@ -216,7 +244,7 @@ export default function PapersLibraryTabContent({
                         <Ban className="w-4 h-4" />
                       </button>
 
-                      <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
+                      <button className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors">
                         <FiMoreVertical className="w-4 h-4" />
                       </button>
                     </div>
@@ -227,8 +255,8 @@ export default function PapersLibraryTabContent({
           </table>
 
           {/* Pagination Footer */}
-          <div className="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-            <div className="text-sm text-gray-600">
+          <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
+            <div className="text-sm text-text-secondary">
               Showing {(readyPapersPage - 1) * 20 + 1}-
               {Math.min(readyPapersPage * 20, readyPapersTotalCount)} of{" "}
               {readyPapersTotalCount.toLocaleString()} records
@@ -242,7 +270,7 @@ export default function PapersLibraryTabContent({
               >
                 Previous
               </Button>
-              <span className="text-sm text-gray-600 px-2">
+              <span className="text-sm text-text-secondary px-2">
                 Page {readyPapersPage} of {readyPapersTotalPages}
               </span>
               <Button

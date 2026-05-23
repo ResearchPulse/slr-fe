@@ -23,7 +23,6 @@ import ChecklistEditorPage from "../pages/checklist/ChecklistEditorPage.tsx";
 import ProjectAuditLogPage from "../pages/projects/ProjectAuditLogPage";
 import PaperDetailsPage from "../pages/projects/PaperDetailsPage";
 
-
 import ProtectedRouteForProject from "../components/routes/ProtectedRouteForProject";
 import ManageStudySelectionPage from "../pages/manage-study-selection/ManageStudySelectionPage.tsx";
 import ScreeningPhaseRouter from "../pages/reviewProcess/studySelection/ScreeningPhaseRouter";
@@ -40,7 +39,13 @@ function MainRoutes() {
         {/* Profile Page */}
         <Route
           path="profile"
-          element={user?.role === "Admin" ? <AdminProfileRedirect /> : <MyProfilePage />}
+          element={
+            user?.role === "Admin" ? (
+              <AdminProfileRedirect />
+            ) : (
+              <MyProfilePage />
+            )
+          }
         />
 
         {/* Project Routes */}
@@ -51,11 +56,20 @@ function MainRoutes() {
             <Route path=":id/settings" element={<ProjectSettingsPage />} />
 
             {/* Checklist Routes */}
-            <Route path=":projectId/checklists" element={<ChecklistDashboardWrapper />} />
-            <Route path=":projectId/checklists/:checklistId" element={<ChecklistEditorPage />} />
+            <Route
+              path=":projectId/checklists"
+              element={<ChecklistDashboardWrapper />}
+            />
+            <Route
+              path=":projectId/checklists/:checklistId"
+              element={<ChecklistEditorPage />}
+            />
 
             {/* Review Process Workspace (from dev branch) */}
-            <Route path=":projectId/processes/:processId" element={<ReviewProcessWorkspace />} />
+            <Route
+              path=":projectId/processes/:processId"
+              element={<ReviewProcessWorkspace />}
+            />
 
             {/* Identification Phase — Leader and Member */}
             <Route
@@ -75,7 +89,12 @@ function MainRoutes() {
 
             <Route
               path=":projectId/processes/:processId/screening/:screeningProcessId"
-              element={<ProtectedRouteForProject allowedRoles={[1, 2]} redirectTo="/projects" />}
+              element={
+                <ProtectedRouteForProject
+                  allowedRoles={[1, 2]}
+                  redirectTo="/projects"
+                />
+              }
             >
               <Route index element={<ScreeningPhaseRouter />} />
               <Route path="dashboard" element={<ManageStudySelectionPage />} />
@@ -83,7 +102,12 @@ function MainRoutes() {
 
             <Route
               path=":projectId/processes/:processId/screening/:screeningProcessId/papers-statistic"
-              element={<ProtectedRouteForProject allowedRoles={[1]} redirectTo="/projects" />}
+              element={
+                <ProtectedRouteForProject
+                  allowedRoles={[1]}
+                  redirectTo="/projects"
+                />
+              }
             >
               <Route index element={<StuSePaperStatisticPage />} />
             </Route>
@@ -117,10 +141,12 @@ function MainRoutes() {
               path=":projectId/processes/:processId/prisma-report"
               element={<PrismaReportWorkspace />}
             />
-            <Route path=":projectId/papers/:paperId" element={<PaperDetailsPage />} />
+            <Route
+              path=":projectId/papers/:paperId"
+              element={<PaperDetailsPage />}
+            />
             <Route path=":id/audit-logs" element={<ProjectAuditLogPage />} />
           </Route>
-
 
           {/* Invitation Routes */}
           <Route path="invitations">

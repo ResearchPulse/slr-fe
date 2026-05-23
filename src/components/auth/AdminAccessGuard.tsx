@@ -9,21 +9,29 @@ import { toastInfo } from "../../utils/toast";
 const AdminAccessGuard: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-  
+  const { user, isAuthenticated } = useSelector(
+    (state: RootState) => state.auth,
+  );
+
   const [showModal, setShowModal] = useState(false);
   const [targetPath, setTargetPath] = useState<string | null>(null);
   const [prevBase, setPrevBase] = useState<"admin" | "client">(
-    location.pathname.startsWith("/admin") ? "admin" : "client"
+    location.pathname.startsWith("/admin") ? "admin" : "client",
   );
 
   useEffect(() => {
     if (!isAuthenticated || user?.role !== "Admin") return;
 
-    const currentBase = location.pathname.startsWith("/admin") ? "admin" : "client";
+    const currentBase = location.pathname.startsWith("/admin")
+      ? "admin"
+      : "client";
 
     // Case 1: Admin moving from Admin Dashboard to Client Pages
-    if (prevBase === "admin" && currentBase === "client" && location.pathname !== "/auth/signin") {
+    if (
+      prevBase === "admin" &&
+      currentBase === "client" &&
+      location.pathname !== "/auth/signin"
+    ) {
       setTargetPath(location.pathname);
       setShowModal(true);
     }
@@ -58,8 +66,9 @@ const AdminAccessGuard: React.FC = () => {
       title="Switch to Client Pages?"
     >
       <div className="space-y-4">
-        <p className="text-gray-600">
-          You are currently in the Admin Dashboard. Do you want to switch to the client view?
+        <p className="text-text-secondary">
+          You are currently in the Admin Dashboard. Do you want to switch to the
+          client view?
         </p>
         <div className="flex justify-end gap-3 mt-6">
           <Button variant="secondary" onClick={handleCancelSwitch}>

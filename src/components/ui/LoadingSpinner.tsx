@@ -5,19 +5,26 @@ interface LoadingSpinnerProps extends React.HTMLAttributes<HTMLDivElement> {
   size?: "sm" | "md" | "lg";
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = "md", className, ...props }) => {
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
+  size = "md",
+  className,
+  ...props
+}) => {
   const sizeStyles = {
-    sm: "w-4 h-4 border-2",
-    md: "w-8 h-8 border-4",
-    lg: "w-12 h-12 border-4",
+    sm: "w-4 h-4 border",
+    md: "w-8 h-8 border-[2px]",
+    lg: "w-12 h-12 border-[2px]",
   };
 
   return (
-    <div className={cn("flex justify-center items-center", className)} {...props}>
+    <div
+      className={cn("flex justify-center items-center", className)}
+      {...props}
+    >
       <div
         className={cn(
-          "border-[#D8D2C8] border-t-[#5B0000] rounded-full animate-spin",
-          sizeStyles[size]
+          "border-border border-t-accent rounded-full animate-spin",
+          sizeStyles[size],
         )}
       />
     </div>

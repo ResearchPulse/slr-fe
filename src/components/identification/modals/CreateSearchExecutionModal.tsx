@@ -80,16 +80,22 @@ export default function CreateSearchExecutionModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Create Search Strategy" size="xl">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Create Search Strategy"
+      size="xl"
+    >
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
         <div className="flex gap-2 text-sm text-blue-800">
           <FiAlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
             <p className="font-medium">Best Practice</p>
             <p className="text-xs text-blue-700 mt-1">
-              Create your search strategy first, then import RIS files. This maintains a clear audit
-              trail and helps organize your systematic review.
+              Create your search strategy first, then import RIS files. This
+              maintains a clear audit trail and helps organize your systematic
+              review.
             </p>
           </div>
         </div>
@@ -114,34 +120,41 @@ export default function CreateSearchExecutionModal({
 
         {/* Search Query */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Search Query <span className="text-xs text-gray-500 font-normal">(optional)</span>
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Search Query{" "}
+            <span className="text-xs text-text-secondary font-normal">
+              (optional)
+            </span>
           </label>
           <textarea
             value={formData.searchQuery}
-            onChange={(e) => setFormData({ ...formData, searchQuery: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, searchQuery: e.target.value })
+            }
             placeholder='e.g., ("machine learning" OR "deep learning") AND "healthcare"'
             rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+            className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
             disabled={isSubmitting}
           />
-          <p className="text-xs text-gray-500 mt-1">
-            Enter the exact query used in the database. This field is optional but recommended for
-            documentation.
+          <p className="text-xs text-text-secondary mt-1">
+            Enter the exact query used in the database. This field is optional
+            but recommended for documentation.
           </p>
         </div>
 
         {/* Executed Date */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Executed Date <span className="text-red-500">*</span>
             </label>
             <input
               type="date"
               value={formData.executedAt}
-              onChange={(e) => setFormData({ ...formData, executedAt: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              onChange={(e) =>
+                setFormData({ ...formData, executedAt: e.target.value })
+              }
+              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               disabled={isSubmitting}
             />
           </div>
@@ -149,22 +162,32 @@ export default function CreateSearchExecutionModal({
 
         {/* Notes */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Notes <span className="text-xs text-gray-500 font-normal">(optional)</span>
+          <label className="block text-sm font-medium text-text-primary mb-2">
+            Notes{" "}
+            <span className="text-xs text-text-secondary font-normal">
+              (optional)
+            </span>
           </label>
           <textarea
             value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+            onChange={(e) =>
+              setFormData({ ...formData, notes: e.target.value })
+            }
             placeholder="Any additional information about this search strategy..."
             rows={3}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             disabled={isSubmitting}
           />
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button type="button" variant="secondary" onClick={handleClose} disabled={isSubmitting}>
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>

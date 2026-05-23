@@ -1,7 +1,13 @@
 import React from "react";
-import Card from "../../ui/Card";
 import type { Project } from "../../../types/project";
-import { FiSettings, FiEdit3, FiArrowLeft, FiGlobe, FiCalendar, FiActivity } from "react-icons/fi";
+import {
+  FiSettings,
+  FiEdit3,
+  FiArrowLeft,
+  FiGlobe,
+  FiCalendar,
+  FiActivity,
+} from "react-icons/fi";
 
 interface ProjectHeaderProps {
   project: Project;
@@ -10,7 +16,12 @@ interface ProjectHeaderProps {
   onSettings?: () => void;
 }
 
-const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onBack, onEdit, onSettings }) => {
+const ProjectHeader: React.FC<ProjectHeaderProps> = ({
+  project,
+  onBack,
+  onEdit,
+  onSettings,
+}) => {
   const getInitials = (name: string) => {
     return name
       .split(" ")
@@ -20,54 +31,54 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onBack, onEdit, 
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 mb-8">
       {/* Navigation */}
-      <div>
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-sm font-semibold text-slate-500 hover:text-slate-900 transition-colors group"
-        >
-          <FiArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          Back to Projects
-        </button>
-      </div>
+      <button
+        onClick={onBack}
+        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-medium text-text-secondary hover:text-text-primary transition-colors group"
+      >
+        <FiArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
+        Back to Projects
+      </button>
 
-      <Card className="p-0 overflow-hidden border-slate-200/60 shadow-sm hover:shadow-md transition-shadow duration-300">
+      {/* Project Card */}
+      <div className="border border-border bg-surface-white">
         {/* Top Section: Identity & Actions */}
-        <div className="p-6 lg:p-8 border-b border-slate-100 bg-white">
-          <span className="px-2.5 py-1 bg-slate-900 text-white text-[10px] font-black rounded uppercase tracking-[0.15em] shadow-sm">
-            {project.code}
-          </span>
-          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
-            <div className="space-y-4 flex-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">
-                  {project.title}
-                </h1>
-              </div>
+        <div className="p-6 border-b border-border">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div className="space-y-3 flex-1">
+              {/* Code badge */}
+              <span className="inline-block px-2 py-0.5 bg-text-primary text-bg-primary text-[10px] font-medium uppercase tracking-[0.15em]">
+                {project.code}
+              </span>
+
+              <h1 className="font-cormorant text-[32px] lg:text-[40px] font-normal text-text-primary leading-tight">
+                {project.title}
+              </h1>
 
               {project.description && (
-                <p className="text-slate-500 text-base lg:text-lg leading-relaxed max-w-2xl font-medium">
+                <p className="text-text-secondary text-sm leading-[1.7] max-w-2xl">
                   {project.description}
                 </p>
               )}
             </div>
 
+            {/* Action buttons */}
             <div className="flex items-center gap-2 self-start">
               <button
                 onClick={onEdit}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-slate-600 hover:bg-slate-50 rounded-xl transition-all border border-slate-200 hover:border-slate-300"
+                className="flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.15em] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-all border border-border"
               >
-                <FiEdit3 className="w-4 h-4" />
+                <FiEdit3 className="w-3.5 h-3.5" />
                 Edit
               </button>
               {onSettings && (
                 <button
                   title="Project settings"
                   onClick={onSettings}
-                  className="p-2.5 rounded-xl hover:bg-slate-50 transition-all border border-slate-200 hover:border-slate-300 text-slate-600 hover:text-slate-900 shadow-sm"
+                  className="p-2 hover:bg-bg-secondary transition-all border border-border text-text-secondary hover:text-text-primary"
                 >
-                  <FiSettings className="w-5 h-5" />
+                  <FiSettings className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -75,31 +86,37 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onBack, onEdit, 
         </div>
 
         {/* Bottom Section: Metadata Grid */}
-        <div className="bg-slate-50/50 p-6 lg:p-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="bg-bg-primary p-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Domain */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-slate-400">
-                <FiGlobe className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Domain</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <FiGlobe className="w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
+                  Domain
+                </span>
               </div>
-              <p className="text-sm font-bold text-slate-900">{project.domain}</p>
+              <p className="text-sm text-text-primary font-medium">
+                {project.domain}
+              </p>
             </div>
 
             {/* Status */}
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-slate-400">
-                <FiActivity className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Status</span>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <FiActivity className="w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
+                  Status
+                </span>
               </div>
               <div>
                 <span
-                  className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-black uppercase tracking-wider shadow-sm ring-1 ring-inset ${
+                  className={`inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border font-medium ${
                     project.statusText === "Active"
-                      ? "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+                      ? "border-accent text-accent"
                       : project.statusText === "Completed"
-                        ? "bg-blue-50 text-blue-700 ring-blue-600/20"
-                        : "bg-amber-50 text-amber-700 ring-amber-600/20"
+                        ? "border-[#2d5a2d] text-[#2d5a2d]"
+                        : "border-border text-text-secondary"
                   }`}
                 >
                   {project.statusText}
@@ -107,26 +124,28 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onBack, onEdit, 
               </div>
             </div>
 
-            {/* Created Date */}
+            {/* Created & Modified Date */}
             <div className="space-y-2">
-              <div className="flex items-center gap-2 text-slate-400">
-                <FiCalendar className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">Created at</span>
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <FiCalendar className="w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
+                  Created at
+                </span>
               </div>
-              <p className="text-sm font-bold text-slate-900">
+              <p className="text-sm text-text-primary">
                 {new Date(project.createdAt).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
                   year: "numeric",
                 })}
               </p>
-              <div className="flex items-center gap-2 text-slate-400">
-                <FiCalendar className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">
+              <div className="flex items-center gap-1.5 text-text-secondary">
+                <FiCalendar className="w-3.5 h-3.5" />
+                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
                   Modified at
                 </span>
               </div>
-              <p className="text-sm font-bold text-slate-900">
+              <p className="text-sm text-text-primary">
                 {new Date(project.modifiedAt).toLocaleDateString("en-US", {
                   month: "long",
                   day: "numeric",
@@ -136,31 +155,33 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({ project, onBack, onEdit, 
             </div>
 
             {/* Leader Info */}
-            <div className="space-y-2 lg:border-l lg:border-slate-200 lg:pl-8">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-3">
+            <div className="space-y-1.5 lg:border-l lg:border-border lg:pl-6">
+              <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-text-secondary block">
                 Project Leader
               </span>
               {project.leader ? (
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-indigo-200">
+                  <div className="h-8 w-8 bg-accent flex items-center justify-center text-bg-primary text-xs font-medium shrink-0">
                     {getInitials(project.leader.fullName)}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-slate-900 truncate">
+                    <p className="text-sm font-medium text-text-primary truncate">
                       {project.leader.fullName}
                     </p>
-                    <p className="text-xs font-medium text-slate-500 truncate">
+                    <p className="text-xs text-text-secondary truncate">
                       {project.leader.email}
                     </p>
                   </div>
                 </div>
               ) : (
-                <p className="text-sm font-bold text-slate-400 italic">No leader assigned</p>
+                <p className="text-sm text-[#A0998C] italic">
+                  No leader assigned
+                </p>
               )}
             </div>
           </div>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

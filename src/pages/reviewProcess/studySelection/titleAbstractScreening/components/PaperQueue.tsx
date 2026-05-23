@@ -10,9 +10,18 @@ import {
   FiList,
   FiShare2,
 } from "react-icons/fi";
-import type { ScreeningPaper, PaperFilters, PaginationInfo, StatusFilter } from "../types";
+import type {
+  ScreeningPaper,
+  PaperFilters,
+  PaginationInfo,
+  StatusFilter,
+} from "../types";
 import type { PaperSortBy } from "../../../../../types/studySelection";
-import { STATUS_CONFIG, SORT_OPTIONS, STATUS_FILTER_OPTIONS } from "../constants";
+import {
+  STATUS_CONFIG,
+  SORT_OPTIONS,
+  STATUS_FILTER_OPTIONS,
+} from "../constants";
 import { cn } from "../../../../../utils/cn";
 
 interface PaperQueueProps {
@@ -45,31 +54,36 @@ export default function PaperQueue({
   const selectedRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    selectedRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    selectedRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "nearest",
+    });
   }, [selectedPaperId]);
 
   const currentSort = SORT_OPTIONS.find((o) => o.value === filters.sortBy);
 
   return (
-    <div className="flex flex-col h-full bg-white border-r border-gray-200">
+    <div className="flex flex-col h-full bg-surface-white border-r border-border">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-100">
+      <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-900">Paper Queue</h2>
-          <span className="text-xs text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full font-medium">
+          <h2 className="text-sm font-semibold text-text-primary">
+            Paper Queue
+          </h2>
+          <span className="text-xs text-text-secondary bg-bg-secondary px-2 py-0.5 rounded-full font-medium">
             {pagination.totalCount}
           </span>
         </div>
 
         {/* Search */}
         <div className="relative mb-2">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-3.5 h-3.5" />
           <input
             type="text"
             placeholder="Search by title, author, year..."
             value={filters.search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
           />
         </div>
 
@@ -82,14 +96,19 @@ export default function PaperQueue({
                 setShowSortDropdown(!showSortDropdown);
                 setShowFilterDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
             >
-              <span className="text-gray-600 truncate">{currentSort?.label ?? "Sort"}</span>
-              <FiChevronDown className="w-3 h-3 text-gray-400 shrink-0" />
+              <span className="text-text-secondary truncate">
+                {currentSort?.label ?? "Sort"}
+              </span>
+              <FiChevronDown className="w-3 h-3 text-text-secondary shrink-0" />
             </button>
             {showSortDropdown && (
               <DropdownMenu
-                items={SORT_OPTIONS.map((o) => ({ label: o.label, value: o.value }))}
+                items={SORT_OPTIONS.map((o) => ({
+                  label: o.label,
+                  value: o.value,
+                }))}
                 onSelect={(val) => {
                   onSortChange(val);
                   setShowSortDropdown(false);
@@ -106,16 +125,20 @@ export default function PaperQueue({
                 setShowFilterDropdown(!showFilterDropdown);
                 setShowSortDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
             >
-              <span className="text-gray-600 truncate">
-                {STATUS_FILTER_OPTIONS.find((f) => f.value === filters.status)?.label ?? "Filter"}
+              <span className="text-text-secondary truncate">
+                {STATUS_FILTER_OPTIONS.find((f) => f.value === filters.status)
+                  ?.label ?? "Filter"}
               </span>
-              <FiChevronDown className="w-3 h-3 text-gray-400 shrink-0" />
+              <FiChevronDown className="w-3 h-3 text-text-secondary shrink-0" />
             </button>
             {showFilterDropdown && (
               <DropdownMenu
-                items={STATUS_FILTER_OPTIONS.map((o) => ({ label: o.label, value: o.value }))}
+                items={STATUS_FILTER_OPTIONS.map((o) => ({
+                  label: o.label,
+                  value: o.value,
+                }))}
                 onSelect={(val) => {
                   onStatusFilterChange(val as StatusFilter);
                   setShowFilterDropdown(false);
@@ -125,7 +148,6 @@ export default function PaperQueue({
             )}
           </div>
         </div>
-
       </div>
 
       {/* Paper List */}
@@ -133,9 +155,12 @@ export default function PaperQueue({
         {papers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <FiSearch className="w-8 h-8 text-gray-200 mb-3" />
-            <p className="text-sm font-medium text-gray-900">No papers found</p>
-            <p className="text-xs text-gray-400 mt-1 max-w-[180px] mx-auto">
-              Try adjusting your search or filters to find what you're looking for.
+            <p className="text-sm font-medium text-text-primary">
+              No papers found
+            </p>
+            <p className="text-xs text-text-secondary mt-1 max-w-[180px] mx-auto">
+              Try adjusting your search or filters to find what you're looking
+              for.
             </p>
             {(filters.search || filters.status !== "all") && (
               <button
@@ -162,42 +187,44 @@ export default function PaperQueue({
         )}
       </div>
 
-        <div className="px-4 py-2 border-t border-gray-100 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <button
-              disabled={!pagination.hasPreviousPage}
-              onClick={() => onPageChange(pagination.pageNumber - 1)}
-              className="p-1.5 rounded text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <FiChevronLeft className="w-4 h-4" />
-            </button>
-            <span className="text-xs text-gray-500">
-              Page {pagination.pageNumber} of {pagination.totalPages}
-            </span>
-            <button
-              disabled={!pagination.hasNextPage}
-              onClick={() => onPageChange(pagination.pageNumber + 1)}
-              className="p-1.5 rounded text-gray-500 hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-            >
-              <FiChevronRight className="w-4 h-4" />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Show</span>
-            <select
-              value={pagination.pageSize}
-              onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="text-[10px] bg-gray-50 border border-gray-200 rounded px-1.5 py-1 text-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-200 transition-all font-medium cursor-pointer"
-            >
-              {[10, 20, 50, 100].map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="px-4 py-2 border-t border-border flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button
+            disabled={!pagination.hasPreviousPage}
+            onClick={() => onPageChange(pagination.pageNumber - 1)}
+            className="p-1.5 rounded text-text-secondary hover:bg-bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <FiChevronLeft className="w-4 h-4" />
+          </button>
+          <span className="text-xs text-text-secondary">
+            Page {pagination.pageNumber} of {pagination.totalPages}
+          </span>
+          <button
+            disabled={!pagination.hasNextPage}
+            onClick={() => onPageChange(pagination.pageNumber + 1)}
+            className="p-1.5 rounded text-text-secondary hover:bg-bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            <FiChevronRight className="w-4 h-4" />
+          </button>
         </div>
+
+        <div className="flex items-center gap-1.5">
+          <span className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
+            Show
+          </span>
+          <select
+            value={pagination.pageSize}
+            onChange={(e) => onPageSizeChange(Number(e.target.value))}
+            className="text-[10px] bg-bg-primary border border-border rounded px-1.5 py-1 text-text-secondary focus:outline-none focus:ring-1 focus:ring-blue-200 transition-all font-medium cursor-pointer"
+          >
+            {[10, 20, 50, 100].map((size) => (
+              <option key={size} value={size}>
+                {size}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   );
 }
@@ -224,42 +251,48 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
           if (e.key === "Enter") onClick();
         }}
         className={cn(
-          "px-4 py-3 border-b border-gray-100 cursor-pointer transition-colors",
+          "px-4 py-3 border-b border-border cursor-pointer transition-colors",
           isSelected
             ? "bg-blue-50 border-l-2 border-l-blue-500"
-            : "hover:bg-gray-50 border-l-2 border-l-transparent",
+            : "hover:bg-bg-primary border-l-2 border-l-transparent",
         )}
       >
         {/* Status indicator + Title */}
         <div className="flex items-start gap-2">
           <StatusDot status={paper.screeningStatus} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-medium text-gray-900 leading-snug line-clamp-2">
+            <h3 className="text-sm font-medium text-text-primary leading-snug line-clamp-2">
               {paper.title}
             </h3>
-            <p className="text-xs text-gray-500 mt-1 truncate">
+            <p className="text-xs text-text-secondary mt-1 truncate">
               {paper.authors ?? "Unknown authors"}
             </p>
             <div className="flex items-center gap-2 mt-1.5">
               {paper.publicationYear && (
-                <span className="text-[10px] text-gray-400 font-medium">
+                <span className="text-[10px] text-text-secondary font-medium">
                   {paper.publicationYear}
                 </span>
               )}
-              {paper.source && <span className="text-[10px] text-gray-400">· {paper.source}</span>}
+              {paper.source && (
+                <span className="text-[10px] text-text-secondary">
+                  · {paper.source}
+                </span>
+              )}
               <div className="flex items-center gap-1.5 ml-auto">
-                {paper.referenceCount !== undefined && paper.referenceCount > 0 && (
-                  <span className="flex items-center gap-0.5 text-[9px] font-bold text-purple-500 bg-purple-50 px-1 rounded">
-                    <FiList className="w-2.5 h-2.5" />
-                    {paper.referenceCount}
-                  </span>
-                )}
-                {paper.citationCount !== undefined && paper.citationCount > 0 && (
-                  <span className="flex items-center gap-0.5 text-[9px] font-bold text-indigo-500 bg-indigo-50 px-1 rounded">
-                    <FiShare2 className="w-2.5 h-2.5" />
-                    {paper.citationCount}
-                  </span>
-                )}
+                {paper.referenceCount !== undefined &&
+                  paper.referenceCount > 0 && (
+                    <span className="flex items-center gap-0.5 text-[9px] font-bold text-accent bg-purple-50 px-1 rounded">
+                      <FiList className="w-2.5 h-2.5" />
+                      {paper.referenceCount}
+                    </span>
+                  )}
+                {paper.citationCount !== undefined &&
+                  paper.citationCount > 0 && (
+                    <span className="flex items-center gap-0.5 text-[9px] font-bold text-accent bg-bg-secondary px-1 rounded">
+                      <FiShare2 className="w-2.5 h-2.5" />
+                      {paper.citationCount}
+                    </span>
+                  )}
               </div>
             </div>
 
@@ -272,8 +305,8 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
                     className={cn(
                       "inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full",
                       d.decision === "included"
-                        ? "bg-green-50 text-green-600"
-                        : "bg-red-50 text-red-600",
+                        ? "bg-surface-white text-green-600"
+                        : "bg-surface-white text-red-600",
                     )}
                   >
                     {d.decision === "included" ? (
@@ -317,8 +350,13 @@ function StatusDot({ status }: { status: string }) {
 
   return (
     <span
-      className={cn("w-2 h-2 rounded-full mt-1.5 shrink-0", dotColors[status] ?? "bg-gray-400")}
-      title={STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.label ?? status}
+      className={cn(
+        "w-2 h-2 rounded-full mt-1.5 shrink-0",
+        dotColors[status] ?? "bg-gray-400",
+      )}
+      title={
+        STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.label ?? status
+      }
     />
   );
 }
@@ -349,13 +387,13 @@ function DropdownMenu<T>({
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-30 py-1"
+      className="absolute top-full left-0 right-0 mt-1 bg-surface-white border border-border rounded-[4px] shadow-none z-30 py-1"
     >
       {items.map((item, i) => (
         <button
           key={i}
           onClick={() => onSelect(item.value)}
-          className="w-full text-left px-3 py-1.5 text-xs text-gray-700 hover:bg-gray-50 transition-colors"
+          className="w-full text-left px-3 py-1.5 text-xs text-text-primary hover:bg-bg-primary transition-colors"
         >
           {item.label}
         </button>

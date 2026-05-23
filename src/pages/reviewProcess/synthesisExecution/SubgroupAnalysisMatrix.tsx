@@ -1,12 +1,19 @@
 import { useMemo, useState } from "react";
-import type { SynthesisThemeDto, SourceDataGroupDto, SourceDataValueDto } from "../../../types/synthesisExecution";
+import type {
+  SynthesisThemeDto,
+  SourceDataGroupDto,
+  SourceDataValueDto,
+} from "../../../types/synthesisExecution";
 
 interface SubgroupAnalysisMatrixProps {
   themes: SynthesisThemeDto[];
   sourceDataGroups: SourceDataGroupDto[];
 }
 
-export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: SubgroupAnalysisMatrixProps) {
+export default function SubgroupAnalysisMatrix({
+  themes,
+  sourceDataGroups,
+}: SubgroupAnalysisMatrixProps) {
   // Filter for categorical groups (heuristic: < 20 unique values)
   const categoricalGroups = useMemo(() => {
     return sourceDataGroups.filter((group) => {
@@ -15,7 +22,9 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
     });
   }, [sourceDataGroups]);
 
-  const [selectedGroupId, setSelectedGroupId] = useState<string>(categoricalGroups[0]?.fieldId ?? "");
+  const [selectedGroupId, setSelectedGroupId] = useState<string>(
+    categoricalGroups[0]?.fieldId ?? "",
+  );
 
   const selectedGroup = useMemo(
     () => categoricalGroups.find((g) => g.fieldId === selectedGroupId),
@@ -56,11 +65,18 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
     if (!selectedGroup) return [];
 
     return themes.map((theme) => {
-      const themeEvidencePapers = new Set(theme.evidences.map((e) => e.paperTitle));
+      const themeEvidencePapers = new Set(
+        theme.evidences.map((e) => e.paperTitle),
+      );
 
       const row = categories.map((category) => {
-        const categoryPapers = categoryPapersLookup.get(category.displayValue) || new Set();
-        const intersection = new Set(Array.from(categoryPapers).filter((paper) => themeEvidencePapers.has(paper)));
+        const categoryPapers =
+          categoryPapersLookup.get(category.displayValue) || new Set();
+        const intersection = new Set(
+          Array.from(categoryPapers).filter((paper) =>
+            themeEvidencePapers.has(paper),
+          ),
+        );
 
         return {
           count: intersection.size,
@@ -83,7 +99,7 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
   }, [matrixData]);
 
   const getIntensityColor = (count: number) => {
-    if (count === 0) return "bg-white";
+    if (count === 0) return "bg-surface-white";
     const intensity = (count / maxCount) * 100;
     if (intensity <= 25) return "bg-blue-100";
     if (intensity <= 50) return "bg-blue-300";
@@ -94,15 +110,19 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
   const getTextColor = (count: number) => {
     if (count === 0) return "text-gray-300";
     const intensity = (count / maxCount) * 100;
-    if (intensity <= 50) return "text-gray-900";
+    if (intensity <= 50) return "text-text-primary";
     return "text-white";
   };
 
   if (categoricalGroups.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-6 py-10 text-center">
-        <p className="text-sm font-medium text-gray-600">No categorical fields available.</p>
-        <p className="mt-1 text-sm text-gray-500">Select a workspace with categorical extracted data fields.</p>
+      <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+        <p className="text-sm font-medium text-text-secondary">
+          No categorical fields available.
+        </p>
+        <p className="mt-1 text-sm text-text-secondary">
+          Select a workspace with categorical extracted data fields.
+        </p>
       </div>
     );
   }
@@ -110,14 +130,17 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
   return (
     <div className="space-y-4">
       <div>
-        <label htmlFor="subgroup-field-select" className="block text-sm font-semibold text-gray-700 mb-2">
+        <label
+          htmlFor="subgroup-field-select"
+          className="block text-sm font-semibold text-text-primary mb-2"
+        >
           Analyze by Field
         </label>
         <select
           id="subgroup-field-select"
           value={selectedGroupId}
           onChange={(e) => setSelectedGroupId(e.target.value)}
-          className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-900 shadow-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="block w-full rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary shadow-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         >
           {categoricalGroups.map((group) => (
             <option key={group.fieldId} value={group.fieldId}>
@@ -129,22 +152,25 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
 
       {selectedGroup && (
         <>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-text-secondary">
             Exploring heterogeneity by cross-referencing Themes against{" "}
-            <span className="font-semibold text-gray-900">{selectedGroup.fieldName}</span>.
+            <span className="font-semibold text-text-primary">
+              {selectedGroup.fieldName}
+            </span>
+            .
           </p>
 
-          <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-[4px] border border-border bg-surface-white shadow-none">
             <table className="w-full text-sm">
               <thead>
-                <tr className="sticky top-0 z-20 border-b border-gray-200 bg-slate-50">
-                  <th className="sticky left-0 z-30 bg-white px-6 py-4 text-left font-semibold text-gray-900 border-r border-gray-200 w-48">
+                <tr className="sticky top-0 z-20 border-b border-border bg-bg-secondary">
+                  <th className="sticky left-0 z-30 bg-surface-white px-6 py-4 text-left font-semibold text-text-primary border-r border-border w-48">
                     Theme
                   </th>
                   {categories.map((category) => (
                     <th
                       key={category.extractedDataValueId}
-                      className="px-6 py-4 text-center font-semibold text-gray-900 whitespace-nowrap min-w-[120px]"
+                      className="px-6 py-4 text-center font-semibold text-text-primary whitespace-nowrap min-w-[120px]"
                     >
                       {category.displayValue}
                     </th>
@@ -153,16 +179,26 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
               </thead>
               <tbody>
                 {matrixData.map(({ theme, row }) => (
-                  <tr key={theme.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                    <td className="sticky left-0 z-10 bg-white px-6 py-4 font-semibold text-gray-900 border-r border-gray-200">
+                  <tr
+                    key={theme.id}
+                    className="border-b border-border hover:bg-bg-primary transition-colors"
+                  >
+                    <td className="sticky left-0 z-10 bg-surface-white px-6 py-4 font-semibold text-text-primary border-r border-border">
                       <div className="flex items-center gap-2">
-                        {theme.colorCode && <div className="h-3 w-3 rounded-full" style={{ backgroundColor: theme.colorCode }} />}
+                        {theme.colorCode && (
+                          <div
+                            className="h-3 w-3 rounded-full"
+                            style={{ backgroundColor: theme.colorCode }}
+                          />
+                        )}
                         <span className="line-clamp-2">{theme.name}</span>
                       </div>
                     </td>
                     {row.map((cell, idx) => (
                       <td key={idx} className="px-6 py-4 text-center">
-                        <div className={`inline-flex items-center justify-center h-10 w-16 rounded-md font-semibold transition-colors ${getIntensityColor(cell.count)} ${getTextColor(cell.count)}`}>
+                        <div
+                          className={`inline-flex items-center justify-center h-10 w-16 rounded-md font-semibold transition-colors ${getIntensityColor(cell.count)} ${getTextColor(cell.count)}`}
+                        >
                           {cell.count > 0 ? cell.count : "—"}
                         </div>
                       </td>
@@ -173,9 +209,9 @@ export default function SubgroupAnalysisMatrix({ themes, sourceDataGroups }: Sub
             </table>
           </div>
 
-          <div className="flex flex-wrap gap-6 text-xs text-gray-500 pt-2">
+          <div className="flex flex-wrap gap-6 text-xs text-text-secondary pt-2">
             <div className="flex items-center gap-2">
-              <div className="h-4 w-4 rounded border border-gray-300 bg-white" />
+              <div className="h-4 w-4 rounded border border-border bg-surface-white" />
               <span>0 papers</span>
             </div>
             <div className="flex items-center gap-2">

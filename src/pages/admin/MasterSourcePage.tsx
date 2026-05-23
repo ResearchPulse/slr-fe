@@ -1,21 +1,27 @@
 import React, { useState, useMemo } from "react";
-import { 
-  FiPlus, 
-  FiSearch, 
-  FiDatabase, 
-  FiEdit2, 
-  FiTrash2, 
-  FiToggleLeft, 
+import {
+  FiPlus,
+  FiSearch,
+  FiDatabase,
+  FiEdit2,
+  FiTrash2,
+  FiToggleLeft,
   FiToggleRight,
   FiExternalLink,
   FiFilter,
-  FiAlertCircle
+  FiAlertCircle,
 } from "react-icons/fi";
-import { useMasterSources, useMasterSourceActions } from "../../hooks/useMasterSources";
+import {
+  useMasterSources,
+  useMasterSourceActions,
+} from "../../hooks/useMasterSources";
 import Modal from "../../components/ui/Modal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import { useForm } from "react-hook-form";
-import type { CreateMasterSearchSourceRequest, MasterSearchSource } from "../../types/masterSource";
+import type {
+  CreateMasterSearchSourceRequest,
+  MasterSearchSource,
+} from "../../types/masterSource";
 import FormField from "../../components/ui/FormField";
 import Button from "../../components/ui/Button";
 import SectionLoading from "../../components/ui/SectionLoading";
@@ -25,17 +31,33 @@ const MasterSourcePage: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSource, setEditingSource] = useState<MasterSearchSource | null>(null);
+  const [editingSource, setEditingSource] = useState<MasterSearchSource | null>(
+    null,
+  );
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: sources, isLoading } = useMasterSources({
     sourceName: searchQuery || undefined,
-    isActive: statusFilter === "all" ? undefined : statusFilter === "active"
+    isActive: statusFilter === "all" ? undefined : statusFilter === "active",
   });
 
-  const { createSource, updateSource, toggleStatus, deleteSource, isCreating, isUpdating, isDeleting } = useMasterSourceActions();
+  const {
+    createSource,
+    updateSource,
+    toggleStatus,
+    deleteSource,
+    isCreating,
+    isUpdating,
+    isDeleting,
+  } = useMasterSourceActions();
 
-  const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm<CreateMasterSearchSourceRequest>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setValue,
+    formState: { errors },
+  } = useForm<CreateMasterSearchSourceRequest>();
 
   const handleOpenModal = (source?: MasterSearchSource) => {
     if (source) {
@@ -50,7 +72,7 @@ const MasterSourcePage: React.FC = () => {
         sourceName: "",
         baseUrl: "",
         isActive: true,
-        logoUrl: ""
+        logoUrl: "",
       });
     }
     setIsModalOpen(true);
@@ -78,12 +100,14 @@ const MasterSourcePage: React.FC = () => {
 
   const filteredSources = useMemo(() => {
     if (!sources) return [];
-    return sources.filter(s => {
-      const matchesSearch = s.sourceName.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                            s.baseUrl.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesStatus = statusFilter === "all" || 
-                            (statusFilter === "active" && s.isActive) || 
-                            (statusFilter === "inactive" && !s.isActive);
+    return sources.filter((s) => {
+      const matchesSearch =
+        s.sourceName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        s.baseUrl.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" && s.isActive) ||
+        (statusFilter === "inactive" && !s.isActive);
       return matchesSearch && matchesStatus;
     });
   }, [sources, searchQuery, statusFilter]);
@@ -93,12 +117,16 @@ const MasterSourcePage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Search Sources</h1>
-          <p className="text-slate-500 mt-1">Manage global bibliographic databases for SLR projects.</p>
+          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+            Search Sources
+          </h1>
+          <p className="text-slate-500 mt-1">
+            Manage global bibliographic databases for SLR projects.
+          </p>
         </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5"
+          className="flex items-center justify-center gap-2 bg-accent hover:bg-indigo-700 text-white px-5 py-2.5 rounded-md font-bold shadow-none shadow-indigo-200 transition-all transform hover:-translate-y-0.5"
         >
           <FiPlus className="w-5 h-5" />
           <span>Create New Source</span>
@@ -106,7 +134,7 @@ const MasterSourcePage: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-white p-4 rounded-3xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 items-center">
+      <div className="bg-surface-white p-4 rounded-md shadow-none border border-slate-100 flex flex-col md:flex-row gap-4 items-center">
         <div className="relative flex-1 w-full">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
           <input
@@ -114,11 +142,11 @@ const MasterSourcePage: React.FC = () => {
             placeholder="Search by name or URL..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-600 font-medium"
+            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-md focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-600 font-medium"
           />
         </div>
         <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100 min-w-[160px]">
+          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-md border border-slate-100 min-w-[160px]">
             <FiFilter className="text-slate-400" />
             <select
               value={statusFilter}
@@ -134,7 +162,7 @@ const MasterSourcePage: React.FC = () => {
       </div>
 
       {/* Data Table */}
-      <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+      <div className="bg-surface-white rounded-md shadow-none border border-slate-100 overflow-hidden">
         {isLoading ? (
           <div className="py-20">
             <SectionLoading type="admin" title="Loading sources..." />
@@ -145,24 +173,36 @@ const MasterSourcePage: React.FC = () => {
               <FiDatabase className="w-10 h-10 opacity-20" />
             </div>
             <p className="text-lg font-bold">No sources found</p>
-            <p className="text-sm">Try adjusting your filters or create a new one.</p>
+            <p className="text-sm">
+              Try adjusting your filters or create a new one.
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto no-scrollbar">
             <table className="w-full text-left">
               <thead>
                 <tr className="border-b border-slate-50">
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">Source Name</th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">Base URL</th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">Status</th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">Usage</th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-right">Actions</th>
+                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                    Source Name
+                  </th>
+                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                    Base URL
+                  </th>
+                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
+                    Status
+                  </th>
+                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
+                    Usage
+                  </th>
+                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-right">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
                 <AnimatePresence>
                   {filteredSources.map((source) => (
-                    <motion.tr 
+                    <motion.tr
                       key={source.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -171,30 +211,36 @@ const MasterSourcePage: React.FC = () => {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 font-bold">
+                          <div className="w-10 h-10 bg-bg-secondary rounded-[4px] flex items-center justify-center text-accent font-bold">
                             {source.sourceName.charAt(0).toUpperCase()}
                           </div>
-                          <span className="font-bold text-slate-700">{source.sourceName}</span>
+                          <span className="font-bold text-slate-700">
+                            {source.sourceName}
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <a 
-                          href={source.baseUrl} 
-                          target="_blank" 
+                        <a
+                          href={source.baseUrl}
+                          target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-500 hover:text-indigo-600 flex items-center gap-1.5 transition-colors group underline decoration-slate-200 underline-offset-4"
+                          className="text-slate-500 hover:text-accent flex items-center gap-1.5 transition-colors group underline decoration-slate-200 underline-offset-4"
                         >
-                          <span className="truncate max-w-[250px]">{source.baseUrl}</span>
+                          <span className="truncate max-w-[250px]">
+                            {source.baseUrl}
+                          </span>
                           <FiExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
                         </a>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex justify-center">
-                          <span className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
-                            source.isActive 
-                              ? "bg-emerald-50 text-emerald-600" 
-                              : "bg-slate-100 text-slate-500"
-                          }`}>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
+                              source.isActive
+                                ? "bg-emerald-50 text-emerald-600"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
                             {source.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
@@ -204,7 +250,9 @@ const MasterSourcePage: React.FC = () => {
                           <span className="text-lg font-black text-slate-700 leading-none">
                             {source.usageCount || 0}
                           </span>
-                          <span className="text-[10px] uppercase font-bold text-slate-400 mt-1">Projects</span>
+                          <span className="text-[10px] uppercase font-bold text-slate-400 mt-1">
+                            Projects
+                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
@@ -212,24 +260,28 @@ const MasterSourcePage: React.FC = () => {
                           <button
                             onClick={() => toggleStatus(source.id)}
                             title={source.isActive ? "Deactivate" : "Activate"}
-                            className={`p-2 rounded-xl transition-all ${
-                              source.isActive 
-                                ? "text-emerald-500 hover:bg-emerald-50" 
+                            className={`p-2 rounded-[4px] transition-all ${
+                              source.isActive
+                                ? "text-emerald-500 hover:bg-emerald-50"
                                 : "text-slate-400 hover:bg-slate-50"
                             }`}
                           >
-                            {source.isActive ? <FiToggleRight className="w-6 h-6" /> : <FiToggleLeft className="w-6 h-6" />}
+                            {source.isActive ? (
+                              <FiToggleRight className="w-6 h-6" />
+                            ) : (
+                              <FiToggleLeft className="w-6 h-6" />
+                            )}
                           </button>
                           <button
                             onClick={() => handleOpenModal(source)}
-                            className="p-2 text-indigo-500 hover:bg-indigo-50 rounded-xl transition-all"
+                            className="p-2 text-accent hover:bg-bg-secondary rounded-[4px] transition-all"
                             title="Edit"
                           >
                             <FiEdit2 className="w-5 h-5" />
                           </button>
                           <button
                             onClick={() => setDeleteId(source.id)}
-                            className="p-2 text-rose-500 hover:bg-rose-50 rounded-xl transition-all"
+                            className="p-2 text-rose-500 hover:bg-rose-50 rounded-[4px] transition-all"
                             title="Delete"
                           >
                             <FiTrash2 className="w-5 h-5" />
@@ -249,14 +301,17 @@ const MasterSourcePage: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingSource ? "Edit Search Source" : "Create New Search Source"}
+        title={
+          editingSource ? "Edit Search Source" : "Create New Search Source"
+        }
         size="md"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
-          <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100 flex gap-3">
-            <FiAlertCircle className="text-indigo-600 w-5 h-5 shrink-0 mt-0.5" />
+          <div className="p-4 bg-bg-secondary/50 rounded-md border border-indigo-100 flex gap-3">
+            <FiAlertCircle className="text-accent w-5 h-5 shrink-0 mt-0.5" />
             <p className="text-sm text-indigo-900 leading-relaxed font-medium">
-              These sources will be available globally for all users to select during the search identification phase.
+              These sources will be available globally for all users to select
+              during the search identification phase.
             </p>
           </div>
 
@@ -266,36 +321,39 @@ const MasterSourcePage: React.FC = () => {
             errorMessage={errors.sourceName?.message}
             {...register("sourceName", { required: "Source name is required" })}
             placeholder="e.g., Scopus, Web of Science"
-            className="rounded-2xl"
+            className="rounded-md"
           />
 
           <FormField
             id="baseUrl"
             label="Base URL"
             errorMessage={errors.baseUrl?.message}
-            {...register("baseUrl", { 
+            {...register("baseUrl", {
               required: "Base URL is required",
               pattern: {
-                value: /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/,
-                message: "Enter a valid URL"
-              }
+                value:
+                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/,
+                message: "Enter a valid URL",
+              },
             })}
             placeholder="e.g., https://www.scopus.com"
-            className="rounded-2xl"
+            className="rounded-md"
           />
 
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-md border border-slate-100">
             <div>
               <p className="font-bold text-slate-700">Initial Status</p>
-              <p className="text-xs text-slate-500">Enable this source immediately</p>
+              <p className="text-xs text-slate-500">
+                Enable this source immediately
+              </p>
             </div>
             <label className="relative inline-flex items-center cursor-pointer">
-              <input 
-                type="checkbox" 
+              <input
+                type="checkbox"
                 {...register("isActive")}
-                className="sr-only peer" 
+                className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-600"></div>
+              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
             </label>
           </div>
 
@@ -304,7 +362,7 @@ const MasterSourcePage: React.FC = () => {
               type="button"
               variant="outline"
               onClick={() => setIsModalOpen(false)}
-              className="flex-1 rounded-2xl font-bold py-3"
+              className="flex-1 rounded-md font-bold py-3"
             >
               Cancel
             </Button>
@@ -312,7 +370,7 @@ const MasterSourcePage: React.FC = () => {
               type="submit"
               variant="primary"
               isLoading={isCreating || isUpdating}
-              className="flex-2 rounded-2xl font-bold py-3 bg-indigo-600 border-none! shadow-lg shadow-indigo-100"
+              className="flex-2 rounded-md font-bold py-3 bg-accent border-none! shadow-none shadow-indigo-100"
             >
               {editingSource ? "Save Changes" : "Create Source"}
             </Button>

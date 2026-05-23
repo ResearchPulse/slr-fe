@@ -41,38 +41,47 @@ interface SummaryCardProps {
   icon: React.ReactNode;
 }
 
-const summaryToneClasses: Record<SummaryCardProps["tone"], { container: string; icon: string }> = {
+const summaryToneClasses: Record<
+  SummaryCardProps["tone"],
+  { container: string; icon: string }
+> = {
   indigo: {
-    container: "border-indigo-100 bg-indigo-50",
-    icon: "bg-linear-to-br from-indigo-500 to-blue-600",
+    container: "border-border bg-surface-white shadow-sm",
+    icon: "bg-bg-secondary text-accent border border-border",
   },
   emerald: {
-    container: "border-emerald-100 bg-emerald-50",
-    icon: "bg-linear-to-br from-emerald-500 to-teal-600",
+    container: "border-border bg-surface-white shadow-sm",
+    icon: "bg-bg-secondary text-[#2d5a2d] border border-border",
   },
   rose: {
-    container: "border-rose-100 bg-rose-50",
-    icon: "bg-linear-to-br from-rose-500 to-pink-600",
+    container: "border-border bg-surface-white shadow-sm",
+    icon: "bg-bg-secondary text-[#7a0000] border border-border",
   },
   amber: {
-    container: "border-amber-100 bg-amber-50",
-    icon: "bg-linear-to-br from-amber-500 to-orange-600",
+    container: "border-border bg-surface-white shadow-sm",
+    icon: "bg-bg-secondary text-text-secondary border border-border",
   },
 };
 
-const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, helperText, tone, icon }) => {
+const SummaryCard: React.FC<SummaryCardProps> = ({
+  label,
+  value,
+  helperText,
+  tone,
+  icon,
+}) => {
   const classes = summaryToneClasses[tone];
 
   return (
     <article
       className={cn(
-        "rounded-3xl border bg-white p-5 shadow-sm transition-all hover:shadow-lg",
+        "rounded-md border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
         classes.container,
       )}
     >
       <div
         className={cn(
-          "w-11 h-11 rounded-2xl flex items-center justify-center text-white mb-4",
+          "w-11 h-11 rounded-md flex items-center justify-center mb-4",
           classes.icon,
         )}
       >
@@ -81,7 +90,9 @@ const SummaryCard: React.FC<SummaryCardProps> = ({ label, value, helperText, ton
       <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
         {label}
       </div>
-      <div className="mt-2 text-3xl font-black tracking-tight text-slate-900">{value}</div>
+      <div className="mt-2 text-3xl font-black tracking-tight text-slate-900">
+        {value}
+      </div>
       <p className="mt-2 text-sm font-medium text-slate-500">{helperText}</p>
     </article>
   );
@@ -102,7 +113,9 @@ const AuditLogPage: React.FC = () => {
   const [sortField, setSortField] = useState<AuditLogSortField>("timestamp");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(null);
+  const [selectedEntry, setSelectedEntry] = useState<AuditLogEntry | null>(
+    null,
+  );
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const queryParams = useMemo(() => {
@@ -118,7 +131,8 @@ const AuditLogPage: React.FC = () => {
     return params;
   }, [currentPage, filters]);
 
-  const { data: auditLogsResponse, isLoading: isLoadingLogs } = useAdminAuditLogs(queryParams);
+  const { data: auditLogsResponse, isLoading: isLoadingLogs } =
+    useAdminAuditLogs(queryParams);
 
   const isPageLoading = isLoading || isLoadingLogs;
 
@@ -133,8 +147,8 @@ const AuditLogPage: React.FC = () => {
   );
 
   const users = useMemo(() => {
-    return Array.from(new Set(logs.map((entry) => entry.user))).sort((left, right) =>
-      left.localeCompare(right),
+    return Array.from(new Set(logs.map((entry) => entry.user))).sort(
+      (left, right) => left.localeCompare(right),
     );
   }, [logs]);
 
@@ -150,10 +164,12 @@ const AuditLogPage: React.FC = () => {
 
   const totalCount = auditLogsResponse?.data?.totalCount ?? sortedLogs.length;
   const totalPages =
-    auditLogsResponse?.data?.totalPages ?? Math.max(1, Math.ceil(totalCount / AUDIT_LOG_PAGE_SIZE));
+    auditLogsResponse?.data?.totalPages ??
+    Math.max(1, Math.ceil(totalCount / AUDIT_LOG_PAGE_SIZE));
 
   const activePage = Math.min(currentPage, totalPages);
-  const pageStart = totalCount === 0 ? 0 : (activePage - 1) * AUDIT_LOG_PAGE_SIZE + 1;
+  const pageStart =
+    totalCount === 0 ? 0 : (activePage - 1) * AUDIT_LOG_PAGE_SIZE + 1;
   const pageEnd = Math.min(activePage * AUDIT_LOG_PAGE_SIZE, totalCount);
 
   const pageLogs = useMemo(() => {
@@ -176,7 +192,10 @@ const AuditLogPage: React.FC = () => {
     [filteredLogs],
   );
 
-  const handleFilterUpdate = (key: keyof AuditLogFiltersState, value: string) => {
+  const handleFilterUpdate = (
+    key: keyof AuditLogFiltersState,
+    value: string,
+  ) => {
     setFilters((current) => ({ ...current, [key]: value }));
     setCurrentPage(1);
   };
@@ -211,8 +230,15 @@ const AuditLogPage: React.FC = () => {
       throw new Error("No audit logs match the selected export range.");
     }
 
-    const { content, mimeType } = buildAuditLogExportContent(exportLogs, request.format);
-    const fileName = buildAuditLogFileName(request.format, request.startDate, request.endDate);
+    const { content, mimeType } = buildAuditLogExportContent(
+      exportLogs,
+      request.format,
+    );
+    const fileName = buildAuditLogFileName(
+      request.format,
+      request.startDate,
+      request.endDate,
+    );
 
     downloadFile(content, fileName, mimeType);
 
@@ -229,7 +255,9 @@ const AuditLogPage: React.FC = () => {
       <div className="flex h-screen items-center justify-center bg-slate-50">
         <div className="flex flex-col items-center gap-4">
           <FiRefreshCw className="h-8 w-8 animate-spin text-slate-400" />
-          <p className="text-sm font-medium text-slate-500">Loading audit history...</p>
+          <p className="text-sm font-medium text-slate-500">
+            Loading audit history...
+          </p>
         </div>
       </div>
     );
@@ -239,31 +267,35 @@ const AuditLogPage: React.FC = () => {
     <div className="max-w-[1600px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
         <div className="space-y-3 max-w-3xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase tracking-[0.22em]">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-bg-secondary text-accent text-[10px] font-black uppercase tracking-[0.22em]">
             <FiFilter className="w-3 h-3" />
             Admin Audit Console
           </div>
           <div className="space-y-2">
-            <h3 className="text-3xl font-black text-slate-900 tracking-tight">Audit Logs</h3>
-            <p className="text-slate-500 text-sm sm:text-base font-medium max-w-2xl">
-              Review system activity, inspect event metadata, and export compliance-ready audit
-              trails from mock frontend data.
+            <h3 className="text-3xl font-serif font-bold text-text-primary tracking-tight">
+              Audit Logs
+            </h3>
+            <p className="text-text-secondary text-sm sm:text-base font-medium max-w-2xl">
+              Review system activity, inspect event metadata, and export
+              compliance-ready audit trails from mock frontend data.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm">
+          <div className="rounded-md border border-border bg-surface-white px-4 py-3 shadow-sm">
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
               Current range
             </div>
-            <div className="text-sm font-bold text-slate-700 mt-1">{activeRangeLabel}</div>
+            <div className="text-sm font-bold text-text-primary mt-1">
+              {activeRangeLabel}
+            </div>
           </div>
 
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl bg-indigo-600 text-white text-sm font-black hover:bg-indigo-700 hover:shadow-xl hover:shadow-indigo-200 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-surface-white text-sm font-bold hover:bg-[#7a0000] hover:shadow-sm transition-all active:scale-95"
           >
             <FiDownload className="w-4 h-4" />
             Export Logs
@@ -272,7 +304,7 @@ const AuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-slate-600 text-sm font-bold hover:bg-slate-50 hover:text-indigo-600 transition-all"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-md bg-surface-white border border-border text-text-primary text-sm font-bold hover:bg-bg-secondary hover:text-accent transition-all"
           >
             <FiRefreshCw className="w-4 h-4" />
             Clear Filters
@@ -321,7 +353,9 @@ const AuditLogPage: React.FC = () => {
         endDate={filters.endDate}
         onSearchTermChange={(value) => handleFilterUpdate("searchTerm", value)}
         onSelectedUserChange={(value) => handleFilterUpdate("user", value)}
-        onSelectedActionTypeChange={(value) => handleFilterUpdate("actionType", value)}
+        onSelectedActionTypeChange={(value) =>
+          handleFilterUpdate("actionType", value)
+        }
         onSelectedStatusChange={(value) => handleFilterUpdate("status", value)}
         onStartDateChange={(value) => handleFilterUpdate("startDate", value)}
         onEndDateChange={(value) => handleFilterUpdate("endDate", value)}
@@ -343,7 +377,10 @@ const AuditLogPage: React.FC = () => {
         onRowClick={setSelectedEntry}
       />
 
-      <AuditLogDetailModal entry={selectedEntry} onClose={() => setSelectedEntry(null)} />
+      <AuditLogDetailModal
+        entry={selectedEntry}
+        onClose={() => setSelectedEntry(null)}
+      />
 
       <AuditLogExportDialog
         isOpen={isExportOpen}

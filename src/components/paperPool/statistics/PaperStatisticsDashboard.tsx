@@ -1,6 +1,11 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { FiFileText, FiCheckCircle, FiAlertTriangle, FiActivity } from "react-icons/fi";
+import {
+  FiFileText,
+  FiCheckCircle,
+  FiAlertTriangle,
+  FiActivity,
+} from "react-icons/fi";
 
 import StatCard from "./StatCard";
 import ChartCard from "./ChartCard";
@@ -40,22 +45,26 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
 
   const { data: pubTypes, isLoading: isLoadingPubTypes } = useQuery({
     queryKey: ["paper-statistics", projectId, "publication-types", filters],
-    queryFn: () => paperStatisticsService.getPublicationTypes(projectId, filters),
+    queryFn: () =>
+      paperStatisticsService.getPublicationTypes(projectId, filters),
   });
 
   const { data: journals, isLoading: isLoadingJournals } = useQuery({
     queryKey: ["paper-statistics", projectId, "top-journals", filters],
-    queryFn: () => paperStatisticsService.getTopJournals(projectId, filters, 10),
+    queryFn: () =>
+      paperStatisticsService.getTopJournals(projectId, filters, 10),
   });
 
   const { data: conferences, isLoading: isLoadingConferences } = useQuery({
     queryKey: ["paper-statistics", projectId, "top-conferences", filters],
-    queryFn: () => paperStatisticsService.getTopConferences(projectId, filters, 10),
+    queryFn: () =>
+      paperStatisticsService.getTopConferences(projectId, filters, 10),
   });
 
   const { data: publishers, isLoading: isLoadingPublishers } = useQuery({
     queryKey: ["paper-statistics", projectId, "top-publishers", filters],
-    queryFn: () => paperStatisticsService.getTopPublishers(projectId, filters, 10),
+    queryFn: () =>
+      paperStatisticsService.getTopPublishers(projectId, filters, 10),
   });
 
   const { data: languages, isLoading: isLoadingLanguages } = useQuery({
@@ -63,14 +72,18 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
     queryFn: () => paperStatisticsService.getLanguages(projectId, filters),
   });
 
-  const { data: fulltextStatus, isLoading: isLoadingFulltextStatus } = useQuery({
-    queryKey: ["paper-statistics", projectId, "fulltext-status", filters],
-    queryFn: () => paperStatisticsService.getFulltextStatus(projectId, filters),
-  });
+  const { data: fulltextStatus, isLoading: isLoadingFulltextStatus } = useQuery(
+    {
+      queryKey: ["paper-statistics", projectId, "fulltext-status", filters],
+      queryFn: () =>
+        paperStatisticsService.getFulltextStatus(projectId, filters),
+    },
+  );
 
   const { data: keywords, isLoading: isLoadingKeywords } = useQuery({
     queryKey: ["paper-statistics", projectId, "top-keywords", filters],
-    queryFn: () => paperStatisticsService.getTopKeywords(projectId, filters, 20),
+    queryFn: () =>
+      paperStatisticsService.getTopKeywords(projectId, filters, 20),
   });
 
   const { data: dataQuality, isLoading: isLoadingDataQuality } = useQuery({
@@ -79,7 +92,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-slate-50/30 p-2 rounded-[2.5rem]">
+    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[2.5rem]">
       {/* Filters Area */}
       <FilterPanel
         filters={filters}
@@ -152,7 +165,11 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingPubTypes}
             isEmpty={!pubTypes?.length}
           >
-            <PieChartComponent data={pubTypes ?? []} nameKey="label" valueKey="count" />
+            <PieChartComponent
+              data={pubTypes ?? []}
+              nameKey="label"
+              valueKey="count"
+            />
           </ChartCard>
         </div>
 
@@ -163,7 +180,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingJournals}
             isEmpty={!journals?.length}
           >
-            <BarChartComponent data={journals ?? []} xKey="count" yKey="label" horizontal />
+            <BarChartComponent
+              data={journals ?? []}
+              xKey="count"
+              yKey="label"
+              horizontal
+            />
           </ChartCard>
         </div>
 
@@ -174,7 +196,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingConferences}
             isEmpty={!conferences?.length}
           >
-            <BarChartComponent data={conferences ?? []} xKey="count" yKey="label" horizontal />
+            <BarChartComponent
+              data={conferences ?? []}
+              xKey="count"
+              yKey="label"
+              horizontal
+            />
           </ChartCard>
         </div>
 
@@ -185,7 +212,11 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingLanguages}
             isEmpty={!languages?.length}
           >
-            <PieChartComponent data={languages ?? []} nameKey="label" valueKey="count" />
+            <PieChartComponent
+              data={languages ?? []}
+              nameKey="label"
+              valueKey="count"
+            />
           </ChartCard>
         </div>
 
@@ -196,7 +227,11 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingFulltextStatus}
             isEmpty={!fulltextStatus?.length}
           >
-            <PieChartComponent data={fulltextStatus ?? []} nameKey="label" valueKey="count" />
+            <PieChartComponent
+              data={fulltextStatus ?? []}
+              nameKey="label"
+              valueKey="count"
+            />
           </ChartCard>
         </div>
 
@@ -207,7 +242,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingKeywords}
             isEmpty={!keywords?.length}
           >
-            <BarChartComponent data={keywords ?? []} xKey="count" yKey="label" horizontal />
+            <BarChartComponent
+              data={keywords ?? []}
+              xKey="count"
+              yKey="label"
+              horizontal
+            />
           </ChartCard>
         </div>
 
@@ -249,7 +289,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
             loading={isLoadingPublishers}
             isEmpty={!publishers?.length}
           >
-            <BarChartComponent data={publishers ?? []} xKey="count" yKey="label" horizontal />
+            <BarChartComponent
+              data={publishers ?? []}
+              xKey="count"
+              yKey="label"
+              horizontal
+            />
           </ChartCard>
         </div>
       </div>
@@ -257,15 +302,18 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   );
 };
 
-const QualityIssue: React.FC<{ label: string; count: number; color: string }> = ({
-  label,
-  count,
-  color,
-}) => (
-  <div className="flex items-center justify-between p-5 bg-slate-50/50 rounded-2xl border border-slate-100 hover:bg-slate-50 transition-colors">
+const QualityIssue: React.FC<{
+  label: string;
+  count: number;
+  color: string;
+}> = ({ label, count, color }) => (
+  <div className="flex items-center justify-between p-5 bg-bg-secondary/50 rounded-[4px] border border-border hover:bg-bg-secondary transition-colors">
     <div className="flex items-center gap-4">
-      <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
-      <span className="font-bold text-slate-500 uppercase tracking-[0.1em] text-[10px]">
+      <div
+        className="w-2.5 h-2.5 rounded-full shadow-none"
+        style={{ backgroundColor: color }}
+      />
+      <span className="font-bold text-text-secondary uppercase tracking-[0.1em] text-[10px]">
         {label}
       </span>
     </div>

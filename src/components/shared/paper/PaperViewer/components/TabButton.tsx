@@ -9,15 +9,21 @@ interface TabButtonProps {
   count?: number;
 }
 
-export const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, label, count }) => {
+export const TabButton: React.FC<TabButtonProps> = ({
+  active,
+  onClick,
+  icon,
+  label,
+  count,
+}) => {
   return (
     <button
       onClick={onClick}
       className={cn(
-        "flex-1 flex items-center justify-center gap-2 px-4 py-3 text-[11px] font-black uppercase tracking-widest transition-all rounded-xl",
+        "flex-1 flex items-center justify-center gap-2 px-4 py-3 text-[11px] font-black uppercase tracking-widest transition-all rounded-[4px]",
         active
-          ? "bg-blue-600 text-white shadow-md shadow-blue-900/20"
-          : "text-slate-500 hover:text-slate-900 hover:bg-slate-50",
+          ? "bg-blue-600 text-white shadow-none shadow-blue-900/20"
+          : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
       )}
     >
       {icon}
@@ -25,8 +31,10 @@ export const TabButton: React.FC<TabButtonProps> = ({ active, onClick, icon, lab
       {count !== undefined && (
         <span
           className={cn(
-            "px-1.5 py-0.5 rounded-lg text-[9px] font-black",
-            active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
+            "px-1.5 py-0.5 rounded-[4px] text-[9px] font-black",
+            active
+              ? "bg-surface-white/20 text-white"
+              : "bg-bg-secondary text-text-secondary",
           )}
         >
           {count}

@@ -3,7 +3,10 @@ import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ChecklistEditor from "../../components/checklist/ChecklistEditor";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import { checklistApi, downloadChecklistReport } from "../../services/checklistService";
+import {
+  checklistApi,
+  downloadChecklistReport,
+} from "../../services/checklistService";
 import {
   SECTION_ORDER,
   type ChecklistItemResponse,
@@ -44,7 +47,9 @@ const isResponseEligibleLeaf = ({
   return canRespond && !hasChildren;
 };
 
-const mapTemplateSampleAnswers = (template?: ChecklistTemplateDetailDto | null) => {
+const mapTemplateSampleAnswers = (
+  template?: ChecklistTemplateDetailDto | null,
+) => {
   const sampleAnswerById = new Map<string, string | null>();
 
   template?.items.forEach((item: ChecklistItemTemplateDto) => {
@@ -81,12 +86,22 @@ const mapChecklistResponseItem = (
   completionPercentage,
   pdfCoordinates: item.pdfCoordinates ?? null,
   children: item.children.map((child) =>
-    mapChecklistResponseItem(child, reviewChecklistId, sampleAnswers, completionPercentage),
+    mapChecklistResponseItem(
+      child,
+      reviewChecklistId,
+      sampleAnswers,
+      completionPercentage,
+    ),
   ),
 });
 
-const flattenChecklistTree = (items: ChecklistItemResponse[]): ChecklistItemResponse[] => {
-  return items.flatMap((item) => [item, ...flattenChecklistTree(item.children ?? [])]);
+const flattenChecklistTree = (
+  items: ChecklistItemResponse[],
+): ChecklistItemResponse[] => {
+  return items.flatMap((item) => [
+    item,
+    ...flattenChecklistTree(item.children ?? []),
+  ]);
 };
 
 const mapChecklist = (
@@ -118,14 +133,18 @@ const mapChecklist = (
       ),
     }));
 
-  const flatResponses = flattenChecklistTree(mappedSections.flatMap((section) => section.items));
+  const flatResponses = flattenChecklistTree(
+    mappedSections.flatMap((section) => section.items),
+  );
   const eligibleItems = flatResponses.filter((item) =>
     isResponseEligibleLeaf({
       canRespond: Boolean(item.canRespond),
       hasChildren: Boolean(item.hasChildren),
     }),
   );
-  const completedEligibleItems = eligibleItems.filter((item) => item.isCompleted);
+  const completedEligibleItems = eligibleItems.filter(
+    (item) => item.isCompleted,
+  );
 
   return {
     id: checklist.reviewChecklistId,
@@ -162,7 +181,8 @@ export default function ChecklistEditorPage() {
       try {
         return await checklistApi.getChecklistById(activeChecklistId);
       } catch (error) {
-        const status = (error as { response?: { status?: number } }).response?.status;
+        const status = (error as { response?: { status?: number } }).response
+          ?.status;
         if (status === 404) return null;
         throw error;
       }
@@ -186,17 +206,26 @@ export default function ChecklistEditorPage() {
   }, [checklistQuery.data, templateQuery.data]);
 
   const saveItemMutation = useMutation({
-    mutationFn: async (payload: { itemId: string; update: UpdateChecklistItemDto }) => {
+    mutationFn: async (payload: {
+      itemId: string;
+      update: UpdateChecklistItemDto;
+    }) => {
       if (!activeChecklistId) {
         throw new Error("Missing checklist id");
       }
 
-      return checklistApi.updateChecklistItem(activeChecklistId, payload.itemId, payload.update);
+      return checklistApi.updateChecklistItem(
+        activeChecklistId,
+        payload.itemId,
+        payload.update,
+      );
     },
     onError: (error) => {
       toastError(
         "Save failed",
-        error instanceof Error ? error.message : "Unable to save checklist item",
+        error instanceof Error
+          ? error.message
+          : "Unable to save checklist item",
       );
     },
   });
@@ -223,7 +252,10 @@ export default function ChecklistEditorPage() {
         return false;
       }
 
-      return isResponseEligibleLeaf({ canRespond: item.canRespond, hasChildren: item.hasChildren });
+      return isResponseEligibleLeaf({
+        canRespond: item.canRespond,
+        hasChildren: item.hasChildren,
+      });
     });
 
     if (eligibleChanges.length === 0) {
@@ -234,7 +266,8 @@ export default function ChecklistEditorPage() {
       eligibleChanges.map((change) => {
         const item = itemByTemplateId.get(change.itemTemplateId);
         const isReportToggleOnly =
-          item?.hasLocationField === false && item?.isSectionHeaderOnly === false;
+          item?.hasLocationField === false &&
+          item?.isSectionHeaderOnly === false;
 
         const update: UpdateChecklistItemDto = isReportToggleOnly
           ? {
@@ -251,11 +284,16 @@ export default function ChecklistEditorPage() {
       }),
     );
 
-    await queryClient.invalidateQueries({ queryKey: ["review-checklist", activeChecklistId] });
+    await queryClient.invalidateQueries({
+      queryKey: ["review-checklist", activeChecklistId],
+    });
 
     const now = Date.now();
     if (now - lastSaveToastAtRef.current > 15000) {
-      toastSuccess("Checklist saved", "Your checklist responses have been synchronized.");
+      toastSuccess(
+        "Checklist saved",
+        "Your checklist responses have been synchronized.",
+      );
       lastSaveToastAtRef.current = now;
     }
   };
@@ -272,7 +310,10 @@ export default function ChecklistEditorPage() {
       downloadChecklistReport(blob, activeChecklistId);
     },
     onSuccess: () => {
-      toastSuccess("Report generated", "The checklist report download has started.");
+      toastSuccess(
+        "Report generated",
+        "The checklist report download has started.",
+      );
     },
     onError: (error) => {
       toastError(
@@ -282,9 +323,12 @@ export default function ChecklistEditorPage() {
     },
   });
 
-  if (checklistQuery.isLoading || (checklistQuery.data && templateQuery.isLoading)) {
+  if (
+    checklistQuery.isLoading ||
+    (checklistQuery.data && templateQuery.isLoading)
+  ) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="flex items-center justify-center min-h-screen bg-surface-white">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -292,8 +336,8 @@ export default function ChecklistEditorPage() {
 
   if (!checklist) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-4">
-        <p className="text-gray-600">Checklist not found</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-surface-white gap-4">
+        <p className="text-text-secondary">Checklist not found</p>
       </div>
     );
   }
@@ -305,7 +349,9 @@ export default function ChecklistEditorPage() {
       onSave={handleSave}
       onGenerateReport={(format) => reportMutation.mutateAsync(format)}
       onAutoFillCompleted={() => {
-        queryClient.invalidateQueries({ queryKey: ["review-checklist", activeChecklistId] });
+        queryClient.invalidateQueries({
+          queryKey: ["review-checklist", activeChecklistId],
+        });
       }}
     />
   );

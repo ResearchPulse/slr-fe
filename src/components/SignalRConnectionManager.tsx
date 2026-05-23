@@ -10,14 +10,18 @@ import { useSignalR } from "../hooks/useSignalR";
  * This component handles the lifecycle of the SignalR service.
  */
 const SignalRConnectionManager: React.FC = () => {
-  const { isAuthenticated, accessToken } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated, accessToken } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   // Initialize the hook to track connection state
   useSignalR();
 
   useEffect(() => {
     if (isAuthenticated && accessToken) {
-      console.log("[SignalRManager] Starting connection as user is authenticated...");
+      console.log(
+        "[SignalRManager] Starting connection as user is authenticated...",
+      );
       signalRService.start(accessToken).catch((err) => {
         console.error("[SignalRManager] Failed to start connection:", err);
       });

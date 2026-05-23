@@ -1,5 +1,12 @@
 import React, { memo, useMemo, useCallback, useState } from "react";
-import { FiCopy, FiExternalLink, FiTag, FiDatabase, FiCalendar, FiUser } from "react-icons/fi";
+import {
+  FiCopy,
+  FiExternalLink,
+  FiTag,
+  FiDatabase,
+  FiCalendar,
+  FiUser,
+} from "react-icons/fi";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 
 // Import styles
@@ -27,7 +34,11 @@ interface PaperDetailsViewProps {
   /** Drawer close handler (only used when mode="drawer") */
   onClose?: () => void;
   /** Optional callback when a PDF is uploaded */
-  onUploadPdf?: (paperId: string, file: File, options: Record<string, unknown>) => Promise<void>;
+  onUploadPdf?: (
+    paperId: string,
+    file: File,
+    options: Record<string, unknown>,
+  ) => Promise<void>;
   /** Optional loading state for PDF upload */
   isUploadingPdf?: boolean;
   /** Custom z-index class for the drawer mode */
@@ -103,7 +114,7 @@ const PaperKeywords = memo(({ keywords }: { keywords?: string | null }) => {
         {tags.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100"
+            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-bg-secondary text-indigo-700 border border-indigo-100"
           >
             {tag}
           </span>
@@ -228,7 +239,11 @@ const PaperDetailsContent = memo(
   }: {
     paper: PaperResponse | null;
     loading?: boolean;
-    onUploadPdf?: (paperId: string, file: File, options: Record<string, unknown>) => Promise<void>;
+    onUploadPdf?: (
+      paperId: string,
+      file: File,
+      options: Record<string, unknown>,
+    ) => Promise<void>;
     isUploadingPdf?: boolean;
   }) => {
     const [previewPdfUrl, setPreviewPdfUrl] = useState<string | null>(null);
@@ -334,7 +349,7 @@ const PaperDetailsView: React.FC<PaperDetailsViewProps> = ({
   return (
     <Drawer
       isOpen={isOpen}
-      onClose={onClose || (() => { })}
+      onClose={onClose || (() => {})}
       title={
         <div className="flex items-center gap-2">
           <FiDatabase className="w-5 h-5 text-blue-600" />

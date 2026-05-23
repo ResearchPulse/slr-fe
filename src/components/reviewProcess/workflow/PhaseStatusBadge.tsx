@@ -11,7 +11,7 @@ const STATUS_CONFIG: Record<
 > = {
   Completed: {
     label: "Completed",
-    classes: "bg-green-100 text-green-700 border-green-200",
+    classes: "bg-green-100 text-green-700 border-border",
     icon: <FiCheck className="w-3 h-3" />,
   },
   InProgress: {
@@ -21,12 +21,12 @@ const STATUS_CONFIG: Record<
   },
   NotStarted: {
     label: "Not Started",
-    classes: "bg-gray-100 text-gray-600 border-gray-200",
+    classes: "bg-bg-secondary text-text-secondary border-border",
     icon: <FiClock className="w-3 h-3" />,
   },
   Locked: {
     label: "Locked",
-    classes: "bg-gray-100 text-gray-400 border-gray-200",
+    classes: "bg-bg-secondary text-text-secondary border-border",
     icon: <FiLock className="w-3 h-3" />,
   },
 };

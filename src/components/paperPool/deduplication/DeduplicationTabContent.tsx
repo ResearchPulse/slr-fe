@@ -57,13 +57,14 @@ export default function DeduplicationTabContent({
   onRefetch,
   canEdit = true,
 }: DeduplicationTabContentProps) {
-  const [internalSelectedDuplicate, setInternalSelectedDuplicate] = useState<DuplicatePair | null>(
-    null,
-  );
+  const [internalSelectedDuplicate, setInternalSelectedDuplicate] =
+    useState<DuplicatePair | null>(null);
 
   // Robust derivation: only use external if it's strictly provided (not undefined)
   const selectedDuplicate =
-    externalSelectedDuplicate !== undefined ? externalSelectedDuplicate : internalSelectedDuplicate;
+    externalSelectedDuplicate !== undefined
+      ? externalSelectedDuplicate
+      : internalSelectedDuplicate;
 
   const onSelectDuplicate = useCallback(
     (pair: DuplicatePair | null) => {
@@ -85,12 +86,15 @@ export default function DeduplicationTabContent({
   // --- Internal state (does NOT affect parent props contract) ---
   const [undoStack, setUndoStack] = useState<UndoableResolution[]>([]);
   const [showDiffs, setShowDiffs] = useState(true);
-  const [confirmingDecision, setConfirmingDecision] = useState<DuplicateResolution | null>(null);
+  const [confirmingDecision, setConfirmingDecision] =
+    useState<DuplicateResolution | null>(null);
   const [sessionStartTime, setSessionStartTime] = useState<number | null>(null);
   const [sessionResolvedCount, setSessionResolvedCount] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const resolvedCount = duplicatePairs.filter((d) => d.status === "resolved").length;
+  const resolvedCount = duplicatePairs.filter(
+    (d) => d.status === "resolved",
+  ).length;
   const unresolvedCount = pendingDuplicates.length;
   const totalCount = duplicatePairs.length;
 
@@ -99,7 +103,9 @@ export default function DeduplicationTabContent({
     (decision: DuplicateResolution): boolean => {
       if (!selectedDuplicate) return false;
       if (decision === "keep-both") return false; // Keeping both is always safe
-      return selectedDuplicate.similarityScore < SIMILARITY_THRESHOLDS.LOW_WARNING;
+      return (
+        selectedDuplicate.similarityScore < SIMILARITY_THRESHOLDS.LOW_WARNING
+      );
     },
     [selectedDuplicate],
   );
@@ -123,8 +129,13 @@ export default function DeduplicationTabContent({
 
       // Push to undo stack
       setUndoStack((prev) => {
-        const next = [...prev, { pairId: selectedDuplicate.id, decision, timestamp: Date.now() }];
-        return next.length > MAX_UNDO_STACK ? next.slice(-MAX_UNDO_STACK) : next;
+        const next = [
+          ...prev,
+          { pairId: selectedDuplicate.id, decision, timestamp: Date.now() },
+        ];
+        return next.length > MAX_UNDO_STACK
+          ? next.slice(-MAX_UNDO_STACK)
+          : next;
       });
 
       // Clear confirmation state
@@ -134,16 +145,23 @@ export default function DeduplicationTabContent({
       onResolveDuplicate(selectedDuplicate.id, decision);
 
       // Auto-advance logic
-      const remainingUnresolved = pendingDuplicates.filter((p) => p.id !== selectedDuplicate.id);
+      const remainingUnresolved = pendingDuplicates.filter(
+        (p) => p.id !== selectedDuplicate.id,
+      );
       if (remainingUnresolved.length > 0) {
         // Try to find the next one in the current list
-        const currentIndex = pendingDuplicates.findIndex((p) => p.id === selectedDuplicate.id);
+        const currentIndex = pendingDuplicates.findIndex(
+          (p) => p.id === selectedDuplicate.id,
+        );
         const nextIndex = (currentIndex + 1) % pendingDuplicates.length;
         const nextPair = pendingDuplicates[nextIndex] || pendingDuplicates[0];
 
         // If the next one is the same as current (last one), it will be removed soon anyway,
         // so we pick another one or null.
-        if (nextPair.id === selectedDuplicate.id && remainingUnresolved.length > 0) {
+        if (
+          nextPair.id === selectedDuplicate.id &&
+          remainingUnresolved.length > 0
+        ) {
           onSelectDuplicate(remainingUnresolved[0]);
         } else {
           onSelectDuplicate(nextPair);
@@ -204,8 +222,12 @@ export default function DeduplicationTabContent({
       {isLoading && duplicatePairs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16">
           <FiRefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-3" />
-          <p className="text-gray-600 font-medium">Loading duplicate pairs...</p>
-          <p className="text-sm text-gray-500 mt-1">Analyzing imported papers for duplicates</p>
+          <p className="text-text-secondary font-medium">
+            Loading duplicate pairs...
+          </p>
+          <p className="text-sm text-text-secondary mt-1">
+            Analyzing imported papers for duplicates
+          </p>
         </div>
       )}
 
@@ -213,12 +235,14 @@ export default function DeduplicationTabContent({
       {error && !isLoading && (
         <div className="flex flex-col items-center justify-center py-16">
           <FiAlertTriangle className="w-10 h-10 text-red-400 mb-3" />
-          <p className="text-gray-900 font-medium">Failed to load duplicate pairs</p>
+          <p className="text-text-primary font-medium">
+            Failed to load duplicate pairs
+          </p>
           <p className="text-sm text-red-600 mt-1">{error}</p>
           {onRefetch && (
             <button
               onClick={onRefetch}
-              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
+              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-[4px] hover:bg-blue-100 transition-colors"
             >
               Try Again
             </button>
@@ -229,16 +253,19 @@ export default function DeduplicationTabContent({
       {/* Main content (only when not loading initial and no error) */}
       {!isLoading && !error && (
         <>
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="rounded-[4px] border border-border bg-surface-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Deduplication Workspace</h2>
-                <p className="text-sm text-gray-500 mt-1">
-                  Review flagged pairs, compare metadata side by side, and resolve confidently.
+                <h2 className="text-xl font-bold text-text-primary">
+                  Deduplication Workspace
+                </h2>
+                <p className="text-sm text-text-secondary mt-1">
+                  Review flagged pairs, compare metadata side by side, and
+                  resolve confidently.
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <span className="rounded-full bg-gray-100 px-3 py-1 font-medium text-gray-700">
+                <span className="rounded-full bg-bg-secondary px-3 py-1 font-medium text-text-primary">
                   Total: {totalCount}
                 </span>
                 <span className="rounded-full bg-amber-100 px-3 py-1 font-medium text-amber-700">
@@ -274,14 +301,16 @@ export default function DeduplicationTabContent({
               {/* Right Panel: Comparison */}
               {selectedDuplicate ? (
                 <div className="lg:col-span-2">
-                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <div className="bg-surface-white border border-border rounded-[4px] p-6">
                     {/* Header with undo */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
-                        <h3 className="font-semibold text-gray-900">Compare & Resolve</h3>
+                        <h3 className="font-semibold text-text-primary">
+                          Compare & Resolve
+                        </h3>
                         {selectedConfidence && (
                           <div className="mt-1.5">
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-text-secondary">
                               Similarity: {selectedDuplicate.similarityScore}% -{" "}
                               <span
                                 className={
@@ -299,11 +328,14 @@ export default function DeduplicationTabContent({
                                     : "Possible Duplicate"}
                               </span>
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              Method: {selectedDuplicate.methodText || "Not available"}
+                            <p className="text-xs text-text-secondary mt-0.5">
+                              Method:{" "}
+                              {selectedDuplicate.methodText || "Not available"}
                             </p>
-                            <p className="text-xs text-gray-500 mt-0.5">
-                              Notes: {selectedDuplicate.deduplicationNotes || "No notes"}
+                            <p className="text-xs text-text-secondary mt-0.5">
+                              Notes:{" "}
+                              {selectedDuplicate.deduplicationNotes ||
+                                "No notes"}
                             </p>
                           </div>
                         )}
@@ -317,7 +349,7 @@ export default function DeduplicationTabContent({
                         {undoStack.length > 0 && (
                           <button
                             onClick={handleUndo}
-                            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-blue-600 transition-colors px-3 py-1.5 rounded-lg hover:bg-blue-50"
+                            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-blue-600 transition-colors px-3 py-1.5 rounded-[4px] hover:bg-blue-50"
                             title="Undo last resolution"
                           >
                             <FiCornerUpLeft className="w-4 h-4" />
@@ -328,19 +360,22 @@ export default function DeduplicationTabContent({
                     </div>
 
                     {/* Low-similarity warning */}
-                    {selectedDuplicate.similarityScore < SIMILARITY_THRESHOLDS.LOW_WARNING && (
-                      <div className="flex items-start gap-2 p-3 mb-4 bg-amber-50 border border-amber-200 rounded-lg">
+                    {selectedDuplicate.similarityScore <
+                      SIMILARITY_THRESHOLDS.LOW_WARNING && (
+                      <div className="flex items-start gap-2 p-3 mb-4 bg-amber-50 border border-amber-200 rounded-[4px]">
                         <FiAlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                         <p className="text-xs text-amber-700">
-                          Low similarity score ({selectedDuplicate.similarityScore}%). These papers
-                          may not be true duplicates. Review carefully before confirming.
+                          Low similarity score (
+                          {selectedDuplicate.similarityScore}%). These papers
+                          may not be true duplicates. Review carefully before
+                          confirming.
                         </p>
                       </div>
                     )}
 
                     {/* Confirmation overlay */}
                     {confirmingDecision && (
-                      <div className="mb-4 p-4 bg-red-50 border-2 border-red-200 rounded-lg">
+                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-[4px]">
                         <div className="flex items-start gap-3">
                           <FiAlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                           <div className="flex-1">
@@ -349,19 +384,25 @@ export default function DeduplicationTabContent({
                             </p>
                             <p className="text-xs text-red-600 mt-1">
                               This pair has a similarity score below{" "}
-                              {SIMILARITY_THRESHOLDS.LOW_WARNING}%. Are you sure these papers are
-                              duplicates? The flagged paper will be removed from the identification
-                              process.
+                              {SIMILARITY_THRESHOLDS.LOW_WARNING}%. Are you sure
+                              these papers are duplicates? The flagged paper
+                              will be removed from the identification process.
                             </p>
                             <div className="flex items-center gap-2 mt-3">
                               <Button
                                 variant="danger"
                                 size="sm"
-                                onClick={() => handleResolve(confirmingDecision)}
+                                onClick={() =>
+                                  handleResolve(confirmingDecision)
+                                }
                               >
                                 Yes, remove duplicate
                               </Button>
-                              <Button variant="ghost" size="sm" onClick={handleCancelConfirm}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleCancelConfirm}
+                              >
                                 Cancel
                               </Button>
                             </div>
@@ -395,8 +436,8 @@ export default function DeduplicationTabContent({
                     </div>
 
                     {/* Decision Controls */}
-                    <div className="border-t border-gray-200 pt-6">
-                      <p className="text-sm text-gray-600 text-center mb-4">
+                    <div className="border-t border-border pt-6">
+                      <p className="text-sm text-text-secondary text-center mb-4">
                         Do these papers represent the same study?
                       </p>
                       <div className="flex flex-col sm:flex-row items-stretch justify-center gap-4">
@@ -405,7 +446,9 @@ export default function DeduplicationTabContent({
                           className="flex-1"
                           onClick={() => handleResolve("cancel")}
                           disabled={
-                            selectedDuplicate.status === "resolved" || isResolving || !canEdit
+                            selectedDuplicate.status === "resolved" ||
+                            isResolving ||
+                            !canEdit
                           }
                         >
                           <FiX className="w-4 h-4 mr-2" />
@@ -416,29 +459,31 @@ export default function DeduplicationTabContent({
                           className="flex-1"
                           onClick={() => handleResolve("keep-both")}
                           disabled={
-                            selectedDuplicate.status === "resolved" || isResolving || !canEdit
+                            selectedDuplicate.status === "resolved" ||
+                            isResolving ||
+                            !canEdit
                           }
                         >
                           <FiCheck className="w-4 h-4 mr-2" />
                           Keep Both (Not Duplicates)
                         </Button>
                       </div>
-                      <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-gray-500">
+                      <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-text-secondary">
                         <span>Shortcuts:</span>
-                        <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono">
+                        <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           1
                         </kbd>
                         <span>Keep Both</span>
-                        <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono">
+                        <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           2
                         </kbd>
                         <span>Cancel</span>
                         <span className="mx-1 text-gray-300">|</span>
-                        <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono">
+                        <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           ↑↓
                         </kbd>
                         <span>Navigate</span>
-                        <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded font-mono">
+                        <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           N
                         </kbd>
                         <span>Next unresolved</span>
@@ -448,11 +493,13 @@ export default function DeduplicationTabContent({
                 </div>
               ) : (
                 // No pair selected placeholder
-                <div className="lg:col-span-2 flex items-center justify-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-12">
+                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-[4px] p-12">
                   <div className="text-center">
-                    <FiLayers className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                    <p className="text-gray-600 font-medium">Select a duplicate pair to compare</p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <FiLayers className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+                    <p className="text-text-secondary font-medium">
+                      Select a duplicate pair to compare
+                    </p>
+                    <p className="text-sm text-text-secondary mt-1">
                       Use ↑↓ keys or click a pair in the queue to begin
                     </p>
                   </div>

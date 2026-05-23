@@ -7,7 +7,11 @@ import TemplateCustoimzer from "./TemplateCustoimzer";
 import { checklistApi } from "../../services/checklistService";
 import { cn } from "../../utils/cn";
 import { ChecklistTemplate, PRISMA_SECTIONS } from "../../types/checklist";
-import { buildChecklistTree, flattenChecklistTree, type ChecklistTreeNode } from "./checklistTree";
+import {
+  buildChecklistTree,
+  flattenChecklistTree,
+  type ChecklistTreeNode,
+} from "./checklistTree";
 import type {
   ChecklistItemTemplate,
   ChecklistSection,
@@ -75,12 +79,18 @@ const toChecklistSection = (value: string): ChecklistSection => {
 };
 
 const toSectionLabel = (section: ChecklistSection): string => {
-  return PRISMA_SECTIONS[section as keyof typeof PRISMA_SECTIONS] ?? String(section);
+  return (
+    PRISMA_SECTIONS[section as keyof typeof PRISMA_SECTIONS] ?? String(section)
+  );
 };
 
-const withHierarchyResponseFlags = (items: ChecklistItemTemplate[]): ChecklistItemTemplate[] => {
+const withHierarchyResponseFlags = (
+  items: ChecklistItemTemplate[],
+): ChecklistItemTemplate[] => {
   const parentIds = new Set(
-    items.filter((item) => item.parentId).map((item) => item.parentId as string),
+    items
+      .filter((item) => item.parentId)
+      .map((item) => item.parentId as string),
   );
 
   return items.map((item) => {
@@ -122,7 +132,9 @@ const flattenNestedItems = (
     };
 
     const children =
-      item.children.length > 0 ? flattenNestedItems(item.children, section, item.id) : [];
+      item.children.length > 0
+        ? flattenNestedItems(item.children, section, item.id)
+        : [];
 
     return [mappedItem, ...children];
   });
@@ -163,7 +175,9 @@ const toLegacyCreateItems = (
 ): CreateChecklistItemTemplateDto[] => {
   const parentItemNumberById = new Map<string, string>();
   const parentIds = new Set(
-    items.filter((item) => item.parentId).map((item) => item.parentId as string),
+    items
+      .filter((item) => item.parentId)
+      .map((item) => item.parentId as string),
   );
 
   items.forEach((item) => {
@@ -183,12 +197,16 @@ const toLegacyCreateItems = (
         : (item.hasLocationField ?? true),
     isSectionHeaderOnly: parentIds.has(item.id),
     defaultSampleAnswer: item.defaultSampleAnswer ?? null,
-    parentItemNumber: item.parentId ? (parentItemNumberById.get(item.parentId) ?? null) : null,
+    parentItemNumber: item.parentId
+      ? (parentItemNumberById.get(item.parentId) ?? null)
+      : null,
     subItems: [],
   }));
 };
 
-const mapTemplateDetail = (template: ChecklistTemplateDetailDto): ChecklistTemplateDetail => {
+const mapTemplateDetail = (
+  template: ChecklistTemplateDetailDto,
+): ChecklistTemplateDetail => {
   const mappedSections: ChecklistTemplateSection[] = (template.sections ?? [])
     .slice()
     .sort((a, b) => a.order - b.order)
@@ -210,7 +228,9 @@ const mapTemplateDetail = (template: ChecklistTemplateDetailDto): ChecklistTempl
   const sectionItems = (template.sections ?? [])
     .slice()
     .sort((a, b) => a.order - b.order)
-    .flatMap((section) => flattenNestedItems(section.items, toChecklistSection(section.name)));
+    .flatMap((section) =>
+      flattenNestedItems(section.items, toChecklistSection(section.name)),
+    );
 
   const fallbackFlatItems = template.items.map((item) => ({
     id: item.id,
@@ -231,7 +251,9 @@ const mapTemplateDetail = (template: ChecklistTemplateDetailDto): ChecklistTempl
 
   const normalizedItems = withHierarchyResponseFlags(
     flattenChecklistTree(
-      buildChecklistTree(sectionItems.length > 0 ? sectionItems : fallbackFlatItems),
+      buildChecklistTree(
+        sectionItems.length > 0 ? sectionItems : fallbackFlatItems,
+      ),
     ),
   );
 
@@ -243,7 +265,8 @@ const mapTemplateDetail = (template: ChecklistTemplateDetailDto): ChecklistTempl
     version: template.version,
     isSystem: template.isSystem,
     templateType: template.isSystem
-      ? (template.type ?? ChecklistTypeValue.FULL) === ChecklistTypeValue.ABSTRACT
+      ? (template.type ?? ChecklistTypeValue.FULL) ===
+        ChecklistTypeValue.ABSTRACT
         ? ChecklistTemplate.PRISMA_2020_ABSTRACT
         : ChecklistTemplate.PRISMA_2020_MAIN
       : ChecklistTemplate.CUSTOM,
@@ -256,19 +279,23 @@ const mapTemplateDetail = (template: ChecklistTemplateDetailDto): ChecklistTempl
   };
 };
 
-const toCreateTemplateRequest = (data: UpdateCustomTemplateRequest): CreateChecklistTemplateDto => {
+const toCreateTemplateRequest = (
+  data: UpdateCustomTemplateRequest,
+): CreateChecklistTemplateDto => {
   const tree = buildChecklistTree(withHierarchyResponseFlags(data.items));
   const templateType: ApiChecklistType = data.type ?? ChecklistTypeValue.FULL;
   const requestedSections: UpdateCustomTemplateSection[] =
     data.sections && data.sections.length > 0
       ? data.sections
-      : Array.from(new Set(data.items.map((item) => item.section))).map((section, index) => ({
-          key: section,
-          name: toSectionLabel(section),
-          description: null,
-          order: index + 1,
-          sectionNumber: String(index + 1),
-        }));
+      : Array.from(new Set(data.items.map((item) => item.section))).map(
+          (section, index) => ({
+            key: section,
+            name: toSectionLabel(section),
+            description: null,
+            order: index + 1,
+            sectionNumber: String(index + 1),
+          }),
+        );
 
   const sections = requestedSections
     .slice()
@@ -281,7 +308,9 @@ const toCreateTemplateRequest = (data: UpdateCustomTemplateRequest): CreateCheck
         sectionNumber: section.sectionNumber ?? String(index + 1),
         items: tree
           .filter((rootNode) => rootNode.section === section.key)
-          .map((rootNode) => mapTreeNodeToCreateItem(rootNode, section.name, templateType)),
+          .map((rootNode) =>
+            mapTreeNodeToCreateItem(rootNode, section.name, templateType),
+          ),
       }),
     );
 
@@ -299,7 +328,9 @@ const toCreateTemplateRequest = (data: UpdateCustomTemplateRequest): CreateCheck
 export default function TemplateManager() {
   const queryClient = useQueryClient();
   const [showEditor, setShowEditor] = useState(false);
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
+    null,
+  );
 
   const templatesQuery = useQuery<ChecklistTemplateSummaryDto[]>({
     queryKey: ["checklist-template-summaries"],
@@ -320,8 +351,13 @@ export default function TemplateManager() {
       return checklistApi.createCustomTemplate(toCreateTemplateRequest(data));
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["checklist-template-summaries"] });
-      toastSuccess("Template saved", "The custom checklist template has been created.");
+      await queryClient.invalidateQueries({
+        queryKey: ["checklist-template-summaries"],
+      });
+      toastSuccess(
+        "Template saved",
+        "The custom checklist template has been created.",
+      );
       setShowEditor(false);
       setSelectedTemplateId(null);
     },
@@ -334,20 +370,23 @@ export default function TemplateManager() {
   });
 
   const selectedTemplate = useMemo(
-    () => (templateDetailQuery.data ? mapTemplateDetail(templateDetailQuery.data) : undefined),
+    () =>
+      templateDetailQuery.data
+        ? mapTemplateDetail(templateDetailQuery.data)
+        : undefined,
     [templateDetailQuery.data],
   );
 
   if (showEditor) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
+      <div className="min-h-screen bg-bg-primary">
+        <div className="bg-surface-white border-b border-border px-6 py-4 sticky top-0 z-10">
           <button
             onClick={() => {
               setShowEditor(false);
               setSelectedTemplateId(null);
             }}
-            className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium"
+            className="inline-flex items-center gap-2 text-accent hover:text-indigo-800 font-medium"
           >
             <FiChevronLeft className="w-5 h-5" />
             Back to Templates
@@ -362,19 +401,23 @@ export default function TemplateManager() {
             setShowEditor(false);
             setSelectedTemplateId(null);
           }}
-          isLoading={createTemplateMutation.isPending || templateDetailQuery.isLoading}
+          isLoading={
+            createTemplateMutation.isPending || templateDetailQuery.isLoading
+          }
         />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-surface-white">
       <div className="bg-linear-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 px-6 py-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-1">Checklist Templates</h1>
-            <p className="text-gray-600">
+            <h1 className="text-3xl font-bold text-text-primary mb-1">
+              Checklist Templates
+            </h1>
+            <p className="text-text-secondary">
               Manage PRISMA and custom checklist templates for your organization
             </p>
           </div>
@@ -397,9 +440,11 @@ export default function TemplateManager() {
             <LoadingSpinner size="lg" />
           </div>
         ) : (templatesQuery.data ?? []).length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">No templates yet</h3>
-            <p className="text-gray-600 mb-4">
+          <div className="text-center py-12 border-2 border-dashed border-border rounded-[4px]">
+            <h3 className="text-lg font-semibold text-text-primary mb-1">
+              No templates yet
+            </h3>
+            <p className="text-text-secondary mb-4">
               Create your first checklist template to get started
             </p>
             <Button
@@ -437,11 +482,11 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
   return (
-    <div className="border rounded-lg p-5 hover:shadow-lg transition-all group bg-white border-gray-200">
+    <div className="border rounded-[4px] p-5 hover:shadow-none transition-all group bg-surface-white border-border">
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-gray-900">{template.name}</h3>
+            <h3 className="font-semibold text-text-primary">{template.name}</h3>
             <span
               className={cn(
                 "text-xs font-semibold px-2 py-0.5 rounded",
@@ -460,30 +505,36 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
                   : "bg-sky-100 text-sky-700",
               )}
             >
-              {template.type === ChecklistTypeValue.ABSTRACT ? "Abstract" : "Full"}
+              {template.type === ChecklistTypeValue.ABSTRACT
+                ? "Abstract"
+                : "Full"}
             </span>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">
+          <p className="text-sm text-text-secondary line-clamp-2">
             {template.description || "No description"}
           </p>
         </div>
       </div>
 
-      <div className="mb-4 py-3 border-t border-gray-200 space-y-2">
+      <div className="mb-4 py-3 border-t border-border space-y-2">
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Items:</span>
-          <span className="font-semibold text-gray-900">{template.itemCount}</span>
+          <span className="text-text-secondary">Items:</span>
+          <span className="font-semibold text-text-primary">
+            {template.itemCount}
+          </span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-gray-600">Version:</span>
-          <span className="font-semibold text-gray-900">{template.version}</span>
+          <span className="text-text-secondary">Version:</span>
+          <span className="font-semibold text-text-primary">
+            {template.version}
+          </span>
         </div>
       </div>
 
-      <div className="flex gap-2 pt-3 border-t border-gray-200">
+      <div className="flex gap-2 pt-3 border-t border-border">
         <button
           onClick={onOpen}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700 text-sm font-medium transition-colors"
+          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-[4px] bg-bg-secondary hover:bg-indigo-100 text-accent hover:text-indigo-700 text-sm font-medium transition-colors"
           title="Use template"
         >
           <FiCopy className="w-4 h-4" />

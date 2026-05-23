@@ -82,19 +82,19 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-surface-white rounded-md shadow-2xl border border-border ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-slate-50/50">
-        <h3 className="font-bold text-gray-900 flex items-center gap-2">
+      <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary">
+        <h3 className="font-medium text-text-primary uppercase tracking-[0.1em] text-[13px] flex items-center gap-2">
           Notifications
           {(isLoading || isFetching) && (
-            <FiLoader className="w-3 h-3 animate-spin text-indigo-500" />
+            <FiLoader className="w-3 h-3 animate-spin text-accent" />
           )}
         </h3>
         <button
           onClick={handleMarkAllAsRead}
           disabled={isMarkingAllAsRead || notifications.length === 0}
-          className="text-xs font-bold text-indigo-600 hover:text-indigo-700 transition-colors disabled:opacity-50 uppercase tracking-tight"
+          className="text-[10px] font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 uppercase tracking-widest"
         >
           {isMarkingAllAsRead ? "Marking..." : "Mark all as read"}
         </button>
@@ -104,56 +104,66 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
         {isLoading ? (
           <div className="p-12 text-center">
-            <FiLoader className="w-8 h-8 animate-spin text-indigo-500 mx-auto mb-4" />
-            <p className="text-gray-500 text-sm">Loading notifications...</p>
+            <FiLoader className="w-8 h-8 animate-spin text-accent mx-auto mb-4" />
+            <p className="text-text-secondary text-sm">
+              Loading notifications...
+            </p>
           </div>
         ) : notifications.length > 0 ? (
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-border">
             {notifications.map((notif) => (
               <div
                 key={notif.id}
                 onClick={() => handleNotificationClick(notif)}
-                className={`p-4 hover:bg-slate-50 transition-colors cursor-pointer flex gap-4 ${!notif.isRead ? "bg-indigo-50/30" : ""
-                  }`}
+                className={`p-4 hover:bg-bg-secondary transition-colors cursor-pointer flex gap-4 ${
+                  !notif.isRead ? "bg-bg-secondary/50" : ""
+                }`}
               >
                 <div className="mt-1 flex-shrink-0">{getIcon(notif.type)}</div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start mb-1 gap-2">
                     <p
-                      className={`text-sm font-bold truncate ${!notif.isRead ? "text-slate-900" : "text-slate-600"
-                        }`}
+                      className={`text-[13px] font-medium truncate tracking-wide ${
+                        !notif.isRead
+                          ? "text-text-primary"
+                          : "text-text-secondary"
+                      }`}
                     >
                       {notif.title}
                     </p>
-                    <div className="flex items-center gap-1 text-[10px] text-slate-400 font-bold whitespace-nowrap">
+                    <div className="flex items-center gap-1 text-[10px] text-text-secondary uppercase tracking-widest whitespace-nowrap">
                       <FiClock className="w-3 h-3" />
                       {formatRelativeTime(notif.createdAt)}
                     </div>
                   </div>
-                  <p className="text-xs text-slate-500 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
                     {notif.message}
                   </p>
                 </div>
                 {!notif.isRead && (
-                  <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2 flex-shrink-0 shadow-sm shadow-indigo-200"></div>
+                  <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div>
                 )}
               </div>
             ))}
           </div>
         ) : (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-slate-100 shadow-inner">
-              <FiBell className="w-8 h-8 text-slate-300" />
+            <div className="w-16 h-16 bg-bg-secondary rounded-[4px] flex items-center justify-center mx-auto mb-4 border border-border">
+              <FiBell className="w-8 h-8 text-text-secondary" />
             </div>
-            <p className="text-slate-500 text-sm font-bold">All caught up!</p>
-            <p className="text-slate-400 text-xs mt-1">No new notifications.</p>
+            <p className="text-text-primary text-[13px] font-medium tracking-[0.1em] uppercase">
+              All caught up!
+            </p>
+            <p className="text-text-secondary text-xs mt-1">
+              No new notifications.
+            </p>
           </div>
         )}
       </div>
 
       {/* Footer */}
-      <div className="p-3 border-t border-gray-100 bg-slate-50/50 text-center">
-        <button className="text-[10px] font-black text-slate-500 hover:text-indigo-600 transition-colors uppercase tracking-[0.2em]">
+      <div className="p-3 border-t border-border bg-bg-secondary text-center">
+        <button className="text-[10px] font-medium text-text-secondary hover:text-text-primary transition-colors uppercase tracking-[0.2em]">
           See All Activity
         </button>
       </div>

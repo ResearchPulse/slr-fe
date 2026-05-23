@@ -17,7 +17,7 @@ interface EditableGridCellProps {
   onSave: (
     nextValue: string,
     isNotReported: boolean,
-    cell: ExtractionGridCellDto
+    cell: ExtractionGridCellDto,
   ) => Promise<void>;
 }
 
@@ -40,16 +40,18 @@ export default function EditableGridCell({
   const [isEditing, setIsEditing] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
   const [draftValue, setDraftValue] = useState(formatCellValue(cell.value));
-  const [isNotReported, setIsNotReported] = useState(Boolean(cell.isNotReported));
+  const [isNotReported, setIsNotReported] = useState(
+    Boolean(cell.isNotReported),
+  );
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
 
   const isEditable = useMemo(
     () => Boolean(cell.paperId && cell.fieldId),
-    [cell.fieldId, cell.paperId]
+    [cell.fieldId, cell.paperId],
   );
   const normalizedFieldType = useMemo(
     () => (columnMeta.fieldType || "Text").trim().toLowerCase(),
-    [columnMeta.fieldType]
+    [columnMeta.fieldType],
   );
 
   const beginEdit = useCallback(() => {
@@ -82,7 +84,15 @@ export default function EditableGridCell({
     } catch {
       // Keep editor open so the user can retry or cancel after a failed save.
     }
-  }, [cell, draftValue, isEditable, isEditing, isNotReported, isSaving, onSave]);
+  }, [
+    cell,
+    draftValue,
+    isEditable,
+    isEditing,
+    isNotReported,
+    isSaving,
+    onSave,
+  ]);
 
   const commitWithOverride = useCallback(
     async (nextDraftValue: string, nextIsNotReported: boolean) => {
@@ -108,7 +118,7 @@ export default function EditableGridCell({
         // Keep editor open so the user can retry or cancel after a failed save.
       }
     },
-    [cell, isEditable, isSaving, onSave]
+    [cell, isEditable, isSaving, onSave],
   );
 
   const cancelChanges = useCallback(() => {
@@ -130,17 +140,19 @@ export default function EditableGridCell({
         await commitChanges();
       }
     },
-    [cancelChanges, commitChanges]
+    [cancelChanges, commitChanges],
   );
 
   const displayedValue = formatCellValue(cell.value);
-  const canViewHistory = Boolean(extractionProcessId && cell.paperId && cell.fieldId);
+  const canViewHistory = Boolean(
+    extractionProcessId && cell.paperId && cell.fieldId,
+  );
 
   const handleEditorBlur = useCallback(
     (
       event: FocusEvent<
         HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-      >
+      >,
     ) => {
       const nextFocused = event.relatedTarget;
 
@@ -153,7 +165,7 @@ export default function EditableGridCell({
 
       void commitChanges();
     },
-    [commitChanges]
+    [commitChanges],
   );
 
   const normalizeBooleanValue = (value: string): string => {
@@ -184,9 +196,11 @@ export default function EditableGridCell({
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
             onKeyDown={(event) => {
-              void handleKeyDown(event as unknown as KeyboardEvent<HTMLTextAreaElement>);
+              void handleKeyDown(
+                event as unknown as KeyboardEvent<HTMLTextAreaElement>,
+              );
             }}
-            className="h-8 w-full rounded-md border border-blue-300 bg-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
 
@@ -198,7 +212,7 @@ export default function EditableGridCell({
             value={normalizeBooleanValue(draftValue)}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-md border border-blue-300 bg-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             <option value="true">True</option>
@@ -214,11 +228,14 @@ export default function EditableGridCell({
             value={draftValue}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-md border border-blue-300 bg-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             {columnMeta.options.map((option) => (
-              <option key={option.optionId || option.value} value={option.value}>
+              <option
+                key={option.optionId || option.value}
+                value={option.value}
+              >
                 {option.value}
               </option>
             ))}
@@ -252,7 +269,7 @@ export default function EditableGridCell({
               void handleKeyDown(event);
             }}
             rows={textEditorRows}
-            className="w-full resize-none rounded-md border border-blue-300 bg-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-slate-200 disabled:bg-slate-100 disabled:text-slate-500"
+            className="w-full resize-none rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
     }
@@ -260,17 +277,17 @@ export default function EditableGridCell({
 
   return (
     <div
-      className="group relative h-full min-h-9 px-1 py-1 text-sm text-slate-700"
+      className="group relative h-full min-h-9 px-1 py-1 text-sm text-text-primary"
       title={displayedValue || "-"}
       onDoubleClick={beginEdit}
     >
       {isEditing ? (
         <div
           ref={editorContainerRef}
-          className="flex items-center gap-1 rounded-md border border-slate-200 bg-slate-50 p-1"
+          className="flex items-center gap-1 rounded-md border border-border bg-bg-secondary p-1"
         >
           {normalizedFieldType !== "multiselect" && (
-            <label className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-slate-600">
+            <label className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-text-secondary">
               <input
                 type="checkbox"
                 checked={isNotReported}
@@ -288,7 +305,7 @@ export default function EditableGridCell({
 
                   void commitWithOverride(nextDraftValue, nextIsNotReported);
                 }}
-                className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
               />
               NR
             </label>
@@ -300,7 +317,7 @@ export default function EditableGridCell({
             <button
               type="button"
               onClick={cancelChanges}
-              className="shrink-0 rounded px-1.5 py-1 text-[10px] font-medium text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+              className="shrink-0 rounded px-1.5 py-1 text-[10px] font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
             >
               Esc
             </button>
@@ -309,7 +326,7 @@ export default function EditableGridCell({
       ) : (
         <div className="flex min-h-6 items-start justify-between gap-2">
           {cell.isNotReported ? (
-            <span className="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+            <span className="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
               NR
             </span>
           ) : (
@@ -327,7 +344,7 @@ export default function EditableGridCell({
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen(true)}
-                className="invisible rounded p-0.5 text-slate-400 transition group-hover:visible hover:bg-slate-100 hover:text-slate-700"
+                className="invisible rounded p-0.5 text-text-secondary transition group-hover:visible hover:bg-bg-secondary hover:text-text-primary"
                 aria-label="View cell history"
               >
                 <History className="h-3.5 w-3.5" />
@@ -338,7 +355,7 @@ export default function EditableGridCell({
               <button
                 type="button"
                 onClick={beginEdit}
-                className="invisible rounded p-0.5 text-slate-400 transition group-hover:visible hover:bg-slate-100 hover:text-slate-700"
+                className="invisible rounded p-0.5 text-text-secondary transition group-hover:visible hover:bg-bg-secondary hover:text-text-primary"
                 aria-label="Edit cell"
               >
                 <Pencil className="h-3.5 w-3.5" />

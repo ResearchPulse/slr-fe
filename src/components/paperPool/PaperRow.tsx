@@ -40,8 +40,8 @@ export default function PaperRow({
 }: PaperRowProps) {
   return (
     <tr
-      className={`group border-b border-gray-50 transition-all duration-200 ${
-        isSelected ? "bg-blue-50/40" : "hover:bg-slate-50/80"
+      className={`group border-b border-border transition-all duration-200 ${
+        isSelected ? "bg-bg-secondary/40" : "hover:bg-bg-secondary/80"
       }`}
     >
       <td className="px-6 py-4 align-top">
@@ -50,13 +50,13 @@ export default function PaperRow({
             type="checkbox"
             checked={isSelected}
             onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer"
+            className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
             aria-label={`Select paper ${paper.id}`}
           />
         </div>
       </td>
       <td className="px-3 py-4 align-top">
-        <span className="text-[10px] font-mono font-bold text-gray-400 bg-gray-100/50 px-1.5 py-0.5 rounded leading-none">
+        <span className="text-[10px] font-mono font-bold text-text-secondary bg-bg-secondary/50 px-1.5 py-0.5 rounded leading-none">
           {paper.id.slice(0, 8)}...
         </span>
       </td>
@@ -66,28 +66,28 @@ export default function PaperRow({
             onClick={() => onViewDetails(paper)}
             className="text-left group/title focus:outline-none"
           >
-            <span className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug group-hover/title:text-blue-600 transition-colors">
+            <span className="text-sm font-bold text-text-primary line-clamp-2 leading-snug group-hover/title:text-accent transition-colors">
               {paper.title}
             </span>
           </button>
-          <div className="text-xs font-medium text-gray-500 mt-1.5 flex items-center gap-1.5">
+          <div className="text-xs font-medium text-text-secondary mt-1.5 flex items-center gap-1.5">
             <span className="truncate max-w-[280px]">{paper.authors}</span>
           </div>
         </div>
       </td>
       <td className="px-3 py-4 align-top">
-        <span className="text-xs font-black text-gray-700 bg-gray-100 px-2 py-0.5 rounded-full">
+        <span className="text-xs font-black text-text-primary bg-bg-secondary px-2 py-0.5 rounded-full">
           {paper.year ?? "N/A"}
         </span>
       </td>
       <td className="px-3 py-4 align-top max-w-[150px]">
         {paper.doi ? (
-          <div className="flex items-center gap-1.5 text-blue-600 hover:text-blue-700 cursor-pointer group/doi">
+          <div className="flex items-center gap-1.5 text-text-primary hover:text-accent cursor-pointer group/doi">
             <FiLink className="w-3 h-3 shrink-0" />
-            <span className="text-[11px] font-mono truncate">{paper.doi}</span>
+            <span className="text-[11px] font-mono truncate border-b border-transparent group-hover/doi:border-accent">{paper.doi}</span>
           </div>
         ) : (
-          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">
             No DOI
           </span>
         )}
@@ -95,8 +95,8 @@ export default function PaperRow({
       <td className="px-3 py-4 align-top">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5">
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-500" />
-            <span className="text-[11px] font-bold text-gray-600 truncate max-w-[100px]">
+            <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+            <span className="text-[11px] font-bold text-text-secondary truncate max-w-[100px]">
               {paper.source}
             </span>
           </div>
@@ -119,7 +119,7 @@ export default function PaperRow({
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => onViewDetails(paper)}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-gray-700 hover:bg-white hover:border-blue-500 hover:text-blue-600 hover:shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-1.5 rounded-[4px] border border-border px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-text-primary hover:bg-surface-white hover:border-accent hover:text-accent hover:shadow-sm transition-all duration-200"
           >
             <FiEye className="h-3.5 w-3.5" />
           </button>
@@ -135,7 +135,7 @@ export default function PaperRow({
                 }
               }}
               disabled={isDeletingPaper}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-red-50 hover:border-red-500 hover:text-red-700 hover:shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-[4px] border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Delete paper"
             >
               {isDeletingPaper ? (

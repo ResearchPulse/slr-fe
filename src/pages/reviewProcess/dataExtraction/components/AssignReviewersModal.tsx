@@ -53,7 +53,7 @@ export default function AssignReviewersModal({
 
   const selectableReviewers = useMemo(
     () => reviewerOptions.filter((option) => option.value),
-    [reviewerOptions]
+    [reviewerOptions],
   );
 
   const reviewer1Options = useMemo(
@@ -61,7 +61,7 @@ export default function AssignReviewersModal({
       { value: "", label: "Select Reviewer 1" },
       ...selectableReviewers.filter((option) => option.value !== rev2),
     ],
-    [rev2, selectableReviewers]
+    [rev2, selectableReviewers],
   );
 
   const reviewer2Options = useMemo(
@@ -69,7 +69,7 @@ export default function AssignReviewersModal({
       { value: "", label: "Select Reviewer 2" },
       ...selectableReviewers.filter((option) => option.value !== rev1),
     ],
-    [rev1, selectableReviewers]
+    [rev1, selectableReviewers],
   );
 
   const canSave = Boolean(task && rev1 && rev2 && rev1 !== rev2);
@@ -88,20 +88,22 @@ export default function AssignReviewersModal({
       isOpen={isOpen}
       onClose={onClose}
       title="Assign Reviewers"
-      description={task ? "Choose two distinct reviewers for this study." : undefined}
+      description={
+        task ? "Choose two distinct reviewers for this study." : undefined
+      }
       size="lg"
     >
       <div className="space-y-6">
-        <div className="rounded-2xl border border-slate-200 bg-gradient-to-r from-slate-50 to-white p-4 shadow-sm">
+        <div className="rounded-[4px] border border-border bg-gradient-to-r from-slate-50 to-white p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-[4px] bg-blue-100 text-blue-700 shadow-sm">
               <Users2 className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
                 Selected Study
               </p>
-              <h3 className="mt-1 truncate text-lg font-bold text-slate-900">
+              <h3 className="mt-1 truncate text-lg font-bold text-text-primary">
                 {task?.title ?? "No study selected"}
               </h3>
             </div>
@@ -109,8 +111,8 @@ export default function AssignReviewersModal({
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <label className="mb-3 block text-sm font-semibold text-slate-700">
+          <div className="rounded-[4px] border border-border bg-surface-white p-4 shadow-sm">
+            <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 1
             </label>
             <Select
@@ -127,8 +129,8 @@ export default function AssignReviewersModal({
             />
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-            <label className="mb-3 block text-sm font-semibold text-slate-700">
+          <div className="rounded-[4px] border border-border bg-surface-white p-4 shadow-sm">
+            <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 2
             </label>
             <Select
@@ -146,40 +148,56 @@ export default function AssignReviewersModal({
           </div>
         </div>
 
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <div className="rounded-[4px] border border-dashed border-border bg-bg-secondary p-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
             Assignment Preview
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {rev1 ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-indigo-100">
+              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-indigo-100">
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[11px] font-bold text-indigo-700">
-                  {getInitials(reviewerOptions.find((option) => option.value === rev1)?.label ?? "")}
+                  {getInitials(
+                    reviewerOptions.find((option) => option.value === rev1)
+                      ?.label ?? "",
+                  )}
                 </span>
                 {reviewerOptions.find((option) => option.value === rev1)?.label}
               </span>
             ) : null}
 
             {rev2 ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 ring-1 ring-slate-200">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[11px] font-bold text-slate-700">
-                  {getInitials(reviewerOptions.find((option) => option.value === rev2)?.label ?? "")}
+              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-text-primary ring-1 ring-slate-200">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[11px] font-bold text-text-primary">
+                  {getInitials(
+                    reviewerOptions.find((option) => option.value === rev2)
+                      ?.label ?? "",
+                  )}
                 </span>
                 {reviewerOptions.find((option) => option.value === rev2)?.label}
               </span>
             ) : null}
 
             {!rev1 && !rev2 ? (
-              <span className="text-sm text-slate-500">Select two reviewers to continue.</span>
+              <span className="text-sm text-text-secondary">
+                Select two reviewers to continue.
+              </span>
             ) : null}
           </div>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:justify-end">
-          <Button variant="outline" onClick={onClose} className="sm:min-w-[130px]">
+        <div className="flex flex-col-reverse gap-3 border-t border-border pt-4 sm:flex-row sm:justify-end">
+          <Button
+            variant="outline"
+            onClick={onClose}
+            className="sm:min-w-[130px]"
+          >
             Cancel
           </Button>
-          <Button onClick={handleSave} disabled={!canSave} className="sm:min-w-[180px]">
+          <Button
+            onClick={handleSave}
+            disabled={!canSave}
+            className="sm:min-w-[180px]"
+          >
             Save Assignments
           </Button>
         </div>

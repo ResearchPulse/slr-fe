@@ -5,7 +5,13 @@ import { useProjectMutations } from "../../hooks/useProjects";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
-import { FiExternalLink, FiSettings, FiUsers, FiArrowLeft, FiCheckCircle } from "react-icons/fi";
+import {
+  FiExternalLink,
+  FiSettings,
+  FiUsers,
+  FiArrowLeft,
+  FiCheckCircle,
+} from "react-icons/fi";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,7 +25,8 @@ export default function ProjectSettingsPage() {
 
   const handleComplete = async () => {
     if (!id) return;
-    if (!window.confirm("Are you sure all review processes are completed?")) return;
+    if (!window.confirm("Are you sure all review processes are completed?"))
+      return;
     try {
       await completeProject(id);
       await refetch();
@@ -30,50 +37,72 @@ export default function ProjectSettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50">
-      <div className="container mx-auto px-4 py-12 max-w-6xl animate-in fade-in duration-700">
+    <div className="min-h-screen bg-bg-primary">
+      <div className="container mx-auto px-4 py-12 max-w-5xl">
         {/* Navigation / Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div className="space-y-1">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-border">
+          <div className="space-y-3">
             <button
               onClick={() => navigate(`/projects/${id}`)}
-              className="group flex items-center gap-2 text-slate-500 hover:text-indigo-600 transition-colors text-sm font-medium mb-2"
+              className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-[11px] uppercase tracking-[0.2em] font-medium"
             >
-              <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+              <FiArrowLeft
+                className="group-hover:-translate-x-1 transition-transform"
+                size={14}
+              />
               Back to Project
             </button>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Settings</h1>
-            <p className="text-slate-500">Configure and manage your project preferences</p>
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary mb-2">
+                Configuration
+              </p>
+              <h1 className="font-cormorant text-[40px] font-normal text-text-primary">
+                Settings
+              </h1>
+            </div>
+            <p className="text-text-secondary text-sm">
+              Configure and manage your project preferences
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-10">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Navigation */}
-          <aside className="w-full lg:w-72 shrink-0">
-            <nav className="flex lg:flex-col gap-1 p-1 bg-white border border-slate-200 rounded-2xl shadow-sm">
+          <aside className="w-full lg:w-56 shrink-0">
+            <nav className="flex lg:flex-col gap-0 border border-border">
               <button
                 onClick={() => setActiveTab("general")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
                   activeTab === "general"
-                    ? "bg-indigo-50 text-indigo-700 font-bold shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 font-medium"
+                    ? "bg-text-primary text-bg-primary"
+                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
                 }`}
               >
                 <FiSettings
-                  className={`${activeTab === "general" ? "text-indigo-600" : "text-slate-400"}`}
+                  size={14}
+                  className={
+                    activeTab === "general"
+                      ? "text-bg-primary"
+                      : "text-text-secondary"
+                  }
                 />
                 General
               </button>
               <button
                 onClick={() => setActiveTab("members")}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
                   activeTab === "members"
-                    ? "bg-indigo-50 text-indigo-700 font-bold shadow-sm"
-                    : "text-slate-600 hover:bg-slate-50 font-medium"
+                    ? "bg-text-primary text-bg-primary"
+                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
                 }`}
               >
                 <FiUsers
-                  className={`${activeTab === "members" ? "text-indigo-600" : "text-slate-400"}`}
+                  size={14}
+                  className={
+                    activeTab === "members"
+                      ? "text-bg-primary"
+                      : "text-text-secondary"
+                  }
                 />
                 Members
               </button>
@@ -83,74 +112,89 @@ export default function ProjectSettingsPage() {
           {/* Main Content Area */}
           <main className="flex-1 space-y-6">
             {activeTab === "general" ? (
-              <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
+              <div className="space-y-6">
                 {/* General Settings Card */}
-                <Card className="p-0 border-slate-200 overflow-hidden rounded-3xl shadow-sm">
-                  <div className="p-8 border-b border-slate-100 bg-slate-50/50">
-                    <h2 className="text-xl font-bold text-slate-900">Project Status Actions</h2>
-                    <p className="text-slate-500 text-sm mt-1">
+                <div className="border border-border bg-surface-white">
+                  <div className="px-6 py-4 border-b border-border bg-bg-primary">
+                    <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
+                      Project Status Actions
+                    </p>
+                    <p className="text-text-secondary text-xs mt-1">
                       Lifecycle management for your systematic review
                     </p>
                   </div>
 
-                  <div className="p-8 space-y-10">
+                  <div className="p-6 space-y-6">
                     {/* Complete Project */}
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                       <div className="max-w-md">
-                        <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm uppercase tracking-wider mb-2">
-                          <FiCheckCircle />
+                        <div className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-text-secondary font-medium mb-3">
+                          <FiCheckCircle size={12} />
                           Finalization
                         </div>
-                        <h3 className="text-lg font-bold text-slate-900 mb-1">Complete Project</h3>
-                        <p className="text-slate-500 text-sm leading-relaxed">
-                          Mark all review processes as finished. This signals that the systematic
-                          review has reached its formal conclusion.
+                        <h3 className="text-[15px] font-medium text-text-primary mb-2">
+                          Complete Project
+                        </h3>
+                        <p className="text-text-secondary text-sm leading-relaxed">
+                          Mark all review processes as finished. This signals
+                          that the systematic review has reached its formal
+                          conclusion.
                         </p>
                       </div>
                       <Button
                         size="lg"
-                        className="bg-emerald-600 hover:bg-emerald-700 shadow-lg shadow-emerald-100 min-w-[180px]"
                         onClick={handleComplete}
                         disabled={isCompleting}
+                        className="min-w-[160px] shrink-0"
                       >
                         {isCompleting ? "Processing..." : "Mark as Completed"}
                       </Button>
                     </div>
 
-                    <hr className="border-slate-100" />
+                    <div className="h-[1px] bg-border" />
                   </div>
-                </Card>
+                </div>
               </div>
             ) : (
-              <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
-                <Card className="p-8 border-slate-200 rounded-3xl shadow-sm space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-inner">
-                      <FiUsers size={28} />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-bold text-slate-900">Manage Members</h2>
-                      <p className="text-slate-500 text-sm mt-1">
-                        Control access and assign roles to your research team
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100">
-                    <p className="text-slate-600 text-sm leading-relaxed mb-6">
-                      Add researchers, screeners, and reviewers to your project. Define their
-                      permission levels to ensure data integrity and workflow efficiency.
+              <div className="space-y-6">
+                <div className="border border-border bg-surface-white">
+                  <div className="px-6 py-4 border-b border-border bg-bg-primary">
+                    <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
+                      Team Members
                     </p>
-                    <Button
-                      variant="primary"
-                      className="bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-100 px-8"
-                      onClick={() => setIsMemberModalOpen(true)}
-                    >
-                      Open Member Manager
-                      <FiExternalLink className="ml-2" />
-                    </Button>
                   </div>
-                </Card>
+                  <div className="p-6 space-y-6">
+                    <div className="flex items-start gap-4">
+                      <div className="w-8 h-8 border border-border flex items-center justify-center text-text-secondary shrink-0">
+                        <FiUsers size={14} />
+                      </div>
+                      <div>
+                        <h2 className="text-[15px] font-medium text-text-primary mb-1">
+                          Manage Members
+                        </h2>
+                        <p className="text-text-secondary text-sm">
+                          Control access and assign roles to your research team
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="bg-bg-primary border border-border p-5">
+                      <p className="text-text-secondary text-sm leading-relaxed mb-5">
+                        Add researchers, screeners, and reviewers to your
+                        project. Define their permission levels to ensure data
+                        integrity and workflow efficiency.
+                      </p>
+                      <Button
+                        variant="primary"
+                        onClick={() => setIsMemberModalOpen(true)}
+                        className="flex items-center gap-2"
+                      >
+                        Open Member Manager
+                        <FiExternalLink size={14} />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </main>

@@ -23,13 +23,16 @@ const PrismaStep = forwardRef<HTMLDivElement, PrismaStepProps>(
         </span>
 
         {/* Icon box */}
-        <div className={`
+        <div
+          className={`
           w-14 h-14 flex items-center justify-center mb-4 border transition-colors
-          ${isActive
-            ? "bg-[#5B0000] border-[#5B0000] text-[#F4F0E8]"
-            : "bg-[#FDFCF9] border-[#D8D2C8] text-[#5C5C5C]"
+          ${
+            isActive
+              ? "bg-[#5B0000] border-[#5B0000] text-[#F4F0E8]"
+              : "bg-[#FDFCF9] border-[#D8D2C8] text-[#5C5C5C]"
           }
-        `}>
+        `}
+        >
           <Icon className="w-6 h-6" />
         </div>
 
@@ -44,7 +47,7 @@ const PrismaStep = forwardRef<HTMLDivElement, PrismaStepProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 PrismaStep.displayName = "PrismaStep";

@@ -1,11 +1,22 @@
 import React, { useMemo, useState } from "react";
-import { FiPlus, FiTrash2, FiChevronDown, FiChevronUp, FiSave, FiLayers } from "react-icons/fi";
+import {
+  FiPlus,
+  FiTrash2,
+  FiChevronDown,
+  FiChevronUp,
+  FiSave,
+  FiLayers,
+} from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import Textarea from "../../components/ui/Textarea";
 import Modal from "../../components/ui/Modal";
 import { cn } from "../../utils/cn";
-import { buildChecklistTree, flattenChecklistTree, type ChecklistTreeNode } from "./checklistTree";
+import {
+  buildChecklistTree,
+  flattenChecklistTree,
+  type ChecklistTreeNode,
+} from "./checklistTree";
 import type {
   ChecklistItemTemplate,
   ChecklistTemplateDetail,
@@ -79,7 +90,9 @@ const toChecklistSection = (value: string): ChecklistSection => {
 };
 
 const getSectionDisplayName = (section: ChecklistSection): string => {
-  return PRISMA_SECTIONS[section as keyof typeof PRISMA_SECTIONS] ?? String(section);
+  return (
+    PRISMA_SECTIONS[section as keyof typeof PRISMA_SECTIONS] ?? String(section)
+  );
 };
 
 const ORDER_GAP = 1000;
@@ -100,7 +113,10 @@ const getNextRootItemNumber = (
   return String(Math.max(...rootNumbers) + 1);
 };
 
-const getNextSubItemNumber = (parentNumber: string, siblingCount: number): string => {
+const getNextSubItemNumber = (
+  parentNumber: string,
+  siblingCount: number,
+): string => {
   return `${parentNumber}.${siblingCount + 1}`;
 };
 
@@ -108,7 +124,9 @@ const getNextSubItemNumber = (parentNumber: string, siblingCount: number): strin
  * Recomputes order after structural changes.
  * Root items are ordered first, then each root's children in sequence.
  */
-const normalizeChecklistOrder = (flatItems: ChecklistItemTemplate[]): ChecklistItemTemplate[] => {
+const normalizeChecklistOrder = (
+  flatItems: ChecklistItemTemplate[],
+): ChecklistItemTemplate[] => {
   const tree = buildChecklistTree(flatItems);
   const flattened = flattenChecklistTree(tree);
 
@@ -129,7 +147,10 @@ const collectDescendantIds = (node: ChecklistTreeNode): string[] => {
   }, []);
 };
 
-const findNodeById = (nodes: ChecklistTreeNode[], id: string): ChecklistTreeNode | null => {
+const findNodeById = (
+  nodes: ChecklistTreeNode[],
+  id: string,
+): ChecklistTreeNode | null => {
   for (const node of nodes) {
     if (node.id === id) {
       return node;
@@ -183,7 +204,10 @@ const reorderSubNodes = (
       const swapIndex = direction === "up" ? index - 1 : index + 1;
       if (swapIndex < 0 || swapIndex >= children.length) return root;
 
-      [children[index], children[swapIndex]] = [children[swapIndex], children[index]];
+      [children[index], children[swapIndex]] = [
+        children[swapIndex],
+        children[index],
+      ];
       return { ...root, children };
     }
 
@@ -209,16 +233,22 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
   isLoading = false,
 }) => {
   const [templateName, setTemplateName] = useState(template?.name || "");
-  const [templateDescription, setTemplateDescription] = useState(template?.description || "");
+  const [templateDescription, setTemplateDescription] = useState(
+    template?.description || "",
+  );
   const [checklistType, setChecklistType] = useState<ChecklistType>(
     template?.type ?? ChecklistTypeValue.FULL,
   );
-  const [items, setItems] = useState<ChecklistItemTemplate[]>(template?.items || []);
+  const [items, setItems] = useState<ChecklistItemTemplate[]>(
+    template?.items || [],
+  );
   const [expandedItemId, setExpandedItemId] = useState<string | null>(null);
   const [showAddItemModal, setShowAddItemModal] = useState(false);
   const [addItemSessionId, setAddItemSessionId] = useState(0);
   const [addItemMode, setAddItemMode] = useState<AddItemMode>("root");
-  const [addItemParentItem, setAddItemParentItem] = useState<ParentItemOption | undefined>();
+  const [addItemParentItem, setAddItemParentItem] = useState<
+    ParentItemOption | undefined
+  >();
   const [newSectionName, setNewSectionName] = useState("");
   const [sections, setSections] = useState<SectionDraft[]>(() => {
     const fromTemplate = (template?.sections ?? [])
@@ -249,9 +279,12 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
 
     return fromItems;
   });
-  const [preferredSectionForAdd, setPreferredSectionForAdd] = useState<ChecklistSection>(() =>
-    toChecklistSection(sections[0]?.key ?? template?.items?.[0]?.section ?? "TITLE"),
-  );
+  const [preferredSectionForAdd, setPreferredSectionForAdd] =
+    useState<ChecklistSection>(() =>
+      toChecklistSection(
+        sections[0]?.key ?? template?.items?.[0]?.section ?? "TITLE",
+      ),
+    );
 
   // Build a sorted tree for hierarchical rendering while keeping editable state flat.
   const checklistTree = useMemo(() => buildChecklistTree(items), [items]);
@@ -262,7 +295,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         .sort((a, b) => a.order - b.order)
         .map((section) => ({
           section: section.key,
-          label: section.sectionNumber ? `${section.sectionNumber}. ${section.name}` : section.name,
+          label: section.sectionNumber
+            ? `${section.sectionNumber}. ${section.name}`
+            : section.name,
           description: section.description ?? undefined,
           nodes: checklistTree.filter((node) => node.section === section.key),
         })),
@@ -272,7 +307,8 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
   const hasDuplicateSectionName = useMemo(
     () =>
       sections.some(
-        (section) => section.name.toLowerCase() === normalizedNewSectionName.toLowerCase(),
+        (section) =>
+          section.name.toLowerCase() === normalizedNewSectionName.toLowerCase(),
       ),
     [normalizedNewSectionName, sections],
   );
@@ -302,7 +338,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
 
   const handleRemoveSection = (section: ChecklistSection) => {
     setItems((prevItems) =>
-      normalizeChecklistOrder(prevItems.filter((item) => item.section !== section)),
+      normalizeChecklistOrder(
+        prevItems.filter((item) => item.section !== section),
+      ),
     );
     setSections((prev) => {
       const next = prev
@@ -324,7 +362,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         return prev;
       }
 
-      return sections.find((current) => current.key !== section)?.key ?? "TITLE";
+      return (
+        sections.find((current) => current.key !== section)?.key ?? "TITLE"
+      );
     });
   };
 
@@ -372,7 +412,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           ? prevItems.find((item) => item.id === newItem.parentId)
           : undefined;
       const resolvedSection =
-        newItem.mode === "sub-item" && parentItem ? parentItem.section : newItem.section;
+        newItem.mode === "sub-item" && parentItem
+          ? parentItem.section
+          : newItem.section;
       const trimmedItemNumber = newItem.itemNumber.trim();
       const autoItemNumber = (() => {
         if (trimmedItemNumber) {
@@ -380,7 +422,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         }
 
         if (newItem.mode === "sub-item" && parentItem) {
-          const siblingCount = prevItems.filter((item) => item.parentId === parentItem.id).length;
+          const siblingCount = prevItems.filter(
+            (item) => item.parentId === parentItem.id,
+          ).length;
           return getNextSubItemNumber(parentItem.itemNumber, siblingCount);
         }
 
@@ -388,7 +432,8 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
       })();
 
       // Grouping/header-only items are organizational and should not carry response-oriented fields.
-      const isSectionHeaderOnly = newItem.mode === "sub-item" ? false : newItem.isSectionHeaderOnly;
+      const isSectionHeaderOnly =
+        newItem.mode === "sub-item" ? false : newItem.isSectionHeaderOnly;
       const hasLocationField =
         isSectionHeaderOnly || checklistType === ChecklistTypeValue.ABSTRACT
           ? false
@@ -426,7 +471,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
       const childIds = collectDescendantIds(nodeToDelete);
       const blockedIds = new Set([itemId, ...childIds]);
 
-      return normalizeChecklistOrder(prevItems.filter((item) => !blockedIds.has(item.id)));
+      return normalizeChecklistOrder(
+        prevItems.filter((item) => !blockedIds.has(item.id)),
+      );
     });
   };
 
@@ -448,7 +495,10 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
     });
   };
 
-  const handleUpdateItem = (itemId: string, updates: Partial<ChecklistItemTemplate>) => {
+  const handleUpdateItem = (
+    itemId: string,
+    updates: Partial<ChecklistItemTemplate>,
+  ) => {
     setItems((prevItems) =>
       prevItems.map((item) => {
         if (item.id !== itemId) {
@@ -456,7 +506,8 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         }
 
         const merged = { ...item, ...updates };
-        const isGroupingItem = Boolean(merged.isSectionHeaderOnly) || Boolean(merged.hasChildren);
+        const isGroupingItem =
+          Boolean(merged.isSectionHeaderOnly) || Boolean(merged.hasChildren);
 
         if (isGroupingItem || checklistType === ChecklistTypeValue.ABSTRACT) {
           return { ...merged, hasLocationField: false };
@@ -476,7 +527,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           isSubItem={depth > 0}
           depth={depth}
           isExpanded={expandedItemId === node.id}
-          onToggleExpand={() => setExpandedItemId(expandedItemId === node.id ? null : node.id)}
+          onToggleExpand={() =>
+            setExpandedItemId(expandedItemId === node.id ? null : node.id)
+          }
           onUpdate={(updates) => handleUpdateItem(node.id, updates)}
           onDelete={() => handleDeleteItem(node.id)}
           onMoveUp={() => handleReorderItem(node.id, "up")}
@@ -520,14 +573,16 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
     <div className="max-w-4xl mx-auto p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl font-bold text-text-primary mb-4">
           {template ? "Edit Template" : "Create Template"}
         </h1>
 
         {/* Template Info */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Template Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Template Name
+            </label>
             <Input
               value={templateName}
               onChange={(e) => setTemplateName(e.target.value)}
@@ -537,7 +592,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Description
+            </label>
             <Textarea
               value={templateDescription}
               onChange={(e) => setTemplateDescription(e.target.value)}
@@ -548,28 +605,34 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Checklist Type</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Checklist Type
+            </label>
             <select
               value={checklistType}
-              onChange={(event) => setChecklistType(Number(event.target.value) as ChecklistType)}
+              onChange={(event) =>
+                setChecklistType(Number(event.target.value) as ChecklistType)
+              }
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[4px] bg-surface-white text-sm"
             >
               <option value={ChecklistTypeValue.FULL}>Full</option>
               <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
             </select>
-            <p className="text-xs text-gray-500 mt-1">
-              Full mode keeps location fields (except grouping/header items). Abstract mode disables
-              location fields for all response items.
+            <p className="text-xs text-text-secondary mt-1">
+              Full mode keeps location fields (except grouping/header items).
+              Abstract mode disables location fields for all response items.
             </p>
           </div>
         </div>
       </div>
 
       {/* Items Section */}
-      <div className="bg-gray-50 rounded-lg p-6 mb-8">
+      <div className="bg-bg-primary rounded-[4px] p-6 mb-8">
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
-          <h2 className="text-xl font-semibold text-gray-900">Checklist Items ({items.length})</h2>
+          <h2 className="text-xl font-semibold text-text-primary">
+            Checklist Items ({items.length})
+          </h2>
           <div className="flex items-center gap-2">
             <Input
               value={newSectionName}
@@ -583,8 +646,16 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
               size="sm"
               variant="secondary"
               className="inline-flex items-center gap-2"
-              disabled={isLoading || !normalizedNewSectionName || hasDuplicateSectionName}
-              title={hasDuplicateSectionName ? "Section name already exists" : undefined}
+              disabled={
+                isLoading ||
+                !normalizedNewSectionName ||
+                hasDuplicateSectionName
+              }
+              title={
+                hasDuplicateSectionName
+                  ? "Section name already exists"
+                  : undefined
+              }
             >
               <FiPlus className="w-4 h-4" />
               Add Section
@@ -595,25 +666,26 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         {/* Items List */}
         <div className="space-y-3">
           {displayedSections.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-text-secondary">
               <p>No sections yet. Add a section to get started.</p>
             </div>
           ) : (
             displayedSections.map((group) => (
               <section key={group.section} className="space-y-3">
-                <div className="sticky top-0 z-10 bg-gray-50/95 backdrop-blur-xs border-b border-gray-200 py-2">
+                <div className="sticky top-0 z-10 bg-bg-primary/95 backdrop-blur-xs border-b border-border py-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <h3 className="text-sm font-semibold tracking-wide text-gray-800 uppercase">
+                      <h3 className="text-sm font-semibold tracking-wide text-text-primary uppercase">
                         {group.label}
                       </h3>
                       {group.description && (
-                        <span className="text-xs text-gray-500 max-w-[40ch] truncate">
+                        <span className="text-xs text-text-secondary max-w-[40ch] truncate">
                           {group.description}
                         </span>
                       )}
-                      <span className="text-xs font-medium text-gray-600">
-                        {group.nodes.length} item{group.nodes.length === 1 ? "" : "s"}
+                      <span className="text-xs font-medium text-text-secondary">
+                        {group.nodes.length} item
+                        {group.nodes.length === 1 ? "" : "s"}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -636,7 +708,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveSection(group.section)}
-                        className="px-2 py-1 text-xs rounded-md text-gray-600 hover:bg-red-100 hover:text-red-600 transition-colors"
+                        className="px-2 py-1 text-xs rounded-md text-text-secondary hover:bg-red-100 hover:text-red-600 transition-colors"
                         disabled={isLoading}
                         title="Remove section and its items"
                       >
@@ -648,8 +720,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                 {group.nodes.length > 0 ? (
                   renderTreeNodes(group.nodes)
                 ) : (
-                  <div className="text-sm text-gray-500 border border-dashed border-gray-300 rounded-lg p-4">
-                    No items in this section yet. Use Add Item to create top-level items.
+                  <div className="text-sm text-text-secondary border border-dashed border-gray-300 rounded-[4px] p-4">
+                    No items in this section yet. Use Add Item to create
+                    top-level items.
                   </div>
                 )}
               </section>
@@ -659,8 +732,13 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
       </div>
 
       {/* Action Buttons */}
-      <div className="flex gap-3 sticky bottom-0 bg-white border-t border-gray-200 p-4 -mx-6 -mb-6">
-        <Button variant="secondary" onClick={onClose} disabled={isLoading} className="flex-1">
+      <div className="flex gap-3 sticky bottom-0 bg-surface-white border-t border-border p-4 -mx-6 -mb-6">
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          disabled={isLoading}
+          className="flex-1"
+        >
           Cancel
         </Button>
         <Button
@@ -731,19 +809,20 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
   isLoading = false,
 }) => {
   const depthClass = depth > 1 ? "ml-6" : depth === 1 ? "ml-2" : "";
-  const isGroupingItem = Boolean(item.isSectionHeaderOnly) || (item.children?.length ?? 0) > 0;
+  const isGroupingItem =
+    Boolean(item.isSectionHeaderOnly) || (item.children?.length ?? 0) > 0;
   const isAbstractType = checklistType === ChecklistTypeValue.ABSTRACT;
 
   return (
     <div
       className={cn(
-        "border rounded-lg p-4 transition-colors",
+        "border rounded-[4px] p-4 transition-colors",
         depthClass,
         isGroupingItem
           ? "bg-amber-50 border-amber-200"
           : isSubItem
             ? "bg-slate-50 border-slate-200"
-            : "bg-white border-gray-200 shadow-sm",
+            : "bg-surface-white border-border shadow-none",
       )}
     >
       {/* Header */}
@@ -751,13 +830,18 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
         <div className="flex items-baseline gap-3 flex-1">
           <span
             className={cn(
-              "font-bold text-indigo-600 min-w-fit",
+              "font-bold text-accent min-w-fit",
               isSubItem ? "text-base" : "text-lg",
             )}
           >
             {item.itemNumber}
           </span>
-          <h3 className={cn("text-gray-900", isSubItem ? "text-sm font-medium" : "font-semibold")}>
+          <h3
+            className={cn(
+              "text-text-primary",
+              isSubItem ? "text-sm font-medium" : "font-semibold",
+            )}
+          >
             {item.topic}
           </h3>
           {isGroupingItem && (
@@ -777,25 +861,25 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
           <button
             onClick={onMoveUp}
             disabled={!canMoveUp || isLoading}
-            className="p-1.5 hover:bg-gray-100 rounded disabled:opacity-50 transition-colors"
+            className="p-1.5 hover:bg-bg-secondary rounded disabled:opacity-50 transition-colors"
             title="Move up"
           >
-            <FiChevronUp className="w-4 h-4 text-gray-600" />
+            <FiChevronUp className="w-4 h-4 text-text-secondary" />
           </button>
           <button
             onClick={onMoveDown}
             disabled={!canMoveDown || isLoading}
-            className="p-1.5 hover:bg-gray-100 rounded disabled:opacity-50 transition-colors"
+            className="p-1.5 hover:bg-bg-secondary rounded disabled:opacity-50 transition-colors"
             title="Move down"
           >
-            <FiChevronDown className="w-4 h-4 text-gray-600" />
+            <FiChevronDown className="w-4 h-4 text-text-secondary" />
           </button>
           {canAddSubItem && (
             <button
               type="button"
               onClick={onAddSubItem}
               disabled={isLoading}
-              className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md border border-indigo-200 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-50"
+              className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md border border-indigo-200 bg-bg-secondary text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-50"
               title="Add sub-item"
             >
               <FiLayers className="w-4 h-4" />
@@ -804,14 +888,14 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
           )}
           <button
             onClick={onToggleExpand}
-            className="px-2 py-1 text-sm font-medium bg-gray-100 hover:bg-gray-200 rounded transition-colors"
+            className="px-2 py-1 text-sm font-medium bg-bg-secondary hover:bg-bg-secondary rounded transition-colors"
           >
             {isExpanded ? "Hide" : "Show"}
           </button>
           <button
             onClick={onDelete}
             disabled={isLoading}
-            className="p-1.5 hover:bg-red-100 rounded text-gray-600 hover:text-red-600 transition-colors disabled:opacity-50"
+            className="p-1.5 hover:bg-red-100 rounded text-text-secondary hover:text-red-600 transition-colors disabled:opacity-50"
             title="Delete item"
           >
             <FiTrash2 className="w-4 h-4" />
@@ -821,28 +905,34 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
 
       {/* Expanded View */}
       {isExpanded && (
-        <div className="space-y-3 pt-3 border-t border-gray-200">
+        <div className="space-y-3 pt-3 border-t border-border">
           {isGroupingItem && (
             <div className="rounded-md border border-amber-200 bg-amber-100/70 px-3 py-2 text-xs text-amber-900">
-              This item is a grouping header. Users will not enter responses here - only fill its
-              sub-items.
+              This item is a grouping header. Users will not enter responses
+              here - only fill its sub-items.
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Section</label>
+              <label className="text-xs font-medium text-text-secondary mb-1 block">
+                Section
+              </label>
               <select
                 value={item.section}
-                onChange={(e) => onUpdate({ section: e.target.value as ChecklistSection })}
+                onChange={(e) =>
+                  onUpdate({ section: e.target.value as ChecklistSection })
+                }
                 disabled={isLoading}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white"
+                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-surface-white"
               >
-                {Array.from(new Set([...sectionOptions, item.section])).map((section) => (
-                  <option key={section} value={section}>
-                    {getSectionDisplayName(section)}
-                  </option>
-                ))}
+                {Array.from(new Set([...sectionOptions, item.section])).map(
+                  (section) => (
+                    <option key={section} value={section}>
+                      {getSectionDisplayName(section)}
+                    </option>
+                  ),
+                )}
               </select>
             </div>
 
@@ -854,7 +944,9 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
                 disabled={isLoading}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm text-gray-700 font-medium">Required</span>
+              <span className="text-sm text-gray-700 font-medium">
+                Required
+              </span>
             </label>
           </div>
 
@@ -863,16 +955,22 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
               <input
                 type="checkbox"
                 checked={item.hasLocationField !== false}
-                onChange={(e) => onUpdate({ hasLocationField: e.target.checked })}
+                onChange={(e) =>
+                  onUpdate({ hasLocationField: e.target.checked })
+                }
                 disabled={isLoading}
                 className="w-4 h-4 rounded border-gray-300"
               />
-              <span className="text-sm text-gray-700 font-medium">Has Location Field</span>
+              <span className="text-sm text-gray-700 font-medium">
+                Has Location Field
+              </span>
             </label>
           )}
 
           <div>
-            <label className="text-xs font-medium text-gray-600 mb-1 block">Description</label>
+            <label className="text-xs font-medium text-text-secondary mb-1 block">
+              Description
+            </label>
             <Textarea
               value={item.description}
               onChange={(e) => onUpdate({ description: e.target.value })}
@@ -881,16 +979,22 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
               className="text-sm"
             />
             {isGroupingItem && (
-              <p className="text-xs text-sky-700 mt-1">(Grouping item - fill sub-items below)</p>
+              <p className="text-xs text-sky-700 mt-1">
+                (Grouping item - fill sub-items below)
+              </p>
             )}
           </div>
 
           {!isGroupingItem && item.defaultSampleAnswer && (
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Sample Answer</label>
+              <label className="text-xs font-medium text-text-secondary mb-1 block">
+                Sample Answer
+              </label>
               <Textarea
                 value={item.defaultSampleAnswer}
-                onChange={(e) => onUpdate({ defaultSampleAnswer: e.target.value })}
+                onChange={(e) =>
+                  onUpdate({ defaultSampleAnswer: e.target.value })
+                }
                 disabled={isLoading}
                 rows={2}
                 className="text-sm"
@@ -931,7 +1035,8 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
 }) => {
   const [itemNumber, setItemNumber] = useState("");
   const [topic, setTopic] = useState("");
-  const [selectedSection, setSelectedSection] = useState<ChecklistSection>(section);
+  const [selectedSection, setSelectedSection] =
+    useState<ChecklistSection>(section);
   const [description, setDescription] = useState("");
   const [isRequired, setIsRequired] = useState(true);
   const [itemKind, setItemKind] = useState<"normal" | "grouping">("normal");
@@ -940,11 +1045,14 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   const effectiveKind = mode === "sub-item" ? "normal" : itemKind;
   const isAbstractType = checklistType === ChecklistTypeValue.ABSTRACT;
 
-  const resolvedSection = mode === "sub-item" && parentItem ? parentItem.section : selectedSection;
+  const resolvedSection =
+    mode === "sub-item" && parentItem ? parentItem.section : selectedSection;
 
   const suggestedItemNumber = useMemo(() => {
     if (mode === "sub-item" && parentItem) {
-      const siblingCount = existingItems.filter((item) => item.parentId === parentItem.id).length;
+      const siblingCount = existingItems.filter(
+        (item) => item.parentId === parentItem.id,
+      ).length;
       return getNextSubItemNumber(parentItem.itemNumber, siblingCount);
     }
 
@@ -980,7 +1088,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
       description,
       section: resolvedSection,
       isRequired,
-      hasLocationField: effectiveKind === "normal" && !isAbstractType ? hasLocationField : false,
+      hasLocationField:
+        effectiveKind === "normal" && !isAbstractType
+          ? hasLocationField
+          : false,
       isSectionHeaderOnly: effectiveKind === "grouping",
       parentId: mode === "sub-item" ? parentItem?.id : undefined,
     });
@@ -989,7 +1100,8 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
   };
 
   const isDuplicateItemNumber = existingItemNumbers.some(
-    (existingItemNumber) => existingItemNumber.toLowerCase() === candidateItemNumber.toLowerCase(),
+    (existingItemNumber) =>
+      existingItemNumber.toLowerCase() === candidateItemNumber.toLowerCase(),
   );
 
   return (
@@ -1001,15 +1113,18 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
     >
       <div className="space-y-4">
         {mode === "sub-item" && parentItem && (
-          <div className="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
-            Adding as sub-item under: {parentItem.itemNumber} - {parentItem.topic}
+          <div className="rounded-[4px] border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
+            Adding as sub-item under: {parentItem.itemNumber} -{" "}
+            {parentItem.topic}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Item Kind</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Item Kind
+          </label>
           {mode === "sub-item" ? (
-            <div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+            <div className="rounded-[4px] border border-border bg-bg-primary px-3 py-2 text-sm text-gray-700">
               Normal Item only
             </div>
           ) : (
@@ -1018,10 +1133,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("normal")}
                 className={cn(
-                  "px-3 py-2 rounded-lg border text-sm font-medium transition-colors",
+                  "px-3 py-2 rounded-[4px] border text-sm font-medium transition-colors",
                   effectiveKind === "normal"
                     ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                    : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
                 )}
               >
                 Normal Item
@@ -1030,10 +1145,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("grouping")}
                 className={cn(
-                  "px-3 py-2 rounded-lg border text-sm font-medium transition-colors",
+                  "px-3 py-2 rounded-[4px] border text-sm font-medium transition-colors",
                   effectiveKind === "grouping"
                     ? "border-amber-300 bg-amber-50 text-amber-800"
-                    : "border-gray-300 bg-white text-gray-700 hover:bg-gray-50",
+                    : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
                 )}
               >
                 Grouping Item
@@ -1043,40 +1158,57 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
 
           {effectiveKind === "grouping" ? (
             <p className="mt-2 text-xs text-amber-800 bg-amber-100 border border-amber-200 rounded-md px-2 py-1">
-              This item is a header only. Users will not enter responses here, and sub-items can be
-              added underneath it.
+              This item is a header only. Users will not enter responses here,
+              and sub-items can be added underneath it.
             </p>
           ) : mode === "sub-item" ? (
-            <p className="mt-2 text-xs text-gray-600">Sub-items are always Normal Items.</p>
+            <p className="mt-2 text-xs text-text-secondary">
+              Sub-items are always Normal Items.
+            </p>
           ) : null}
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Item Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Item Number
+            </label>
             <div className="flex gap-2">
               <Input
                 value={itemNumber}
                 onChange={(e) => setItemNumber(e.target.value)}
                 placeholder={suggestedItemNumber}
               />
-              <Button type="button" variant="secondary" onClick={applySuggestedNumber}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={applySuggestedNumber}
+              >
                 Use Suggested
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">Suggested: {suggestedItemNumber}</p>
+            <p className="text-xs text-text-secondary mt-1">
+              Suggested: {suggestedItemNumber}
+            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Section</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Section
+            </label>
             <select
               value={resolvedSection}
-              onChange={(e) => setSelectedSection(e.target.value as ChecklistSection)}
+              onChange={(e) =>
+                setSelectedSection(e.target.value as ChecklistSection)
+              }
               disabled={mode === "sub-item"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-[4px] bg-surface-white text-sm"
             >
               {Array.from(
-                new Set([resolvedSection, ...existingItems.map((item) => item.section)]),
+                new Set([
+                  resolvedSection,
+                  ...existingItems.map((item) => item.section),
+                ]),
               ).map((section) => (
                 <option key={section} value={section}>
                   {getSectionDisplayName(section)}
@@ -1087,7 +1219,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Topic</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Topic
+          </label>
           <Input
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
@@ -1096,11 +1230,15 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
         </div>
 
         {isDuplicateItemNumber && (
-          <p className="text-sm text-red-600">This item number already exists in the template.</p>
+          <p className="text-sm text-red-600">
+            This item number already exists in the template.
+          </p>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Description
+          </label>
           <Textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -1127,24 +1265,32 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
               onChange={(e) => setHasLocationField(e.target.checked)}
               className="w-4 h-4 rounded border-gray-300"
             />
-            <span className="text-sm text-gray-700 font-medium">Has Location Field</span>
+            <span className="text-sm text-gray-700 font-medium">
+              Has Location Field
+            </span>
           </label>
         )}
 
         {effectiveKind === "normal" && isAbstractType && (
-          <p className="text-xs text-gray-600">
+          <p className="text-xs text-text-secondary">
             Abstract type disables location fields for all response items.
           </p>
         )}
 
-        <div className="flex gap-3 pt-4 border-t border-gray-200">
-          <Button variant="secondary" onClick={handleCloseModal} className="flex-1">
+        <div className="flex gap-3 pt-4 border-t border-border">
+          <Button
+            variant="secondary"
+            onClick={handleCloseModal}
+            className="flex-1"
+          >
             Cancel
           </Button>
           <Button
             onClick={handleAdd}
             disabled={
-              !topic.trim() || isDuplicateItemNumber || (mode === "sub-item" && !parentItem)
+              !topic.trim() ||
+              isDuplicateItemNumber ||
+              (mode === "sub-item" && !parentItem)
             }
             className="flex-1"
           >
@@ -1157,7 +1303,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
 };
 
 const TemplateCustoimzer: React.FC<TemplateCustoimzerProps> = (props) => {
-  return <TemplateCustoimzerInner key={props.template?.id ?? "new"} {...props} />;
+  return (
+    <TemplateCustoimzerInner key={props.template?.id ?? "new"} {...props} />
+  );
 };
 
 export default TemplateCustoimzer;

@@ -7,7 +7,10 @@ interface ReferenceExtractionPanelProps {
   hasPdf: boolean;
 }
 
-const ReferenceExtractionPanel: React.FC<ReferenceExtractionPanelProps> = ({ paperId, hasPdf }) => {
+const ReferenceExtractionPanel: React.FC<ReferenceExtractionPanelProps> = ({
+  paperId,
+  hasPdf,
+}) => {
   return (
     <section className="mb-6">
       <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
@@ -18,15 +21,20 @@ const ReferenceExtractionPanel: React.FC<ReferenceExtractionPanelProps> = ({ pap
       <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
         {!hasPdf ? (
           <p className="text-sm text-slate-600">
-            No PDF available. Upload a full-text PDF to enable reference extraction.
+            No PDF available. Upload a full-text PDF to enable reference
+            extraction.
           </p>
         ) : (
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="text-sm text-slate-700 max-w-md">
-              Extract references from this paper's full-text PDF to discover additional studies via
-              backward snowballing.
+              Extract references from this paper's full-text PDF to discover
+              additional studies via backward snowballing.
             </p>
-            <ReferenceExtractionButton paperId={paperId} hasPdf={hasPdf} variant="panel" />
+            <ReferenceExtractionButton
+              paperId={paperId}
+              hasPdf={hasPdf}
+              variant="panel"
+            />
           </div>
         )}
       </div>

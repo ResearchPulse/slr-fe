@@ -1,11 +1,6 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  AlertTriangle,
-  CheckCircle2,
-  Eye,
-  MessageSquare,
-} from "lucide-react";
+import { AlertTriangle, CheckCircle2, Eye, MessageSquare } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Card from "../../../../components/ui/Card";
 import Drawer from "../../../../components/ui/Drawer";
@@ -22,7 +17,10 @@ import type {
   ExtractionCommentDto,
   SubmitConsensusRequestDto,
 } from "../../../../types/dataExtraction";
-import { FieldTypeEnum, SectionTypeEnum as SectionType } from "../../../../types/dataExtraction";
+import {
+  FieldTypeEnum,
+  SectionTypeEnum as SectionType,
+} from "../../../../types/dataExtraction";
 import type { UseDataExtractionWorkspaceReturn } from "../types";
 import ConsensusDocumentDrawer from "./consensusWorkspace/ConsensusDocumentDrawer";
 import ConsensusHeader from "./consensusWorkspace/ConsensusHeader";
@@ -59,12 +57,14 @@ function normalizeDisplayValue(value: string | null | undefined): string {
 
 function getReviewerDisplayName(
   username: string | null | undefined,
-  fallbackLabel: string
+  fallbackLabel: string,
 ): string {
   return (username ?? "").trim() || fallbackLabel;
 }
 
-function getAnswerDisplayValue(answer: AnswerDetailDto | null | undefined): string {
+function getAnswerDisplayValue(
+  answer: AnswerDetailDto | null | undefined,
+): string {
   if (!answer) {
     return "Not provided";
   }
@@ -76,11 +76,15 @@ function getAnswerDisplayValue(answer: AnswerDetailDto | null | undefined): stri
   return normalizeDisplayValue(answer.displayValue);
 }
 
-function hasEvidenceCoordinates(answer: AnswerDetailDto | null | undefined): boolean {
+function hasEvidenceCoordinates(
+  answer: AnswerDetailDto | null | undefined,
+): boolean {
   return Boolean(answer?.evidenceCoordinates?.trim());
 }
 
-function hasFinalEvidenceCoordinates(finalValue: ConsensusValueDto | undefined): boolean {
+function hasFinalEvidenceCoordinates(
+  finalValue: ConsensusValueDto | undefined,
+): boolean {
   return Boolean(finalValue?.evidenceCoordinates?.trim());
 }
 
@@ -95,17 +99,19 @@ function buildAnswerStateKey(
   sectionId: string,
   fieldId: string,
   matrixColumnId: string | null,
-  matrixRowIndex: number | null
+  matrixRowIndex: number | null,
 ): string {
   const normalizedColumnId = matrixColumnId ?? "root";
   const normalizedRowIndex =
-    matrixRowIndex === null || matrixRowIndex === undefined ? "root" : String(matrixRowIndex);
+    matrixRowIndex === null || matrixRowIndex === undefined
+      ? "root"
+      : String(matrixRowIndex);
 
   return `${sectionId}-${fieldId}-${normalizedColumnId}-${normalizedRowIndex}`;
 }
 
 function getPrimaryAnswerGroup(
-  field: ConsensusFieldDto
+  field: ConsensusFieldDto,
 ): ConsensusAnswerGroupDto | null {
   return field.answers?.[0] ?? null;
 }
@@ -113,7 +119,7 @@ function getPrimaryAnswerGroup(
 function getMatrixAnswerGroup(
   field: ConsensusFieldDto,
   matrixRowIndex: number,
-  matrixColumnId: string | null
+  matrixColumnId: string | null,
 ): ConsensusAnswerGroupDto | null {
   const normalizedColumnId = matrixColumnId ?? "";
 
@@ -121,14 +127,14 @@ function getMatrixAnswerGroup(
     (field.answers ?? []).find(
       (answerGroup) =>
         answerGroup.matrixRowIndex === matrixRowIndex &&
-        (answerGroup.matrixColumnId ?? "") === normalizedColumnId
+        (answerGroup.matrixColumnId ?? "") === normalizedColumnId,
     ) ?? null
   );
 }
 
 function answersAreConflicted(
   answer1: AnswerDetailDto | null | undefined,
-  answer2: AnswerDetailDto | null | undefined
+  answer2: AnswerDetailDto | null | undefined,
 ): boolean {
   if (!answer1 || !answer2) {
     return !!answer1 !== !!answer2;
@@ -149,7 +155,9 @@ function answersAreConflicted(
 
   // Compare stringValue (for text, multiselect)
   if (answer1.stringValue || answer2.stringValue) {
-    return (answer1.stringValue ?? "").trim() !== (answer2.stringValue ?? "").trim();
+    return (
+      (answer1.stringValue ?? "").trim() !== (answer2.stringValue ?? "").trim()
+    );
   }
 
   // Compare numericValue (for integer, decimal)
@@ -189,7 +197,7 @@ function hasUnresolvedConflict(
   field: ConsensusFieldDto,
   answerGroup: ConsensusAnswerGroupDto | null,
   effectiveFinalAnswers: Record<string, ConsensusValueDto>,
-  explicitlyResolvedFields: Set<string>
+  explicitlyResolvedFields: Set<string>,
 ): boolean {
   if (!answerGroup) {
     return false;
@@ -203,7 +211,7 @@ function hasUnresolvedConflict(
 
   const isConflicted = answersAreConflicted(
     answerGroup.reviewer1Answer,
-    answerGroup.reviewer2Answer
+    answerGroup.reviewer2Answer,
   );
   if (!isConflicted) {
     return false;
@@ -213,7 +221,7 @@ function hasUnresolvedConflict(
     sectionId,
     field.fieldId,
     answerGroup.matrixColumnId ?? null,
-    answerGroup.matrixRowIndex ?? null
+    answerGroup.matrixRowIndex ?? null,
   );
 
   // If leader explicitly touched this cell, it's resolved even if empty
@@ -227,7 +235,7 @@ function hasUnresolvedConflict(
 function countSectionUnresolvedConflicts(
   section: ConsensusSectionDto,
   effectiveFinalAnswers: Record<string, ConsensusValueDto>,
-  explicitlyResolvedFields: Set<string>
+  explicitlyResolvedFields: Set<string>,
 ): number {
   return section.fields.reduce((count, field) => {
     const answerGroups = field.answers ?? [];
@@ -242,8 +250,8 @@ function countSectionUnresolvedConflicts(
         field,
         answerGroup,
         effectiveFinalAnswers,
-        explicitlyResolvedFields
-      )
+        explicitlyResolvedFields,
+      ),
     ).length;
 
     return count + unresolvedCount;
@@ -251,7 +259,7 @@ function countSectionUnresolvedConflicts(
 }
 
 function buildInitialFinalAnswers(
-  workspace: ConsensusWorkspaceDto | null
+  workspace: ConsensusWorkspaceDto | null,
 ): Record<string, ConsensusValueDto> {
   if (!workspace) {
     return {};
@@ -266,7 +274,7 @@ function buildInitialFinalAnswers(
           section.sectionId,
           field.fieldId,
           answerGroup.matrixColumnId ?? null,
-          answerGroup.matrixRowIndex ?? null
+          answerGroup.matrixRowIndex ?? null,
         );
 
         let defaultAnswer: AnswerDetailDto | null = null;
@@ -278,11 +286,11 @@ function buildInitialFinalAnswers(
           // Ongoing consensus flow: auto-fill only when both reviewers agree.
           const isConflict = answersAreConflicted(
             answerGroup.reviewer1Answer,
-            answerGroup.reviewer2Answer
+            answerGroup.reviewer2Answer,
           );
           defaultAnswer = isConflict
             ? null
-            : answerGroup.reviewer1Answer ?? answerGroup.reviewer2Answer;
+            : (answerGroup.reviewer1Answer ?? answerGroup.reviewer2Answer);
         }
 
         answers[key] = {
@@ -304,7 +312,7 @@ function buildInitialFinalAnswers(
 }
 
 function buildSelectOptions(
-  field: ConsensusFieldDto
+  field: ConsensusFieldDto,
 ): Array<{ value: string; label: string }> {
   const options = (field.options ?? [])
     .filter((option) => !!option.optionId)
@@ -313,10 +321,7 @@ function buildSelectOptions(
       label: option.value,
     }));
 
-  return [
-    { value: "", label: "Select final answer" },
-    ...options,
-  ];
+  return [{ value: "", label: "Select final answer" }, ...options];
 }
 
 export default function DataExtractionConsensusWorkspace({
@@ -351,33 +356,36 @@ export default function DataExtractionConsensusWorkspace({
 
   const reviewer1Name = getReviewerDisplayName(
     consensusWorkspace?.reviewer1Username,
-    "Reviewer 1"
+    "Reviewer 1",
   );
   const reviewer2Name = getReviewerDisplayName(
     consensusWorkspace?.reviewer2Username,
-    "Reviewer 2"
+    "Reviewer 2",
   );
 
   const [activeSectionId, setActiveSectionId] = useState<string | null>(null);
   const [isDocumentDrawerOpen, setIsDocumentDrawerOpen] = useState(false);
-  const [finalAnswers, setFinalAnswers] = useState<Record<string, ConsensusValueDto>>({});
-  const [explicitlyResolvedFields, setExplicitlyResolvedFields] = useState<Set<string>>(
-    new Set()
-  );
-  const [manualMatrixRows, setManualMatrixRows] = useState<Record<string, number>>({});
+  const [finalAnswers, setFinalAnswers] = useState<
+    Record<string, ConsensusValueDto>
+  >({});
+  const [explicitlyResolvedFields, setExplicitlyResolvedFields] = useState<
+    Set<string>
+  >(new Set());
+  const [manualMatrixRows, setManualMatrixRows] = useState<
+    Record<string, number>
+  >({});
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
-  const [activeThread, setActiveThread] = useState<ActiveConsensusThreadState | null>(
-    null
-  );
+  const [activeThread, setActiveThread] =
+    useState<ActiveConsensusThreadState | null>(null);
 
   const initialFinalAnswers = useMemo(
     () => buildInitialFinalAnswers(consensusWorkspace),
-    [consensusWorkspace]
+    [consensusWorkspace],
   );
 
   const effectiveFinalAnswers = useMemo(
     () => ({ ...initialFinalAnswers, ...finalAnswers }),
-    [initialFinalAnswers, finalAnswers]
+    [initialFinalAnswers, finalAnswers],
   );
 
   const unresolvedConflictCount = useMemo(() => {
@@ -391,20 +399,20 @@ export default function DataExtractionConsensusWorkspace({
         countSectionUnresolvedConflicts(
           section,
           effectiveFinalAnswers,
-          explicitlyResolvedFields
+          explicitlyResolvedFields,
         ),
-      0
+      0,
     );
   }, [consensusWorkspace, effectiveFinalAnswers, explicitlyResolvedFields]);
 
   const totalConflictCount = useMemo(
     () => (isReadOnly ? 0 : unresolvedConflictCount),
-    [isReadOnly, unresolvedConflictCount]
+    [isReadOnly, unresolvedConflictCount],
   );
 
   const hasUnresolvedConflicts = useMemo(
     () => unresolvedConflictCount > 0,
-    [unresolvedConflictCount]
+    [unresolvedConflictCount],
   );
 
   // Derive the effective active section ID, defaulting to the first section if none is set
@@ -425,7 +433,11 @@ export default function DataExtractionConsensusWorkspace({
     if (!consensusWorkspace || !effectiveActiveSectionId) {
       return null;
     }
-    return consensusWorkspace.sections.find((s) => s.sectionId === effectiveActiveSectionId) ?? null;
+    return (
+      consensusWorkspace.sections.find(
+        (s) => s.sectionId === effectiveActiveSectionId,
+      ) ?? null
+    );
   }, [consensusWorkspace, effectiveActiveSectionId]);
 
   const activeConflictCount = useMemo(() => {
@@ -436,7 +448,7 @@ export default function DataExtractionConsensusWorkspace({
     return countSectionUnresolvedConflicts(
       activeSection,
       effectiveFinalAnswers,
-      explicitlyResolvedFields
+      explicitlyResolvedFields,
     );
   }, [activeSection, effectiveFinalAnswers, explicitlyResolvedFields]);
 
@@ -445,9 +457,9 @@ export default function DataExtractionConsensusWorkspace({
       countSectionUnresolvedConflicts(
         section,
         effectiveFinalAnswers,
-        explicitlyResolvedFields
+        explicitlyResolvedFields,
       ),
-    [effectiveFinalAnswers, explicitlyResolvedFields]
+    [effectiveFinalAnswers, explicitlyResolvedFields],
   );
 
   const getFieldType = useCallback(
@@ -465,7 +477,7 @@ export default function DataExtractionConsensusWorkspace({
 
       return null;
     },
-    [consensusWorkspace]
+    [consensusWorkspace],
   );
 
   const normalizedDocumentUrl = normalizeDisplayValue(documentUrl);
@@ -492,11 +504,14 @@ export default function DataExtractionConsensusWorkspace({
       ws.setActiveHighlights(coordinates);
       setIsDocumentDrawerOpen(true);
     },
-    [onJumpToEvidence, ws]
+    [onJumpToEvidence, ws],
   );
 
   const matrixRowIndexes = useMemo(() => {
-    if (!activeSection || activeSection.sectionType !== SectionType.MatrixGrid) {
+    if (
+      !activeSection ||
+      activeSection.sectionType !== SectionType.MatrixGrid
+    ) {
       return [];
     }
 
@@ -513,7 +528,8 @@ export default function DataExtractionConsensusWorkspace({
       });
     });
 
-    const maxReviewerRowIndex = rowIndexSet.size > 0 ? Math.max(...rowIndexSet) : -1;
+    const maxReviewerRowIndex =
+      rowIndexSet.size > 0 ? Math.max(...rowIndexSet) : -1;
     const manualRowCount = manualMatrixRows[activeSection.sectionId] ?? 0;
     const totalRowCount = Math.max(maxReviewerRowIndex + 1, 0) + manualRowCount;
 
@@ -521,7 +537,10 @@ export default function DataExtractionConsensusWorkspace({
   }, [activeSection, manualMatrixRows]);
 
   const matrixColumns = useMemo(() => {
-    if (!activeSection || activeSection.sectionType !== SectionType.MatrixGrid) {
+    if (
+      !activeSection ||
+      activeSection.sectionType !== SectionType.MatrixGrid
+    ) {
       return [];
     }
 
@@ -541,16 +560,21 @@ export default function DataExtractionConsensusWorkspace({
       field: ConsensusFieldDto,
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
-      newValue: string
+      newValue: string,
     ) => {
-      const key = buildAnswerStateKey(sectionId, field.fieldId, matrixColumnId, matrixRowIndex);
+      const key = buildAnswerStateKey(
+        sectionId,
+        field.fieldId,
+        matrixColumnId,
+        matrixRowIndex,
+      );
 
       // Parse the value based on field type
       let parsedValue: ConsensusValueDto;
 
       if (field.fieldType === FieldTypeEnum.SingleSelect) {
         const selectedOption = (field.options ?? []).find(
-          (option) => option.optionId === newValue
+          (option) => option.optionId === newValue,
         );
 
         parsedValue = {
@@ -562,7 +586,8 @@ export default function DataExtractionConsensusWorkspace({
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       } else if (field.fieldType === FieldTypeEnum.Integer) {
         const numericValue = newValue ? parseInt(newValue, 10) : null;
@@ -575,7 +600,8 @@ export default function DataExtractionConsensusWorkspace({
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       } else if (field.fieldType === FieldTypeEnum.Decimal) {
         const numericValue = newValue ? parseFloat(newValue) : null;
@@ -588,7 +614,8 @@ export default function DataExtractionConsensusWorkspace({
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       } else if (field.fieldType === FieldTypeEnum.Boolean) {
         parsedValue = {
@@ -596,15 +623,17 @@ export default function DataExtractionConsensusWorkspace({
           optionId: null,
           stringValue: null,
           numericValue: null,
-          booleanValue: newValue === "true" ? true : newValue === "false" ? false : null,
+          booleanValue:
+            newValue === "true" ? true : newValue === "false" ? false : null,
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       } else if (field.fieldType === FieldTypeEnum.MultiSelect) {
         const selectedOptionIds = new Set(
-          parseCommaSeparatedIds(effectiveFinalAnswers[key]?.stringValue)
+          parseCommaSeparatedIds(effectiveFinalAnswers[key]?.stringValue),
         );
         const nextOptionId = newValue.trim();
 
@@ -625,7 +654,8 @@ export default function DataExtractionConsensusWorkspace({
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       } else {
         // Text, MultiSelect, default
@@ -638,7 +668,8 @@ export default function DataExtractionConsensusWorkspace({
           isNotReported: false,
           matrixColumnId,
           matrixRowIndex,
-          evidenceCoordinates: effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
+          evidenceCoordinates:
+            effectiveFinalAnswers[key]?.evidenceCoordinates ?? null,
         };
       }
 
@@ -653,7 +684,7 @@ export default function DataExtractionConsensusWorkspace({
         return next;
       });
     },
-    [effectiveFinalAnswers]
+    [effectiveFinalAnswers],
   );
 
   const handleUseReviewerAnswer = useCallback(
@@ -661,7 +692,7 @@ export default function DataExtractionConsensusWorkspace({
       sectionId: string,
       field: ConsensusFieldDto,
       answerGroup: ConsensusAnswerGroupDto | null,
-      reviewerKey: "reviewer1Answer" | "reviewer2Answer"
+      reviewerKey: "reviewer1Answer" | "reviewer2Answer",
     ) => {
       const answer = answerGroup?.[reviewerKey] ?? null;
 
@@ -669,15 +700,14 @@ export default function DataExtractionConsensusWorkspace({
         sectionId,
         field.fieldId,
         answerGroup?.matrixColumnId ?? null,
-        answerGroup?.matrixRowIndex ?? null
+        answerGroup?.matrixRowIndex ?? null,
       );
 
-      const normalizedMultiSelectStringValue =
-        answer?.isNotReported
-          ? null
-          : field.fieldType === FieldTypeEnum.MultiSelect
+      const normalizedMultiSelectStringValue = answer?.isNotReported
+        ? null
+        : field.fieldType === FieldTypeEnum.MultiSelect
           ? (answer?.stringValue ?? answer?.displayValue ?? "").trim() || null
-          : answer?.stringValue ?? null;
+          : (answer?.stringValue ?? null);
 
       setFinalAnswers((prev) => ({
         ...prev,
@@ -700,7 +730,7 @@ export default function DataExtractionConsensusWorkspace({
         return next;
       });
     },
-    []
+    [],
   );
 
   const handleFinalAnswerNotReportedChange = useCallback(
@@ -709,9 +739,14 @@ export default function DataExtractionConsensusWorkspace({
       field: ConsensusFieldDto,
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
-      isNotReported: boolean
+      isNotReported: boolean,
     ) => {
-      const key = buildAnswerStateKey(sectionId, field.fieldId, matrixColumnId, matrixRowIndex);
+      const key = buildAnswerStateKey(
+        sectionId,
+        field.fieldId,
+        matrixColumnId,
+        matrixRowIndex,
+      );
 
       setFinalAnswers((previous) => {
         const existing = previous[key];
@@ -722,8 +757,12 @@ export default function DataExtractionConsensusWorkspace({
             fieldId: field.fieldId,
             optionId: isNotReported ? null : (existing?.optionId ?? null),
             stringValue: isNotReported ? null : (existing?.stringValue ?? null),
-            numericValue: isNotReported ? null : (existing?.numericValue ?? null),
-            booleanValue: isNotReported ? null : (existing?.booleanValue ?? null),
+            numericValue: isNotReported
+              ? null
+              : (existing?.numericValue ?? null),
+            booleanValue: isNotReported
+              ? null
+              : (existing?.booleanValue ?? null),
             isNotReported,
             matrixColumnId,
             matrixRowIndex,
@@ -740,7 +779,7 @@ export default function DataExtractionConsensusWorkspace({
         return next;
       });
     },
-    []
+    [],
   );
 
   const renderFinalDecisionControl = useCallback(
@@ -750,7 +789,7 @@ export default function DataExtractionConsensusWorkspace({
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
       finalValue: ConsensusValueDto | undefined,
-      compact = false
+      compact = false,
     ) => {
       const isNotReported = Boolean(finalValue?.isNotReported);
       const controlDisabled = isReadOnly || isNotReported;
@@ -761,7 +800,13 @@ export default function DataExtractionConsensusWorkspace({
           <Select
             value={finalValue?.optionId ?? ""}
             onChange={(event) =>
-              handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, event.target.value)
+              handleFinalAnswerChange(
+                sectionId,
+                field,
+                matrixColumnId,
+                matrixRowIndex,
+                event.target.value,
+              )
             }
             options={buildSelectOptions(field)}
             disabled={controlDisabled}
@@ -770,9 +815,19 @@ export default function DataExtractionConsensusWorkspace({
       } else if (field.fieldType === FieldTypeEnum.Boolean) {
         control = (
           <Select
-            value={finalValue?.booleanValue === null ? "" : String(finalValue?.booleanValue)}
+            value={
+              finalValue?.booleanValue === null
+                ? ""
+                : String(finalValue?.booleanValue)
+            }
             onChange={(event) =>
-              handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, event.target.value)
+              handleFinalAnswerChange(
+                sectionId,
+                field,
+                matrixColumnId,
+                matrixRowIndex,
+                event.target.value,
+              )
             }
             options={[
               { value: "", label: "Select final answer" },
@@ -783,30 +838,39 @@ export default function DataExtractionConsensusWorkspace({
           />
         );
       } else if (field.fieldType === FieldTypeEnum.MultiSelect) {
-        const selectedOptionIds = new Set(parseCommaSeparatedIds(finalValue?.stringValue));
+        const selectedOptionIds = new Set(
+          parseCommaSeparatedIds(finalValue?.stringValue),
+        );
 
         control = (
           <div
             className={
               compact
-                ? "max-h-32 space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-white p-2"
-                : "max-h-40 space-y-2 overflow-y-auto rounded-xl border border-slate-200 bg-white p-3"
+                ? "max-h-32 space-y-2 overflow-y-auto rounded-[4px] border border-border bg-surface-white p-2"
+                : "max-h-40 space-y-2 overflow-y-auto rounded-[4px] border border-border bg-surface-white p-3"
             }
           >
             {(field.options ?? []).map((option) => {
               const optionId = option.optionId ?? "";
-              const isChecked = optionId.length > 0 && selectedOptionIds.has(optionId);
+              const isChecked =
+                optionId.length > 0 && selectedOptionIds.has(optionId);
 
               return (
                 <label
                   key={optionId || option.value}
-                  className="flex items-center gap-2 text-sm text-slate-700"
+                  className="flex items-center gap-2 text-sm text-text-primary"
                 >
                   <input
                     type="checkbox"
                     checked={isChecked}
                     onChange={() =>
-                      handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, optionId)
+                      handleFinalAnswerChange(
+                        sectionId,
+                        field,
+                        matrixColumnId,
+                        matrixRowIndex,
+                        optionId,
+                      )
                     }
                     disabled={controlDisabled || optionId.length === 0}
                     className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
@@ -824,10 +888,16 @@ export default function DataExtractionConsensusWorkspace({
             step="1"
             value={finalValue?.numericValue ?? ""}
             onChange={(event) =>
-              handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, event.target.value)
+              handleFinalAnswerChange(
+                sectionId,
+                field,
+                matrixColumnId,
+                matrixRowIndex,
+                event.target.value,
+              )
             }
             placeholder="Enter final decision"
-            className="bg-white"
+            className="bg-surface-white"
             disabled={controlDisabled}
           />
         );
@@ -838,10 +908,16 @@ export default function DataExtractionConsensusWorkspace({
             step="any"
             value={finalValue?.numericValue ?? ""}
             onChange={(event) =>
-              handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, event.target.value)
+              handleFinalAnswerChange(
+                sectionId,
+                field,
+                matrixColumnId,
+                matrixRowIndex,
+                event.target.value,
+              )
             }
             placeholder="Enter final decision"
-            className="bg-white"
+            className="bg-surface-white"
             disabled={controlDisabled}
           />
         );
@@ -851,10 +927,16 @@ export default function DataExtractionConsensusWorkspace({
             type="text"
             value={finalValue?.stringValue ?? ""}
             onChange={(event) =>
-              handleFinalAnswerChange(sectionId, field, matrixColumnId, matrixRowIndex, event.target.value)
+              handleFinalAnswerChange(
+                sectionId,
+                field,
+                matrixColumnId,
+                matrixRowIndex,
+                event.target.value,
+              )
             }
             placeholder="Enter final decision"
-            className="bg-white"
+            className="bg-surface-white"
             disabled={controlDisabled}
           />
         );
@@ -863,7 +945,7 @@ export default function DataExtractionConsensusWorkspace({
       return (
         <div className="space-y-2">
           {!isReadOnly ? (
-            <label className="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <label className="inline-flex items-center gap-2 text-xs font-medium text-text-secondary">
               <input
                 type="checkbox"
                 checked={isNotReported}
@@ -873,17 +955,17 @@ export default function DataExtractionConsensusWorkspace({
                     field,
                     matrixColumnId,
                     matrixRowIndex,
-                    event.target.checked
+                    event.target.checked,
                   )
                 }
-                className="h-3.5 w-3.5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
               />
               Not Reported
             </label>
           ) : null}
 
           {isNotReported ? (
-            <p className="inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-slate-700">
+            <p className="inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
               NR
             </p>
           ) : null}
@@ -892,11 +974,7 @@ export default function DataExtractionConsensusWorkspace({
         </div>
       );
     },
-    [
-      handleFinalAnswerChange,
-      handleFinalAnswerNotReportedChange,
-      isReadOnly,
-    ]
+    [handleFinalAnswerChange, handleFinalAnswerNotReportedChange, isReadOnly],
   );
 
   const submitConsensusNow = useCallback(() => {
@@ -973,7 +1051,7 @@ export default function DataExtractionConsensusWorkspace({
       threadOwnerId: string,
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
-      content: string
+      content: string,
     ) => {
       if (!ws.selectedPaperId) {
         return;
@@ -986,7 +1064,7 @@ export default function DataExtractionConsensusWorkspace({
         matrixRowIndex,
       });
     },
-    [ws]
+    [ws],
   );
 
   const renderFinalDecisionCommentButton = useCallback(
@@ -995,7 +1073,7 @@ export default function DataExtractionConsensusWorkspace({
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
       comments: ExtractionCommentDto[],
-      titleSuffix?: string
+      titleSuffix?: string,
     ) => {
       if (!ws.selectedPaperId || !ws.currentUserId) {
         return null;
@@ -1019,13 +1097,18 @@ export default function DataExtractionConsensusWorkspace({
               ws.currentUserId ?? "",
               matrixColumnId,
               matrixRowIndex,
-              content
+              content,
             )
           }
         />
       );
     },
-    [handleSubmitFieldComment, ws.currentUserId, ws.isAddingFieldComment, ws.selectedPaperId]
+    [
+      handleSubmitFieldComment,
+      ws.currentUserId,
+      ws.isAddingFieldComment,
+      ws.selectedPaperId,
+    ],
   );
 
   const openThread = useCallback(
@@ -1036,12 +1119,12 @@ export default function DataExtractionConsensusWorkspace({
       fieldName: string,
       matrixColumnId: string | null,
       matrixRowIndex: number | null,
-      columnName?: string
+      columnName?: string,
     ) => {
       const threadOwnerId =
         reviewerKey === "reviewer1"
-          ? consensusWorkspace?.reviewer1Id ?? ""
-          : consensusWorkspace?.reviewer2Id ?? "";
+          ? (consensusWorkspace?.reviewer1Id ?? "")
+          : (consensusWorkspace?.reviewer2Id ?? "");
 
       if (!threadOwnerId) {
         return;
@@ -1066,7 +1149,7 @@ export default function DataExtractionConsensusWorkspace({
         title: targetTitle,
       });
     },
-    [consensusWorkspace, reviewer1Name, reviewer2Name]
+    [consensusWorkspace, reviewer1Name, reviewer2Name],
   );
 
   const activeThreadComments = useMemo(() => {
@@ -1075,13 +1158,15 @@ export default function DataExtractionConsensusWorkspace({
     }
 
     const section = consensusWorkspace.sections.find(
-      (item) => item.sectionId === activeThread.sectionId
+      (item) => item.sectionId === activeThread.sectionId,
     );
-    const field = section?.fields.find((item) => item.fieldId === activeThread.fieldId);
+    const field = section?.fields.find(
+      (item) => item.fieldId === activeThread.fieldId,
+    );
     const answerGroup = (field?.answers ?? []).find(
       (group) =>
         (group.matrixColumnId ?? null) === activeThread.matrixColumnId &&
-        (group.matrixRowIndex ?? null) === activeThread.matrixRowIndex
+        (group.matrixRowIndex ?? null) === activeThread.matrixRowIndex,
     );
 
     if (!answerGroup) {
@@ -1089,16 +1174,13 @@ export default function DataExtractionConsensusWorkspace({
     }
 
     return activeThread.reviewerKey === "reviewer1"
-      ? answerGroup.reviewer1Answer?.comments ?? []
-      : answerGroup.reviewer2Answer?.comments ?? [];
+      ? (answerGroup.reviewer1Answer?.comments ?? [])
+      : (answerGroup.reviewer2Answer?.comments ?? []);
   }, [activeThread, consensusWorkspace]);
 
   if (isLoading) {
     return (
-      <ConsensusStateScreen
-        onBack={() => navigate(dashboardPath)}
-        isLoading
-      />
+      <ConsensusStateScreen onBack={() => navigate(dashboardPath)} isLoading />
     );
   }
 
@@ -1114,7 +1196,7 @@ export default function DataExtractionConsensusWorkspace({
   const paperTitle = ws.selectedStudy?.title ?? "Unknown Study";
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col overflow-hidden bg-slate-100 pb-16">
+    <div className="h-[calc(100vh-5rem)] flex flex-col overflow-hidden bg-bg-secondary pb-16">
       <ConsensusHeader
         paperTitle={paperTitle}
         onBack={() => navigate(dashboardPath)}
@@ -1139,24 +1221,28 @@ export default function DataExtractionConsensusWorkspace({
           )}
 
           {isReadOnly && (
-            <div className="mb-4 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <div className="mb-4 rounded-[4px] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
               <p className="font-medium">💙 Read-Only Mode</p>
-              <p className="mt-1 text-blue-700">This paper's extraction is completed. You are viewing the consensus in read-only mode.</p>
+              <p className="mt-1 text-blue-700">
+                This paper's extraction is completed. You are viewing the
+                consensus in read-only mode.
+              </p>
             </div>
           )}
 
-          <Card className="rounded-2xl border border-slate-200 bg-white p-0 shadow-sm">
-            <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+          <Card className="rounded-[4px] border border-border bg-surface-white p-0 shadow-none">
+            <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">
+                <h2 className="text-lg font-semibold text-text-primary">
                   {activeSection.name}
                 </h2>
-                <p className="mt-1 text-sm text-slate-500">
-                  Compare Reviewer 1 and Reviewer 2 values, then set the final decision.
+                <p className="mt-1 text-sm text-text-secondary">
+                  Compare Reviewer 1 and Reviewer 2 values, then set the final
+                  decision.
                 </p>
               </div>
 
-              <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+              <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary">
                 {activeConflictCount} remaining conflicts in this section
               </span>
             </div>
@@ -1164,18 +1250,18 @@ export default function DataExtractionConsensusWorkspace({
             {activeSection.sectionType === SectionType.FlatForm ? (
               <div className="overflow-x-auto">
                 <table className="min-w-[980px] w-full border-collapse">
-                  <thead className="sticky top-0 z-10 bg-slate-50">
+                  <thead className="sticky top-0 z-10 bg-bg-secondary">
                     <tr className="text-left">
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Field Name
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer1Name}
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer2Name}
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Final Decision
                       </th>
                     </tr>
@@ -1188,13 +1274,13 @@ export default function DataExtractionConsensusWorkspace({
                       const rev2Answer = answerGroup?.reviewer2Answer ?? null;
                       const rowHasConflict = answersAreConflicted(
                         rev1Answer,
-                        rev2Answer
+                        rev2Answer,
                       );
                       const sectionKey = buildAnswerStateKey(
                         activeSection.sectionId,
                         field.fieldId,
                         null,
-                        null
+                        null,
                       );
                       const finalValue = effectiveFinalAnswers[sectionKey];
                       const rowHasUnresolvedConflict = hasUnresolvedConflict(
@@ -1202,7 +1288,7 @@ export default function DataExtractionConsensusWorkspace({
                         field,
                         answerGroup,
                         effectiveFinalAnswers,
-                        explicitlyResolvedFields
+                        explicitlyResolvedFields,
                       );
                       const rowConflictResolved =
                         rowHasConflict && !rowHasUnresolvedConflict;
@@ -1215,7 +1301,7 @@ export default function DataExtractionConsensusWorkspace({
                               ? "border-t border-amber-100 bg-amber-50"
                               : rowConflictResolved
                                 ? "border-t border-emerald-100 bg-emerald-50/40"
-                              : "border-t border-slate-100 bg-white"
+                                : "border-t border-border bg-surface-white"
                           }
                         >
                           <td className="px-4 py-4 align-top">
@@ -1235,7 +1321,7 @@ export default function DataExtractionConsensusWorkspace({
                                 <p className="text-sm font-semibold text-slate-800">
                                   {field.name}
                                 </p>
-                                <p className="mt-1 text-xs text-slate-500">
+                                <p className="mt-1 text-xs text-text-secondary">
                                   {rowHasUnresolvedConflict
                                     ? "Conflict detected"
                                     : rowConflictResolved
@@ -1247,7 +1333,7 @@ export default function DataExtractionConsensusWorkspace({
                           </td>
 
                           <td className="px-4 py-4 align-top">
-                            <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                            <div className="flex items-start gap-2 rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
                               <div className="min-w-0 flex-1">
                                 {getAnswerDisplayValue(rev1Answer)}
                               </div>
@@ -1256,10 +1342,10 @@ export default function DataExtractionConsensusWorkspace({
                                   type="button"
                                   onClick={() =>
                                     handleJumpToEvidence(
-                                      rev1Answer?.evidenceCoordinates ?? ""
+                                      rev1Answer?.evidenceCoordinates ?? "",
                                     )
                                   }
-                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                   aria-label="View evidence"
                                   title="View evidence"
                                 >
@@ -1275,10 +1361,10 @@ export default function DataExtractionConsensusWorkspace({
                                     field.fieldId,
                                     field.name,
                                     null,
-                                    null
+                                    null,
                                   )
                                 }
-                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                 aria-label="Open reviewer 1 thread"
                                 title="Open reviewer 1 thread"
                               >
@@ -1293,7 +1379,7 @@ export default function DataExtractionConsensusWorkspace({
                           </td>
 
                           <td className="px-4 py-4 align-top">
-                            <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+                            <div className="flex items-start gap-2 rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
                               <div className="min-w-0 flex-1">
                                 {getAnswerDisplayValue(rev2Answer)}
                               </div>
@@ -1302,10 +1388,10 @@ export default function DataExtractionConsensusWorkspace({
                                   type="button"
                                   onClick={() =>
                                     handleJumpToEvidence(
-                                      rev2Answer?.evidenceCoordinates ?? ""
+                                      rev2Answer?.evidenceCoordinates ?? "",
                                     )
                                   }
-                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                   aria-label="View evidence"
                                   title="View evidence"
                                 >
@@ -1321,10 +1407,10 @@ export default function DataExtractionConsensusWorkspace({
                                     field.fieldId,
                                     field.name,
                                     null,
-                                    null
+                                    null,
                                   )
                                 }
-                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                 aria-label="Open reviewer 2 thread"
                                 title="Open reviewer 2 thread"
                               >
@@ -1345,16 +1431,18 @@ export default function DataExtractionConsensusWorkspace({
                                 field,
                                 null,
                                 null,
-                                finalValue
+                                finalValue,
                               )}
 
                               {hasFinalEvidenceCoordinates(finalValue) ? (
                                 <button
                                   type="button"
                                   onClick={() =>
-                                    handleJumpToEvidence(finalValue?.evidenceCoordinates ?? "")
+                                    handleJumpToEvidence(
+                                      finalValue?.evidenceCoordinates ?? "",
+                                    )
                                   }
-                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                   aria-label="View final evidence"
                                   title="View final evidence"
                                 >
@@ -1363,14 +1451,14 @@ export default function DataExtractionConsensusWorkspace({
                               ) : null}
 
                               <div className="flex items-center justify-between gap-2">
-                                <span className="text-xs font-medium text-slate-500">
+                                <span className="text-xs font-medium text-text-secondary">
                                   Final decision note
                                 </span>
                                 {renderFinalDecisionCommentButton(
                                   field,
                                   null,
                                   null,
-                                  answerGroup?.finalAnswer?.comments ?? []
+                                  answerGroup?.finalAnswer?.comments ?? [],
                                 )}
                               </div>
 
@@ -1384,7 +1472,7 @@ export default function DataExtractionConsensusWorkspace({
                                         activeSection.sectionId,
                                         field,
                                         answerGroup,
-                                        "reviewer1Answer"
+                                        "reviewer1Answer",
                                       )
                                     }
                                     className="!px-2 text-xs"
@@ -1399,7 +1487,7 @@ export default function DataExtractionConsensusWorkspace({
                                         activeSection.sectionId,
                                         field,
                                         answerGroup,
-                                        "reviewer2Answer"
+                                        "reviewer2Answer",
                                       )
                                     }
                                     className="!px-2 text-xs"
@@ -1422,14 +1510,17 @@ export default function DataExtractionConsensusWorkspace({
                   <div className="overflow-x-auto">
                     <table className="min-w-[980px] w-full border-collapse">
                       <thead>
-                        <tr className="bg-slate-100 text-left">
-                          <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                        <tr className="bg-bg-secondary text-left">
+                          <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                             Field
                           </th>
                           {matrixColumns.map((column, columnIndex) => (
                             <th
-                              key={column.columnId ?? `matrix-column-${columnIndex}`}
-                              className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600"
+                              key={
+                                column.columnId ??
+                                `matrix-column-${columnIndex}`
+                              }
+                              className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary"
                             >
                               {column.name}
                             </th>
@@ -1438,12 +1529,13 @@ export default function DataExtractionConsensusWorkspace({
                       </thead>
 
                       <tbody>
-                        <tr className="border-t border-slate-200">
+                        <tr className="border-t border-border">
                           <td
                             colSpan={Math.max(matrixColumns.length + 1, 1)}
-                            className="bg-white px-3 py-4 text-sm text-slate-500"
+                            className="bg-surface-white px-3 py-4 text-sm text-text-secondary"
                           >
-                            No matrix rows yet. Use + Add Item to start consensus.
+                            No matrix rows yet. Use + Add Item to start
+                            consensus.
                           </td>
                         </tr>
                       </tbody>
@@ -1453,7 +1545,7 @@ export default function DataExtractionConsensusWorkspace({
                   matrixRowIndexes.map((rowIndex) => (
                     <div
                       key={`${activeSection.sectionId}-matrix-row-${rowIndex}`}
-                      className="rounded-xl border border-slate-200 bg-slate-50/60 p-3"
+                      className="rounded-[4px] border border-border bg-bg-secondary/60 p-3"
                     >
                       <h3 className="mb-3 text-sm font-semibold text-slate-800">
                         Item #{rowIndex + 1}
@@ -1462,14 +1554,17 @@ export default function DataExtractionConsensusWorkspace({
                       <div className="overflow-x-auto">
                         <table className="min-w-[980px] w-full border-collapse">
                           <thead>
-                            <tr className="bg-slate-100 text-left">
-                              <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600">
+                            <tr className="bg-bg-secondary text-left">
+                              <th className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                                 Field
                               </th>
                               {matrixColumns.map((column, columnIndex) => (
                                 <th
-                                  key={column.columnId ?? `matrix-column-${columnIndex}`}
-                                  className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-600"
+                                  key={
+                                    column.columnId ??
+                                    `matrix-column-${columnIndex}`
+                                  }
+                                  className="px-3 py-2 text-xs font-semibold uppercase tracking-wide text-text-secondary"
                                 >
                                   {column.name}
                                 </th>
@@ -1479,8 +1574,11 @@ export default function DataExtractionConsensusWorkspace({
 
                           <tbody>
                             {activeSection.fields.map((field) => (
-                              <tr key={`${field.fieldId}-row-${rowIndex}`} className="border-t border-slate-200">
-                                <td className="bg-white px-3 py-3 align-top text-sm font-semibold text-slate-800">
+                              <tr
+                                key={`${field.fieldId}-row-${rowIndex}`}
+                                className="border-t border-border"
+                              >
+                                <td className="bg-surface-white px-3 py-3 align-top text-sm font-semibold text-slate-800">
                                   {field.name}
                                 </td>
 
@@ -1488,27 +1586,34 @@ export default function DataExtractionConsensusWorkspace({
                                   const answerGroup = getMatrixAnswerGroup(
                                     field,
                                     rowIndex,
-                                    column.columnId ?? null
+                                    column.columnId ?? null,
                                   );
-                                  const rev1Answer = answerGroup?.reviewer1Answer ?? null;
-                                  const rev2Answer = answerGroup?.reviewer2Answer ?? null;
-                                  const hasConflict = answersAreConflicted(rev1Answer, rev2Answer);
+                                  const rev1Answer =
+                                    answerGroup?.reviewer1Answer ?? null;
+                                  const rev2Answer =
+                                    answerGroup?.reviewer2Answer ?? null;
+                                  const hasConflict = answersAreConflicted(
+                                    rev1Answer,
+                                    rev2Answer,
+                                  );
                                   const hasReviewerData = !!answerGroup;
                                   const answerKey = buildAnswerStateKey(
                                     activeSection.sectionId,
                                     field.fieldId,
                                     column.columnId ?? null,
-                                    rowIndex
+                                    rowIndex,
                                   );
-                                  const finalValue = effectiveFinalAnswers[answerKey];
+                                  const finalValue =
+                                    effectiveFinalAnswers[answerKey];
                                   const unresolved = hasUnresolvedConflict(
                                     activeSection.sectionId,
                                     field,
                                     answerGroup,
                                     effectiveFinalAnswers,
-                                    explicitlyResolvedFields
+                                    explicitlyResolvedFields,
                                   );
-                                  const rowConflictResolved = hasConflict && !unresolved;
+                                  const rowConflictResolved =
+                                    hasConflict && !unresolved;
 
                                   return (
                                     <td
@@ -1516,27 +1621,32 @@ export default function DataExtractionConsensusWorkspace({
                                       className={
                                         unresolved
                                           ? "bg-amber-50 px-3 py-3 align-top"
-                                          : "bg-white px-3 py-3 align-top"
+                                          : "bg-surface-white px-3 py-3 align-top"
                                       }
                                     >
                                       <div className="space-y-2">
-                                        <div className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1">
-                                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                        <div className="rounded-[4px] border border-border bg-bg-secondary px-2 py-1">
+                                          <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                                             {reviewer1Name}
                                           </p>
-                                          <div className="mt-1 flex items-start gap-2 text-xs text-slate-700">
+                                          <div className="mt-1 flex items-start gap-2 text-xs text-text-primary">
                                             <p className="min-w-0 flex-1">
-                                              {getAnswerDisplayValue(rev1Answer)}
+                                              {getAnswerDisplayValue(
+                                                rev1Answer,
+                                              )}
                                             </p>
-                                            {hasEvidenceCoordinates(rev1Answer) ? (
+                                            {hasEvidenceCoordinates(
+                                              rev1Answer,
+                                            ) ? (
                                               <button
                                                 type="button"
                                                 onClick={() =>
                                                   handleJumpToEvidence(
-                                                    rev1Answer?.evidenceCoordinates ?? ""
+                                                    rev1Answer?.evidenceCoordinates ??
+                                                      "",
                                                   )
                                                 }
-                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                                 aria-label="View evidence"
                                                 title="View evidence"
                                               >
@@ -1553,15 +1663,16 @@ export default function DataExtractionConsensusWorkspace({
                                                   field.name,
                                                   column.columnId ?? null,
                                                   rowIndex,
-                                                  column.name
+                                                  column.name,
                                                 )
                                               }
-                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                               aria-label="Open reviewer 1 thread"
                                               title="Open reviewer 1 thread"
                                             >
                                               <MessageSquare className="h-3 w-3" />
-                                              {(rev1Answer?.comments?.length ?? 0) > 0 ? (
+                                              {(rev1Answer?.comments?.length ??
+                                                0) > 0 ? (
                                                 <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
                                                   {rev1Answer?.comments?.length}
                                                 </span>
@@ -1570,23 +1681,28 @@ export default function DataExtractionConsensusWorkspace({
                                           </div>
                                         </div>
 
-                                        <div className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1">
-                                          <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
+                                        <div className="rounded-[4px] border border-border bg-bg-secondary px-2 py-1">
+                                          <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                                             {reviewer2Name}
                                           </p>
-                                          <div className="mt-1 flex items-start gap-2 text-xs text-slate-700">
+                                          <div className="mt-1 flex items-start gap-2 text-xs text-text-primary">
                                             <p className="min-w-0 flex-1">
-                                              {getAnswerDisplayValue(rev2Answer)}
+                                              {getAnswerDisplayValue(
+                                                rev2Answer,
+                                              )}
                                             </p>
-                                            {hasEvidenceCoordinates(rev2Answer) ? (
+                                            {hasEvidenceCoordinates(
+                                              rev2Answer,
+                                            ) ? (
                                               <button
                                                 type="button"
                                                 onClick={() =>
                                                   handleJumpToEvidence(
-                                                    rev2Answer?.evidenceCoordinates ?? ""
+                                                    rev2Answer?.evidenceCoordinates ??
+                                                      "",
                                                   )
                                                 }
-                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                                 aria-label="View evidence"
                                                 title="View evidence"
                                               >
@@ -1603,15 +1719,16 @@ export default function DataExtractionConsensusWorkspace({
                                                   field.name,
                                                   column.columnId ?? null,
                                                   rowIndex,
-                                                  column.name
+                                                  column.name,
                                                 )
                                               }
-                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                               aria-label="Open reviewer 2 thread"
                                               title="Open reviewer 2 thread"
                                             >
                                               <MessageSquare className="h-3 w-3" />
-                                              {(rev2Answer?.comments?.length ?? 0) > 0 ? (
+                                              {(rev2Answer?.comments?.length ??
+                                                0) > 0 ? (
                                                 <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
                                                   {rev2Answer?.comments?.length}
                                                 </span>
@@ -1626,18 +1743,21 @@ export default function DataExtractionConsensusWorkspace({
                                           column.columnId ?? null,
                                           rowIndex,
                                           finalValue,
-                                          true
+                                          true,
                                         )}
 
-                                        {hasFinalEvidenceCoordinates(finalValue) ? (
+                                        {hasFinalEvidenceCoordinates(
+                                          finalValue,
+                                        ) ? (
                                           <button
                                             type="button"
                                             onClick={() =>
                                               handleJumpToEvidence(
-                                                finalValue?.evidenceCoordinates ?? ""
+                                                finalValue?.evidenceCoordinates ??
+                                                  "",
                                               )
                                             }
-                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
                                             aria-label="View final evidence"
                                             title="View final evidence"
                                           >
@@ -1646,15 +1766,16 @@ export default function DataExtractionConsensusWorkspace({
                                         ) : null}
 
                                         <div className="flex items-center justify-between gap-2">
-                                          <span className="text-[11px] font-medium text-slate-500">
+                                          <span className="text-[11px] font-medium text-text-secondary">
                                             Final decision note
                                           </span>
                                           {renderFinalDecisionCommentButton(
                                             field,
                                             column.columnId ?? null,
                                             rowIndex,
-                                            answerGroup?.finalAnswer?.comments ?? [],
-                                            column.name
+                                            answerGroup?.finalAnswer
+                                              ?.comments ?? [],
+                                            column.name,
                                           )}
                                         </div>
 
@@ -1669,7 +1790,7 @@ export default function DataExtractionConsensusWorkspace({
                                             Conflict resolved
                                           </div>
                                         ) : (
-                                          <div className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-1 text-[11px] font-medium text-slate-700">
+                                          <div className="inline-flex items-center gap-1 rounded-md bg-bg-secondary px-2 py-1 text-[11px] font-medium text-text-primary">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                             {hasReviewerData
                                               ? "Answers match"
@@ -1688,7 +1809,7 @@ export default function DataExtractionConsensusWorkspace({
                                                   activeSection.sectionId,
                                                   field,
                                                   answerGroup,
-                                                  "reviewer1Answer"
+                                                  "reviewer1Answer",
                                                 )
                                               }
                                             >
@@ -1703,7 +1824,7 @@ export default function DataExtractionConsensusWorkspace({
                                                   activeSection.sectionId,
                                                   field,
                                                   answerGroup,
-                                                  "reviewer2Answer"
+                                                  "reviewer2Answer",
                                                 )
                                               }
                                             >
@@ -1725,10 +1846,12 @@ export default function DataExtractionConsensusWorkspace({
                 )}
 
                 {!isReadOnly && (
-                  <div className="border-t border-slate-100 pt-4">
+                  <div className="border-t border-border pt-4">
                     <Button
                       variant="outline"
-                      onClick={() => handleAddMatrixRow(activeSection.sectionId)}
+                      onClick={() =>
+                        handleAddMatrixRow(activeSection.sectionId)
+                      }
                       className="w-full"
                     >
                       + Add Item
@@ -1739,21 +1862,21 @@ export default function DataExtractionConsensusWorkspace({
             )}
           </Card>
 
-          <div className="sticky bottom-0 mt-4 flex items-center justify-between rounded-xl border border-slate-200 bg-white/95 px-4 py-3 backdrop-blur">
+          <div className="sticky bottom-0 mt-4 flex items-center justify-between rounded-[4px] border border-border bg-surface-white/95 px-4 py-3 backdrop-blur">
             <p
               className={
                 hasUnresolvedConflicts && !isReadOnly
                   ? "text-sm font-medium text-amber-700"
-                  : "text-sm text-slate-500"
+                  : "text-sm text-text-secondary"
               }
             >
               {isReadOnly
                 ? "This consensus has been finalized."
                 : isCorrectionMode
                   ? "Review and update finalized consensus data for synthesis readiness."
-                : hasUnresolvedConflicts
-                  ? `Please resolve all ${unresolvedConflictCount} remaining conflicts before completing.`
-                  : "Resolve conflicts and confirm final answers for this study."}
+                  : hasUnresolvedConflicts
+                    ? `Please resolve all ${unresolvedConflictCount} remaining conflicts before completing.`
+                    : "Resolve conflicts and confirm final answers for this study."}
             </p>
             {!isReadOnly && (
               <Button
@@ -1761,7 +1884,9 @@ export default function DataExtractionConsensusWorkspace({
                 isLoading={ws.isSubmittingConsensus}
                 disabled={ws.isSubmittingConsensus}
               >
-                {isCompletedPaper ? "Update Final Data" : "Save & Complete Consensus"}
+                {isCompletedPaper
+                  ? "Update Final Data"
+                  : "Save & Complete Consensus"}
               </Button>
             )}
           </div>
@@ -1770,12 +1895,18 @@ export default function DataExtractionConsensusWorkspace({
 
       {isConfirmModalOpen ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
-          <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-slate-900">
+          <div className="w-full max-w-lg rounded-[4px] border border-border bg-surface-white p-6 shadow-2xl">
+            <h3 className="text-lg font-semibold text-text-primary">
               Confirm Save With Unresolved Conflicts
             </h3>
-            <p className="mt-3 text-sm text-slate-600">
-              There are still {unresolvedConflictCount} unresolved conflicts. If you proceed, empty values will be submitted for these fields. Are you sure you want to {isCompletedPaper ? "update the finalized consensus data" : "complete this consensus"}?
+            <p className="mt-3 text-sm text-text-secondary">
+              There are still {unresolvedConflictCount} unresolved conflicts. If
+              you proceed, empty values will be submitted for these fields. Are
+              you sure you want to{" "}
+              {isCompletedPaper
+                ? "update the finalized consensus data"
+                : "complete this consensus"}
+              ?
             </p>
 
             <div className="mt-6 flex justify-end gap-3">
@@ -1818,7 +1949,7 @@ export default function DataExtractionConsensusWorkspace({
                 activeThread.threadOwnerId,
                 activeThread.matrixColumnId,
                 activeThread.matrixRowIndex,
-                content
+                content,
               )
             }
           />

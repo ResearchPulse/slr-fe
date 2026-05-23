@@ -60,36 +60,39 @@ export default function PaperTable({
 }: PaperTableProps) {
   if (isLoading && papers.length === 0) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center bg-white rounded-xl border border-gray-100">
+      <div className="flex min-h-[400px] items-center justify-center bg-surface-white rounded-[4px] border border-border">
         <div className="flex flex-col items-center gap-3">
           <LoadingSpinner size="lg" />
-          <p className="text-sm text-gray-500 animate-pulse">Loading paper library...</p>
+          <p className="text-sm text-text-secondary animate-pulse">
+            Loading paper library...
+          </p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 overflow-hidden flex flex-col shadow-sm">
+    <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden flex flex-col shadow-none">
       {/* Table Header / Toolbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-bg-primary/50">
         <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-gray-900">
-            {totalCount.toLocaleString()} <span className="font-normal text-gray-500">Results</span>
+          <span className="text-sm font-semibold text-text-primary">
+            {totalCount.toLocaleString()}{" "}
+            <span className="font-normal text-text-secondary">Results</span>
           </span>
           {isFetching && (
-            <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-blue-50 text-[10px] font-bold text-blue-600 uppercase tracking-wider border border-blue-100">
-              <div className="w-1 h-1 rounded-full bg-blue-600 animate-ping" />
+            <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-bg-secondary text-[10px] font-bold text-accent uppercase tracking-wider border border-border">
+              <div className="w-1 h-1 rounded-full bg-accent animate-ping" />
               Refreshing
             </div>
           )}
         </div>
         <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+          <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
             Rows per page:
           </label>
           <select
-            className="rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs font-medium text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+            className="rounded-[4px] border border-border bg-surface-white px-2 py-1.5 text-xs font-medium text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
           >
@@ -106,7 +109,7 @@ export default function PaperTable({
         style={{ maxHeight: "calc(100vh - 400px)", minHeight: "400px" }}
       >
         <table className="w-full border-collapse">
-          <thead className="sticky top-0 z-10 bg-white border-b border-gray-100 shadow-sm">
+          <thead className="sticky top-0 z-10 bg-surface-white border-b border-border shadow-none">
             <tr className="text-left">
               <th className="px-6 py-4 w-12">
                 <div className="flex items-center">
@@ -114,30 +117,30 @@ export default function PaperTable({
                     type="checkbox"
                     checked={allPageSelected}
                     onChange={(e) => onToggleAllPage(e.target.checked)}
-                    className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer"
+                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
                     aria-label="Select all papers in current page"
                   />
                 </div>
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Paper ID
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Title & Authors
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Year
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 DOI
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Source
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Full Text
               </th>
-              <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-gray-400">
+              <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Actions
               </th>
             </tr>
@@ -165,7 +168,7 @@ export default function PaperTable({
               <tr>
                 <td colSpan={7} className="px-6 py-20">
                   <div className="flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                    <div className="w-16 h-16 bg-bg-primary rounded-full flex items-center justify-center mb-4">
                       <svg
                         className="w-8 h-8 text-gray-300"
                         fill="none"
@@ -180,10 +183,12 @@ export default function PaperTable({
                         />
                       </svg>
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900">No papers found</h3>
-                    <p className="mt-1 text-sm text-gray-500 max-w-xs">
-                      We couldn't find any papers matching your current filter criteria. Try
-                      adjusting your search or filters.
+                    <h3 className="text-base font-semibold text-text-primary">
+                      No papers found
+                    </h3>
+                    <p className="mt-1 text-sm text-text-secondary max-w-xs">
+                      We couldn't find any papers matching your current filter
+                      criteria. Try adjusting your search or filters.
                     </p>
                   </div>
                 </td>
@@ -194,10 +199,11 @@ export default function PaperTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4 bg-gray-50/30">
-        <div className="text-xs font-medium text-gray-500">
-          Showing page <span className="text-gray-900 font-bold">{pageNumber}</span> of{" "}
-          <span className="text-gray-900 font-bold">{totalPages}</span>
+      <div className="flex items-center justify-between border-t border-border px-6 py-4 bg-bg-primary/30">
+        <div className="text-xs font-medium text-text-secondary">
+          Showing page{" "}
+          <span className="text-text-primary font-bold">{pageNumber}</span> of{" "}
+          <span className="text-text-primary font-bold">{totalPages}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button

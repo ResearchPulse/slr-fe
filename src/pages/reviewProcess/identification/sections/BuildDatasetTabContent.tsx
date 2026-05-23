@@ -33,7 +33,8 @@ export default function BuildDatasetTabContent({
   // Local input state for snapshot filters
   const [snapshotSearchInput, setSnapshotSearchInput] = useState("");
   const [snapshotYearInput, setSnapshotYearInput] = useState("");
-  const [snapshotSearchSourceInput, setSnapshotSearchSourceInput] = useState("");
+  const [snapshotSearchSourceInput, setSnapshotSearchSourceInput] =
+    useState("");
 
   // Handle add to snapshot
   const handleAddToSnapshot = useCallback(async () => {
@@ -63,10 +64,10 @@ export default function BuildDatasetTabContent({
   return (
     <div>
       {/* Summary bar */}
-      <div className="flex items-center gap-6 mb-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-lg border border-gray-200">
+      <div className="flex items-center gap-6 mb-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-[4px] border border-border">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-text-primary">
             <span className="font-semibold text-emerald-700">
               {dataset.readyTotalCount.toLocaleString()}
             </span>{" "}
@@ -76,7 +77,7 @@ export default function BuildDatasetTabContent({
         <div className="w-px h-5 bg-gray-300" />
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500" />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-text-primary">
             <span className="font-semibold text-blue-700">
               {dataset.snapshotTotalCount.toLocaleString()}
             </span>{" "}
@@ -98,7 +99,7 @@ export default function BuildDatasetTabContent({
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Ready Papers */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-white min-h-[500px] flex flex-col">
+        <div className="border border-border rounded-[4px] p-4 bg-surface-white min-h-[500px] flex flex-col">
           <ReadyPapersTable
             papers={dataset.readyPapers}
             totalCount={dataset.readyTotalCount}
@@ -137,7 +138,7 @@ export default function BuildDatasetTabContent({
         </div>
 
         {/* Right: Snapshot Dataset */}
-        <div className="border border-gray-200 rounded-lg p-4 bg-white min-h-[500px] flex flex-col">
+        <div className="border border-border rounded-[4px] p-4 bg-surface-white min-h-[500px] flex flex-col">
           <SnapshotTable
             papers={dataset.snapshotPapers}
             totalCount={dataset.snapshotTotalCount}

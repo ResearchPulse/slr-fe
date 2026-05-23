@@ -1,7 +1,10 @@
 import Input from "../../../../components/ui/Input";
 import Select from "../../../../components/ui/Select";
 import Textarea from "../../../../components/ui/Textarea";
-import { FieldTypeEnum, type ExtractionFieldDto } from "../../../../types/dataExtraction";
+import {
+  FieldTypeEnum,
+  type ExtractionFieldDto,
+} from "../../../../types/dataExtraction";
 import type { ExtractionValue } from "../types";
 
 interface ExtractionFieldInputProps {
@@ -16,7 +19,7 @@ export default function ExtractionFieldInput({
   onChange,
 }: ExtractionFieldInputProps) {
   const options = [...(field.options ?? [])].sort(
-    (a, b) => a.displayOrder - b.displayOrder
+    (a, b) => a.displayOrder - b.displayOrder,
   );
 
   if (
@@ -87,19 +90,23 @@ export default function ExtractionFieldInput({
 
   if (field.fieldType === FieldTypeEnum.MultiSelect) {
     const selectedValues = Array.isArray(value)
-      ? value.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+      ? value.filter(
+          (item): item is string =>
+            typeof item === "string" && item.trim().length > 0,
+        )
       : [];
 
     return (
-      <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+      <div className="space-y-2 rounded-[4px] border border-border bg-bg-secondary p-4">
         {options.map((option) => {
           const optionId = option.optionId ?? "";
-          const checked = optionId.length > 0 && selectedValues.includes(optionId);
+          const checked =
+            optionId.length > 0 && selectedValues.includes(optionId);
 
           return (
             <label
               key={option.optionId ?? option.value}
-              className="flex items-center gap-3 text-sm text-slate-700"
+              className="flex items-center gap-3 text-sm text-text-primary"
             >
               <input
                 type="checkbox"
@@ -114,9 +121,7 @@ export default function ExtractionFieldInput({
                     return;
                   }
 
-                  onChange(
-                    selectedValues.filter((item) => item !== optionId)
-                  );
+                  onChange(selectedValues.filter((item) => item !== optionId));
                 }}
                 className="h-4 w-4 rounded border-slate-300 text-blue-600"
                 disabled={!optionId}

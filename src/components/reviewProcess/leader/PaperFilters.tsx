@@ -2,7 +2,10 @@ import React from "react";
 import { Search, Filter } from "lucide-react";
 import Input from "../../ui/Input";
 import Select from "../../ui/Select";
-import { AssignmentFilterStatus, ResolutionFilterStatus } from "../../../types/studySelection";
+import {
+  AssignmentFilterStatus,
+  ResolutionFilterStatus,
+} from "../../../types/studySelection";
 
 interface PaperFiltersProps {
   onSearchChange: (value: string) => void;
@@ -23,11 +26,11 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
   showStageFilter = true,
 }) => {
   return (
-    <div className="bg-white p-4 border-b border-gray-200 sticky top-0 z-20">
+    <div className="bg-surface-white p-4 border-b border-border sticky top-0 z-20">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-4">
         {/* Search Bar */}
         <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-text-secondary">
             <Search className="w-4 h-4" />
           </div>
           <Input
@@ -41,12 +44,15 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
         <div className="flex flex-wrap items-center gap-3">
           {showStageFilter && (
             <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
+              <Filter className="w-4 h-4 text-text-secondary" />
               <Select
                 className="min-w-[180px]"
                 options={[
                   { label: "All Stages", value: "all" },
-                  { label: "Title/Abstract Screening", value: "title-abstract" },
+                  {
+                    label: "Title/Abstract Screening",
+                    value: "title-abstract",
+                  },
                   { label: "Full-Text Screening", value: "full-text" },
                 ]}
                 defaultValue="all"
@@ -56,7 +62,9 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
           )}
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Year</span>
+            <span className="text-xs font-semibold text-text-secondary uppercase">
+              Year
+            </span>
             <Input
               type="number"
               placeholder="YYYY"
@@ -64,7 +72,10 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
               onChange={(e) => {
                 const value = e.target.value.trim();
                 const parsedYear = value ? parseInt(value, 10) : undefined;
-                if (!value || (parsedYear && parsedYear >= 1900 && parsedYear < 2100)) {
+                if (
+                  !value ||
+                  (parsedYear && parsedYear >= 1900 && parsedYear < 2100)
+                ) {
                   onYearChange?.(parsedYear);
                 }
               }}
@@ -72,12 +83,15 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Source</span>
-
+            <span className="text-xs font-semibold text-text-secondary uppercase">
+              Source
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Assignment</span>
+            <span className="text-xs font-semibold text-text-secondary uppercase">
+              Assignment
+            </span>
             <Select
               className="min-w-[150px]"
               options={[
@@ -92,12 +106,16 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
                 },
               ]}
               defaultValue={AssignmentFilterStatus.All.toString()}
-              onChange={(e) => onAssignmentStatusChange?.(parseInt(e.target.value))}
+              onChange={(e) =>
+                onAssignmentStatusChange?.(parseInt(e.target.value))
+              }
             />
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400 uppercase">Resolution</span>
+            <span className="text-xs font-semibold text-text-secondary uppercase">
+              Resolution
+            </span>
             <Select
               className="min-w-[150px]"
               options={[
@@ -116,7 +134,9 @@ const PaperFilters: React.FC<PaperFiltersProps> = ({
                 },
               ]}
               defaultValue={ResolutionFilterStatus.All.toString()}
-              onChange={(e) => onDecisionStatusChange?.(parseInt(e.target.value))}
+              onChange={(e) =>
+                onDecisionStatusChange?.(parseInt(e.target.value))
+              }
             />
           </div>
         </div>

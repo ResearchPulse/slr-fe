@@ -23,7 +23,7 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
       className,
       ...props
     },
-    ref
+    ref,
   ) => {
     const hasError = !!errorMessage;
 
@@ -42,13 +42,21 @@ const FormTextarea = React.forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           {...props}
         />
         {hasError ? (
-          <HelperText message={errorMessage} variant="error" id={`${id}-error`} />
+          <HelperText
+            message={errorMessage}
+            variant="error"
+            id={`${id}-error`}
+          />
         ) : helperText ? (
-          <HelperText message={helperText} variant="default" id={`${id}-helper`} />
+          <HelperText
+            message={helperText}
+            variant="default"
+            id={`${id}-helper`}
+          />
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 FormTextarea.displayName = "FormTextarea";

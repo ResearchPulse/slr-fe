@@ -40,7 +40,10 @@ import UploadFullTextPdfModal from "../reviewProcess/studySelection/components/U
 import { useProjectMember } from "../../hooks/useProjectMember";
 
 export default function PaperDetailsPage() {
-  const { projectId, paperId } = useParams<{ projectId: string; paperId: string }>();
+  const { projectId, paperId } = useParams<{
+    projectId: string;
+    paperId: string;
+  }>();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<string>("abstract");
   const [openGraph, setOpenGraph] = useState(false);
@@ -52,15 +55,24 @@ export default function PaperDetailsPage() {
   const { member } = useProjectMember(projectId || "");
   const isLeader = member?.isLeader ?? false;
 
-  const { data: paper, isLoading: isPaperLoading, error: paperError } = usePaperDetails(paperId);
+  const {
+    data: paper,
+    isLoading: isPaperLoading,
+    error: paperError,
+  } = usePaperDetails(paperId);
 
   // Discovery Hooks
-  const { data: references = [], isLoading: isReferencesLoading } = usePaperReferences(paperId);
-  const { data: citations = [], isLoading: isCitationsLoading } = usePaperCitations(paperId);
-  const { data: citationGraph, isLoading: isGraphLoading } = usePaperGraph(paperId, {
-    depth: graphDepth,
-    minConfidence,
-  });
+  const { data: references = [], isLoading: isReferencesLoading } =
+    usePaperReferences(paperId);
+  const { data: citations = [], isLoading: isCitationsLoading } =
+    usePaperCitations(paperId);
+  const { data: citationGraph, isLoading: isGraphLoading } = usePaperGraph(
+    paperId,
+    {
+      depth: graphDepth,
+      minConfidence,
+    },
+  );
 
   const [sidebarWidth, setSidebarWidth] = useState(200);
   const sidebarRef = useRef<HTMLDivElement>(null);
@@ -99,11 +111,14 @@ export default function PaperDetailsPage() {
 
   const activeSectionCoords = useMemo(() => {
     if (!activeSection) return null;
-    const section = paper?.fullTextSections?.find((s) => s.sectionTitle === activeSection);
+    const section = paper?.fullTextSections?.find(
+      (s) => s.sectionTitle === activeSection,
+    );
     return section?.coordinates || null;
   }, [activeSection, paper]);
 
-  const isDiscoveryLoading = isReferencesLoading || isCitationsLoading || isGraphLoading;
+  const isDiscoveryLoading =
+    isReferencesLoading || isCitationsLoading || isGraphLoading;
 
   // ---- Mutation: Upload Full-Text PDF ----
   const uploadMutation = useMutation({
@@ -117,12 +132,18 @@ export default function PaperDetailsPage() {
       });
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.papers.detail(paperId!) });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.papers.detail(paperId!),
+      });
       toast.success("PDF uploaded successfully.");
       setIsUploadModalOpen(false);
     },
     onError: (error) => {
-      toast.error(error instanceof Error ? error.message : "Failed to upload PDF. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to upload PDF. Please try again.",
+      );
     },
   });
 
@@ -140,27 +161,31 @@ export default function PaperDetailsPage() {
 
   if (isPaperLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50/50">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50">
         <FiLoader className="w-10 h-10 text-blue-600 animate-spin mb-4" />
-        <p className="text-slate-500 font-medium">Loading paper details...</p>
+        <p className="text-text-secondary font-medium">
+          Loading paper details...
+        </p>
       </div>
     );
   }
 
   if (paperError || !paper) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50/50 px-6 text-center">
-        <div className="w-20 h-20 bg-red-50 rounded-3xl flex items-center justify-center text-red-500 mb-6 border border-red-100">
+      <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50 px-6 text-center">
+        <div className="w-20 h-20 bg-surface-white rounded-[4px] flex items-center justify-center text-red-500 mb-6 border border-red-100">
           <FiFileText className="w-10 h-10" />
         </div>
-        <h1 className="text-2xl font-black text-slate-900 mb-2">Paper Not Found</h1>
-        <p className="text-slate-500 max-w-md mb-8">
-          The paper you are looking for might have been removed or you don't have permission to view
-          it.
+        <h1 className="text-2xl font-black text-text-primary mb-2">
+          Paper Not Found
+        </h1>
+        <p className="text-text-secondary max-w-md mb-8">
+          The paper you are looking for might have been removed or you don't
+          have permission to view it.
         </p>
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-slate-50 transition-all active:scale-95"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-surface-white border border-border text-text-primary rounded-[4px] font-bold hover:bg-bg-secondary transition-all active:scale-95"
         >
           <FiArrowLeft className="w-4 h-4" />
           Go Back
@@ -170,23 +195,23 @@ export default function PaperDetailsPage() {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50/50">
+    <div className="flex flex-col min-h-screen bg-bg-secondary/50">
       {/* Header / Navigation */}
-      <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200 px-6 py-4">
+      <div className="sticky top-0 z-30 bg-surface-white/80 backdrop-blur-md border-b border-border px-6 py-4">
         <div className=" flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="p-2.5 hover:bg-slate-100 rounded-xl text-slate-500 transition-colors"
+              className="p-2.5 hover:bg-bg-secondary rounded-[4px] text-text-secondary transition-colors"
               title="Back"
             >
               <FiArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight">
+              <h2 className="text-sm font-black text-text-primary uppercase tracking-tight">
                 Paper Details
               </h2>
-              <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">
                 Project ID: {projectId?.substring(0, 8)}...
               </p>
             </div>
@@ -198,7 +223,7 @@ export default function PaperDetailsPage() {
                 href={paper.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:bg-slate-50 transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-surface-white border border-border text-text-primary text-xs font-bold rounded-[4px] hover:bg-bg-secondary transition-all"
               >
                 Source Link
                 <FiExternalLink className="w-3.5 h-3.5" />
@@ -231,7 +256,7 @@ export default function PaperDetailsPage() {
           )}
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-1 bg-white p-1 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-[4px] border border-border shadow-none">
             <TabButton
               active={activeTab === "abstract"}
               onClick={() => setActiveTab("abstract")}
@@ -270,11 +295,20 @@ export default function PaperDetailsPage() {
           <div className="space-y-6 animate-in fade-in duration-300">
             {activeTab === "abstract" && (
               <>
-                <ContentSection paper={paper as any} isFieldUpdated={isFieldUpdated} />
+                <ContentSection
+                  paper={paper as any}
+                  isFieldUpdated={isFieldUpdated}
+                />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <PublicationInfoCard paper={paper as any} isFieldUpdated={isFieldUpdated} />
-                  <IdentifierSection paper={paper as any} isFieldUpdated={isFieldUpdated} />
+                  <PublicationInfoCard
+                    paper={paper as any}
+                    isFieldUpdated={isFieldUpdated}
+                  />
+                  <IdentifierSection
+                    paper={paper as any}
+                    isFieldUpdated={isFieldUpdated}
+                  />
                 </div>
 
                 <SystemMetadataCollapse paper={paper as any} />
@@ -282,8 +316,8 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "references" && (
-              <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-                <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight mb-4">
+              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+                <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Cited References
                 </h2>
                 <PaperNodeList
@@ -295,8 +329,8 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "citations" && (
-              <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-                <h2 className="text-sm font-black text-slate-900 uppercase tracking-tight mb-4">
+              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+                <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Citing Papers
                 </h2>
                 <PaperNodeList
@@ -320,9 +354,9 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "fulltext" && (
-              <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm h-[800px] flex flex-col">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                  <h2 className="text-xs font-black text-slate-900 uppercase tracking-tight">
+              <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
+                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-bg-secondary/50">
+                  <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
                     {paper.pdfUrl ? "PDF Viewer" : "Full-Text Access"}
                   </h2>
                   {paper.pdfUrl && (
@@ -354,7 +388,7 @@ export default function PaperDetailsPage() {
                     <div
                       onMouseDown={handleMouseDown}
                       className={cn(
-                        "w-1 hover:w-1.5 bg-slate-100 hover:bg-blue-400 cursor-col-resize transition-all duration-200 z-10 relative group",
+                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-blue-400 cursor-col-resize transition-all duration-200 z-10 relative group",
                         isResizing && "bg-blue-500 w-1.5",
                       )}
                     >
@@ -363,7 +397,7 @@ export default function PaperDetailsPage() {
 
                     <div
                       className={cn(
-                        "flex-1 relative bg-slate-100 transition-opacity",
+                        "flex-1 relative bg-bg-secondary transition-opacity",
                         isResizing && "pointer-events-none opacity-80",
                       )}
                     >
@@ -374,30 +408,32 @@ export default function PaperDetailsPage() {
                           scale={1.5}
                         />
                       ) : (
-                        <div className="flex flex-col items-center justify-center h-full bg-slate-50 text-slate-400 p-8 text-center">
+                        <div className="flex flex-col items-center justify-center h-full bg-bg-secondary text-text-secondary p-8 text-center">
                           <FiUploadCloud className="w-12 h-12 mb-4 opacity-20" />
                           <p className="font-bold text-lg">No PDF Available</p>
                           <p className="text-sm max-w-xs mt-2">
-                            Full-text content was not found or could not be extracted for this
-                            paper.
+                            Full-text content was not found or could not be
+                            extracted for this paper.
                           </p>
                         </div>
                       )}
                     </div>
                   </div>
                 ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center p-12 bg-slate-50/30">
-                    <div className="w-20 h-20 bg-white rounded-3xl shadow-sm flex items-center justify-center mb-6 text-slate-300 border border-slate-100">
+                  <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
+                    <div className="w-20 h-20 bg-surface-white rounded-[4px] shadow-none flex items-center justify-center mb-6 text-slate-300 border border-slate-100">
                       <FiFileText className="w-10 h-10" />
                     </div>
-                    <h3 className="text-lg font-bold text-slate-900 mb-2">No PDF attached yet</h3>
-                    <p className="text-sm text-slate-500 max-w-sm text-center mb-8 leading-relaxed">
+                    <h3 className="text-lg font-bold text-text-primary mb-2">
+                      No PDF attached yet
+                    </h3>
+                    <p className="text-sm text-text-secondary max-w-sm text-center mb-8 leading-relaxed">
                       PDF is not available for this paper.
                     </p>
                     {isLeader && (
                       <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-200 transition-all active:scale-95"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-[4px] text-sm font-bold shadow-none shadow-blue-200 transition-all active:scale-95"
                       >
                         <FiUploadCloud className="w-4 h-4" />
                         Upload Full-Text PDF

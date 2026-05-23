@@ -29,7 +29,8 @@ export default function ManageStudySelectionPage() {
   const { screeningProcessId } = useParams<{
     screeningProcessId: string;
   }>();
-  const [currentPhase, setCurrentPhase] = useState<SelectionPhase>("TITLE_ABSTRACT");
+  const [currentPhase, setCurrentPhase] =
+    useState<SelectionPhase>("TITLE_ABSTRACT");
   const [isAssignmentMode, setIsAssignmentMode] = useState(false);
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -38,7 +39,9 @@ export default function ManageStudySelectionPage() {
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
   const currentPhaseNumeric =
-    currentPhase === "TITLE_ABSTRACT" ? PaperPhase.TitleAbstract : PaperPhase.FullText;
+    currentPhase === "TITLE_ABSTRACT"
+      ? PaperPhase.TitleAbstract
+      : PaperPhase.FullText;
   const queryClient = useQueryClient();
 
   const isResizingLeft = useRef(false);
@@ -48,7 +51,8 @@ export default function ManageStudySelectionPage() {
 
   // Fetch process details to check status
   const { data: processDetails } = useStudySelectionDetails(screeningProcessId);
-  const isCompleted = processDetails?.status === SelectionProcessStatus.Completed;
+  const isCompleted =
+    processDetails?.status === SelectionProcessStatus.Completed;
 
   // Fetch full paper details when a paper is selected
   const { paper: selectedPaper } = usePaperDetails(
@@ -63,13 +67,20 @@ export default function ManageStudySelectionPage() {
   );
 
   // Fetch conflict status to check for conflicts on the selected paper
-  const { data: conflictStatusList } = useConflictStatus(screeningProcessId, currentPhaseNumeric, {
-    enabled: !!screeningProcessId,
-  });
+  const { data: conflictStatusList } = useConflictStatus(
+    screeningProcessId,
+    currentPhaseNumeric,
+    {
+      enabled: !!screeningProcessId,
+    },
+  );
 
   const paperHasConflict = React.useMemo(() => {
     if (!selectedPaperId || !conflictStatusList) return false;
-    return conflictStatusList.find((c) => c.paperId === selectedPaperId)?.hasConflict || false;
+    return (
+      conflictStatusList.find((c) => c.paperId === selectedPaperId)
+        ?.hasConflict || false
+    );
   }, [selectedPaperId, conflictStatusList]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -124,7 +135,8 @@ export default function ManageStudySelectionPage() {
 
   // ---- Resolution Logic ----
   const currentUser = useSelector((state: RootState) => state.auth.user);
-  const { mutate: resolveConflict, isPending: isResolving } = useResolveConflict();
+  const { mutate: resolveConflict, isPending: isResolving } =
+    useResolveConflict();
 
   const handleInclude = useCallback(
     (paperId: string) => {
@@ -145,10 +157,15 @@ export default function ManageStudySelectionPage() {
           onSuccess: () => {
             toastSuccess("Included", "Paper included successfully");
             queryClient.invalidateQueries({
-              queryKey: ["study-selection", screeningProcessId, "conflict-status"],
+              queryKey: [
+                "study-selection",
+                screeningProcessId,
+                "conflict-status",
+              ],
             });
           },
-          onError: (err: any) => toastError("Error", err.message || "Failed to include paper"),
+          onError: (err: any) =>
+            toastError("Error", err.message || "Failed to include paper"),
         },
       );
     },
@@ -156,7 +173,11 @@ export default function ManageStudySelectionPage() {
   );
 
   const handleExclude = useCallback(
-    (paperId: string, exclusionReasonId: string | null, reason: string | null) => {
+    (
+      paperId: string,
+      exclusionReasonId: string | null,
+      reason: string | null,
+    ) => {
       if (!screeningProcessId || !currentUser?.id) return;
 
       resolveConflict(
@@ -175,10 +196,15 @@ export default function ManageStudySelectionPage() {
           onSuccess: () => {
             toastSuccess("Excluded", "Paper excluded successfully");
             queryClient.invalidateQueries({
-              queryKey: ["study-selection", screeningProcessId, "conflict-status"],
+              queryKey: [
+                "study-selection",
+                screeningProcessId,
+                "conflict-status",
+              ],
             });
           },
-          onError: (err: any) => toastError("Error", err.message || "Failed to exclude paper"),
+          onError: (err: any) =>
+            toastError("Error", err.message || "Failed to exclude paper"),
         },
       );
     },
@@ -186,7 +212,7 @@ export default function ManageStudySelectionPage() {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-slate-50 overflow-hidden">
+    <div className="flex flex-col h-screen bg-bg-secondary overflow-hidden">
       <StuSePhaseHeaderController
         currentPhase={currentPhase}
         onPhaseChange={(phase) => {
@@ -196,23 +222,32 @@ export default function ManageStudySelectionPage() {
         }}
       />
 
-      <div ref={containerRef} className="relative flex flex-1 overflow-hidden select-none">
+      <div
+        ref={containerRef}
+        className="relative flex flex-1 overflow-hidden select-none"
+      >
         {/* Main Content: Paper Viewer - Occupies full space */}
-        <div className="flex-1 min-w-0 bg-white z-0 px-12 overflow-hidden">
+        <div className="flex-1 min-w-0 bg-surface-white z-0 px-12 overflow-hidden">
           <PaperViewer
-            paper={selectedPaper ? { ...selectedPaper, hasConflict: paperHasConflict } : null}
+            paper={
+              selectedPaper
+                ? { ...selectedPaper, hasConflict: paperHasConflict }
+                : null
+            }
             isLeaderView={true}
             onInclude={
               !isCompleted &&
               selectedPaper &&
-              (!selectedPaper.resolution || selectedPaper.resolution.phase < currentPhaseNumeric)
+              (!selectedPaper.resolution ||
+                selectedPaper.resolution.phase < currentPhaseNumeric)
                 ? handleInclude
                 : undefined
             }
             onExclude={
               !isCompleted &&
               selectedPaper &&
-              (!selectedPaper.resolution || selectedPaper.resolution.phase < currentPhaseNumeric)
+              (!selectedPaper.resolution ||
+                selectedPaper.resolution.phase < currentPhaseNumeric)
                 ? handleExclude
                 : undefined
             }
@@ -226,8 +261,8 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isLeftCollapsed ? "48px" : `${leftWidth}px` }}
           className={cn(
-            "absolute left-0 top-0 bottom-0 z-20 flex flex-col border-r border-slate-200 shadow-2xl",
-            isAssignmentMode ? "bg-indigo-50/30" : "bg-white",
+            "absolute left-0 top-0 bottom-0 z-20 flex flex-col border-r border-border shadow-2xl",
+            isAssignmentMode ? "bg-bg-secondary/30" : "bg-surface-white",
             isLeftCollapsed ? "shadow-none" : "shadow-slate-300/50",
             !isResizing && "transition-all duration-300",
           )}
@@ -244,8 +279,8 @@ export default function ManageStudySelectionPage() {
           {!isLeftCollapsed && (
             <div
               className={cn(
-                "p-4 border-b border-slate-200 transition-colors duration-300",
-                isAssignmentMode ? "bg-indigo-50/50" : "bg-white",
+                "p-4 border-b border-border transition-colors duration-300",
+                isAssignmentMode ? "bg-bg-secondary/50" : "bg-surface-white",
               )}
             >
               <Button
@@ -256,10 +291,10 @@ export default function ManageStudySelectionPage() {
                 }}
                 disabled={isCompleted}
                 className={cn(
-                  "w-full gap-2 transition-all duration-300 shadow-md",
+                  "w-full gap-2 transition-all duration-300 shadow-none",
                   isAssignmentMode
                     ? "bg-rose-500 hover:bg-rose-600 text-white border-none"
-                    : "bg-indigo-600 hover:bg-indigo-700 text-white",
+                    : "bg-accent hover:bg-indigo-700 text-white",
                   isCompleted && "opacity-50 cursor-not-allowed",
                 )}
                 size="sm"
@@ -278,16 +313,18 @@ export default function ManageStudySelectionPage() {
               </Button>
               {isAssignmentMode && (
                 <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                  <div className="text-[10px] font-black text-indigo-500 uppercase tracking-widest flex items-center gap-2 animate-pulse">
-                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                  <div className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-2 animate-pulse">
+                    <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Assignment Mode Active
                   </div>
-                  <div className="p-2.5 bg-amber-50/50 border border-amber-100 rounded-lg flex gap-2">
+                  <div className="p-2.5 bg-amber-50/50 border border-amber-100 rounded-[4px] flex gap-2">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                    <p className="text-[10px] text-slate-600 leading-relaxed font-medium">
+                    <p className="text-[10px] text-text-secondary leading-relaxed font-medium">
                       Select papers to assign reviewers.{" "}
-                      <span className="text-amber-700 font-bold">Resolved papers</span> cannot be
-                      assigned.
+                      <span className="text-amber-700 font-bold">
+                        Resolved papers
+                      </span>{" "}
+                      cannot be assigned.
                     </p>
                   </div>
                 </div>
@@ -313,7 +350,7 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isRightCollapsed ? "48px" : `${rightWidth}px` }}
           className={cn(
-            "absolute right-0 top-0 bottom-0 z-20 bg-white border-l border-slate-200 shadow-2xl",
+            "absolute right-0 top-0 bottom-0 z-20 bg-surface-white border-l border-border shadow-2xl",
             isRightCollapsed ? "shadow-none" : "shadow-slate-300/50",
             !isResizing && "transition-all duration-300",
           )}
@@ -348,16 +385,26 @@ export default function ManageStudySelectionPage() {
           onAssignmentComplete={() => {
             setSelectedIds([]);
             queryClient.invalidateQueries({
-              queryKey: ["infinite-title-abstract-assignment-papers", screeningProcessId],
+              queryKey: [
+                "infinite-title-abstract-assignment-papers",
+                screeningProcessId,
+              ],
             });
             queryClient.invalidateQueries({
-              queryKey: ["infinite-full-text-assignment-papers", screeningProcessId],
+              queryKey: [
+                "infinite-full-text-assignment-papers",
+                screeningProcessId,
+              ],
             });
             queryClient.invalidateQueries({
               queryKey: ["reviewer-decisions"],
             });
             queryClient.invalidateQueries({
-              queryKey: ["study-selection", screeningProcessId, "conflict-status"],
+              queryKey: [
+                "study-selection",
+                screeningProcessId,
+                "conflict-status",
+              ],
             });
           }}
         />

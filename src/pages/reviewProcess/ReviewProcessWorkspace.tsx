@@ -13,7 +13,10 @@ import SynthesisStrategyModal from "./synthesisExecution/components/SynthesisStr
 import { SelectionProcessStatus } from "../../types/studySelection";
 
 export default function ReviewProcessWorkspace() {
-  const { projectId, processId } = useParams<{ projectId: string; processId: string }>();
+  const { projectId, processId } = useParams<{
+    projectId: string;
+    processId: string;
+  }>();
 
   const {
     member,
@@ -62,8 +65,10 @@ export default function ReviewProcessWorkspace() {
   if (error || !process) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <h2 className="text-lg font-semibold text-red-800 mb-2">Error Loading Process</h2>
+        <div className="bg-surface-white border border-border rounded-[4px] p-6">
+          <h2 className="text-lg font-semibold text-red-800 mb-2">
+            Error Loading Process
+          </h2>
           <p className="text-red-600">{error || "Process not found"}</p>
           <Button onClick={handleBack} variant="secondary" className="mt-4">
             Back to Project
@@ -74,7 +79,7 @@ export default function ReviewProcessWorkspace() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 print:bg-white">
+    <div className="min-h-screen bg-bg-primary print:bg-surface-white">
       {/* Top Header */}
       <ProcessHeader
         process={process}
@@ -87,10 +92,11 @@ export default function ReviewProcessWorkspace() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 print:px-4">
-
-
         {/* PRISMA Report Access */}
-        <PrismaReportCard projectId={projectId || ""} processId={processId || ""} />
+        <PrismaReportCard
+          projectId={projectId || ""}
+          processId={processId || ""}
+        />
 
         {/* Workflow Timeline */}
         <WorkflowTimeline
@@ -106,7 +112,10 @@ export default function ReviewProcessWorkspace() {
           completeLoadingMap={phaseCompleteLoadingMap}
           reopenLoadingMap={phaseReopenLoadingMap}
           disabled={process.statusText === "NotStarted"}
-          isStudySelectionCompleted={process.studySelectionProcess?.status === SelectionProcessStatus.Completed}
+          isStudySelectionCompleted={
+            process.studySelectionProcess?.status ===
+            SelectionProcessStatus.Completed
+          }
         />
 
         {/* Paper Pool Selector Modal */}
@@ -116,7 +125,9 @@ export default function ReviewProcessWorkspace() {
             onClose={() => setIsAddPapersModalOpen(false)}
             projectId={projectId}
             processId={processId}
-            processName={process.name || process.processName || "Review Process"}
+            processName={
+              process.name || process.processName || "Review Process"
+            }
           />
         )}
 
@@ -131,7 +142,9 @@ export default function ReviewProcessWorkspace() {
         <QualityAssessmentCriteriaModal
           isOpen={isQualityCriteriaModalOpen}
           onClose={() => setIsQualityCriteriaModalOpen(false)}
-          qualityAssessmentProcessId={process.qualityAssessmentProcess?.id || ""}
+          qualityAssessmentProcessId={
+            process.qualityAssessmentProcess?.id || ""
+          }
         />
 
         {projectId && process.synthesisProcess?.id ? (

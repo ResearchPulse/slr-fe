@@ -1,6 +1,21 @@
-import React, { useState, useCallback, useMemo, useEffect, useRef } from "react";
+import React, {
+  useState,
+  useCallback,
+  useMemo,
+  useEffect,
+  useRef,
+} from "react";
 import { useNavigate } from "react-router-dom";
-import { FiChevronLeft, FiSave, FiEye, FiDownload, FiMenu, FiUpload, FiRefreshCw, FiFileText } from "react-icons/fi";
+import {
+  FiChevronLeft,
+  FiSave,
+  FiEye,
+  FiDownload,
+  FiMenu,
+  FiUpload,
+  FiRefreshCw,
+  FiFileText,
+} from "react-icons/fi";
 import Button from "../ui/Button";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import Drawer from "../ui/Drawer";
@@ -9,7 +24,10 @@ import SectionSidebar from "./SectionSidebar";
 import ChecklistItem from "./ChecklistItem";
 import SampleAnswerModal from "./SampleAnswerModal";
 import ChecklistPdfPanel from "./ChecklistPdfPanel";
-import { useChecklistData, useChecklistEditorState } from "../../hooks/useChecklistData";
+import {
+  useChecklistData,
+  useChecklistEditorState,
+} from "../../hooks/useChecklistData";
 import { useSignalRSubscription } from "../../hooks/useSignalR";
 import { checklistApi } from "../../services/checklistService";
 import { cn } from "../../utils/cn";
@@ -70,7 +88,8 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [sampleAnswerData, setSampleAnswerData] = useState<SampleAnswerData | null>(null);
+  const [sampleAnswerData, setSampleAnswerData] =
+    useState<SampleAnswerData | null>(null);
   const [savingItemId, setSavingItemId] = useState<string | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -102,7 +121,8 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
   // --- PDF panel state ---
   const [isPdfPanelOpen, setIsPdfPanelOpen] = useState(false);
-  const [activePdfCoordinate, setActivePdfCoordinate] = useState<HighlightArea | null>(null);
+  const [activePdfCoordinate, setActivePdfCoordinate] =
+    useState<HighlightArea | null>(null);
   const [pdfWidth, setPdfWidth] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -173,31 +193,34 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   });
 
   // ─── SignalR subscription for auto-fill status updates ────────────────────
-  useSignalRSubscription("OnChecklistAutoFillStatus", useCallback(
-    (payload: ChecklistAutoFillStatusPayload) => {
-      // Only process events for the current checklist
-      if (!checklist || payload.reviewChecklistId !== checklist.id) return;
+  useSignalRSubscription(
+    "OnChecklistAutoFillStatus",
+    useCallback(
+      (payload: ChecklistAutoFillStatusPayload) => {
+        // Only process events for the current checklist
+        if (!checklist || payload.reviewChecklistId !== checklist.id) return;
 
-      const isTerminal =
-        payload.status === AutoFillStatus.Completed ||
-        payload.status === AutoFillStatus.Failed;
+        const isTerminal =
+          payload.status === AutoFillStatus.Completed ||
+          payload.status === AutoFillStatus.Failed;
 
-      setAutoFillState({
-        isActive: !isTerminal,
-        status: payload.status,
-        message: payload.message,
-        completionPercentage: payload.completionPercentage,
-        totalItems: payload.totalItems,
-        mappedItems: payload.mappedItems,
-      });
+        setAutoFillState({
+          isActive: !isTerminal,
+          status: payload.status,
+          message: payload.message,
+          completionPercentage: payload.completionPercentage,
+          totalItems: payload.totalItems,
+          mappedItems: payload.mappedItems,
+        });
 
-      // When completed, notify parent to re-fetch data
-      if (payload.status === AutoFillStatus.Completed) {
-        onAutoFillCompleted?.();
-      }
-    },
-    [checklist?.id, onAutoFillCompleted],
-  ));
+        // When completed, notify parent to re-fetch data
+        if (payload.status === AutoFillStatus.Completed) {
+          onAutoFillCompleted?.();
+        }
+      },
+      [checklist?.id, onAutoFillCompleted],
+    ),
+  );
 
   // Auto-dismiss the status banner after terminal states
   useEffect(() => {
@@ -205,9 +228,12 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
       autoFillState.status === AutoFillStatus.Completed ||
       autoFillState.status === AutoFillStatus.Failed
     ) {
-      const timeout = setTimeout(() => {
-        setAutoFillState((prev) => ({ ...prev, isActive: false }));
-      }, autoFillState.status === AutoFillStatus.Completed ? 5000 : 10000);
+      const timeout = setTimeout(
+        () => {
+          setAutoFillState((prev) => ({ ...prev, isActive: false }));
+        },
+        autoFillState.status === AutoFillStatus.Completed ? 5000 : 10000,
+      );
       return () => clearTimeout(timeout);
     }
   }, [autoFillState.status]);
@@ -237,7 +263,10 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         });
 
         // POST the PDF — backend returns 202 Accepted immediately
-        const initialStatus = await checklistApi.autoFillChecklist(checklist.id, file);
+        const initialStatus = await checklistApi.autoFillChecklist(
+          checklist.id,
+          file,
+        );
 
         // Update with the server-confirmed initial status
         setAutoFillState({
@@ -252,7 +281,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           isActive: false,
           status: AutoFillStatus.Failed,
           message:
-            error instanceof Error ? error.message : "Failed to start auto-fill",
+            error instanceof Error
+              ? error.message
+              : "Failed to start auto-fill",
         });
         setError(
           error instanceof Error
@@ -292,11 +323,20 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
       clearDraftChanges();
       setLastSavedAt(new Date().toISOString());
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Failed to save changes");
+      setError(
+        error instanceof Error ? error.message : "Failed to save changes",
+      );
     } finally {
       setSaving(false);
     }
-  }, [clearDraftChanges, getDraftChangesToSubmit, hasDraftChanges, onSave, setError, setSaving]);
+  }, [
+    clearDraftChanges,
+    getDraftChangesToSubmit,
+    hasDraftChanges,
+    onSave,
+    setError,
+    setSaving,
+  ]);
 
   const handleSaveItem = useCallback(
     async (itemTemplateId: string) => {
@@ -318,13 +358,22 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         ]);
         clearDraftChange(itemTemplateId);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Failed to save item");
+        setError(
+          error instanceof Error ? error.message : "Failed to save item",
+        );
       } finally {
         setSaving(false);
         setSavingItemId(null);
       }
     },
-    [clearDraftChange, getItemResponse, hasDraftChange, onSave, setError, setSaving],
+    [
+      clearDraftChange,
+      getItemResponse,
+      hasDraftChange,
+      onSave,
+      setError,
+      setSaving,
+    ],
   );
 
   const handleGenerateReport = useCallback(
@@ -335,7 +384,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         setSaving(true);
         await onGenerateReport(format);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Failed to generate report");
+        setError(
+          error instanceof Error ? error.message : "Failed to generate report",
+        );
       } finally {
         setSaving(false);
       }
@@ -344,7 +395,11 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   );
 
   const handleShowSampleAnswer = useCallback(
-    (item: { itemNumber: string; topic: string; defaultSampleAnswer?: string | null }) => {
+    (item: {
+      itemNumber: string;
+      topic: string;
+      defaultSampleAnswer?: string | null;
+    }) => {
       setSampleAnswerData({
         itemNumber: item.itemNumber,
         topic: item.topic,
@@ -360,57 +415,60 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
     [showSample],
   );
 
-  const handleNavigateToPdf = useCallback(
-    (coordinateString: string) => {
-      var coors = coordinateString
-        .split(";")
-        .map((entry) => entry.trim())
-        .filter((entry) => entry.length > 0)
-        .flatMap((entry) => {
-          const parts = entry.split(",").map((part) => Number(part.trim()));
-          if (parts.length < 5 || parts.some((part) => Number.isNaN(part))) {
-            return [];
-          }
+  const handleNavigateToPdf = useCallback((coordinateString: string) => {
+    var coors = coordinateString
+      .split(";")
+      .map((entry) => entry.trim())
+      .filter((entry) => entry.length > 0)
+      .flatMap((entry) => {
+        const parts = entry.split(",").map((part) => Number(part.trim()));
+        if (parts.length < 5 || parts.some((part) => Number.isNaN(part))) {
+          return [];
+        }
 
-          const [page, x, y, height, width] = parts;
-          return [
-            {
-              page,
-              x,
-              y,
-              h: height,
-              w: width,
-            },
-          ];
-        });
+        const [page, x, y, height, width] = parts;
+        return [
+          {
+            page,
+            x,
+            y,
+            h: height,
+            w: width,
+          },
+        ];
+      });
 
-      if (coors.length > 0) {
-        const coord = coors[0];
-        // Use PDF dimensions from checklist or fallback to standard US Letter
-        const PAGE_WIDTH = checklist?.pageWidth ?? 612;
-        const PAGE_HEIGHT = checklist?.pageHeight ?? 792;
+    if (coors.length > 0) {
+      const coord = coors[0];
+      // Use PDF dimensions from checklist or fallback to standard US Letter
+      const PAGE_WIDTH = checklist?.pageWidth ?? 612;
+      const PAGE_HEIGHT = checklist?.pageHeight ?? 792;
 
-        const highlightArea: HighlightArea = {
-          pageIndex: coord.page - 1,
-          left: (coord.x / PAGE_WIDTH) * 100,
-          top: (coord.y / PAGE_HEIGHT) * 100,
-          width: (coord.h / PAGE_HEIGHT) * 100,
-          height: (coord.w / PAGE_WIDTH) * 100,
-        };
+      const highlightArea: HighlightArea = {
+        pageIndex: coord.page - 1,
+        left: (coord.x / PAGE_WIDTH) * 100,
+        top: (coord.y / PAGE_HEIGHT) * 100,
+        width: (coord.h / PAGE_HEIGHT) * 100,
+        height: (coord.w / PAGE_WIDTH) * 100,
+      };
 
-        setActivePdfCoordinate(highlightArea);
-        setIsPdfPanelOpen(true);
-      }
-    },
-    [],
+      setActivePdfCoordinate(highlightArea);
+      setIsPdfPanelOpen(true);
+    }
+  }, []);
+
+  const currentSectionProgress = sectionProgress.find(
+    (s) => s.section === activeSection,
   );
-
-  const currentSectionProgress = sectionProgress.find((s) => s.section === activeSection);
   const currentSectionMeta = useMemo(
-    () => checklist?.sections?.find((section) => section.section === activeSection),
+    () =>
+      checklist?.sections?.find((section) => section.section === activeSection),
     [activeSection, checklist?.sections],
   );
-  const currentSectionItems = useMemo(() => currentSectionMeta?.items ?? [], [currentSectionMeta]);
+  const currentSectionItems = useMemo(
+    () => currentSectionMeta?.items ?? [],
+    [currentSectionMeta],
+  );
   const sectionsWithItems = useMemo(
     () => sectionProgress.filter((section) => section.totalItems > 0),
     [sectionProgress],
@@ -432,7 +490,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-white">
+      <div className="flex items-center justify-center min-h-screen bg-surface-white">
         <LoadingSpinner size="lg" />
       </div>
     );
@@ -440,8 +498,8 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
   if (!checklist) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white gap-4">
-        <p className="text-gray-600">Checklist not found</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-surface-white gap-4">
+        <p className="text-text-secondary">Checklist not found</p>
         <Button onClick={() => navigate(-1)} variant="secondary">
           Go Back
         </Button>
@@ -449,7 +507,10 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
     );
   }
 
-  const renderChecklistTree = (nodes: ChecklistItemResponse[], depth = 0): React.ReactNode => {
+  const renderChecklistTree = (
+    nodes: ChecklistItemResponse[],
+    depth = 0,
+  ): React.ReactNode => {
     return nodes.map((itemNode) => {
       const isSubItem = depth > 0;
       const itemId = itemNode.itemTemplateId;
@@ -457,7 +518,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
       return (
         <div key={itemId} className="space-y-3">
-          <div className={cn(isSubItem && "ml-8 pl-4 border-l-2 border-slate-200")}>
+          <div
+            className={cn(isSubItem && "ml-8 pl-4 border-l-2 border-border")}
+          >
             <ChecklistItem
               template={{
                 id: itemId,
@@ -479,7 +542,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
               onUpdate={updateItemResponse}
               onShowSample={handleShowSampleAnswer}
               onSaveItem={handleSaveItem}
-              onNavigateToPdf={checklist.pdfUrl ? handleNavigateToPdf : undefined}
+              onNavigateToPdf={
+                checklist.pdfUrl ? handleNavigateToPdf : undefined
+              }
               isSubItem={isSubItem}
               hasUnsavedChanges={hasDraftChange(itemId)}
               isLoading={isSaving && savingItemId === itemId}
@@ -492,10 +557,11 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
     });
   };
 
-  const isAutoFillInProgress = autoFillState.isActive && autoFillState.status !== null;
+  const isAutoFillInProgress =
+    autoFillState.isActive && autoFillState.status !== null;
 
   return (
-    <div className="flex h-screen flex-col bg-white">
+    <div className="flex h-screen flex-col bg-surface-white">
       {/* Hidden file input for PDF upload */}
       <input
         ref={fileInputRef}
@@ -507,7 +573,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
       />
 
       {/* Header */}
-      <div className="fixed z-40 w-full bg-white border-b border-gray-200 h-16 flex items-center px-4 sm:px-6 gap-4">
+      <div className="fixed z-40 w-full bg-surface-white border-b border-border h-16 flex items-center px-4 sm:px-6 gap-4">
         <Button
           variant="ghost"
           size="sm"
@@ -515,13 +581,16 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           className="p-2"
           title="Go back"
         >
-          <FiChevronLeft className="w-6 h-6 text-gray-600" />
+          <FiChevronLeft className="w-6 h-6 text-text-secondary" />
         </Button>
 
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-gray-900 truncate">{checklist.title}</h1>
-          <p className="text-xs text-gray-500">
-            {checklist.templateName} • {checklist.completionPercentage}% Complete
+          <h1 className="text-lg font-bold text-text-primary truncate">
+            {checklist.title}
+          </h1>
+          <p className="text-xs text-text-secondary">
+            {checklist.templateName} • {checklist.completionPercentage}%
+            Complete
           </p>
         </div>
 
@@ -588,7 +657,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           onClick={() => setIsMobileMenuOpen(true)}
           className="md:hidden p-2"
         >
-          <FiMenu className="w-6 h-6 text-gray-600" />
+          <FiMenu className="w-6 h-6 text-text-secondary" />
         </Button>
       </div>
 
@@ -664,72 +733,112 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         </div>
 
         {/* Main Content */}
-        <main className={cn(
-          "flex flex-col overflow-hidden flex-1",
-          !isDragging && "transition-all duration-300"
-        )}>
+        <main
+          className={cn(
+            "flex flex-col overflow-hidden flex-1",
+            !isDragging && "transition-all duration-300",
+          )}
+        >
           {/* Auto-Fill Status Banner */}
           {autoFillState.status && (
             <div
               className={cn(
                 "shrink-0 border-b px-4 sm:px-6 py-3 flex items-center gap-3 transition-all duration-300",
                 autoFillState.status === AutoFillStatus.Failed
-                  ? "bg-red-50 border-red-200 text-red-700"
+                  ? "bg-surface-white border-border text-red-700"
                   : autoFillState.status === AutoFillStatus.Completed
-                    ? "bg-green-50 border-green-200 text-green-700"
-                    : "bg-indigo-50 border-indigo-200 text-indigo-700",
+                    ? "bg-surface-white border-border text-green-700"
+                    : "bg-bg-secondary border-indigo-200 text-indigo-700",
               )}
             >
-              {autoFillState.isActive && autoFillState.status !== AutoFillStatus.Completed && (
-                <LoadingSpinner size="sm" />
-              )}
+              {autoFillState.isActive &&
+                autoFillState.status !== AutoFillStatus.Completed && (
+                  <LoadingSpinner size="sm" />
+                )}
               {autoFillState.status === AutoFillStatus.Completed && (
-                <svg className="w-5 h-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                <svg
+                  className="w-5 h-5 text-green-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               )}
               {autoFillState.status === AutoFillStatus.Failed && (
-                <svg className="w-5 h-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-5 h-5 text-red-500"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               )}
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium truncate">
-                  {AUTO_FILL_STAGE_LABELS[autoFillState.status] ?? autoFillState.status}
+                  {AUTO_FILL_STAGE_LABELS[autoFillState.status] ??
+                    autoFillState.status}
                 </p>
                 {autoFillState.message && (
-                  <p className="text-xs opacity-75 truncate">{autoFillState.message}</p>
+                  <p className="text-xs opacity-75 truncate">
+                    {autoFillState.message}
+                  </p>
                 )}
               </div>
-              {autoFillState.mappedItems != null && autoFillState.totalItems != null && (
-                <span className="text-xs font-mono whitespace-nowrap">
-                  {autoFillState.mappedItems}/{autoFillState.totalItems} items
-                </span>
-              )}
-              {autoFillState.status === AutoFillStatus.Completed && onAutoFillCompleted && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={onAutoFillCompleted}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs border-green-300 text-green-700 hover:bg-green-50 whitespace-nowrap"
-                  title="Refresh checklist data"
-                >
-                  <FiRefreshCw className="w-3.5 h-3.5" />
-                  Refresh
-                </Button>
-              )}
+              {autoFillState.mappedItems != null &&
+                autoFillState.totalItems != null && (
+                  <span className="text-xs font-mono whitespace-nowrap">
+                    {autoFillState.mappedItems}/{autoFillState.totalItems} items
+                  </span>
+                )}
+              {autoFillState.status === AutoFillStatus.Completed &&
+                onAutoFillCompleted && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onAutoFillCompleted}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs border-green-300 text-green-700 hover:bg-surface-white whitespace-nowrap"
+                    title="Refresh checklist data"
+                  >
+                    <FiRefreshCw className="w-3.5 h-3.5" />
+                    Refresh
+                  </Button>
+                )}
               {/* Dismiss button for terminal states */}
               {(autoFillState.status === AutoFillStatus.Completed ||
                 autoFillState.status === AutoFillStatus.Failed) && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setAutoFillState((prev) => ({ ...prev, status: null }))}
+                  onClick={() =>
+                    setAutoFillState((prev) => ({ ...prev, status: null }))
+                  }
                   className="p-1 h-auto min-h-0 min-w-0"
                   title="Dismiss"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </Button>
               )}
@@ -737,7 +846,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           )}
 
           {/* Progress Bar */}
-          <div className="shrink-0 bg-linear-to-r from-indigo-50 to-white border-b border-gray-200 p-4 sm:p-6">
+          <div className="shrink-0 bg-linear-to-r from-indigo-50 to-white border-b border-border p-4 sm:p-6">
             <CompletionProgress
               completed={checklist.completedItems}
               total={checklist.totalItems}
@@ -748,32 +857,37 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
           {/* Error Message */}
           {saveError && (
-            <div className="shrink-0 mx-4 mt-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+            <div className="shrink-0 mx-4 mt-4 p-3 bg-surface-white border border-border text-red-700 rounded-[4px] text-sm">
               {saveError}
             </div>
           )}
 
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto">
-            <div className={cn(
-              "mx-auto p-4 sm:p-6 lg:p-10 space-y-8",
-              isPdfPanelOpen && checklist.pdfUrl ? "max-w-full" : "max-w-4xl",
-            )}>
+            <div
+              className={cn(
+                "mx-auto p-4 sm:p-6 lg:p-10 space-y-8",
+                isPdfPanelOpen && checklist.pdfUrl ? "max-w-full" : "max-w-4xl",
+              )}
+            >
               {/* Section Header */}
               <div className="mb-8">
-                <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                <h2 className="text-3xl font-bold text-text-primary mb-2">
                   {currentSectionProgress?.displayName ?? activeSection}
                 </h2>
                 {currentSectionMeta?.description && (
-                  <p className="text-sm text-gray-500 mb-2">{currentSectionMeta.description}</p>
-                )}
-                {currentSectionProgress && (
-                  <p className="text-gray-600">
-                    {currentSectionProgress.completedItems} of {currentSectionProgress.totalItems}{" "}
-                    items completed in this section
+                  <p className="text-sm text-text-secondary mb-2">
+                    {currentSectionMeta.description}
                   </p>
                 )}
-                <p className="text-xs text-gray-500 mt-2">
+                {currentSectionProgress && (
+                  <p className="text-text-secondary">
+                    {currentSectionProgress.completedItems} of{" "}
+                    {currentSectionProgress.totalItems} items completed in this
+                    section
+                  </p>
+                )}
+                <p className="text-xs text-text-secondary mt-2">
                   {isSaving
                     ? "Saving changes..."
                     : hasDraftChanges
@@ -789,14 +903,16 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                 {currentSectionItems.length > 0 ? (
                   renderChecklistTree(currentSectionItems)
                 ) : (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg border border-gray-200">
-                    <p className="text-gray-600">No items in this section yet</p>
+                  <div className="text-center py-12 bg-bg-primary rounded-[4px] border border-border">
+                    <p className="text-text-secondary">
+                      No items in this section yet
+                    </p>
                   </div>
                 )}
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex justify-between pt-8 border-t border-gray-200">
+              <div className="flex justify-between pt-8 border-t border-border">
                 <Button
                   variant="secondary"
                   onClick={() => {
@@ -804,7 +920,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                       (s) => s.section === activeSection,
                     );
                     if (sectionIndex > 0) {
-                      setActiveSection(sectionProgress[sectionIndex - 1].section);
+                      setActiveSection(
+                        sectionProgress[sectionIndex - 1].section,
+                      );
                     }
                   }}
                 >
@@ -817,7 +935,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                       (s) => s.section === activeSection,
                     );
                     if (sectionIndex < sectionProgress.length - 1) {
-                      setActiveSection(sectionProgress[sectionIndex + 1].section);
+                      setActiveSection(
+                        sectionProgress[sectionIndex + 1].section,
+                      );
                     }
                   }}
                 >
@@ -835,22 +955,28 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             className={cn(
               "shrink-0 flex",
               !isDragging && "transition-all duration-300",
-              !pdfWidth && "w-[55%]"
+              !pdfWidth && "w-[55%]",
             )}
           >
             {/* Divider */}
             <div
               className={cn(
                 "w-1.5 relative cursor-col-resize select-none self-stretch flex items-center justify-center group z-50",
-                isDragging ? "bg-indigo-600" : "bg-gray-200 hover:bg-indigo-400 transition-colors"
+                isDragging
+                  ? "bg-accent"
+                  : "bg-bg-secondary hover:bg-indigo-400 transition-colors",
               )}
               onMouseDown={handleMouseDown}
             >
               <div className="absolute inset-y-0 -left-2 -right-2 cursor-col-resize" />
-              <div className={cn(
-                "w-0.5 h-6 rounded-full transition-colors",
-                isDragging ? "bg-indigo-200" : "bg-gray-400 group-hover:bg-white"
-              )} />
+              <div
+                className={cn(
+                  "w-0.5 h-6 rounded-full transition-colors",
+                  isDragging
+                    ? "bg-indigo-200"
+                    : "bg-gray-400 group-hover:bg-surface-white",
+                )}
+              />
             </div>
 
             <div className="flex-1 h-full overflow-hidden">
@@ -868,7 +994,11 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
       </div>
 
       {/* Sample Answer Modal */}
-      <SampleAnswerModal isOpen={showSampleModal} onClose={closeSample} data={sampleAnswerData} />
+      <SampleAnswerModal
+        isOpen={showSampleModal}
+        onClose={closeSample}
+        data={sampleAnswerData}
+      />
     </div>
   );
 };

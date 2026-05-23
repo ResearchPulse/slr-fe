@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, X } from 'lucide-react';
-import { cn } from '../../../utils/cn';
+import React, { useState, useEffect, useRef } from "react";
+import { Calendar, X } from "lucide-react";
+import { cn } from "../../../utils/cn";
 
 interface YearRangeSliderProps {
   fromYear: number;
@@ -17,7 +17,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
   minYear = 1900,
   maxYear = new Date().getFullYear(),
   onChange,
-  onClear
+  onClear,
 }) => {
   const [minVal, setMinVal] = useState(fromYear);
   const [maxVal, setMaxVal] = useState(toYear);
@@ -72,12 +72,14 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
     <div className="flex flex-col gap-4 p-4 min-w-[300px]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-indigo-500" />
-          <span className="text-xs font-black text-slate-700 uppercase tracking-wider">Publication Years</span>
+          <Calendar className="w-4 h-4 text-accent" />
+          <span className="text-xs font-black text-text-primary uppercase tracking-wider">
+            Publication Years
+          </span>
         </div>
-        <button 
+        <button
           onClick={onClear}
-          className="p-1 rounded-md hover:bg-slate-100 text-slate-400 hover:text-rose-500 transition-colors"
+          className="p-1 rounded-md hover:bg-bg-secondary text-text-secondary hover:text-rose-500 transition-colors"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -85,11 +87,15 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
 
       <div className="flex items-center justify-between mb-2">
         <div className="flex flex-col">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">From</span>
+          <span className="text-[10px] font-bold text-text-secondary uppercase">
+            From
+          </span>
           <span className="text-sm font-black text-slate-800">{minVal}</span>
         </div>
         <div className="flex flex-col text-right">
-          <span className="text-[10px] font-bold text-slate-400 uppercase">To</span>
+          <span className="text-[10px] font-bold text-text-secondary uppercase">
+            To
+          </span>
           <span className="text-sm font-black text-slate-800">{maxVal}</span>
         </div>
       </div>
@@ -106,7 +112,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           onTouchEnd={handleMouseUp}
           className={cn(
             "thumb thumb--zindex-3",
-            minVal > maxYear - 100 && "thumb--zindex-5"
+            minVal > maxYear - 100 && "thumb--zindex-5",
           )}
         />
         <input
@@ -123,7 +129,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
 
         <div className="slider">
           <div className="slider__track bg-slate-200" />
-          <div ref={range} className="slider__range bg-indigo-500" />
+          <div ref={range} className="slider__range bg-accent" />
         </div>
       </div>
 
@@ -187,7 +193,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           background-color: #ffffff;
           border: 2px solid #6366f1;
           border-radius: 50%;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow-none: 0 1px 3px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           height: 18px;
           width: 18px;
@@ -201,7 +207,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           background-color: #ffffff;
           border: 2px solid #6366f1;
           border-radius: 50%;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow-none: 0 1px 3px rgba(0, 0, 0, 0.1);
           cursor: pointer;
           height: 18px;
           width: 18px;

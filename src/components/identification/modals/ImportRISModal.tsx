@@ -50,10 +50,14 @@ export default function ImportRISModal({
 }: ImportRISModalProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedSource, setSelectedSource] = useState<string>("");
-  const [selectedStrategyId, setSelectedStrategyId] = useState<string>(preselectedStrategyId || "");
+  const [selectedStrategyId, setSelectedStrategyId] = useState<string>(
+    preselectedStrategyId || "",
+  );
   const [isDragging, setIsDragging] = useState(false);
 
-  const preselectedStrategy = availableStrategies.find((s) => s.id === preselectedStrategyId);
+  const preselectedStrategy = availableStrategies.find(
+    (s) => s.id === preselectedStrategyId,
+  );
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -81,9 +85,18 @@ export default function ImportRISModal({
     if (!selectedFile) return;
 
     // In quick-import mode, source is required
-    if (mode === "quick-import" && sourceRequiredInQuickImport && !selectedSource) return;
+    if (
+      mode === "quick-import" &&
+      sourceRequiredInQuickImport &&
+      !selectedSource
+    )
+      return;
 
-    await onSubmit(selectedFile, selectedSource, selectedStrategyId || undefined);
+    await onSubmit(
+      selectedFile,
+      selectedSource,
+      selectedStrategyId || undefined,
+    );
 
     // Reset form
     setSelectedFile(null);
@@ -104,18 +117,23 @@ export default function ImportRISModal({
     selectedFile &&
     !isUploading &&
     (mode === "from-strategy" ||
-      (mode === "quick-import" && (!sourceRequiredInQuickImport || Boolean(selectedSource))));
+      (mode === "quick-import" &&
+        (!sourceRequiredInQuickImport || Boolean(selectedSource))));
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title={mode === "from-strategy" ? "Import RIS to Strategy" : "Quick Import RIS File"}
+      title={
+        mode === "from-strategy"
+          ? "Import RIS to Strategy"
+          : "Quick Import RIS File"
+      }
       size="lg"
     >
       {/* Mode-specific Info Banner */}
       {mode === "from-strategy" && preselectedStrategy && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+        <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
           <div className="flex gap-2 text-sm">
             <FiLock className="w-4 h-4 text-blue-700 mt-0.5 shrink-0" />
             <div className="text-blue-800">
@@ -133,14 +151,14 @@ export default function ImportRISModal({
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* File Upload */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-text-primary mb-2">
             RIS File <span className="text-red-500">*</span>
           </label>
           <div
-            className={`relative border-2 border-dashed rounded-lg p-6 transition-all ${
+            className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all ${
               isDragging
                 ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-gray-400 bg-white"
+                : "border-border hover:border-gray-400 bg-surface-white"
             }`}
             onDragOver={(e) => {
               e.preventDefault();
@@ -155,8 +173,10 @@ export default function ImportRISModal({
                   <div className="flex items-center gap-2">
                     <FiUpload className="w-5 h-5 text-green-600" />
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{selectedFile.name}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-medium text-text-primary">
+                        {selectedFile.name}
+                      </p>
+                      <p className="text-xs text-text-secondary">
                         {(selectedFile.size / 1024).toFixed(2)} KB
                       </p>
                     </div>
@@ -166,7 +186,7 @@ export default function ImportRISModal({
                     onClick={() => {
                       setSelectedFile(null);
                     }}
-                    className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                    className="p-1 text-text-secondary hover:text-text-secondary rounded transition-colors"
                     disabled={isUploading}
                   >
                     <FiX className="w-5 h-5" />
@@ -175,7 +195,7 @@ export default function ImportRISModal({
 
                 {/* Parsed Record Count */}
                 {/* {parsedRecordCount !== null && (
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="bg-surface-white border border-border rounded-[4px] p-3">
                     <div className="flex items-center gap-2 text-sm text-green-800">
                       <FiCheck className="w-4 h-4" />
                       <p className="font-medium">
@@ -187,8 +207,8 @@ export default function ImportRISModal({
               </div>
             ) : (
               <div className="text-center">
-                <FiUpload className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                <p className="text-sm text-gray-700 mb-1">
+                <FiUpload className="w-10 h-10 text-text-secondary mx-auto mb-2" />
+                <p className="text-sm text-text-primary mb-1">
                   Drag and drop your RIS file here, or{" "}
                   <label className="text-blue-600 hover:text-blue-700 cursor-pointer underline">
                     browse
@@ -201,7 +221,7 @@ export default function ImportRISModal({
                     />
                   </label>
                 </p>
-                <p className="text-xs text-gray-500">Supported: .ris</p>
+                <p className="text-xs text-text-secondary">Supported: .ris</p>
               </div>
             )}
           </div>
@@ -210,13 +230,16 @@ export default function ImportRISModal({
         {/* Source Selector (Quick Import Mode Only) */}
         {mode === "quick-import" && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {sourceLabel} {sourceRequiredInQuickImport && <span className="text-red-500">*</span>}
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              {sourceLabel}{" "}
+              {sourceRequiredInQuickImport && (
+                <span className="text-red-500">*</span>
+              )}
             </label>
             <select
               value={selectedSource}
               onChange={(e) => setSelectedSource(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               disabled={isUploading}
             >
               <option value="">{sourcePlaceholder}</option>
@@ -232,20 +255,23 @@ export default function ImportRISModal({
         {/* Strategy Selector (Quick Import Mode Only) */}
         {mode === "quick-import" && showStrategySelectorInQuickImport && (
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-text-primary mb-2">
               Link to Existing Strategy{" "}
-              <span className="text-xs text-gray-500 font-normal">(optional)</span>
+              <span className="text-xs text-text-secondary font-normal">
+                (optional)
+              </span>
             </label>
             <select
               value={selectedStrategyId}
               onChange={(e) => setSelectedStrategyId(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               disabled={isUploading || availableStrategies.length === 0}
             >
               <option value="">Don't link to a strategy</option>
               {availableStrategies.map((strategy) => (
                 <option key={strategy.id} value={strategy.id}>
-                  {strategy.searchSource} - {new Date(strategy.executedAt).toLocaleDateString()}
+                  {strategy.searchSource} -{" "}
+                  {new Date(strategy.executedAt).toLocaleDateString()}
                 </option>
               ))}
             </select>
@@ -256,10 +282,14 @@ export default function ImportRISModal({
         {isUploading && uploadProgress > 0 && (
           <div className="mt-4">
             <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-gray-700">Uploading...</span>
-              <span className="text-sm font-medium text-gray-700">{uploadProgress}%</span>
+              <span className="text-sm font-medium text-text-primary">
+                Uploading...
+              </span>
+              <span className="text-sm font-medium text-text-primary">
+                {uploadProgress}%
+              </span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
+            <div className="w-full bg-bg-secondary rounded-full h-2.5">
               <div
                 className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
                 style={{ width: `${uploadProgress}%` }}
@@ -269,8 +299,13 @@ export default function ImportRISModal({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200">
-          <Button type="button" variant="secondary" onClick={handleClose} disabled={isUploading}>
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isUploading}
+          >
             Cancel
           </Button>
           <Button type="submit" disabled={!canSubmit}>

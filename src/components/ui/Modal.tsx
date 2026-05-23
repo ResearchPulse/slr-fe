@@ -47,7 +47,11 @@ export const Modal: React.FC<ModalProps> = ({
 
   // Handle outside click
   const handleBackdropClick = (e: React.MouseEvent) => {
-    if (closeOnOutsideClick && modalRef.current && !modalRef.current.contains(e.target as Node)) {
+    if (
+      closeOnOutsideClick &&
+      modalRef.current &&
+      !modalRef.current.contains(e.target as Node)
+    ) {
       onClose();
     }
   };
@@ -68,7 +72,7 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Backdrop with frosted glass effect */}
       <div
-        className="fixed inset-0 bg-[#111111]/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+        className="fixed inset-0 bg-text-primary/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
         aria-hidden="true"
       />
 
@@ -77,7 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-[#FDFCF9] rounded-[4px] border border-[#D8D2C8] shadow-lg overflow-hidden transform transition-all z-10 animate-in zoom-in-95 fade-in duration-300",
+          "relative w-full bg-surface-white rounded-[4px] border border-border shadow-lg overflow-hidden transform transition-all z-10 animate-in zoom-in-95 fade-in duration-300",
           sizeStyles[size],
           className,
         )}
@@ -85,18 +89,18 @@ export const Modal: React.FC<ModalProps> = ({
         aria-modal="true"
       >
         {/* Header Section */}
-        <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-[#D8D2C8]">
+        <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border">
           <div className="space-y-1">
-            <div className="text-[18px] font-medium text-[#111111] leading-snug">
+            <div className="text-[18px] font-medium text-text-primary leading-snug">
               {title}
             </div>
             {description && (
-              <div className="text-sm text-[#5C5C5C]">{description}</div>
+              <div className="text-sm text-text-secondary">{description}</div>
             )}
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-[#5C5C5C] hover:text-[#111111] hover:bg-[#ECE8E1] rounded-[4px] transition-colors"
+            className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-colors"
           >
             <FiX size={18} />
             <span className="sr-only">Close</span>

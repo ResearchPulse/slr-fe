@@ -13,14 +13,18 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
   draft,
   template,
   renderItem,
-  renderSectionTitle
+  renderSectionTitle,
 }) => {
   // If template is provided, map its fields to the display structure
-  const displayData = template ? {
-    title: template.name,
-    paragraphs: template.description ? [{ id: 'desc', text: template.description, order: 0 }] : [],
-    sections: template.sections || []
-  } : draft;
+  const displayData = template
+    ? {
+        title: template.name,
+        paragraphs: template.description
+          ? [{ id: "desc", text: template.description, order: 0 }]
+          : [],
+        sections: template.sections || [],
+      }
+    : draft;
 
   if (!displayData) {
     return (
@@ -35,7 +39,9 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
       {/* Title */}
       <header>
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-          {(displayData as any)?.title || (displayData as any)?.name || <span className="text-gray-300 italic">Untitled Document</span>}
+          {(displayData as any)?.title || (displayData as any)?.name || (
+            <span className="text-gray-300 italic">Untitled Document</span>
+          )}
         </h1>
         <div className="h-1 w-20 bg-blue-600 mt-4 rounded-full"></div>
       </header>
@@ -44,12 +50,19 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
       <div className="space-y-4">
         {displayData.paragraphs.length > 0 ? (
           displayData.paragraphs.map((p) => (
-            <p key={p.id} className="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap">
-              {p.text || <span className="text-gray-200">Empty paragraph...</span>}
+            <p
+              key={p.id}
+              className="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap"
+            >
+              {p.text || (
+                <span className="text-gray-200">Empty paragraph...</span>
+              )}
             </p>
           ))
         ) : (
-          <p className="text-gray-300 italic text-sm">No introductory paragraphs added.</p>
+          <p className="text-gray-300 italic text-sm">
+            No introductory paragraphs added.
+          </p>
         )}
       </div>
 
@@ -61,12 +74,18 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
               <div>
                 <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-between gap-3">
                   <span>
-                    {section.title || <span className="text-gray-300 italic">Untitled Section</span>}
+                    {section.title || (
+                      <span className="text-gray-300 italic">
+                        Untitled Section
+                      </span>
+                    )}
                   </span>
                   {renderSectionTitle && renderSectionTitle(section)}
                 </h2>
                 {section.description && (
-                  <p className="mt-2 text-gray-500 text-sm italic">{section.description}</p>
+                  <p className="mt-2 text-gray-500 text-sm italic">
+                    {section.description}
+                  </p>
                 )}
               </div>
 
@@ -74,10 +93,17 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
                 {section.items.length > 0 ? (
                   <ol className="space-y-4 list-decimal marker:text-blue-500 marker:font-bold">
                     {section.items.map((item) => (
-                      <li key={item.id} className="pl-3 text-gray-700 font-medium">
+                      <li
+                        key={item.id}
+                        className="pl-3 text-gray-700 font-medium"
+                      >
                         <div className="flex items-center justify-between gap-4">
                           <span>
-                            {item.text || <span className="text-gray-300 italic">No text provided</span>}
+                            {item.text || (
+                              <span className="text-gray-300 italic">
+                                No text provided
+                              </span>
+                            )}
                           </span>
                           {renderItem && renderItem(item)}
                         </div>
@@ -85,14 +111,18 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
                     ))}
                   </ol>
                 ) : (
-                  <p className="text-gray-300 italic text-sm">No items in this section.</p>
+                  <p className="text-gray-300 italic text-sm">
+                    No items in this section.
+                  </p>
                 )}
               </div>
             </section>
           ))
         ) : (
           <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-xl">
-            <p className="text-gray-300 font-medium italic">Your sections will appear here.</p>
+            <p className="text-gray-300 font-medium italic">
+              Your sections will appear here.
+            </p>
           </div>
         )}
       </div>
@@ -106,4 +136,3 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
     </div>
   );
 };
-

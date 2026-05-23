@@ -59,7 +59,9 @@ export default function FullTextReader({
   const [activeSuggestion, setActiveSuggestion] = useState<NonNullable<
     FullTextPaper["extractionSuggestion"]
   > | null>(null);
-  const [appliedMetadataFields, setAppliedMetadataFields] = useState<string[]>([]);
+  const [appliedMetadataFields, setAppliedMetadataFields] = useState<string[]>(
+    [],
+  );
   const containerRef = useRef<HTMLDivElement>(null);
 
   const hasPdf = !!(paper?.pdfUrl || paper?.url);
@@ -101,31 +103,38 @@ export default function FullTextReader({
       return;
     }
 
-    await onApplyMetadataSuggestion(paper.id, activeSuggestion.sourceMetadataId, selectedFields);
+    await onApplyMetadataSuggestion(
+      paper.id,
+      activeSuggestion.sourceMetadataId,
+      selectedFields,
+    );
     setAppliedMetadataFields(selectedFields);
     setActiveSuggestion(null);
   };
 
   const updatedFields = new Set(
-    [...appliedMetadataFields, ...(paper?.extractionResult?.updatedFields ?? [])].map((value) =>
-      value.toLowerCase(),
-    ),
+    [
+      ...appliedMetadataFields,
+      ...(paper?.extractionResult?.updatedFields ?? []),
+    ].map((value) => value.toLowerCase()),
   );
 
   // Empty state
   if (!paper) {
     return (
-      <div className="flex flex-col items-center justify-center h-full bg-gray-50 text-center px-8">
+      <div className="flex flex-col items-center justify-center h-full bg-bg-primary text-center px-8">
         <FiBookOpen className="w-12 h-12 text-gray-300 mb-4" />
-        <h3 className="text-lg font-medium text-gray-500">No Paper Selected</h3>
-        <p className="text-sm text-gray-400 mt-2">
+        <h3 className="text-lg font-medium text-text-secondary">
+          No Paper Selected
+        </h3>
+        <p className="text-sm text-text-secondary mt-2">
           Select a paper from the queue to read the full text
         </p>
-        <div className="flex items-center gap-2 mt-4 text-xs text-gray-400">
-          <kbd className="px-1.5 py-0.5 bg-white rounded border border-gray-200 font-mono text-[10px]">
+        <div className="flex items-center gap-2 mt-4 text-xs text-text-secondary">
+          <kbd className="px-1.5 py-0.5 bg-surface-white rounded border border-border font-mono text-[10px]">
             ↑
           </kbd>
-          <kbd className="px-1.5 py-0.5 bg-white rounded border border-gray-200 font-mono text-[10px]">
+          <kbd className="px-1.5 py-0.5 bg-surface-white rounded border border-border font-mono text-[10px]">
             ↓
           </kbd>
           <span>to navigate papers</span>
@@ -135,7 +144,7 @@ export default function FullTextReader({
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col h-full bg-white">
+    <div ref={containerRef} className="flex flex-col h-full bg-surface-white">
       {isUploadModalOpen && (
         <UploadFullTextPdfModal
           isOpen={isUploadModalOpen}
@@ -166,7 +175,6 @@ export default function FullTextReader({
             volume: paper.volume,
             issue: paper.issue,
             pages: paper.pages,
-            
           }}
           suggestion={activeSuggestion}
           onApply={handleApplySuggestion}
@@ -175,12 +183,14 @@ export default function FullTextReader({
       )}
 
       {/* Reader Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-gray-50 shrink-0">
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-bg-primary shrink-0">
         <div className="flex items-center gap-2 min-w-0">
-          <FiFileText className="w-4 h-4 text-indigo-600 shrink-0" />
-          <h2 className="text-sm font-medium text-gray-900 truncate">{paper.title}</h2>
+          <FiFileText className="w-4 h-4 text-accent shrink-0" />
+          <h2 className="text-sm font-medium text-text-primary truncate">
+            {paper.title}
+          </h2>
           {paper.pdfFileName && (
-            <span className="text-[10px] text-gray-500 bg-white border border-gray-200 rounded px-2 py-0.5 truncate max-w-48">
+            <span className="text-[10px] text-text-secondary bg-surface-white border border-border rounded px-2 py-0.5 truncate max-w-48">
               {paper.pdfFileName}
             </span>
           )}
@@ -191,10 +201,10 @@ export default function FullTextReader({
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={cn(
-              "p-1.5 rounded-lg transition-colors",
+              "p-1.5 rounded-[4px] transition-colors",
               showSearch
                 ? "bg-blue-100 text-blue-700"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100",
+                : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
             )}
             title="Search within paper"
           >
@@ -205,43 +215,45 @@ export default function FullTextReader({
           <button
             onClick={() => setShowSectionNav(!showSectionNav)}
             className={cn(
-              "p-1.5 rounded-lg transition-colors",
+              "p-1.5 rounded-[4px] transition-colors",
               showSectionNav
                 ? "bg-indigo-100 text-indigo-700"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100",
+                : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
             )}
             title="Toggle section navigation"
           >
             <FiBookOpen className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-5 bg-gray-200 mx-1" />
+          <div className="w-px h-5 bg-bg-secondary mx-1" />
 
           {/* Zoom controls */}
           <button
             onClick={handleZoomOut}
             disabled={zoomLevel <= 50}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
             title="Zoom out"
           >
             <FiZoomOut className="w-4 h-4" />
           </button>
-          <span className="text-xs text-gray-500 w-10 text-center font-medium">{zoomLevel}%</span>
+          <span className="text-xs text-text-secondary w-10 text-center font-medium">
+            {zoomLevel}%
+          </span>
           <button
             onClick={handleZoomIn}
             disabled={zoomLevel >= 200}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
             title="Zoom in"
           >
             <FiZoomIn className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-5 bg-gray-200 mx-1" />
+          <div className="w-px h-5 bg-bg-secondary mx-1" />
 
           {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
             title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? (
@@ -257,7 +269,7 @@ export default function FullTextReader({
               href={paper.pdfUrl || paper.url || ""}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+              className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
               title="Open in new tab"
             >
               <FiExternalLink className="w-4 h-4" />
@@ -268,16 +280,16 @@ export default function FullTextReader({
 
       {/* Search Bar */}
       {showSearch && (
-        <div className="px-4 py-2 border-b border-gray-200 bg-white">
+        <div className="px-4 py-2 border-b border-border bg-surface-white">
           <div className="relative">
-            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-3.5 h-3.5" />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-3.5 h-3.5" />
             <input
               type="text"
               placeholder="Search within paper..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg bg-gray-50 focus:bg-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
             />
           </div>
         </div>
@@ -287,15 +299,15 @@ export default function FullTextReader({
       <div className="flex flex-1 min-h-0">
         {/* Section Navigation Sidebar */}
         {showSectionNav && (
-          <div className="w-48 shrink-0 border-r border-gray-100 overflow-y-auto bg-gray-50">
+          <div className="w-48 shrink-0 border-r border-border overflow-y-auto bg-bg-primary">
             <div className="py-3">
-              <p className="px-4 text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
+              <p className="px-4 text-[10px] font-semibold text-text-secondary uppercase tracking-wider mb-2">
                 Sections
               </p>
               {PAPER_SECTIONS.map((section) => (
                 <button
                   key={section.id}
-                  className="w-full text-left px-4 py-2 text-xs text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition-colors"
+                  className="w-full text-left px-4 py-2 text-xs text-text-secondary hover:bg-bg-secondary hover:text-text-primary transition-colors"
                 >
                   {section.label}
                 </button>
@@ -304,7 +316,7 @@ export default function FullTextReader({
 
             {/* AI Highlights */}
             {aiHighlights.length > 0 && (
-              <div className="border-t border-gray-200 py-3">
+              <div className="border-t border-border py-3">
                 <p className="px-4 text-[10px] font-semibold text-blue-500 uppercase tracking-wider mb-2">
                   AI Highlights
                 </p>
@@ -315,7 +327,9 @@ export default function FullTextReader({
                     title={hl.text}
                   >
                     <span className="font-medium">{hl.section}</span>
-                    <span className="text-gray-400 ml-1">p.{hl.page}</span>
+                    <span className="text-text-secondary ml-1">
+                      p.{hl.page}
+                    </span>
                   </button>
                 ))}
               </div>
@@ -324,55 +338,67 @@ export default function FullTextReader({
         )}
 
         {/* PDF / Full Text Content */}
-        <div className="flex-1 min-w-0 overflow-auto bg-gray-100">
-          {paper.extraction?.status === "failed" && paper.extraction.requested && (
-            <div className="border-b border-amber-200 bg-amber-50 p-4">
-              <p className="text-sm font-medium text-amber-900">
-                PDF uploaded successfully, but metadata extraction failed.
-              </p>
-              {paper.extraction.message && (
-                <p className="mt-1 text-xs text-amber-800">{paper.extraction.message}</p>
-              )}
-              {onRetryExtraction && (
-                <button
-                  onClick={() => onRetryExtraction(paper.id)}
-                  disabled={isRetryingExtraction}
-                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <FiRefreshCw
-                    className={cn("h-3.5 w-3.5", isRetryingExtraction && "animate-spin")}
-                  />
-                  {isRetryingExtraction ? "Retrying..." : "Retry Extraction"}
-                </button>
-              )}
-            </div>
-          )}
+        <div className="flex-1 min-w-0 overflow-auto bg-bg-secondary">
+          {paper.extraction?.status === "failed" &&
+            paper.extraction.requested && (
+              <div className="border-b border-amber-200 bg-amber-50 p-4">
+                <p className="text-sm font-medium text-amber-900">
+                  PDF uploaded successfully, but metadata extraction failed.
+                </p>
+                {paper.extraction.message && (
+                  <p className="mt-1 text-xs text-amber-800">
+                    {paper.extraction.message}
+                  </p>
+                )}
+                {onRetryExtraction && (
+                  <button
+                    onClick={() => onRetryExtraction(paper.id)}
+                    disabled={isRetryingExtraction}
+                    className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-amber-300 bg-surface-white px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    <FiRefreshCw
+                      className={cn(
+                        "h-3.5 w-3.5",
+                        isRetryingExtraction && "animate-spin",
+                      )}
+                    />
+                    {isRetryingExtraction ? "Retrying..." : "Retry Extraction"}
+                  </button>
+                )}
+              </div>
+            )}
 
           {paper.extractionResult && (
-            <div className="border-b border-indigo-100 bg-indigo-50/80 p-4">
+            <div className="border-b border-indigo-100 bg-bg-secondary/80 p-4">
               <div className="mb-3 flex items-center gap-2">
-                <FiCpu className="h-4 w-4 text-indigo-600" />
+                <FiCpu className="h-4 w-4 text-accent" />
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-wider text-indigo-500">
+                  <p className="text-xs font-semibold uppercase tracking-wider text-accent">
                     AI Extraction Result
                   </p>
-                  <p className="text-sm font-semibold text-slate-900">AI Extracted Metadata</p>
+                  <p className="text-sm font-semibold text-text-primary">
+                    AI Extracted Metadata
+                  </p>
                 </div>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-xl bg-white px-4 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="rounded-[4px] bg-surface-white px-4 py-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                     Metadata Sources
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <SourceBadge
-                      label={paper.metadataSources?.title ?? paper.source ?? "Current Record"}
+                      label={
+                        paper.metadataSources?.title ??
+                        paper.source ??
+                        "Current Record"
+                      }
                       tone="neutral"
                     />
                   </div>
                 </div>
-                <div className="rounded-xl bg-white px-4 py-3">
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="rounded-[4px] bg-surface-white px-4 py-3">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                     Updated Fields
                   </p>
                   <div className="mt-2 flex flex-wrap gap-2">
@@ -386,51 +412,74 @@ export default function FullTextReader({
                         </span>
                       ))
                     ) : (
-                      <span className="text-sm text-slate-500">No fields changed</span>
+                      <span className="text-sm text-text-secondary">
+                        No fields changed
+                      </span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="mt-3 rounded-xl bg-white px-4 py-3">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">
+              <div className="mt-3 rounded-[4px] bg-surface-white px-4 py-3">
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                   Metadata Source Transparency
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {paper.metadataSources?.title && (
                     <SourceBadge
                       label={`Title [${paper.metadataSources.title}]`}
-                      tone={paper.metadataSources.title === "GROBID" ? "ai" : "neutral"}
+                      tone={
+                        paper.metadataSources.title === "GROBID"
+                          ? "ai"
+                          : "neutral"
+                      }
                     />
                   )}
                   {paper.metadataSources?.authors && (
                     <SourceBadge
                       label={`Authors [${paper.metadataSources.authors}]`}
-                      tone={paper.metadataSources.authors === "GROBID" ? "ai" : "neutral"}
+                      tone={
+                        paper.metadataSources.authors === "GROBID"
+                          ? "ai"
+                          : "neutral"
+                      }
                     />
                   )}
                   {paper.metadataSources?.abstract && (
                     <SourceBadge
                       label={`Abstract [${paper.metadataSources.abstract}]`}
-                      tone={paper.metadataSources.abstract === "GROBID" ? "ai" : "neutral"}
+                      tone={
+                        paper.metadataSources.abstract === "GROBID"
+                          ? "ai"
+                          : "neutral"
+                      }
                     />
                   )}
                   {paper.metadataSources?.doi && (
                     <SourceBadge
                       label={`DOI [${paper.metadataSources.doi}]`}
-                      tone={paper.metadataSources.doi === "GROBID" ? "ai" : "neutral"}
+                      tone={
+                        paper.metadataSources.doi === "GROBID"
+                          ? "ai"
+                          : "neutral"
+                      }
                     />
                   )}
                   {paper.metadataSources?.journal && (
                     <SourceBadge
                       label={`Journal [${paper.metadataSources.journal}]`}
-                      tone={paper.metadataSources.journal === "GROBID" ? "ai" : "neutral"}
+                      tone={
+                        paper.metadataSources.journal === "GROBID"
+                          ? "ai"
+                          : "neutral"
+                      }
                     />
                   )}
                 </div>
                 {updatedFields.size > 0 && (
                   <p className="mt-3 text-xs font-medium text-indigo-700">
-                    Updated via AI extraction: {Array.from(updatedFields).join(", ")}
+                    Updated via AI extraction:{" "}
+                    {Array.from(updatedFields).join(", ")}
                   </p>
                 )}
               </div>
@@ -455,17 +504,25 @@ export default function FullTextReader({
                   />
                 )}
                 {paper.extractionResult.doi && (
-                  <ExtractedFieldCard label="Extracted DOI" value={paper.extractionResult.doi} />
+                  <ExtractedFieldCard
+                    label="Extracted DOI"
+                    value={paper.extractionResult.doi}
+                  />
                 )}
               </div>
             </div>
           )}
           {hasPdf ? (
-            <PdfViewer url={paper.pdfUrl || paper.url || ""} zoomLevel={zoomLevel} />
+            <PdfViewer
+              url={paper.pdfUrl || paper.url || ""}
+              zoomLevel={zoomLevel}
+            />
           ) : (
             <FullTextMissing
               paper={paper}
-              onUpload={onUploadPdf ? () => setIsUploadModalOpen(true) : undefined}
+              onUpload={
+                onUploadPdf ? () => setIsUploadModalOpen(true) : undefined
+              }
               isUploading={isUploading}
             />
           )}
@@ -483,8 +540,11 @@ function PdfViewer({ url, zoomLevel }: { url: string; zoomLevel: number }) {
   return (
     <div className="h-full w-full flex items-center justify-center p-4">
       <div
-        className="bg-white shadow-lg rounded-lg overflow-hidden w-full h-full"
-        style={{ transform: `scale(${zoomLevel / 100})`, transformOrigin: "top center" }}
+        className="bg-surface-white shadow-none rounded-[4px] overflow-hidden w-full h-full"
+        style={{
+          transform: `scale(${zoomLevel / 100})`,
+          transformOrigin: "top center",
+        }}
       >
         <iframe
           src={`${url}#toolbar=0&navpanes=0`}
@@ -512,18 +572,25 @@ function FullTextMissing({
 }) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-8">
-      <div className="w-16 h-16 rounded-2xl bg-amber-50 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-[4px] bg-amber-50 flex items-center justify-center mb-4">
         <FiAlertTriangle className="w-8 h-8 text-amber-500" />
       </div>
-      <h3 className="text-lg font-semibold text-gray-700 mb-2">Full Text Missing</h3>
-      <p className="text-sm text-gray-500 max-w-sm mb-6">
-        No PDF is available for this paper. Upload the full text to proceed with screening.
+      <h3 className="text-lg font-semibold text-text-primary mb-2">
+        Full Text Missing
+      </h3>
+      <p className="text-sm text-text-secondary max-w-sm mb-6">
+        No PDF is available for this paper. Upload the full text to proceed with
+        screening.
       </p>
 
       {/* Paper info */}
-      <div className="bg-white rounded-xl p-4 border border-gray-200 max-w-md w-full mb-6">
-        <h4 className="text-sm font-medium text-gray-800 mb-1 line-clamp-2">{paper.title}</h4>
-        <p className="text-xs text-gray-500">{paper.authors ?? "Unknown authors"}</p>
+      <div className="bg-surface-white rounded-[4px] p-4 border border-border max-w-md w-full mb-6">
+        <h4 className="text-sm font-medium text-text-primary mb-1 line-clamp-2">
+          {paper.title}
+        </h4>
+        <p className="text-xs text-text-secondary">
+          {paper.authors ?? "Unknown authors"}
+        </p>
         {paper.doi && (
           <a
             href={`https://doi.org/${encodeURIComponent(paper.doi)}`}
@@ -539,17 +606,18 @@ function FullTextMissing({
 
       {/* Upload action */}
       {onUpload && (
-        <div className="max-w-md w-full bg-white rounded-xl p-4 border border-gray-200 space-y-3">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <div className="max-w-md w-full bg-surface-white rounded-[4px] p-4 border border-border space-y-3">
+          <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
             Upload full text PDF
           </p>
-          <p className="text-sm text-gray-500">
-            Select a PDF file up to 20 MB. The file will be uploaded and linked to this paper.
+          <p className="text-sm text-text-secondary">
+            Select a PDF file up to 20 MB. The file will be uploaded and linked
+            to this paper.
           </p>
           <button
             onClick={onUpload}
             disabled={isUploading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-indigo-600 text-white font-medium text-sm rounded-xl hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white font-medium text-sm rounded-[4px] hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FiFileText className="w-4 h-4" />
             {isUploading ? "Uploading PDF..." : "Open Upload Modal"}
@@ -561,12 +629,12 @@ function FullTextMissing({
       {paper.abstract && (
         <div className="mt-8 max-w-lg w-full">
           <div className="flex items-center gap-2 mb-3">
-            <FiChevronDown className="w-3 h-3 text-gray-400" />
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            <FiChevronDown className="w-3 h-3 text-text-secondary" />
+            <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
               Abstract (preview)
             </p>
           </div>
-          <div className="text-sm text-gray-600 leading-relaxed bg-white rounded-xl p-5 border border-gray-200 text-left">
+          <div className="text-sm text-text-secondary leading-relaxed bg-surface-white rounded-[4px] p-5 border border-border text-left">
             {paper.abstract}
           </div>
         </div>
@@ -575,12 +643,20 @@ function FullTextMissing({
   );
 }
 
-function SourceBadge({ label, tone }: { label: string; tone: "neutral" | "ai" }) {
+function SourceBadge({
+  label,
+  tone,
+}: {
+  label: string;
+  tone: "neutral" | "ai";
+}) {
   return (
     <span
       className={cn(
         "rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider",
-        tone === "ai" ? "bg-indigo-100 text-indigo-700" : "bg-slate-100 text-slate-600",
+        tone === "ai"
+          ? "bg-indigo-100 text-indigo-700"
+          : "bg-bg-secondary text-text-secondary",
       )}
     >
       {label}
@@ -588,11 +664,19 @@ function SourceBadge({ label, tone }: { label: string; tone: "neutral" | "ai" })
   );
 }
 
-function ExtractedFieldCard({ label, value }: { label: string; value: string }) {
+function ExtractedFieldCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
   return (
-    <div className="rounded-xl bg-white px-4 py-3">
-      <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-400">{label}</p>
-      <p className="mt-1 text-sm text-slate-700">{value}</p>
+    <div className="rounded-[4px] bg-surface-white px-4 py-3">
+      <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+        {label}
+      </p>
+      <p className="mt-1 text-sm text-text-primary">{value}</p>
     </div>
   );
 }

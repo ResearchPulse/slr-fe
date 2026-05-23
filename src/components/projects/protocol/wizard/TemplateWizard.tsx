@@ -4,7 +4,10 @@ import { useProjectResearchQuestions } from "../../../../hooks/useProjects";
 import type { ExtractionTemplateDto } from "../../../../types/dataExtraction";
 import type { ExtractionTemplateResponseDto } from "../../../../types/dataExtraction";
 import type { DataItemDefinitionExtended } from "../../../../types/dataExtraction";
-import type { WizardSection, WizardStep } from "../../../../types/templateWizard";
+import type {
+  WizardSection,
+  WizardStep,
+} from "../../../../types/templateWizard";
 import Step1_Overview from "./steps/Step1_Overview";
 import Step2_FlatSetup from "./steps/Step2_FlatSetup";
 import Step3_MatrixSetup from "./steps/Step3_MatrixSetup";
@@ -16,7 +19,10 @@ interface TemplateWizardProps {
   projectId?: string;
   onComplete: (template: ExtractionTemplateResponseDto) => void;
   isViewOnly?: boolean;
-  existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
+  existingTemplate?:
+    | ExtractionTemplateDto
+    | ExtractionTemplateResponseDto
+    | null;
 }
 
 export default function TemplateWizard({
@@ -38,7 +44,10 @@ export default function TemplateWizard({
     updateMatrixData,
     getCompletedTemplate,
     resetWizard,
-  } = useTemplateWizard({ dataExtractionProcessId: resolvedProcessId, existingTemplate });
+  } = useTemplateWizard({
+    dataExtractionProcessId: resolvedProcessId,
+    existingTemplate,
+  });
 
   const {
     researchQuestions,
@@ -58,16 +67,19 @@ export default function TemplateWizard({
   ]);
 
   const currentSection = useMemo(
-    () => state.sections.find((s: WizardSection) => s.id === state.sectionInProgress),
-    [state.sectionInProgress, state.sections]
+    () =>
+      state.sections.find(
+        (s: WizardSection) => s.id === state.sectionInProgress,
+      ),
+    [state.sectionInProgress, state.sections],
   );
 
   const currentSectionItems = useMemo(
     () =>
       state.sectionInProgress
-        ? state.sectionData.get(state.sectionInProgress) ?? []
+        ? (state.sectionData.get(state.sectionInProgress) ?? [])
         : [],
-    [state.sectionInProgress, state.sectionData]
+    [state.sectionInProgress, state.sectionData],
   );
 
   const currentMatrixData = useMemo(
@@ -75,7 +87,7 @@ export default function TemplateWizard({
       state.sectionInProgress
         ? state.matrixData.get(state.sectionInProgress)
         : undefined,
-    [state.sectionInProgress, state.matrixData]
+    [state.sectionInProgress, state.matrixData],
   );
 
   const handleCompleteFlatSetup = useCallback(
@@ -85,7 +97,7 @@ export default function TemplateWizard({
       }
       goToStep(1);
     },
-    [state.sectionInProgress, updateSectionData, goToStep]
+    [state.sectionInProgress, updateSectionData, goToStep],
   );
 
   const handleCompleteMatrixSetup = useCallback(
@@ -95,7 +107,7 @@ export default function TemplateWizard({
       }
       goToStep(1);
     },
-    [state.sectionInProgress, updateMatrixData, goToStep]
+    [state.sectionInProgress, updateMatrixData, goToStep],
   );
 
   const renderStep = () => {
@@ -105,7 +117,7 @@ export default function TemplateWizard({
           <Step1_Overview
             sections={state.sections}
             completedSections={Array.from(state.sectionData.keys()).concat(
-              Array.from(state.matrixData.keys())
+              Array.from(state.matrixData.keys()),
             )}
             onSetupSection={startSectionSetup}
             isViewOnly={isViewOnly}
@@ -161,7 +173,7 @@ export default function TemplateWizard({
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       {/* Progress Indicator */}
-      <div className="sticky top-0 bg-white border-b border-gray-200 shadow-sm z-10">
+      <div className="sticky top-0 bg-surface-white border-b border-border shadow-none z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex gap-2">
@@ -171,23 +183,22 @@ export default function TemplateWizard({
                   onClick={() => goToStep(step as WizardStep)}
                   disabled={step > 1 && state.sections.length === 0}
                   className={`
-                    px-4 py-2 rounded-lg font-medium text-sm transition-all
+                    px-4 py-2 rounded-[4px] font-medium text-sm transition-all
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${
                       state.currentStep === step
-                        ? "bg-blue-600 text-white shadow-md"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        ? "bg-blue-600 text-white shadow-none"
+                        : "bg-bg-secondary text-text-primary hover:bg-bg-secondary"
                     }
                   `}
                 >
                   {/* Step {step} */}
-                  {step === 1
-                    ? "Overview": "Preview & Publish"}
+                  {step === 1 ? "Overview" : "Preview & Publish"}
                 </button>
               ))}
             </div>
 
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-text-secondary">
               {state.sectionInProgress && (
                 <span>
                   Working on:{" "}

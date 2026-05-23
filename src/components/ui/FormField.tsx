@@ -25,7 +25,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
       type,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [showPassword, setShowPassword] = useState(false);
     const hasError = !!errorMessage;
@@ -43,11 +43,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             className={cn(className, isPasswordType && "pr-10")}
             aria-invalid={hasError}
             aria-describedby={
-              hasError
-                ? `${id}-error`
-                : helperText
-                ? `${id}-helper`
-                : undefined
+              hasError ? `${id}-error` : helperText ? `${id}-helper` : undefined
             }
             {...props}
           />
@@ -81,7 +77,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
         ) : null}
       </div>
     );
-  }
+  },
 );
 
 FormField.displayName = "FormField";

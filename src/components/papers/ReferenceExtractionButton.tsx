@@ -31,7 +31,9 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
     e.stopPropagation(); // Prevent row click in table
     try {
       await extractReferencesMutation.mutateAsync(paperId);
-      toast.success("References extracted successfully. Candidates added to the Snowballing pool.");
+      toast.success(
+        "References extracted successfully. Candidates added to the Snowballing pool.",
+      );
       setIsConfirmModalOpen(false);
       setSuccess(true);
       onSuccess?.();
@@ -59,7 +61,8 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
     >
       <div className="space-y-6">
         <p className="text-slate-600 leading-relaxed">
-          This will analyze the full-text PDF and extract references using GROBID.
+          This will analyze the full-text PDF and extract references using
+          GROBID.
           <br />
           <br />
           Detected references will be added to the Snowballing Candidate Pool.
@@ -109,7 +112,11 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
             className,
           )}
           title={
-            success ? "Extraction Complete" : hasPdf ? "Extract References" : "No PDF available"
+            success
+              ? "Extraction Complete"
+              : hasPdf
+                ? "Extract References"
+                : "No PDF available"
           }
         >
           {extractReferencesMutation.isPending ? (
@@ -127,7 +134,7 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
     <>
       <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
         {success ? (
-          <div className="text-sm font-medium text-green-600 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 flex items-center gap-2">
+          <div className="text-sm font-medium text-green-600 bg-surface-white px-3 py-1.5 rounded-lg border border-green-100 flex items-center gap-2">
             Extraction Complete
           </div>
         ) : (

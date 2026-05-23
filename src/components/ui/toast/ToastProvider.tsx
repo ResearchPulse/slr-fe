@@ -1,7 +1,9 @@
-import React from 'react';
-import { Toaster } from 'react-hot-toast';
+import React from "react";
+import { Toaster } from "react-hot-toast";
 
-export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({ children }) => {
+export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <>
       {children}
@@ -20,7 +22,7 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({ childr
           // We'll mostly use custom toasts, but these are defaults
           duration: 4000,
           style: {
-            maxWidth: '450px',
+            maxWidth: "450px",
           },
         }}
       />

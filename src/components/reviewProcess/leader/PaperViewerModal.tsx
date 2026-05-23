@@ -34,7 +34,11 @@ interface PaperViewerModalProps {
   isApplyingMetadataSuggestion?: boolean;
   onRetryExtraction?: (paperId: string) => Promise<void>;
   isRetryingExtraction?: boolean;
-  onResolveConflict?: (paperId: string, decision: ScreeningDecision, notes?: string) => void;
+  onResolveConflict?: (
+    paperId: string,
+    decision: ScreeningDecision,
+    notes?: string,
+  ) => void;
   isResolving?: boolean;
   isSubmitting?: boolean;
   phase?: PaperPhase;
@@ -44,7 +48,9 @@ interface PaperViewerModalProps {
  * A simple adapter to satisfy PaperViewer's ScreeningPaper requirement.
  * We primarily need basic metadata; decisions and screeningStatus are less critical in the leader "View Details" mode.
  */
-function adaptPaperToScreening(paper: PaperResponse | null): ScreeningPaper | null {
+function adaptPaperToScreening(
+  paper: PaperResponse | null,
+): ScreeningPaper | null {
   if (!paper) return null;
 
   // Attempt to map selectionStatusText to ScreeningStatus
@@ -138,7 +144,11 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
   const handleApplySuggestion = async (selectedFields: string[]) => {
     if (!onApplyMetadataSuggestion || !suggestion || !paper) return;
     try {
-      await onApplyMetadataSuggestion(paper.id, suggestion.sourceMetadataId, selectedFields);
+      await onApplyMetadataSuggestion(
+        paper.id,
+        suggestion.sourceMetadataId,
+        selectedFields,
+      );
       setIsSuggestionModalOpen(false);
     } catch (error) {
       console.error("Failed to apply metadata suggestion:", error);
@@ -157,9 +167,9 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
         <div className="relative -mx-8 -mb-8 -mt-2 w-[calc(100%+4rem)] overflow-hidden rounded-b-3xl">
           {/* Suggestion Alert Bar */}
           {suggestion && (
-            <div className="flex items-center justify-between border-b border-indigo-100 bg-indigo-50 px-6 py-2.5">
+            <div className="flex items-center justify-between border-b border-indigo-100 bg-bg-secondary px-6 py-2.5">
               <div className="flex items-center gap-2">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-accent">
                   <Sparkles className="h-3.5 w-3.5" />
                 </div>
                 <p className="text-xs font-semibold text-indigo-900">
@@ -168,7 +178,7 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
               </div>
               <button
                 onClick={() => setIsSuggestionModalOpen(true)}
-                className="rounded-lg bg-indigo-600 px-3 py-1 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-indigo-700 active:scale-95"
+                className="rounded-[4px] bg-accent px-3 py-1 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-indigo-700 active:scale-95"
               >
                 View & Apply Changes
               </button>
@@ -177,10 +187,12 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
 
           <div className="h-[80vh] overflow-hidden">
             {isLoading && (
-              <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">
+              <div className="absolute inset-0 z-50 flex items-center justify-center bg-surface-white/80 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-3">
                   <Loader2 className="h-10 w-10 animate-spin text-blue-500" />
-                  <p className="text-sm font-medium text-gray-500">Fetching full details...</p>
+                  <p className="text-sm font-medium text-text-secondary">
+                    Fetching full details...
+                  </p>
                 </div>
               </div>
             )}

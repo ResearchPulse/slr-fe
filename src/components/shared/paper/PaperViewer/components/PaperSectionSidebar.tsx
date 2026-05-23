@@ -23,10 +23,10 @@ export function PaperSectionSidebar({
   return (
     <div
       style={{ width: `${width}px` }}
-      className="bg-slate-50 border-r border-slate-100 flex flex-col h-full animate-in slide-in-from-left duration-300 shrink-0 overflow-hidden"
+      className="bg-bg-secondary border-r border-border flex flex-col h-full animate-in slide-in-from-left duration-300 shrink-0 overflow-hidden"
     >
-      <div className="p-4 border-b border-slate-100 bg-white/50">
-        <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
+      <div className="p-4 border-b border-border bg-surface-white/50">
+        <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">
           Sections
         </h3>
       </div>
@@ -41,11 +41,11 @@ export function PaperSectionSidebar({
                 key={`${section.sectionTitle}-${section.order}`}
                 onClick={() => onSectionClick(section.sectionTitle)}
                 className={cn(
-                  "w-full text-left px-3 py-2 rounded-xl transition-all duration-200 group",
+                  "w-full text-left px-3 py-2 rounded-[4px] transition-all duration-200 group",
                   "text-xs font-bold uppercase tracking-tight",
                   isActive
-                    ? "bg-blue-100 text-blue-700 shadow-sm"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700",
+                    ? "bg-blue-100 text-blue-700 shadow-none"
+                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary",
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -59,15 +59,15 @@ export function PaperSectionSidebar({
           })
         ) : (
           <div className="flex flex-col items-center justify-center h-40 px-4 text-center">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-loose">
+            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest leading-loose">
               No sections detected
             </p>
           </div>
         )}
       </div>
 
-      <div className="p-4 border-t border-slate-100 bg-white/30">
-        <p className="text-[9px] text-slate-400 leading-tight font-medium">
+      <div className="p-4 border-t border-border bg-surface-white/30">
+        <p className="text-[9px] text-text-secondary leading-tight font-medium">
           Structured Reading Mode
         </p>
       </div>

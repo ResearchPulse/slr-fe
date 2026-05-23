@@ -18,7 +18,10 @@ interface IdentificationFilterBarProps {
   tone?: FilterTone;
 }
 
-const toneClasses: Record<FilterTone, { ring: string; border: string; button: string }> = {
+const toneClasses: Record<
+  FilterTone,
+  { ring: string; border: string; button: string }
+> = {
   blue: {
     ring: "focus:ring-blue-500",
     border: "focus:border-blue-500",
@@ -51,7 +54,7 @@ export default function IdentificationFilterBar({
   return (
     <div className="flex flex-wrap items-center gap-2">
       <div className="relative flex-1 min-w-60">
-        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
         <input
           type="text"
           placeholder={searchPlaceholder}
@@ -62,13 +65,13 @@ export default function IdentificationFilterBar({
               onSearch(searchInput);
             }
           }}
-          className={`w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+          className={`w-full pl-10 pr-4 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
         />
       </div>
 
       <button
         onClick={() => onSearch(searchInput)}
-        className={`px-3 py-2 text-sm text-white rounded-lg transition-colors ${styles.button}`}
+        className={`px-3 py-2 text-sm text-white rounded-[4px] transition-colors ${styles.button}`}
       >
         Search
       </button>
@@ -79,12 +82,17 @@ export default function IdentificationFilterBar({
         value={yearInput}
         onChange={(e) => {
           onYearInputChange(e.target.value);
-          const parsedValue = e.target.value ? parseInt(e.target.value, 10) : undefined;
-          if (!e.target.value || (parsedValue && parsedValue >= 1900 && parsedValue < 2100)) {
+          const parsedValue = e.target.value
+            ? parseInt(e.target.value, 10)
+            : undefined;
+          if (
+            !e.target.value ||
+            (parsedValue && parsedValue >= 1900 && parsedValue < 2100)
+          ) {
             onYearFilter(parsedValue);
           }
         }}
-        className={`w-24 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+        className={`w-24 px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
       />
 
       <select
@@ -94,7 +102,7 @@ export default function IdentificationFilterBar({
           onSearchSourceInputChange(nextValue);
           onSearchSourceFilter(nextValue || undefined);
         }}
-        className={`min-w-[190px] max-w-[280px] px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+        className={`min-w-[190px] max-w-[280px] px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
       >
         <option value="">All sources</option>
       </select>
@@ -102,7 +110,7 @@ export default function IdentificationFilterBar({
       {hasFilters && (
         <button
           onClick={onClearFilters}
-          className="px-3 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-colors"
         >
           Clear filters
         </button>

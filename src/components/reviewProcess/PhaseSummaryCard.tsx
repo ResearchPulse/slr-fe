@@ -45,7 +45,7 @@ export default function PhaseSummaryCard({
         );
       case "locked":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-500 text-xs font-medium rounded-full">
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-bg-secondary text-text-secondary text-xs font-medium rounded-full">
             <FiLock className="w-3 h-3" />
             Locked
           </span>
@@ -64,34 +64,40 @@ export default function PhaseSummaryCard({
       case "danger":
         return "text-red-700";
       default:
-        return "text-gray-900";
+        return "text-text-primary";
     }
   };
 
   const getBorderClass = () => {
     switch (status) {
       case "completed":
-        return "border-green-200 bg-green-50/30";
+        return "border-border bg-surface-white/30";
       case "current":
-        return "border-blue-300 bg-blue-50/30 shadow-md";
+        return "border-blue-300 bg-blue-50/30 shadow-none";
       case "locked":
-        return "border-gray-200 bg-gray-50 opacity-60";
+        return "border-border bg-bg-primary opacity-60";
       default:
-        return "border-gray-200 bg-white";
+        return "border-border bg-surface-white";
     }
   };
 
   return (
     <div
-      className={`border-2 rounded-lg p-5 transition-all duration-200 hover:shadow-lg ${getBorderClass()}`}
+      className={`border-2 rounded-[4px] p-5 transition-all duration-200 hover:shadow-none ${getBorderClass()}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="text-2xl text-blue-600">{phaseIcon}</div>
           <div>
-            <h3 className="font-semibold text-gray-900 text-base">{phaseName}</h3>
-            {lastUpdated && <p className="text-xs text-gray-500 mt-0.5">Updated {lastUpdated}</p>}
+            <h3 className="font-semibold text-text-primary text-base">
+              {phaseName}
+            </h3>
+            {lastUpdated && (
+              <p className="text-xs text-text-secondary mt-0.5">
+                Updated {lastUpdated}
+              </p>
+            )}
           </div>
         </div>
         {getStatusBadge()}
@@ -100,9 +106,16 @@ export default function PhaseSummaryCard({
       {/* Stats Grid */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         {stats.map((stat, index) => (
-          <div key={index} className="bg-white rounded-md p-3 border border-gray-200">
-            <p className="text-xs text-gray-600 mb-1">{stat.label}</p>
-            <p className={`text-xl font-bold ${getStatColorClass(stat.variant)}`}>{stat.value}</p>
+          <div
+            key={index}
+            className="bg-surface-white rounded-md p-3 border border-border"
+          >
+            <p className="text-xs text-text-secondary mb-1">{stat.label}</p>
+            <p
+              className={`text-xl font-bold ${getStatColorClass(stat.variant)}`}
+            >
+              {stat.value}
+            </p>
           </div>
         ))}
       </div>

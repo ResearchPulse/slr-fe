@@ -43,7 +43,11 @@ function hasValue(value: string | null | undefined): value is string {
   return Boolean(value && value.trim());
 }
 
-const SYNTHESIS_TYPE_OPTIONS: Array<{ value: SynthesisType; label: string; description: string }> = [
+const SYNTHESIS_TYPE_OPTIONS: Array<{
+  value: SynthesisType;
+  label: string;
+  description: string;
+}> = [
   {
     value: "DescriptiveStatistics",
     label: "Descriptive Statistics",
@@ -52,7 +56,8 @@ const SYNTHESIS_TYPE_OPTIONS: Array<{ value: SynthesisType; label: string; descr
   {
     value: "NarrativeThematic",
     label: "Narrative / Thematic Analysis",
-    description: "Cluster findings into themes and write narrative interpretations.",
+    description:
+      "Cluster findings into themes and write narrative interpretations.",
   },
   {
     value: "CrossTabulation",
@@ -62,11 +67,14 @@ const SYNTHESIS_TYPE_OPTIONS: Array<{ value: SynthesisType; label: string; descr
   {
     value: "QuantitativeMetaAnalysis",
     label: "Quantitative Meta-analysis",
-    description: "Pool quantitative outcomes where effect measures are compatible.",
+    description:
+      "Pool quantitative outcomes where effect measures are compatible.",
   },
 ];
 
-function buildInitialFormState(strategy: DataSynthesisStrategyDto | null): SynthesisStrategyFormState {
+function buildInitialFormState(
+  strategy: DataSynthesisStrategyDto | null,
+): SynthesisStrategyFormState {
   return {
     synthesisStrategyId: strategy?.synthesisStrategyId ?? null,
     synthesisType: strategy?.synthesisType ?? "",
@@ -88,8 +96,9 @@ function ResearchQuestionList({
 }) {
   if (researchQuestions.length === 0) {
     return (
-      <div className="rounded-2xl border border-dashed border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-800">
-        No research questions were found for this project yet. Create at least one question before defining a synthesis strategy.
+      <div className="rounded-[4px] border border-dashed border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-800">
+        No research questions were found for this project yet. Create at least
+        one question before defining a synthesis strategy.
       </div>
     );
   }
@@ -104,23 +113,33 @@ function ResearchQuestionList({
             key={question.selectionId}
             type="button"
             onClick={() => onToggle(question.selectionId)}
-            className={`flex h-full flex-col items-start gap-3 rounded-2xl border p-4 text-left transition-all ${
+            className={`flex h-full flex-col items-start gap-3 rounded-[4px] border p-4 text-left transition-all ${
               isSelected
                 ? "border-blue-300 bg-blue-50 shadow-sm shadow-blue-100"
-                : "border-gray-200 bg-white hover:border-blue-200 hover:bg-blue-50/40"
+                : "border-border bg-surface-white hover:border-blue-200 hover:bg-blue-50/40"
             }`}
           >
             <div className="flex items-center gap-3">
               <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-xs font-semibold ${
-                  isSelected ? "bg-blue-600 text-white" : "bg-gray-100 text-gray-500"
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] text-xs font-semibold ${
+                  isSelected
+                    ? "bg-blue-600 text-white"
+                    : "bg-bg-secondary text-text-secondary"
                 }`}
               >
-                {isSelected ? <CheckSquare className="h-4 w-4" /> : <Target className="h-4 w-4" />}
+                {isSelected ? (
+                  <CheckSquare className="h-4 w-4" />
+                ) : (
+                  <Target className="h-4 w-4" />
+                )}
               </span>
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">Research Question</p>
-                <p className="mt-1 text-sm font-semibold text-gray-900">{question.questionText}</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
+                  Research Question
+                </p>
+                <p className="mt-1 text-sm font-semibold text-text-primary">
+                  {question.questionText}
+                </p>
               </div>
             </div>
           </button>
@@ -140,17 +159,25 @@ export default function SynthesisStrategyModal({
 }: SynthesisStrategyModalProps) {
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formState, setFormState] = useState<SynthesisStrategyFormState>(buildInitialFormState(null));
+  const [formState, setFormState] = useState<SynthesisStrategyFormState>(
+    buildInitialFormState(null),
+  );
 
   const researchQuestionsQuery = useProjectResearchQuestions(projectId);
   const strategiesQuery = useQuery({
     queryKey: QUERY_KEYS.synthesisExecution.strategies(synthesisProcessId),
-    queryFn: () => synthesisExecutionService.getSynthesisStrategiesByProcessId(synthesisProcessId),
+    queryFn: () =>
+      synthesisExecutionService.getSynthesisStrategiesByProcessId(
+        synthesisProcessId,
+      ),
     enabled: isOpen && Boolean(synthesisProcessId),
     staleTime: 60 * 1000,
   });
 
-  const activeStrategy = useMemo(() => strategiesQuery.data?.[0] ?? null, [strategiesQuery.data]);
+  const activeStrategy = useMemo(
+    () => strategiesQuery.data?.[0] ?? null,
+    [strategiesQuery.data],
+  );
   const researchQuestions = useMemo<SelectableResearchQuestion[]>(
     () =>
       researchQuestionsQuery.researchQuestions.map((question, index) => ({
@@ -160,7 +187,8 @@ export default function SynthesisStrategyModal({
       })),
     [researchQuestionsQuery.researchQuestions],
   );
-  const isLoading = researchQuestionsQuery.isLoading || strategiesQuery.isLoading;
+  const isLoading =
+    researchQuestionsQuery.isLoading || strategiesQuery.isLoading;
 
   useEffect(() => {
     if (!isOpen) {
@@ -171,14 +199,19 @@ export default function SynthesisStrategyModal({
       ...buildInitialFormState(activeStrategy),
       targetResearchQuestionSelectionIds: activeStrategy
         ? researchQuestions
-            .filter((question) => activeStrategy.targetResearchQuestionIds.includes(question.backendId))
+            .filter((question) =>
+              activeStrategy.targetResearchQuestionIds.includes(
+                question.backendId,
+              ),
+            )
             .map((question) => question.selectionId)
         : [],
     });
   }, [activeStrategy, isOpen, researchQuestions]);
 
   const upsertStrategyMutation = useMutation({
-    mutationFn: (request: UpsertSynthesisStrategyRequest) => synthesisExecutionService.upsertSynthesisStrategy(request),
+    mutationFn: (request: UpsertSynthesisStrategyRequest) =>
+      synthesisExecutionService.upsertSynthesisStrategy(request),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.synthesisExecution.strategies(synthesisProcessId),
@@ -188,12 +221,15 @@ export default function SynthesisStrategyModal({
 
   const handleToggleResearchQuestion = (questionId: string) => {
     setFormState((current) => {
-      const exists = current.targetResearchQuestionSelectionIds.includes(questionId);
+      const exists =
+        current.targetResearchQuestionSelectionIds.includes(questionId);
 
       return {
         ...current,
         targetResearchQuestionSelectionIds: exists
-          ? current.targetResearchQuestionSelectionIds.filter((id) => id !== questionId)
+          ? current.targetResearchQuestionSelectionIds.filter(
+              (id) => id !== questionId,
+            )
           : [...current.targetResearchQuestionSelectionIds, questionId],
       };
     });
@@ -227,12 +263,18 @@ export default function SynthesisStrategyModal({
     }
 
     const targetResearchQuestionIds = researchQuestions
-      .filter((question) => formState.targetResearchQuestionSelectionIds.includes(question.selectionId))
+      .filter((question) =>
+        formState.targetResearchQuestionSelectionIds.includes(
+          question.selectionId,
+        ),
+      )
       .map((question) => question.backendId)
       .filter(hasValue);
 
     if (targetResearchQuestionIds.length === 0) {
-      toast.error("Selected research questions are invalid. Please refresh and select again.");
+      toast.error(
+        "Selected research questions are invalid. Please refresh and select again.",
+      );
       return;
     }
 
@@ -246,7 +288,8 @@ export default function SynthesisStrategyModal({
         description: formState.description.trim(),
         targetResearchQuestionIds,
         dataGroupingPlan: formState.dataGroupingPlan.trim() || null,
-        sensitivityAnalysisPlan: formState.sensitivityAnalysisPlan.trim() || null,
+        sensitivityAnalysisPlan:
+          formState.sensitivityAnalysisPlan.trim() || null,
       });
 
       if (startAfterSave && onStartSynthesis) {
@@ -275,37 +318,45 @@ export default function SynthesisStrategyModal({
       closeOnEsc={!isSubmitting}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
+        <div className="rounded-[4px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="rounded-2xl bg-white p-3 text-blue-600 shadow-sm ring-1 ring-blue-100">
+            <div className="rounded-[4px] bg-surface-white p-3 text-blue-600 shadow-sm ring-1 ring-blue-100">
               <BookOpen className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-400">Planning step</p>
-              <h3 className="mt-1 text-xl font-semibold text-slate-900">Prepare the synthesis plan before starting</h3>
-              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-                Define the synthesis approach, choose the research questions this strategy will answer, and document how evidence will be grouped and stress-tested.
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-400">
+                Planning step
+              </p>
+              <h3 className="mt-1 text-xl font-semibold text-text-primary">
+                Prepare the synthesis plan before starting
+              </h3>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
+                Define the synthesis approach, choose the research questions
+                this strategy will answer, and document how evidence will be
+                grouped and stress-tested.
               </p>
             </div>
           </div>
 
           {activeStrategy ? (
-            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div className="mt-4 rounded-[4px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               An existing strategy was found and will be updated when you save.
             </div>
           ) : null}
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[240px] items-center justify-center rounded-3xl border border-gray-200 bg-gray-50">
+          <div className="flex min-h-[240px] items-center justify-center rounded-[4px] border border-border bg-bg-primary">
             <LoadingSpinner size="lg" />
           </div>
         ) : (
           <div className="space-y-6">
-            <section className="space-y-3 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <Layers3 className="h-5 w-5 text-blue-600" />
-                <h4 className="text-base font-semibold text-gray-900">Synthesis Type</h4>
+                <h4 className="text-base font-semibold text-text-primary">
+                  Synthesis Type
+                </h4>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
                 {SYNTHESIS_TYPE_OPTIONS.map((option) => {
@@ -315,28 +366,39 @@ export default function SynthesisStrategyModal({
                     <button
                       key={option.value}
                       type="button"
-                      onClick={() => setFormState((current) => ({ ...current, synthesisType: option.value }))}
-                      className={`rounded-2xl border p-4 text-left transition-all ${
+                      onClick={() =>
+                        setFormState((current) => ({
+                          ...current,
+                          synthesisType: option.value,
+                        }))
+                      }
+                      className={`rounded-[4px] border p-4 text-left transition-all ${
                         isSelected
                           ? "border-blue-300 bg-blue-50 shadow-sm shadow-blue-100"
-                          : "border-gray-200 bg-gray-50 hover:border-blue-200 hover:bg-blue-50/50"
+                          : "border-border bg-bg-primary hover:border-blue-200 hover:bg-blue-50/50"
                       }`}
                     >
-                      <p className="text-sm font-semibold text-gray-900">{option.label}</p>
-                      <p className="mt-1 text-sm leading-6 text-gray-600">{option.description}</p>
+                      <p className="text-sm font-semibold text-text-primary">
+                        {option.label}
+                      </p>
+                      <p className="mt-1 text-sm leading-6 text-text-secondary">
+                        {option.description}
+                      </p>
                     </button>
                   );
                 })}
               </div>
             </section>
 
-            <section className="space-y-3 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <Target className="h-5 w-5 text-blue-600" />
-                  <h4 className="text-base font-semibold text-gray-900">Target Research Questions</h4>
+                  <h4 className="text-base font-semibold text-text-primary">
+                    Target Research Questions
+                  </h4>
                 </div>
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-gray-500">
+                <span className="rounded-full border border-border bg-bg-primary px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
                   {formState.targetResearchQuestionSelectionIds.length} selected
                 </span>
               </div>
@@ -347,45 +409,66 @@ export default function SynthesisStrategyModal({
               />
             </section>
 
-            <section className="space-y-4 rounded-3xl border border-gray-200 bg-white p-5 shadow-sm">
+            <section className="space-y-4 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-blue-600" />
-                <h4 className="text-base font-semibold text-gray-900">Strategy Details</h4>
+                <h4 className="text-base font-semibold text-text-primary">
+                  Strategy Details
+                </h4>
               </div>
 
               <div className="grid gap-4">
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">Description</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    Description
+                  </span>
                   <textarea
                     value={formState.description}
-                    onChange={(event) => setFormState((current) => ({ ...current, description: event.target.value }))}
+                    onChange={(event) =>
+                      setFormState((current) => ({
+                        ...current,
+                        description: event.target.value,
+                      }))
+                    }
                     rows={4}
                     maxLength={2000}
-                    className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     placeholder="Summarize the synthesis objective and the scope of the planned analysis."
                   />
                 </label>
 
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">Data Grouping Plan</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    Data Grouping Plan
+                  </span>
                   <textarea
                     value={formState.dataGroupingPlan}
-                    onChange={(event) => setFormState((current) => ({ ...current, dataGroupingPlan: event.target.value }))}
+                    onChange={(event) =>
+                      setFormState((current) => ({
+                        ...current,
+                        dataGroupingPlan: event.target.value,
+                      }))
+                    }
                     rows={4}
-                    className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     placeholder="Describe how extracted data should be grouped across studies."
                   />
                 </label>
 
                 <label className="space-y-2">
-                  <span className="text-sm font-semibold text-gray-700">Sensitivity Analysis Plan</span>
+                  <span className="text-sm font-semibold text-text-primary">
+                    Sensitivity Analysis Plan
+                  </span>
                   <textarea
                     value={formState.sensitivityAnalysisPlan}
                     onChange={(event) =>
-                      setFormState((current) => ({ ...current, sensitivityAnalysisPlan: event.target.value }))
+                      setFormState((current) => ({
+                        ...current,
+                        sensitivityAnalysisPlan: event.target.value,
+                      }))
                     }
                     rows={4}
-                    className="w-full rounded-2xl border border-gray-300 bg-white px-4 py-3 text-sm text-gray-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     placeholder="Describe how robustness checks or alternative groupings should be handled."
                   />
                 </label>
@@ -394,11 +477,20 @@ export default function SynthesisStrategyModal({
           </div>
         )}
 
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-gray-100 pt-4">
-          <Button variant="outline" type="button" onClick={handleClose} disabled={isSubmitting}>
+        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-4">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type="submit" isLoading={isSubmitting} disabled={isLoading || researchQuestions.length === 0}>
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            disabled={isLoading || researchQuestions.length === 0}
+          >
             {startAfterSave ? "Save & Start Synthesis" : "Save Strategy"}
           </Button>
         </div>

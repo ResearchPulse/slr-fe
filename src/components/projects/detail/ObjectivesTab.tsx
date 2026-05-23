@@ -9,7 +9,11 @@ interface ObjectivesTabProps {
   isLeader?: boolean;
 }
 
-const ObjectivesTab: React.FC<ObjectivesTabProps> = ({ objectives, onAdd, isLeader = true }) => {
+const ObjectivesTab: React.FC<ObjectivesTabProps> = ({
+  objectives,
+  onAdd,
+  isLeader = true,
+}) => {
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -25,7 +29,9 @@ const ObjectivesTab: React.FC<ObjectivesTabProps> = ({ objectives, onAdd, isLead
           </Card>
         ))}
         {objectives.length === 0 && (
-          <p className="text-center text-gray-500 py-8">No objectives added yet</p>
+          <p className="text-center text-text-secondary py-8">
+            No objectives added yet
+          </p>
         )}
       </div>
     </div>
