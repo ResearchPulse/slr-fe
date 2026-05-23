@@ -1,6 +1,5 @@
 import React from "react";
 import Button from "../../ui/Button";
-import Card from "../../ui/Card";
 import type { ReviewNeed } from "../../../types/coreAndGovernance";
 
 interface ReviewNeedsTabProps {

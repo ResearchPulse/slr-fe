@@ -1,5 +1,4 @@
 import React from "react";
-import { FiShield, FiHome } from "react-icons/fi";
 import LoadingSpinner from "./LoadingSpinner";
 
 interface SectionLoadingProps {
@@ -14,7 +13,6 @@ const SectionLoading: React.FC<SectionLoadingProps> = ({
   subtitle,
 }) => {
   const isAdmin = type === "admin";
-  const Icon = isAdmin ? FiShield : FiHome;
 
   return (
     <div className="fixed inset-0 bg-bg-primary z-[var(--z-index-section-loading)] flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">

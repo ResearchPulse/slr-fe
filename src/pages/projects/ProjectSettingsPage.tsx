@@ -3,7 +3,6 @@ import { useNavigate, useParams } from "react-router";
 import { useProject } from "../../hooks/useProjects";
 import { useProjectMutations } from "../../hooks/useProjects";
 import Button from "../../components/ui/Button";
-import Card from "../../components/ui/Card";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
 import {
   FiExternalLink,

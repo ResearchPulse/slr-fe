@@ -74,7 +74,6 @@ export const CustomToast: React.FC<CustomToastProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const progressBarRef = useRef<HTMLDivElement>(null);
 
   // Entrance & Exit Animations
   useLayoutEffect(() => {
