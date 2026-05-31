@@ -17,7 +17,7 @@ const SystemSettings: React.FC = () => {
         return <ProjectExclusionCodeTab />;
       case "example":
         return (
-          <div className="bg-surface-white p-12 rounded-[2.5rem] border border-slate-100 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
+          <div className="bg-surface-white p-12 rounded-md border border-slate-100 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
             <div className="w-16 h-16 bg-slate-50 rounded-md flex items-center justify-center text-slate-300">
               <FiDatabase size={32} />
             </div>
@@ -31,7 +31,7 @@ const SystemSettings: React.FC = () => {
         );
       default:
         return (
-          <div className="bg-surface-white p-12 rounded-[2.5rem] border border-slate-100 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
+          <div className="bg-surface-white p-12 rounded-md border border-slate-100 flex flex-col items-center justify-center text-center space-y-4 min-h-[400px]">
             <div className="w-16 h-16 bg-slate-50 rounded-md flex items-center justify-center text-slate-300">
               <FiLock size={32} />
             </div>

@@ -77,7 +77,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
           {/* Subtle Decorative Background Element */}
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/50 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="w-24 h-24 rounded-[2.5rem] bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-indigo-200 hover:text-indigo-400">
+          <div className="w-24 h-24 rounded-[4px] bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-indigo-200 hover:text-indigo-400">
             <RiFileList3Line size={48} />
             <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-surface-white border-4 border-slate-50 flex items-center justify-center text-text-secondary group-hover:border-indigo-50 group-hover:text-accent shadow-none transition-all">
               <RiAddLine size={18} />
@@ -95,7 +95,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            className="rounded-[2rem] px-12 py-7 h-auto text-xl font-black shadow-2xl shadow-indigo-300 transition-all hover:-translate-y-1 active:translate-y-0"
+            className="rounded-[4px] px-12 py-7 h-auto text-xl font-black shadow-2xl shadow-indigo-300 transition-all hover:-translate-y-1 active:translate-y-0"
           >
             <RiAddLine className="mr-2" size={28} />
             Create Master Template

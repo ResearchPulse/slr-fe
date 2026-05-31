@@ -24,8 +24,8 @@ export default function CancelInvitationConfirm({
         className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
         onClick={onCancel}
       />
-      <div className="relative bg-surface-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-300 space-y-6">
-        <div className="w-16 h-16 bg-rose-50 rounded-[2rem] flex items-center justify-center text-rose-500 mb-6">
+      <div className="relative bg-surface-white rounded-[4px] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-300 space-y-6">
+        <div className="w-16 h-16 bg-rose-50 rounded-[4px] flex items-center justify-center text-rose-500 mb-6">
           <FiAlertCircle size={32} />
         </div>
         <div className="space-y-2">

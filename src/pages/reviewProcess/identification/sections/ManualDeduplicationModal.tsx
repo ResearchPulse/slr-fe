@@ -112,6 +112,27 @@ export default function ManualDeduplicationModal({
 
   if (!sourcePaper) return null;
 
+  const modalFooter = step === "compare" ? (
+    <>
+      <Button
+        variant="secondary"
+        onClick={() => setStep("search")}
+        disabled={isConfirming}
+        className="px-8 rounded-[4px] font-bold"
+      >
+        Back to Search
+      </Button>
+      <Button
+        variant="danger"
+        onClick={handleConfirm}
+        isLoading={isConfirming}
+        className="px-10 rounded-[4px] font-black shadow-xl shadow-red-500/20"
+      >
+        Confirm Duplicate
+      </Button>
+    </>
+  ) : undefined;
+
   return (
     <Modal
       isOpen={isOpen}
@@ -123,8 +144,10 @@ export default function ManualDeduplicationModal({
           ? "Search for the original paper to link this duplicate to."
           : "Compare both papers and confirm the duplication."
       }
+      footer={modalFooter}
+      bodyClassName={step === "compare" ? "p-6 flex flex-col h-[70vh] overflow-hidden" : undefined}
     >
-      <div className="flex flex-col h-full min-h-[500px]">
+      <div className="flex flex-col h-full min-h-0">
         {step === "search" ? (
           <div className="space-y-6">
             {/* Source Paper Preview */}
@@ -242,9 +265,9 @@ export default function ManualDeduplicationModal({
             )}
           </div>
         ) : (
-          <div className="flex flex-col grow gap-6 overflow-hidden">
+          <div className="flex flex-col grow gap-6 overflow-hidden min-h-0">
             {/* Warning Banner & Toggle */}
-            <div className="flex items-center justify-between gap-3 p-3 bg-surface-white border border-red-100 rounded-[4px]">
+            <div className="flex items-center justify-between gap-3 p-3 bg-surface-white border border-red-100 rounded-[4px] shrink-0">
               <div className="flex items-center gap-3">
                 <FiAlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
                 <p className="text-xs font-medium text-red-700">
@@ -264,7 +287,7 @@ export default function ManualDeduplicationModal({
             <div className="grid grid-cols-2 gap-6 min-h-0 grow">
               {/* Original Paper (Keep) */}
               <div className="flex flex-col min-h-0">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-3 shrink-0">
                   <div className="w-2 h-2 rounded-full bg-green-500" />
                   <h4 className="text-sm font-black text-text-primary uppercase tracking-wider">
                     Original Paper (Keep)
@@ -307,7 +330,7 @@ export default function ManualDeduplicationModal({
 
               {/* Potential Duplicate (Remove) */}
               <div className="flex flex-col min-h-0">
-                <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-2 mb-3 shrink-0">
                   <div className="w-2 h-2 rounded-full bg-red-500" />
                   <h4 className="text-sm font-black text-text-primary uppercase tracking-wider">
                     Potential Duplicate (Remove)
@@ -349,38 +372,17 @@ export default function ManualDeduplicationModal({
               </div>
             </div>
 
-            {/* Footer Actions */}
-            <div className="flex flex-col gap-4 pt-6 border-t border-border">
-              <div className="space-y-2">
-                <label className="text-xs font-black text-text-secondary uppercase tracking-widest pl-1">
-                  Reason for Manual Deduplication
-                </label>
-                <textarea
-                  placeholder="E.g., Same study, different title translation or corrected authors list."
-                  value={reason}
-                  onChange={(e) => setReason(e.target.value)}
-                  className="w-full p-4 bg-bg-secondary border border-border rounded-[1.25rem] focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-3">
-                <Button
-                  variant="secondary"
-                  onClick={() => setStep("search")}
-                  disabled={isConfirming}
-                  className="px-8 rounded-[4px] font-bold"
-                >
-                  Back to Search
-                </Button>
-                <Button
-                  variant="danger"
-                  onClick={handleConfirm}
-                  isLoading={isConfirming}
-                  className="px-10 rounded-[4px] font-black shadow-xl shadow-red-500/20"
-                >
-                  Confirm Duplicate
-                </Button>
-              </div>
+            {/* Deduplication Reason */}
+            <div className="space-y-2 pt-6 border-t border-border shrink-0">
+              <label className="text-xs font-black text-text-secondary uppercase tracking-widest pl-1">
+                Reason for Manual Deduplication
+              </label>
+              <textarea
+                placeholder="E.g., Same study, different title translation or corrected authors list."
+                value={reason}
+                onChange={(e) => setReason(e.target.value)}
+                className="w-full p-4 bg-bg-secondary border border-border rounded-[1.25rem] focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
+              />
             </div>
           </div>
         )}

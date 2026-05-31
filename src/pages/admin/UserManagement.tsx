@@ -278,24 +278,24 @@ const UserManagement: React.FC = () => {
       )}
 
       {/* 📦 Master Table Container (Desktop) 📦 */}
-      <div className="hidden lg:block bg-surface-white rounded-[2.5rem] border border-slate-100 shadow-[0_20px_50px_rgba(0,0,0,0.05)] overflow-hidden">
-        <div className="overflow-auto max-h-[650px] scrollbar-thin scrollbar-thumb-indigo-100 scrollbar-track-transparent">
-          <Table className="min-w-[1100px] relative">
+      <div className="hidden lg:block bg-surface-white rounded-md border border-slate-100 shadow-none overflow-hidden">
+        <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-indigo-100 scrollbar-track-transparent">
+          <Table className="relative">
             <TableHeader className="bg-slate-50/90 backdrop-blur-md border-b border-slate-100 sticky top-0 z-10 shadow-none">
               <TableRow className="hover:bg-transparent">
-                <TableHead className="px-10 py-7 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
+                <TableHead className="px-6 py-5 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
                   Personal Information
                 </TableHead>
-                <TableHead className="px-6 py-7 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 text-center">
+                <TableHead className="px-6 py-5 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 text-center">
                   Username
                 </TableHead>
-                <TableHead className="px-6 py-7 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
+                <TableHead className="px-6 py-5 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
                   Access Role
                 </TableHead>
-                <TableHead className="px-6 py-7 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
+                <TableHead className="px-6 py-5 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400">
                   Account Status
                 </TableHead>
-                <TableHead className="px-10 py-7 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 text-right">
+                <TableHead className="px-6 py-5 text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 text-right">
                   Administrative Actions
                 </TableHead>
               </TableRow>
@@ -306,7 +306,7 @@ const UserManagement: React.FC = () => {
                   .fill(0)
                   .map((_, i) => (
                     <TableRow key={i} className="animate-pulse">
-                      <TableCell colSpan={5} className="px-10 py-7">
+                      <TableCell colSpan={5} className="px-6 py-5">
                         <div className="h-14 bg-slate-50 rounded-md w-full" />
                       </TableCell>
                     </TableRow>
@@ -314,11 +314,11 @@ const UserManagement: React.FC = () => {
               ) : users.length > 0 ? (
                 users.map((user: User) => (
                   <TableRow
-                    key={user.id}
-                    className="group hover:bg-bg-secondary/30 transition-all duration-300"
+                     key={user.id}
+                     className="group hover:bg-bg-secondary/30 transition-all duration-300"
                   >
                     {/* User Profile Cell */}
-                    <TableCell className="px-10 py-7">
+                    <TableCell className="px-6 py-4">
                       <div className="flex items-center gap-5">
                         <div className="relative group/avatar">
                           <div className="w-14 h-14 rounded-[4px] bg-surface-white border border-border flex items-center justify-center text-accent font-serif font-bold text-xl shadow-sm group-hover:scale-105 transition-transform duration-500">
@@ -343,7 +343,7 @@ const UserManagement: React.FC = () => {
                     </TableCell>
 
                     {/* Username/Identity Cell */}
-                    <TableCell className="px-6 py-7 text-center">
+                    <TableCell className="px-6 py-4 text-center">
                       <div className="inline-flex items-center gap-2.5 px-4 py-2 bg-surface-white border border-border rounded-[4px] group-hover:bg-bg-secondary group-hover:border-accent transition-all shadow-sm">
                         <span className="text-xs font-bold text-text-primary tracking-wider">
                           @{user.username}
@@ -352,19 +352,19 @@ const UserManagement: React.FC = () => {
                     </TableCell>
 
                     {/* Role Cell */}
-                    <TableCell className="px-6 py-7">
+                    <TableCell className="px-6 py-4">
                       <RoleBadge role={user.role} />
                     </TableCell>
 
                     {/* Status Cell */}
-                    <TableCell className="px-6 py-7">
+                    <TableCell className="px-6 py-4">
                       <div className="space-y-1.5">
                         <StatusBadge isActive={user.isActive} />
                       </div>
                     </TableCell>
 
                     {/* Actions Cell */}
-                    <TableCell className="px-10 py-7 text-right">
+                    <TableCell className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-1.5 ">
                         <ActionButton
                           icon={FiEdit3}
@@ -399,7 +399,7 @@ const UserManagement: React.FC = () => {
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="px-10 py-20 text-center text-slate-400 font-medium"
+                    className="px-6 py-10 text-center text-slate-400 font-medium"
                   >
                     No users found matching your search.
                   </TableCell>
@@ -410,7 +410,7 @@ const UserManagement: React.FC = () => {
         </div>
 
         {/* 📉 Table Footer (Desktop) 📉 */}
-        <div className="px-10 py-6 bg-slate-50/50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="px-6 py-5 bg-slate-50/50 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-6">
             <div className="flex flex-col">
               <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">
@@ -488,14 +488,14 @@ const UserManagement: React.FC = () => {
       </div>
 
       {/* 📱 Mobile User Cards (lg hidden) 📱 */}
-      <div className="lg:hidden space-y-4 max-h-[550px] overflow-y-auto px-2 -mx-2 pr-4 scrollbar-thin scrollbar-thumb-slate-100 scrollbar-track-transparent">
+      <div className="lg:hidden space-y-4 px-2 -mx-2 pr-4">
         {isLoading ? (
           Array(pageSize)
             .fill(0)
             .map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-white p-6 rounded-[2rem] border border-slate-100 animate-pulse"
+                className="bg-surface-white p-6 rounded-md border border-slate-100 animate-pulse"
               >
                 <div className="h-20 bg-slate-50 rounded-md w-full" />
               </div>
@@ -504,7 +504,7 @@ const UserManagement: React.FC = () => {
           users.map((user: User) => (
             <div
               key={user.id}
-              className="bg-surface-white p-6 rounded-[2rem] border border-slate-100 shadow-none shadow-slate-200/40 space-y-6"
+              className="bg-surface-white p-6 rounded-md border border-slate-100 shadow-none space-y-6"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -569,7 +569,7 @@ const UserManagement: React.FC = () => {
             </div>
           ))
         ) : (
-          <div className="bg-surface-white p-10 rounded-[2rem] border border-slate-100 text-center text-slate-400 font-medium">
+          <div className="bg-surface-white p-10 rounded-md border border-slate-100 text-center text-slate-400 font-medium">
             No users found.
           </div>
         )}
@@ -618,7 +618,7 @@ const UserManagement: React.FC = () => {
         ].map((item, i) => (
           <div
             key={i}
-            className="flex gap-4 p-5 bg-slate-50/50 rounded-[2rem] border border-slate-100/50 group hover:bg-surface-white hover:shadow-none hover:shadow-slate-100 transition-all duration-500"
+            className="flex gap-4 p-5 bg-slate-50/50 rounded-md border border-slate-100/50 group hover:bg-surface-white hover:shadow-none transition-all duration-500"
           >
             <div className="w-10 h-10 shrink-0 bg-surface-white border border-slate-100 rounded-[4px] flex items-center justify-center text-accent shadow-none group-hover:scale-110 transition-transform">
               {item.icon}

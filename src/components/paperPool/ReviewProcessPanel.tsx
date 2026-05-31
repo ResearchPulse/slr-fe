@@ -47,7 +47,7 @@ export default function ReviewProcessPanel({
   const hasSelected = selectedPaperIds.length > 0;
 
   return (
-    <div className="mt-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 bg-surface-white p-8 rounded-[2.5rem] border border-border shadow-none shadow-slate-200/50">
+    <div className="mt-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 bg-surface-white p-8 rounded-[4px] border border-border shadow-none shadow-slate-200/50">
       <div className="flex flex-col gap-6">
         {/* Hierarchy Hint - REMOVED since we have the new indicator in the parent */}
 

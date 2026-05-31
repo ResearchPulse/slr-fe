@@ -7,7 +7,7 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 
 const Table: React.FC<TableProps> = ({ children, className, ...props }) => {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full">
       <table
         className={cn("w-full border-collapse text-left", className)}
         {...props}

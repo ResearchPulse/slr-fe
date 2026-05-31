@@ -164,7 +164,7 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
       size="xl"
     >
       <div className="space-y-6 pt-4">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border shadow-2xl bg-surface-white min-h-[400px]">
+        <div className="relative overflow-hidden rounded-md border border-border shadow-none bg-surface-white min-h-[400px]">
           <Table>
             <TableHeader className="bg-bg-secondary/50">
               <TableRow className="hover:bg-transparent border-b border-border">

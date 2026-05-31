@@ -27,7 +27,6 @@ import {
   useExportProjectsMutation,
 } from "../../hooks/useProjects";
 import type { ProjectStatus } from "../../types/project";
-import { formatDate } from "../../utils/dateFormat";
 import toast from "react-hot-toast";
 
 const StatusBadge: React.FC<{ status: ProjectStatus }> = ({ status }) => {
@@ -63,6 +62,7 @@ const SLRProjectManagement: React.FC = () => {
   const [viewingProject, setViewingProject] = useState<
     { id: string; title: string } | undefined
   >();
+  const [isViewOnly, setIsViewOnly] = useState(false);
 
   // Hooks
   const {
@@ -126,10 +126,7 @@ const SLRProjectManagement: React.FC = () => {
     }
   };
 
-  const displayDate = (dateStr?: string | null) => {
-    if (!dateStr) return "N/A";
-    return formatDate(dateStr);
-  };
+
 
   const handleFormSuccess = () => {
     setIsFormModalOpen(false);
@@ -139,11 +136,19 @@ const SLRProjectManagement: React.FC = () => {
 
   const handleCreateProjectClick = () => {
     setEditingProjectId(undefined); // Ensure no project is being edited
+    setIsViewOnly(false);
     setIsFormModalOpen(true);
   };
 
   const handleEditProjectClick = (projectId: string) => {
     setEditingProjectId(projectId);
+    setIsViewOnly(false);
+    setIsFormModalOpen(true);
+  };
+
+  const handleViewProjectClick = (projectId: string) => {
+    setEditingProjectId(projectId);
+    setIsViewOnly(true);
     setIsFormModalOpen(true);
   };
 
@@ -249,12 +254,12 @@ const SLRProjectManagement: React.FC = () => {
       )}
 
       {/* Table Container */}
-      <div className="bg-surface-white rounded-[2rem] border border-slate-100 shadow-none shadow-slate-200/40 overflow-hidden">
+      <div className="bg-surface-white rounded-md border border-slate-100 shadow-none overflow-hidden">
         <div className="overflow-x-auto no-scrollbar">
-          <table className="w-full text-left border-collapse min-w-[1000px]">
+          <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
                   <Tooltip content="The unique identifier or project code for this workspace.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Code
@@ -262,7 +267,7 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
                   <Tooltip content="Refers to the project title, domain classification, and brief summary of the systematic literature review.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Description
@@ -270,7 +275,7 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
                   <Tooltip content="The project leader responsible for overseeing the research workspace.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Leader
@@ -278,34 +283,18 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
                   Status
                 </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400">
-                  <Tooltip content="The scheduled start and expected completion dates for this research project.">
-                    <div className="flex items-center gap-1.5 cursor-help uppercase">
-                      Timeline
-                      <FiInfo size={12} className="text-slate-300" />
-                    </div>
-                  </Tooltip>
-                </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400 text-center">
-                  <Tooltip content="Total number of steps in the Systematic Literature Review workflow">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400 text-center">
+                  <Tooltip content="Completed steps out of total steps in the review workflow">
                     <div className="flex items-center justify-center gap-1.5 cursor-help">
-                      Total Processes
+                      Processes
                       <FiInfo size={12} className="text-slate-300" />
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400 text-center">
-                  <Tooltip content="Number of review steps successfully finalized">
-                    <div className="flex items-center justify-center gap-1.5 cursor-help">
-                      Processes Done
-                      <FiInfo size={12} className="text-slate-300" />
-                    </div>
-                  </Tooltip>
-                </th>
-                <th className="px-6 py-5 text-[11px] font-black uppercase tracking-widest text-slate-400 text-right">
+                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400 text-right">
                   Actions
                 </th>
               </tr>
@@ -316,7 +305,7 @@ const SLRProjectManagement: React.FC = () => {
                   .fill(0)
                   .map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td colSpan={8} className="px-6 py-8">
+                      <td colSpan={6} className="px-4 py-6">
                         <div className="h-12 bg-slate-50 rounded-md w-full" />
                       </td>
                     </tr>
@@ -327,12 +316,12 @@ const SLRProjectManagement: React.FC = () => {
                     key={project.id}
                     className="group hover:bg-slate-50/80 transition-colors"
                   >
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-4">
                       <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-1 rounded uppercase tracking-wider border border-slate-200">
                         {project.code}
                       </span>
                     </td>
-                    <td className="px-6 py-5 max-w-sm">
+                    <td className="px-4 py-4 max-w-xs">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Tooltip content={project.title}>
@@ -356,63 +345,41 @@ const SLRProjectManagement: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-4">
                       {project.leader ? (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center text-accent font-bold text-xs shadow-sm border border-border">
-                            {project.leader.fullName.charAt(0)}
-                          </div>
-                          <div className="flex flex-col">
-                            <span className="text-sm font-bold text-slate-700 leading-tight">
+                        <Tooltip content={`${project.leader.fullName} (@${project.leader.userName || "username"}) • ${project.leader.email}`}>
+                          <div className="flex items-center gap-2.5 cursor-help">
+                            <div className="w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center text-accent font-bold text-xs border border-border">
+                              {project.leader.fullName.charAt(0)}
+                            </div>
+                            <span className="text-sm font-bold text-slate-700 leading-tight truncate max-w-[120px]">
                               {project.leader.fullName}
                             </span>
-                            <span className="text-[10px] font-medium text-slate-400">
-                              {project.leader.email}
-                            </span>
                           </div>
-                        </div>
+                        </Tooltip>
                       ) : (
                         <span className="text-xs font-bold text-slate-300 italic uppercase tracking-widest">
                           No Leader
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-4">
                       <StatusBadge status={project.statusText} />
                     </td>
-                    <td className="px-6 py-5">
-                      <div className="space-y-1 whitespace-nowrap">
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">
-                            From
-                          </span>
-                          <span className="text-xs font-bold text-slate-600">
-                            {displayDate(project.startDate)}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between gap-4">
-                          <span className="text-[9px] font-black text-slate-300 uppercase tracking-widest leading-none">
-                            To
-                          </span>
-                          <span className="text-xs font-bold text-slate-600">
-                            {displayDate(project.endDate)}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-5 text-center">
-                      <span className="text-sm font-bold text-slate-700 bg-slate-50 px-3 py-1.5 rounded-[4px] border border-slate-100">
-                        {project.totalProcesses ?? 0}
+                    <td className="px-4 py-4 text-center">
+                      <span className="text-xs font-bold text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded-[4px] border border-slate-100 whitespace-nowrap">
+                        <span className="text-accent">{project.completedProcesses ?? 0}</span>
+                        <span className="text-slate-300 mx-1">/</span>
+                        <span>{project.totalProcesses ?? 0}</span>
                       </span>
                     </td>
-                    <td className="px-6 py-5 text-center">
-                      <span className="text-sm font-bold text-accent bg-bg-secondary px-3 py-1.5 rounded-[4px] border border-indigo-100">
-                        {project.completedProcesses ?? 0}
-                      </span>
-                    </td>
-                    <td className="px-6 py-5 text-right">
+                    <td className="px-4 py-4 text-right">
                       <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 lg:opacity-100 transition-opacity">
-                        <ActionButton icon={FiEye} label="View Detail" />
+                        <ActionButton
+                          icon={FiEye}
+                          label="View Detail"
+                          onClick={() => handleViewProjectClick(project.id)}
+                        />
                         <ActionButton
                           icon={FiUsers}
                           label="Members"
@@ -444,13 +411,13 @@ const SLRProjectManagement: React.FC = () => {
               ) : (
                 <tr key="no-projects">
                   <td
-                    colSpan={8}
+                    colSpan={6}
                     className="px-6 py-28 text-center bg-slate-50/20"
                   >
                     <div className="max-w-md mx-auto space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
                       <div className="relative mx-auto w-24 h-24">
-                        <div className="absolute inset-0 bg-bg-secondary rounded-[2rem] rotate-12 opacity-50 transition-transform group-hover:rotate-45" />
-                        <div className="relative w-full h-full bg-surface-white border border-border rounded-[2rem] flex items-center justify-center text-text-secondary shadow-sm">
+                        <div className="absolute inset-0 bg-bg-secondary rounded-[4px] rotate-12 opacity-50 transition-transform group-hover:rotate-45" />
+                        <div className="relative w-full h-full bg-surface-white border border-border rounded-[4px] flex items-center justify-center text-text-secondary shadow-sm">
                           <SiTask size={42} className="text-accent opacity-50" />
                         </div>
                       </div>
@@ -577,8 +544,12 @@ const SLRProjectManagement: React.FC = () => {
       {/* Project Form Modal */}
       <ProjectFormModal
         isOpen={isFormModalOpen}
-        onClose={() => setIsFormModalOpen(false)}
+        onClose={() => {
+          setIsFormModalOpen(false);
+          setEditingProjectId(undefined);
+        }}
         projectId={editingProjectId}
+        isViewOnly={isViewOnly}
         onSuccess={handleFormSuccess}
       />
 

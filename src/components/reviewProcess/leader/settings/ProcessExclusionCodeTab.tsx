@@ -98,7 +98,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
   return (
     <div className="space-y-6 p-6">
       {/* 🛠️ Action Bar 🛠️ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-[2rem] border border-border shadow-none">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-[4px] border border-border shadow-none">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
           <div className="relative flex-1 max-w-md">
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary" />
@@ -157,7 +157,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
       </div>
 
       {/* 📊 Table 📊 */}
-      <div className="bg-surface-white rounded-[2.5rem] border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[400px] flex flex-col">
+      <div className="bg-surface-white rounded-[4px] border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[400px] flex flex-col">
         <div className="flex-1">
           <Table>
             <TableHeader className="bg-bg-secondary/50">

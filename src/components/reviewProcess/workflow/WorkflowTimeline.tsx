@@ -124,7 +124,7 @@ export default function WorkflowTimeline({
 
       {/* Stats Summary - Now on Top */}
       <div className="mb-12">
-        <div className="bg-bg-secondary/50 border border-border rounded-[2.5rem] p-8 relative overflow-hidden group transition-all hover:shadow-none hover:shadow-slate-200/50">
+        <div className="bg-bg-secondary/50 border border-border rounded-[4px] p-8 relative overflow-hidden group transition-all hover:shadow-none hover:shadow-slate-200/50">
           {/* Background Decorative Element */}
           <div className="absolute -right-20 -top-20 w-64 h-64 bg-bg-secondary rounded-full blur-[80px] opacity-40 group-hover:opacity-70 transition-opacity" />
           <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-50 rounded-full blur-[80px] opacity-40 group-hover:opacity-70 transition-opacity" />

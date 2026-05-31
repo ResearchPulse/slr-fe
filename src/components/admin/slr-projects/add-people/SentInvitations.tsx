@@ -108,7 +108,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
 
   if (!invitations || invitations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-8 text-center bg-slate-50/50 rounded-[2.5rem] border-2 border-dashed border-slate-100">
+      <div className="flex flex-col items-center justify-center py-20 px-8 text-center bg-slate-50/50 rounded-[4px] border-2 border-dashed border-slate-100">
         <div className="w-16 h-16 bg-surface-white rounded-md flex items-center justify-center text-slate-300 mb-4 shadow-none">
           <FiBell size={24} />
         </div>

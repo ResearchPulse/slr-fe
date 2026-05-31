@@ -8,11 +8,14 @@ interface ModalProps {
   onClose: () => void;
   title: React.ReactNode;
   children: React.ReactNode;
+  footer?: React.ReactNode;
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
+  bodyClassName?: string;
   description?: React.ReactNode;
   closeOnOutsideClick?: boolean;
   closeOnEsc?: boolean;
+  mode?: "modal" | "drawer";
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -20,11 +23,14 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
+  footer,
   size = "md",
   className,
+  bodyClassName,
   description,
   closeOnOutsideClick = true,
   closeOnEsc = true,
+  mode = "modal",
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -67,7 +73,10 @@ export const Modal: React.FC<ModalProps> = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+      className={cn(
+        "fixed inset-0 z-(--z-index-modal) flex overflow-hidden",
+        mode === "drawer" ? "justify-end" : "items-center justify-center p-4 sm:p-6"
+      )}
       onClick={handleBackdropClick}
     >
       {/* Backdrop with frosted glass effect */}
@@ -76,12 +85,15 @@ export const Modal: React.FC<ModalProps> = ({
         aria-hidden="true"
       />
 
-      {/* Modal Content container for scaling animation */}
+      {/* Modal/Drawer Content container for scaling animation */}
       <div
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-surface-white rounded-[4px] border border-border shadow-lg overflow-hidden transform transition-all z-10 animate-in zoom-in-95 fade-in duration-300",
+          "relative w-full bg-surface-white border border-border shadow-lg overflow-hidden transform transition-all z-10 flex flex-col",
+          mode === "drawer" 
+            ? "h-full max-h-screen rounded-none border-l border-y-0 border-r-0 animate-in slide-in-from-right fade-in duration-300"
+            : "rounded-[4px] max-h-[85vh] animate-in zoom-in-95 fade-in duration-300",
           sizeStyles[size],
           className,
         )}
@@ -89,7 +101,7 @@ export const Modal: React.FC<ModalProps> = ({
         aria-modal="true"
       >
         {/* Header Section */}
-        <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border">
+        <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border shrink-0">
           <div className="space-y-1">
             <div className="text-[18px] font-medium text-text-primary leading-snug">
               {title}
@@ -108,7 +120,16 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Body Section */}
-        <div className="p-6 max-h-[80vh] overflow-y-auto">{children}</div>
+        <div className={cn("p-6 overflow-y-auto flex-1", bodyClassName)}>
+          {children}
+        </div>
+
+        {/* Footer Section */}
+        {footer && (
+          <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-border bg-bg-secondary shrink-0">
+            {footer}
+          </div>
+        )}
       </div>
     </div>,
     document.body,

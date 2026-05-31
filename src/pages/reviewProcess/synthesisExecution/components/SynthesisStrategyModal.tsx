@@ -316,8 +316,28 @@ export default function SynthesisStrategyModal({
       size="xl"
       closeOnOutsideClick={!isSubmitting}
       closeOnEsc={!isSubmitting}
+      footer={
+        <>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={handleClose}
+            disabled={isSubmitting}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            form="synthesis-strategy-form"
+            isLoading={isSubmitting}
+            disabled={isLoading || researchQuestions.length === 0}
+          >
+            {startAfterSave ? "Save & Start Synthesis" : "Save Strategy"}
+          </Button>
+        </>
+      }
     >
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form id="synthesis-strategy-form" onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-[4px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
           <div className="flex items-start gap-4">
             <div className="rounded-[4px] bg-surface-white p-3 text-blue-600 shadow-sm ring-1 ring-blue-100">
@@ -476,24 +496,6 @@ export default function SynthesisStrategyModal({
             </section>
           </div>
         )}
-
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-border pt-4">
-          <Button
-            variant="outline"
-            type="button"
-            onClick={handleClose}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            isLoading={isSubmitting}
-            disabled={isLoading || researchQuestions.length === 0}
-          >
-            {startAfterSave ? "Save & Start Synthesis" : "Save Strategy"}
-          </Button>
-        </div>
       </form>
     </Modal>
   );

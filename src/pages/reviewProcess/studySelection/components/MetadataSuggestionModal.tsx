@@ -185,7 +185,7 @@ export default function MetadataSuggestionModal({
         </div>
 
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
+          <div className="flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[4px] bg-surface-white shadow-sm">
               <FiMinusSquare className="h-6 w-6 text-slate-300" />
             </div>
@@ -227,7 +227,7 @@ export default function MetadataSuggestionModal({
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-[1.5rem] border border-border bg-surface-white shadow-sm">
+            <div className="overflow-hidden rounded-[4px] border border-border bg-surface-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-100">
                 <thead className="bg-bg-secondary/80">
                   <tr>

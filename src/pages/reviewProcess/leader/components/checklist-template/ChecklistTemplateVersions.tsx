@@ -131,7 +131,7 @@ export const ChecklistTemplateVersions: React.FC<
         </Button>
       </div>
 
-      <div className="bg-surface-white rounded-[2rem] border border-border overflow-hidden shadow-none">
+      <div className="bg-surface-white rounded-md border border-border overflow-hidden shadow-none">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent cursor-default">

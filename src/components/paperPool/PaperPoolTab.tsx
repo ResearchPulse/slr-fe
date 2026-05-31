@@ -652,7 +652,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 1 && (
         <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[2.5rem] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Research <span className="text-blue-600">Context</span> Summary
@@ -675,7 +675,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 2 && (
         <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[2.5rem] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Search <span className="text-blue-600">Strategy</span> Planning

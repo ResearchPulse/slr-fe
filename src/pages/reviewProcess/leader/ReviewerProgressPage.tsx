@@ -207,7 +207,7 @@ const ReviewerProgressPage: React.FC = () => {
       </div>
 
       {/* Main Table */}
-      <Card className="border-none shadow-2xl bg-surface-white/80 backdrop-blur-md rounded-[2.5rem] overflow-hidden">
+      <Card className="bg-surface-white rounded-md border border-border shadow-none overflow-hidden">
         <Table>
           <TableHeader className="bg-bg-secondary/30">
             <TableRow className="hover:bg-transparent cursor-default">

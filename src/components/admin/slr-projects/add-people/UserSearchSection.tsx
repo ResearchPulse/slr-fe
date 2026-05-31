@@ -54,7 +54,7 @@ export default function UserSearchSection({
         />
       </div>
 
-      <div className="max-h-[340px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
+      <div className="max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
         {isSearching && (
           <div className="absolute inset-0 bg-surface-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-md">
             <LoadingSpinner size="sm" />

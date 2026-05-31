@@ -219,7 +219,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[2rem] p-10 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-[4px] p-10 transition-all text-center ${
                   isDragging
                     ? "border-blue-500 bg-blue-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -343,7 +343,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[2rem] p-10 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-[4px] p-10 transition-all text-center ${
                   isDraggingBib
                     ? "border-emerald-500 bg-emerald-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"

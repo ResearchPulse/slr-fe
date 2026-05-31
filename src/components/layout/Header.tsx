@@ -46,11 +46,7 @@ const Header: React.FC = () => {
   };
 
   const getUserInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+    return name ? name.trim().charAt(0).toUpperCase() : "";
   };
 
   // Close dropdown when clicking outside

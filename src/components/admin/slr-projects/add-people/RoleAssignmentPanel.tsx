@@ -46,23 +46,22 @@ export default function RoleAssignmentPanel({
   return (
     <div className="h-full">
       {selectedUser ? (
-        <div className="bg-slate-50 border border-indigo-100 rounded-[2rem] p-6 space-y-6 animate-in slide-in-from-right-4 duration-500">
+        <div className="bg-surface-white border border-slate-100 rounded-md p-5 space-y-5 animate-in slide-in-from-right-4 duration-500">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-md bg-accent text-white flex items-center justify-center text-sm font-black shadow-none shadow-indigo-100">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-10 h-10 rounded-md bg-accent text-white flex items-center justify-center text-xs font-black shrink-0">
                   {getInitials(selectedUser.fullName)}
                 </div>
-                <div>
-                  <h6 className="text-sm font-black text-slate-900 tracking-tight leading-none mb-1">
+                <div className="min-w-0">
+                  <h6 className="text-xs font-black text-slate-800 tracking-tight leading-none mb-1 truncate">
                     {selectedUser.fullName}
                   </h6>
-                  <p className="text-[10px] font-bold text-slate-500 leading-none mb-1">
-                    @{selectedUser.userName}
-                  </p>
-                  <p className="text-[10px] font-medium text-slate-400 truncate">
-                    {selectedUser.email}
-                  </p>
+                  <div className="flex items-center gap-1.5 text-[9px] font-bold text-slate-400">
+                    <span className="italic text-accent/80">@{selectedUser.userName}</span>
+                    <span className="w-0.5 h-0.5 rounded-full bg-slate-200" />
+                    <span className="font-medium truncate">{selectedUser.email}</span>
+                  </div>
                 </div>
               </div>
               <Tooltip
@@ -71,57 +70,52 @@ export default function RoleAssignmentPanel({
               >
                 <button
                   onClick={() => onRemoveFromWaitlist(selectedUser.id)}
-                  className={cn(
-                    "p-2 rounded-[4px] transition-all",
-                    isAdded
-                      ? "text-red-400 hover:text-red-500 hover:bg-surface-white"
-                      : "text-slate-300 hover:text-slate-500 hover:bg-slate-100",
-                  )}
+                  className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-slate-50 rounded-[4px] transition-all"
                 >
-                  <FiTrash2 size={16} />
+                  <FiTrash2 size={14} />
                 </button>
               </Tooltip>
             </div>
 
-            <div className="h-px bg-slate-200" />
+            <div className="h-px bg-slate-100" />
 
             <div className="space-y-3">
-              <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
+              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">
                 Assign Permission Tier
               </label>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-2.5">
                 {!disableMemberRole && (
                   <button
                     onClick={() => onRoleChange("Member")}
                     className={cn(
-                      "group flex items-center justify-between p-4 rounded-md border-2 transition-all text-left",
+                      "group flex items-center justify-between p-3.5 rounded-md border transition-all text-left",
                       previewRole === "Member"
-                        ? "bg-surface-white border-indigo-600 shadow-none shadow-indigo-100/50"
-                        : "bg-surface-white/50 border-slate-100 hover:border-slate-200",
+                        ? "bg-indigo-50/50 border-indigo-200"
+                        : "bg-surface-white border-slate-100 hover:border-slate-200",
                     )}
                   >
                     <div className="flex items-center gap-3">
                       <div
                         className={cn(
-                          "p-2 rounded-[4px] transition-colors",
+                          "p-1.5 rounded-[4px] transition-colors",
                           previewRole === "Member"
-                            ? "bg-accent text-white"
-                            : "bg-slate-100 text-slate-400",
+                            ? "bg-indigo-600 text-white"
+                            : "bg-slate-50 text-slate-400",
                         )}
                       >
-                        <FiUser size={16} />
+                        <FiUser size={14} />
                       </div>
                       <div>
-                        <p className="text-xs font-black text-slate-800 tracking-tight leading-none mb-1">
+                        <p className="text-xs font-black text-slate-700 tracking-tight leading-none mb-0.5">
                           Standard Member
                         </p>
-                        <p className="text-[9px] font-bold text-slate-400">
+                        <p className="text-[9px] font-medium text-slate-400">
                           Read & contribute access
                         </p>
                       </div>
                     </div>
                     {previewRole === "Member" && (
-                      <FiCheck className="text-accent" size={18} />
+                      <FiCheck className="text-indigo-600" size={16} />
                     )}
                   </button>
                 )}
@@ -131,10 +125,10 @@ export default function RoleAssignmentPanel({
                     disabled={!canAssignLeaderRole && previewRole !== "Leader"}
                     onClick={() => onRoleChange("Leader")}
                     className={cn(
-                      "group flex items-center justify-between p-4 rounded-md border-2 transition-all text-left relative overflow-hidden",
+                      "group flex items-center justify-between p-3.5 rounded-md border transition-all text-left relative overflow-hidden",
                       previewRole === "Leader"
-                        ? "bg-indigo-900 border-indigo-900 shadow-none shadow-slate-200"
-                        : "bg-surface-white/50 border-slate-100 hover:border-slate-200",
+                        ? "bg-indigo-50/50 border-indigo-200"
+                        : "bg-surface-white border-slate-100 hover:border-slate-200",
                       !canAssignLeaderRole &&
                         previewRole !== "Leader" &&
                         "opacity-60 cursor-not-allowed bg-slate-50",
@@ -143,33 +137,19 @@ export default function RoleAssignmentPanel({
                     <div className="flex items-center gap-3">
                       <div
                         className={cn(
-                          "p-2 rounded-[4px] transition-colors",
+                          "p-1.5 rounded-[4px] transition-colors",
                           previewRole === "Leader"
-                            ? "bg-surface-white text-indigo-900"
-                            : "bg-slate-100 text-slate-400",
+                            ? "bg-indigo-600 text-white"
+                            : "bg-slate-50 text-slate-400",
                         )}
                       >
-                        <FiShield size={16} />
+                        <FiShield size={14} />
                       </div>
                       <div>
-                        <p
-                          className={cn(
-                            "text-xs font-black tracking-tight leading-none mb-1",
-                            previewRole === "Leader"
-                              ? "text-white"
-                              : "text-slate-800",
-                          )}
-                        >
+                        <p className="text-xs font-black text-slate-700 tracking-tight leading-none mb-0.5">
                           Lead Researcher
                         </p>
-                        <p
-                          className={cn(
-                            "text-[9px] font-bold",
-                            previewRole === "Leader"
-                              ? "text-white/60"
-                              : "text-slate-400",
-                          )}
-                        >
+                        <p className="text-[9px] font-medium text-slate-400">
                           {!isLeaderResolved
                             ? "Checking leadership..."
                             : currentLeader?.type === "Accepted"
@@ -181,7 +161,7 @@ export default function RoleAssignmentPanel({
                       </div>
                     </div>
                     {previewRole === "Leader" ? (
-                      <FiCheck className="text-white" size={18} />
+                      <FiCheck className="text-indigo-600" size={16} />
                     ) : (
                       !canAssignLeaderRole &&
                       isLeaderResolved && (
@@ -194,7 +174,7 @@ export default function RoleAssignmentPanel({
                         >
                           <FiAlertTriangle
                             className="text-amber-500"
-                            size={14}
+                            size={12}
                           />
                         </Tooltip>
                       )
@@ -205,32 +185,26 @@ export default function RoleAssignmentPanel({
             </div>
           </div>
 
-          <div className="flex items-center justify-center gap-2 py-3 bg-emerald-50/50 border border-emerald-100 rounded-md">
-            <div className="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-500 text-white">
-              <FiCheck size={12} />
-            </div>
-            <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
-              Saved into Batch
-            </p>
+          <div className="flex items-center justify-center gap-2 py-2.5 bg-emerald-50/40 border border-emerald-100/50 rounded-md text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+            <FiCheck size={12} />
+            <span>Đã thêm vào danh sách chờ</span>
           </div>
 
-          <div className="p-4 bg-surface-white/30 border border-slate-100 border-dashed rounded-md">
-            <p className="text-[9px] text-slate-400 font-bold leading-relaxed italic text-center">
-              Role updates are saved instantly. Send invitations when ready.
-            </p>
-          </div>
+          <p className="text-[9px] text-slate-400 font-bold leading-relaxed italic text-center">
+            Lời mời sẽ được gửi đi khi bạn nhấn nút gửi ở góc dưới.
+          </p>
         </div>
       ) : (
-        <div className="h-full flex flex-col items-center justify-center border-2 border-dashed border-slate-100 rounded-[2rem] p-10 text-center space-y-4">
-          <div className="w-16 h-16 bg-slate-50 rounded-[2rem] flex items-center justify-center text-slate-200">
-            <FiUsers size={32} />
+        <div className="h-full flex flex-col items-center justify-center border border-dashed border-slate-100 rounded-md p-10 text-center space-y-4">
+          <div className="w-12 h-12 bg-slate-50 rounded-md flex items-center justify-center text-slate-300">
+            <FiUsers size={24} />
           </div>
           <div className="space-y-1">
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
-              Awaiting Selection
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Đang chờ lựa chọn
             </p>
             <p className="text-xs font-bold text-slate-300 italic">
-              Select a contributor to assign role
+              Chọn một tài khoản để thiết lập vai trò
             </p>
           </div>
         </div>

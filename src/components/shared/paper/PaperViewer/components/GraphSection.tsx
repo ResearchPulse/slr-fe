@@ -19,7 +19,7 @@ export const GraphSection: React.FC<GraphSectionProps> = ({
 }) => {
   return (
     <div className="space-y-4">
-      <div className="aspect-video bg-slate-900 rounded-[2.5rem] flex flex-col items-center justify-center relative overflow-hidden group border border-slate-800 shadow-2xl">
+      <div className="aspect-video bg-slate-900 rounded-[4px] flex flex-col items-center justify-center relative overflow-hidden group border border-slate-800 shadow-2xl">
         <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:32px_32px]" />
 
         {isDiscoveryLoading ? (

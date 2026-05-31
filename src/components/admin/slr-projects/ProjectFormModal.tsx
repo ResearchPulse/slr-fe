@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useProject, useProjectMutations } from "../../../hooks/useProjects";
-import type { CreateProjectRequest, Project } from "../../../types/project";
+import type { Project } from "../../../types/project";
 import FormField from "../../ui/FormField";
 import FormTextarea from "../../ui/FormTextarea";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import Modal from "../../ui/Modal";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { cn } from "../../../utils/cn";
-import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText } from "react-icons/fi";
+import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar } from "react-icons/fi";
 
 interface ProjectFormModalProps {
   isOpen: boolean;
   onClose: () => void;
   projectId?: string;
+  isViewOnly?: boolean;
   onSuccess?: (project: Project) => void;
 }
 
@@ -20,6 +21,7 @@ export default function ProjectFormModal({
   isOpen,
   onClose,
   projectId,
+  isViewOnly = false,
   onSuccess,
 }: ProjectFormModalProps) {
   const isEditMode = Boolean(projectId);
@@ -28,7 +30,7 @@ export default function ProjectFormModal({
   const { project, isLoading: isInitialLoading } = useProject(projectId);
 
   // Mutations
-  const { createProject, isCreating, updateProject, isUpdating } =
+  const { createProject, isCreating, updateProject, isUpdating, updateProjectDates } =
     useProjectMutations();
 
   const [formData, setFormData] = useState({
@@ -36,6 +38,8 @@ export default function ProjectFormModal({
     title: "",
     domain: "",
     description: "",
+    startDate: "",
+    endDate: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -47,8 +51,10 @@ export default function ProjectFormModal({
         setFormData({
           code: project.code,
           title: project.title,
-          domain: project.domain,
+          domain: project.domain || "",
           description: project.description || "",
+          startDate: project.startDate ? project.startDate.split("T")[0] : "",
+          endDate: project.endDate ? project.endDate.split("T")[0] : "",
         });
       } else if (!isEditMode && isOpen) {
         // Clear form when opening for creation
@@ -57,6 +63,8 @@ export default function ProjectFormModal({
           title: "",
           domain: "",
           description: "",
+          startDate: "",
+          endDate: "",
         });
         setErrors({});
       }
@@ -82,7 +90,9 @@ export default function ProjectFormModal({
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
     if (!formData.title.trim())
-      newErrors.title = "A compelling title is required.";
+      newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
+    if (!isEditMode && !formData.domain.trim())
+      newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -93,24 +103,74 @@ export default function ProjectFormModal({
 
     try {
       if (isEditMode && projectId) {
+        // Update basic project metadata
         const result = await updateProject({
           id: projectId,
-          data: { id: projectId, ...formData },
+          data: {
+            id: projectId,
+            title: formData.title,
+            domain: formData.domain,
+            description: formData.description,
+          },
         });
+
+        // Chỉ cập nhật ngày tháng khi người dùng thực sự thay đổi chúng trên form (trong trường hợp được phép sửa)
+        const originalStartDate = project?.startDate ? project.startDate.split("T")[0] : "";
+        const originalEndDate = project?.endDate ? project.endDate.split("T")[0] : "";
+        const hasDatesChanged = formData.startDate !== originalStartDate || formData.endDate !== originalEndDate;
+
+        if (hasDatesChanged) {
+          try {
+            await updateProjectDates({
+              id: projectId,
+              data: {
+                id: projectId,
+                startDate: formData.startDate ? formData.startDate : null,
+                endDate: formData.endDate ? formData.endDate : null,
+              },
+            });
+          } catch (dateErr: any) {
+            console.warn("Không thể cập nhật ngày tháng do phân quyền:", dateErr);
+            toastError("Lưu ngày tháng thất bại", "Chỉ có Trưởng nhóm dự án (Project Leader) mới có quyền thay đổi ngày bắt đầu/kết thúc.");
+          }
+        }
+
         if (result.isSuccess) {
           toastSuccess(
-            "Project Updated",
-            "The repository metadata has been successfully updated.",
+            "Đã cập nhật dự án",
+            "Thông tin chi tiết của dự án đã được cập nhật thành công.",
           );
           onSuccess?.(result.data);
           onClose();
         }
       } else {
-        const result = await createProject(formData as CreateProjectRequest);
+        // Create new project with basic info first
+        const result = await createProject({
+          title: formData.title,
+          domain: formData.domain,
+          description: formData.description,
+        });
+
+        // Set dates if they are provided
+        if (result.isSuccess && (formData.startDate || formData.endDate)) {
+          try {
+            await updateProjectDates({
+              id: result.data.id,
+              data: {
+                id: result.data.id,
+                startDate: formData.startDate ? formData.startDate : null,
+                endDate: formData.endDate ? formData.endDate : null,
+              },
+            });
+          } catch (dateErr) {
+            console.warn("Không thể gán ngày tháng khi tạo mới dự án:", dateErr);
+          }
+        }
+
         if (result.isSuccess) {
           toastSuccess(
-            "Project Created",
-            "New research workspace has been initialized successfully.",
+            "Đã tạo dự án",
+            "Dự án nghiên cứu mới đã được khởi tạo thành công.",
           );
           onSuccess?.(result.data);
           onClose();
@@ -125,8 +185,8 @@ export default function ProjectFormModal({
       const errorMessage =
         maybeErr.response?.data?.message ||
         maybeErr.message ||
-        "An unexpected error occurred during project submission.";
-      toastError("Submission Failed", errorMessage);
+        "Đã xảy ra lỗi không xác định trong quá trình gửi biểu mẫu.";
+      toastError("Yêu cầu thất bại", errorMessage);
     }
   };
 
@@ -136,129 +196,224 @@ export default function ProjectFormModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditMode ? "Project Settings" : "New Systematic Review"}
+      title={isViewOnly ? "Chi tiết Dự án" : (isEditMode ? "Cấu hình Dự án" : "Tạo mới dự án SLR")}
       description={
-        isEditMode
-          ? "Update your workspace parameters and metadata."
-          : "Launch a new research workspace with standardized protocols."
+        isViewOnly
+          ? "Xem thông tin chi tiết và dòng thời gian của dự án nghiên cứu."
+          : (isEditMode
+              ? "Cập nhật các tham số có thể chỉnh sửa của dự án."
+              : "Khởi tạo một dự án nghiên cứu mới theo quy trình chuẩn.")
       }
       size="md"
+      mode="drawer"
+      /* Ghìm các nút Hủy / Lưu xuống chân trang của Drawer cố định cực kỳ đẹp mắt */
+      footer={!isViewOnly ? (
+        <div className="flex items-center justify-end gap-3 w-full">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-3 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95 cursor-pointer"
+          >
+            Hủy
+          </button>
+          <button
+            type="submit"
+            form="project-form"
+            disabled={isSubmitting}
+            className={cn(
+              "flex items-center gap-2 px-10 py-4 bg-accent text-white text-[11px] font-black rounded-md hover:bg-[#7a0000] transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest cursor-pointer shadow-none",
+              isSubmitting && "animate-pulse",
+            )}
+          >
+            {isSubmitting ? (
+              "Đang xử lý..."
+            ) : (
+              <>
+                {isEditMode ? <FiSave size={18} /> : <FiPlus size={18} />}
+                {isEditMode ? "Lưu thay đổi" : "Khởi tạo dự án"}
+              </>
+            )}
+          </button>
+        </div>
+      ) : undefined}
     >
       {isInitialLoading && isEditMode ? (
         <div className="flex flex-col justify-center items-center py-20 space-y-4">
           <LoadingSpinner size="lg" />
           <p className="text-slate-400 font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">
-            Initializing Workspace
+            Đang tải thông tin...
           </p>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-8">
+      ) : isViewOnly ? (
+        /* --- CHẾ ĐỘ 1: XEM CHI TIẾT (VIEW ONLY - CHỈ ĐỌC) --- */
+        /* Loại bỏ hoàn toàn nút đóng thừa ở chân trang theo yêu cầu (đóng bằng nút X ở header) */
+        <div className="space-y-6 animate-in fade-in duration-300">
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
-              {isEditMode && (
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                    <FiInfo size={12} className="text-indigo-400" />
-                    Repository Code
-                  </div>
-                  <FormField
-                    id="code"
-                    label="Project Code"
-                    name="code"
-                    value={formData.code}
-                    readOnly
-                    containerClassName="space-y-1.5"
-                    className="bg-slate-100 border-slate-200 rounded-[1.25rem] py-4 font-black text-accent cursor-not-allowed shadow-inner"
-                  />
+              {/* Mã dự án */}
+              <div className="space-y-1 bg-slate-50 p-4 border border-slate-100 rounded-md">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <FiInfo size={12} className="text-indigo-400" />
+                  Mã dự án (Không thể sửa)
                 </div>
-              )}
+                <div className="text-sm font-black text-accent tracking-wider uppercase mt-1">
+                  {formData.code || "N/A"}
+                </div>
+              </div>
 
+              {/* Tiêu đề nghiên cứu */}
+              <div className="space-y-1 px-1">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <FiFileText size={12} className="text-indigo-400" />
+                  Tiêu đề nghiên cứu
+                </div>
+                <div className="text-sm font-bold text-slate-800 leading-relaxed mt-1">
+                  {formData.title || "N/A"}
+                </div>
+              </div>
+
+              {/* Lĩnh vực nghiên cứu */}
+              <div className="space-y-1 px-1">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  <FiLayers size={12} className="text-indigo-400" />
+                  Lĩnh vực nghiên cứu
+                </div>
+                <div className="text-sm font-bold text-slate-800 mt-1">
+                  {formData.domain || "N/A"}
+                </div>
+              </div>
+
+              {/* Dòng thời gian (Ngày bắt đầu & Ngày kết thúc) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 p-4 border border-slate-100/50 rounded-md">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <FiCalendar size={12} className="text-indigo-400" />
+                    Ngày bắt đầu
+                  </div>
+                  <div className="text-sm font-bold text-slate-700 mt-1">
+                    {project?.startDate
+                      ? new Date(project.startDate).toLocaleDateString("vi-VN")
+                      : "Chưa bắt đầu"}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                    <FiCalendar size={12} className="text-indigo-400" />
+                    Ngày kết thúc
+                  </div>
+                  <div className="text-sm font-bold text-slate-700 mt-1">
+                    {project?.endDate
+                      ? new Date(project.endDate).toLocaleDateString("vi-VN")
+                      : "Chưa xác định"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Tóm tắt mô tả */}
+            <div className="space-y-2 px-1">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <FiInfo size={12} className="text-indigo-400" />
+                Tóm tắt dự án (Mô tả)
+              </div>
+              <div className="text-sm text-slate-700 font-medium italic leading-relaxed border-l-2 border-indigo-100 pl-4 py-1 mt-1 whitespace-pre-line bg-indigo-50/5 rounded-r-md">
+                {formData.description || "Không có mô tả chi tiết."}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* --- CHẾ ĐỘ 2: CHỈNH SỬA / TẠO MỚI (EDIT / CREATE MODE) --- */
+        /* Đặt ID form để kích hoạt nút submit từ footer cố định của Modal bên ngoài */
+        <form id="project-form" onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
+          <div className="space-y-6 shrink-0">
+            <div className="grid grid-cols-1 gap-6">
+              {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
                   <FiFileText size={12} className="text-indigo-400" />
-                  Identity
+                  Tiêu đề nghiên cứu
                 </div>
                 <FormField
                   id="title"
-                  label="Research Title"
+                  label="Tiêu đề nghiên cứu"
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   errorMessage={errors.title}
-                  placeholder="e.g., Impact of Generative AI in Code Automation"
+                  placeholder="Ví dụ: Tác động của Generative AI trong Tự động hóa Lập trình"
                   containerClassName="space-y-1.5"
-                  className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-[1.25rem] py-4 font-bold text-slate-800 placeholder:text-slate-300 transition-all"
+                  className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md py-4 font-bold text-slate-800 placeholder:text-slate-300 transition-all shadow-none"
                   required
                 />
               </div>
-            </div>
 
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                <FiInfo size={12} className="text-indigo-400" />
-                Context & Scope
-              </div>
-              <FormTextarea
-                id="description"
-                label="Executive Summary"
-                name="description"
-                value={formData.description || ""}
-                onChange={handleChange}
-                placeholder="Briefly outline the research objectives and significance..."
-                rows={5}
-                containerClassName="space-y-1.5"
-                className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-[1.25rem] p-4 font-medium text-slate-700 italic leading-relaxed placeholder:text-slate-300 transition-all"
-              />
+              {/* LĨNH VỰC NGHIÊN CỨU (Chỉ hiển thị khi TẠO MỚI, ẩn hoàn toàn khi CHỈNH SỬA) */}
+              {!isEditMode ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
+                    <FiLayers size={12} className="text-indigo-400" />
+                    Lĩnh vực nghiên cứu
+                  </div>
+                  <FormField
+                    id="domain"
+                    label="Lĩnh vực nghiên cứu"
+                    name="domain"
+                    value={formData.domain}
+                    onChange={handleChange}
+                    errorMessage={errors.domain}
+                    placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
+                    containerClassName="space-y-1.5"
+                    className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md py-4 font-bold text-slate-800 placeholder:text-slate-300 transition-all shadow-none"
+                    required
+                  />
+                </div>
+              ) : (
+                /* Giữ input hidden để không mất dữ liệu của form */
+                <input type="hidden" name="domain" value={formData.domain} />
+              )}
             </div>
           </div>
 
+          {/* TÓM TẮT DỰ ÁN / MÔ TẢ (Kéo dài tối đa ra toàn bộ khung Drawer để cân đối với chiều cao màn hình) */}
+          <div className="space-y-2 flex-1 flex flex-col min-h-[320px]">
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 shrink-0">
+              <FiInfo size={12} className="text-indigo-400" />
+              Tóm tắt dự án (Mô tả)
+            </div>
+            <FormTextarea
+              id="description"
+              label="Tóm tắt dự án"
+              name="description"
+              value={formData.description || ""}
+              onChange={handleChange}
+              placeholder="Mô tả ngắn gọn về mục tiêu và tầm quan trọng của nghiên cứu..."
+              rows={12}
+              containerClassName="space-y-1.5 flex-1 flex flex-col"
+              className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md p-4 font-medium text-slate-700 italic leading-relaxed placeholder:text-slate-300 transition-all shadow-none flex-1 resize-none min-h-[280px]"
+            />
+          </div>
+
+          {/* Huy hiệu Workflow tiêu chuẩn (Chỉ hiển thị khi Tạo mới) */}
           {!isEditMode && (
-            <div className="p-5 bg-bg-secondary/50 border border-indigo-100/50 rounded-[1.5rem] flex items-start gap-4">
-              <div className="w-10 h-10 rounded-[4px] bg-indigo-100 flex items-center justify-center text-accent shrink-0">
+            <div className="p-5 bg-bg-secondary/50 border border-indigo-100/50 rounded-md flex items-start gap-4 shadow-none shrink-0">
+              <div className="w-10 h-10 rounded-[4px] bg-indigo-100 flex items-center justify-center text-accent shrink-0 border border-indigo-200">
                 <FiLayers size={18} />
               </div>
               <div className="space-y-1 mt-0.5">
                 <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none">
-                  Standard Workflow
+                  Quy trình tiêu chuẩn
                 </p>
-                <p className="text-xs text-indigo-900 font-bold leading-tight">
-                  Project starts in <span className="text-accent">Draft</span>{" "}
-                  mode.
+                <p className="text-xs text-indigo-900 font-bold leading-tight mt-1">
+                  Dự án sẽ được bắt đầu dưới dạng <span className="text-accent font-black">Bản nháp (Draft)</span>.
                 </p>
-                <p className="text-[10px] text-indigo-700/60 font-medium">
-                  You can refine parameters before activating the full review
-                  pipeline.
+                <p className="text-[10px] text-indigo-700/60 font-medium mt-1">
+                  Bạn có thể tinh chỉnh các tham số trước khi kích hoạt quy trình đánh giá đầy đủ.
                 </p>
               </div>
             </div>
           )}
-
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-50">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-3 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={cn(
-                "flex items-center gap-2 px-10 py-4 bg-accent text-white text-[11px] font-black rounded-[1.25rem] hover:bg-indigo-700 hover:shadow-2xl hover:shadow-indigo-200 transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest",
-                isSubmitting && "animate-pulse",
-              )}
-            >
-              {isSubmitting ? (
-                "Processing..."
-              ) : (
-                <>
-                  {isEditMode ? <FiSave size={18} /> : <FiPlus size={18} />}
-                  {isEditMode ? "Save Changes" : "Launch Workspace"}
-                </>
-              )}
-            </button>
-          </div>
         </form>
       )}
     </Modal>

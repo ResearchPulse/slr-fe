@@ -205,8 +205,9 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
           : "Loading paper details..."
       }
       size="md"
+      bodyClassName="p-0 overflow-hidden flex-1 flex flex-col"
     >
-      <div className="flex flex-col -m-8 bg-surface-white overflow-hidden min-h-[400px]">
+      <div className="flex flex-col bg-surface-white overflow-hidden h-[65vh] min-h-[450px]">
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-12">
             <div className="flex flex-col items-center gap-4">

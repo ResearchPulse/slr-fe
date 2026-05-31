@@ -18,8 +18,8 @@ export default function ReplaceLeaderConfirm({
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 animate-in fade-in duration-300">
       <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-      <div className="relative bg-surface-white rounded-[2.5rem] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-300 space-y-6">
-        <div className="w-16 h-16 bg-amber-50 rounded-[2rem] flex items-center justify-center text-amber-500 mb-6">
+      <div className="relative bg-surface-white rounded-[4px] w-full max-w-sm p-8 shadow-2xl animate-in zoom-in-95 duration-300 space-y-6">
+        <div className="w-16 h-16 bg-amber-50 rounded-[4px] flex items-center justify-center text-amber-500 mb-6">
           <FiAlertTriangle size={32} />
         </div>
         <div className="space-y-2">

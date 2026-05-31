@@ -195,7 +195,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
             </h3>
           </div>
 
-          <div className="bg-bg-secondary/50 p-6 rounded-[2rem] border border-border space-y-4">
+          <div className="bg-bg-secondary/50 p-6 rounded-[4px] border border-border space-y-4">
             <div className="relative">
               <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary" />
               <input
@@ -297,7 +297,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
             </button>
           </div>
 
-          <div className="bg-bg-secondary/50 p-6 rounded-[2rem] border border-border space-y-4">
+          <div className="bg-bg-secondary/50 p-6 rounded-[4px] border border-border space-y-4">
             <div className="space-y-3">
               {customReasons.map((reason, index) => (
                 <div

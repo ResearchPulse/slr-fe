@@ -145,7 +145,7 @@ export default function InvitationDetailPage() {
 
         <div className="grid gap-8">
           {/* Main Content Card */}
-          <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-[2.5rem]">
+          <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-[4px]">
             <div className="bg-slate-900 p-10 sm:p-12 text-white relative overflow-hidden">
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-[#7a0000]/20 rounded-full blur-3xl -mr-32 -mt-32" />

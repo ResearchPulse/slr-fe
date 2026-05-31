@@ -128,7 +128,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
   onRowClick,
 }) => {
   return (
-    <section className="bg-surface-white rounded-[2.25rem] border border-border shadow-sm overflow-hidden">
+    <section className="bg-surface-white rounded-md border border-border shadow-none overflow-hidden">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-5 border-b border-border bg-surface-white">
         <div>
           <h3 className="text-lg font-serif font-bold text-text-primary tracking-tight">

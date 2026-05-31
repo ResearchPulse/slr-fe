@@ -92,7 +92,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[2.5rem]">
+    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[4px]">
       {/* Filters Area */}
       <FilterPanel
         filters={filters}

@@ -40,7 +40,8 @@ import { resolveProjectLeader } from "../../../utils/projectUtils";
 
 // Reusable Sub-components from add-people directory
 import ProjectLeaderStatus from "./add-people/ProjectLeaderStatus";
-import SelectionSection from "./add-people/SelectionSection";
+import UserSearchSection from "./add-people/UserSearchSection";
+import InvitationWaitlist from "./add-people/InvitationWaitlist";
 import RoleAssignmentPanel from "./add-people/RoleAssignmentPanel";
 import ReplaceLeaderConfirm from "./add-people/ReplaceLeaderConfirm";
 import SentInvitations from "./add-people/SentInvitations";
@@ -62,12 +63,7 @@ interface User {
 }
 
 const getInitials = (name: string) => {
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+  return name ? name.trim().charAt(0).toUpperCase() : "";
 };
 
 const mapSearchResultToUser = (result: UserSearchResult): User => ({
@@ -389,14 +385,14 @@ export default function ProjectMembersModal({
         );
       }
       await Promise.all(requests);
-      toastSuccess(`Successfully staged ${waitlistUsers.length} invitations!`);
+      toastSuccess(`Đã gửi thành công ${waitlistUsers.length} lời mời tham gia!`);
       setAssignedRoles({});
       setSelectedUserId(null);
       setInviteSearchTerm("");
       refetchInvitations();
       refetchMembers();
     } catch (error: any) {
-      toastError(error?.message || "Failed to send some invitations.");
+      toastError(error?.message || "Không thể gửi một số lời mời.");
     }
   };
 
@@ -410,9 +406,9 @@ export default function ProjectMembersModal({
         return updated;
       });
       setShowReplaceConfirm(false);
-      toastSuccess("Project leader has been replaced successfully");
+      toastSuccess("Đã thay đổi Trưởng nhóm dự án thành công.");
     } catch (error) {
-      toastError("Failed to replace project leader");
+      toastError("Không thể thay đổi Trưởng nhóm dự án.");
     }
   };
 
@@ -424,16 +420,17 @@ export default function ProjectMembersModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Team Management"
+      title="Quản lý Thành viên"
       description={
         projectName
-          ? `Administering collaborators for ${projectName}`
-          : "Manage project participants and invitations."
+          ? `Quản lý thành viên tham gia dự án: ${projectName}`
+          : "Quản lý những thành viên tham gia và các thư mời."
       }
       size="xl"
       closeOnOutsideClick={false}
+      mode="drawer"
     >
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Unified Tab Switcher */}
         <div className="flex p-1 bg-slate-100/80 rounded-md w-fit border border-slate-200/50">
           <button
@@ -446,7 +443,7 @@ export default function ProjectMembersModal({
             )}
           >
             <FiUsers size={14} />
-            Collaboration
+            Thành viên dự án
           </button>
           {canManageMembers && (
             <button
@@ -459,7 +456,7 @@ export default function ProjectMembersModal({
               )}
             >
               <FiUserPlus size={14} />
-              Add Member
+              Thêm thành viên
             </button>
           )}
           {canManageMembers && (
@@ -473,13 +470,13 @@ export default function ProjectMembersModal({
               )}
             >
               <FiSend size={14} />
-              Sent Invitations
+              Lịch sử gửi lời mời
             </button>
           )}
         </div>
 
         {/* Tab Content */}
-        <div className="min-h-[500px]">
+        <div className="min-h-[450px]">
           {activeTab === "collaboration" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col h-full">
               {/* Collaboration Search */}
@@ -490,7 +487,7 @@ export default function ProjectMembersModal({
                 />
                 <input
                   type="text"
-                  placeholder="Search active team members..."
+                  placeholder="Tìm kiếm thành viên trong dự án..."
                   value={memberSearchTerm}
                   onChange={(e) => {
                     setMemberSearchTerm(e.target.value);
@@ -504,13 +501,13 @@ export default function ProjectMembersModal({
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
                   <LoadingSpinner size="lg" />
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
-                    Synchronizing Registry
+                    Đang đồng bộ dữ liệu...
                   </p>
                 </div>
               ) : membersError ? (
-                <div className="p-6 bg-surface-white border border-red-100 rounded-[2rem] text-center space-y-2">
+                <div className="p-6 bg-surface-white border border-red-100 rounded-md text-center space-y-2 shadow-none">
                   <p className="text-sm font-black text-red-600 uppercase tracking-tight">
-                    Sync Failed
+                    Đồng bộ thất bại
                   </p>
                   <p className="text-xs text-red-400 font-medium">
                     {membersError}
@@ -549,8 +546,8 @@ export default function ProjectMembersModal({
                                 )}
                               >
                                 {member.role === ProjectRole.Leader
-                                  ? "Leader"
-                                  : "Member"}
+                                  ? "Trưởng nhóm"
+                                  : "Thành viên"}
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-400">
@@ -566,7 +563,7 @@ export default function ProjectMembersModal({
                           </div>
                           <div className="hidden sm:flex flex-col items-end gap-1 text-right shrink-0">
                             <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none">
-                              Joined Pipeline
+                              Ngày tham gia
                             </p>
                             <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-[4px] border border-slate-100/50">
                               <FiCalendar
@@ -578,7 +575,7 @@ export default function ProjectMembersModal({
                           </div>
                           {canManageMembers && (
                             <div className="pl-2 border-l border-slate-50 ml-2">
-                              <Tooltip content="Remove from project">
+                              <Tooltip content="Xóa khỏi dự án">
                                 <button className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-[4px] transition-all active:scale-95 group/del">
                                   <FiTrash2
                                     size={18}
@@ -595,8 +592,8 @@ export default function ProjectMembersModal({
                         <FiUsers size={48} className="text-slate-300 mb-4" />
                         <p className="text-sm font-black text-slate-900 uppercase">
                           {debouncedMemberSearch
-                            ? "No Search Results"
-                            : "Registry Empty"}
+                            ? "Không tìm thấy kết quả"
+                            : "Dự án chưa có thành viên"}
                         </p>
                       </div>
                     )}
@@ -647,7 +644,7 @@ export default function ProjectMembersModal({
           )}
 
           {activeTab === "add" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
               {!effectivelyHideLeaderRole && (
                 <ProjectLeaderStatus
                   currentLeader={currentLeader}
@@ -656,46 +653,55 @@ export default function ProjectMembersModal({
                 />
               )}
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                <SelectionSection
-                  searchTerm={inviteSearchTerm}
-                  onSearchChange={setInviteSearchTerm}
-                  isSearching={isSearching}
-                  displayUsers={users}
-                  selectedUserId={selectedUserId}
-                  onSelectUser={handleSelectUser}
-                  onSelectFromWaitlist={handleSelectFromWaitlist}
-                  assignedRoles={assignedRoles}
-                  waitlistUsers={waitlistUsers}
-                  onRemoveFromWaitlist={handleRemoveFromWaitlist}
-                  getInitials={getInitials}
-                  currentPage={
-                    isGlobalAdmin && !debouncedInviteSearch
-                      ? addMemberPageNumber
-                      : undefined
-                  }
-                  totalPages={
-                    isGlobalAdmin && !debouncedInviteSearch
-                      ? adminListData?.totalPages
-                      : undefined
-                  }
-                  onPageChange={setAddMemberPageNumber}
-                />
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+                <div className="lg:col-span-7">
+                  <UserSearchSection
+                    searchTerm={inviteSearchTerm}
+                    onSearchChange={setInviteSearchTerm}
+                    isSearching={isSearching}
+                    displayUsers={users}
+                    selectedUserId={selectedUserId}
+                    onSelectUser={handleSelectUser}
+                    assignedRoles={assignedRoles}
+                    getInitials={getInitials}
+                    currentPage={
+                      isGlobalAdmin && !debouncedInviteSearch
+                        ? addMemberPageNumber
+                        : undefined
+                    }
+                    totalPages={
+                      isGlobalAdmin && !debouncedInviteSearch
+                        ? adminListData?.totalPages
+                        : undefined
+                    }
+                    onPageChange={setAddMemberPageNumber}
+                  />
+                </div>
 
-                <RoleAssignmentPanel
-                  selectedUser={selectedUser}
-                  previewRole={previewRole}
-                  canAssignLeaderRole={
-                    canAssignLeaderRole && !effectivelyHideLeaderRole
-                  }
-                  isLeaderResolved={isLeaderResolved}
-                  currentLeader={currentLeader}
-                  onRoleChange={handleRoleChange}
-                  onRemoveFromWaitlist={handleRemoveFromWaitlist}
-                  getInitials={getInitials}
-                  hideLeaderRole={effectivelyHideLeaderRole}
-                  disableMemberRole={isGlobalAdmin}
-                />
+                <div className="lg:col-span-5 space-y-6">
+                  <RoleAssignmentPanel
+                    selectedUser={selectedUser}
+                    previewRole={previewRole}
+                    canAssignLeaderRole={
+                      canAssignLeaderRole && !effectivelyHideLeaderRole
+                    }
+                    isLeaderResolved={isLeaderResolved}
+                    currentLeader={currentLeader}
+                    onRoleChange={handleRoleChange}
+                    onRemoveFromWaitlist={handleRemoveFromWaitlist}
+                    getInitials={getInitials}
+                    hideLeaderRole={effectivelyHideLeaderRole}
+                    disableMemberRole={isGlobalAdmin}
+                  />
+
+                  <InvitationWaitlist
+                    users={waitlistUsers}
+                    onRemove={handleRemoveFromWaitlist}
+                    onSelect={handleSelectFromWaitlist}
+                    selectedUserId={selectedUserId}
+                    getInitials={getInitials}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -723,7 +729,7 @@ export default function ProjectMembersModal({
                   ))}
                 </div>
                 <p className="text-[10px] font-black text-accent uppercase tracking-wider">
-                  {totalSelections} Ready for Invite
+                  {totalSelections} Đã chọn gửi
                 </p>
               </div>
             )}
@@ -732,29 +738,29 @@ export default function ProjectMembersModal({
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-8 py-3.5 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95"
+              className="px-8 py-3.5 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95 cursor-pointer"
             >
-              Close
+              Đóng
             </button>
             {activeTab === "add" && (
               <button
                 onClick={handleSendInvitations}
                 disabled={totalSelections === 0 || isSendingInvitations}
                 className={cn(
-                  "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-md transition-all active:scale-95 uppercase tracking-widest shadow-lg min-w-[200px] justify-center",
+                  "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-md transition-all active:scale-95 uppercase tracking-widest shadow-none min-w-[200px] justify-center cursor-pointer",
                   totalSelections > 0 && !isSendingInvitations
-                    ? "bg-slate-900 text-white hover:bg-accent hover:shadow-indigo-100"
-                    : "bg-slate-100 text-slate-300 cursor-not-allowed shadow-none",
+                    ? "bg-slate-900 text-white hover:bg-accent"
+                    : "bg-slate-100 text-slate-300 cursor-not-allowed",
                 )}
               >
                 {isSendingInvitations ? (
                   <>
                     <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Sending...
+                    Đang gửi...
                   </>
                 ) : (
                   <>
-                    Send Invitations
+                    Gửi lời mời
                     {totalSelections > 0 && (
                       <span className="ml-1 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-surface-white/20 text-[10px]">
                         {totalSelections}

@@ -21,7 +21,7 @@ const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        "bg-surface-white rounded-[2rem] border border-border p-6 shadow-none hover:shadow-none transition-all duration-300",
+        "bg-surface-white rounded-[4px] border border-border p-6 shadow-none hover:shadow-none transition-all duration-300",
         loading && "animate-pulse",
       )}
     >

@@ -35,7 +35,7 @@ export const ChecklistTemplateDetailModal: React.FC<
           </p>
         </div>
       ) : error ? (
-        <div className="p-8 text-center bg-surface-white rounded-[2rem] border border-red-100">
+        <div className="p-8 text-center bg-surface-white rounded-[4px] border border-red-100">
           <p className="text-red-500 font-medium">
             Failed to load template details.
           </p>

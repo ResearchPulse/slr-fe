@@ -17,7 +17,7 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
   isFieldUpdated,
 }) => {
   return (
-    <div className="bg-surface-white rounded-[2rem] border border-border p-8 shadow-none relative overflow-hidden group">
+    <div className="bg-surface-white rounded-[4px] border border-border p-8 shadow-none relative overflow-hidden group">
       {/* Background Decor */}
       <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary rounded-full opacity-50 group-hover:scale-110 transition-transform duration-700" />
 

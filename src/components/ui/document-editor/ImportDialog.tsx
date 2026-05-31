@@ -112,6 +112,24 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       title="Import Checklist JSON"
       description="Populate your checklist from raw JSON data."
       size="lg"
+      footer={
+        <>
+          <Button
+            variant="ghost"
+            onClick={onClose}
+            className="rounded-2xl px-8 hover:bg-slate-50"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleImport}
+            disabled={!jsonInput.trim()}
+            className="rounded-2xl px-12 gap-2 shadow-lg shadow-indigo-100"
+          >
+            <FileCode className="w-5 h-5" /> Import Now
+          </Button>
+        </>
+      }
     >
       <div className="space-y-6">
         {/* Tutorial Toggle */}
@@ -238,23 +256,6 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
             </div>
           </div>
         )}
-
-        <div className="flex justify-end gap-3 pt-4">
-          <Button
-            variant="ghost"
-            onClick={onClose}
-            className="rounded-2xl px-8 hover:bg-slate-50"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleImport}
-            disabled={!jsonInput.trim()}
-            className="rounded-2xl px-12 gap-2 shadow-lg shadow-indigo-100"
-          >
-            <FileCode className="w-5 h-5" /> Import Now
-          </Button>
-        </div>
       </div>
     </Modal>
   );

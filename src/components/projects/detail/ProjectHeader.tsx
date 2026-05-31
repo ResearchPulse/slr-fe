@@ -23,11 +23,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   onSettings,
 }) => {
   const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((n) => n[0])
-      .join("")
-      .toUpperCase();
+    return name ? name.trim().charAt(0).toUpperCase() : "";
   };
 
   return (

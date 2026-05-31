@@ -213,9 +213,9 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[2.5rem]">
+    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[4px]">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-8 rounded-[2rem] border border-border shadow-none">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-8 rounded-[4px] border border-border shadow-none">
         <div className="flex items-center gap-5">
           <div className="w-14 h-14 bg-surface-white border border-border text-accent rounded-[4px] flex items-center justify-center shadow-sm">
             <FiLayers className="w-7 h-7" />

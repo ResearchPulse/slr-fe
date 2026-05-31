@@ -225,8 +225,24 @@ const StudySelectionCriteriaModal: React.FC<
       onClose={onClose}
       title="Study Selection Criteria"
       size="xl"
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} className="px-6">
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleApplyAndContinue}
+            className="px-8 shadow-lg shadow-indigo-100"
+            disabled={criteriaGroups.length === 0 || isSaving}
+          >
+            {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : null}
+            {isSaving ? "Saving..." : "Apply & Continue"}
+          </Button>
+        </>
+      }
     >
-      <div className="flex flex-col gap-6 py-2 h-[80vh]">
+      <div className="space-y-6">
         {/* Header Section */}
         <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-indigo-50 to-white rounded-[4px] border border-indigo-100 shadow-sm shrink-0">
           <div className="flex gap-4">
@@ -259,57 +275,36 @@ const StudySelectionCriteriaModal: React.FC<
           </Button>
         </div>
 
-        {/* Scrollable Area */}
-        <div className="flex-1 overflow-y-auto pr-2 space-y-8 custom-scrollbar">
-          {/* Reference Data Section */}
-          {showRefData && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
-              {isLoading ? (
-                <div className="flex justify-center py-10">
-                  <LoadingSpinner />
-                </div>
-              ) : (
-                <>
-                  <ProjectPICOCElement picocs={picocs} />
-                  <ProjectResearchQuestions
-                    researchQuestions={researchQuestions}
-                  />
-                </>
-              )}
-            </div>
-          )}
+        {/* Reference Data Section */}
+        {showRefData && (
+          <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+            {isLoading ? (
+              <div className="flex justify-center py-10">
+                <LoadingSpinner />
+              </div>
+            ) : (
+              <>
+                <ProjectPICOCElement picocs={picocs} />
+                <ProjectResearchQuestions
+                  researchQuestions={researchQuestions}
+                />
+              </>
+            )}
+          </div>
+        )}
 
-          {/* Criteria Management Section */}
-          <ManageStuSeCriteria
-            criteriaGroups={criteriaGroups}
-            isGenerating={isGenerating}
-            onAiSuggest={handleAiSuggest}
-            onAddCustomGroup={addCustomGroup}
-            onDeleteGroup={deleteGroup}
-            onUpdateGroupDescription={updateGroupDescription}
-            onAddCriterion={addCriterion}
-            onDeleteCriterion={deleteCriterion}
-            onUpdateCriterion={updateCriterionText}
-          />
-
-          {/* AI Response Preview */}
-        </div>
-
-        {/* Footer Actions */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-border shrink-0">
-          <Button variant="secondary" onClick={onClose} className="px-6">
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleApplyAndContinue}
-            className="px-8 shadow-lg shadow-indigo-100"
-            disabled={criteriaGroups.length === 0 || isSaving}
-          >
-            {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : null}
-            {isSaving ? "Saving..." : "Apply & Continue"}
-          </Button>
-        </div>
+        {/* Criteria Management Section */}
+        <ManageStuSeCriteria
+          criteriaGroups={criteriaGroups}
+          isGenerating={isGenerating}
+          onAiSuggest={handleAiSuggest}
+          onAddCustomGroup={addCustomGroup}
+          onDeleteGroup={deleteGroup}
+          onUpdateGroupDescription={updateGroupDescription}
+          onAddCriterion={addCriterion}
+          onDeleteCriterion={deleteCriterion}
+          onUpdateCriterion={updateCriterionText}
+        />
       </div>
     </Modal>
   );

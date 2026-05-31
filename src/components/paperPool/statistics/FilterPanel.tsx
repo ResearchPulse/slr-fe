@@ -19,7 +19,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableSources,
 }) => {
   return (
-    <div className="bg-surface-white p-8 rounded-[2.5rem] border border-border shadow-none flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="bg-surface-white p-8 rounded-[4px] border border-border shadow-none flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div className="flex items-center gap-5">
         <div className="w-14 h-14 bg-slate-900 text-white rounded-[4px] flex items-center justify-center shadow-none shadow-slate-200">
           <FiFilter className="w-7 h-7" />
