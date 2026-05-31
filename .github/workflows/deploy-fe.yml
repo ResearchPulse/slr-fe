@@ -8,26 +8,29 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    
-steps:
-  - name: Write SSH key
-    run: |
-      mkdir -p ~/.ssh
-      echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
-      chmod 600 ~/.ssh/deploy_key
 
-  - name: Deploy FE on DigitalOcean
-    uses: appleboy/ssh-action@v1.0.3
-    with:
-      host: ${{ secrets.VPS_HOST }}
-      username: root
-      key_path: ~/.ssh/deploy_key
-      port: 22
-      script: |
-        cd /opt/SystematicLiteratureReviewSystem.FE
-        git pull origin main
-        npm install
-        npm run build
-        rm -rf /var/www/slr/*
-        cp -r dist/* /var/www/slr/
-        systemctl restart nginx
+    steps:
+      - name: Check SSH key secret
+        run: |
+          if [ -z "${{ secrets.VPS_SSH_KEY }}" ]; then
+            echo "VPS_SSH_KEY is EMPTY"
+            exit 1
+          else
+            echo "VPS_SSH_KEY exists"
+          fi
+
+      - name: Deploy FE on DigitalOcean
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: root
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
+            cd /opt/SystematicLiteratureReviewSystem.FE
+            git pull origin main
+            npm install
+            npm run build
+            rm -rf /var/www/slr/*
+            cp -r dist/* /var/www/slr/
+            systemctl restart nginx
