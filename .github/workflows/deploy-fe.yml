@@ -28,9 +28,14 @@ jobs:
           port: 22
           script: |
             cd /opt/SystematicLiteratureReviewSystem.FE
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
+
+            rm -rf node_modules/.vite dist
             npm install
             npm run build
+
             rm -rf /var/www/slr/*
             cp -r dist/* /var/www/slr/
+
             systemctl restart nginx
