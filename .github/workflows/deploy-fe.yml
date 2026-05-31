@@ -11,9 +11,13 @@ jobs:
 
     steps:
       - name: Deploy FE on DigitalOcean
-        uses: garygrossgarten/github-action-ssh@release
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          command: |
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
+          script: |
             cd /opt/SystematicLiteratureReviewSystem.FE
             git pull origin main
             npm install
@@ -21,6 +25,3 @@ jobs:
             rm -rf /var/www/slr/*
             cp -r dist/* /var/www/slr/
             systemctl restart nginx
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
