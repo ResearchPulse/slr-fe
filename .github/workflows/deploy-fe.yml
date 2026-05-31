@@ -1,0 +1,30 @@
+name: Deploy FE to DigitalOcean
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy FE on DigitalOcean
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd /opt/SystematicLiteratureReviewSystem.FE
+
+            git pull origin main
+
+            npm install
+            npm run build
+
+            rm -rf /var/www/slr/*
+            cp -r dist/* /var/www/slr/
+
+            sudo systemctl restart nginx
