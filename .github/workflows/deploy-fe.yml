@@ -1,4 +1,4 @@
-name: Deploy FE to DigitalOcean
+name: Deploy FE to VPS
 
 on:
   push:
@@ -6,36 +6,62 @@ on:
       - main
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check SSH key secret
-        run: |
-          if [ -z "${{ secrets.VPS_SSH_KEY }}" ]; then
-            echo "VPS_SSH_KEY is EMPTY"
-            exit 1
-          else
-            echo "VPS_SSH_KEY exists"
-          fi
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Deploy FE on DigitalOcean
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build FE
+        run: npm run build
+
+      # Connect GitHub Runner to your NetBird VPN network
+      - name: Install and Connect NetBird VPN
+        run: |
+          curl -fsSL https://pkgs.netbird.io/install.sh | sh
+          sudo netbird up --setup-key ${{ secrets.NETBIRD_SETUP_KEY }}
+          echo "Waiting 10 seconds for NetBird interface to initialize..."
+          sleep 10
+          sudo netbird status
+
+      # Copy dist folder from GitHub Runner to VM
+      - name: Copy FE build to VM
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          source: "dist"
+          target: "/tmp/slr-fe"
+
+      # Deploy static files to nginx folder
+      - name: Deploy FE via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: root
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: 22
+          username: ${{ secrets.VPS_USER }}
+          password: ${{ secrets.VPS_PASSWORD }}
           script: |
-            cd /opt/SystematicLiteratureReviewSystem.FE
-            git fetch origin main
-            git reset --hard origin/main
+            sudo mkdir -p /var/www/slr
 
-            rm -rf node_modules/.vite dist
-            npm install
-            npm run build
+            sudo rm -rf /var/www/slr/*
+            sudo cp -r /tmp/slr-fe/dist/* /var/www/slr/
 
-            rm -rf /var/www/slr/*
-            cp -r dist/* /var/www/slr/
+            sudo chown -R www-data:www-data /var/www/slr
+            sudo chmod -R 755 /var/www/slr
 
-            systemctl restart nginx
+            sudo nginx -t
+            sudo systemctl reload nginx
+
+            rm -rf /tmp/slr-fe
+
+            echo "FE deployed successfully"
