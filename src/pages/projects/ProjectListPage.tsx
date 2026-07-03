@@ -7,6 +7,7 @@ import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import ProjectUtilityBar from "../../components/projects/ProjectUtilityBar";
 import ProjectTable from "../../components/projects/ProjectTable";
+import { TableSkeleton } from "../../components/ui/Skeleton";
 import {
   setCurrentProject,
   clearProjectMember,
@@ -33,8 +34,9 @@ export default function ProjectListPage() {
   const totalCount = data?.totalCount || 0;
 
   const filteredProjects = useMemo(() => {
-    if (!searchQuery) return projects;
-    return projects.filter((project: Project) =>
+    const list = projects || [];
+    if (!searchQuery) return list;
+    return list.filter((project: Project) =>
       project.title.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [projects, searchQuery]);
@@ -42,14 +44,6 @@ export default function ProjectListPage() {
   const handleChecklistClick = (projectId: string) => {
     navigate(`/projects/${projectId}/checklists`);
   };
-
-  if (isLoading && !data) {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-bg-primary">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
-  }
 
   return (
     <div className="flex flex-col min-h-screen bg-bg-primary">
@@ -98,23 +92,27 @@ export default function ProjectListPage() {
           </div>
         )}
 
-        {/* Project Table */}
+        {/* Project Table or Skeleton */}
         <div className="border border-border rounded-[4px] overflow-hidden">
-          <ProjectTable
-            projects={filteredProjects}
-            onView={(id) => {
-              const project = projects.find((p: Project) => p.id === id);
-              if (project) {
-                dispatch(
-                  setCurrentProject({ id: project.id, title: project.title }),
-                );
-                // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
-                dispatch(clearProjectMember());
-              }
-              navigate(`/projects/${id}`);
-            }}
-            onChecklistClick={handleChecklistClick}
-          />
+          {isLoading && !data ? (
+            <TableSkeleton rows={pageSize} />
+          ) : (
+            <ProjectTable
+              projects={filteredProjects}
+              onView={(id) => {
+                const project = projects.find((p: Project) => p.id === id);
+                if (project) {
+                  dispatch(
+                    setCurrentProject({ id: project.id, title: project.title }),
+                  );
+                  // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
+                  dispatch(clearProjectMember());
+                }
+                navigate(`/projects/${id}`);
+              }}
+              onChecklistClick={handleChecklistClick}
+            />
+          )}
         </div>
 
         {/* Pagination */}

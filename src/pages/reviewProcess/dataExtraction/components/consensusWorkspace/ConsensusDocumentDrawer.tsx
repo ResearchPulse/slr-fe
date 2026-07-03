@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { PDF_WORKER_URL } from "../../../../../config/pdfWorker";
 import {
   highlightPlugin,
   type RenderHighlightsProps,
@@ -127,7 +128,7 @@ export default function ConsensusDocumentDrawer({
         ) : null}
 
         <div className="min-h-0 flex-1 overflow-hidden rounded-[4px] border border-border bg-surface-white">
-          <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+          <Worker workerUrl={PDF_WORKER_URL}>
             <Viewer
               fileUrl={effectiveDocumentUrl}
               plugins={[highlightPluginInstance]}

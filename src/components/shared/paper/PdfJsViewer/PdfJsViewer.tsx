@@ -6,10 +6,11 @@ import {
   forwardRef,
 } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import { PDF_WORKER_URL } from "../../../../config/pdfWorker";
 import { usePdfHighlights, type HighlightArea } from "./hooks/usePdfHighlights";
 
 // Initialize PDF.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
 interface PdfJsViewerProps {
   fileUrl: string;

@@ -8,6 +8,7 @@ import {
   FiUser,
 } from "react-icons/fi";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { PDF_WORKER_URL } from "../../config/pdfWorker";
 
 // Import styles
 import "@react-pdf-viewer/core/lib/styles/index.css";
@@ -287,7 +288,7 @@ const PaperDetailsContent = memo(
             size="xl"
           >
             <div className="h-[75vh] w-[calc(100%+4rem)] -mx-8 -mb-8 mt-4 bg-slate-50 overflow-hidden relative">
-              <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js">
+              <Worker workerUrl={PDF_WORKER_URL}>
                 <Viewer fileUrl={previewPdfUrl} />
               </Worker>
             </div>

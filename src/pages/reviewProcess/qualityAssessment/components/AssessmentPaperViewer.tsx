@@ -1,6 +1,7 @@
 import QAPaperDetails from "./QAPaperDetails";
 import type { WorkspaceQAPaper } from "../QualityAssessmentWorkspace";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { PDF_WORKER_URL } from "../../../../config/pdfWorker";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import { highlightPlugin, Trigger } from "@react-pdf-viewer/highlight";
 import type {
@@ -152,7 +153,7 @@ export default function AssessmentPaperViewer({
               </div>
               <div className="flex-[1] w-full bg-bg-secondary overflow-hidden relative">
                 <Worker
-                  workerUrl={`https://unpkg.com/pdfjs-dist@3.4.120/build/pdf.worker.min.js`}
+                  workerUrl={PDF_WORKER_URL}
                 >
                   <div className="absolute inset-0 font-sans">
                     <Viewer

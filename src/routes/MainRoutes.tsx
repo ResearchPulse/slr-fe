@@ -1,164 +1,177 @@
+import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import AdminProfileRedirect from "../components/profile/AdminProfileRedirect";
-import HomePage from "../pages/home/HomePage";
-import ProjectListPage from "../pages/projects/ProjectListPage";
-import ProjectDetailPage from "../pages/projects/ProjectDetailPage";
-import ProjectSettingsPage from "../pages/projects/ProjectSettingsPage";
-import ReviewProcessWorkspace from "../pages/reviewProcess/ReviewProcessWorkspace";
-import IdentificationPhaseWorkspace from "../pages/reviewProcess/IdentificationPhaseWorkspace";
-import PrismaReportWorkspace from "../pages/reviewProcess/prismaReport/PrismaReportWorkspace";
-import FullTextScreeningWorkspace from "../pages/reviewProcess/studySelection/fullTextScreening/FullTextScreeningWorkspace";
-import QualityAssessmentWorkspace from "../pages/reviewProcess/qualityAssessment/QualityAssessmentWorkspace";
-import SynthesisPhaseWorkspace from "../pages/reviewProcess/synthesisExecution/SynthesisPhaseWorkspace";
 import MainLayout from "../layouts/MainLayout";
 import ProjectLayout from "../layouts/ProjectLayout";
-import InvitationDetailPage from "../pages/invitations/InvitationDetailPage";
-import DataExtractionPhaseWorkspace from "../pages/reviewProcess/dataExtraction/DataExtractionPhaseWorkspace.tsx";
-import ExtractionGridWorkspace from "../pages/reviewProcess/dataExtraction/components/gridWorkspace/ExtractionGridWorkspace";
-import MyProfilePage from "../pages/profile/MyProfilePage";
-import ChecklistDashboardWrapper from "../pages/checklist/ChecklistDashboardWrapper.tsx";
-import ChecklistEditorPage from "../pages/checklist/ChecklistEditorPage.tsx";
-import ProjectAuditLogPage from "../pages/projects/ProjectAuditLogPage";
-import PaperDetailsPage from "../pages/projects/PaperDetailsPage";
-
 import ProtectedRouteForProject from "../components/routes/ProtectedRouteForProject";
-import ManageStudySelectionPage from "../pages/manage-study-selection/ManageStudySelectionPage.tsx";
-import ScreeningPhaseRouter from "../pages/reviewProcess/studySelection/ScreeningPhaseRouter";
-import StuSePaperStatisticPage from "../pages/manage-study-selection/StuSePaperStatisticPage";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+
+// Lazy loaded page components
+const HomePage = lazy(() => import("../pages/home/HomePage"));
+const ProjectListPage = lazy(() => import("../pages/projects/ProjectListPage"));
+const ProjectDetailPage = lazy(() => import("../pages/projects/ProjectDetailPage"));
+const ProjectSettingsPage = lazy(() => import("../pages/projects/ProjectSettingsPage"));
+const ReviewProcessWorkspace = lazy(() => import("../pages/reviewProcess/ReviewProcessWorkspace"));
+const IdentificationPhaseWorkspace = lazy(() => import("../pages/reviewProcess/IdentificationPhaseWorkspace"));
+const PrismaReportWorkspace = lazy(() => import("../pages/reviewProcess/prismaReport/PrismaReportWorkspace"));
+const FullTextScreeningWorkspace = lazy(() => import("../pages/reviewProcess/studySelection/fullTextScreening/FullTextScreeningWorkspace"));
+const QualityAssessmentWorkspace = lazy(() => import("../pages/reviewProcess/qualityAssessment/QualityAssessmentWorkspace"));
+const SynthesisPhaseWorkspace = lazy(() => import("../pages/reviewProcess/synthesisExecution/SynthesisPhaseWorkspace"));
+const InvitationDetailPage = lazy(() => import("../pages/invitations/InvitationDetailPage"));
+const DataExtractionPhaseWorkspace = lazy(() => import("../pages/reviewProcess/dataExtraction/DataExtractionPhaseWorkspace"));
+const ExtractionGridWorkspace = lazy(() => import("../pages/reviewProcess/dataExtraction/components/gridWorkspace/ExtractionGridWorkspace"));
+const MyProfilePage = lazy(() => import("../pages/profile/MyProfilePage"));
+const ChecklistDashboardWrapper = lazy(() => import("../pages/checklist/ChecklistDashboardWrapper"));
+const ChecklistEditorPage = lazy(() => import("../pages/checklist/ChecklistEditorPage"));
+const ProjectAuditLogPage = lazy(() => import("../pages/projects/ProjectAuditLogPage"));
+const PaperDetailsPage = lazy(() => import("../pages/projects/PaperDetailsPage"));
+const ManageStudySelectionPage = lazy(() => import("../pages/manage-study-selection/ManageStudySelectionPage"));
+const ScreeningPhaseRouter = lazy(() => import("../pages/reviewProcess/studySelection/ScreeningPhaseRouter"));
+const StuSePaperStatisticPage = lazy(() => import("../pages/manage-study-selection/StuSePaperStatisticPage"));
 
 function MainRoutes() {
   const { user } = useSelector((state: RootState) => state.auth);
   return (
-    <Routes>
-      <Route path="/" element={<MainLayout />}>
-        {/* Home Page */}
-        <Route index element={<HomePage />} />
+    <Suspense
+      fallback={
+        <div className="flex h-screen w-screen items-center justify-center bg-bg-primary">
+          <LoadingSpinner size="lg" />
+        </div>
+      }
+    >
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          {/* Home Page */}
+          <Route index element={<HomePage />} />
 
-        {/* Profile Page */}
-        <Route
-          path="profile"
-          element={
-            user?.role === "Admin" ? (
-              <AdminProfileRedirect />
-            ) : (
-              <MyProfilePage />
-            )
-          }
-        />
+          {/* Profile Page */}
+          <Route
+            path="profile"
+            element={
+              user?.role === "Admin" ? (
+                <AdminProfileRedirect />
+              ) : (
+                <MyProfilePage />
+              )
+            }
+          />
 
-        {/* Project Routes */}
-        <Route>
-          <Route path="projects" element={<ProjectLayout />}>
-            <Route index element={<ProjectListPage />} />
-            <Route path=":id/*" element={<ProjectDetailPage />} />
-            <Route path=":id/settings" element={<ProjectSettingsPage />} />
+          {/* Project Routes */}
+          <Route>
+            <Route path="projects" element={<ProjectLayout />}>
+              <Route index element={<ProjectListPage />} />
+              <Route path=":id/*" element={<ProjectDetailPage />} />
+              <Route path=":id/settings" element={<ProjectSettingsPage />} />
 
-            {/* Checklist Routes */}
-            <Route
-              path=":projectId/checklists"
-              element={<ChecklistDashboardWrapper />}
-            />
-            <Route
-              path=":projectId/checklists/:checklistId"
-              element={<ChecklistEditorPage />}
-            />
-
-            {/* Review Process Workspace (from dev branch) */}
-            <Route
-              path=":projectId/processes/:processId"
-              element={<ReviewProcessWorkspace />}
-            />
-
-            {/* Identification Phase — Leader and Member */}
-            <Route
-              element={
-                <ProtectedRouteForProject
-                  allowedRoles={[1, 2]}
-                  redirectTo="/projects"
-                  forbiddenTo="/projects"
-                />
-              }
-            >
+              {/* Checklist Routes */}
               <Route
-                path=":projectId/processes/:processId/identification/:identificationPhaseId"
-                element={<IdentificationPhaseWorkspace />}
+                path=":projectId/checklists"
+                element={<ChecklistDashboardWrapper />}
               />
-            </Route>
+              <Route
+                path=":projectId/checklists/:checklistId"
+                element={<ChecklistEditorPage />}
+              />
 
-            <Route
-              path=":projectId/processes/:processId/screening/:screeningProcessId"
-              element={
-                <ProtectedRouteForProject
-                  allowedRoles={[1, 2]}
-                  redirectTo="/projects"
+              {/* Review Process Workspace (from dev branch) */}
+              <Route
+                path=":projectId/processes/:processId"
+                element={<ReviewProcessWorkspace />}
+              />
+
+              {/* Identification Phase — Leader and Member */}
+              <Route
+                element={
+                  <ProtectedRouteForProject
+                    allowedRoles={[1, 2]}
+                    redirectTo="/projects"
+                    forbiddenTo="/projects"
+                  />
+                }
+              >
+                <Route
+                  path=":projectId/processes/:processId/identification/:identificationPhaseId"
+                  element={<IdentificationPhaseWorkspace />}
                 />
-              }
-            >
-              <Route index element={<ScreeningPhaseRouter />} />
-              <Route path="dashboard" element={<ManageStudySelectionPage />} />
+              </Route>
+
+              <Route
+                path=":projectId/processes/:processId/screening/:screeningProcessId"
+                element={
+                  <ProtectedRouteForProject
+                    allowedRoles={[1, 2]}
+                    redirectTo="/projects"
+                  />
+                }
+              >
+                <Route index element={<ScreeningPhaseRouter />} />
+                <Route path="dashboard" element={<ManageStudySelectionPage />} />
+              </Route>
+
+              <Route
+                path=":projectId/processes/:processId/screening/:screeningProcessId/papers-statistic"
+                element={
+                  <ProtectedRouteForProject
+                    allowedRoles={[1]}
+                    redirectTo="/projects"
+                  />
+                }
+              >
+                <Route index element={<StuSePaperStatisticPage />} />
+              </Route>
+
+              <Route
+                path=":projectId/processes/:processId/full-text-screening/:screeningProcessId"
+                element={<FullTextScreeningWorkspace />}
+              />
+              {/* Quality Assessment Workspace */}
+              <Route
+                path=":projectId/processes/:processId/quality-assessment/:qualityAssessmentId"
+                element={<QualityAssessmentWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/extraction"
+                element={<DataExtractionPhaseWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/extraction/workspace/:studyId"
+                element={<DataExtractionPhaseWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/extraction/grid"
+                element={<ExtractionGridWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/synthesis/*"
+                element={<SynthesisPhaseWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/prisma-report"
+                element={<PrismaReportWorkspace />}
+              />
+              <Route
+                path=":projectId/papers/:paperId"
+                element={<PaperDetailsPage />}
+              />
+              <Route path=":id/audit-logs" element={<ProjectAuditLogPage />} />
             </Route>
 
-            <Route
-              path=":projectId/processes/:processId/screening/:screeningProcessId/papers-statistic"
-              element={
-                <ProtectedRouteForProject
-                  allowedRoles={[1]}
-                  redirectTo="/projects"
-                />
-              }
-            >
-              <Route index element={<StuSePaperStatisticPage />} />
+            {/* Invitation Routes */}
+            <Route path="invitations">
+              <Route path=":invitationId" element={<InvitationDetailPage />} />
             </Route>
-
-            <Route
-              path=":projectId/processes/:processId/full-text-screening/:screeningProcessId"
-              element={<FullTextScreeningWorkspace />}
-            />
-            {/* Quality Assessment Workspace */}
-            <Route
-              path=":projectId/processes/:processId/quality-assessment/:qualityAssessmentId"
-              element={<QualityAssessmentWorkspace />}
-            />
-            <Route
-              path=":projectId/processes/:processId/extraction"
-              element={<DataExtractionPhaseWorkspace />}
-            />
-            <Route
-              path=":projectId/processes/:processId/extraction/workspace/:studyId"
-              element={<DataExtractionPhaseWorkspace />}
-            />
-            <Route
-              path=":projectId/processes/:processId/extraction/grid"
-              element={<ExtractionGridWorkspace />}
-            />
-            <Route
-              path=":projectId/processes/:processId/synthesis/*"
-              element={<SynthesisPhaseWorkspace />}
-            />
-            <Route
-              path=":projectId/processes/:processId/prisma-report"
-              element={<PrismaReportWorkspace />}
-            />
-            <Route
-              path=":projectId/papers/:paperId"
-              element={<PaperDetailsPage />}
-            />
-            <Route path=":id/audit-logs" element={<ProjectAuditLogPage />} />
           </Route>
 
-          {/* Invitation Routes */}
-          <Route path="invitations">
-            <Route path=":invitationId" element={<InvitationDetailPage />} />
-          </Route>
+          {/* 404 Page */}
+          {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
         </Route>
-
-        {/* 404 Page */}
-        {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
-      </Route>
-    </Routes>
+      </Routes>
+    </Suspense>
   );
 }
+
+export default MainRoutes;
 
 export default MainRoutes;
