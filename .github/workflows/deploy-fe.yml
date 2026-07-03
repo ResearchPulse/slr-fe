@@ -26,6 +26,15 @@ jobs:
           npm ci
           npm run build
 
+      # Connect GitHub Runner to your NetBird VPN network
+      - name: Install and Connect NetBird VPN
+        run: |
+          curl -fsSL https://pkgs.netbird.io/install.sh | sh
+          sudo netbird up --setup-key ${{ secrets.NETBIRD_SETUP_KEY }}
+          echo "Waiting 10 seconds for NetBird interface to initialize..."
+          sleep 10
+          sudo netbird status
+
       # 3. Dọn dẹp thư mục cũ trên VPS trước khi copy file mới
       - name: Clear old files on VPS
         uses: appleboy/ssh-action@v1.0.3
