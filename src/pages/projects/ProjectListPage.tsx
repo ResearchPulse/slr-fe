@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
-import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import ProjectUtilityBar from "../../components/projects/ProjectUtilityBar";
 import ProjectTable from "../../components/projects/ProjectTable";
 import { TableSkeleton } from "../../components/ui/Skeleton";
