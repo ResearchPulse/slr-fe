@@ -35,33 +35,33 @@ jobs:
           sleep 10
           sudo netbird status
 
-      # 3. Dọn dẹp thư mục cũ trên VPS trước khi copy file mới
-      - name: Clear old files on VPS
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          script: |
-            rm -rf /var/www/slr/*
-
-      # 4. Copy các file đã build từ thư mục dist/ sang VPS qua SCP
-      - name: Copy build files to VPS via SCP
+      # 3. Copy các file đã build vào thư mục tạm trên VPS qua SCP (thư mục home của user luôn có quyền ghi)
+      - name: Copy build files to VPS temporary directory via SCP
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           source: "dist/**"
-          target: "/var/www/slr"
+          target: "slr-temp"
           strip_components: 1
 
-      # 5. Restart Nginx để cập nhật
-      - name: Restart Nginx
+      # 4. Deploy các file từ thư mục tạm sang thư mục Nginx bằng sudo và restart Nginx
+      - name: Deploy files and Restart Nginx
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
+            # Dọn dẹp thư mục Nginx (dùng sudo)
+            sudo rm -rf /var/www/slr/*
+            
+            # Copy file từ thư mục tạm sang thư mục Nginx (dùng sudo)
+            sudo cp -r ~/slr-temp/* /var/www/slr/
+            
+            # Dọn dẹp thư mục tạm
+            rm -rf ~/slr-temp
+            
+            # Restart Nginx
             sudo systemctl restart nginx
