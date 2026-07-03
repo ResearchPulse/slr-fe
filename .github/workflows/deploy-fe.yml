@@ -49,19 +49,22 @@ jobs:
       # 4. Deploy các file từ thư mục tạm sang thư mục Nginx bằng sudo và restart Nginx
       - name: Deploy files and Restart Nginx
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
+          envs: VPS_PASSWORD
           script: |
-            # Dọn dẹp thư mục Nginx (dùng sudo)
-            sudo rm -rf /var/www/slr/*
+            # Dọn dẹp thư mục Nginx (Sử dụng mật khẩu để xác thực sudo)
+            echo "$VPS_PASSWORD" | sudo -S rm -rf /var/www/slr/*
             
-            # Copy file từ thư mục tạm sang thư mục Nginx (dùng sudo)
-            sudo cp -r ~/slr-temp/* /var/www/slr/
+            # Copy file từ thư mục tạm sang thư mục Nginx
+            echo "$VPS_PASSWORD" | sudo -S cp -r ~/slr-temp/* /var/www/slr/
             
             # Dọn dẹp thư mục tạm
             rm -rf ~/slr-temp
             
             # Restart Nginx
-            sudo systemctl restart nginx
+            echo "$VPS_PASSWORD" | sudo -S systemctl restart nginx
