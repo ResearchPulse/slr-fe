@@ -13,20 +13,31 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Cài đặt Node.js trên máy ảo GitHub Runner để build
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      # 1. Setup Docker Buildx to build image
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 2. Log in to Docker Hub
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
         with:
-          node-version: 20
-          cache: 'npm'
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 2. Cài đặt dependencies và Build dự án ra thư mục dist
-      - name: Install dependencies and build
-        run: |
-          npm ci
-          npm run build
+      # 3. Build and push Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/slr-fe:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
-      # Connect GitHub Runner to your NetBird VPN network
+      # Connect GitHub Runner to your NetBird VPN network to access the VPS SSH
       - name: Install and Connect NetBird VPN
         run: |
           curl -fsSL https://pkgs.netbird.io/install.sh | sh
@@ -35,36 +46,35 @@ jobs:
           sleep 10
           sudo netbird status
 
-      # 3. Copy các file đã build vào thư mục tạm trên VPS qua SCP (thư mục home của user luôn có quyền ghi)
-      - name: Copy build files to VPS temporary directory via SCP
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          password: ${{ secrets.VPS_PASSWORD }}
-          source: "dist/**"
-          target: "slr-temp"
-          strip_components: 1
-
-      # 4. Deploy các file từ thư mục tạm sang thư mục Nginx bằng sudo và restart Nginx
-      - name: Deploy files and Restart Nginx
+      # 4. Pull and Run the Docker container on VPS via SSH
+      - name: SSH Deploy to VPS
         uses: appleboy/ssh-action@v1.0.3
         env:
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           password: ${{ secrets.VPS_PASSWORD }}
-          envs: VPS_PASSWORD
+          envs: VPS_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
-            # Dọn dẹp thư mục Nginx (Sử dụng mật khẩu để xác thực sudo)
-            echo "$VPS_PASSWORD" | sudo -S rm -rf /var/www/slr/*
+            # Đăng nhập Docker Hub trên VPS
+            echo "$VPS_PASSWORD" | sudo -S docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
             
-            # Copy file từ thư mục tạm sang thư mục Nginx
-            echo "$VPS_PASSWORD" | sudo -S cp -r ~/slr-temp/* /var/www/slr/
+            # Pull image mới nhất
+            echo "$VPS_PASSWORD" | sudo -S docker pull "$DOCKERHUB_USERNAME/slr-fe:latest"
             
-            # Dọn dẹp thư mục tạm
-            rm -rf ~/slr-temp
+            # Stop và Xóa container cũ
+            echo "$VPS_PASSWORD" | sudo -S docker stop slr-fe || true
+            echo "$VPS_PASSWORD" | sudo -S docker rm slr-fe || true
             
-            # Restart Nginx
-            echo "$VPS_PASSWORD" | sudo -S systemctl restart nginx
+            # Khởi chạy container mới trên cổng local 8081
+            echo "$VPS_PASSWORD" | sudo -S docker run -d \
+              --name slr-fe \
+              -p 127.0.0.1:8081:80 \
+              --restart unless-stopped \
+              "$DOCKERHUB_USERNAME/slr-fe:latest"
+            
+            # Dọn dẹp các Docker image cũ không dùng để tiết kiệm ổ cứng VPS
+            echo "$VPS_PASSWORD" | sudo -S docker image prune -f
