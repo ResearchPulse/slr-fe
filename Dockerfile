@@ -1,7 +1,16 @@
 # Stage 1: Build the React application
 FROM node:20-alpine AS build
 
+# Define build arguments
+ARG VITE_API_URL
+ARG VITE_BE_URL
+
+# Set environment variables for the build process
+ENV VITE_API_URL=$VITE_API_URL
+ENV VITE_BE_URL=$VITE_BE_URL
+
 WORKDIR /app
+
 
 # Copy package files and install dependencies
 COPY package*.json ./

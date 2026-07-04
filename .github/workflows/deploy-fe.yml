@@ -34,8 +34,12 @@ jobs:
           context: .
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/slr-fe:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_BE_URL=${{ secrets.VITE_BE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
 
       # Connect GitHub Runner to your NetBird VPN network to access the VPS SSH
       - name: Install and Connect NetBird VPN
