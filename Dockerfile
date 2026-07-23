@@ -4,10 +4,12 @@ FROM node:20-alpine AS build
 # Define build arguments
 ARG VITE_API_URL
 ARG VITE_BE_URL
+ARG VITE_GOOGLE_CLIENT_ID
 
 # Set environment variables for the build process
 ENV VITE_API_URL=$VITE_API_URL
 ENV VITE_BE_URL=$VITE_BE_URL
+ENV VITE_GOOGLE_CLIENT_ID=$VITE_GOOGLE_CLIENT_ID
 
 WORKDIR /app
 

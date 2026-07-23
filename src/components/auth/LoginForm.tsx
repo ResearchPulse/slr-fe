@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import Button from "../ui/Button";
@@ -6,6 +6,8 @@ import FormField from "../ui/FormField";
 import { authService } from "../../services/authService";
 import { login } from "../../redux/slices/authSlice";
 import { toastSuccess, toastError } from "../../utils/toast";
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "958247033750-vaq77m0gs50ueoghroksmu8jimsdvt00.apps.googleusercontent.com";
 
 const LoginForm: React.FC = () => {
   const [keyLogin, setKeyLogin] = useState("");
@@ -15,6 +17,91 @@ const LoginForm: React.FC = () => {
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const handleGoogleCredentialResponse = async (response: any) => {
+    setIsLoading(true);
+    try {
+      const res = await authService.googleLogin(response.credential);
+
+      if (res.isSuccess) {
+        const { accessToken, userId, username, email, role } = res.data;
+
+        dispatch(
+          login({
+            accessToken,
+            accessTokenExpiresAt: res.data.accessTokenExpiresAt,
+            user: {
+              id: userId,
+              name: username,
+              email,
+              username,
+              role,
+            },
+          }),
+        );
+
+        toastSuccess(
+          "Welcome to Systematic Review Support System",
+          `Hello ${username}`,
+        );
+        if (role === "Admin") {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
+      } else {
+        toastError(
+          "Login Failed",
+          "Google authentication failed. Please try again.",
+        );
+      }
+    } catch (error: any) {
+      toastError(
+        "Error",
+        "Google authentication failed. Please check your credentials or try again later.",
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement;
+    
+    const initializeGoogleSignIn = () => {
+      const google = (window as any).google;
+      if (google?.accounts?.id) {
+        google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse,
+          auto_select: false,
+          cancel_on_tap_outside: true
+        });
+        
+        google.accounts.id.renderButton(
+          document.getElementById("google-signin-btn"),
+          { 
+            theme: "outline", 
+            size: "large", 
+            width: 320,
+            text: "continue_with",
+            shape: "rectangular"
+          }
+        );
+      }
+    };
+
+    if (!script) {
+      script = document.createElement("script");
+      script.src = "https://accounts.google.com/gsi/client";
+      script.async = true;
+      script.defer = true;
+      document.body.appendChild(script);
+      script.onload = initializeGoogleSignIn;
+    } else {
+      initializeGoogleSignIn();
+    }
+  }, []);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -162,6 +249,20 @@ const LoginForm: React.FC = () => {
             </Button>
           </div>
         </form>
+
+        {/* OR Divider & Google Login */}
+        <div className="relative my-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-border" />
+          </div>
+          <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
+            <span className="bg-surface-white px-3 text-text-muted">Or</span>
+          </div>
+        </div>
+
+        <div className="w-full flex justify-center">
+          <div id="google-signin-btn" className="w-full max-w-[320px] flex justify-center"></div>
+        </div>
       </div>
     </div>
   );
