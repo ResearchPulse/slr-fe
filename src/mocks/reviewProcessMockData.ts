@@ -1,6 +1,5 @@
-// Mock data for Review Process Workspace
-// TODO: Replace with actual API calls
-
+// Mock data 
+// TODO: Replace with actual API call
 import type {
   PhaseStats,
   Activity,
