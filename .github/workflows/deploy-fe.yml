@@ -5,81 +5,154 @@ on:
     branches:
       - main
 
+concurrency:
+  group: deploy-fe-production
+  cancel-in-progress: true
+
 jobs:
-  build-and-deploy:
+  build-and-push:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
+    outputs:
+      image_tag: ${{ steps.meta.outputs.tag }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 1. Setup Docker Buildx to build image
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+      - name: Set image tag (short SHA)
+        id: meta
+        run: echo "tag=${GITHUB_SHA::8}" >> "$GITHUB_OUTPUT"
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      # 2. Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 3. Build and push Docker image
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Build and push Docker image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/slr-fe:latest
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/slr-fe:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/slr-fe:${{ steps.meta.outputs.tag }}
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
             VITE_BE_URL=${{ secrets.VITE_BE_URL }}
             VITE_GOOGLE_CLIENT_ID=${{ secrets.VITE_GOOGLE_CLIENT_ID }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-from: type=gha,scope=fe
+          cache-to: type=gha,mode=max,scope=fe
 
+  deploy:
+    name: Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: build-and-push
 
-      # Connect GitHub Runner to your NetBird VPN network to access the VPS SSH
-      - name: Install and Connect NetBird VPN
+    steps:
+      - name: Parse VPS SSH target
+        id: vps
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
         run: |
-          curl -fsSL https://pkgs.netbird.io/install.sh | sh
-          sudo netbird up --setup-key ${{ secrets.NETBIRD_SETUP_KEY }}
-          echo "Waiting 10 seconds for NetBird interface to initialize..."
-          sleep 10
-          sudo netbird status
+          target="$VPS_HOST"
+          target="${target#ssh }"
 
-      # 4. Pull and Run the Docker container on VPS via SSH
-      - name: SSH Deploy to VPS
-        uses: appleboy/ssh-action@v1.0.3
+          if [[ "$target" == *@* ]]; then
+            username="${target%@*}"
+            host="${target#*@}"
+          else
+            username="root"
+            host="$target"
+          fi
+
+          host="${host%% *}"
+
+          if [ -z "$host" ]; then
+            echo "VPS_HOST must be like: ssh root@1.2.3.4"
+            exit 1
+          fi
+
+          echo "username=$username" >> "$GITHUB_OUTPUT"
+          echo "host=$host" >> "$GITHUB_OUTPUT"
+
+      - name: Detect SSH auth type
+        id: ssh_auth
         env:
           VPS_PASSWORD: ${{ secrets.VPS_PASSWORD }}
+        run: |
+          if printf '%s' "$VPS_PASSWORD" | grep -q "PRIVATE KEY"; then
+            echo "type=key" >> "$GITHUB_OUTPUT"
+          else
+            echo "type=password" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Deploy to VPS with password
+        if: steps.ssh_auth.outputs.type == 'password'
+        uses: appleboy/ssh-action@v1.0.3
+        env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
+          host: ${{ steps.vps.outputs.host }}
+          username: ${{ steps.vps.outputs.username }}
           password: ${{ secrets.VPS_PASSWORD }}
-          envs: VPS_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,VPS_PATH
           script: |
-            # Đăng nhập Docker Hub trên VPS
-            echo "$VPS_PASSWORD" | sudo -S docker login -u "$DOCKERHUB_USERNAME" -p "$DOCKERHUB_TOKEN"
-            
-            # Pull image mới nhất
-            echo "$VPS_PASSWORD" | sudo -S docker pull "$DOCKERHUB_USERNAME/slr-fe:latest"
-            
-            # Stop và Xóa container cũ
-            echo "$VPS_PASSWORD" | sudo -S docker stop slr-fe || true
-            echo "$VPS_PASSWORD" | sudo -S docker rm slr-fe || true
-            
-            # Khởi chạy container mới trên cổng local 8081
-            echo "$VPS_PASSWORD" | sudo -S docker run -d \
+            VPS_PATH="${VPS_PATH:-/root/SystematicLiteratureReviewSystem.FE}"
+            mkdir -p "$VPS_PATH"
+            cd "$VPS_PATH"
+
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker pull "$DOCKERHUB_USERNAME/slr-fe:$IMAGE_TAG"
+
+            docker stop slr-fe || true
+            docker rm slr-fe || true
+
+            docker run -d \
               --name slr-fe \
               -p 127.0.0.1:8081:80 \
               --restart unless-stopped \
-              "$DOCKERHUB_USERNAME/slr-fe:latest"
-            
-            # Dọn dẹp các Docker image cũ không dùng để tiết kiệm ổ cứng VPS
-            echo "$VPS_PASSWORD" | sudo -S docker image prune -f
+              "$DOCKERHUB_USERNAME/slr-fe:$IMAGE_TAG"
+
+            docker image prune -f
+            docker ps -a
+
+      - name: Deploy to VPS with private key
+        if: steps.ssh_auth.outputs.type == 'key'
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          IMAGE_TAG: ${{ needs.build-and-push.outputs.image_tag }}
+          VPS_PATH: ${{ secrets.VPS_PATH }}
+        with:
+          host: ${{ steps.vps.outputs.host }}
+          username: ${{ steps.vps.outputs.username }}
+          key: ${{ secrets.VPS_PASSWORD }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,VPS_PATH
+          script: |
+            VPS_PATH="${VPS_PATH:-/root/SystematicLiteratureReviewSystem.FE}"
+            mkdir -p "$VPS_PATH"
+            cd "$VPS_PATH"
+
+            echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker pull "$DOCKERHUB_USERNAME/slr-fe:$IMAGE_TAG"
+
+            docker stop slr-fe || true
+            docker rm slr-fe || true
+
+            docker run -d \
+              --name slr-fe \
+              -p 127.0.0.1:8081:80 \
+              --restart unless-stopped \
+              "$DOCKERHUB_USERNAME/slr-fe:$IMAGE_TAG"
+
+            docker image prune -f
+            docker ps -a
