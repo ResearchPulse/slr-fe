@@ -67,7 +67,7 @@ const LoginForm: React.FC = () => {
 
   useEffect(() => {
     let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement;
-    
+
     const initializeGoogleSignIn = () => {
       const google = (window as any).google;
       if (google?.accounts?.id) {
@@ -77,12 +77,12 @@ const LoginForm: React.FC = () => {
           auto_select: false,
           cancel_on_tap_outside: true
         });
-        
+
         google.accounts.id.renderButton(
           document.getElementById("google-signin-btn"),
-          { 
-            theme: "outline", 
-            size: "large", 
+          {
+            theme: "outline",
+            size: "large",
             width: 320,
             text: "continue_with",
             shape: "rectangular"
@@ -194,24 +194,23 @@ const LoginForm: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col items-center">
-      <div className="w-full text-center mb-10">
-        <h2 className="font-cormorant text-[32px] sm:text-[40px] font-normal text-text-primary leading-tight mb-4 tracking-tight">
+      {/* Heading */}
+      <div className="w-full text-center mb-8">
+        <h2 className="font-cormorant text-[30px] sm:text-[36px] font-normal text-text-primary leading-tight mb-3 tracking-tight">
           Welcome back
         </h2>
-        <p className="text-text-secondary text-[13px] leading-relaxed max-w-sm mx-auto">
-          Securely access your workspace to manage extraction, synthesis, and PRISMA reporting.
+        <p className="text-text-secondary text-sm leading-relaxed">
+          Sign in to continue to your account
         </p>
       </div>
 
-      <div className="w-full bg-surface-white border border-border rounded-[2px] px-6 py-8 sm:px-10 sm:py-10 shadow-none relative overflow-hidden">
-        {/* Subtle top border accent */}
-        <div className="absolute top-0 left-0 w-full h-[1px] bg-accent/20" />
-        
+      {/* Sign-in Card */}
+      <div className="w-full bg-surface-white border border-border rounded-[4px] px-6 py-8 sm:px-8">
         {/* Login Form */}
         <form className="space-y-5" onSubmit={handleSubmit}>
           <FormField
             id="keyLogin"
-            label="Email or Username"
+            label="Email / Username"
             type="text"
             autoComplete="username"
             placeholder="Enter email or username"
@@ -221,7 +220,6 @@ const LoginForm: React.FC = () => {
             }
             errorMessage={errors.keyLogin}
             disabled={isLoading}
-            className="bg-bg-primary border-border focus:border-text-primary focus:ring-0 shadow-none transition-colors rounded-[2px] px-4 py-3 text-[13px] placeholder:text-text-muted hover:border-border-hover"
           />
 
           {/* Password Field */}
@@ -235,17 +233,23 @@ const LoginForm: React.FC = () => {
             onChange={(e) => setPassword(e.target.value.replace(/\s/g, ""))}
             errorMessage={errors.password}
             disabled={isLoading}
-            className="bg-bg-primary border-border focus:border-text-primary focus:ring-0 shadow-none transition-colors rounded-[2px] px-4 py-3 text-[13px] placeholder:text-text-muted hover:border-border-hover"
           />
 
-          <div className="pt-4">
+          {/* Forgot password hint (no reset flow exists yet) */}
+          <div className="flex justify-end -mt-2">
+            <span className="text-[12px] text-text-secondary">
+              Forgot password?
+            </span>
+          </div>
+
+          <div className="pt-2">
             <Button
               type="submit"
               variant="primary"
-              className="w-full h-11 text-[11px] uppercase tracking-[0.15em] rounded-[2px]"
+              className="w-full h-11 text-[12px] uppercase tracking-[0.15em] rounded-[4px]"
               isLoading={isLoading}
             >
-              Sign in
+              Sign In
             </Button>
           </div>
         </form>
@@ -256,13 +260,19 @@ const LoginForm: React.FC = () => {
             <div className="w-full border-t border-border" />
           </div>
           <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-            <span className="bg-surface-white px-3 text-text-muted">Or</span>
+            <span className="bg-surface-white px-3 text-text-secondary">Or</span>
           </div>
         </div>
 
         <div className="w-full flex justify-center">
           <div id="google-signin-btn" className="w-full max-w-[320px] flex justify-center"></div>
         </div>
+
+        {/* Sign-up hint (no registration page exists yet) */}
+        <p className="mt-6 text-center text-sm text-text-secondary">
+          Don&apos;t have an account?{" "}
+          <span className="font-medium text-accent">Sign up</span>
+        </p>
       </div>
     </div>
   );

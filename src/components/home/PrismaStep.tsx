@@ -14,22 +14,22 @@ const PrismaStep = forwardRef<HTMLDivElement, PrismaStepProps>(
     return (
       <div
         ref={ref}
-        className="flex flex-col items-center text-center p-6 transition-all duration-500 opacity-0"
+        className="flex flex-col items-center text-center p-4 sm:p-6"
         data-prisma-step
       >
-        {/* Editorial number */}
-        <span className="text-[11px] uppercase tracking-[0.25em] text-[#5C5C5C] mb-4 font-mono">
+        {/* Step number */}
+        <span className="text-[11px] uppercase tracking-[0.25em] text-text-secondary mb-4 font-mono">
           {number}
         </span>
 
         {/* Icon box */}
         <div
           className={`
-          w-14 h-14 flex items-center justify-center mb-4 border transition-colors
+          w-14 h-14 flex items-center justify-center mb-4 border
           ${
             isActive
-              ? "bg-[#5B0000] border-[#5B0000] text-[#F4F0E8]"
-              : "bg-[#FDFCF9] border-[#D8D2C8] text-[#5C5C5C]"
+              ? "bg-accent border-accent text-bg-primary"
+              : "bg-surface-white border-border text-text-secondary"
           }
         `}
         >
@@ -37,11 +37,11 @@ const PrismaStep = forwardRef<HTMLDivElement, PrismaStepProps>(
         </div>
 
         {/* Label */}
-        <h4 className="text-[11px] font-medium text-[#111111] uppercase tracking-[0.2em] mb-1">
+        <h4 className="text-[11px] font-medium text-text-primary uppercase tracking-[0.2em] mb-1">
           {label}
         </h4>
         {description && (
-          <p className="text-[11px] text-[#5C5C5C] max-w-[100px] leading-relaxed">
+          <p className="text-[11px] text-text-secondary max-w-[100px] leading-relaxed">
             {description}
           </p>
         )}

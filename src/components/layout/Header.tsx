@@ -255,15 +255,28 @@ const Header: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <Link to="/auth/signin">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="px-5 py-2 h-auto rounded-[4px] shadow-none text-[12px] uppercase tracking-[0.15em]"
-                  >
-                    Sign In
-                  </Button>
-                </Link>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  {location.pathname === "/" && (
+                    <Link to="/auth/signin" className="hidden sm:block">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        className="px-5 py-2 h-auto rounded-[4px] shadow-none text-[12px] uppercase tracking-[0.15em]"
+                      >
+                        Get Started
+                      </Button>
+                    </Link>
+                  )}
+                  <Link to="/auth/signin">
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className="px-5 py-2 h-auto rounded-[4px] shadow-none text-[12px] uppercase tracking-[0.15em]"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                </div>
               )}
             </div>
           </div>

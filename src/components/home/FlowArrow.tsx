@@ -4,7 +4,7 @@ const FlowArrow = forwardRef<HTMLDivElement>((_, ref) => {
   return (
     <div
       ref={ref}
-      className="hidden lg:flex items-center justify-center h-14 px-3 opacity-0"
+      className="hidden lg:flex items-center justify-center h-14 px-3"
       data-flow-arrow
     >
       {/* Thin editorial line arrow */}
