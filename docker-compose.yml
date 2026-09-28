@@ -1,0 +1,7 @@
+services:
+  slr-frontend:
+    image: ghcr.io/researchpulse/slr-fe:latest
+    container_name: slr-frontend
+    restart: always
+    ports:
+      - "8081:80"
