@@ -1,16 +1,37 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
+import { FiSearch, FiFolder } from "react-icons/fi";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
-import ProjectUtilityBar from "../../components/projects/ProjectUtilityBar";
+import Input from "../../components/ui/Input";
 import ProjectTable from "../../components/projects/ProjectTable";
 import { TableSkeleton } from "../../components/ui/Skeleton";
 import {
   setCurrentProject,
   clearProjectMember,
 } from "../../redux/slices/projectSlice";
+
+/** Small summary card for the dashboard header. */
+function StatCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div className="bg-surface-white border border-border rounded-[4px] px-5 py-4">
+      <p className="text-[11px] uppercase tracking-[0.15em] text-text-secondary mb-1.5">
+        {label}
+      </p>
+      <p className="font-cormorant text-[28px] leading-none text-text-primary">
+        {value}
+      </p>
+    </div>
+  );
+}
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
@@ -40,48 +61,84 @@ export default function ProjectListPage() {
     );
   }, [projects, searchQuery]);
 
+  // Status counts derived from the currently loaded results (no extra API calls)
+  const activeCount = useMemo(
+    () => filteredProjects.filter((p) => p.statusText === "Active").length,
+    [filteredProjects],
+  );
+  const completedCount = useMemo(
+    () => filteredProjects.filter((p) => p.statusText === "Completed").length,
+    [filteredProjects],
+  );
+
   const handleChecklistClick = (projectId: string) => {
     navigate(`/projects/${projectId}/checklists`);
   };
 
+  const hasNoResults = !isLoading && filteredProjects.length === 0;
+
   return (
     <div className="flex flex-col min-h-screen bg-bg-primary">
-      {/* Utility Bar */}
-      <ProjectUtilityBar onSearchChange={setSearchQuery} />
+      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+        {/* Page Header */}
+        <div className="mb-8">
+          <h1 className="font-cormorant text-[32px] sm:text-[40px] font-normal text-text-primary leading-tight mb-2">
+            Research Projects
+          </h1>
+          <p className="text-text-secondary text-sm leading-relaxed">
+            Manage and organize your systematic literature reviews.
+          </p>
+        </div>
 
-      <main className="flex-1 px-6 py-6">
-        {/* Status Filter */}
-        <div className="mb-6 flex gap-2 flex-wrap items-center">
-          <span className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mr-2">
-            Filter:
-          </span>
-          <Button
-            size="sm"
-            variant={statusFilter === undefined ? "primary" : "outline"}
-            onClick={() => {
-              setStatusFilter(undefined);
-              setCurrentPage(1);
-            }}
-          >
-            All
-          </Button>
-          {(["Draft", "Active", "Completed"] as ProjectStatus[]).map(
-            (status) => (
-              <Button
-                key={status}
-                size="sm"
-                variant={statusFilter === status ? "primary" : "outline"}
-                onClick={() => {
-                  setStatusFilter(status);
-                  setCurrentPage(1);
-                }}
-              >
-                {status}
-              </Button>
-            ),
-          )}
-          <div className="ml-auto text-[11px] uppercase tracking-[0.15em] text-text-secondary">
-            {totalCount} {totalCount === 1 ? "project" : "projects"}
+        {/* Summary Cards */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
+          <StatCard label="Total Projects" value={totalCount} />
+          <StatCard label="Active" value={activeCount} />
+          <StatCard label="Completed" value={completedCount} />
+        </div>
+
+        {/* Search & Filters */}
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+          {/* Search */}
+          <div className="relative w-full sm:w-72">
+            <FiSearch
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-placeholder"
+              size={14}
+            />
+            <Input
+              placeholder="Search projects..."
+              className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-[4px] text-sm"
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+
+          {/* Status Filter */}
+          <div className="flex gap-2 flex-wrap items-center sm:ml-auto">
+            <Button
+              size="sm"
+              variant={statusFilter === undefined ? "primary" : "outline"}
+              onClick={() => {
+                setStatusFilter(undefined);
+                setCurrentPage(1);
+              }}
+            >
+              All
+            </Button>
+            {(["Draft", "Active", "Completed"] as ProjectStatus[]).map(
+              (status) => (
+                <Button
+                  key={status}
+                  size="sm"
+                  variant={statusFilter === status ? "primary" : "outline"}
+                  onClick={() => {
+                    setStatusFilter(status);
+                    setCurrentPage(1);
+                  }}
+                >
+                  {status}
+                </Button>
+              ),
+            )}
           </div>
         </div>
 
@@ -91,10 +148,24 @@ export default function ProjectListPage() {
           </div>
         )}
 
-        {/* Project Table or Skeleton */}
-        <div className="border border-border rounded-[4px] overflow-hidden">
+        {/* Projects Table or Skeleton */}
+        <div className="border border-border rounded-[4px] overflow-hidden bg-surface-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
+          ) : hasNoResults ? (
+            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+              <div className="w-12 h-12 border border-border rounded-[4px] flex items-center justify-center text-text-secondary mb-5">
+                <FiFolder className="w-5 h-5" />
+              </div>
+              <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-2">
+                No projects yet
+              </h3>
+              <p className="text-text-secondary text-sm leading-relaxed max-w-sm">
+                {searchQuery || statusFilter
+                  ? "No projects match your search or filter. Try different keywords or clear the filters."
+                  : "You haven't created or joined any projects yet. Ask a project leader to invite you, or set up your first review."}
+              </p>
+            </div>
           ) : (
             <ProjectTable
               projects={filteredProjects}
@@ -116,7 +187,7 @@ export default function ProjectListPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 flex justify-center items-center gap-2">
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-2">
             <Button
               size="sm"
               variant="outline"
