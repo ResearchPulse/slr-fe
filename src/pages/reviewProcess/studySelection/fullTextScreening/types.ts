@@ -17,6 +17,7 @@ import type {
   AiAnalysisData,
 } from "../../../../types/studySelection";
 import type { UploadPdfOptions } from "../uploadTypes";
+import { formatAuthors } from "../../../../utils/formatAuthors";
 
 // ============================================
 // UI Types
@@ -264,7 +265,7 @@ export function adaptPaperWithDecisions(paper: PaperWithDecisionsResponse): Full
   return {
     id: paper.paperId,
     title: paper.title,
-    authors: paper.authors,
+    authors: formatAuthors(paper.authors),
     doi: paper.doi,
     publicationYear: paper.publicationYear,
     abstract: paper.abstract,
@@ -309,7 +310,7 @@ export function adaptAssignedPaper(paper: AssignedPaperResponse): FullTextPaper 
   return {
     id: paper.paperId,
     title: paper.title,
-    authors: paper.authors ?? null,
+    authors: formatAuthors(paper.authors),
     doi: paper.doi ?? null,
     publicationYear: paper.publicationYear ? Number(paper.publicationYear) : null,
     pdfUrl: paper.pdfUrl ?? null,

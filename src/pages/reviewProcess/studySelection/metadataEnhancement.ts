@@ -4,6 +4,7 @@ import type {
   MetadataEnhancedFieldKey,
   MetadataEnhancementResult,
 } from "./uploadTypes";
+import { formatAuthors } from "../../../utils/formatAuthors";
 
 interface ComparablePaperMetadata {
   title: string | null;
@@ -31,7 +32,7 @@ function getComparableMetadata(
 ): ComparablePaperMetadata {
   return {
     title: normalizeValue(paper.title),
-    authors: normalizeValue(paper.authors),
+    authors: formatAuthors(paper.authors),
     abstract: normalizeValue(paper.abstract),
     doi: normalizeValue(paper.doi),
     journal: normalizeValue(paper.journal),

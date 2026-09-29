@@ -73,7 +73,8 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
         paperIds: [paperId],
         memberIds: selectedReviewers.map((r) => r.id),
         studySelectionProcessId,
-        phase: phase,
+        // PaperPhase uses 0/1 in the FE; the assignment API uses 1/2.
+        phase: phase + 1,
       },
       {
         onSuccess: (response) => {
