@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import Button from "../ui/Button";
@@ -10,6 +10,39 @@ import { toastSuccess, toastError } from "../../utils/toast";
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 const isGoogleSignInConfigured = Boolean(GOOGLE_CLIENT_ID && FIREBASE_API_KEY);
+
+interface GoogleCredentialResponse {
+  credential: string;
+}
+
+interface GoogleIdentityServices {
+  accounts: {
+    id: {
+      initialize: (options: {
+        client_id: string;
+        callback: (response: GoogleCredentialResponse) => void;
+        auto_select: boolean;
+        cancel_on_tap_outside: boolean;
+      }) => void;
+      renderButton: (
+        element: HTMLElement | null,
+        options: {
+          theme: string;
+          size: string;
+          width: number;
+          text: string;
+          shape: string;
+        },
+      ) => void;
+    };
+  };
+}
+
+declare global {
+  interface Window {
+    google?: GoogleIdentityServices;
+  }
+}
 
 const normalizeGlobalRole = (role: string) =>
   role.toUpperCase() === "ADMIN" ? "Admin" : role;
@@ -23,53 +56,56 @@ const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleGoogleCredentialResponse = async (response: { credential: string }) => {
-    setIsLoading(true);
-    try {
-      const res = await authService.googleLogin(response.credential);
+  const handleGoogleCredentialResponse = useCallback(
+    async (response: GoogleCredentialResponse) => {
+      setIsLoading(true);
+      try {
+        const res = await authService.googleLogin(response.credential);
 
-      if (res.isSuccess) {
-        const { accessToken, userId, username, email, role } = res.data;
-        const normalizedRole = normalizeGlobalRole(role);
+        if (res.isSuccess) {
+          const { accessToken, userId, username, email, role } = res.data;
+          const normalizedRole = normalizeGlobalRole(role);
 
-        dispatch(
-          login({
-            accessToken,
-            accessTokenExpiresAt: res.data.accessTokenExpiresAt,
-            user: {
-              id: userId,
-              name: username,
-              email,
-              username,
-              role: normalizedRole,
-            },
-          }),
-        );
+          dispatch(
+            login({
+              accessToken,
+              accessTokenExpiresAt: res.data.accessTokenExpiresAt,
+              user: {
+                id: userId,
+                name: username,
+                email,
+                username,
+                role: normalizedRole,
+              },
+            }),
+          );
 
-        toastSuccess(
-          "Welcome to Systematic Review Support System",
-          `Hello ${username}`,
-        );
-        if (normalizedRole === "Admin") {
-          navigate("/admin");
+          toastSuccess(
+            "Welcome to Systematic Review Support System",
+            `Hello ${username}`,
+          );
+          if (normalizedRole === "Admin") {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
         } else {
-          navigate("/");
+          toastError(
+            "Login Failed",
+            "Google authentication failed. Please try again.",
+          );
         }
-      } else {
+      } catch {
         toastError(
-          "Login Failed",
-          "Google authentication failed. Please try again.",
+          "Error",
+          "Google authentication failed. Please check your credentials or try again later.",
         );
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error: any) {
-      toastError(
-        "Error",
-        "Google authentication failed. Please check your credentials or try again later.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    },
+    [dispatch, navigate],
+  );
 
   useEffect(() => {
     if (!isGoogleSignInConfigured) return;
@@ -79,7 +115,7 @@ const LoginForm: React.FC = () => {
     ) as HTMLScriptElement;
 
     const initializeGoogleSignIn = () => {
-      const google = (window as any).google;
+      const google = window.google;
       if (google?.accounts?.id) {
         google.accounts.id.initialize({
           client_id: GOOGLE_CLIENT_ID,
@@ -111,7 +147,7 @@ const LoginForm: React.FC = () => {
     } else {
       initializeGoogleSignIn();
     }
-  }, []);
+  }, [handleGoogleCredentialResponse]);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -193,7 +229,7 @@ const LoginForm: React.FC = () => {
         });
         setErrors(fieldErrors);
       }
-    } catch (error: any) {
+    } catch {
       toastError(
         "Error",
         "Your account does not exist or invalid credentials.",
@@ -287,12 +323,6 @@ const LoginForm: React.FC = () => {
             </p>
           )}
         </div>
-
-        {/* Sign-up hint (no registration page exists yet) */}
-        <p className="mt-6 text-center text-sm text-text-secondary">
-          Don&apos;t have an account?{" "}
-          <span className="font-medium text-accent">Sign up</span>
-        </p>
       </div>
     </div>
   );
