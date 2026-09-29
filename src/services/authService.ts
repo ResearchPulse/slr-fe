@@ -30,7 +30,7 @@ export const authService = {
   },
   googleLogin: async (googleIdToken: string): Promise<LoginResponse> => {
     if (!FIREBASE_API_KEY) {
-      throw new Error("VITE_FIREBASE_API_KEY is not configured");
+      throw new Error("Google sign-in is unavailable");
     }
 
     const firebaseResponse = await axios.post<FirebaseIdentityResponse>(

@@ -9,7 +9,9 @@ import { toastSuccess, toastError } from "../../utils/toast";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
-const isGoogleSignInConfigured = Boolean(GOOGLE_CLIENT_ID && FIREBASE_API_KEY);
+const isGoogleSignInConfigured = Boolean(
+  GOOGLE_CLIENT_ID?.trim() && FIREBASE_API_KEY?.trim(),
+);
 
 interface GoogleCredentialResponse {
   credential: string;
@@ -318,9 +320,14 @@ const LoginForm: React.FC = () => {
               className="w-full max-w-[320px] flex justify-center"
             ></div>
           ) : (
-            <p className="w-full max-w-[320px] text-center text-xs text-text-secondary">
-              Google sign-in is unavailable until Google Client ID and Firebase API key are configured.
-            </p>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full max-w-[320px] h-11 rounded-[4px]"
+              disabled
+            >
+              Continue with Google
+            </Button>
           )}
         </div>
       </div>
