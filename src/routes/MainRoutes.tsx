@@ -5,6 +5,7 @@ import type { RootState } from "../redux/store";
 import AdminProfileRedirect from "../components/profile/AdminProfileRedirect";
 import MainLayout from "../layouts/MainLayout";
 import ProjectLayout from "../layouts/ProjectLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteForProject from "../components/routes/ProtectedRouteForProject";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -60,7 +61,8 @@ function MainRoutes() {
 
           {/* Project Routes */}
           <Route>
-            <Route path="projects" element={<ProjectLayout />}>
+            <Route element={<ProtectedRoute />}>
+              <Route path="projects" element={<ProjectLayout />}>
               <Route index element={<ProjectListPage />} />
               <Route path=":id/*" element={<ProjectDetailPage />} />
               <Route path=":id/settings" element={<ProjectSettingsPage />} />
@@ -168,6 +170,7 @@ function MainRoutes() {
                 element={<PaperDetailsPage />}
               />
               <Route path=":id/audit-logs" element={<ProjectAuditLogPage />} />
+              </Route>
             </Route>
 
             {/* Invitation Routes */}

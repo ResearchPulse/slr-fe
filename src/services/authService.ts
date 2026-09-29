@@ -3,6 +3,14 @@ import api from "../config/axios";
 import type { LoginRequest, LoginResponse, RefreshResponse, RegisterRequest, RegisterResponse } from "../types/auth";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "/api";
+const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
+const FIREBASE_AUTH_EXCHANGE_URL =
+  import.meta.env.VITE_FIREBASE_AUTH_EXCHANGE_URL ||
+  "https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp";
+
+interface FirebaseIdentityResponse {
+  idToken: string;
+}
 
 export const authService = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
@@ -20,8 +28,24 @@ export const authService = {
     );
     return response.data;
   },
-  googleLogin: async (idToken: string): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>("/auth/google/login", { idToken });
+  googleLogin: async (googleIdToken: string): Promise<LoginResponse> => {
+    if (!FIREBASE_API_KEY) {
+      throw new Error("Google sign-in is unavailable");
+    }
+
+    const firebaseResponse = await axios.post<FirebaseIdentityResponse>(
+      `${FIREBASE_AUTH_EXCHANGE_URL}?key=${encodeURIComponent(FIREBASE_API_KEY)}`,
+      {
+        postBody: `id_token=${encodeURIComponent(googleIdToken)}&providerId=google.com`,
+        requestUri: window.location.origin,
+        returnSecureToken: true,
+        returnIdpCredential: false,
+      },
+    );
+
+    const response = await api.post<LoginResponse>("/auth/google/login", {
+      idToken: firebaseResponse.data.idToken,
+    });
     return response.data;
   },
 };

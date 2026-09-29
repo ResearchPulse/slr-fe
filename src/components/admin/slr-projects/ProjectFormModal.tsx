@@ -108,7 +108,7 @@ export default function ProjectFormModal({
           id: projectId,
           data: {
             id: projectId,
-            title: formData.title,
+            name: formData.title,
             domain: formData.domain,
             description: formData.description,
           },
@@ -146,7 +146,7 @@ export default function ProjectFormModal({
       } else {
         // Create new project with basic info first
         const result = await createProject({
-          title: formData.title,
+          name: formData.title,
           domain: formData.domain,
           description: formData.description,
         });

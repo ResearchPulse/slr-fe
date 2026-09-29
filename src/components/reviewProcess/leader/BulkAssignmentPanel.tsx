@@ -163,9 +163,9 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-50 opacity-0 translate-y-[100px]"
+      className="w-full px-4 pb-4 shrink-0 z-50 opacity-0 translate-y-[100px]"
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-[4px] shadow-2xl p-6 text-white overflow-visible relative">
+      <div className="max-w-5xl mx-auto bg-slate-900 border border-slate-700 rounded-[4px] shadow-2xl p-6 text-white overflow-visible relative">
         {/* Background Accent */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
@@ -212,6 +212,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   </button>
                 }
                 className="w-auto"
+                align="right"
                 position="top"
                 contentClassName="bg-transparent shadow-none ring-0 w-auto p-0"
               >

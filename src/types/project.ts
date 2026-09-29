@@ -103,14 +103,14 @@ export interface ProjectDetail extends Project {
 
 // Request Types
 export interface CreateProjectRequest {
-  title: string;
+  name: string;
   domain: string;
   description?: string;
 }
 
 export interface UpdateProjectRequest {
   id: string;
-  title: string;
+  name: string;
   domain: string;
   description?: string;
 }

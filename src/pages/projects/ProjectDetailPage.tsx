@@ -108,15 +108,15 @@ export default function ProjectDetailPage() {
 
       const data = response.data;
       const hasSetup =
-        data.researchTopic.trim().length > 0 ||
-        data.researchObjective.trim().length > 0 ||
-        data.domain.trim().length > 0 ||
-        data.picoc.population.trim().length > 0 ||
-        data.picoc.intervention.trim().length > 0 ||
-        data.picoc.comparator.trim().length > 0 ||
-        data.picoc.outcome.trim().length > 0 ||
-        data.picoc.context.trim().length > 0 ||
-        data.researchQuestions.length > 0;
+        Boolean(data?.researchTopic?.trim()) ||
+        Boolean(data?.researchObjective?.trim()) ||
+        Boolean(data?.domain?.trim()) ||
+        Boolean(data?.picoc?.population?.trim()) ||
+        Boolean(data?.picoc?.intervention?.trim()) ||
+        Boolean(data?.picoc?.comparator?.trim()) ||
+        Boolean(data?.picoc?.outcome?.trim()) ||
+        Boolean(data?.picoc?.context?.trim()) ||
+        (data?.researchQuestions?.length ?? 0) > 0;
 
       setIsProjectSetupReady(hasSetup);
     } catch {
