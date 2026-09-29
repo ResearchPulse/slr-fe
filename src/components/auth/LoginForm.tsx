@@ -267,7 +267,16 @@ const LoginForm: React.FC = () => {
         </div>
 
         <div className="w-full flex justify-center">
-          <div id="google-signin-btn" className="w-full max-w-[320px] flex justify-center"></div>
+          {GOOGLE_CLIENT_ID ? (
+            <div
+              id="google-signin-btn"
+              className="w-full max-w-[320px] flex justify-center"
+            ></div>
+          ) : (
+            <p className="w-full max-w-[320px] text-center text-xs text-text-secondary">
+              Google sign-in is unavailable until VITE_GOOGLE_CLIENT_ID is configured.
+            </p>
+          )}
         </div>
 
         {/* Sign-up hint (no registration page exists yet) */}
