@@ -17,7 +17,13 @@ import { dataExtractionConductingService } from "../services/dataExtractionCondu
 import synthesisExecutionService from "../services/synthesisExecutionService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import type { ReviewProcess } from "../types/reviewProcess";
-import type { PhaseStats, Activity, TeamMember } from "../types/reviewProcessWorkspace";
+import type {
+  Alert,
+  Activity,
+  PhaseStats,
+  ProgressStats,
+  TeamMember,
+} from "../types/reviewProcessWorkspace";
 import type {
   WorkflowPhase,
   PhaseStatusType,
@@ -32,6 +38,56 @@ interface UseReviewProcessWorkspaceParams {
   projectId: string | undefined;
   processId: string | undefined;
 }
+
+const EMPTY_PHASE_STATS: PhaseStats = {
+  identification: {
+    recordsImported: 0,
+    duplicatesRemoved: 0,
+    databasesSearched: 0,
+    uniqueRecords: 0,
+  },
+  screening: {
+    totalPapers: 0,
+    included: 0,
+    excluded: 0,
+    conflictCount: 0,
+    pendingCount: 0,
+  },
+  extraction: {
+    studiesExtracted: 0,
+    fieldsExtracted: 0,
+    pending: 0,
+    completed: 0,
+    awaitingConsensus: 0,
+  },
+  quality: {
+    totalPapers: 0,
+    highQualityPapers: 0,
+    lowQualityPapers: 0,
+    inProgressPapers: 0,
+    notStartedPapers: 0,
+  },
+  synthesis: {
+    studiesSynthesized: 0,
+    themes: 0,
+    findings: 0,
+    linkedEvidence: 0,
+    status: "NotStarted",
+  },
+  prisma: {
+    lastGenerated: "",
+    version: "",
+    completeness: "0%",
+    status: "NotStarted",
+  },
+};
+
+const EMPTY_PROGRESS_STATS: ProgressStats = {
+  completionPercentage: 0,
+  recordsProcessed: 0,
+  totalRecords: 0,
+  estimatedCompletion: "",
+};
 
 interface UseReviewProcessWorkspaceReturn {
   // Membership management
@@ -54,8 +110,8 @@ interface UseReviewProcessWorkspaceReturn {
   // Legacy data kept for backward-compatible panels
   phaseStats: PhaseStats;
   activities: Activity[];
-  alerts: ReturnType<typeof getMockAlerts>;
-  progressStats: ReturnType<typeof getMockProgressStats>;
+  alerts: Alert[];
+  progressStats: ProgressStats;
 
   // Actions
   handleBack: () => void;
@@ -700,8 +756,7 @@ export const useReviewProcessWorkspace = ({
     [processId, process, reopenPhase],
   );
 
-  // Build phaseStats: use real API data where available
-  const mockStats = getMockPhaseStats();
+  // Build phaseStats from API data. Unknown values remain empty instead of using demo data.
   const prismaStats = process?.identificationProcess?.prismaStatistics;
   const selectionStats = process?.studySelectionProcess?.selectionStatistics;
   const qualityStats = process?.qualityAssessmentProcess?.qualityStatistics;
@@ -730,7 +785,6 @@ export const useReviewProcessWorkspace = ({
 
   const phaseStats: PhaseStats = useMemo(
     () => ({
-      ...mockStats,
       identification: prismaStats
         ? {
             recordsImported: prismaStats.totalRecordsImported,
@@ -738,7 +792,7 @@ export const useReviewProcessWorkspace = ({
             databasesSearched: prismaStats.importBatchCount,
             uniqueRecords: prismaStats.uniqueRecords,
           }
-        : mockStats.identification,
+        : EMPTY_PHASE_STATS.identification,
       screening: selectionStats
         ? {
             totalPapers: selectionStats.totalPapers,
@@ -747,7 +801,7 @@ export const useReviewProcessWorkspace = ({
             conflictCount: selectionStats.conflictCount,
             pendingCount: selectionStats.pendingCount,
           }
-        : mockStats.screening,
+        : EMPTY_PHASE_STATS.screening,
       quality: qualityStats
         ? {
             totalPapers: qualityStats.totalPapers,
@@ -756,16 +810,16 @@ export const useReviewProcessWorkspace = ({
             inProgressPapers: qualityStats.inProgressPapers,
             notStartedPapers: qualityStats.notStartedPapers,
           }
-        : mockStats.quality,
+        : EMPTY_PHASE_STATS.quality,
       extraction: extractionDashboardQuery.data
         ? {
             studiesExtracted: extractionDashboardQuery.data.summary.totalIncluded,
-            fieldsExtracted: mockStats.extraction.fieldsExtracted, // Keep mock for now as not provided by API
+            fieldsExtracted: 0,
             pending: extractionDashboardQuery.data.summary.inProgress,
             completed: extractionDashboardQuery.data.summary.completed,
             awaitingConsensus: extractionDashboardQuery.data.summary.awaitingConsensus,
           }
-        : mockStats.extraction,
+        : EMPTY_PHASE_STATS.extraction,
       synthesis: synthesisWorkspaceQuery.data
         ? {
             studiesSynthesized: synthesisWorkspaceQuery.data.totalExtractedPapers,
@@ -782,11 +836,13 @@ export const useReviewProcessWorkspace = ({
             themes: 0,
             findings: 0,
             linkedEvidence: 0,
-            status: formatSynthesisStatus(process?.synthesisProcess?.statusText),
+            status: process?.synthesisProcess?.statusText
+              ? formatSynthesisStatus(process.synthesisProcess.statusText)
+              : EMPTY_PHASE_STATS.synthesis.status,
           },
+      prisma: EMPTY_PHASE_STATS.prisma,
     }),
     [
-      mockStats,
       prismaStats,
       selectionStats,
       qualityStats,
@@ -837,20 +893,13 @@ export const useReviewProcessWorkspace = ({
   const paperStats: ProcessPaperStats = useMemo(() => {
     const stats = process?.studySelectionProcess?.selectionStatistics;
 
-    // Fallback/Mock logic if stats aren't directly available or for specific fields
-    // In a real app, these should come from the review_process_papers relation
     const total = stats?.totalPapers ?? process?.totalPapersImported ?? 0;
     const included = stats?.includedCount ?? process?.totalIncludedPapers ?? 0;
     const excluded = stats?.excludedCount ?? process?.totalExcludedPapers ?? 0;
     const pending = stats?.pendingCount ?? 0;
 
-    // For "Screening" vs "Not Screened", we might need more granular data.
-    // Here we'll use a heuristic or just put everything in Not Screened if not sure.
-    // If we have startedAt but not completedAt, some are likely in screening.
-    const inScreening =
-      process?.studySelectionProcess?.statusText === "InProgress"
-        ? Math.floor(pending * 0.3) // Mock split for demonstration
-        : 0;
+    // The API does not expose a granular in-screening count yet.
+    const inScreening = 0;
     const notScreened = pending - inScreening;
 
     return {
@@ -891,8 +940,8 @@ export const useReviewProcessWorkspace = ({
   }, [projectMembers]);
 
   const activities: Activity[] = [];
-  const alerts: any[] = [];
-  const progressStats = { overallProgress: 0, completedTasks: 0, totalTasks: 0, daysRemaining: 0 };
+  const alerts: Alert[] = [];
+  const progressStats: ProgressStats = EMPTY_PROGRESS_STATS;
 
 
   // Computed values

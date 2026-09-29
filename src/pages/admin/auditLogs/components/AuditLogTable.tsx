@@ -141,7 +141,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
 
         <div className="flex items-center gap-2 text-xs font-bold text-text-secondary">
           <FiClock className="w-4 h-4 text-accent" />
-          Last refreshed from mock data
+          Live audit data
         </div>
       </div>
 

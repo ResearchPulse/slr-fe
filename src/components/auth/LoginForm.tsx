@@ -7,7 +7,7 @@ import { authService } from "../../services/authService";
 import { login } from "../../redux/slices/authSlice";
 import { toastSuccess, toastError } from "../../utils/toast";
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || "958247033750-vaq77m0gs50ueoghroksmu8jimsdvt00.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
 const LoginForm: React.FC = () => {
   const [keyLogin, setKeyLogin] = useState("");
@@ -66,6 +66,8 @@ const LoginForm: React.FC = () => {
   };
 
   useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return;
+
     let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement;
 
     const initializeGoogleSignIn = () => {
