@@ -48,9 +48,6 @@ interface DataExtractionConsensusWorkspaceProps {
   onJumpToEvidence?: (coordinatesString: string) => void;
 }
 
-const FALLBACK_PDF_URL =
-  "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
-
 function normalizeDisplayValue(value: string | null | undefined): string {
   return (value ?? "").trim() || "Not provided";
 }
@@ -481,8 +478,7 @@ export default function DataExtractionConsensusWorkspace({
   );
 
   const normalizedDocumentUrl = normalizeDisplayValue(documentUrl);
-  const effectiveDocumentUrl = normalizedDocumentUrl || FALLBACK_PDF_URL;
-  const isUsingFallbackDocument = normalizedDocumentUrl.length === 0;
+  const effectiveDocumentUrl = normalizedDocumentUrl || null;
 
   const handleJumpToEvidence = useCallback(
     (coordinatesString: string) => {
@@ -1959,7 +1955,6 @@ export default function DataExtractionConsensusWorkspace({
       <ConsensusDocumentDrawer
         isOpen={isDocumentDrawerOpen}
         effectiveDocumentUrl={effectiveDocumentUrl}
-        isUsingFallbackDocument={isUsingFallbackDocument}
         activeHighlights={ws.activeHighlights}
         onClose={() => setIsDocumentDrawerOpen(false)}
       />

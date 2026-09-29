@@ -118,35 +118,14 @@ const CommentEditor: React.FC = () => {
 const NotesPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Notes");
 
-  const mockComments = [
-    {
-      id: 1,
-      user: "Vong Tai Dong",
-      role: "K18 HCM",
-      content:
-        "This looks like a solid start for the protocol. We should refine the research questions next week.",
-      timestamp: "2026-02-12, 11:00 am",
-    },
-    {
-      id: 2,
-      user: "System AI",
-      role: "Assistant",
-      content:
-        "I recommend adding more specific PICO criteria to ensure clear screening guidelines.",
-      timestamp: "2026-02-12, 11:05 am",
-    },
-  ];
-
   return (
     <div className="flex flex-col h-full bg-surface-card">
       <NotesTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex-1 overflow-y-auto">
         {activeTab === "Notes" ? (
-          <div className="divide-y divide-border-default">
-            {mockComments.map((comment) => (
-              <CommentItem key={comment.id} {...comment} />
-            ))}
+          <div className="p-8 text-center text-text-muted text-sm italic">
+            No notes yet.
           </div>
         ) : (
           <div className="p-8 text-center text-text-muted text-sm italic">

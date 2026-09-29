@@ -20,7 +20,6 @@ import ReviewerFormPane from "./reviewerWorkspace/ReviewerFormPane";
 import ReviewerPdfPanel from "./reviewerWorkspace/ReviewerPdfPanel";
 import ReviewerSidebar from "./reviewerWorkspace/ReviewerSidebar";
 import {
-  FALLBACK_PDF_URL,
   flattenTemplateFields,
   getMatrixFieldKey,
   getSectionId,
@@ -169,8 +168,7 @@ export default function DataExtractionReviewerWorkspace({
       paperStatus === "completed" ||
       ws.hasCurrentUserSubmitted(selectedPaperId));
   const normalizedDocumentUrl = (documentUrl ?? "").trim();
-  const effectiveDocumentUrl = normalizedDocumentUrl || FALLBACK_PDF_URL;
-  const isUsingFallbackDocument = normalizedDocumentUrl.length === 0;
+  const effectiveDocumentUrl = normalizedDocumentUrl || null;
 
   const [activeSectionIdState, setActiveSectionIdState] = useState("");
   const [formValues, setFormValues] = useState<Record<string, FormFieldState>>(
@@ -1708,7 +1706,6 @@ export default function DataExtractionReviewerWorkspace({
       <div className="flex h-full min-w-[1080px]">
         <ReviewerPdfPanel
           effectiveDocumentUrl={effectiveDocumentUrl}
-          isUsingFallbackDocument={isUsingFallbackDocument}
           activeHighlights={ws.activeHighlights}
           activeEvidenceTargetLabel={activeEvidenceTargetLabel}
           canUseEvidenceSelection={Boolean(activeEvidenceTarget)}
