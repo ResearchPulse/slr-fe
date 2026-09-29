@@ -71,7 +71,6 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
               isProjectSetupReady={props.isProjectSetupReady}
               onSetupSaved={props.onSetupSaved}
               embedded={true}
-              hideEditButton={true}
             />
           </div>
         </div>
