@@ -17,7 +17,6 @@ import type {
   AuditLogFiltersState,
   AuditLogSortField,
 } from "../../types/auditLog";
-import { auditLogMockData } from "../admin/auditLogs/mockData";
 import { AUDIT_LOG_PAGE_SIZE } from "../admin/auditLogs/constants";
 import {
   buildAuditLogExportContent,
@@ -153,7 +152,7 @@ const ProjectAuditLogPage: React.FC = () => {
   }, []);
 
   const logs = useMemo(
-    () => auditLogsResponse?.data?.items || auditLogMockData,
+    () => auditLogsResponse?.data?.items || [],
     [auditLogsResponse],
   );
 
@@ -400,7 +399,7 @@ const ProjectAuditLogPage: React.FC = () => {
               </p>
             </div>
             <div className="text-xs font-bold text-text-secondary">
-              Mock UI only
+              Client-side export history
             </div>
           </div>
 

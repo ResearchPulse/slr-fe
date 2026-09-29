@@ -20,47 +20,48 @@ class PrismaReportService {
     return PrismaReportService.instance;
   }
 
-  /** Generate a new PRISMA report snapshot for a review process */
+  /** Generate a new PRISMA report snapshot for a project */
   async generateReport(
-    reviewProcessId: string,
+    projectId: string,
     request: GeneratePrismaReportRequest = {},
   ): Promise<ApiResponse<PrismaReportResponse>> {
     const response = await api.post<ApiResponse<PrismaReportResponse>>(
-      `/review-processes/${reviewProcessId}/prisma-report`,
+      `/projects/${projectId}/prisma/reports`,
       request,
     );
     return response.data;
   }
 
   /** Get a specific PRISMA report by its ID */
-  async getReportById(reportId: string): Promise<ApiResponse<PrismaReportResponse>> {
-    const response = await api.get<ApiResponse<PrismaReportResponse>>(
-      `/prisma-reports/${reportId}`,
-    );
+  async getReportById(reportId: string, projectId?: string): Promise<ApiResponse<PrismaReportResponse>> {
+    const targetUrl = projectId
+      ? `/projects/${projectId}/prisma/reports/${reportId}`
+      : `/projects/current/prisma/reports/${reportId}`;
+    const response = await api.get<ApiResponse<PrismaReportResponse>>(targetUrl);
     return response.data;
   }
 
-  /** Get all PRISMA reports for a review process */
+  /** Get all PRISMA reports for a project */
   async getReportsByReviewProcess(
-    reviewProcessId: string,
+    projectId: string,
   ): Promise<ApiResponse<PrismaReportListResponse[]>> {
     const response = await api.get<ApiResponse<PrismaReportListResponse[]>>(
-      `/review-processes/${reviewProcessId}/prisma-reports`,
+      `/projects/${projectId}/prisma/reports`,
     );
     return response.data;
   }
 
-  /** Get the latest PRISMA report for a review process */
-  async getLatestReport(reviewProcessId: string): Promise<ApiResponse<PrismaReportResponse>> {
+  /** Get the latest PRISMA report for a project */
+  async getLatestReport(projectId: string): Promise<ApiResponse<PrismaReportResponse>> {
     const response = await api.get<ApiResponse<PrismaReportResponse>>(
-      `/review-processes/${reviewProcessId}/prisma-report/latest`,
+      `/projects/${projectId}/prisma/reports/latest`,
     );
     return response.data;
   }
 
   /** Download the latest PRISMA flow diagram for a review process as .docx */
   async downloadPrismaFlowDiagram(reviewProcessId: string): Promise<Blob> {
-    const response = await api.get(`/review-processes/${reviewProcessId}/prisma-report/download`, {
+    const response = await api.get(`/projects/${reviewProcessId}/prisma/reports/latest`, {
       responseType: "blob",
     });
     return response.data;

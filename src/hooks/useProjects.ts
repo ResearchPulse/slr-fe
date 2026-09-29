@@ -241,10 +241,9 @@ export const useReplaceLeaderMutation = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ projectId, newLeaderUserId }: { projectId: string; newLeaderUserId: string }) => {
-      // TODO: Replace with actual API call
-      // return projectService.replaceLeader(projectId, newLeaderUserId);
-      console.log(`Replacing leader for project ${projectId} with user ${newLeaderUserId}`);
-      return { success: true };
+      void projectId;
+      void newLeaderUserId;
+      throw new Error("Replacing a project leader is not available yet");
     },
     onSuccess: (_, variables) => {
       // Invalidate members and invitations to recompute leader state

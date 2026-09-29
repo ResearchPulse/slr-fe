@@ -31,6 +31,8 @@ export default function PrismaReportWorkspace() {
     diagramRef.current?.exportImage();
   }, []);
 
+  const effectiveProjectId = projectId || processId || "";
+
   const {
     latestReport,
     activeReport,
@@ -54,12 +56,16 @@ export default function PrismaReportWorkspace() {
     clearSelection,
     downloadPrismaDiagram,
     refreshAll,
-  } = usePrismaReport({ reviewProcessId: processId });
+  } = usePrismaReport({ reviewProcessId: effectiveProjectId });
 
   // React Query fetches on mount automatically — no useEffect needed
 
   const handleBack = () => {
-    navigate(`/projects/${projectId}/processes/${processId}`);
+    if (projectId && processId) {
+      navigate(`/projects/${projectId}/processes/${processId}`);
+    } else {
+      navigate(`/projects/${effectiveProjectId}`);
+    }
   };
 
   const handleGenerate = async () => {

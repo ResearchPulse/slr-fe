@@ -6,7 +6,7 @@ export interface CurrentProject {
 }
 
 export interface CurrentProjectMember {
-  role: number;
+  role: number | string;
   roleText: string;
   isLeader: boolean;
 }

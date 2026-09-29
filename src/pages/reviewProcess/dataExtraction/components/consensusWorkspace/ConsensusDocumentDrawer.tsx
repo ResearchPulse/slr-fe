@@ -14,8 +14,7 @@ import "@react-pdf-viewer/highlight/lib/styles/index.css";
 
 interface ConsensusDocumentDrawerProps {
   isOpen: boolean;
-  effectiveDocumentUrl: string;
-  isUsingFallbackDocument: boolean;
+  effectiveDocumentUrl: string | null;
   activeHighlights: PdfHighlightCoordinate[];
   onClose: () => void;
 }
@@ -26,7 +25,6 @@ const PAGE_HEIGHT = 792;
 export default function ConsensusDocumentDrawer({
   isOpen,
   effectiveDocumentUrl,
-  isUsingFallbackDocument,
   activeHighlights,
   onClose,
 }: ConsensusDocumentDrawerProps) {
@@ -105,9 +103,12 @@ export default function ConsensusDocumentDrawer({
           <Button
             variant="outline"
             size="sm"
-            onClick={() =>
-              window.open(effectiveDocumentUrl, "_blank", "noopener,noreferrer")
-            }
+            onClick={() => {
+              if (effectiveDocumentUrl) {
+                window.open(effectiveDocumentUrl, "_blank", "noopener,noreferrer");
+              }
+            }}
+            disabled={!effectiveDocumentUrl}
           >
             <ExternalLink className="mr-2 h-4 w-4" />
             Open in New Tab
@@ -120,21 +121,20 @@ export default function ConsensusDocumentDrawer({
       }
     >
       <div className="flex h-full flex-col gap-3">
-        {isUsingFallbackDocument ? (
-          <p className="rounded-[4px] border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
-            This study has no PDF URL yet, so a mock PDF is shown for UI
-            testing.
-          </p>
-        ) : null}
-
         <div className="min-h-0 flex-1 overflow-hidden rounded-[4px] border border-border bg-surface-white">
-          <Worker workerUrl={PDF_WORKER_URL}>
-            <Viewer
-              fileUrl={effectiveDocumentUrl}
-              plugins={[highlightPluginInstance]}
-              onDocumentLoad={jumpToFirstEvidence}
-            />
-          </Worker>
+          {effectiveDocumentUrl ? (
+            <Worker workerUrl={PDF_WORKER_URL}>
+              <Viewer
+                fileUrl={effectiveDocumentUrl}
+                plugins={[highlightPluginInstance]}
+                onDocumentLoad={jumpToFirstEvidence}
+              />
+            </Worker>
+          ) : (
+            <div className="flex h-full items-center justify-center px-6 text-center text-sm text-text-muted">
+              This study does not have a full-text PDF yet.
+            </div>
+          )}
         </div>
       </div>
     </Drawer>

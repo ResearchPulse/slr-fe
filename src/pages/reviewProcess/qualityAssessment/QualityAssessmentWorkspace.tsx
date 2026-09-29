@@ -20,7 +20,7 @@ import type { RootState } from "../../../redux/store";
 
 export type WorkspaceQAPaper = QAPaperResponse | LeaderQAPaperResponse;
 
-const dummyStats = {
+const defaultQAStats = {
   total: 0,
   completed: 0,
   inProgress: 0,
@@ -150,7 +150,7 @@ export default function QualityAssessmentWorkspace() {
       const completed = leaderStats.completedPapers ?? 0;
       const total = leaderStats.totalPapers ?? 0;
       return {
-        ...dummyStats,
+        ...defaultQAStats,
         total,
         completed,
         inProgress: leaderStats.inProgressPapers ?? 0,
@@ -162,7 +162,7 @@ export default function QualityAssessmentWorkspace() {
       const completed = memberStats.completedPapers ?? 0;
       const total = memberStats.totalPapers ?? 0;
       return {
-        ...dummyStats,
+        ...defaultQAStats,
         total,
         completed,
         inProgress: memberStats.inProgressPapers ?? 0,
@@ -172,7 +172,7 @@ export default function QualityAssessmentWorkspace() {
       };
     }
 
-    if (!activePapers.length) return dummyStats;
+    if (!activePapers.length) return defaultQAStats;
     const total = activePapers.length;
     const completed = activePapers.filter(
       (p) => p.completionPercentage === 100,
@@ -185,7 +185,7 @@ export default function QualityAssessmentWorkspace() {
     ).length;
 
     return {
-      ...dummyStats,
+      ...defaultQAStats,
       total,
       completed,
       inProgress,

@@ -8,8 +8,6 @@ import type { FlattenedTemplateField, FormFieldValue } from "./types";
 
 export const MATRIX_ITEM_NAME_KEY = "__matrixItemName";
 export const MATRIX_COLUMN_ID_KEY = "__matrixColumnId";
-export const FALLBACK_PDF_URL =
-  "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf";
 
 export function getSectionId(section: ExtractionSectionDto): string {
   return section.sectionId ?? section.name;

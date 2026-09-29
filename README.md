@@ -58,7 +58,8 @@ src/
 npm install
 
 # Setup environment variables
-cp .env 
+cp .env.example .env
+# Leave VITE_API_URL and VITE_BE_URL empty to use the local Vite proxy.
 
 # Start development server
 npm run dev 
