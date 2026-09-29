@@ -14,7 +14,7 @@ const ProjectUtilityBar: React.FC<ProjectUtilityBarProps> = ({
       {/* Search Input */}
       <div className="relative w-72">
         <FiSearch
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-[#A0998C]"
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-text-muted"
           size={14}
         />
         <Input

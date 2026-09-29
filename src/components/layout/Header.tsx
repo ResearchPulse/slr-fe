@@ -186,7 +186,7 @@ const Header: React.FC = () => {
                   {user?.role === "Admin" && (
                     <button
                       onClick={handleSwitchAdmin}
-                      className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-text-primary hover:bg-[#2a2a2a] text-bg-primary rounded-[4px] transition-colors duration-200"
+                      className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-text-on-primary rounded-[4px] transition-colors duration-200"
                     >
                       <FiShield className="w-4 h-4" />
                       <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-[0.15em]">

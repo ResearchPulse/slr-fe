@@ -168,7 +168,7 @@ export default function PoolWorkflowStepper({
                   onClick={action.onClick}
                   className={`px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-none flex items-center gap-2 ${
                     action.primary
-                      ? "bg-accent text-bg-primary hover:bg-[#7a0000]"
+                      ? "bg-accent text-bg-primary hover:bg-primary-hover"
                       : "bg-surface-white border border-border text-text-secondary hover:text-text-primary hover:bg-bg-primary"
                   }`}
                 >

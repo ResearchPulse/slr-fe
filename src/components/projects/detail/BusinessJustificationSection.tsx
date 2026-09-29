@@ -98,7 +98,7 @@ const BusinessJustificationSection: React.FC<
               `}
             >
               {tab.label}
-              <span className="ml-1.5 text-[10px] text-[#A0998C]">
+              <span className="ml-1.5 text-[10px] text-text-muted">
                 ({tab.count})
               </span>
             </button>

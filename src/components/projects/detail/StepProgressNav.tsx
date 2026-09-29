@@ -50,7 +50,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
                         ? "bg-text-primary border-text-primary text-bg-primary cursor-pointer"
                         : isCurrent
                           ? "bg-surface-white border-accent text-accent cursor-pointer step-current-pulse"
-                          : "bg-bg-secondary border-border text-[#A0998C] cursor-not-allowed"
+                          : "bg-bg-secondary border-border text-text-muted cursor-not-allowed"
                     }
                   `}
                   title={
@@ -79,7 +79,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
                         ? "text-text-primary"
                         : isCurrent
                           ? "text-accent"
-                          : "text-[#A0998C]"
+                          : "text-text-muted"
                     }
                   `}
                 >

@@ -29,17 +29,17 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const variants = {
       primary:
-        "bg-[#111111] text-[#F4F0E8] border border-transparent hover:bg-[#2a2a2a] focus:ring-[#111111]/20",
+        "bg-primary text-text-on-primary border border-transparent hover:bg-primary-hover focus:ring-primary/20",
       secondary:
-        "bg-transparent border border-[#D8D2C8] text-[#111111] hover:bg-[#ECE8E1] focus:ring-[#D8D2C8]",
+        "bg-transparent border border-border text-text-primary hover:bg-bg-secondary focus:ring-border",
       danger:
-        "bg-[#5B0000] text-[#F4F0E8] border border-transparent hover:bg-[#7a0000] focus:ring-[#5B0000]/20",
+        "bg-error text-white border border-transparent hover:bg-red-700 focus:ring-error/20",
       success:
-        "bg-[#2d5a2d] text-white border border-transparent hover:bg-[#1e3d1e] focus:ring-[#2d5a2d]/20",
+        "bg-success text-white border border-transparent hover:bg-green-700 focus:ring-success/20",
       outline:
-        "bg-transparent border border-[#111111] text-[#111111] hover:bg-[#111111] hover:text-[#F4F0E8] focus:ring-[#111111]/20",
+        "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus:ring-text-primary/20",
       ghost:
-        "bg-transparent text-[#5C5C5C] hover:text-[#111111] focus:ring-[#D8D2C8] border border-transparent",
+        "bg-transparent text-text-secondary hover:text-text-primary focus:ring-border border border-transparent",
     };
 
     const sizes = {

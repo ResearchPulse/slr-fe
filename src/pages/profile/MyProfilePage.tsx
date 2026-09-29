@@ -81,7 +81,7 @@ const EditableField: React.FC<{
             />
             <button
               onClick={handleSave}
-              className="flex-shrink-0 w-9 h-9 bg-text-primary text-bg-primary flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
+              className="flex-shrink-0 w-9 h-9 bg-primary text-text-on-primary flex items-center justify-center hover:bg-primary-hover transition-colors"
               aria-label="Save"
             >
               <FiCheck className="w-4 h-4" />

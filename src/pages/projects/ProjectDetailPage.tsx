@@ -313,7 +313,7 @@ export default function ProjectDetailPage() {
           </p>
           <button
             onClick={() => navigate("/projects")}
-            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-[#7a0000] transition-colors text-[12px] uppercase tracking-[0.1em]"
+            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-primary-hover transition-colors text-[12px] uppercase tracking-[0.1em]"
           >
             Back to Project List
           </button>
@@ -490,7 +490,7 @@ export default function ProjectDetailPage() {
       {/* All-steps-complete banner for active projects */}
       {isProjectActive && (
         <div className="border border-border bg-surface-white rounded-[4px] p-4 mb-6 flex items-center gap-3">
-          <div className="w-7 h-7 rounded-full bg-[#2d5a2d] flex items-center justify-center shrink-0">
+          <div className="w-7 h-7 rounded-full bg-success flex items-center justify-center shrink-0">
             <svg
               className="w-3.5 h-3.5 text-white"
               fill="none"
@@ -506,7 +506,7 @@ export default function ProjectDetailPage() {
             </svg>
           </div>
           <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] font-medium text-[#2d5a2d]">
+            <p className="text-[11px] uppercase tracking-[0.2em] font-medium text-success">
               Project Setup Complete
             </p>
             <p className="text-xs text-text-secondary mt-0.5">

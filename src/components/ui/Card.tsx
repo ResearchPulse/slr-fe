@@ -15,15 +15,15 @@ export const Card: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "bg-[#FDFCF9] border border-[#D8D2C8] rounded-[4px] overflow-hidden p-4 sm:p-6",
-        "hover:border-[#A0998C] transition-colors duration-200",
+        "bg-surface-white border border-border rounded-[4px] overflow-hidden p-4 sm:p-6",
+        "hover:border-text-muted transition-colors duration-200",
         className,
       )}
       {...props}
     >
       {title && (
-        <div className="pb-4 mb-4 border-b border-[#D8D2C8]">
-          <h3 className="text-base font-medium text-[#111111] uppercase tracking-[0.1em]">
+        <div className="pb-4 mb-4 border-b border-border">
+          <h3 className="text-base font-medium text-text-primary uppercase tracking-[0.1em]">
             {title}
           </h3>
         </div>
@@ -49,7 +49,7 @@ export const CardTitle: React.FC<React.HTMLAttributes<HTMLHeadingElement>> = ({
 }) => (
   <h3
     className={cn(
-      "text-base font-medium leading-none tracking-[0.05em] uppercase text-[#111111]",
+      "text-base font-medium leading-none tracking-[0.05em] uppercase text-text-primary",
       className,
     )}
     {...props}

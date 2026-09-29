@@ -23,7 +23,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
             // Default state (no error)
             !error &&
-              "border-border focus:ring-accent focus:border-accent hover:border-[#A0998C]",
+              "border-border focus:ring-accent focus:border-accent hover:border-text-muted",
 
             // Error state
             error &&

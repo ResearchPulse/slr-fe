@@ -83,7 +83,7 @@ const StatusBadge: React.FC<{ isActive: boolean }> = ({ isActive }) => {
       className={cn(
         "px-3 py-1 rounded-full text-[11px] font-bold border flex items-center gap-2 w-fit",
         isActive
-          ? "bg-surface-white text-[#2d5a2d] border-border shadow-sm"
+          ? "bg-surface-white text-success border-border shadow-sm"
           : "bg-surface-white text-text-secondary border-border opacity-80",
       )}
     >
@@ -91,7 +91,7 @@ const StatusBadge: React.FC<{ isActive: boolean }> = ({ isActive }) => {
         className={cn(
           "w-2 h-2 rounded-full",
           isActive
-            ? "bg-[#2d5a2d] shadow-[0_0_8px_rgba(45,90,45,0.5)] animate-pulse"
+            ? "bg-success shadow-[0_0_8px_rgba(22,163,74,0.5)] animate-pulse"
             : "bg-text-secondary",
         )}
       />
@@ -260,7 +260,7 @@ const UserManagement: React.FC = () => {
         <Tooltip content="Create a new system user account" position="left">
           <button
             onClick={() => setIsAddModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-white text-sm font-bold rounded-[4px] hover:bg-[#7a0000] hover:shadow-sm transition-all active:scale-95 group"
+            className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-white text-sm font-bold rounded-[4px] hover:bg-primary-hover hover:shadow-sm transition-all active:scale-95 group"
           >
             <FiUserPlus
               size={20}
@@ -325,7 +325,7 @@ const UserManagement: React.FC = () => {
                             {user.fullName.charAt(0)}
                           </div>
                           {user.isActive && (
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#2d5a2d] border-2 border-surface-white rounded-full shadow-sm" />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-success border-2 border-surface-white rounded-full shadow-sm" />
                           )}
                         </div>
                         <div className="space-y-1">
@@ -380,14 +380,14 @@ const UserManagement: React.FC = () => {
                             icon={FiXCircle}
                             label="Deactivate Access"
                             variant="destructive"
-                            className="hover:shadow-sm hover:text-[#7a0000]"
+                            className="hover:shadow-sm hover:text-error"
                             onClick={() => handleStatusToggleClick(user)}
                           />
                         ) : (
                           <ActionButton
                             icon={FiCheckCircle}
                             label="Reactivate Access"
-                            className="text-[#2d5a2d] hover:bg-bg-secondary hover:text-accent"
+                            className="text-success hover:bg-bg-secondary hover:text-accent"
                             onClick={() => handleStatusToggleClick(user)}
                           />
                         )}

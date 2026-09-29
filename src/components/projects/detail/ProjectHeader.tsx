@@ -111,7 +111,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                     project.statusText === "Active"
                       ? "border-accent text-accent"
                       : project.statusText === "Completed"
-                        ? "border-[#2d5a2d] text-[#2d5a2d]"
+                        ? "border-success text-success"
                         : "border-border text-text-secondary"
                   }`}
                 >
@@ -170,7 +170,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-[#A0998C] italic">
+                <p className="text-sm text-text-muted italic">
                   No leader assigned
                 </p>
               )}

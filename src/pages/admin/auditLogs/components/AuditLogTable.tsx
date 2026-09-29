@@ -38,14 +38,14 @@ interface AuditLogTableProps {
 }
 
 const statusClasses: Record<AuditLogEntry["status"], string> = {
-  Success: "bg-surface-white text-[#2d5a2d] border-border shadow-sm",
-  Failed: "bg-surface-white text-[#7a0000] border-border shadow-sm",
+  Success: "bg-surface-white text-success border-border shadow-sm",
+  Failed: "bg-surface-white text-error border-border shadow-sm",
 };
 
 const actionToneClasses: Record<AuditLogEntry["actionType"], string> = {
-  create: "bg-surface-white text-[#2d5a2d] border-border shadow-sm",
+  create: "bg-surface-white text-success border-border shadow-sm",
   update: "bg-bg-secondary text-accent border-border shadow-sm",
-  delete: "bg-surface-white text-[#7a0000] border-border shadow-sm",
+  delete: "bg-surface-white text-error border-border shadow-sm",
   export: "bg-surface-white text-text-secondary border-border shadow-sm",
   access: "bg-surface-white text-text-primary border-border shadow-sm",
   review: "bg-bg-secondary text-accent border-border shadow-sm",
@@ -216,7 +216,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   className={cn(
                     "group transition-all duration-200",
                     entry.importance === "high"
-                      ? "bg-[#7a0000]/5 hover:bg-[#7a0000]/10"
+                      ? "bg-error/5 hover:bg-error/10"
                       : "hover:bg-bg-secondary/40",
                   )}
                 >
@@ -302,7 +302,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
               className={cn(
                 "w-full text-left px-5 py-4 transition-all",
                 entry.importance === "high"
-                  ? "bg-[#7a0000]/5 hover:bg-[#7a0000]/10"
+                  ? "bg-error/5 hover:bg-error/10"
                   : "bg-surface-white hover:bg-bg-secondary/30",
               )}
             >

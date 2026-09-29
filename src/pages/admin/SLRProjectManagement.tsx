@@ -32,7 +32,7 @@ import toast from "react-hot-toast";
 const StatusBadge: React.FC<{ status: ProjectStatus }> = ({ status }) => {
   const styles = {
     Draft: "bg-surface-white text-text-secondary border-border shadow-sm",
-    Active: "bg-surface-white text-[#2d5a2d] border-border shadow-sm",
+    Active: "bg-surface-white text-success border-border shadow-sm",
     Completed: "bg-bg-secondary text-accent border-border shadow-sm",
   };
 
@@ -233,7 +233,7 @@ const SLRProjectManagement: React.FC = () => {
           position="left"
         >
           <button
-            className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-white text-sm font-bold rounded-[4px] hover:bg-[#7a0000] hover:shadow-sm transition-all active:scale-95 group cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-white text-sm font-bold rounded-[4px] hover:bg-primary-hover hover:shadow-sm transition-all active:scale-95 group cursor-pointer"
             onClick={handleCreateProjectClick}
           >
             <FiPlus

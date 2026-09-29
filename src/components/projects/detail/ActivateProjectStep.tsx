@@ -107,7 +107,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
                   className={`w-7 h-7 border flex items-center justify-center flex-shrink-0 ${
                     item.required !== false
                       ? "border-accent text-accent"
-                      : "border-border text-[#A0998C]"
+                      : "border-border text-text-muted"
                   }`}
                 >
                   <FiAlertCircle className="w-3.5 h-3.5" strokeWidth={2} />
@@ -122,7 +122,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
                   {item.label}
                 </span>
                 {item.required === false && !item.completed && (
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-[#A0998C]">
+                  <span className="text-[10px] uppercase tracking-[0.15em] text-text-muted">
                     Optional
                   </span>
                 )}

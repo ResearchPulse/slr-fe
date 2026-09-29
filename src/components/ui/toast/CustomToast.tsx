@@ -34,19 +34,19 @@ const toastStyles: Record<
   success: {
     bg: "bg-surface-white",
     border: "border-border",
-    iconColor: "text-[#556B2F]", // muted olive
+    iconColor: "text-success",
     icon: <HiCheckCircle className="w-5 h-5" />,
   },
   error: {
     bg: "bg-surface-white",
     border: "border-border",
-    iconColor: "text-accent", // muted burgundy
+    iconColor: "text-error",
     icon: <HiXCircle className="w-5 h-5" />,
   },
   warning: {
     bg: "bg-surface-white",
     border: "border-border",
-    iconColor: "text-[#B8860B]", // muted amber
+    iconColor: "text-warning",
     icon: <HiExclamationTriangle className="w-5 h-5" />,
   },
   info: {

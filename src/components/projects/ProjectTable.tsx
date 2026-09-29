@@ -174,7 +174,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   project.statusText === "Active"
                     ? "border-accent text-accent"
                     : project.statusText === "Completed"
-                      ? "border-[#2d5a2d] text-[#2d5a2d]"
+                      ? "border-success text-success"
                       : "border-border text-text-secondary",
                 )}
               >
@@ -204,7 +204,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   </span>
                 </div>
               ) : (
-                <span className="text-[#A0998C] text-sm">—</span>
+                <span className="text-text-muted text-sm">—</span>
               )}
             </TableCell>
             <TableCell className="text-text-secondary text-sm whitespace-nowrap">
@@ -245,7 +245,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
           <TableRow className="hover:bg-transparent cursor-default">
             <TableCell
               colSpan={12}
-              className="p-12 text-center text-[#A0998C] text-sm tracking-wide"
+              className="p-12 text-center text-text-muted text-sm tracking-wide"
             >
               You don't have any projects or haven't joined any projects.
             </TableCell>

@@ -65,7 +65,7 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
         ))}
         {reviewNeeds.length === 0 && (
           <div className="border border-dashed border-border py-14 text-center">
-            <p className="text-[#A0998C] text-sm">No review needs added yet.</p>
+            <p className="text-text-muted text-sm">No review needs added yet.</p>
           </div>
         )}
       </div>

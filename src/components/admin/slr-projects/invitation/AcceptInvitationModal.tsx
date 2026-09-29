@@ -36,7 +36,7 @@ export default function AcceptInvitationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Join Project">
       <div className="p-6">
-        <div className="w-16 h-16 bg-bg-secondary text-[#2d5a2d] rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-success rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
           <FiCheckCircle size={32} />
         </div>
         <p className="text-center text-text-secondary font-medium mb-8">
@@ -51,7 +51,7 @@ export default function AcceptInvitationModal({
             No, Cancel
           </Button>
           <Button
-            className="flex-1 bg-accent hover:bg-[#7a0000] text-surface-white shadow-sm"
+            className="flex-1 bg-accent hover:bg-primary-hover text-surface-white shadow-sm"
             onClick={handleAccept}
             disabled={isAccepting}
           >

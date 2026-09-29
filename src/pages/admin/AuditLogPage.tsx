@@ -50,11 +50,11 @@ const summaryToneClasses: Record<
   },
   emerald: {
     container: "border-border bg-surface-white shadow-sm",
-    icon: "bg-bg-secondary text-[#2d5a2d] border border-border",
+    icon: "bg-bg-secondary text-success border border-border",
   },
   rose: {
     container: "border-border bg-surface-white shadow-sm",
-    icon: "bg-bg-secondary text-[#7a0000] border border-border",
+    icon: "bg-bg-secondary text-error border border-border",
   },
   amber: {
     container: "border-border bg-surface-white shadow-sm",
@@ -294,7 +294,7 @@ const AuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-surface-white text-sm font-bold hover:bg-[#7a0000] hover:shadow-sm transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-md bg-accent text-surface-white text-sm font-bold hover:bg-primary-hover hover:shadow-sm transition-all active:scale-95"
           >
             <FiDownload className="w-4 h-4" />
             Export Logs

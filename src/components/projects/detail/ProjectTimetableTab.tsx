@@ -74,7 +74,7 @@ export default function ProjectTimetableTab({
               value={formStartDate}
               onChange={(event) => setFormStartDate(event.target.value)}
               disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-[#A0998C] outline-none transition-colors"
+              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-text-muted outline-none transition-colors"
             />
           </div>
 
@@ -87,7 +87,7 @@ export default function ProjectTimetableTab({
               value={formEndDate}
               onChange={(event) => setFormEndDate(event.target.value)}
               disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-[#A0998C] outline-none transition-colors"
+              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-text-muted outline-none transition-colors"
             />
           </div>
         </div>

@@ -72,7 +72,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
                       href={doc.document_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 py-2 px-4 bg-text-primary text-bg-primary text-[11px] uppercase tracking-[0.1em] hover:bg-[#2a2a2a] transition-colors"
+                      className="inline-flex items-center gap-2 py-2 px-4 bg-primary text-text-on-primary text-[11px] uppercase tracking-[0.1em] hover:bg-primary-hover transition-colors"
                     >
                       <FiExternalLink className="w-3.5 h-3.5" />
                       View Full Document
@@ -85,11 +85,11 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
         ))}
         {documents.length === 0 && (
           <div className="border border-dashed border-border py-14 text-center">
-            <FiBriefcase className="w-8 h-8 text-[#A0998C] mx-auto mb-3" />
+            <FiBriefcase className="w-8 h-8 text-text-muted mx-auto mb-3" />
             <p className="text-text-secondary text-sm">
               No commissioning documents added yet
             </p>
-            <p className="text-[11px] text-[#A0998C] mt-1">
+            <p className="text-[11px] text-text-muted mt-1">
               Add documents to define the project's financial and legal scope.
             </p>
           </div>

@@ -221,7 +221,7 @@ export default function ProjectFormModal({
             form="project-form"
             disabled={isSubmitting}
             className={cn(
-              "flex items-center gap-2 px-10 py-4 bg-accent text-white text-[11px] font-black rounded-md hover:bg-[#7a0000] transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest cursor-pointer shadow-none",
+              "flex items-center gap-2 px-10 py-4 bg-accent text-white text-[11px] font-black rounded-md hover:bg-primary-hover transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest cursor-pointer shadow-none",
               isSubmitting && "animate-pulse",
             )}
           >
