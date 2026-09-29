@@ -25,13 +25,8 @@ import type {
   ProcessPaperStats,
 } from "../components/reviewProcess/workflow/types";
 import { WORKFLOW_PHASES } from "../components/reviewProcess/workflow/constants";
-import {
-  getMockPhaseStats,
-  getMockActivities,
-  getMockAlerts,
-  getMockProgressStats,
-} from "../mocks/reviewProcessMockData";
 import { toastWarning } from "../utils/toast";
+
 
 interface UseReviewProcessWorkspaceParams {
   projectId: string | undefined;
@@ -895,9 +890,10 @@ export const useReviewProcessWorkspace = ({
     });
   }, [projectMembers]);
 
-  const activities = getMockActivities();
-  const alerts = getMockAlerts();
-  const progressStats = getMockProgressStats();
+  const activities: Activity[] = [];
+  const alerts: any[] = [];
+  const progressStats = { overallProgress: 0, completedTasks: 0, totalTasks: 0, daysRemaining: 0 };
+
 
   // Computed values
   const completedPhases = useMemo(

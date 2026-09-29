@@ -71,5 +71,18 @@ export const deduplicationService = {
     const response = await api.post<ApiResponse<null>>(url, request);
     return response.data;
   },
+
+  /**
+   * Run automated deduplication on imported papers in project
+   * POST /api/projects/{projectId}/deduplication/run
+   */
+  async runDeduplication(
+    projectId: string,
+  ): Promise<ApiResponse<{ duplicatesFound: number; totalScreenable: number }>> {
+    const url = `/projects/${projectId}/deduplication/run`;
+    const response = await api.post<ApiResponse<{ duplicatesFound: number; totalScreenable: number }>>(url);
+    return response.data;
+  },
 };
+
 

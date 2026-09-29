@@ -32,13 +32,22 @@ export const useProjectMember = (projectId: string | undefined) => {
         currentProjectMember.role !== role ||
         currentProjectMember.roleText !== roleText
       ) {
-        dispatch(
-          setProjectMember({
-            role,
-            roleText,
-            isLeader: role === 1,
-          })
-        );
+      const isLeader =
+        role === 1 ||
+        role === 2 ||
+        String(role).toUpperCase() === "OWNER" ||
+        String(role).toUpperCase() === "ADMIN" ||
+        String(roleText).toUpperCase() === "OWNER" ||
+        String(roleText).toUpperCase() === "ADMIN";
+
+      dispatch(
+        setProjectMember({
+          role,
+          roleText,
+          isLeader,
+        })
+      );
+
       }
     }
   }, [query.data, dispatch, currentProjectMember]);

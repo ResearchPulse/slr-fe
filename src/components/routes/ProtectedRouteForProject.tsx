@@ -4,7 +4,7 @@ import { useProjectMember } from "../../hooks/useProjectMember";
 import type { RootState } from "../../redux/store";
 
 interface ProtectedRouteForProjectProps {
-  allowedRoles?: number[];
+  allowedRoles?: (number | string)[];
   redirectTo?: string;
   forbiddenTo?: string;
 }
@@ -91,15 +91,35 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
   }
 
   // Case 2: Role not allowed
-  if (
-    allowedRoles &&
-    currentProjectMember &&
-    !allowedRoles.includes(currentProjectMember.role)
-  ) {
+  const normalizeRoleToNumber = (r: unknown): number => {
+    if (typeof r === "number") return r;
+    const str = String(r || "").toUpperCase();
+    if (str === "OWNER") return 1;
+    if (str === "ADMIN") return 2;
+    if (str === "REVIEWER") return 3;
+    if (str === "VIEWER") return 4;
+    return 99;
+  };
+
+  const isRoleAllowed = (): boolean => {
+    if (!allowedRoles || allowedRoles.length === 0) return true;
+    if (!currentProjectMember) return false;
+
+    // 1. Direct match with role or roleText
+    if (allowedRoles.includes(currentProjectMember.role as any)) return true;
+    if (currentProjectMember.roleText && allowedRoles.includes(currentProjectMember.roleText as any)) return true;
+
+    // 2. Normalized numeric match
+    const memberNum = normalizeRoleToNumber(currentProjectMember.role);
+    return allowedRoles.some((ar) => normalizeRoleToNumber(ar) === memberNum);
+  };
+
+  if (!isRoleAllowed()) {
     const fallback = forbiddenTo ?? redirectTo;
     if (fallback) {
       return <Navigate to={resolvePath(fallback, params)} replace />;
     }
+
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
         <h2 className="text-xl font-bold text-red-600 mb-2">
