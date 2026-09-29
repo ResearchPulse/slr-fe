@@ -1,13 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { signInWithPopup } from "firebase/auth";
 import Button from "../ui/Button";
 import FormField from "../ui/FormField";
 import { authService } from "../../services/authService";
 import { login } from "../../redux/slices/authSlice";
 import { toastSuccess, toastError } from "../../utils/toast";
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+import {
+  firebaseAuth,
+  googleProvider,
+  isFirebaseAuthConfigured,
+} from "../../config/firebase";
 
 const LoginForm: React.FC = () => {
   const [keyLogin, setKeyLogin] = useState("");
@@ -18,10 +22,20 @@ const LoginForm: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleGoogleCredentialResponse = async (response: any) => {
+  const handleGoogleSignIn = async () => {
+    if (!firebaseAuth) {
+      toastError(
+        "Google sign-in unavailable",
+        "Configure the Firebase web authentication settings first.",
+      );
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const res = await authService.googleLogin(response.credential);
+      const result = await signInWithPopup(firebaseAuth, googleProvider);
+      const firebaseIdToken = await result.user.getIdToken();
+      const res = await authService.googleLogin(firebaseIdToken);
 
       if (res.isSuccess) {
         const { accessToken, userId, username, email, role } = res.data;
@@ -64,46 +78,6 @@ const LoginForm: React.FC = () => {
       setIsLoading(false);
     }
   };
-
-  useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return;
-
-    let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]') as HTMLScriptElement;
-
-    const initializeGoogleSignIn = () => {
-      const google = (window as any).google;
-      if (google?.accounts?.id) {
-        google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true
-        });
-
-        google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn"),
-          {
-            theme: "outline",
-            size: "large",
-            width: 320,
-            text: "continue_with",
-            shape: "rectangular"
-          }
-        );
-      }
-    };
-
-    if (!script) {
-      script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
-      script.async = true;
-      script.defer = true;
-      document.body.appendChild(script);
-      script.onload = initializeGoogleSignIn;
-    } else {
-      initializeGoogleSignIn();
-    }
-  }, []);
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -267,14 +241,19 @@ const LoginForm: React.FC = () => {
         </div>
 
         <div className="w-full flex justify-center">
-          {GOOGLE_CLIENT_ID ? (
-            <div
-              id="google-signin-btn"
-              className="w-full max-w-[320px] flex justify-center"
-            ></div>
+          {isFirebaseAuthConfigured ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full max-w-[320px] h-11 rounded-[4px]"
+              onClick={handleGoogleSignIn}
+              disabled={isLoading}
+            >
+              Continue with Google
+            </Button>
           ) : (
             <p className="w-full max-w-[320px] text-center text-xs text-text-secondary">
-              Google sign-in is unavailable until VITE_GOOGLE_CLIENT_ID is configured.
+              Google sign-in is unavailable until Firebase web authentication is configured.
             </p>
           )}
         </div>
