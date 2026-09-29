@@ -66,44 +66,45 @@ export function useAIProjectSetupState(projectId: string, onSetupSaved?: () => v
     5: viewMode === "summary",
   } as const;
 
-  const mapPicocResponse = (picoc: GeneratePicocResponse): PicoCForm => ({
-    population: picoc.population ?? "",
-    intervention: picoc.intervention ?? "",
-    comparator: picoc.comparator ?? "",
-    outcome: picoc.outcome ?? "",
-    context: picoc.context ?? "",
+  const mapPicocResponse = (picoc?: Partial<GeneratePicocResponse> | null): PicoCForm => ({
+    population: picoc?.population ?? "",
+    intervention: picoc?.intervention ?? "",
+    comparator: picoc?.comparator ?? "",
+    outcome: picoc?.outcome ?? "",
+    context: picoc?.context ?? "",
   });
 
-  const hasExistingSetup = (data: ProjectSetupDetailsResponse) => {
+  const hasExistingSetup = (data?: Partial<ProjectSetupDetailsResponse> | null) => {
+    if (!data) return false;
     const hasMainFields =
-      data.researchTopic.trim().length > 0 ||
-      data.researchObjective.trim().length > 0 ||
-      data.domain.trim().length > 0;
+      Boolean(data.researchTopic?.trim()) ||
+      Boolean(data.researchObjective?.trim()) ||
+      Boolean(data.domain?.trim());
 
     const hasPicoc =
-      data.picoc.population.trim().length > 0 ||
-      data.picoc.intervention.trim().length > 0 ||
-      data.picoc.comparator.trim().length > 0 ||
-      data.picoc.outcome.trim().length > 0 ||
-      data.picoc.context.trim().length > 0;
+      Boolean(data.picoc?.population?.trim()) ||
+      Boolean(data.picoc?.intervention?.trim()) ||
+      Boolean(data.picoc?.comparator?.trim()) ||
+      Boolean(data.picoc?.outcome?.trim()) ||
+      Boolean(data.picoc?.context?.trim());
 
-    return hasMainFields || hasPicoc || data.researchQuestions.length > 0;
+    return hasMainFields || hasPicoc || (data.researchQuestions?.length ?? 0) > 0;
   };
 
   const applySetupData = useCallback((data: ProjectSetupDetailsResponse) => {
-    const mappedRQs: EditableResearchQuestion[] = (data.researchQuestions ?? []).map((rq) => ({
+    const mappedRQs: EditableResearchQuestion[] = (data?.researchQuestions ?? []).map((rq) => ({
       id: rq.id,
       questionText: rq.questionText,
     }));
 
     const snapshot: SetupSnapshot = {
-      topic: data.researchTopic ?? "",
-      language: data.language ?? "English",
+      topic: data?.researchTopic ?? "",
+      language: data?.language ?? "English",
       scope: {
-        objectives: data.researchObjective ?? "",
-        domain: data.domain ?? "",
+        objectives: data?.researchObjective ?? "",
+        domain: data?.domain ?? "",
       },
-      picoc: mapPicocResponse(data.picoc),
+      picoc: mapPicocResponse(data?.picoc),
       researchQuestions: mappedRQs,
     };
 
@@ -125,7 +126,7 @@ export function useAIProjectSetupState(projectId: string, onSetupSaved?: () => v
     setIsLoadingSetup(true);
     try {
       const response = await aiProjectSetupService.getSetupDetails(projectId);
-      if (!response.isSuccess || !response.data) {
+      if (!response?.isSuccess || !response?.data) {
         setViewMode("wizard");
         return;
       }
@@ -137,7 +138,7 @@ export function useAIProjectSetupState(projectId: string, onSetupSaved?: () => v
         setViewMode("wizard");
       }
     } catch {
-      toastWarning("Unable to load setup", "Could not load existing setup details. You can continue manually.");
+      // Setup details not yet initialized or network fallback - cleanly default to wizard mode
       setViewMode("wizard");
     } finally {
       setIsLoadingSetup(false);

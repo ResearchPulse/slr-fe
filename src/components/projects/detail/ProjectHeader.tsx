@@ -26,6 +26,21 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
     return name ? name.trim().charAt(0).toUpperCase() : "";
   };
 
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "N/A";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "N/A";
+    return d.toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const displayCode = project.code || (project.id ? project.id.slice(0, 8).toUpperCase() : "PROJECT");
+  const displayTitle = project.title || (project as any).name || "Systematic Literature Review";
+  const displayStatus = project.statusText || (project.status === 2 ? "Completed" : "Active");
+
   return (
     <div className="space-y-4 mb-8">
       {/* Navigation */}
@@ -45,11 +60,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <div className="space-y-3 flex-1">
               {/* Code badge */}
               <span className="inline-block px-2 py-0.5 bg-text-primary text-bg-primary text-[10px] font-medium uppercase tracking-[0.15em]">
-                {project.code}
+                {displayCode}
               </span>
 
               <h1 className="font-cormorant text-[32px] lg:text-[40px] font-normal text-text-primary leading-tight">
-                {project.title}
+                {displayTitle}
               </h1>
 
               {project.description && (
@@ -108,14 +123,14 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               <div>
                 <span
                   className={`inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border font-medium ${
-                    project.statusText === "Active"
+                    displayStatus === "Active"
                       ? "border-accent text-accent"
-                      : project.statusText === "Completed"
+                      : displayStatus === "Completed"
                         ? "border-[#2d5a2d] text-[#2d5a2d]"
                         : "border-border text-text-secondary"
                   }`}
                 >
-                  {project.statusText}
+                  {displayStatus}
                 </span>
               </div>
             </div>
@@ -129,11 +144,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 </span>
               </div>
               <p className="text-sm text-text-primary">
-                {new Date(project.createdAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {formatDate(project.createdAt)}
               </p>
               <div className="flex items-center gap-1.5 text-text-secondary">
                 <FiCalendar className="w-3.5 h-3.5" />
@@ -142,11 +153,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 </span>
               </div>
               <p className="text-sm text-text-primary">
-                {new Date(project.modifiedAt).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })}
+                {formatDate(project.modifiedAt || (project as any).updatedAt || project.createdAt)}
               </p>
             </div>
 
