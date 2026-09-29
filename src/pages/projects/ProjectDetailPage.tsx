@@ -478,7 +478,7 @@ export default function ProjectDetailPage() {
       <ProjectHeader
         project={project}
         onBack={() => navigate("/projects")}
-        onEdit={() => navigate(`/projects/${id}/edit`)}
+        onEdit={() => navigate(`/projects/${id}/overview`)}
         onSettings={() => navigate(`/projects/${id}/settings`)}
       />
 

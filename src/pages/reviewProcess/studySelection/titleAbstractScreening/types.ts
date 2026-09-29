@@ -20,6 +20,7 @@ import type {
 } from "../../../../types/studySelection";
 import type { ParsedSectionDto } from "../../../../types/paper";
 import type { UploadPdfOptions } from "../uploadTypes";
+import { formatAuthors } from "../../../../utils/formatAuthors";
 
 // ============================================
 // UI Types (string-based for rendering)
@@ -298,7 +299,7 @@ export function adaptPaperWithDecisions(paper: PaperWithDecisionsResponse): Scre
     id: paper.paperId,
     assignedReviewers: paper.assignedReviewers,
     title: paper.title,
-    authors: paper.authors,
+    authors: formatAuthors(paper.authors),
     doi: paper.doi,
     publicationYear: paper.publicationYear,
     abstract: paper.abstract,
@@ -352,7 +353,7 @@ export function adaptAssignedPaper(paper: AssignedPaperResponse): ScreeningPaper
     id: paper.paperId,
     assignedReviewers: paper.assignedReviewers,
     title: paper.title,
-    authors: paper.authors,
+    authors: formatAuthors(paper.authors),
     doi: paper.doi,
     publicationYear: paper.publicationYear,
     abstract: paper.abstract,
