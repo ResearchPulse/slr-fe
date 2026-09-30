@@ -24,25 +24,31 @@ export const useProjectMember = (projectId: string | undefined) => {
 
   useEffect(() => {
     if (query.data?.isSuccess && query.data.data) {
-      const { role, roleText } = query.data.data;
+      const { role, roleNumber, roleText } = query.data.data;
+      const roleNames: Record<string, number> = {
+        OWNER: 1,
+        ADMIN: 2,
+        REVIEWER: 3,
+        VIEWER: 4,
+      };
+      const normalizedRole =
+        typeof roleNumber === "number"
+          ? roleNumber
+          : typeof role === "number"
+            ? role
+            : roleNames[String(roleText || role).toUpperCase()] || 3;
       
       // Update Redux if the data is different or missing
       if (
         !currentProjectMember ||
-        currentProjectMember.role !== role ||
+        currentProjectMember.role !== normalizedRole ||
         currentProjectMember.roleText !== roleText
       ) {
-      const isLeader =
-        role === 1 ||
-        role === 2 ||
-        String(role).toUpperCase() === "OWNER" ||
-        String(role).toUpperCase() === "ADMIN" ||
-        String(roleText).toUpperCase() === "OWNER" ||
-        String(roleText).toUpperCase() === "ADMIN";
+      const isLeader = normalizedRole === 1 || normalizedRole === 2;
 
       dispatch(
         setProjectMember({
-          role,
+          role: normalizedRole,
           roleText,
           isLeader,
         })

@@ -169,8 +169,8 @@ class ProjectService {
    * Get current user's membership/role in a project
    * GET /api/projects/{projectId}/my-membership
    */
-  getMyMembership = async (projectId: string): Promise<ApiResponse<{ role: number; roleText: string }>> => {
-    const response = await api.get<ApiResponse<{ role: number; roleText: string }>>(`${this.endpoint}/${projectId}/my-membership`);
+  getMyMembership = async (projectId: string): Promise<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>> => {
+    const response = await api.get<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>>(`${this.endpoint}/${projectId}/my-membership`);
     return response.data;
   };
 

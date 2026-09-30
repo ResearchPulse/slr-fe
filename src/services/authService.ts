@@ -17,6 +17,11 @@ export const authService = {
     const response = await api.post<LoginResponse>("/auth/login", credentials);
     return response.data;
   },
+
+  quickLogin: async (keyLogin: string): Promise<LoginResponse> => {
+    const response = await api.post<LoginResponse>("/auth/dev/quick-login", { keyLogin });
+    return response.data;
+  },
   register: async (data: RegisterRequest): Promise<RegisterResponse> => {
     const response = await api.post<RegisterResponse>("/auth/register", data);
     return response.data;

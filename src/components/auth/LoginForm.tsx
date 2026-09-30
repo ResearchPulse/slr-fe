@@ -12,6 +12,7 @@ const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
 const isGoogleSignInConfigured = Boolean(
   GOOGLE_CLIENT_ID?.trim() && FIREBASE_API_KEY?.trim(),
 );
+const showQuickLogin = import.meta.env.DEV;
 
 interface GoogleCredentialResponse {
   credential: string;
@@ -241,6 +242,32 @@ const LoginForm: React.FC = () => {
     }
   };
 
+  const handleQuickLogin = async (account: "admin" | "leader" | "reviewer") => {
+    setIsLoading(true);
+    try {
+      const response = await authService.quickLogin(account);
+      if (!response.isSuccess) {
+        throw new Error("Quick login failed");
+      }
+
+      const { accessToken, userId, username, email, role } = response.data;
+      const normalizedRole = normalizeGlobalRole(role);
+      dispatch(
+        login({
+          accessToken,
+          accessTokenExpiresAt: response.data.accessTokenExpiresAt,
+          user: { id: userId, name: username, email, username, role: normalizedRole },
+        }),
+      );
+      toastSuccess("Welcome to Systematic Review Support System", `Hello ${username}`);
+      navigate(normalizedRole === "Admin" ? "/admin" : "/");
+    } catch {
+      toastError("Quick Login Failed", "Check that development authentication is enabled on the server.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="w-full flex flex-col items-center">
       {/* Heading */}
@@ -302,6 +329,43 @@ const LoginForm: React.FC = () => {
             </Button>
           </div>
         </form>
+
+        {showQuickLogin && (
+          <div className="mt-5">
+            <p className="mb-3 text-center text-[11px] uppercase tracking-wider text-text-secondary">
+              Quick login (development)
+            </p>
+            <div className="grid grid-cols-3 gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isLoading}
+                onClick={() => void handleQuickLogin("admin")}
+              >
+                Admin
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isLoading}
+                onClick={() => void handleQuickLogin("leader")}
+              >
+                Leader
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full"
+                disabled={isLoading}
+                onClick={() => void handleQuickLogin("reviewer")}
+              >
+                Reviewer
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* OR Divider & Google Login */}
         <div className="relative my-6">
