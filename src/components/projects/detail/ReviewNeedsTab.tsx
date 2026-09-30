@@ -51,12 +51,12 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
               </div>
               <div className="flex items-center gap-2 pt-3 border-t border-border">
                 <div className="w-5 h-5 bg-accent flex items-center justify-center text-[9px] text-bg-primary font-medium uppercase">
-                  {need.identified_by.charAt(0)}
+                  {(need.identified_by || "S").charAt(0)}
                 </div>
                 <p className="text-[11px] text-text-secondary">
                   Identified by{" "}
                   <span className="font-medium text-text-primary">
-                    {need.identified_by}
+                    {need.identified_by || "System"}
                   </span>
                 </p>
               </div>

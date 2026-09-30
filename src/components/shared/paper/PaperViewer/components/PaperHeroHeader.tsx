@@ -4,6 +4,7 @@ import { Sparkles } from "lucide-react";
 
 import { StatusBadge } from "./StatusBadge";
 import type { ScreeningPaper } from "../../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
+import { formatAuthors } from "../../../../../utils/formatAuthors";
 
 interface PaperHeroHeaderProps {
   paper: ScreeningPaper;
@@ -45,7 +46,7 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
         <div className="space-y-4">
           <div className="flex items-start gap-2">
             <p className="text-base font-bold text-text-secondary leading-relaxed">
-              {paper.authors ?? "Unknown authors"}
+              {formatAuthors(paper.authors) ?? "Unknown authors"}
             </p>
             {isFieldUpdated("Authors") && (
               <div className="group/spark relative flex items-center">

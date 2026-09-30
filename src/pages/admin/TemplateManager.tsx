@@ -447,14 +447,16 @@ export default function TemplateManager() {
             <p className="text-text-secondary mb-4">
               Create your first checklist template to get started
             </p>
-            <Button
-              onClick={() => {
-                setSelectedTemplateId(null);
-                setShowEditor(true);
-              }}
-            >
-              Create First Template
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  setSelectedTemplateId(null);
+                  setShowEditor(true);
+                }}
+              >
+                Create First Template
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

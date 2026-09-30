@@ -74,8 +74,8 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
 
     if (selectedPaperIds.length === 0) return;
 
-    // Use currentPhase from props. If not provided, fallback to 1 (TitleAbstract)
-    const phase = currentPhase ?? 1;
+    // PaperPhase uses 0/1 in the FE; the assignment API uses 1/2.
+    const phase = (currentPhase ?? 0) + 1;
 
     assignPapers(
       {
