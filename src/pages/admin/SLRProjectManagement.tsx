@@ -31,15 +31,15 @@ import toast from "react-hot-toast";
 
 const StatusBadge: React.FC<{ status: ProjectStatus }> = ({ status }) => {
   const styles = {
-    Draft: "bg-surface-white text-text-secondary border-border shadow-sm",
-    Active: "bg-surface-white text-success border-border shadow-sm",
-    Completed: "bg-bg-secondary text-accent border-border shadow-sm",
+    Draft: "bg-slate-50 text-slate-600 ring-slate-200",
+    Active: "bg-sky-50 text-sky-700 ring-sky-200",
+    Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
   };
 
   return (
     <span
       className={cn(
-        "px-2.5 py-0.5 rounded-full text-xs font-bold border",
+        "inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset",
         styles[status],
       )}
     >
@@ -158,33 +158,37 @@ const SLRProjectManagement: React.FC = () => {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="mx-auto max-w-[1600px] space-y-6 pb-2">
       {/* Page Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-        <div className="space-y-1">
-          <h3 className="text-2xl font-serif font-bold text-text-primary tracking-tight">
+      <div className="flex flex-col gap-5 border-b border-[#E3EAEE] pb-6 xl:flex-row xl:items-start xl:justify-between">
+        <div className="min-w-0">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#087BC1]">Project management</p>
+          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-[#173247] sm:text-[32px]">
             SLR Projects
-          </h3>
-          <p className="text-text-secondary text-sm font-medium">
+          </h1>
+          <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-[#71838F]">
             Manage and monitor systematic literature review workflows across the
             system.
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative group">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent transition-colors" />
+        <div className="flex w-full flex-col gap-3 xl:w-auto xl:min-w-[590px]">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap xl:justify-end">
+          <div className="group relative min-w-0 flex-1 sm:min-w-[230px]">
+            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#91A2AD] transition-colors group-focus-within:text-[#087BC1]" />
             <input
               type="text"
               placeholder="Search projects..."
-              className="pl-10 pr-10 py-2.5 bg-surface-white border border-border rounded-[4px] text-sm w-full sm:w-64 outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all font-medium shadow-sm"
+              className="h-11 w-full rounded-[9px] border border-[#DCE6EC] bg-white py-2.5 pl-10 pr-10 text-[13px] text-[#29485C] outline-none transition focus:border-[#8DBDD8] focus:ring-4 focus:ring-[#087BC1]/[0.08]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-accent transition-colors p-1"
+                type="button"
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-[#91A2AD] transition-colors hover:text-[#087BC1]"
               >
                 <FiX size={16} />
               </button>
@@ -192,7 +196,7 @@ const SLRProjectManagement: React.FC = () => {
           </div>
           <Tooltip content="Filter project list by status" position="bottom">
             <Select
-              className="w-40"
+              className="w-full sm:w-[170px]"
               value={statusFilter || ""}
               onChange={(e) => {
                 setStatusFilter((e.target.value as ProjectStatus) || undefined);
@@ -211,7 +215,8 @@ const SLRProjectManagement: React.FC = () => {
             position="bottom"
           >
             <button
-              className="flex items-center gap-2 px-4 py-2.5 bg-surface-white border border-border text-text-primary text-sm font-bold rounded-[4px] hover:bg-bg-secondary hover:text-accent transition-all active:scale-95 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              type="button"
+              className="flex h-11 items-center justify-center gap-2 rounded-[9px] border border-[#DCE6EC] bg-white px-4 text-[12px] font-semibold text-[#29485C] shadow-[0_1px_3px_rgba(23,50,71,0.04)] transition hover:border-[#B9CEDB] hover:bg-[#F8FBFD] disabled:cursor-not-allowed disabled:opacity-50"
               onClick={handleExportClick}
               disabled={isExporting}
             >
@@ -223,43 +228,49 @@ const SLRProjectManagement: React.FC = () => {
               {isExporting ? "Exporting..." : "Export"}
             </button>
           </Tooltip>
-        </div>
-      </div>
-
-      {/* Create Project Action Row */}
-      <div className="flex justify-end">
+          </div>
         <Tooltip
           content="Launch a new Systematic Literature Review project"
           position="left"
         >
           <button
-            className="flex items-center gap-2 px-6 py-3 bg-accent text-surface-white text-sm font-bold rounded-[4px] hover:bg-primary-hover hover:shadow-sm transition-all active:scale-95 group cursor-pointer"
+            type="button"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-[9px] bg-[#087BC1] px-5 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(8,123,193,0.16)] transition hover:bg-[#066CA9] sm:ml-auto sm:w-fit"
             onClick={handleCreateProjectClick}
           >
             <FiPlus
               size={20}
-              className="group-hover:rotate-90 transition-transform duration-300"
+              className="transition-transform duration-200"
             />
-            Create New Project
+            Create new project
           </button>
         </Tooltip>
+        </div>
       </div>
 
       {/* Error State */}
       {isError && (
-        <div className="p-4 bg-surface-white border border-red-100 rounded-md text-red-700 text-sm font-medium mb-6">
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-[13px] font-medium text-rose-700">
           {error ||
             "An error occurred while fetching projects. Please try again."}
         </div>
       )}
 
       {/* Table Container */}
-      <div className="bg-surface-white rounded-md border border-slate-100 shadow-none overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-[#E0E8ED] bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
         <div className="overflow-x-auto no-scrollbar">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[1080px] table-fixed border-collapse text-left">
+            <colgroup>
+              <col className="w-[11%]" />
+              <col className="w-[33%]" />
+              <col className="w-[18%]" />
+              <col className="w-[11%]" />
+              <col className="w-[11%]" />
+              <col className="w-[16%]" />
+            </colgroup>
             <thead>
-              <tr className="bg-slate-50/50 border-b border-slate-100">
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
+              <tr className="border-b border-[#E8EEF2] bg-[#F8FAFC]">
+                <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                   <Tooltip content="The unique identifier or project code for this workspace.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Code
@@ -267,7 +278,7 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                   <Tooltip content="Refers to the project title, domain classification, and brief summary of the systematic literature review.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Description
@@ -275,18 +286,18 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
-                  <Tooltip content="The project leader responsible for overseeing the research workspace.">
+                <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
+                  <Tooltip content="The project owner, who holds the project Leader role.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
-                      Leader
+                      Project owner
                       <FiInfo size={12} className="text-slate-300" />
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400">
+                <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                   Status
                 </th>
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400 text-center">
+                <th className="px-5 py-4 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                   <Tooltip content="Completed steps out of total steps in the review workflow">
                     <div className="flex items-center justify-center gap-1.5 cursor-help">
                       Processes
@@ -294,19 +305,19 @@ const SLRProjectManagement: React.FC = () => {
                     </div>
                   </Tooltip>
                 </th>
-                <th className="px-4 py-4 text-[11px] font-black uppercase tracking-widest text-slate-400 text-right">
+                <th className="px-5 py-4 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-50">
+            <tbody className="divide-y divide-[#E9EEF1]">
               {isLoading ? (
                 Array(pageSize)
                   .fill(0)
                   .map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td colSpan={6} className="px-4 py-6">
-                        <div className="h-12 bg-slate-50 rounded-md w-full" />
+                      <td colSpan={6} className="px-5 py-5">
+                        <div className="h-12 w-full rounded-lg bg-[#F4F7F9]" />
                       </td>
                     </tr>
                   ))
@@ -314,30 +325,30 @@ const SLRProjectManagement: React.FC = () => {
                 filteredProjects.map((project) => (
                   <tr
                     key={project.id}
-                    className="group hover:bg-slate-50/80 transition-colors"
+                    className="group transition-colors hover:bg-[#FAFCFD]"
                   >
-                    <td className="px-4 py-4">
-                      <span className="text-[10px] font-black bg-slate-100 text-slate-600 px-2 py-1 rounded uppercase tracking-wider border border-slate-200">
+                    <td className="px-5 py-4">
+                      <span className="inline-flex rounded-md border border-[#E0E8ED] bg-[#F4F7F9] px-2 py-1 text-[10px] font-bold tracking-[0.04em] text-[#536B7A]">
                         {project.code}
                       </span>
                     </td>
-                    <td className="px-4 py-4 max-w-xs">
+                    <td className="max-w-xs px-5 py-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Tooltip content={project.title}>
-                            <h4 className="font-bold text-slate-800 line-clamp-1 group-hover:text-accent transition-colors cursor-help">
+                            <h4 className="line-clamp-1 text-[13px] font-semibold text-[#29485C] transition-colors group-hover:text-[#087BC1]">
                               {project.title}
                             </h4>
                           </Tooltip>
                         </div>
-                        <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-tighter">
-                          <span className="px-1.5 py-0.5 bg-slate-100 rounded text-slate-500">
+                        <div className="flex min-w-0 items-center gap-2 pt-0.5 text-[10px] text-[#82929C]">
+                          <span className="max-w-[150px] truncate rounded bg-[#F1F5F7] px-1.5 py-0.5 font-semibold text-[#627987]">
                             {project.domain}
                           </span>
 
                           {project.description && (
                             <Tooltip content={project.description}>
-                              <span className="line-clamp-1 font-medium italic text-slate-300 normal-case cursor-help text-[10px]">
+                              <span className="line-clamp-1 font-normal text-[#98A6AE]">
                                 {project.description}
                               </span>
                             </Tooltip>
@@ -345,36 +356,45 @@ const SLRProjectManagement: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-5 py-4">
                       {project.leader ? (
-                        <Tooltip content={`${project.leader.fullName} (@${project.leader.userName || "username"}) • ${project.leader.email}`}>
-                          <div className="flex items-center gap-2.5 cursor-help">
-                            <div className="w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center text-accent font-bold text-xs border border-border">
-                              {project.leader.fullName.charAt(0)}
-                            </div>
-                            <span className="text-sm font-bold text-slate-700 leading-tight truncate max-w-[120px]">
+                        <Tooltip content={`${project.leader.fullName} (@${project.leader.username || "username"})${project.leader.email ? ` • ${project.leader.email}` : ""}`}>
+                          <span className="block truncate text-[12px] font-semibold leading-tight text-[#536B7A]">
                               {project.leader.fullName}
-                            </span>
-                          </div>
+                          </span>
                         </Tooltip>
                       ) : (
-                        <span className="text-xs font-bold text-slate-300 italic uppercase tracking-widest">
-                          No Leader
+                        <span className="text-[10px] font-medium text-[#9AA8B0]">
+                          Owner unavailable
                         </span>
                       )}
                     </td>
-                    <td className="px-4 py-4">
+                    <td className="px-5 py-4">
                       <StatusBadge status={project.statusText} />
                     </td>
-                    <td className="px-4 py-4 text-center">
-                      <span className="text-xs font-bold text-slate-700 bg-slate-50 px-2.5 py-1.5 rounded-[4px] border border-slate-100 whitespace-nowrap">
-                        <span className="text-accent">{project.completedProcesses ?? 0}</span>
-                        <span className="text-slate-300 mx-1">/</span>
-                        <span>{project.totalProcesses ?? 0}</span>
-                      </span>
+                    <td className="px-5 py-4 text-center">
+                      {typeof project.completedProcesses === "number" &&
+                      typeof project.totalProcesses === "number" ? (
+                        <span
+                          aria-label={`${project.completedProcesses} of ${project.totalProcesses} review phases completed`}
+                          className="whitespace-nowrap rounded-md border border-[#E8EEF2] bg-[#F8FAFC] px-2.5 py-1.5 text-[11px] font-semibold text-[#536B7A]"
+                        >
+                          <span className="text-[#087BC1]">{project.completedProcesses}</span>
+                          <span className="mx-1 text-[#B3C0C7]">/</span>
+                          <span>{project.totalProcesses}</span>
+                        </span>
+                      ) : (
+                        <span
+                          title="Workflow progress is not available for this project."
+                          aria-label="Workflow progress unavailable"
+                          className="text-[12px] text-[#98A6AE]"
+                        >
+                          —
+                        </span>
+                      )}
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 lg:opacity-100 transition-opacity">
+                    <td className="px-5 py-4 text-right">
+                      <div className="flex items-center justify-end gap-0.5 transition-opacity">
                         <ActionButton
                           icon={FiEye}
                           label="View Detail"
@@ -392,7 +412,7 @@ const SLRProjectManagement: React.FC = () => {
                           label="Edit Info"
                           onClick={() => handleEditProjectClick(project.id)}
                         />
-                        <div className="w-px h-4 bg-slate-200 mx-1" />
+                        <div className="mx-1 h-4 w-px bg-[#E3EAEE]" />
 
                         <ActionButton
                           icon={FaRegTrashAlt}
@@ -412,35 +432,37 @@ const SLRProjectManagement: React.FC = () => {
                 <tr key="no-projects">
                   <td
                     colSpan={6}
-                    className="px-6 py-28 text-center bg-slate-50/20"
+                    className="bg-white px-6 py-16 text-center"
                   >
-                    <div className="max-w-md mx-auto space-y-6 animate-in fade-in slide-in-from-top-4 duration-500">
-                      <div className="relative mx-auto w-24 h-24">
-                        <div className="absolute inset-0 bg-bg-secondary rounded-[4px] rotate-12 opacity-50 transition-transform group-hover:rotate-45" />
-                        <div className="relative w-full h-full bg-surface-white border border-border rounded-[4px] flex items-center justify-center text-text-secondary shadow-sm">
-                          <SiTask size={42} className="text-accent opacity-50" />
-                        </div>
+                    <div className="mx-auto flex max-w-md flex-col items-center">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF6FB] text-[#087BC1]">
+                        <SiTask size={21} />
                       </div>
-                      <div className="space-y-2">
-                        <h5 className="text-xl font-black text-slate-900 tracking-tight">
-                          No research workspaces found
+                      <div className="mt-4 space-y-1.5">
+                        <h5 className="text-[15px] font-semibold tracking-[-0.02em] text-[#29485C]">
+                          No projects found
                         </h5>
-                        <p className="text-sm text-slate-500 font-medium leading-relaxed italic">
-                          We couldn't find any projects matching your current
-                          filters. <br className="hidden sm:block" />
-                          Try adjusting your search criteria or create a fresh
-                          workspace.
+                        <p className="text-[12px] leading-5 text-[#82929C]">
+                          No projects match these filters. Adjust your search or create a project.
                         </p>
                       </div>
-                      <div className="pt-2">
+                      <div className="mt-4 flex flex-wrap justify-center gap-2">
                         <button
+                          type="button"
                           onClick={() => {
                             setSearchTerm("");
                             setStatusFilter(undefined);
                           }}
-                          className="px-6 py-2 text-xs font-bold text-accent bg-bg-secondary border border-border rounded-[4px] hover:bg-surface-white transition-all uppercase tracking-widest active:scale-95 shadow-sm"
+                          className="h-9 rounded-lg border border-[#DCE6EC] bg-white px-3.5 text-[11px] font-semibold text-[#536B7A] transition hover:bg-[#F8FAFC]"
                         >
-                          Clear All Filters
+                          Clear filters
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleCreateProjectClick}
+                          className="h-9 rounded-lg bg-[#087BC1] px-3.5 text-[11px] font-semibold text-white transition hover:bg-[#066CA9]"
+                        >
+                          Create project
                         </button>
                       </div>
                     </div>
@@ -452,21 +474,21 @@ const SLRProjectManagement: React.FC = () => {
         </div>
 
         {/* Pagination Footer */}
-        <div className="px-6 py-4 bg-slate-50/30 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="flex flex-col items-center justify-between gap-4 border-t border-[#E8EEF2] bg-[#FBFCFD] px-5 py-4 sm:flex-row sm:px-6">
           <div className="flex items-center gap-4">
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+            <p className="text-[11px] font-medium text-[#82929C]">
               Showing{" "}
-              <span className="text-slate-900">
+              <span className="font-semibold text-[#29485C]">
                 {totalCount > 0 ? itemsStart : 0}-{itemsEnd}
               </span>{" "}
-              of <span className="text-slate-900">{totalCount}</span>
+              of <span className="font-semibold text-[#29485C]">{totalCount}</span>
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+              <span className="text-[10px] font-medium text-[#82929C]">
                 Per page:
               </span>
               <Select
-                className="w-20 py-1.5"
+                className="w-[76px] [&>button]:h-9 [&>button]:rounded-lg [&>button]:px-2.5 [&>button]:text-[11px]"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
@@ -484,7 +506,9 @@ const SLRProjectManagement: React.FC = () => {
           <div className="flex items-center gap-2">
             <Tooltip content="Previous Page">
               <button
-                className="p-2 border border-slate-200 rounded-[4px] text-slate-400 hover:bg-surface-white hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none"
+                type="button"
+                aria-label="Previous page"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#DCE6EC] bg-white text-[#71838F] transition hover:border-[#B9CEDB] hover:text-[#087BC1] disabled:pointer-events-none disabled:opacity-40"
                 disabled={pageNumber === 1 || isLoading}
                 onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
               >
@@ -503,12 +527,13 @@ const SLRProjectManagement: React.FC = () => {
                 return (
                   <button
                     key={pageToShow}
+                    type="button"
                     onClick={() => setPageNumber(pageToShow)}
                     className={cn(
-                      "w-9 h-9 text-xs font-bold rounded-[4px] transition-all shadow-sm border",
+                      "h-9 min-w-9 rounded-lg border px-2 text-[11px] font-semibold transition-colors",
                       pageNumber === pageToShow
-                        ? "bg-accent text-surface-white shadow-sm border-accent"
-                        : "bg-surface-white text-text-primary hover:bg-bg-secondary border-border",
+                        ? "border-[#087BC1] bg-[#087BC1] text-white"
+                        : "border-[#DCE6EC] bg-white text-[#536B7A] hover:bg-[#F1F7FA]",
                     )}
                   >
                     {pageToShow}
@@ -519,7 +544,9 @@ const SLRProjectManagement: React.FC = () => {
 
             <Tooltip content="Next Page">
               <button
-                className="p-2 border border-slate-200 rounded-[4px] bg-surface-white text-slate-600 hover:bg-slate-50 hover:text-accent transition-all shadow-none disabled:opacity-30 disabled:pointer-events-none"
+                type="button"
+                aria-label="Next page"
+                className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#DCE6EC] bg-white text-[#71838F] transition hover:border-[#B9CEDB] hover:text-[#087BC1] disabled:pointer-events-none disabled:opacity-40"
                 disabled={
                   pageNumber === totalPages || totalPages === 0 || isLoading
                 }
@@ -534,11 +561,8 @@ const SLRProjectManagement: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Card Layout Hint */}
-      <div className="lg:hidden space-y-4 pt-4">
-        <p className="text-[10px] font-black text-center text-slate-400 uppercase tracking-[0.2em]">
-          End of Table View
-        </p>
+      <div className="px-1 text-center text-[10px] text-[#98A6AE] lg:hidden">
+        Scroll the table horizontally to see all columns.
       </div>
 
       {/* Project Form Modal */}

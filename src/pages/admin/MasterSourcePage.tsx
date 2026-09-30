@@ -25,6 +25,7 @@ import type {
 import FormField from "../../components/ui/FormField";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import Select from "../../components/ui/Select";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MasterSourcePage: React.FC = () => {
@@ -43,7 +44,6 @@ const MasterSourcePage: React.FC = () => {
     error: sourceLoadError,
     refetch: refetchSources,
   } = useMasterSources({
-    sourceName: searchQuery || undefined,
     isActive: statusFilter === "all" ? undefined : statusFilter === "active",
   });
 
@@ -119,68 +119,70 @@ const MasterSourcePage: React.FC = () => {
   }, [sources, searchQuery, statusFilter]);
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-[1600px] space-y-6 pb-2">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col gap-5 border-b border-[#E3EAEE] pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#087BC1]">System configuration</p>
+          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-[#173247] sm:text-[32px]">
             Search Sources
           </h1>
-          <p className="text-slate-500 mt-1">
+          <p className="mt-1.5 text-[14px] leading-6 text-[#71838F]">
             Manage global bibliographic databases for SLR projects.
           </p>
         </div>
         <button
+          type="button"
           onClick={() => handleOpenModal()}
-          className="flex items-center justify-center gap-2 bg-accent hover:bg-indigo-700 text-white px-5 py-2.5 rounded-md font-bold shadow-none shadow-indigo-200 transition-all transform hover:-translate-y-0.5"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-[9px] bg-[#087BC1] px-5 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(8,123,193,0.16)] transition hover:bg-[#066CA9]"
         >
-          <FiPlus className="w-5 h-5" />
-          <span>Create New Source</span>
+          <FiPlus className="h-4 w-4" />
+          <span>Create source</span>
         </button>
       </div>
 
       {/* Filter Bar */}
-      <div className="bg-surface-white p-4 rounded-md shadow-none border border-slate-100 flex flex-col md:flex-row gap-4 items-center">
-        <div className="relative flex-1 w-full">
-          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+      <div className="flex flex-col gap-3 rounded-xl border border-[#E0E8ED] bg-white p-3.5 sm:flex-row sm:items-center">
+        <div className="group relative min-w-0 flex-1">
+          <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#91A2AD] transition-colors group-focus-within:text-[#087BC1]" />
           <input
             type="text"
             placeholder="Search by name or URL..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-md focus:ring-2 focus:ring-indigo-500/20 transition-all text-slate-600 font-medium"
+            className="h-11 w-full rounded-[9px] border border-[#DCE6EC] bg-[#FBFCFD] py-2.5 pl-10 pr-4 text-[13px] text-[#29485C] outline-none transition focus:border-[#8DBDD8] focus:bg-white focus:ring-4 focus:ring-[#087BC1]/[0.08]"
           />
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2 bg-slate-50 px-4 py-2 rounded-md border border-slate-100 min-w-[160px]">
-            <FiFilter className="text-slate-400" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-transparent border-none focus:ring-0 text-slate-600 font-bold w-full cursor-pointer"
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active Only</option>
-              <option value="inactive">Inactive Only</option>
-            </select>
-          </div>
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <FiFilter className="ml-1 h-4 w-4 shrink-0 text-[#91A2AD]" />
+          <Select
+            aria-label="Filter by source status"
+            className="w-full sm:w-[180px]"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            options={[
+              { value: "all", label: "All statuses" },
+              { value: "active", label: "Active only" },
+              { value: "inactive", label: "Inactive only" },
+            ]}
+          />
         </div>
       </div>
 
       {/* Data Table */}
-      <div className="bg-surface-white rounded-md shadow-none border border-slate-100 overflow-hidden">
+      <div className="overflow-hidden rounded-xl border border-[#E0E8ED] bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
         {isLoading ? (
-          <div className="min-h-[280px] flex flex-col items-center justify-center gap-3 text-slate-500">
+          <div className="flex min-h-[250px] flex-col items-center justify-center gap-3 text-[#71838F]">
             <LoadingSpinner size="lg" />
-            <p className="text-sm font-medium">Loading sources...</p>
+            <p className="text-[13px] font-medium">Loading sources...</p>
           </div>
         ) : hasSourceLoadError && !sources ? (
-          <div className="py-20 flex flex-col items-center justify-center text-center text-slate-500">
-            <div className="w-20 h-20 bg-red-50 text-red-400 rounded-full flex items-center justify-center mb-4">
-              <FiAlertCircle className="w-10 h-10" />
+          <div className="flex min-h-[250px] flex-col items-center justify-center px-5 py-12 text-center text-[#71838F]">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+              <FiAlertCircle className="h-5 w-5" />
             </div>
-            <p className="text-lg font-bold text-slate-700">Could not load search sources</p>
-            <p className="text-sm mt-1 max-w-lg">
+            <p className="text-[15px] font-semibold text-[#29485C]">Could not load search sources</p>
+            <p className="mt-1 max-w-lg text-[12px] leading-5">
               {sourceLoadError instanceof Error
                 ? sourceLoadError.message
                 : "The server could not return the source list."}
@@ -188,44 +190,63 @@ const MasterSourcePage: React.FC = () => {
             <button
               type="button"
               onClick={() => void refetchSources()}
-              className="mt-4 px-4 py-2 rounded-md bg-accent text-white font-semibold hover:bg-[#7a0000]"
+              className="mt-4 h-9 rounded-lg bg-[#087BC1] px-4 text-[12px] font-semibold text-white transition hover:bg-[#066CA9]"
             >
               Retry
             </button>
           </div>
         ) : filteredSources.length === 0 ? (
-          <div className="py-20 flex flex-col items-center justify-center text-slate-400">
-            <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-              <FiDatabase className="w-10 h-10 opacity-20" />
+          <div className="flex min-h-[250px] flex-col items-center justify-center px-5 py-12 text-center text-[#82929C]">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[#EEF6FB] text-[#087BC1]">
+              <FiDatabase className="h-5 w-5" />
             </div>
-            <p className="text-lg font-bold">No sources found</p>
-            <p className="text-sm">
+            <p className="text-[15px] font-semibold text-[#29485C]">No sources found</p>
+            <p className="mt-1 text-[12px]">
               Try adjusting your filters or create a new one.
             </p>
+            {(searchQuery || statusFilter !== "all") && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                }}
+                className="mt-4 h-9 rounded-lg border border-[#DCE6EC] bg-white px-3.5 text-[11px] font-semibold text-[#536B7A] transition hover:bg-[#F8FAFC]"
+              >
+                Clear filters
+              </button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto no-scrollbar">
-            <table className="w-full text-left">
+            <table className="w-full min-w-[760px] table-fixed text-left">
+              <colgroup>
+                <col className="w-[24%]" />
+                <col className="w-[39%]" />
+                <col className="w-[14%]" />
+                <col className="w-[11%]" />
+                <col className="w-[12%]" />
+              </colgroup>
               <thead>
-                <tr className="border-b border-slate-50">
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                <tr className="border-b border-[#E8EEF2] bg-[#F8FAFC]">
+                  <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                     Source Name
                   </th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider">
+                  <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                     Base URL
                   </th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
+                  <th className="px-5 py-4 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                     Status
                   </th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-center">
+                  <th className="px-5 py-4 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                     Usage
                   </th>
-                  <th className="px-6 py-5 text-sm font-bold text-slate-500 uppercase tracking-wider text-right">
+                  <th className="px-5 py-4 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-[#82929C]">
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-50">
+              <tbody className="divide-y divide-[#E9EEF1]">
                 <AnimatePresence>
                   {filteredSources.map((source) => (
                     <motion.tr
@@ -233,84 +254,90 @@ const MasterSourcePage: React.FC = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
-                      className="hover:bg-slate-50/50 transition-colors"
+                      className="transition-colors hover:bg-[#FAFCFD]"
                     >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-bg-secondary rounded-[4px] flex items-center justify-center text-accent font-bold">
+                      <td className="px-5 py-4">
+                        <div className="flex min-w-0 items-center gap-3">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] bg-[#EEF6FB] text-[13px] font-semibold text-[#087BC1]">
                             {source.sourceName.charAt(0).toUpperCase()}
                           </div>
-                          <span className="font-bold text-slate-700">
+                          <span className="truncate text-[13px] font-semibold text-[#29485C]">
                             {source.sourceName}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="min-w-0 px-5 py-4">
                         <a
                           href={source.baseUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-slate-500 hover:text-accent flex items-center gap-1.5 transition-colors group underline decoration-slate-200 underline-offset-4"
+                          className="group flex min-w-0 items-center gap-1.5 text-[12px] text-[#627987] transition-colors hover:text-[#087BC1]"
                         >
-                          <span className="truncate max-w-[250px]">
+                          <span className="truncate underline decoration-[#DCE6EC] underline-offset-4">
                             {source.baseUrl}
                           </span>
-                          <FiExternalLink className="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <FiExternalLink className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                         </a>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-5 py-4">
                         <div className="flex justify-center">
                           <span
-                            className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest ${
+                            className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${
                               source.isActive
-                                ? "bg-emerald-50 text-emerald-600"
-                                : "bg-slate-100 text-slate-500"
+                                ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
+                                : "bg-slate-50 text-slate-600 ring-slate-200"
                             }`}
                           >
                             {source.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col items-center">
-                          <span className="text-lg font-black text-slate-700 leading-none">
+                      <td className="px-5 py-4 text-center">
+                        <div className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
+                          <span className="text-[13px] font-semibold leading-none text-[#29485C]">
                             {source.usageCount || 0}
                           </span>
-                          <span className="text-[10px] uppercase font-bold text-slate-400 mt-1">
+                          <span className="text-[10px] text-[#82929C]">
                             Projects
                           </span>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-5 py-4">
+                        <div className="flex items-center justify-end gap-1">
                           <button
+                            type="button"
                             onClick={() => toggleStatus(source.id)}
                             title={source.isActive ? "Deactivate" : "Activate"}
-                            className={`p-2 rounded-[4px] transition-all ${
+                            aria-label={source.isActive ? "Deactivate source" : "Activate source"}
+                            className={`flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
                               source.isActive
-                                ? "text-emerald-500 hover:bg-emerald-50"
-                                : "text-slate-400 hover:bg-slate-50"
+                                ? "text-emerald-600 hover:bg-emerald-50"
+                                : "text-[#82929C] hover:bg-[#F1F5F7]"
                             }`}
                           >
                             {source.isActive ? (
-                              <FiToggleRight className="w-6 h-6" />
+                              <FiToggleRight className="h-5 w-5" />
                             ) : (
-                              <FiToggleLeft className="w-6 h-6" />
+                              <FiToggleLeft className="h-5 w-5" />
                             )}
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleOpenModal(source)}
-                            className="p-2 text-accent hover:bg-bg-secondary rounded-[4px] transition-all"
+                            aria-label={`Edit ${source.sourceName}`}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-[#087BC1] transition-colors hover:bg-[#EEF6FB]"
                             title="Edit"
                           >
-                            <FiEdit2 className="w-5 h-5" />
+                            <FiEdit2 className="h-[17px] w-[17px]" />
                           </button>
                           <button
+                            type="button"
                             onClick={() => setDeleteId(source.id)}
-                            className="p-2 text-rose-500 hover:bg-rose-50 rounded-[4px] transition-all"
+                            aria-label={`Delete ${source.sourceName}`}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg text-rose-500 transition-colors hover:bg-rose-50"
                             title="Delete"
                           >
-                            <FiTrash2 className="w-5 h-5" />
+                            <FiTrash2 className="h-[17px] w-[17px]" />
                           </button>
                         </div>
                       </td>
@@ -333,9 +360,9 @@ const MasterSourcePage: React.FC = () => {
         size="md"
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 pt-2">
-          <div className="p-4 bg-bg-secondary/50 rounded-md border border-indigo-100 flex gap-3">
-            <FiAlertCircle className="text-accent w-5 h-5 shrink-0 mt-0.5" />
-            <p className="text-sm text-indigo-900 leading-relaxed font-medium">
+          <div className="flex gap-3 rounded-xl border border-[#DCEAF2] bg-[#F4F9FC] p-4">
+            <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#087BC1]" />
+            <p className="text-[12px] leading-5 text-[#536B7A]">
               These sources will be available globally for all users to select
               during the search identification phase.
             </p>
@@ -347,7 +374,7 @@ const MasterSourcePage: React.FC = () => {
             errorMessage={errors.sourceName?.message}
             {...register("sourceName", { required: "Source name is required" })}
             placeholder="e.g., Scopus, Web of Science"
-            className="rounded-md"
+            className="rounded-lg"
           />
 
           <FormField
@@ -363,13 +390,13 @@ const MasterSourcePage: React.FC = () => {
               },
             })}
             placeholder="e.g., https://www.scopus.com"
-            className="rounded-md"
+            className="rounded-lg"
           />
 
-          <div className="flex items-center justify-between p-4 bg-slate-50 rounded-md border border-slate-100">
+          <div className="flex items-center justify-between rounded-xl border border-[#E3EAEE] bg-[#F8FAFC] p-4">
             <div>
-              <p className="font-bold text-slate-700">Initial Status</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-[13px] font-semibold text-[#29485C]">Initial status</p>
+              <p className="mt-0.5 text-[11px] text-[#82929C]">
                 Enable this source immediately
               </p>
             </div>
@@ -379,16 +406,16 @@ const MasterSourcePage: React.FC = () => {
                 {...register("isActive")}
                 className="sr-only peer"
               />
-              <div className="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-surface-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-accent"></div>
+              <div className="relative h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-[#087BC1] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#087BC1]/10"></div>
             </label>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex gap-3 border-t border-[#E8EEF2] pt-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => setIsModalOpen(false)}
-              className="flex-1 rounded-md font-bold py-3"
+              className="flex-1 rounded-lg py-2.5 text-[12px] font-semibold"
             >
               Cancel
             </Button>
@@ -396,7 +423,7 @@ const MasterSourcePage: React.FC = () => {
               type="submit"
               variant="primary"
               isLoading={isCreating || isUpdating}
-              className="flex-2 rounded-md font-bold py-3 bg-accent border-none! shadow-none shadow-indigo-100"
+              className="flex-1 rounded-lg border-none! bg-[#087BC1] py-2.5 text-[12px] font-semibold shadow-none hover:bg-[#066CA9]"
             >
               {editingSource ? "Save Changes" : "Create Source"}
             </Button>
