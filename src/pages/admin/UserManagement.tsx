@@ -427,18 +427,19 @@ const UserManagement: React.FC = () => {
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-tighter">
                 View Intensity:
               </span>
-              <select
-                className="bg-transparent border-none text-xs font-black text-accent outline-none cursor-pointer focus:ring-0"
+              <Select
+                className="w-32"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
                   setPageNumber(1);
                 }}
-              >
-                <option value={10}>10 per page</option>
-                <option value={20}>20 per page</option>
-                <option value={50}>50 per page</option>
-              </select>
+                options={[
+                  { value: "10", label: "10" },
+                  { value: "20", label: "20" },
+                  { value: "50", label: "50" },
+                ]}
+              />
             </div>
           </div>
 

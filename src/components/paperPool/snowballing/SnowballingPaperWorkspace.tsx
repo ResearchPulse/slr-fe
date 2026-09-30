@@ -22,6 +22,7 @@ import {
 import type { PaperWithCandidateDto } from "../../../types/paper";
 import { type MockCandidate } from "../../../mocks/snowballingMockData";
 import Pagination from "../../ui/Pagination";
+import Select from "../../ui/Select";
 import CandidateDetailPanel from "./CandidateDetailPanel";
 import Modal from "../../ui/Modal";
 import { cn } from "../../../utils/cn";
@@ -385,19 +386,20 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                 <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
                   Page Size
                 </span>
-                <select
+                <Select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setPageNumber(1);
                   }}
-                  className="bg-bg-secondary border border-border rounded-[4px] text-xs font-bold px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/20"
-                >
-                  <option value={10}>10</option>
-                  <option value={25}>25</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
+                  className="w-[72px]"
+                  options={[
+                    { value: "10", label: "10" },
+                    { value: "25", label: "25" },
+                    { value: "50", label: "50" },
+                    { value: "100", label: "100" },
+                  ]}
+                />
               </div>
               <div className="w-px h-4 bg-slate-200" />
               <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
