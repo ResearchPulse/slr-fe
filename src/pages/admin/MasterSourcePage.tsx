@@ -24,7 +24,7 @@ import type {
 } from "../../types/masterSource";
 import FormField from "../../components/ui/FormField";
 import Button from "../../components/ui/Button";
-import SectionLoading from "../../components/ui/SectionLoading";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MasterSourcePage: React.FC = () => {
@@ -36,7 +36,13 @@ const MasterSourcePage: React.FC = () => {
   );
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  const { data: sources, isLoading } = useMasterSources({
+  const {
+    data: sources,
+    isLoading,
+    isError: hasSourceLoadError,
+    error: sourceLoadError,
+    refetch: refetchSources,
+  } = useMasterSources({
     sourceName: searchQuery || undefined,
     isActive: statusFilter === "all" ? undefined : statusFilter === "active",
   });
@@ -164,8 +170,28 @@ const MasterSourcePage: React.FC = () => {
       {/* Data Table */}
       <div className="bg-surface-white rounded-md shadow-none border border-slate-100 overflow-hidden">
         {isLoading ? (
-          <div className="py-20">
-            <SectionLoading type="admin" title="Loading sources..." />
+          <div className="min-h-[280px] flex flex-col items-center justify-center gap-3 text-slate-500">
+            <LoadingSpinner size="lg" />
+            <p className="text-sm font-medium">Loading sources...</p>
+          </div>
+        ) : hasSourceLoadError && !sources ? (
+          <div className="py-20 flex flex-col items-center justify-center text-center text-slate-500">
+            <div className="w-20 h-20 bg-red-50 text-red-400 rounded-full flex items-center justify-center mb-4">
+              <FiAlertCircle className="w-10 h-10" />
+            </div>
+            <p className="text-lg font-bold text-slate-700">Could not load search sources</p>
+            <p className="text-sm mt-1 max-w-lg">
+              {sourceLoadError instanceof Error
+                ? sourceLoadError.message
+                : "The server could not return the source list."}
+            </p>
+            <button
+              type="button"
+              onClick={() => void refetchSources()}
+              className="mt-4 px-4 py-2 rounded-md bg-accent text-white font-semibold hover:bg-[#7a0000]"
+            >
+              Retry
+            </button>
           </div>
         ) : filteredSources.length === 0 ? (
           <div className="py-20 flex flex-col items-center justify-center text-slate-400">
