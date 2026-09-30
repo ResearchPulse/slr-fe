@@ -29,7 +29,7 @@ const TableHeader: React.FC<TableHeaderProps> = ({
 }) => {
   return (
     <thead
-      className={cn("bg-bg-secondary border-b border-border", className)}
+      className={cn("bg-transparent border-b border-border", className)}
       {...props}
     >
       {children}
@@ -65,7 +65,7 @@ const TableRow: React.FC<TableRowProps> = ({
   return (
     <tr
       className={cn(
-        "transition-colors hover:bg-bg-secondary/60 group cursor-pointer",
+        "transition-colors hover:bg-bg-secondary/50 group cursor-pointer",
         className,
       )}
       {...props}
@@ -87,7 +87,7 @@ const TableHead: React.FC<TableHeadProps> = ({
   return (
     <th
       className={cn(
-        "p-4 text-[10px] font-medium text-text-secondary uppercase tracking-[0.15em]",
+        "p-4 text-[12px] font-medium text-text-muted tracking-[0.02em]",
         className,
       )}
       {...props}

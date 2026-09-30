@@ -37,12 +37,12 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       <div className="flex items-center gap-4">
         <button
           onClick={onMenuClick}
-          className="p-2 -ml-2 text-text-secondary hover:text-accent hover:bg-bg-primary rounded-[4px] transition-all lg:hidden"
+          className="p-2 -ml-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[8px] transition-colors lg:hidden"
           aria-label="Toggle Menu"
         >
           <FiMenu className="w-6 h-6" />
         </button>
-        <h2 className="font-cormorant text-2xl font-normal text-text-primary tracking-tight">
+        <h2 className="text-xl font-semibold text-text-primary tracking-[-0.01em]">
           {pageTitle}
         </h2>
       </div>
@@ -63,14 +63,14 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
 
         <div className="flex items-center gap-3 p-1">
           <div className="hidden sm:block text-right ml-2">
-            <p className="text-[13px] font-medium text-text-primary leading-tight tracking-wide">
+            <p className="text-[13px] font-medium text-text-primary leading-tight">
               {user?.name || "Admin Account"}
             </p>
-            <p className="text-[10px] uppercase font-medium text-text-secondary tracking-[0.2em] mt-0.5">
+            <p className="text-[12px] text-text-muted mt-0.5">
               {user?.role || "Super Admin"}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-[4px] bg-accent text-bg-primary flex items-center justify-center font-medium text-sm shadow-none ring-1 ring-border">
+          <div className="h-9 w-9 rounded-full bg-primary-light text-primary flex items-center justify-center font-semibold text-sm">
             {user?.name ? getUserInitials(user.name) : "AD"}
           </div>
         </div>

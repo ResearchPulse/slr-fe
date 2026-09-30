@@ -90,10 +90,10 @@ export const Modal: React.FC<ModalProps> = ({
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-surface-white border border-border shadow-lg overflow-hidden transform transition-all z-10 flex flex-col",
-          mode === "drawer" 
+          "relative w-full bg-surface-white border border-border shadow-[0_8px_32px_rgba(18,35,49,0.12)] overflow-hidden transform transition-all z-10 flex flex-col",
+          mode === "drawer"
             ? "h-full max-h-screen rounded-none border-l border-y-0 border-r-0 animate-in slide-in-from-right fade-in duration-300"
-            : "rounded-[4px] max-h-[85vh] animate-in zoom-in-95 fade-in duration-300",
+            : "rounded-[12px] max-h-[85vh] animate-in zoom-in-95 fade-in duration-300",
           sizeStyles[size],
           className,
         )}
@@ -103,7 +103,7 @@ export const Modal: React.FC<ModalProps> = ({
         {/* Header Section */}
         <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border shrink-0">
           <div className="space-y-1">
-            <div className="text-[18px] font-medium text-text-primary leading-snug">
+            <div className="text-[17px] font-semibold text-text-primary leading-snug tracking-[-0.01em]">
               {title}
             </div>
             {description && (
@@ -112,7 +112,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-colors"
+            className="p-2 text-text-muted hover:text-text-primary hover:bg-bg-secondary rounded-[8px] transition-colors"
           >
             <FiX size={18} />
             <span className="sr-only">Close</span>
@@ -126,7 +126,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Footer Section */}
         {footer && (
-          <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-border bg-bg-secondary shrink-0">
+          <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-border bg-surface-white shrink-0">
             {footer}
           </div>
         )}

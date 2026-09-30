@@ -6,24 +6,24 @@ const PolicyPage: React.FC = () => {
   const navigate = useNavigate();
   return (
     <div className="min-h-screen w-full bg-bg-primary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto border border-border overflow-hidden">
+      <div className="max-w-4xl mx-auto border border-border rounded-[16px] overflow-hidden bg-surface-white">
         {/* Header */}
-        <div className="bg-text-primary px-8 py-12 relative">
+        <div className="px-8 py-10 sm:px-12 relative border-b border-border">
           <button
             onClick={() => navigate("/auth/signup")}
-            className="absolute top-6 right-6 p-2 text-bg-primary/40 hover:text-bg-primary transition-colors border border-bg-primary/10 hover:border-bg-primary/30"
+            className="absolute top-6 right-6 p-2 rounded-[8px] text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors"
             aria-label="Close"
           >
             <FiX className="w-4 h-4" />
           </button>
           <div className="mt-2">
-            <p className="text-[11px] uppercase tracking-[0.3em] text-bg-primary/40 mb-4">
-              Legal Information
+            <p className="text-[12px] font-medium text-text-muted mb-3">
+              Legal information
             </p>
-            <h1 className="font-cormorant text-[44px] sm:text-[52px] font-normal text-bg-primary leading-tight mb-3">
+            <h1 className="text-[32px] sm:text-[40px] font-semibold text-text-primary leading-[1.15] tracking-[-0.01em] mb-3">
               Privacy Policy &amp; Terms
             </h1>
-            <p className="text-bg-primary/50 text-sm">
+            <p className="text-text-muted text-[13px]">
               Last updated: January 11, 2026
             </p>
           </div>
@@ -34,10 +34,10 @@ const PolicyPage: React.FC = () => {
           {/* Section 1 */}
           <section className="space-y-4">
             <div className="border-b border-border pb-3 mb-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+              <p className="font-mono text-[12px] text-text-muted mb-1">
                 01
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-[22px] font-semibold text-text-primary tracking-[-0.01em]">
                 Introduction
               </h2>
             </div>
@@ -61,10 +61,10 @@ const PolicyPage: React.FC = () => {
           {/* Section 2 */}
           <section className="space-y-4">
             <div className="border-b border-border pb-3 mb-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+              <p className="font-mono text-[12px] text-text-muted mb-1">
                 02
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-[22px] font-semibold text-text-primary tracking-[-0.01em]">
                 Data Collection
               </h2>
             </div>
@@ -113,10 +113,10 @@ const PolicyPage: React.FC = () => {
           {/* Section 3 */}
           <section className="space-y-4">
             <div className="border-b border-border pb-3 mb-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+              <p className="font-mono text-[12px] text-text-muted mb-1">
                 03
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-[22px] font-semibold text-text-primary tracking-[-0.01em]">
                 User Responsibilities
               </h2>
             </div>
@@ -155,10 +155,10 @@ const PolicyPage: React.FC = () => {
           {/* Section 4 */}
           <section className="space-y-4">
             <div className="border-b border-border pb-3 mb-4">
-              <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
+              <p className="font-mono text-[12px] text-text-muted mb-1">
                 04
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-[22px] font-semibold text-text-primary tracking-[-0.01em]">
                 Security Measures
               </h2>
             </div>

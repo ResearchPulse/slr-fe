@@ -23,11 +23,11 @@ export default function EmptyState({
 }: EmptyStateProps) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="mb-6 opacity-80 text-text-secondary">{icon}</div>
-      <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-3 tracking-tight">
+      <div className="mb-6 text-text-muted">{icon}</div>
+      <h3 className="text-xl font-semibold text-text-primary mb-2 tracking-[-0.01em]">
         {title}
       </h3>
-      <p className="text-text-secondary text-[13px] tracking-wide text-center max-w-md mb-8 leading-relaxed">
+      <p className="text-text-secondary text-sm text-center max-w-md mb-8 leading-relaxed">
         {description}
       </p>
       <div className="flex items-center gap-3">
@@ -42,9 +42,7 @@ export default function EmptyState({
         )}
       </div>
       {helperText && (
-        <p className="text-[11px] uppercase tracking-[0.1em] text-text-secondary mt-6">
-          {helperText}
-        </p>
+        <p className="text-[13px] text-text-muted mt-6">{helperText}</p>
       )}
     </div>
   );

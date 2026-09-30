@@ -20,7 +20,7 @@ export const Skeleton: React.FC<SkeletonProps> = ({ className, ...props }) => {
  */
 export const CardSkeleton: React.FC = () => {
   return (
-    <div className="rounded-[4px] border border-border bg-surface-white p-6 space-y-4 shadow-none">
+    <div className="rounded-[12px] border border-border bg-surface-white p-6 space-y-4 shadow-none">
       <div className="flex justify-between items-start">
         <Skeleton className="h-6 w-2/3 rounded" />
         <Skeleton className="h-5 w-16 rounded-full" />
@@ -34,7 +34,7 @@ export const CardSkeleton: React.FC = () => {
           <Skeleton className="h-4 w-12" />
           <Skeleton className="h-4 w-16" />
         </div>
-        <Skeleton className="h-8 w-24 rounded-[4px]" />
+        <Skeleton className="h-8 w-24 rounded-[8px]" />
       </div>
     </div>
   );
@@ -45,9 +45,9 @@ export const CardSkeleton: React.FC = () => {
  */
 export const TableSkeleton: React.FC<{ rows?: number }> = ({ rows = 5 }) => {
   return (
-    <div className="w-full border border-border rounded-[4px] overflow-hidden bg-surface-white">
+    <div className="w-full border border-border rounded-[12px] overflow-hidden bg-surface-white">
       {/* Header */}
-      <div className="bg-bg-secondary px-6 py-4 border-b border-border flex justify-between gap-4">
+      <div className="bg-bg-secondary/60 px-6 py-4 border-b border-border flex justify-between gap-4">
         <Skeleton className="h-4 w-1/4" />
         <Skeleton className="h-4 w-1/6" />
         <Skeleton className="h-4 w-1/6" />

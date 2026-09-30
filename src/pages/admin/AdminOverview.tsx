@@ -19,13 +19,13 @@ import { useAdminAuditLogs } from "../../hooks/useAuditLogs";
 import { masterSourceService } from "../../services/masterSourceService";
 
 const actionToneClasses: Record<string, string> = {
-  create: "bg-emerald-50 text-[#2d5a2d] border-emerald-200",
-  update: "bg-blue-50 text-blue-700 border-blue-200",
-  delete: "bg-rose-50 text-[#7a0000] border-rose-200",
-  export: "bg-slate-50 text-slate-700 border-slate-200",
-  access: "bg-purple-50 text-purple-700 border-purple-200",
-  review: "bg-amber-50 text-amber-700 border-amber-200",
-  system: "bg-bg-secondary text-accent border-border",
+  create: "bg-success/10 text-success border-success/20",
+  update: "bg-primary-light text-primary border-primary/20",
+  delete: "bg-rose-50 text-rose-700 border-rose-200",
+  export: "bg-bg-secondary text-text-secondary border-border",
+  access: "bg-primary-light text-primary border-primary/20",
+  review: "bg-warning/10 text-warning border-warning/20",
+  system: "bg-bg-secondary text-text-secondary border-border",
 };
 
 const AdminOverview: React.FC = () => {
@@ -74,7 +74,7 @@ const AdminOverview: React.FC = () => {
         change: "Active Members",
         tone: "indigo",
         path: "/admin/users",
-        icon: <FiUsers className="w-5 h-5 text-accent" />,
+        icon: <FiUsers className="w-5 h-5 text-primary" />,
       },
       {
         label: "Active Projects",
@@ -82,7 +82,7 @@ const AdminOverview: React.FC = () => {
         change: "Under Review",
         tone: "emerald",
         path: "/admin/projects",
-        icon: <SiTask className="w-5 h-5 text-[#2d5a2d]" />,
+        icon: <SiTask className="w-5 h-5 text-success" />,
       },
       {
         label: "Audit Events",
@@ -90,7 +90,7 @@ const AdminOverview: React.FC = () => {
         change: "Real-time Trails",
         tone: "amber",
         path: "/admin/audit-logs",
-        icon: <FiFileText className="w-5 h-5 text-amber-600" />,
+        icon: <FiFileText className="w-5 h-5 text-warning" />,
       },
       {
         label: "Search Sources",
@@ -98,7 +98,7 @@ const AdminOverview: React.FC = () => {
         change: "Connected DBs",
         tone: "blue",
         path: "/admin/master-sources",
-        icon: <FiDatabase className="w-5 h-5 text-blue-600" />,
+        icon: <FiDatabase className="w-5 h-5 text-primary" />,
       },
     ],
     [
@@ -141,7 +141,7 @@ const AdminOverview: React.FC = () => {
       {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-border pb-6">
         <div className="space-y-1">
-          <h3 className="font-cormorant text-3xl sm:text-4xl font-normal text-text-primary tracking-tight">
+          <h3 className="text-[28px] sm:text-[34px] font-semibold text-text-primary tracking-[-0.01em]">
             Welcome back, Admin
           </h3>
           <p className="text-text-secondary text-sm">
@@ -153,18 +153,18 @@ const AdminOverview: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-accent text-surface-white text-xs font-bold uppercase tracking-wider hover:bg-[#7a0000] transition-all shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-4 h-10 rounded-[8px] bg-primary text-surface-white text-[13px] font-medium hover:bg-primary-hover transition-colors"
           >
             <SiTask className="w-3.5 h-3.5" />
-            Manage Projects
+            Manage projects
           </button>
           <button
             type="button"
             onClick={() => navigate("/admin/audit-logs")}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-md bg-surface-white border border-border text-text-primary text-xs font-bold uppercase tracking-wider hover:bg-bg-secondary hover:text-accent transition-all"
+            className="inline-flex items-center gap-2 px-4 h-10 rounded-[8px] bg-surface-white border border-border text-[13px] font-medium text-text-primary hover:bg-bg-secondary transition-colors"
           >
-            <FiClock className="w-3.5 h-3.5 text-accent" />
-            Audit Console
+            <FiClock className="w-3.5 h-3.5 text-text-muted" />
+            Audit console
           </button>
         </div>
       </div>
@@ -175,22 +175,22 @@ const AdminOverview: React.FC = () => {
           <div
             key={i}
             onClick={() => navigate(stat.path)}
-            className="bg-surface-white p-5 rounded-md border border-border shadow-none transition-all duration-200 hover:border-accent/40 hover:shadow-sm cursor-pointer group flex flex-col justify-between"
+            className="bg-surface-white p-5 rounded-[12px] border border-border transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-[0_2px_8px_rgba(18,35,49,0.06)] cursor-pointer group flex flex-col justify-between"
           >
             <div className="flex items-start justify-between mb-3">
-              <span className="text-[11px] font-bold text-text-secondary uppercase tracking-[0.18em] group-hover:text-accent transition-colors">
+              <span className="text-[12px] font-medium text-text-muted group-hover:text-primary transition-colors">
                 {stat.label}
               </span>
-              <div className="w-9 h-9 rounded-md bg-bg-secondary flex items-center justify-center border border-border group-hover:scale-105 transition-transform">
+              <div className="w-9 h-9 rounded-[10px] bg-primary-light flex items-center justify-center group-hover:scale-105 transition-transform">
                 {stat.icon}
               </div>
             </div>
 
             <div className="flex items-end justify-between mt-2">
-              <span className="text-3xl font-normal text-text-primary font-cormorant leading-none">
+              <span className="text-[28px] font-semibold text-text-primary leading-none tracking-[-0.01em]">
                 {stat.value}
               </span>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-[4px] bg-bg-secondary text-text-secondary border border-border">
+              <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-bg-secondary text-text-secondary">
                 {stat.change}
               </span>
             </div>

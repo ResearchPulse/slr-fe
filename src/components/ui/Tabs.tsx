@@ -64,9 +64,9 @@ const Tabs: React.FC<TabsProps> = ({
               key={item.id}
               onClick={() => handleTabClick(item.id)}
               className={cn(
-                "flex items-center gap-2 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 border-b-2 -mb-px",
+                "flex items-center gap-2 px-4 py-2.5 text-sm font-medium whitespace-nowrap transition-colors duration-200 border-b-2 -mb-px",
                 isActive
-                  ? "text-text-primary border-accent"
+                  ? "text-primary border-primary"
                   : "text-text-secondary border-transparent hover:text-text-primary hover:border-border",
                 itemClassName,
               )}
@@ -84,9 +84,9 @@ const Tabs: React.FC<TabsProps> = ({
               {item.badge !== undefined && (
                 <span
                   className={cn(
-                    "px-1.5 py-0.5 rounded-[2px] text-[9px] font-medium min-w-[1.25rem] flex items-center justify-center",
+                    "px-1.5 py-0.5 rounded-full text-[11px] font-medium min-w-[1.25rem] flex items-center justify-center",
                     isActive
-                      ? "bg-accent/10 text-accent"
+                      ? "bg-primary-light text-primary"
                       : "bg-bg-secondary text-text-secondary",
                   )}
                 >

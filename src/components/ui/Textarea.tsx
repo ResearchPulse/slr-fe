@@ -12,9 +12,9 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         className={cn(
           // Base styles
-          "w-full px-3 py-2.5 rounded-[4px] bg-surface-white border",
+          "w-full px-4 py-3 rounded-[10px] bg-surface-white border",
           "text-text-primary placeholder:text-text-muted",
-          "text-sm transition-colors duration-200",
+          "text-sm transition-[color,background-color,border-color,box-shadow] duration-200",
           "focus:bg-surface-white focus:outline-none focus:ring-1",
           "min-h-[100px] resize-y",
 

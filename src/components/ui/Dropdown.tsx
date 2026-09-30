@@ -61,12 +61,14 @@ const Dropdown: React.FC<DropdownProps> = ({
       {isOpen && (
         <div
           className={cn(
-            "absolute z-50 rounded-md focus:outline-none",
-            !contentClassName?.includes("bg-") && "bg-white",
+            "absolute z-50 rounded-[10px] focus:outline-none",
+            !contentClassName?.includes("bg-") && "bg-surface-white",
             !contentClassName?.includes("w-") && "w-56",
-            !contentClassName?.includes("shadow-") && "shadow-lg",
-            !contentClassName?.includes("ring-") &&
-              "ring-1 ring-black ring-opacity-5",
+            !contentClassName?.includes("shadow-") &&
+              "shadow-[0_4px_16px_rgba(18,35,49,0.08)]",
+            !contentClassName?.includes("border-") &&
+              !contentClassName?.includes("ring-") &&
+              "border border-border",
             !contentClassName?.includes("p-") && "py-1",
             alignments[align],
             positions[position],
@@ -94,13 +96,13 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   return (
     <button
       className={cn(
-        "flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-colors",
+        "flex w-full items-center px-4 py-2 text-sm text-text-primary hover:bg-bg-secondary hover:text-primary transition-colors",
         className,
       )}
       {...props}
     >
       {icon && (
-        <span className="mr-3 text-gray-400 group-hover:text-blue-500">
+        <span className="mr-3 text-text-muted">
           {icon}
         </span>
       )}

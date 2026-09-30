@@ -122,14 +122,14 @@ const Drawer: React.FC<DrawerProps> = ({
         <div
           ref={drawerRef}
           className={cn(
-            "pointer-events-auto w-screen bg-bg-primary shadow-2xl",
+            "pointer-events-auto w-screen bg-surface-white shadow-2xl",
             maxWidth,
           )}
         >
           <div className="flex h-full flex-col overflow-y-auto">
             {/* Drawer Header */}
-            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-bg-primary z-10">
-              <div className="flex-1 text-lg font-bold text-text-primary">
+            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-surface-white z-10">
+              <div className="flex-1 text-lg font-semibold text-text-primary tracking-[-0.01em]">
                 {title}
               </div>
               <button
@@ -146,7 +146,7 @@ const Drawer: React.FC<DrawerProps> = ({
 
             {/* Drawer Footer */}
             {footer && (
-              <div className="p-6 border-t border-border bg-bg-secondary sticky bottom-0">
+              <div className="p-6 border-t border-border bg-surface-white sticky bottom-0">
                 {footer}
               </div>
             )}

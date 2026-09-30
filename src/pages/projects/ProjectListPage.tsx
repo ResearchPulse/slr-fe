@@ -4,32 +4,50 @@ import { useDispatch } from "react-redux";
 import { FiSearch, FiFolder } from "react-icons/fi";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
-import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
 import ProjectTable from "../../components/projects/ProjectTable";
 import { TableSkeleton } from "../../components/ui/Skeleton";
+import { cn } from "../../utils/cn";
 import {
   setCurrentProject,
   clearProjectMember,
 } from "../../redux/slices/projectSlice";
 
-/** Small summary card for the dashboard header. */
-function StatCard({
-  label,
-  value,
+/** Quiet stat item — the number is the focus, the label recedes. */
+function StatItem({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[28px] sm:text-[32px] leading-none font-semibold text-text-primary tabular-nums">
+        {value}
+      </span>
+      <span className="text-[13px] text-text-secondary">{label}</span>
+    </div>
+  );
+}
+
+/** Quiet option in the status filter group. Active state is soft blue, never a heavy button. */
+function FilterOption({
+  active,
+  onClick,
+  children,
 }: {
-  label: string;
-  value: number;
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
 }) {
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] px-5 py-4">
-      <p className="text-[11px] uppercase tracking-[0.15em] text-text-secondary mb-1.5">
-        {label}
-      </p>
-      <p className="font-cormorant text-[28px] leading-none text-text-primary">
-        {value}
-      </p>
-    </div>
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        "h-9 px-4 rounded-[8px] text-sm font-medium transition-colors duration-150",
+        active
+          ? "bg-primary-light text-primary"
+          : "text-text-secondary hover:text-text-primary",
+      )}
+    >
+      {children}
+    </button>
   );
 }
 
@@ -84,85 +102,91 @@ export default function ProjectListPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-bg-primary">
-      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
         {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="font-cormorant text-[32px] sm:text-[40px] font-normal text-text-primary leading-tight mb-2">
-            Research Projects
+        <header className="mb-10 lg:mb-12">
+          <h1 className="text-[34px] sm:text-[40px] lg:text-[46px] font-semibold tracking-[-0.01em] leading-[1.1] text-text-primary mb-3">
+            Research projects
           </h1>
-          <p className="text-text-secondary text-sm leading-relaxed">
+          <p className="text-base text-text-secondary leading-relaxed">
             Manage and organize your systematic literature reviews.
           </p>
-        </div>
+        </header>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
-          <StatCard label="Total Projects" value={totalCount} />
-          <StatCard label="Active" value={activeCount} />
-          <StatCard label="Completed" value={completedCount} />
+        {/* Summary strip — numbers separated by hairlines, no cards */}
+        <div className="flex mb-10 lg:mb-12">
+          <div className="flex-1 pr-6 sm:pr-10">
+            <StatItem label="Total projects" value={totalCount} />
+          </div>
+          <div className="flex-1 px-6 sm:px-10 border-l border-border">
+            <StatItem label="Active" value={activeCount} />
+          </div>
+          <div className="flex-1 pl-6 sm:pl-10 border-l border-border">
+            <StatItem label="Completed" value={completedCount} />
+          </div>
         </div>
 
         {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-5">
           {/* Search */}
-          <div className="relative w-full sm:w-72">
+          <div className="relative w-full sm:w-[340px]">
             <FiSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-placeholder"
-              size={14}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted"
+              size={15}
             />
             <Input
               placeholder="Search projects..."
-              className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-[4px] text-sm"
+              className="pl-10 h-12 text-sm"
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
 
-          {/* Status Filter */}
-          <div className="flex gap-2 flex-wrap items-center sm:ml-auto">
-            <Button
-              size="sm"
-              variant={statusFilter === undefined ? "primary" : "outline"}
+          {/* Status Filter — quiet segmented group */}
+          <div
+            className="flex items-center gap-1 sm:ml-auto"
+            role="group"
+            aria-label="Filter by status"
+          >
+            <FilterOption
+              active={statusFilter === undefined}
               onClick={() => {
                 setStatusFilter(undefined);
                 setCurrentPage(1);
               }}
             >
               All
-            </Button>
+            </FilterOption>
             {(["Draft", "Active", "Completed"] as ProjectStatus[]).map(
               (status) => (
-                <Button
+                <FilterOption
                   key={status}
-                  size="sm"
-                  variant={statusFilter === status ? "primary" : "outline"}
+                  active={statusFilter === status}
                   onClick={() => {
                     setStatusFilter(status);
                     setCurrentPage(1);
                   }}
                 >
                   {status}
-                </Button>
+                </FilterOption>
               ),
             )}
           </div>
         </div>
 
         {error && (
-          <div className="bg-surface-white border border-accent text-accent px-4 py-3 rounded-[4px] mb-6 text-sm">
+          <div className="bg-primary-light border-l-[3px] border-primary text-text-primary px-4 py-3 rounded-[8px] mb-6 text-sm">
             {error}
           </div>
         )}
 
         {/* Projects Table or Skeleton */}
-        <div className="border border-border rounded-[4px] overflow-hidden bg-surface-white">
+        <div className="border border-border rounded-[12px] overflow-hidden bg-surface-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
           ) : hasNoResults ? (
             <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-              <div className="w-12 h-12 border border-border rounded-[4px] flex items-center justify-center text-text-secondary mb-5">
-                <FiFolder className="w-5 h-5" />
-              </div>
-              <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-2">
+              <FiFolder className="w-8 h-8 text-text-muted mb-5" />
+              <h3 className="text-xl font-semibold text-text-primary mb-2">
                 No projects yet
               </h3>
               <p className="text-text-secondary text-sm leading-relaxed max-w-sm">
@@ -172,35 +196,39 @@ export default function ProjectListPage() {
               </p>
             </div>
           ) : (
-            <ProjectTable
-              projects={filteredProjects}
-              onView={(id) => {
-                const project = projects.find((p: Project) => p.id === id);
-                if (project) {
-                  dispatch(
-                    setCurrentProject({ id: project.id, title: project.title }),
-                  );
-                  // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
-                  dispatch(clearProjectMember());
-                }
-                navigate(`/projects/${id}`);
-              }}
-              onChecklistClick={handleChecklistClick}
-            />
+            // contain:paint keeps the wide table's scrollable overflow from
+            // leaking to the document on small screens (Chromium quirk with
+            // border-collapse tables) while overflow-x-auto keeps it scrollable
+            <div className="overflow-x-auto [contain:paint]">
+              <ProjectTable
+                projects={filteredProjects}
+                onView={(id) => {
+                  const project = projects.find((p: Project) => p.id === id);
+                  if (project) {
+                    dispatch(
+                      setCurrentProject({ id: project.id, title: project.title }),
+                    );
+                    // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
+                    dispatch(clearProjectMember());
+                  }
+                  navigate(`/projects/${id}`);
+                }}
+                onChecklistClick={handleChecklistClick}
+              />
+            </div>
           )}
         </div>
 
-        {/* Pagination */}
+        {/* Pagination — quiet text controls, current page marked softly */}
         {totalPages > 1 && (
-          <div className="mt-8 flex flex-wrap justify-center items-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
+          <div className="mt-10 flex flex-wrap justify-center items-center gap-1">
+            <button
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1 || isLoading}
+              className="h-9 px-3 rounded-[8px] text-sm text-text-secondary hover:text-text-primary disabled:opacity-40 disabled:pointer-events-none transition-colors duration-150"
             >
-              ← Prev
-            </Button>
+              ← Previous
+            </button>
 
             <div className="flex gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map(
@@ -211,16 +239,23 @@ export default function ProjectListPage() {
                     page === totalPages ||
                     (page >= currentPage - 1 && page <= currentPage + 1)
                   ) {
-                    return (
-                      <Button
+                    return page === currentPage ? (
+                      <span
                         key={page}
-                        size="sm"
-                        variant={page === currentPage ? "primary" : "outline"}
-                        onClick={() => setCurrentPage(page)}
-                        disabled={isLoading}
+                        aria-current="page"
+                        className="h-9 min-w-9 px-3 inline-flex items-center justify-center rounded-[8px] text-sm font-medium bg-primary-light text-primary"
                       >
                         {page}
-                      </Button>
+                      </span>
+                    ) : (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        disabled={isLoading}
+                        className="h-9 min-w-9 px-3 rounded-[8px] text-sm text-text-secondary hover:text-text-primary disabled:opacity-40 disabled:pointer-events-none transition-colors duration-150"
+                      >
+                        {page}
+                      </button>
                     );
                   } else if (
                     page === currentPage - 2 ||
@@ -229,9 +264,9 @@ export default function ProjectListPage() {
                     return (
                       <span
                         key={page}
-                        className="px-2 py-1 text-text-secondary text-sm"
+                        className="h-9 px-2 inline-flex items-center text-text-muted text-sm"
                       >
-                        ...
+                        …
                       </span>
                     );
                   }
@@ -240,17 +275,16 @@ export default function ProjectListPage() {
               )}
             </div>
 
-            <Button
-              size="sm"
-              variant="outline"
+            <button
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || isLoading}
+              className="h-9 px-3 rounded-[8px] text-sm text-text-secondary hover:text-text-primary disabled:opacity-40 disabled:pointer-events-none transition-colors duration-150"
             >
               Next →
-            </Button>
+            </button>
 
-            <span className="ml-4 text-[11px] uppercase tracking-[0.15em] text-text-secondary">
-              Page {currentPage} / {totalPages}
+            <span className="ml-4 text-[13px] text-text-muted">
+              Page {currentPage} of {totalPages}
             </span>
           </div>
         )}

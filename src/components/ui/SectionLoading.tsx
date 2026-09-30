@@ -20,7 +20,7 @@ const SectionLoading: React.FC<SectionLoadingProps> = ({
         <LoadingSpinner size="lg" className="text-accent opacity-80" />
       </div>
       <div className="text-center space-y-3">
-        <h3 className="font-cormorant text-3xl font-normal text-text-primary tracking-tight">
+        <h3 className="text-2xl font-semibold text-text-primary tracking-[-0.01em]">
           {title ||
             (isAdmin ? "Initializing Admin Console" : "Loading Client Portal")}
         </h3>

@@ -17,6 +17,7 @@ import type { RootState } from "../../redux/store";
 import { logout } from "../../redux/slices/authSlice";
 import { clearCurrentProject } from "../../redux/slices/projectSlice";
 import Button from "../ui/Button";
+import { cn } from "../../utils/cn";
 import { toastWarning } from "../../utils/toast";
 import { useUnreadCount } from "../../hooks/useNotifications";
 
@@ -78,6 +79,9 @@ const Header: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [{ name: "Projects", path: "/projects", icon: FiLayers }];
+
+  const isNavActive = (path: string) =>
+    location.pathname === path || location.pathname.startsWith(path + "/");
 
   const handleHeaderInteraction = (
     e: React.MouseEvent | React.KeyboardEvent,
@@ -141,12 +145,18 @@ const Header: React.FC = () => {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden md:flex items-center gap-7">
                 {navLinks.map((link) => (
                   <Link
                     key={link.name}
                     to={link.path}
-                    className="px-4 py-2 text-[11px] font-medium uppercase tracking-[0.2em] text-text-primary hover:opacity-60 transition-opacity whitespace-nowrap"
+                    className={cn(
+                      "text-sm font-medium transition-colors duration-150 whitespace-nowrap",
+                      isNavActive(link.path)
+                        ? "text-primary"
+                        : "text-text-primary/70 hover:text-text-primary",
+                    )}
+                    aria-current={isNavActive(link.path) ? "page" : undefined}
                   >
                     {link.name}
                   </Link>
@@ -186,10 +196,10 @@ const Header: React.FC = () => {
                   {user?.role === "Admin" && (
                     <button
                       onClick={handleSwitchAdmin}
-                      className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-primary hover:bg-primary-hover text-text-on-primary rounded-[4px] transition-colors duration-200"
+                      className="flex items-center gap-2 px-4 h-9 bg-primary hover:bg-primary-hover text-text-on-primary rounded-[8px] transition-colors duration-150"
                     >
                       <FiShield className="w-4 h-4" />
-                      <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-[0.15em]">
+                      <span className="hidden sm:inline text-[13px] font-medium">
                         Admin Console
                       </span>
                     </button>
@@ -208,23 +218,23 @@ const Header: React.FC = () => {
                         <p className="text-sm font-medium text-text-primary">
                           {user?.name || "User"}
                         </p>
-                        <p className="text-[10px] uppercase tracking-wider text-text-secondary">
+                        <p className="text-[12px] text-text-muted">
                           {user?.role || "User"}
                         </p>
                       </div>
-                      <div className="h-8 w-8 bg-accent text-bg-primary rounded-[4px] flex items-center justify-center font-medium text-sm">
+                      <div className="h-8 w-8 bg-primary-light text-primary rounded-full flex items-center justify-center font-semibold text-sm">
                         {user?.name ? getUserInitials(user.name) : "U"}
                       </div>
                     </button>
 
                     {/* Profile Dropdown Menu */}
                     {showUserDropdown && (
-                      <div className="absolute right-0 mt-2 w-52 bg-surface-white rounded-[4px] border border-border py-1 z-50">
+                      <div className="absolute right-0 mt-2 w-52 bg-surface-white rounded-[10px] border border-border py-1 z-50 shadow-[0_4px_16px_rgba(18,35,49,0.08)]">
                         <div className="px-4 py-3 border-b border-border mb-1 lg:hidden">
                           <p className="text-sm font-medium text-text-primary truncate">
                             {user?.name}
                           </p>
-                          <p className="text-[10px] uppercase tracking-wider text-text-secondary truncate">
+                          <p className="text-[12px] text-text-muted truncate">
                             {user?.role}
                           </p>
                         </div>
@@ -255,23 +265,20 @@ const Header: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <div className="flex items-center gap-2.5 sm:gap-3">
+                <div className="flex items-center gap-4">
                   {location.pathname === "/" && (
-                    <Link to="/auth/signin" className="hidden sm:block">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="px-6"
-                      >
-                        Get Started
-                      </Button>
+                    <Link
+                      to="/auth/signin"
+                      className="hidden sm:block text-sm font-medium text-text-secondary hover:text-primary transition-colors duration-150"
+                    >
+                      Get Started
                     </Link>
                   )}
                   <Link to="/auth/signin">
                     <Button
                       variant="primary"
                       size="sm"
-                      className="px-6"
+                      className="px-5 h-9 normal-case tracking-normal text-[13px] rounded-[8px]"
                     >
                       Sign In
                     </Button>
@@ -305,7 +312,7 @@ const Header: React.FC = () => {
           </p>
         }
       >
-        <p className="text-[11px] text-text-secondary uppercase tracking-[0.2em] mb-6">
+        <p className="text-[11px] text-text-muted uppercase tracking-[0.15em] mb-4">
           Navigation
         </p>
         <nav className="space-y-1">
@@ -313,7 +320,12 @@ const Header: React.FC = () => {
             <Link
               key={link.name}
               to={link.path}
-              className="flex items-center gap-4 p-3 text-[11px] font-medium uppercase tracking-[0.2em] text-text-primary hover:bg-bg-secondary transition-colors"
+              className={cn(
+                "flex items-center gap-3 p-3 text-sm font-medium rounded-[8px] transition-colors duration-150",
+                isNavActive(link.path)
+                  ? "text-primary bg-primary-light"
+                  : "text-text-primary hover:bg-bg-secondary",
+              )}
             >
               <link.icon className="w-4 h-4 opacity-50" />
               {link.name}
@@ -324,7 +336,7 @@ const Header: React.FC = () => {
         <div className="mt-12">
           {user?.role === "Admin" && (
             <div className="mb-6">
-              <p className="text-[11px] text-text-secondary uppercase tracking-[0.2em] mb-4">
+              <p className="text-[11px] text-text-muted uppercase tracking-[0.15em] mb-4">
                 Management
               </p>
               <button
@@ -332,36 +344,34 @@ const Header: React.FC = () => {
                   setIsMenuOpen(false);
                   handleSwitchAdmin();
                 }}
-                className="w-full flex items-center gap-4 p-3 bg-text-primary text-bg-primary rounded-[4px] transition-colors active:scale-[0.98]"
+                className="w-full flex items-center gap-3 p-3 bg-text-primary text-white rounded-[8px] transition-colors active:scale-[0.99]"
               >
                 <FiShield className="w-4 h-4" />
-                <span className="text-[12px] font-medium uppercase tracking-[0.15em]">
-                  Admin Dashboard
-                </span>
+                <span className="text-sm font-medium">Admin Dashboard</span>
               </button>
             </div>
           )}
-          <p className="text-[11px] text-text-secondary uppercase tracking-[0.2em] mb-4">
+          <p className="text-[11px] text-text-muted uppercase tracking-[0.15em] mb-4">
             Account
           </p>
           {isAuthenticated ? (
             <>
-              <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-[4px]">
-                <div className="h-10 w-10 bg-accent text-bg-primary rounded-[4px] flex items-center justify-center font-medium text-base">
+              <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-[8px]">
+                <div className="h-10 w-10 bg-primary-light text-primary rounded-full flex items-center justify-center font-semibold text-base">
                   {user?.name ? getUserInitials(user.name) : "U"}
                 </div>
                 <div>
                   <p className="text-sm font-medium text-text-primary">
                     {user?.name || "User"}
                   </p>
-                  <p className="text-[10px] uppercase tracking-wider text-text-secondary">
+                  <p className="text-[12px] text-text-muted">
                     {user?.role || "User"}
                   </p>
                 </div>
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full mt-3 flex items-center gap-3 p-3 text-sm text-accent hover:bg-bg-secondary transition-colors"
+                className="w-full mt-3 flex items-center gap-3 p-3 text-sm text-primary hover:bg-bg-secondary transition-colors"
               >
                 <FiLogOut className="w-4 h-4" />
                 Sign Out
@@ -369,7 +379,9 @@ const Header: React.FC = () => {
             </>
           ) : (
             <Link to="/auth/signin" onClick={() => setIsMenuOpen(false)}>
-              <Button className="w-full">Sign In</Button>
+              <Button className="w-full h-11 normal-case tracking-normal text-[13px] rounded-[8px]">
+                Sign In
+              </Button>
             </Link>
           )}
         </div>

@@ -41,34 +41,37 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   const displayTitle = project.title || (project as any).name || "Systematic Literature Review";
   const displayStatus = project.statusText || (project.status === 2 ? "Completed" : "Active");
 
+  const metaLabel =
+    "text-[12px] font-medium text-text-muted flex items-center gap-1.5";
+
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-4 mb-10">
       {/* Navigation */}
       <button
         onClick={onBack}
-        className="flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] font-medium text-text-secondary hover:text-text-primary transition-colors group"
+        className="flex items-center gap-2 text-[13px] font-medium text-text-secondary hover:text-primary transition-colors group"
       >
         <FiArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" />
-        Back to Projects
+        Back to projects
       </button>
 
-      {/* Project Card */}
-      <div className="border border-border bg-surface-white">
+      {/* Project header */}
+      <div className="border border-border rounded-[12px] bg-surface-white overflow-hidden">
         {/* Top Section: Identity & Actions */}
-        <div className="p-6 border-b border-border">
+        <div className="p-6 sm:p-8 border-b border-border">
           <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
             <div className="space-y-3 flex-1">
-              {/* Code badge */}
-              <span className="inline-block px-2 py-0.5 bg-text-primary text-bg-primary text-[10px] font-medium uppercase tracking-[0.15em]">
+              {/* Code — quiet metadata, not a badge */}
+              <span className="font-mono text-[12px] text-text-muted">
                 {displayCode}
               </span>
 
-              <h1 className="font-cormorant text-[32px] lg:text-[40px] font-normal text-text-primary leading-tight">
+              <h1 className="text-[28px] sm:text-[34px] lg:text-[40px] font-semibold text-text-primary leading-[1.15] tracking-[-0.01em]">
                 {displayTitle}
               </h1>
 
               {project.description && (
-                <p className="text-text-secondary text-sm leading-[1.7] max-w-2xl">
+                <p className="text-text-secondary text-[15px] leading-[1.7] max-w-2xl">
                   {project.description}
                 </p>
               )}
@@ -78,7 +81,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             <div className="flex items-center gap-2 self-start">
               <button
                 onClick={onEdit}
-                className="flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.15em] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-all border border-border"
+                className="flex items-center gap-2 px-4 h-10 rounded-[8px] text-[13px] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
               >
                 <FiEdit3 className="w-3.5 h-3.5" />
                 Edit
@@ -87,7 +90,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 <button
                   title="Project settings"
                   onClick={onSettings}
-                  className="p-2 hover:bg-bg-secondary transition-all border border-border text-text-secondary hover:text-text-primary"
+                  className="p-2.5 h-10 w-10 flex items-center justify-center rounded-[8px] text-text-muted hover:text-text-primary hover:bg-bg-secondary transition-colors"
                 >
                   <FiSettings className="w-4 h-4" />
                 </button>
@@ -96,17 +99,15 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
           </div>
         </div>
 
-        {/* Bottom Section: Metadata Grid */}
-        <div className="bg-bg-primary p-6">
+        {/* Bottom Section: Metadata Grid — quiet definitions on the page surface */}
+        <div className="bg-bg-secondary/40 px-6 sm:px-8 py-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Domain */}
             <div className="space-y-1.5">
-              <div className="flex items-center gap-1.5 text-text-secondary">
+              <span className={metaLabel}>
                 <FiGlobe className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
-                  Domain
-                </span>
-              </div>
+                Domain
+              </span>
               <p className="text-sm text-text-primary font-medium">
                 {project.domain}
               </p>
@@ -114,20 +115,18 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
 
             {/* Status */}
             <div className="space-y-1.5">
-              <div className="flex items-center gap-1.5 text-text-secondary">
+              <span className={metaLabel}>
                 <FiActivity className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
-                  Status
-                </span>
-              </div>
+                Status
+              </span>
               <div>
                 <span
-                  className={`inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border font-medium ${
+                  className={`inline-block px-2.5 py-[3px] rounded-full text-[12px] font-medium leading-none ${
                     displayStatus === "Active"
-                      ? "border-accent text-accent"
+                      ? "bg-primary-light text-primary"
                       : displayStatus === "Completed"
-                        ? "border-success text-success"
-                        : "border-border text-text-secondary"
+                        ? "bg-success/10 text-success"
+                        : "bg-bg-secondary text-text-secondary"
                   }`}
                 >
                   {displayStatus}
@@ -137,34 +136,26 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
 
             {/* Created & Modified Date */}
             <div className="space-y-2">
-              <div className="flex items-center gap-1.5 text-text-secondary">
+              <span className={metaLabel}>
                 <FiCalendar className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
-                  Created at
-                </span>
-              </div>
+                Dates
+              </span>
               <p className="text-sm text-text-primary">
+                <span className="text-text-muted text-[12px]">Created </span>
                 {formatDate(project.createdAt)}
               </p>
-              <div className="flex items-center gap-1.5 text-text-secondary">
-                <FiCalendar className="w-3.5 h-3.5" />
-                <span className="text-[10px] uppercase tracking-[0.2em] font-medium">
-                  Modified at
-                </span>
-              </div>
               <p className="text-sm text-text-primary">
+                <span className="text-text-muted text-[12px]">Modified </span>
                 {formatDate(project.modifiedAt || (project as any).updatedAt || project.createdAt)}
               </p>
             </div>
 
             {/* Leader Info */}
             <div className="space-y-1.5 lg:border-l lg:border-border lg:pl-6">
-              <span className="text-[10px] uppercase tracking-[0.2em] font-medium text-text-secondary block">
-                Project Leader
-              </span>
+              <span className={metaLabel}>Project leader</span>
               {project.leader ? (
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 bg-accent flex items-center justify-center text-bg-primary text-xs font-medium shrink-0">
+                  <div className="h-8 w-8 bg-primary-light text-primary rounded-full flex items-center justify-center text-xs font-semibold shrink-0">
                     {getInitials(project.leader.fullName)}
                   </div>
                   <div className="min-w-0">
@@ -177,7 +168,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-text-muted italic">
+                <p className="text-sm text-text-muted">
                   No leader assigned
                 </p>
               )}

@@ -33,14 +33,14 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
   if (isActive) {
     return (
       <div className="max-w-2xl mx-auto py-12 text-center">
-        <div className="w-16 h-16 mx-auto mb-6 bg-text-primary flex items-center justify-center">
-          <FiCheck className="w-8 h-8 text-bg-primary" strokeWidth={2.5} />
+        <div className="w-14 h-14 mx-auto mb-6 bg-primary-light text-primary rounded-full flex items-center justify-center">
+          <FiCheck className="w-7 h-7" strokeWidth={2.5} />
         </div>
-        <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary mb-3">
+        <p className="text-[13px] font-medium text-text-muted mb-3">
           All steps complete
         </p>
-        <h2 className="font-cormorant text-[36px] font-normal text-text-primary mb-3">
-          Project Setup Complete
+        <h2 className="text-[28px] sm:text-[32px] font-semibold text-text-primary mb-3 tracking-[-0.01em]">
+          Project setup complete
         </h2>
         <p className="text-text-secondary text-sm mb-8 max-w-md mx-auto leading-[1.7]">
           Your project is now active. You can invite reviewers and create review
@@ -60,14 +60,14 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
   return (
     <div className="max-w-2xl mx-auto py-8">
       <div className="text-center mb-8">
-        <div className="w-12 h-12 mx-auto mb-5 border border-border bg-bg-secondary flex items-center justify-center text-text-secondary">
+        <div className="w-12 h-12 mx-auto mb-5 bg-primary-light text-primary rounded-full flex items-center justify-center">
           <FiZap className="w-5 h-5" />
         </div>
-        <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary mb-3">
+        <p className="text-[13px] font-medium text-text-muted mb-3">
           Final step
         </p>
-        <h2 className="font-cormorant text-[36px] font-normal text-text-primary mb-3">
-          Activate Your Project
+        <h2 className="text-[28px] sm:text-[32px] font-semibold text-text-primary mb-3 tracking-[-0.01em]">
+          Activate your project
         </h2>
         <p className="text-text-secondary text-sm max-w-md mx-auto leading-[1.7]">
           Review the checklist below and activate your project when ready. Once
@@ -77,10 +77,10 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
       </div>
 
       {/* Readiness Checklist */}
-      <div className="border border-border bg-surface-white mb-8">
-        <div className="px-6 py-3 border-b border-border bg-bg-primary">
-          <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
-            Readiness Checklist
+      <div className="border border-border bg-surface-white rounded-[12px] overflow-hidden mb-8">
+        <div className="px-6 py-3 border-b border-border bg-bg-secondary/40">
+          <p className="text-[12px] font-medium text-text-muted">
+            Readiness checklist
           </p>
         </div>
         <ul className="divide-y divide-border">
@@ -96,17 +96,17 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
               }`}
             >
               {item.completed ? (
-                <div className="w-7 h-7 bg-text-primary flex items-center justify-center flex-shrink-0">
+                <div className="w-7 h-7 bg-primary-light text-primary rounded-full flex items-center justify-center flex-shrink-0">
                   <FiCheck
-                    className="w-3.5 h-3.5 text-bg-primary"
+                    className="w-3.5 h-3.5"
                     strokeWidth={3}
                   />
                 </div>
               ) : (
                 <div
-                  className={`w-7 h-7 border flex items-center justify-center flex-shrink-0 ${
+                  className={`w-7 h-7 border rounded-full flex items-center justify-center flex-shrink-0 ${
                     item.required !== false
-                      ? "border-accent text-accent"
+                      ? "border-primary text-primary"
                       : "border-border text-text-muted"
                   }`}
                 >
@@ -122,18 +122,18 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
                   {item.label}
                 </span>
                 {item.required === false && !item.completed && (
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-text-muted">
+                  <span className="text-[12px] text-text-muted">
                     Optional
                   </span>
                 )}
                 {item.required !== false && !item.completed && (
-                  <span className="text-[10px] uppercase tracking-[0.15em] text-accent">
+                  <span className="text-[12px] font-medium text-primary">
                     Required
                   </span>
                 )}
               </div>
               {item.completed && (
-                <span className="text-[10px] uppercase tracking-[0.15em] text-text-secondary">
+                <span className="text-[12px] font-medium text-text-muted">
                   Done
                 </span>
               )}
@@ -155,7 +155,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
             {isActivating ? "Activating..." : "Activate Project"}
           </Button>
         ) : (
-          <div className="border border-border bg-bg-primary p-4 inline-block">
+          <div className="border border-border bg-bg-secondary/40 rounded-[10px] p-4 inline-block">
             <p className="text-sm text-text-secondary">
               Complete all required checklist items above to activate your
               project.

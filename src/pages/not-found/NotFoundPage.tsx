@@ -58,7 +58,7 @@ const NotFoundPage: React.FC = () => {
         <div className="flex justify-center mb-6">
           <div
             ref={iconRef}
-            className="w-20 h-20 sm:w-24 sm:h-24 border border-border bg-bg-secondary flex items-center justify-center text-text-secondary"
+            className="w-20 h-20 sm:w-24 sm:h-24 bg-primary-light text-primary rounded-[20px] flex items-center justify-center"
           >
             <FiAlertCircle className="w-10 h-10 sm:w-12 sm:h-12" />
           </div>
@@ -66,14 +66,11 @@ const NotFoundPage: React.FC = () => {
 
         {/* Text Content */}
         <div className="space-y-4">
-          <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary">
-            Error
-          </p>
-          <h1 className="font-cormorant text-[96px] sm:text-[128px] font-normal text-text-primary leading-none tracking-tight">
+          <h1 className="text-[88px] sm:text-[120px] font-semibold text-text-primary leading-none tracking-[-0.03em]">
             404
           </h1>
-          <h2 className="font-cormorant text-[28px] sm:text-[36px] font-normal text-text-primary">
-            Page Not Found
+          <h2 className="text-[26px] sm:text-[32px] font-semibold text-text-primary tracking-[-0.01em]">
+            Page not found
           </h2>
           <p className="text-[15px] text-text-secondary max-w-md mx-auto leading-[1.7]">
             Sorry, we couldn't find the page you're looking for. It might have

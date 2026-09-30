@@ -20,6 +20,11 @@ interface ProjectTableProps {
 type SortField = "title" | "domain" | "status" | "createdAt" | "modifiedAt";
 type SortOrder = "asc" | "desc";
 
+// Local overrides on the shared table primitives — quieter header, roomier rows
+const thClass =
+  "py-3.5 normal-case tracking-[0.02em] text-[12px] font-medium text-text-muted";
+const tdClass = "py-5";
+
 const renderSortIndicator = (
   activeField: SortField,
   sortField: SortField,
@@ -27,19 +32,19 @@ const renderSortIndicator = (
 ) => {
   if (sortField !== activeField) {
     return (
-      <div className="w-4 h-4 opacity-0 group-hover:opacity-30 flex flex-col items-center justify-center ml-1">
+      <span className="w-4 h-4 opacity-0 group-hover/col:opacity-40 inline-flex flex-col items-center justify-center ml-1 text-text-muted">
         <FiChevronUp size={10} />
         <FiChevronDown size={10} />
-      </div>
+      </span>
     );
   }
 
   return (
-    <span className="ml-1 text-accent">
+    <span className="ml-1 inline-flex text-primary">
       {sortOrder === "asc" ? (
-        <FiChevronUp size={14} />
+        <FiChevronUp size={13} />
       ) : (
-        <FiChevronDown size={14} />
+        <FiChevronDown size={13} />
       )}
     </span>
   );
@@ -81,159 +86,151 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     }
   };
 
+  const sortableHead = (
+    label: string,
+    field: SortField,
+    className?: string,
+  ) => (
+    <TableHead
+      className={cn(thClass, "cursor-pointer group/col select-none", className)}
+      onClick={() => handleSort(field)}
+    >
+      <span className="inline-flex items-center transition-colors duration-150 hover:text-text-secondary">
+        {label}
+        {renderSortIndicator(field, sortField, sortOrder)}
+      </span>
+    </TableHead>
+  );
+
   return (
     <Table>
-      <TableHeader>
+      <TableHeader className="bg-transparent">
         <TableRow className="hover:bg-transparent cursor-default">
-          <TableHead className="w-12">
+          <TableHead className={cn(thClass, "w-12")}>
             <input
               type="checkbox"
-              className="w-4 h-4 rounded-[2px] border-border text-accent focus:ring-accent"
+              className="w-4 h-4 rounded-[3px] border-border text-accent focus:ring-accent"
               checked={
                 selectedIds.size === projects.length && projects.length > 0
               }
               onChange={toggleSelectAll}
+              aria-label="Select all projects"
             />
           </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("title")}
-          >
-            <div className="flex items-center">Code</div>
+          {sortableHead("Code", "title")}
+          {sortableHead("Name", "title")}
+          {sortableHead("Domain", "domain")}
+          {sortableHead("Status", "status")}
+          <TableHead className={thClass}>Role</TableHead>
+          <TableHead className={thClass}>Leader</TableHead>
+          {sortableHead("Created", "createdAt")}
+          {sortableHead("Modified", "modifiedAt")}
+          <TableHead className={cn(thClass, "text-center")}>
+            <span className="sr-only">Checklist</span>
           </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("title")}
-          >
-            <div className="flex items-center">
-              Name {renderSortIndicator("title", sortField, sortOrder)}
-            </div>
+          <TableHead className={cn(thClass, "text-right")}>
+            <span className="sr-only">View</span>
           </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("domain")}
-          >
-            <div className="flex items-center">
-              Domain {renderSortIndicator("domain", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("status")}
-          >
-            <div className="flex items-center">
-              Status {renderSortIndicator("status", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>Leader</TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("createdAt")}
-          >
-            <div className="flex items-center">
-              Created {renderSortIndicator("createdAt", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("modifiedAt")}
-          >
-            <div className="flex items-center">
-              Modified {renderSortIndicator("modifiedAt", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead className="text-center">Checklist</TableHead>
-          <TableHead className="text-right">View</TableHead>
         </TableRow>
       </TableHeader>
-      <TableBody>
+      <TableBody className="divide-y divide-border/70">
         {projects.map((project) => (
-          <TableRow key={project.id} onClick={() => onView(project.id)}>
-            <TableCell onClick={(e) => e.stopPropagation()}>
+          <TableRow
+            key={project.id}
+            className="hover:bg-bg-secondary/50"
+            onClick={() => onView(project.id)}
+          >
+            <TableCell className={tdClass} onClick={(e) => e.stopPropagation()}>
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded-[2px] border-border text-accent focus:ring-accent"
+                className="w-4 h-4 rounded-[3px] border-border text-accent focus:ring-accent"
                 checked={selectedIds.has(project.id)}
                 onChange={() => toggleSelectRow(project.id)}
+                aria-label={`Select ${project.title}`}
               />
             </TableCell>
-            <TableCell className="font-mono text-[11px] tracking-wider text-accent font-medium">
+            <TableCell className={cn(tdClass, "font-mono text-[12px] text-text-muted whitespace-nowrap")}>
               {project.code}
             </TableCell>
-            <TableCell className="font-medium text-text-primary group-hover:text-accent transition-colors">
+            <TableCell
+              className={cn(
+                tdClass,
+                "text-[15px] font-medium text-text-primary group-hover:text-accent transition-colors duration-150",
+              )}
+            >
               {project.title}
             </TableCell>
-            <TableCell className="text-text-secondary text-sm">
+            <TableCell className={cn(tdClass, "text-[13px] text-text-secondary")}>
               {project.domain}
             </TableCell>
-            <TableCell>
+            <TableCell className={tdClass}>
               <span
                 className={cn(
-                  "inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border rounded-[2px] font-medium",
+                  "inline-block px-2.5 py-[3px] rounded-full text-[12px] font-medium leading-none",
                   project.statusText === "Active"
-                    ? "border-accent text-accent"
+                    ? "bg-primary-light text-primary"
                     : project.statusText === "Completed"
-                      ? "border-success text-success"
-                      : "border-border text-text-secondary",
+                      ? "bg-success/10 text-success"
+                      : "bg-bg-secondary text-text-secondary",
                 )}
               >
                 {project.statusText}
               </span>
             </TableCell>
-            <TableCell>
-              <span
-                className={cn(
-                  "inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border rounded-[2px] font-medium",
-                  project.roleText === "Leader"
-                    ? "border-accent text-accent"
-                    : "border-border text-text-secondary",
-                )}
-              >
-                {project.roleText || "Member"}
-              </span>
+            <TableCell className={cn(tdClass, "text-[13px] text-text-secondary")}>
+              {project.roleText || "Member"}
             </TableCell>
-            <TableCell className="whitespace-nowrap">
+            <TableCell className={cn(tdClass, "whitespace-nowrap")}>
               {project.leader ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-[10px] text-bg-primary font-bold uppercase">
-                    {project.leader.fullName.charAt(0)}
+                <div className="flex items-center gap-2.5">
+                  <div className="w-6 h-6 rounded-full bg-primary-light text-primary flex items-center justify-center text-[11px] font-semibold">
+                    {project.leader.fullName.charAt(0).toUpperCase()}
                   </div>
-                  <span className="text-sm text-text-primary">
+                  <span className="text-[13px] text-text-primary">
                     {project.leader.fullName}
                   </span>
                 </div>
               ) : (
-                <span className="text-text-muted text-sm">—</span>
+                <span className="text-text-muted text-[13px]">—</span>
               )}
             </TableCell>
-            <TableCell className="text-text-secondary text-sm whitespace-nowrap">
+            <TableCell
+              className={cn(
+                tdClass,
+                "text-[13px] text-text-secondary whitespace-nowrap",
+              )}
+            >
               {new Date(project.createdAt).toLocaleDateString()}
             </TableCell>
-            <TableCell className="text-text-secondary text-sm whitespace-nowrap">
+            <TableCell
+              className={cn(
+                tdClass,
+                "text-[13px] text-text-secondary whitespace-nowrap",
+              )}
+            >
               {new Date(project.modifiedAt).toLocaleDateString()}
             </TableCell>
             <TableCell
-              className="text-center"
+              className={cn(tdClass, "text-center")}
               onClick={(e) => e.stopPropagation()}
             >
               {onChecklistClick && (
                 <button
                   onClick={() => onChecklistClick(project.id)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border border-border bg-surface-white hover:border-accent hover:text-accent text-text-secondary text-[11px] uppercase tracking-wider font-medium transition-colors"
+                  className="inline-flex p-2 rounded-[8px] text-text-muted hover:text-primary hover:bg-primary-light transition-colors duration-150"
                   title="View checklists"
+                  aria-label={`View checklists for ${project.title}`}
                 >
-                  <FiCheckSquare className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Checklist</span>
+                  <FiCheckSquare className="w-4 h-4" />
                 </button>
               )}
             </TableCell>
             <TableCell
-              className="text-right"
+              className={cn(tdClass, "text-right")}
               onClick={(e) => e.stopPropagation()}
             >
               <button
-                className="text-[11px] uppercase tracking-wider text-text-secondary hover:text-accent font-medium transition-colors"
+                className="text-[13px] font-medium text-text-secondary hover:text-primary transition-colors duration-150"
                 onClick={() => onView(project.id)}
               >
                 View →
@@ -244,8 +241,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
         {projects.length === 0 && (
           <TableRow className="hover:bg-transparent cursor-default">
             <TableCell
-              colSpan={12}
-              className="p-12 text-center text-text-muted text-sm tracking-wide"
+              colSpan={11}
+              className="p-12 text-center text-text-muted text-sm"
             >
               You don't have any projects or haven't joined any projects.
             </TableCell>
