@@ -76,17 +76,27 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
             <LoadingSpinner size="lg" />
           </div>
         ) : propChecklists.length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-[4px]">
-            <FiCheckCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-            <h3 className="text-lg font-semibold text-text-primary mb-1">
+          <div className="flex flex-col items-center justify-center text-center py-16 px-6 border-2 border-dashed border-border rounded-xl bg-surface-white/60 max-w-xl mx-auto my-6 shadow-xs">
+            <div className="w-16 h-16 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-4 ring-1 ring-accent/20">
+              <FiCheckCircle className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-semibold text-text-primary mb-2">
               No checklists yet
             </h3>
-            <p className="text-text-secondary mb-4">
-              Create your first PRISMA checklist to get started
+            <p className="text-text-secondary text-sm max-w-sm mb-6 leading-relaxed">
+              Create your first PRISMA checklist to track and evaluate your systematic review reporting items.
             </p>
-            <Button onClick={() => setShowCreateModal(true)}>
-              Create First Checklist
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setShowCreateModal(true)}
+                className="inline-flex items-center gap-2 shadow-sm"
+              >
+                <FiPlus className="w-4 h-4" />
+                Create First Checklist
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

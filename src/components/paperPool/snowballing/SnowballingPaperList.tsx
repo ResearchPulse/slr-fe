@@ -15,6 +15,7 @@ import { cn } from "../../../utils/cn";
 import type { PaperWithCandidateDto } from "../../../types/paper";
 import ReferenceExtractionButton from "../../papers/ReferenceExtractionButton";
 import Pagination from "../../ui/Pagination";
+import Select from "../../ui/Select";
 
 interface SnowballingPaperListProps {
   projectId: string;
@@ -303,20 +304,21 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                 <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                   Per Page:
                 </span>
-                <select
+                <Select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setPageNumber(1);
                   }}
-                  className="bg-bg-secondary text-[10px] font-black text-text-secondary uppercase tracking-widest focus:outline-none cursor-pointer border border-border rounded-[4px] px-2 py-1 hover:bg-surface-white transition-colors"
-                >
-                  <option value={5}>5</option>
-                  <option value={10}>10</option>
-                  <option value={20}>20</option>
-                  <option value={50}>50</option>
-                  <option value={100}>100</option>
-                </select>
+                  className="w-[72px]"
+                  options={[
+                    { value: "5", label: "5" },
+                    { value: "10", label: "10" },
+                    { value: "20", label: "20" },
+                    { value: "50", label: "50" },
+                    { value: "100", label: "100" },
+                  ]}
+                />
               </div>
             </div>
             <Pagination
