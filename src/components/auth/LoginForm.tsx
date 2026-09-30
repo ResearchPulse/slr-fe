@@ -271,17 +271,17 @@ const LoginForm: React.FC = () => {
   return (
     <div className="w-full flex flex-col items-center">
       {/* Heading */}
-      <div className="w-full text-center mb-8">
-        <h2 className="font-cormorant text-[30px] sm:text-[36px] font-normal text-text-primary leading-tight mb-3 tracking-tight">
+      <div className="w-full text-center mb-9">
+        <h2 className="text-[28px] sm:text-[32px] font-semibold text-text-primary leading-tight mb-3 tracking-[-0.01em]">
           Welcome back
         </h2>
-        <p className="text-text-secondary text-sm leading-relaxed">
+        <p className="text-text-secondary text-base leading-relaxed">
           Sign in to continue to your account
         </p>
       </div>
 
       {/* Sign-in Card */}
-      <div className="w-full bg-surface-white border border-border rounded-[4px] px-6 py-8 sm:px-8">
+      <div className="w-full bg-surface-white border border-border rounded-[16px] shadow-[0_1px_3px_rgba(18,35,49,0.06)] px-6 py-9 sm:px-9 sm:py-10">
         {/* Login Form */}
         <form className="space-y-5" onSubmit={handleSubmit}>
           <FormField
@@ -296,6 +296,7 @@ const LoginForm: React.FC = () => {
             }
             errorMessage={errors.keyLogin}
             disabled={isLoading}
+            className="h-[52px]"
           />
 
           {/* Password Field */}
@@ -309,11 +310,12 @@ const LoginForm: React.FC = () => {
             onChange={(e) => setPassword(e.target.value.replace(/\s/g, ""))}
             errorMessage={errors.password}
             disabled={isLoading}
+            className="h-[52px]"
           />
 
           {/* Forgot password hint (no reset flow exists yet) */}
-          <div className="flex justify-end -mt-2">
-            <span className="text-[12px] text-text-secondary">
+          <div className="flex justify-end -mt-1">
+            <span className="text-[13px] text-text-secondary">
               Forgot password?
             </span>
           </div>
@@ -322,7 +324,8 @@ const LoginForm: React.FC = () => {
             <Button
               type="submit"
               variant="primary"
-              className="w-full h-11 text-[12px] uppercase tracking-[0.15em] rounded-[4px]"
+              size="lg"
+              className="w-full"
               isLoading={isLoading}
             >
               Sign In
@@ -387,7 +390,8 @@ const LoginForm: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              className="w-full max-w-[320px] h-11 rounded-[4px]"
+              size="lg"
+              className="w-full max-w-[320px]"
               disabled
             >
               Continue with Google

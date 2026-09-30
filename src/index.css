@@ -11,28 +11,29 @@
      COLOR SYSTEM
      ===================================================== */
 
-  --color-bg-primary: #F8FAFC;
-  --color-bg-secondary: #F1F5F9;
+  --color-bg-primary: #F7F9FA;
+  --color-bg-secondary: #EEF2F5;
 
   --color-surface-white: #FFFFFF;
-  --color-surface-ground: #F8FAFC;
+  --color-surface-ground: #F7F9FA;
   --color-surface-card: #FFFFFF;
 
-  --color-text-primary: #152536;
-  --color-text-secondary: #64748B;
-  --color-text-muted: #94A3B8;
-  --color-text-main: #152536;
+  --color-text-primary: #122331;
+  --color-text-secondary: #647381;
+  --color-text-muted: #8B9AA4;
+  --color-text-main: #122331;
 
-  --color-accent: #087CC1;
-  --color-primary: #087CC1;
-  --color-primary-hover: #066BA8;
-  --color-primary-light: #EAF6FC;
+  --color-accent: #0071BC;
+  --color-primary: #0071BC;
+  --color-primary-hover: #005F9E;
+  --color-primary-light: #F0F7FC;
+  --color-soft-blue: #F0F7FC;
 
   --color-text-on-primary: #FFFFFF;
 
-  --color-border: #D9E2EC;
-  --color-border-default: #D9E2EC;
-  --color-border-focus: #087CC1;
+  --color-border: #DCE4E9;
+  --color-border-default: #DCE4E9;
+  --color-border-focus: #0071BC;
 
   /* =====================================================
      STATUS COLORS
@@ -195,6 +196,26 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
+}
+
+/* =====================================================
+   LINKS — primary blue with subtle underline on hover
+   ===================================================== */
+
+.link-primary {
+  color: var(--color-primary);
+  text-decoration: none;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition:
+    color 0.2s ease,
+    text-decoration-color 0.2s ease;
+}
+
+.link-primary:hover {
+  color: var(--color-primary-hover);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 /* =====================================================

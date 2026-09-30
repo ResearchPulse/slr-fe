@@ -29,23 +29,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const variants = {
       primary:
-        "bg-primary text-text-on-primary border border-transparent hover:bg-primary-hover focus:ring-primary/20",
+        "bg-primary text-text-on-primary border border-transparent hover:bg-primary-hover hover:shadow-[0_6px_16px_rgba(0,113,188,0.18)] focus:ring-primary/25",
       secondary:
-        "bg-transparent border border-border text-text-primary hover:bg-bg-secondary focus:ring-border",
+        "bg-transparent border border-border text-text-primary hover:border-text-muted hover:bg-bg-secondary focus:ring-border",
       danger:
         "bg-error text-white border border-transparent hover:bg-red-700 focus:ring-error/20",
       success:
         "bg-success text-white border border-transparent hover:bg-green-700 focus:ring-success/20",
       outline:
-        "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus:ring-text-primary/20",
+        "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus:ring-text-primary/25",
       ghost:
         "bg-transparent text-text-secondary hover:text-text-primary focus:ring-border border border-transparent",
     };
 
     const sizes = {
-      sm: "px-3 py-1.5 text-[11px]",
-      md: "px-4 py-2.5 text-[12px]",
-      lg: "px-6 py-3 text-[13px]",
+      sm: "px-4 py-1.5 text-[11px] min-h-[36px] md:min-h-0",
+      md: "px-5 py-2.5 text-[12px] min-h-[44px] md:min-h-0",
+      lg: "px-8 py-3.5 text-[13px] min-h-[52px]",
     };
 
     return (
@@ -55,9 +55,12 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         className={cn(
           // Base Layout & Typography
-          "rounded-[4px] uppercase tracking-[0.1em] font-medium flex items-center justify-center transition-colors duration-200 whitespace-nowrap min-h-[44px] md:min-h-0",
+          "rounded-[10px] uppercase tracking-[0.1em] font-medium flex items-center justify-center whitespace-nowrap",
+          // Motion — explicit properties only, never `all`
+          "transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200",
+          "hover:-translate-y-[1px] active:translate-y-0",
           "focus:outline-none focus:ring-2",
-          "disabled:opacity-40 disabled:cursor-not-allowed",
+          "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0",
 
           variants[variant],
           sizes[size],

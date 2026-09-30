@@ -111,11 +111,11 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className="bg-bg-primary border-b border-border sticky top-0 z-[100] transition-all duration-300 h-[52px] md:h-[60px]"
+        className="bg-surface-white border-b border-border sticky top-0 z-[100] transition-[box-shadow] duration-300 h-[60px] md:h-[72px]"
         onClickCapture={handleHeaderInteraction}
         onKeyDownCapture={handleHeaderInteraction}
       >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 h-full">
+        <div className="container mx-auto px-5 sm:px-8 lg:px-12 h-full">
           <div className="flex justify-between items-center h-full">
             {/* Left Side: Logo & Desktop Nav */}
             <div className="flex items-center gap-8 lg:gap-12">
@@ -255,13 +255,13 @@ const Header: React.FC = () => {
                   </div>
                 </>
               ) : (
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex items-center gap-2.5 sm:gap-3">
                   {location.pathname === "/" && (
                     <Link to="/auth/signin" className="hidden sm:block">
                       <Button
-                        variant="secondary"
+                        variant="outline"
                         size="sm"
-                        className="px-5 py-2 h-auto rounded-[4px] shadow-none text-[12px] uppercase tracking-[0.15em]"
+                        className="px-6"
                       >
                         Get Started
                       </Button>
@@ -271,7 +271,7 @@ const Header: React.FC = () => {
                     <Button
                       variant="primary"
                       size="sm"
-                      className="px-5 py-2 h-auto rounded-[4px] shadow-none text-[12px] uppercase tracking-[0.15em]"
+                      className="px-6"
                     >
                       Sign In
                     </Button>
