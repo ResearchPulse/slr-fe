@@ -1,17 +1,14 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   FiAlertTriangle,
-  FiCheckCircle,
-  FiCode,
   FiDownload,
-  FiFileText,
-  FiGrid,
 } from "react-icons/fi";
 import Modal from "../../../../components/ui/Modal";
 import { cn } from "../../../../utils/cn";
 import type { AuditLogExportFormat } from "../../../../types/auditLog";
 import { EXPORT_FORMAT_OPTIONS } from "../constants";
 import { formatRangeLabel } from "../utils";
+import { DatePickerField } from "./AuditLogFilters";
 
 interface ExportRequest {
   format: AuditLogExportFormat;
@@ -26,12 +23,6 @@ interface AuditLogExportDialogProps {
   defaultEndDate: string;
   onExport: (request: ExportRequest) => Promise<void> | void;
 }
-
-const formatIconMap: Record<AuditLogExportFormat, React.ReactNode> = {
-  csv: <FiFileText className="w-5 h-5" />,
-  json: <FiCode className="w-5 h-5" />,
-  xlsx: <FiGrid className="w-5 h-5" />,
-};
 
 const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
   isOpen,
@@ -128,29 +119,13 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
       title="Export Audit Logs"
       description="Generate a client-side export from the currently selected date range."
       size="lg"
+      className="max-w-[820px] rounded-xl"
+      bodyClassName="p-4 sm:p-6"
     >
-      <div className="space-y-6">
-        <div className="rounded-md border border-indigo-100 bg-bg-secondary/60 p-5">
-          <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-md bg-accent text-white flex items-center justify-center shrink-0">
-              <FiDownload className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h4 className="text-sm font-black uppercase tracking-[0.18em] text-indigo-700">
-                Export scope
-              </h4>
-              <p className="text-sm text-slate-600 font-medium">
-                The export will use the selected format and date range, then be
-                saved locally in your browser.
-              </p>
-              <p className="text-xs font-semibold text-slate-500">
-                Current range: {formatRangeLabel(startDate, endDate)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-3 sm:grid-cols-3">
+      <div className="space-y-5">
+        <div>
+          <h3 className="mb-2 text-sm font-semibold text-text-primary">File format</h3>
+          <div className="grid gap-2 sm:grid-cols-3">
           {EXPORT_FORMAT_OPTIONS.map((option) => {
             const isSelected = format === option.value;
             return (
@@ -158,99 +133,83 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
                 key={option.value}
                 type="button"
                 onClick={() => setFormat(option.value)}
+                aria-pressed={isSelected}
                 className={cn(
-                  "rounded-md border p-4 text-left transition-all",
+                  "flex min-h-[92px] items-start gap-3 rounded-lg border p-3.5 text-left transition-colors",
                   isSelected
-                    ? "border-indigo-200 bg-bg-secondary shadow-lg shadow-indigo-100/60"
-                    : "border-slate-200 bg-surface-white hover:border-indigo-200 hover:bg-slate-50",
+                    ? "border-accent bg-bg-secondary"
+                    : "border-border bg-white hover:bg-bg-primary",
                 )}
               >
-                <div className="flex items-center justify-between gap-4 mb-3">
-                  <div
+                <span
                     className={cn(
-                      "w-11 h-11 rounded-md flex items-center justify-center",
+                      "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
                       isSelected
-                        ? "bg-accent text-white"
-                        : "bg-slate-100 text-slate-500",
+                        ? "border-accent"
+                        : "border-[#AAB7C0]",
                     )}
                   >
-                    {formatIconMap[option.value]}
-                  </div>
-                  {isSelected && (
-                    <FiCheckCircle className="w-5 h-5 text-accent" />
-                  )}
-                </div>
-                <div className="text-sm font-black text-slate-900">
-                  {option.label}
-                </div>
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  {option.description}
-                </p>
+                    {isSelected && <span className="h-2 w-2 rounded-full bg-accent" />}
+                  </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-semibold text-text-primary">{option.label}</span>
+                  <span className="mt-1 block text-xs leading-4 text-text-secondary">{option.description}</span>
+                </span>
               </button>
             );
           })}
+          </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <label className="space-y-2 block">
-            <span className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-              Start date
-            </span>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(event) => setStartDate(event.target.value)}
-              className="w-full px-4 py-3 rounded-[4px] bg-surface-white border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all"
-            />
-          </label>
-          <label className="space-y-2 block">
-            <span className="text-[11px] font-black uppercase tracking-[0.18em] text-slate-400">
-              End date
-            </span>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(event) => setEndDate(event.target.value)}
-              className="w-full px-4 py-3 rounded-[4px] bg-surface-white border border-slate-200 text-sm font-medium text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all"
-            />
-          </label>
+        <div>
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-sm font-semibold text-text-primary">Date range</h3>
+            <span className="text-xs text-text-secondary">{formatRangeLabel(startDate, endDate)}</span>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <DatePickerField label="Start date" value={startDate} onChange={setStartDate} />
+            <DatePickerField label="End date" value={endDate} onChange={setEndDate} />
+          </div>
+          <p className="mt-2 text-xs text-text-secondary">
+            The file is generated in your browser and downloaded to your device.
+          </p>
         </div>
 
         {errorMessage && (
-          <div className="rounded-md border border-rose-100 bg-rose-50 p-4 text-sm font-medium text-rose-700 flex items-center gap-2">
+          <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
             <FiAlertTriangle className="w-4 h-4 shrink-0" />
             {errorMessage}
           </div>
         )}
 
         {isExporting && (
-          <div className="rounded-md border border-slate-100 bg-slate-50 p-5 space-y-3">
+          <div className="space-y-3 rounded-lg border border-border bg-bg-primary p-4">
             <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-sm font-semibold text-text-primary">
                   Generating export
                 </p>
-                <p className="text-xs font-medium text-slate-500">
+                <p className="text-xs text-text-secondary">
                   Preparing the {format.toUpperCase()} file for download.
                 </p>
               </div>
-              <div className="text-sm font-black text-accent">{progress}%</div>
+              <div className="text-sm font-semibold text-accent">{progress}%</div>
             </div>
-            <div className="h-3 rounded-full bg-surface-white overflow-hidden border border-slate-200">
+            <div className="h-2 overflow-hidden rounded-full bg-[#E4EAEE]">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all duration-300"
+                className="h-full rounded-full bg-accent transition-[width] duration-300"
                 style={{ width: `${progress}%` }}
               />
             </div>
           </div>
         )}
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+        <div className="flex flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={onClose}
             disabled={isExporting}
-            className="px-5 py-3 rounded-md text-sm font-bold border border-slate-200 text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all disabled:opacity-50"
+            className="h-10 rounded-lg border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary disabled:opacity-50"
           >
             Cancel
           </button>
@@ -259,10 +218,10 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
             onClick={handleStartExport}
             disabled={isExporting || hasInvalidRange}
             className={cn(
-              "px-6 py-3 rounded-md text-sm font-black transition-all inline-flex items-center justify-center gap-2",
+              "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors",
               isExporting || hasInvalidRange
                 ? "bg-slate-200 text-slate-500 cursor-not-allowed"
-                : "bg-accent text-white hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200",
+                : "bg-accent text-white hover:bg-primary-hover",
             )}
           >
             <FiDownload className="w-4 h-4" />

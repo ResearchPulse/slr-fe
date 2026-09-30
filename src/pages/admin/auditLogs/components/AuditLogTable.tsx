@@ -2,7 +2,6 @@ import React from "react";
 import {
   FiArrowDown,
   FiArrowUp,
-  FiClock,
   FiFileText,
   FiSearch,
 } from "react-icons/fi";
@@ -38,18 +37,18 @@ interface AuditLogTableProps {
 }
 
 const statusClasses: Record<AuditLogEntry["status"], string> = {
-  Success: "bg-surface-white text-success border-border shadow-sm",
-  Failed: "bg-surface-white text-error border-border shadow-sm",
+  Success: "bg-emerald-50 text-emerald-700 border-emerald-100",
+  Failed: "bg-rose-50 text-rose-700 border-rose-100",
 };
 
 const actionToneClasses: Record<AuditLogEntry["actionType"], string> = {
-  create: "bg-surface-white text-success border-border shadow-sm",
-  update: "bg-bg-secondary text-accent border-border shadow-sm",
-  delete: "bg-surface-white text-error border-border shadow-sm",
-  export: "bg-surface-white text-text-secondary border-border shadow-sm",
-  access: "bg-surface-white text-text-primary border-border shadow-sm",
-  review: "bg-bg-secondary text-accent border-border shadow-sm",
-  system: "bg-surface-white text-text-secondary border-border shadow-sm",
+  create: "bg-emerald-50 text-emerald-700 border-emerald-100",
+  update: "bg-bg-secondary text-accent border-border",
+  delete: "bg-rose-50 text-rose-700 border-rose-100",
+  export: "bg-bg-primary text-text-secondary border-border",
+  access: "bg-bg-primary text-text-primary border-border",
+  review: "bg-bg-secondary text-accent border-border",
+  system: "bg-bg-primary text-text-secondary border-border",
 };
 
 const SortHeader: React.FC<{
@@ -65,7 +64,7 @@ const SortHeader: React.FC<{
     <button
       type="button"
       onClick={() => onSortChange(field)}
-      className="inline-flex items-center gap-1.5 uppercase tracking-[0.16em] text-inherit font-black"
+      className="inline-flex items-center gap-1.5 text-inherit font-medium"
     >
       {label}
       {isActive ? (
@@ -99,14 +98,14 @@ const SkeletonRows = () => (
 );
 
 const EmptyState = () => (
-  <div className="py-20 flex flex-col items-center justify-center text-center px-6">
-    <div className="w-16 h-16 rounded-md bg-slate-100 text-slate-400 flex items-center justify-center mb-4">
+  <div className="py-16 flex flex-col items-center justify-center text-center px-6">
+    <div className="w-12 h-12 rounded-xl bg-bg-secondary text-accent flex items-center justify-center mb-4">
       <FiSearch className="w-7 h-7" />
     </div>
-    <h4 className="text-lg font-black text-slate-900">
+    <h4 className="text-lg font-semibold text-text-primary">
       No audit records found
     </h4>
-    <p className="text-sm text-slate-500 max-w-md mt-2">
+    <p className="text-sm text-text-secondary max-w-md mt-2">
       Try widening the date range, clearing a filter, or searching with a
       different resource ID.
     </p>
@@ -128,28 +127,23 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
   onRowClick,
 }) => {
   return (
-    <section className="bg-surface-white rounded-md border border-border shadow-none overflow-hidden">
+    <section className="bg-surface-white rounded-xl border border-border overflow-hidden">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-5 border-b border-border bg-surface-white">
         <div>
-          <h3 className="text-lg font-serif font-bold text-text-primary tracking-tight">
-            Audit log entries
+          <h3 className="text-base font-semibold text-text-primary">
+            Activity records
           </h3>
-          <p className="text-sm text-text-secondary font-medium">
-            Showing {pageStart} - {pageEnd} of {totalCount} records
+          <p className="text-sm text-text-secondary">
+            {totalCount === 0 ? "No records" : `Showing ${pageStart}–${pageEnd}`} of {totalCount} records
           </p>
-        </div>
-
-        <div className="flex items-center gap-2 text-xs font-bold text-text-secondary">
-          <FiClock className="w-4 h-4 text-accent" />
-          Live audit data
         </div>
       </div>
 
       <div className="hidden xl:block overflow-x-auto">
-        <Table className="min-w-7xl">
-          <TableHeader className="bg-slate-50/90 sticky top-0 z-10">
+        <Table className="w-full min-w-[1160px] table-fixed">
+          <TableHeader className="bg-bg-primary sticky top-0 z-10">
             <TableRow className="hover:bg-transparent cursor-default">
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="Timestamp"
                   field="timestamp"
@@ -158,7 +152,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   onSortChange={onSortChange}
                 />
               </TableHead>
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="User"
                   field="user"
@@ -167,7 +161,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   onSortChange={onSortChange}
                 />
               </TableHead>
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[34%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="Action"
                   field="action"
@@ -176,7 +170,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   onSortChange={onSortChange}
                 />
               </TableHead>
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[13%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="Resource Type"
                   field="resourceType"
@@ -185,7 +179,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   onSortChange={onSortChange}
                 />
               </TableHead>
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[13%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="Resource ID"
                   field="resourceId"
@@ -194,7 +188,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   onSortChange={onSortChange}
                 />
               </TableHead>
-              <TableHead className="px-6 py-5 text-[11px] text-slate-400">
+              <TableHead className="w-[8%] px-4 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                 <SortHeader
                   label="Status"
                   field="status"
@@ -214,56 +208,56 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   key={entry.id}
                   onClick={() => onRowClick(entry)}
                   className={cn(
-                    "group transition-all duration-200",
+                    "group border-b border-border bg-white transition-colors",
                     entry.importance === "high"
-                      ? "bg-error/5 hover:bg-error/10"
-                      : "hover:bg-bg-secondary/40",
+                      ? "border-l-2 border-l-rose-300 hover:bg-rose-50/40"
+                      : "hover:bg-bg-primary/70",
                   )}
                 >
-                  <TableCell className="px-6 py-5">
-                    <div className="text-sm font-bold text-text-primary group-hover:text-accent transition-colors">
+                  <TableCell className="px-4 py-4">
+                    <div className="whitespace-nowrap text-sm font-medium text-text-primary group-hover:text-accent transition-colors">
                       {formatAuditDateTime(entry.timestamp)}
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <div className="space-y-1">
-                      <div className="text-sm font-bold text-slate-800 group-hover:text-accent transition-colors">
+                  <TableCell className="px-4 py-4">
+                    <div className="min-w-0 space-y-1">
+                      <div className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors">
                         {entry.user}
                       </div>
-                      <div className="text-[11px] font-semibold text-slate-400">
+                      <div className="truncate text-xs text-text-secondary">
                         {entry.ipAddress}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <div className="space-y-2">
+                  <TableCell className="px-4 py-4">
+                    <div className="flex min-w-0 items-start gap-2">
                       <div
                         className={cn(
-                          "inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-[0.16em] border",
+                          "mt-0.5 inline-flex shrink-0 items-center rounded-md border px-2 py-1 text-xs font-medium capitalize",
                           actionToneClasses[entry.actionType],
                         )}
                       >
                         {entry.actionType}
                       </div>
-                      <div className="text-sm font-medium text-slate-700 line-clamp-2">
+                      <div className="min-w-0 text-sm text-text-secondary line-clamp-2">
                         {entry.action}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <div className="text-sm font-semibold text-slate-700">
+                  <TableCell className="px-4 py-4">
+                    <div className="truncate text-sm text-text-primary" title={entry.resourceType}>
                       {entry.resourceType}
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5">
-                    <div className="font-mono text-sm font-semibold text-slate-700">
+                  <TableCell className="px-4 py-4">
+                    <div className="truncate font-mono text-xs text-text-secondary" title={entry.resourceId}>
                       {entry.resourceId}
                     </div>
                   </TableCell>
-                  <TableCell className="px-6 py-5">
+                  <TableCell className="px-4 py-4">
                     <span
                       className={cn(
-                        "inline-flex items-center px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-[0.16em] border",
+                        "inline-flex items-center rounded-md border px-2 py-1 text-xs font-medium",
                         statusClasses[entry.status],
                       )}
                     >
@@ -283,13 +277,13 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
         </Table>
       </div>
 
-      <div className="xl:hidden divide-y divide-slate-100">
+      <div className="xl:hidden divide-y divide-border">
         {isLoading ? (
           <div className="p-4 space-y-4">
             {Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className="rounded-md bg-slate-100/80 animate-pulse h-36"
+                className="rounded-lg bg-bg-primary animate-pulse h-32"
               />
             ))}
           </div>
@@ -300,7 +294,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
               type="button"
               onClick={() => onRowClick(entry)}
               className={cn(
-                "w-full text-left px-5 py-4 transition-all",
+                "w-full text-left px-5 py-4 transition-colors",
                 entry.importance === "high"
                   ? "bg-error/5 hover:bg-error/10"
                   : "bg-surface-white hover:bg-bg-secondary/30",
@@ -311,7 +305,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={cn(
-                        "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.16em] border",
+                        "rounded-md border px-2 py-1 text-xs font-medium capitalize",
                         statusClasses[entry.status],
                       )}
                     >
@@ -319,20 +313,20 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                     </span>
                     <span
                       className={cn(
-                        "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.16em] border",
+                        "rounded-md border px-2 py-1 text-xs font-medium capitalize",
                         actionToneClasses[entry.actionType],
                       )}
                     >
                       {entry.actionType}
                     </span>
                   </div>
-                  <div className="text-sm font-black text-slate-900 line-clamp-1">
+                  <div className="text-sm font-medium text-text-primary line-clamp-1">
                     {entry.action}
                   </div>
-                  <div className="text-xs font-semibold text-slate-500">
+                  <div className="text-xs text-text-secondary">
                     {entry.user} • {entry.resourceType} {entry.resourceId}
                   </div>
-                  <div className="text-[11px] font-medium text-slate-400">
+                  <div className="text-xs text-text-secondary">
                     {formatAuditDateTime(entry.timestamp)}
                   </div>
                 </div>
@@ -346,8 +340,8 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
       </div>
 
       {!isLoading && totalPages > 1 && (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-5 border-t border-slate-100 bg-slate-50/60">
-          <div className="text-sm font-medium text-slate-500">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between px-5 sm:px-6 py-4 border-t border-border bg-bg-primary">
+          <div className="text-sm text-text-secondary">
             Page {currentPage} of {totalPages}
           </div>
           <Pagination

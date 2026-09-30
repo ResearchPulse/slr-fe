@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
@@ -33,6 +33,15 @@ export const Modal: React.FC<ModalProps> = ({
   mode = "modal",
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
+  const [isEntered, setIsEntered] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setIsEntered(false);
+    const frame = window.requestAnimationFrame(() => setIsEntered(true));
+    return () => window.cancelAnimationFrame(frame);
+  }, [isOpen]);
 
   // Close on Escape key
   useEffect(() => {
@@ -81,7 +90,10 @@ export const Modal: React.FC<ModalProps> = ({
     >
       {/* Backdrop with frosted glass effect */}
       <div
-        className="fixed inset-0 bg-text-primary/50 backdrop-blur-sm transition-opacity duration-300 animate-in fade-in"
+        className={cn(
+          "fixed inset-0 bg-text-primary/45 backdrop-blur-[2px] transition-opacity duration-300 ease-out",
+          isEntered ? "opacity-100" : "opacity-0",
+        )}
         aria-hidden="true"
       />
 
@@ -90,10 +102,18 @@ export const Modal: React.FC<ModalProps> = ({
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-surface-white border border-border shadow-lg overflow-hidden transform transition-all z-10 flex flex-col",
+          "relative w-full bg-surface-white border border-border shadow-lg overflow-hidden z-10 flex flex-col transition-[opacity,transform] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
           mode === "drawer" 
-            ? "h-full max-h-screen rounded-none border-l border-y-0 border-r-0 animate-in slide-in-from-right fade-in duration-300"
-            : "rounded-[4px] max-h-[85vh] animate-in zoom-in-95 fade-in duration-300",
+            ? cn(
+                "h-full max-h-screen rounded-none border-l border-y-0 border-r-0",
+                isEntered ? "translate-x-0 opacity-100" : "translate-x-3 opacity-0",
+              )
+            : cn(
+                "rounded-xl max-h-[85vh]",
+                isEntered
+                  ? "translate-y-0 scale-100 opacity-100"
+                  : "translate-y-2 scale-[0.985] opacity-0",
+              ),
           sizeStyles[size],
           className,
         )}
