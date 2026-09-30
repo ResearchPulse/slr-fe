@@ -50,26 +50,31 @@ export default function ProjectListPage() {
     status: statusFilter,
   });
 
+  const { data: allProjectsData } = useMyProjects({
+    pageNumber: 1,
+    pageSize: 100,
+  });
+
   const totalPages = data?.totalPages || 1;
-  const totalCount = data?.totalCount || 0;
+  const allList = allProjectsData?.items || [];
+  const totalCount = (data as any)?.allTotalCount ?? allProjectsData?.totalCount ?? allList.length;
+  const activeCount = (data as any)?.activeCount ?? allList.filter((p: Project) => p.statusText === "Active").length;
+  const completedCount = (data as any)?.completedCount ?? allList.filter((p: Project) => p.statusText === "Completed").length;
 
   const filteredProjects = useMemo(() => {
-    const list = projects || [];
-    if (!searchQuery) return list;
-    return list.filter((project: Project) =>
-      project.title.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [projects, searchQuery]);
-
-  // Status counts derived from the currently loaded results (no extra API calls)
-  const activeCount = useMemo(
-    () => filteredProjects.filter((p) => p.statusText === "Active").length,
-    [filteredProjects],
-  );
-  const completedCount = useMemo(
-    () => filteredProjects.filter((p) => p.statusText === "Completed").length,
-    [filteredProjects],
-  );
+    let list = projects || [];
+    if (statusFilter) {
+      list = list.filter((project: Project) =>
+        project.statusText?.toLowerCase() === statusFilter.toLowerCase(),
+      );
+    }
+    if (searchQuery) {
+      list = list.filter((project: Project) =>
+        project.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+    return list;
+  }, [projects, statusFilter, searchQuery]);
 
   const handleChecklistClick = (projectId: string) => {
     navigate(`/projects/${projectId}/checklists`);
