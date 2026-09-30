@@ -94,10 +94,9 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
   const normalizeRoleToNumber = (r: unknown): number => {
     if (typeof r === "number") return r;
     const str = String(r || "").toUpperCase();
-    if (str === "OWNER") return 1;
-    if (str === "ADMIN") return 2;
+    if (str === "OWNER" || str === "ADMIN") return 1;
+    if (str === "LECTURER") return 2;
     if (str === "REVIEWER") return 3;
-    if (str === "VIEWER") return 4;
     return 99;
   };
 

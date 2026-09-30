@@ -53,7 +53,7 @@ export default function QualityAssessmentWorkspace() {
   const { members: projectMembers } = useProjectMembers(projectId);
   // TODO: casi role nay co phai isLeader ko wtf :)?
   const members =
-    projectMembers?.filter((m) => m.role !== ProjectRole.Leader) || [];
+    projectMembers?.filter((m) => m.role === ProjectRole.Reviewer) || [];
 
   const {
     assignedPapers,

@@ -13,7 +13,7 @@ import {
   FiAlertCircle,
 } from "react-icons/fi";
 import { useInvitation } from "../../hooks/useProjects";
-import { InvitationStatus, ProjectRole } from "../../types/project";
+import { InvitationStatus, getProjectRoleLabel } from "../../types/project";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
@@ -183,9 +183,7 @@ export default function InvitationDetailPage() {
                       </div>
                       <div>
                         <p className="text-lg font-black text-slate-900">
-                          {invitation.role === ProjectRole.Leader
-                            ? "Project Leader"
-                            : "Standard Member"}
+                          {getProjectRoleLabel(invitation.role)}
                         </p>
                         <p className="text-xs text-slate-400 font-medium">
                           Full collaboration access

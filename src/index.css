@@ -136,6 +136,65 @@ html {
   font-family: var(--font-primary);
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
+  scroll-behavior: smooth;
+  scroll-padding-top: 88px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.scroll-reveal:not(.is-visible),
+.scroll-pop:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(22px) scale(0.985);
+}
+
+.scroll-reveal.is-visible,
+.scroll-pop.is-visible {
+  animation: scroll-bounce-in 720ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
+}
+
+.scroll-pop-delay-1.is-visible {
+  animation-delay: 70ms;
+}
+
+.scroll-pop-delay-2.is-visible {
+  animation-delay: 140ms;
+}
+
+@keyframes scroll-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+  }
+
+  68% {
+    opacity: 1;
+    transform: translateY(-3px) scale(1.003);
+  }
+
+  84% {
+    transform: translateY(1px) scale(0.999);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal,
+  .scroll-pop,
+  .scroll-reveal.is-visible,
+  .scroll-pop.is-visible {
+    opacity: 1;
+    transform: none;
+    animation: none;
+  }
 }
 
 body {

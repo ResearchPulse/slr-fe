@@ -183,6 +183,18 @@ class ProjectService {
     return response.data;
   };
 
+  updateMemberRole = async (
+    projectId: string,
+    userId: string,
+    role: "LECTURER" | "REVIEWER",
+  ): Promise<ApiResponse<unknown>> => {
+    const response = await api.put<ApiResponse<unknown>>(
+      `${this.endpoint}/${projectId}/members/${userId}`,
+      { role },
+    );
+    return response.data;
+  };
+
   /**
    * Get project PICOCs
    * GET /api/projects/{projectId}/picocs

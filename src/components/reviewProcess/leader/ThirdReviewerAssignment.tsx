@@ -40,7 +40,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
   // Filter out leaders and existing reviewers
   const availableReviewers = useMemo(() => {
     return members.filter((m) => {
-      const isLeader = m.role === ProjectRole.Leader;
+      const isReviewer = m.role === ProjectRole.Reviewer;
       const alreadyReviewed = existingReviewersId.some((id) => {
         if (!id) return false;
         const normalizedId = String(id).trim().toLowerCase();
@@ -50,7 +50,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
           normalizedId === m.fullName?.toLowerCase()
         );
       });
-      return !isLeader && !alreadyReviewed;
+      return isReviewer && !alreadyReviewed;
     });
   }, [members, existingReviewersId]);
 

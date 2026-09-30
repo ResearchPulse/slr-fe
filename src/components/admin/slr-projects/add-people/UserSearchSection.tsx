@@ -17,7 +17,7 @@ interface UserSearchSectionProps {
   displayUsers: User[];
   selectedUserId: string | null;
   onSelectUser: (user: User) => void;
-  assignedRoles: Record<string, "Leader" | "Member">;
+  assignedRoles: Record<string, "Lecturer" | "Reviewer">;
   getInitials: (name: string) => string;
   // Pagination for admin list
   currentPage?: number;

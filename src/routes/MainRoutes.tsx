@@ -115,7 +115,7 @@ function MainRoutes() {
                 path=":projectId/processes/:processId/screening/:screeningProcessId"
                 element={
                   <ProtectedRouteForProject
-                    allowedRoles={[1, 2]}
+                    allowedRoles={[1, 3]}
                     redirectTo="/projects"
                   />
                 }

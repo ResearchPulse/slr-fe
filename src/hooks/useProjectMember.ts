@@ -27,9 +27,9 @@ export const useProjectMember = (projectId: string | undefined) => {
       const { role, roleNumber, roleText } = query.data.data;
       const roleNames: Record<string, number> = {
         OWNER: 1,
-        ADMIN: 2,
+        ADMIN: 1,
+        LECTURER: 2,
         REVIEWER: 3,
-        VIEWER: 4,
       };
       const normalizedRole =
         typeof roleNumber === "number"
@@ -44,7 +44,7 @@ export const useProjectMember = (projectId: string | undefined) => {
         currentProjectMember.role !== normalizedRole ||
         currentProjectMember.roleText !== roleText
       ) {
-      const isLeader = normalizedRole === 1 || normalizedRole === 2;
+      const isLeader = normalizedRole === 1;
 
       dispatch(
         setProjectMember({

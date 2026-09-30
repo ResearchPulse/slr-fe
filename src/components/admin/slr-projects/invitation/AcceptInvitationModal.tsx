@@ -1,7 +1,7 @@
 import { FiCheckCircle } from "react-icons/fi";
 import Modal from "../../../ui/Modal";
 import Button from "../../../ui/Button";
-import { ProjectRole } from "../../../../types/project";
+import { getProjectRoleLabel } from "../../../../types/project";
 
 import { useAcceptInvitation } from "../../../../hooks/useProjects";
 import { toastSuccess, toastError } from "../../../../utils/toast";
@@ -9,7 +9,7 @@ import { toastSuccess, toastError } from "../../../../utils/toast";
 interface AcceptInvitationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  role: number;
+  role: number | string;
   invitationId: string;
   onSuccess?: () => void;
 }
@@ -42,7 +42,7 @@ export default function AcceptInvitationModal({
         <p className="text-center text-text-secondary font-medium mb-8">
           Do you want to join this project as{" "}
           <span className="text-text-primary font-bold">
-            {role === ProjectRole.Leader ? "Project Leader" : "Standard Member"}
+            {getProjectRoleLabel(role)}
           </span>
           ?
         </p>

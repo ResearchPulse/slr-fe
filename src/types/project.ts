@@ -43,17 +43,29 @@ export interface Project {
 
 // Project Roles
 export const ProjectRole = {
-  Leader: 1,
-  Member: 2
+  Owner: 1,
+  Leader: 1, // Compatibility alias for older project views.
+  Lecturer: 2,
+  Member: 2, // Compatibility alias for older project views.
+  Reviewer: 3,
 } as const;
 
 export type ProjectRoleType = typeof ProjectRole[keyof typeof ProjectRole];
+
+export const getProjectRoleLabel = (role: unknown): string => {
+  const value = String(role ?? "").trim().toUpperCase();
+  if (["1", "OWNER", "ADMIN", "LEADER"].includes(value)) return "Owner";
+  if (["2", "LECTURER", "MEMBER"].includes(value)) return "Lecturer";
+  if (["3", "REVIEWER"].includes(value)) return "Reviewer";
+  return "Unknown role";
+};
 
 // Project Member Interface
 export interface ProjectMember {
   userId: string;
   projectId: string;
   role: ProjectRoleType;
+  roleText?: string;
   joinedAt: string;
   userName: string;
   fullName: string;
@@ -81,7 +93,7 @@ export interface ProjectInvitation {
   invitedByUserId: string;
   invitedByUserFullName: string;
   status: InvitationStatusType;
-  role: ProjectRoleType;
+  role: ProjectRoleType | string;
   responseMessage?: string;
   expiredAt: string;
   respondedAt?: string;

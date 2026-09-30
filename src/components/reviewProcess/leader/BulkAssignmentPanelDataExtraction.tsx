@@ -40,7 +40,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
   });
 
   const reviewers = useMemo(
-    () => members.filter((m) => m.role !== ProjectRole.Leader),
+    () => members.filter((m) => m.role === ProjectRole.Lecturer),
     [members],
   );
 

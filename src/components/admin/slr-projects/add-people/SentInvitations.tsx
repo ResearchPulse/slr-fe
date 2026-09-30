@@ -14,6 +14,7 @@ import {
 import {
   ProjectRole,
   InvitationStatus,
+  getProjectRoleLabel,
   type ProjectInvitation,
 } from "../../../../types/project";
 import { toastSuccess, toastError } from "../../../../utils/toast";
@@ -149,12 +150,12 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
                     <span
                       className={cn(
                         "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-[4px]",
-                        inv.role === ProjectRole.Leader
+                        inv.role === ProjectRole.Owner
                           ? "bg-bg-secondary text-accent"
                           : "bg-slate-100 text-slate-500",
                       )}
                     >
-                      {inv.role === ProjectRole.Leader ? "Lead" : "Std Member"}
+                      {getProjectRoleLabel(inv.role)}
                     </span>
                   </div>
                   <p className="text-[10px] font-medium text-slate-400">

@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { FiSearch, FiFolder } from "react-icons/fi";
+import { FiSearch, FiFolder, FiUsers, FiEye, FiShield } from "react-icons/fi";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
@@ -12,6 +12,9 @@ import {
   setCurrentProject,
   clearProjectMember,
 } from "../../redux/slices/projectSlice";
+import { getProjectRoleLabel } from "../../types/project";
+
+type RoleFilter = "All" | "Owner" | "Lecturer" | "Reviewer";
 
 /** Small summary card for the dashboard header. */
 function StatCard({
@@ -42,6 +45,7 @@ export default function ProjectListPage() {
     undefined,
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
   const pageSize = 10;
 
   const { data, projects, isLoading, error } = useMyProjects({
@@ -55,13 +59,42 @@ export default function ProjectListPage() {
     pageSize: 100,
   });
 
-  const totalPages = data?.totalPages || 1;
   const allList = allProjectsData?.items || [];
-  const totalCount = (data as any)?.allTotalCount ?? allProjectsData?.totalCount ?? allList.length;
-  const activeCount = (data as any)?.activeCount ?? allList.filter((p: Project) => p.statusText === "Active").length;
-  const completedCount = (data as any)?.completedCount ?? allList.filter((p: Project) => p.statusText === "Completed").length;
+  const roleProjects = useMemo(
+    () => roleFilter === "All"
+      ? allList
+      : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === roleFilter),
+    [allList, roleFilter],
+  );
+  const totalCount = roleProjects.length;
+  const activeCount = roleProjects.filter((p: Project) => p.statusText === "Active").length;
+  const completedCount = roleProjects.filter((p: Project) => p.statusText === "Completed").length;
+
+  const roleFilteredResults = useMemo(() => {
+    let list = roleProjects;
+    if (statusFilter) {
+      list = list.filter((project: Project) =>
+        project.statusText?.toLowerCase() === statusFilter.toLowerCase(),
+      );
+    }
+    if (searchQuery) {
+      list = list.filter((project: Project) =>
+        project.title.toLowerCase().includes(searchQuery.toLowerCase()),
+      );
+    }
+    return list;
+  }, [roleProjects, statusFilter, searchQuery]);
+
+  const totalPages = roleFilter === "All"
+    ? data?.totalPages || 1
+    : Math.max(1, Math.ceil(roleFilteredResults.length / pageSize));
 
   const filteredProjects = useMemo(() => {
+    if (roleFilter !== "All") {
+      const start = (currentPage - 1) * pageSize;
+      return roleFilteredResults.slice(start, start + pageSize);
+    }
+
     let list = projects || [];
     if (statusFilter) {
       list = list.filter((project: Project) =>
@@ -74,7 +107,7 @@ export default function ProjectListPage() {
       );
     }
     return list;
-  }, [projects, statusFilter, searchQuery]);
+  }, [projects, roleFilter, roleFilteredResults, currentPage, pageSize, statusFilter, searchQuery]);
 
   const handleChecklistClick = (projectId: string) => {
     navigate(`/projects/${projectId}/checklists`);
@@ -88,11 +121,46 @@ export default function ProjectListPage() {
         {/* Page Header */}
         <div className="mb-8">
           <h1 className="font-cormorant text-[32px] sm:text-[40px] font-normal text-text-primary leading-tight mb-2">
-            Research Projects
+            {roleFilter === "All" ? "Research Projects" : `${roleFilter === "Owner" ? "Leader" : roleFilter} Projects`}
           </h1>
           <p className="text-text-secondary text-sm leading-relaxed">
-            Manage and organize your systematic literature reviews.
+            {roleFilter === "Reviewer"
+              ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
+              : roleFilter === "Lecturer"
+                ? "Projects where you support the research team and contribute to the review workflow."
+                : roleFilter === "Owner"
+                  ? "Projects you lead, with setup, team coordination, and review process controls."
+                  : "Your research workspace, organized around the role you hold in each project."}
           </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2 mb-6" aria-label="Filter projects by role">
+          {([
+            { value: "All", label: "All roles", icon: FiUsers },
+            { value: "Owner", label: "Leader", icon: FiShield },
+            { value: "Lecturer", label: "Lecturer", icon: FiEye },
+            { value: "Reviewer", label: "Reviewer", icon: FiEye },
+          ] as const).map(({ value, label, icon: Icon }) => {
+            const count = value === "All"
+              ? allList.length
+              : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === value).length;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
+                aria-pressed={roleFilter === value}
+                className={`inline-flex items-center gap-2 px-3 py-2 border rounded-[4px] text-[11px] uppercase tracking-[0.12em] transition-colors ${
+                  roleFilter === value
+                    ? "bg-text-primary text-bg-primary border-text-primary"
+                    : "bg-surface-white text-text-secondary border-border hover:border-accent hover:text-text-primary"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                {label}<span className="opacity-70">{count}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Summary Cards */}
@@ -113,7 +181,10 @@ export default function ProjectListPage() {
             <Input
               placeholder="Search projects..."
               className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-[4px] text-sm"
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
 

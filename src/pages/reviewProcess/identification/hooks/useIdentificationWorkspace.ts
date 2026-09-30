@@ -26,6 +26,7 @@ import type { TabType, PhaseStatus } from "../types";
 import { DEFAULT_PRISMA_STATS, LIBRARY_PAGE_SIZE } from "../constants";
 import { identificationProcessService } from "../../../../services/identificationProcessService";
 import { deduplicationService } from "../../../../services/deduplicationService";
+import { useProjectMember } from "../../../../hooks/useProjectMember";
 import toast from "react-hot-toast";
 
 export const useIdentificationWorkspace = () => {
@@ -38,6 +39,7 @@ export const useIdentificationWorkspace = () => {
     identificationPhaseId: string;
   }>();
   const navigate = useNavigate();
+  const { member } = useProjectMember(projectId);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("strategies");
@@ -73,7 +75,7 @@ export const useIdentificationWorkspace = () => {
     }
   })();
 
-  const canEdit = phaseStatus === "in-progress";
+  const canEdit = phaseStatus === "in-progress" && (member?.isLeader === true || member?.role === 2);
 
   // Drag state (for import tab)
   const [isDragging, setIsDragging] = useState(false);

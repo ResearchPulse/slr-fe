@@ -453,11 +453,12 @@ export default function ProjectDetailPage() {
               setSelectedStep("business-justification");
             }}
             embedded={true}
+            hideEditButton={!isLeader}
           />
         );
 
       case "activate-project":
-        return (
+        return isLeader ? (
           <ActivateProjectStep
             projectId={id || ""}
             isActive={false}
@@ -465,6 +466,10 @@ export default function ProjectDetailPage() {
             onActivate={handleActivate}
             isActivating={activateLoading}
           />
+        ) : (
+          <div className="border border-border bg-surface-white p-6 text-sm text-text-secondary">
+            Project activation is managed by the project leader. You can review the setup and project information here.
+          </div>
         );
 
       default:
@@ -477,6 +482,7 @@ export default function ProjectDetailPage() {
       {/* ── Top Area: Project Header + Settings ───────────────────────────── */}
       <ProjectHeader
         project={project}
+        isLeader={isLeader}
         onBack={() => navigate("/projects")}
         onEdit={() => navigate(`/projects/${id}/overview`)}
         onSettings={() => navigate(`/projects/${id}/settings`)}

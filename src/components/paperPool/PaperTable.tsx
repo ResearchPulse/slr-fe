@@ -31,6 +31,7 @@ interface PaperTableProps {
   onDeletePaper?: (paperId: string, reason: string) => void;
   isDeletingPaper?: string | null; // PaperId being deleted
   isLeader?: boolean;
+  canUploadPdf?: boolean;
 }
 
 export default function PaperTable({
@@ -57,6 +58,7 @@ export default function PaperTable({
   onDeletePaper,
   isDeletingPaper,
   isLeader = false,
+  canUploadPdf = false,
 }: PaperTableProps) {
   if (isLoading && papers.length === 0) {
     return (
@@ -162,6 +164,7 @@ export default function PaperTable({
                 onDeletePaper={onDeletePaper}
                 isDeletingPaper={isDeletingPaper === paper.id}
                 isLeader={isLeader}
+                canUploadPdf={canUploadPdf}
               />
             ))}
             {papers.length === 0 && !isLoading && (

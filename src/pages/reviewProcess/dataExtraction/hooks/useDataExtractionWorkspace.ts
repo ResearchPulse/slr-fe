@@ -834,7 +834,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
 
   const reviewerOptions = useMemo<ReviewerOption[]>(() => {
     const options = projectMembers
-      .filter((member) => member.role === ProjectRole.Member)
+      .filter((member) => member.role === ProjectRole.Lecturer)
       .map((member) => ({
         id: member.userId,
         name: member.userName

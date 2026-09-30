@@ -38,7 +38,7 @@ export default function SearchSourcePage({
     updateStrategies,
   } = useSearchSources(projectId);
   const { member } = useProjectMember(projectId);
-  const isLeader = member?.isLeader ?? false;
+  const canEditSources = member?.isLeader === true || member?.role === 2;
 
   const [sources, setSources] = useState<SearchSourceDto[]>([]);
   const [selectedMasterId, setSelectedMasterId] = useState<string>("");
@@ -155,7 +155,7 @@ export default function SearchSourcePage({
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Add Source Section */}
-        {isLeader && (
+        {canEditSources && (
           <div className="md:col-span-1">
             <div className="bg-surface-white rounded-[4px] p-6 shadow-none border border-border sticky top-24">
               <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
@@ -212,7 +212,7 @@ export default function SearchSourcePage({
         {/* List Section */}
         <div
           className={
-            isLeader ? "md:col-span-2 space-y-4" : "md:col-span-3 space-y-4"
+            canEditSources ? "md:col-span-2 space-y-4" : "md:col-span-3 space-y-4"
           }
         >
           <div className="flex items-center justify-between mb-4">
@@ -224,7 +224,7 @@ export default function SearchSourcePage({
               </span>
             </h3>
 
-            {hasChanges && isLeader && (
+            {hasChanges && canEditSources && (
               <button
                 onClick={handleSave}
                 disabled={isUpserting}
@@ -320,14 +320,14 @@ export default function SearchSourcePage({
                             className={hasStrategy ? "animate-spin-slow" : ""}
                           />
                           {hasStrategy
-                            ? isLeader
+                            ? canEditSources
                               ? "Configure"
                               : "View Strategy"
-                            : isLeader
+                            : canEditSources
                               ? "Setup Strategy"
                               : "No Strategy"}
                         </button>
-                        {isLeader && (
+                        {canEditSources && (
                           <button
                             onClick={() => handleRemoveSource(index)}
                             className="p-2 text-gray-300 hover:text-red-600 hover:bg-surface-white rounded-[4px] transition-all"
@@ -353,7 +353,7 @@ export default function SearchSourcePage({
             source={sources[configuringSourceIndex]}
             onSave={handleSaveStrategy}
             onClose={() => setConfiguringSourceIndex(null)}
-            isLeader={isLeader}
+            isLeader={canEditSources}
           />
         )}
       </AnimatePresence>
@@ -367,7 +367,7 @@ export default function SearchSourcePage({
             value: s.sourceId || "",
           }))
           .filter((s) => !!s.value)}
-        isLeader={isLeader}
+        isLeader={canEditSources}
       />
     </div>
   );

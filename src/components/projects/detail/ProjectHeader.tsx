@@ -1,5 +1,6 @@
 import React from "react";
 import type { Project } from "../../../types/project";
+import { getProjectRoleLabel } from "../../../types/project";
 import {
   FiSettings,
   FiEdit3,
@@ -11,6 +12,7 @@ import {
 
 interface ProjectHeaderProps {
   project: Project;
+  isLeader?: boolean;
   onBack: () => void;
   onEdit: () => void;
   onSettings?: () => void;
@@ -18,6 +20,7 @@ interface ProjectHeaderProps {
 
 const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   project,
+  isLeader = false,
   onBack,
   onEdit,
   onSettings,
@@ -76,14 +79,17 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
 
             {/* Action buttons */}
             <div className="flex items-center gap-2 self-start">
-              <button
+              <span className="px-2.5 py-1 border border-border text-[10px] uppercase tracking-[0.15em] text-text-secondary">
+                {isLeader ? "Leader" : getProjectRoleLabel(project.role ?? project.roleText)}
+              </span>
+              {isLeader && <button
                 onClick={onEdit}
                 className="flex items-center gap-2 px-4 py-2 text-[11px] uppercase tracking-[0.15em] font-medium text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-all border border-border"
               >
                 <FiEdit3 className="w-3.5 h-3.5" />
                 Edit
-              </button>
-              {onSettings && (
+              </button>}
+              {isLeader && onSettings && (
                 <button
                   title="Project settings"
                   onClick={onSettings}
