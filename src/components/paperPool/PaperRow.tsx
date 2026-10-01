@@ -59,18 +59,24 @@ export default function PaperRow({
         isSelected ? "bg-bg-secondary/40" : "hover:bg-bg-secondary/80"
       }`}
     >
-      <td className="px-6 py-4 align-top">
-        <div className="flex items-center pt-0.5">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
-            className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
-            aria-label={`Select paper ${paper.id}`}
-          />
-        </div>
-      </td>
-      <td className="px-3 py-4 align-top">
+      {isLeader && (
+        <td className="px-6 py-4 align-top">
+          <div className="flex items-center pt-0.5">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
+              className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
+              aria-label={`Select paper ${paper.id}`}
+            />
+          </div>
+        </td>
+      )}
+      <td
+        className={`${
+          isLeader ? "px-3" : "px-4 sm:px-5"
+        } py-4 align-top`}
+      >
         <span className="text-[10px] font-mono font-bold text-text-secondary bg-bg-secondary/50 px-1.5 py-0.5 rounded leading-none">
           {paper.id.slice(0, 8)}...
         </span>
