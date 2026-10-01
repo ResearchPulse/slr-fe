@@ -1,27 +1,22 @@
 import {
   ArrowRight,
   BarChart3,
-  CheckCircle2,
   LayoutDashboard,
   Lightbulb,
   PencilLine,
   Sparkles,
   Tags,
 } from "lucide-react";
-import Button from "../../../components/ui/Button";
 import type { SynthesisWorkspaceDto } from "../../../types/synthesisExecution";
 
 interface SynthesisDashboardProps {
   workspace: SynthesisWorkspaceDto;
   finalizedFindingCount: number;
   evidenceCount: number;
-  canCompletePhase: boolean;
-  isCompleting?: boolean;
   isReadOnly?: boolean;
   onNavigateToThematic: () => void;
   onNavigateToDescriptiveCharts: () => void;
   onNavigateToRqReporting: () => void;
-  onCompletePhase: () => void;
 }
 
 function statusLabel(
@@ -99,13 +94,10 @@ export default function SynthesisDashboard({
   workspace,
   finalizedFindingCount,
   evidenceCount,
-  canCompletePhase,
-  isCompleting = false,
   isReadOnly = false,
   onNavigateToThematic,
   onNavigateToDescriptiveCharts,
   onNavigateToRqReporting,
-  onCompletePhase,
 }: SynthesisDashboardProps) {
   const completedAt = workspace.process.completedAt
     ? new Date(workspace.process.completedAt).toLocaleString()
@@ -157,31 +149,6 @@ export default function SynthesisDashboard({
             />
           </div>
 
-          {workspace.process.status === "InProgress" &&
-          canCompletePhase &&
-          !isReadOnly ? (
-            <div className="mt-6 rounded-[4px] border border-emerald-300 bg-emerald-50 p-4 shadow-none">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-semibold text-emerald-900">
-                    All research question findings are finalized.
-                  </p>
-                  <p className="mt-1 text-sm text-emerald-700">
-                    You can complete the synthesis phase and lock the workspace.
-                  </p>
-                </div>
-                <Button
-                  variant="success"
-                  isLoading={isCompleting}
-                  onClick={onCompletePhase}
-                  className="shadow-none shadow-emerald-200"
-                >
-                  <CheckCircle2 className="mr-2 h-4 w-4" />
-                  Complete Synthesis Phase
-                </Button>
-              </div>
-            </div>
-          ) : null}
         </div>
 
         <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
