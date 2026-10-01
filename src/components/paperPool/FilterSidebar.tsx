@@ -39,7 +39,7 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:h-[calc(100vh-120px)] lg:w-16 lg:flex-col lg:py-6">
+      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-fit lg:flex-col lg:py-6">
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -60,7 +60,7 @@ export default function FilterSidebar({
   }
 
   return (
-    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:h-[calc(100vh-120px)] lg:w-80">
+    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-fit lg:max-h-[calc(100vh-2rem)]">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
@@ -87,7 +87,7 @@ export default function FilterSidebar({
       </div>
 
       {/* Filter Content */}
-      <div className="flex-1 space-y-6 overflow-y-auto p-4 custom-scrollbar sm:p-5">
+      <div className="space-y-6 overflow-y-auto p-4 custom-scrollbar sm:p-5 max-h-[calc(100vh-16rem)]">
         {/* Search Input */}
         <div className="space-y-2">
           <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
