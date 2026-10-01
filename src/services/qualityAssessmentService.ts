@@ -18,24 +18,70 @@ import type {
   QualityAssessmentProcessResponse
 } from "../types/qualityAssessment";
 
+const toQualityProcess = (data: any, id: string): QualityAssessmentProcessResponse => ({
+  id,
+  reviewProcessId: data.projectId ? `rp_${data.projectId}` : id,
+  status: data.status === "COMPLETED" ? 2 : data.status === "ACTIVE" || data.status === "REOPENED" ? 1 : 0,
+  statusText: data.status === "COMPLETED" ? "Completed" : data.status === "ACTIVE" || data.status === "REOPENED" ? "InProgress" : "NotStarted",
+  isHaveCriteria: true,
+});
+
+const toQualityDashboard = (data: any): LeaderQADashboardResponse => {
+  if (data?.papers) return data as LeaderQADashboardResponse;
+
+  const items = Array.isArray(data) ? data : [];
+  const papers = items.map((item) => ({
+    id: item.paperId,
+    paperId: item.paperId,
+    title: item.title,
+    status: item.status,
+    reviewers: [],
+    decisions: [],
+    resolution: null,
+    completionPercentage: item.assigned ? 0 : 100,
+  }));
+  const completedPapers = papers.filter((paper) => paper.completionPercentage >= 100).length;
+  return {
+    papers: {
+      items: papers,
+      pageNumber: 1,
+      pageSize: Math.max(items.length, 1),
+      totalCount: items.length,
+      totalPages: 1,
+    },
+    reviewerProgresses: [],
+    completionPercentage: papers.length ? Math.round((completedPapers / papers.length) * 100) : 0,
+    totalPapers: papers.length,
+    completedPapers,
+    inProgressPapers: Math.max(papers.length - completedPapers, 0),
+    notStartedPapers: 0,
+  } as unknown as LeaderQADashboardResponse;
+};
+
 export const qualityAssessmentService = {
   projectIdFromProcessId(id: string): string {
     return id.replace(/^(?:qa_|rp_)/, "");
   },
 
   async getProcess(id: string): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
-    const response = await api.get<ApiResponse<QualityAssessmentProcessResponse>>(`/quality-assessment/${id}`);
-    return response.data;
+    const response = await api.get<ApiResponse<any>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes`,
+    );
+    return { ...response.data, data: toQualityProcess(response.data.data, id) };
   },
 
   async start(id: string): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
-    const response = await api.post<ApiResponse<QualityAssessmentProcessResponse>>(`/quality-assessment/${id}/start`);
-    return response.data;
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/start`,
+    );
+    return { ...response.data, data: toQualityProcess(response.data.data, id) };
   },
 
   async complete(id: string): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
-    const response = await api.post<ApiResponse<QualityAssessmentProcessResponse>>(`/quality-assessment/${id}/complete`);
-    return response.data;
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/complete`,
+    );
+    return { ...response.data, data: toQualityProcess(response.data.data, id) };
   },
 
   async assignReviewers(data: QualityAssessmentAssignmentRequest): Promise<ApiResponse<null>> {
@@ -52,19 +98,19 @@ export const qualityAssessmentService = {
   },
 
   async getPapers(qaProcessId: string, params?: QADashboardParams): Promise<ApiResponse<LeaderQADashboardResponse>> {
-    const response = await api.get<ApiResponse<LeaderQADashboardResponse>>(
+    const response = await api.get<ApiResponse<any>>(
       `/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/papers`,
       { params },
     );
-    return response.data;
+    return { ...response.data, data: toQualityDashboard(response.data.data) };
   },
 
   async getMyAssignedPapers(qaProcessId: string, params?: QADashboardParams): Promise<ApiResponse<QAMemberDashboardResponse>> {
-    const response = await api.get<ApiResponse<QAMemberDashboardResponse>>(
+    const response = await api.get<ApiResponse<any>>(
       `/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/papers/my`,
       { params },
     );
-    return response.data;
+    return { ...response.data, data: toQualityDashboard(response.data.data) as QAMemberDashboardResponse };
   },
 
   async getProcessStrategies(qaProcessId: string): Promise<ApiResponse<QualityAssessmentStrategy[]>> {

@@ -19,6 +19,42 @@ import type {
 } from "../types/dataExtraction";
 import type { ApiResponse } from "../types/project";
 
+const toExtractionDashboard = (data: any): ExtractionDashboardResponseDto => {
+  if (data?.tasks && data?.summary) return data as ExtractionDashboardResponseDto;
+
+  const items = Array.isArray(data) ? data : [];
+  const tasks = items.map((item) => ({
+    taskId: item.paperId,
+    paperId: item.paperId,
+    title: item.title,
+    status: item.assigned ? "in-progress" : "todo",
+  }));
+  const completed = tasks.filter((task) => task.status === "completed").length;
+  const awaitingConsensus = tasks.filter((task) => task.status === "awaiting-consensus").length;
+  const inProgress = tasks.filter((task) => task.status === "in-progress").length;
+  return {
+    summary: {
+      totalIncluded: tasks.length,
+      inProgress,
+      awaitingConsensus,
+      completed,
+    },
+    tasks: {
+      items: tasks,
+      totalCount: tasks.length,
+      pageNumber: 1,
+      pageSize: Math.max(tasks.length, 1),
+      totalPages: 1,
+    },
+  };
+};
+
+const valuesArrayToRecord = (values: ExtractedValueDto[]) =>
+  Object.fromEntries(values.map((value) => [value.fieldId, value]));
+
+const consensusValuesToRecord = (values: SubmitConsensusRequestDto["values"]) =>
+  Object.fromEntries(values.map((value) => [value.fieldId, value]));
+
 export const dataExtractionConductingService = {
   projectIdFromProcessId(extractionProcessId: string): string {
     return extractionProcessId.replace(/^(?:de_|rp_)/, "");
@@ -35,7 +71,7 @@ export const dataExtractionConductingService = {
       }
     );
 
-    return response.data;
+    return { ...response.data, data: toExtractionDashboard(response.data.data) };
   },
 
   async assignReviewers(
@@ -58,7 +94,7 @@ export const dataExtractionConductingService = {
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/submit`,
-      payload
+      { values: valuesArrayToRecord(payload.values) }
     );
 
     return response.data;
@@ -71,7 +107,7 @@ export const dataExtractionConductingService = {
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/submit`,
-      payload
+      { values: valuesArrayToRecord(payload.values) }
     );
 
     return response.data;
@@ -132,7 +168,7 @@ export const dataExtractionConductingService = {
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/comments`,
-      { ...payload, fieldId },
+      { text: payload.content, fieldId },
     );
 
     return response.data;
@@ -145,7 +181,7 @@ export const dataExtractionConductingService = {
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/consensus`,
-      payload
+      { values: consensusValuesToRecord(payload.values) }
     );
 
     return response.data;
@@ -195,7 +231,7 @@ export const dataExtractionConductingService = {
   ): Promise<ApiResponse<null>> {
     const response = await api.put<ApiResponse<null>>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${payload.paperId}/draft`,
-      payload
+      { values: { [payload.fieldId]: payload.newValue } }
     );
 
     return response.data;
