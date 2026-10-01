@@ -24,6 +24,7 @@ import ProjectDrawers from "../../components/projects/detail/ProjectDrawers";
 import Button from "../../components/ui/Button";
 import Card from "../../components/ui/Card";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
+import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 import { aiProjectSetupService } from "../../services/aiProjectSetupService";
 import OverviewTabContent from "../../components/projects/detail/OverviewTabContent";
 import ProjectSetupSection from "../../components/projects/detail/ProjectSetupSection";
@@ -216,6 +217,7 @@ export default function ProjectDetailPage() {
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const [isPICOCModalOpen, setIsPICOCModalOpen] = useState(false);
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
+  const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
   const location = useLocation();
   const activeMainSection = location.pathname.includes("/workspace")
     ? "paper-pool"
@@ -514,7 +516,7 @@ export default function ProjectDetailPage() {
         project={projectForHeader ?? project}
         isLeader={isLeader}
         onBack={() => navigate("/projects")}
-        onEdit={() => navigate(`/projects/${id}/overview`)}
+        onEdit={() => setIsEditProjectModalOpen(true)}
         onSettings={() => navigate(`/projects/${id}/settings`)}
       />
 
@@ -557,6 +559,16 @@ export default function ProjectDetailPage() {
         onClose={() => setIsMemberModalOpen(false)}
         projectId={id}
         projectName={project.title}
+      />
+
+      <ProjectFormModal
+        isOpen={isEditProjectModalOpen}
+        onClose={() => setIsEditProjectModalOpen(false)}
+        projectId={id}
+        onSuccess={async () => {
+          setIsEditProjectModalOpen(false);
+          await refetchProject();
+        }}
       />
     </div>
   );

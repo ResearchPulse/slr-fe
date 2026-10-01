@@ -247,6 +247,15 @@ export const useResolveConflict = () => {
       queryClient.invalidateQueries({
         queryKey: ["infinite-full-text-assignment-papers", variables.processId],
       });
+      queryClient.invalidateQueries({
+        queryKey: ["study-selection", variables.processId, "conflict-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study-selection", variables.processId, "conflicts"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study-selection", variables.processId, "statistics"],
+      });
     },
   });
 };

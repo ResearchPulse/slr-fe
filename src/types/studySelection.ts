@@ -454,6 +454,7 @@ export type GetPaperDetailsResponse = ApiResponse<PaperWithDecisionsResponse>;
 export interface ConflictDetailResponse extends PaperWithDecisionsResponse {
   isFinishReview: boolean;
   assignedMembers?: AssignedMember[];
+  hasConflict?: boolean;
 }
 export type GetConflictDetailResponse = ApiResponse<ConflictDetailResponse>;
 export type BulkResolvePapersResponse = ApiResponse<ScreeningResolutionResponse[]>;
