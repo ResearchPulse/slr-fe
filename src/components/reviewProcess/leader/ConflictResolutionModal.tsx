@@ -144,7 +144,13 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
             resolverName: detailData.resolution.resolverName || "",
           }
         : undefined,
-      isFinishReview: detailData.isFinishReview && !hasPendingReviewer,
+      isFinishReview:
+        Boolean(
+          detailData.isFinishReview ||
+            detailData.status === 3 ||
+            detailData.hasConflict ||
+            (detailData.decisions && detailData.decisions.length >= 2),
+        ) && !hasPendingReviewer,
       assignedReviewerIds: Array.from(
         new Set([...assignedIds, ...decisionIds]),
       ),
