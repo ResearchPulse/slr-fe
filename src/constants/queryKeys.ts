@@ -142,8 +142,8 @@ export const QUERY_KEYS = {
     conflicts: (processId: string) => ["study-selection", processId, "conflicts"] as const,
     decisionsByPaper: (processId: string, paperId: string) =>
       ["study-selection", processId, "papers", paperId, "decisions"] as const,
-    paperDetails: (processId: string, paperId: string) =>
-      ["study-selection", processId, "papers", paperId, "detail"] as const,
+    paperDetails: (processId: string, paperId: string, phase?: number) =>
+      ["study-selection", processId, "papers", paperId, "detail", phase ?? 0] as const,
     aiAnalysis: (processId: string, paperId: string, phase: number) =>
       ["study-selection", processId, "papers", paperId, "ai-analysis", phase] as const,
     exclusionCodes: (processId: string, params?: object) =>

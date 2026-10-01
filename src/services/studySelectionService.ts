@@ -31,6 +31,7 @@ import type {
   GetAssignmentPapersResponse,
   ScreeningPhaseQuery,
   AssignedPapersParams,
+  PaperPhase,
   GetAssignedPapersResponse,
   ConflictsByPhaseParams,
   GetConflictsByPhaseResponse,
@@ -296,9 +297,14 @@ export const studySelectionService = {
     return response.data;
   },
   // 18. Get Detailed Paper Info (with decisions/resolution)
-  async getPaperDetails(processId: string, paperId: string): Promise<GetPaperDetailsResponse> {
+  async getPaperDetails(
+    processId: string,
+    paperId: string,
+    phase?: PaperPhase,
+  ): Promise<GetPaperDetailsResponse> {
     const response = await api.get<GetPaperDetailsResponse>(
       `/study-selection/${processId}/papers/${paperId}`,
+      { params: phase === undefined ? undefined : { phase } },
     );
     return response.data;
   },

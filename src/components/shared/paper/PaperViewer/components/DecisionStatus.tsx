@@ -14,9 +14,13 @@ export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper }) => {
   const myDecision = currentUser
     ? paper.decisions.find((d) => d.reviewerId === currentUser.id)
     : null;
-  const decisionLabel =
-    paper.finalDecisionText ??
-    (paper.screeningStatus === "included" ? "Included" : "Excluded");
+  const statusLabel: Record<typeof paper.screeningStatus, string> = {
+    pending: "Pending",
+    included: "Included",
+    excluded: "Excluded",
+    conflicted: "Conflicted",
+  };
+  const decisionLabel = paper.finalDecisionText || statusLabel[paper.screeningStatus];
 
   if (
     myDecision &&
@@ -71,7 +75,11 @@ export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper }) => {
       )}
       {decisionLabel}
       {!isIncluded && !isExcluded && (
-        <span className="ml-auto opacity-50">Resolution Required</span>
+        <span className="ml-auto opacity-50">
+          {paper.screeningStatus === "conflicted"
+            ? "Resolution Required"
+            : "Awaiting reviewer decisions"}
+        </span>
       )}
     </div>
   );

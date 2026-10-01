@@ -526,11 +526,11 @@ export default function PaperViewer({
                           (isLeaderView && hasPendingAssignedReviewer) ||
                           isLoadingReviewers
                         }
-                      className="flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-emerald-600 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <FiCheck className="w-4 h-4" />
-                        Include{" "}
-                        <kbd className="ml-2 px-1.5 py-0.5 bg-emerald-500/50 rounded font-mono">
+                        Include
+                        <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
                           1
                         </kbd>
                       </button>

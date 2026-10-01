@@ -101,11 +101,20 @@ export default function ExcludeMenu({
   // Close on Click Outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const reasonOptions = document.getElementById(
+        "exclusion-reason-select-options",
+      );
+
+      // The Select renders its options in a portal under document.body. Treat
+      // that portal as part of this form so choosing a reason does not close it.
+      if (reasonOptions?.contains(target)) return;
+
       if (
         menuRef.current &&
-        !menuRef.current.contains(event.target as Node) &&
+        !menuRef.current.contains(target) &&
         buttonRef.current &&
-        !buttonRef.current.contains(event.target as Node)
+        !buttonRef.current.contains(target)
       ) {
         setIsOpen(false);
       }
@@ -152,10 +161,10 @@ export default function ExcludeMenu({
         onClick={() => !isDisabled && setIsOpen(!isOpen)}
         disabled={isSubmitting || isDisabled}
         className={cn(
-          "w-full inline-flex items-center justify-center gap-2 px-4 py-3 font-semibold text-sm rounded-[4px] transition-all shadow-none disabled:opacity-50 disabled:cursor-not-allowed",
+          "inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
           isOpen
-            ? "bg-red-700 text-white ring-2 ring-red-100"
-            : "bg-red-600 text-white hover:bg-red-700 active:bg-red-800",
+            ? "border-rose-600 bg-rose-600 text-white ring-2 ring-rose-100"
+            : "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100 focus-visible:ring-rose-200",
           isDisabled && "opacity-50 grayscale-[0.5]",
         )}
       >
@@ -163,7 +172,14 @@ export default function ExcludeMenu({
           className={cn("w-4 h-4 transition-transform", isOpen && "rotate-90")}
         />
         {isOpen ? "Close" : "Exclude"}
-        <kbd className="ml-1 px-1 py-0.5 bg-red-500/50 rounded text-[9px] font-mono">
+        <kbd
+          className={cn(
+            "ml-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",
+            isOpen
+              ? "bg-rose-500 text-white"
+              : "border border-rose-200 bg-white/80 text-rose-700",
+          )}
+        >
           2
         </kbd>
       </button>

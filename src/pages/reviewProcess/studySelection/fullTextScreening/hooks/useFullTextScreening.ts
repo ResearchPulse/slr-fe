@@ -187,8 +187,13 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
     queryKey: QUERY_KEYS.studySelection.paperDetails(
       screeningProcessId ?? "",
       resolvedSelectedId ?? "",
+      PaperPhase.FullText,
     ),
-    queryFn: () => studySelectionService.getPaperDetails(screeningProcessId!, resolvedSelectedId!),
+    queryFn: () => studySelectionService.getPaperDetails(
+      screeningProcessId!,
+      resolvedSelectedId!,
+      PaperPhase.FullText,
+    ),
     enabled: !!screeningProcessId && !!resolvedSelectedId && isLeader,
     staleTime: 30_000,
   });
