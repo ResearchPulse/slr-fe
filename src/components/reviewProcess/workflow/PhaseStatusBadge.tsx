@@ -11,13 +11,13 @@ const STATUS_CONFIG: Record<
 > = {
   Completed: {
     label: "Completed",
-    classes: "bg-green-100 text-green-700 border-border",
+    classes: "bg-success/10 text-success border-success/20",
     icon: <FiCheck className="w-3 h-3" />,
   },
   InProgress: {
     label: "In Progress",
-    classes: "bg-blue-100 text-blue-700 border-blue-200",
-    icon: <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />,
+    classes: "bg-primary-light text-primary border-primary/20",
+    icon: <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />,
   },
   NotStarted: {
     label: "Not Started",

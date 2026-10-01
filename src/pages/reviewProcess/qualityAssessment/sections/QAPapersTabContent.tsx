@@ -235,9 +235,10 @@ export function QAPapersTabContent({
     : [];
 
   return (
-    <div className="flex flex-1 min-h-0 w-full overflow-hidden bg-surface-white">
-      {/* 1. Left Panel: Paper List Queue */}
-      <div className="w-80 shrink-0 border-r border-border flex flex-col bg-bg-primary h-full overflow-hidden">
+    <div className="min-h-0 w-full flex-1 overflow-auto bg-bg-primary p-3 sm:p-4">
+      <div className="grid min-h-full grid-cols-1 overflow-hidden rounded-2xl border border-border bg-surface-white shadow-[0_2px_10px_rgba(18,35,49,0.05)] xl:h-full xl:min-h-0 xl:grid-cols-[270px_minmax(0,1fr)_350px]">
+      {/* Paper queue */}
+      <div className="flex min-h-[300px] min-w-0 flex-col overflow-hidden border-b border-border bg-bg-primary xl:h-full xl:min-h-0 xl:border-b-0 xl:border-r">
         <AssessmentQueue
           papers={papers}
           selectedPaperId={selectedPaperId}
@@ -252,8 +253,8 @@ export function QAPapersTabContent({
         />
       </div>
 
-      {/* 2. Middle Panel: Paper Details Viewer */}
-      <div className="flex-1 min-w-0 flex flex-col h-full bg-surface-white relative overflow-hidden">
+      {/* Paper details */}
+      <div className="relative flex min-h-[520px] min-w-0 flex-col overflow-hidden bg-surface-white xl:h-full xl:min-h-0">
         {selectedPaper ? (
           <div className="h-full overflow-hidden">
             <AssessmentPaperViewer
@@ -265,20 +266,30 @@ export function QAPapersTabContent({
             />
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-text-secondary bg-bg-primary h-full">
-            Select a paper from the queue to view its details.
+          <div className="flex min-h-[520px] flex-1 items-center justify-center bg-bg-primary/60 px-6 text-center text-text-secondary xl:min-h-0">
+            <div className="max-w-sm rounded-2xl border border-border bg-surface-white p-8 shadow-sm">
+              <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent">
+                <span className="text-lg font-semibold">1</span>
+              </div>
+              <p className="text-sm font-semibold text-text-primary">Choose a study to review</p>
+              <p className="mt-1 text-sm leading-6 text-text-secondary">Paper details and assessment activity will appear here.</p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* 3. Right Panel: Assessment / Resolution */}
-      <div className="w-[380px] shrink-0 border-l border-border flex flex-col bg-surface-white h-full relative z-10">
+      {/* Assessment / resolution */}
+      <div className="relative z-10 flex min-h-[560px] min-w-0 flex-col overflow-hidden border-t border-border bg-surface-white xl:h-full xl:min-h-0 xl:border-l xl:border-t-0">
         {selectedPaper ? (
           <div className="flex h-full flex-col">
-            <div className="flex border-b border-border bg-bg-primary shrink-0">
-              <div className="flex-1 py-3 text-sm font-medium border-b-2 border-indigo-600 text-indigo-700 text-center">
+            <div className="flex shrink-0 items-center justify-between border-b border-border bg-surface-white px-4 py-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted">Quality review</p>
+                <p className="mt-0.5 text-sm font-semibold text-text-primary">
                 {isLeader ? "Conflict Resolution" : "Assessment Criteria"}
+                </p>
               </div>
+              <span className="rounded-full border border-primary/15 bg-primary-light px-2.5 py-1 text-[11px] font-medium text-primary">{isLeader ? "Leader" : "Reviewer"}</span>
             </div>
             <div className="flex-1 overflow-hidden">
               {isLeader ? (
@@ -311,11 +322,14 @@ export function QAPapersTabContent({
             </div>
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center text-text-secondary bg-bg-primary p-6 text-center h-full">
-            {isLeader ? "Resolution" : "Assessment"} tools will appear here when
-            a paper is selected.
+          <div className="flex min-h-[360px] flex-1 items-center justify-center bg-bg-primary/50 p-6 text-center text-text-secondary xl:min-h-0">
+            <div className="max-w-xs">
+              <p className="text-sm font-semibold text-text-primary">Assessment panel</p>
+              <p className="mt-1 text-sm leading-6">Select a paper to view reviewer decisions and submit a resolution.</p>
+            </div>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

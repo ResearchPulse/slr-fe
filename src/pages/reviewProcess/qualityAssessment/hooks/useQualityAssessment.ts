@@ -190,7 +190,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `qa_results_${id}.xlsx`;
+      a.download = `qa_results_${id}.csv`;
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);

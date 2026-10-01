@@ -11,6 +11,18 @@ export default function MainLayout() {
     /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?screening(?:\/|$)/.test(
       pathname,
     );
+  const isReviewProcessDashboard =
+    /\/projects\/[^/]+\/processes\/[^/]+\/?$/.test(pathname);
+  const isDataExtractionWorkspace =
+    /\/projects\/[^/]+\/processes\/[^/]+\/extraction(?:\/|$)/.test(pathname);
+  const isQualityAssessmentWorkspace =
+    /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?quality-assessment(?:\/|$)/.test(
+      pathname,
+    );
+  const isSynthesisWorkspace =
+    /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?synthesis(?:\/|$)/.test(
+      pathname,
+    );
 
   return (
     <div
@@ -21,7 +33,11 @@ export default function MainLayout() {
       }
     >
       <SignalRConnectionManager />
-      {!isScreeningWorkspace && <Header />}
+      {!isScreeningWorkspace &&
+        !isReviewProcessDashboard &&
+        !isDataExtractionWorkspace &&
+        !isQualityAssessmentWorkspace &&
+        !isSynthesisWorkspace && <Header />}
       <main
         className={
           isScreeningWorkspace

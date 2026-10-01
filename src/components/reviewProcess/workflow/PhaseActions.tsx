@@ -67,7 +67,7 @@ export default function PhaseActions({
         <button
           onClick={onStart}
           disabled={startLoading || disabled}
-          className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-[4px] hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:bg-primary-hover hover:border-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FiPlay className="w-3.5 h-3.5" />
           {startLoading ? "Starting..." : "Start Phase"}
@@ -80,7 +80,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-[4px] hover:bg-blue-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:border-primary-hover hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiExternalLink className="w-3.5 h-3.5" />
               Open Workspace
@@ -90,7 +90,7 @@ export default function PhaseActions({
             <button
               onClick={handleCompleteClick}
               disabled={completeLoading || disabled}
-              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-green-700 bg-surface-white border border-border rounded-[4px] hover:bg-green-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-success/35 bg-success/10 px-3 py-2 text-sm font-semibold text-success transition-colors hover:border-success/50 hover:bg-success/15 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiCheckCircle className="w-3.5 h-3.5" />
               {completeLoading ? "Completing..." : "Complete Phase"}
@@ -105,7 +105,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-text-primary bg-bg-primary border border-border rounded-[4px] hover:bg-bg-secondary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-white px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-text-muted hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiEye className="w-3.5 h-3.5" />
               View Results
@@ -116,7 +116,7 @@ export default function PhaseActions({
             <button
               onClick={handleReopenClick}
               disabled={reopenLoading || disabled}
-              className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-[4px] hover:bg-amber-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-warning/40 bg-warning/15 px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-warning/60 hover:bg-warning/25 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiRotateCcw className="w-3.5 h-3.5" />
               {reopenLoading ? "Reopening..." : "Reopen Phase"}

@@ -38,20 +38,21 @@ export default function ReviewerSidebar({
   onSubmitExtraction,
 }: ReviewerSidebarProps) {
   return (
-    <aside className="h-full w-[20%] overflow-y-auto border-x border-border bg-surface-white p-4 pb-24">
+    <aside className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+      <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
       <Button
         type="button"
         onClick={onAutoExtract}
         isLoading={isAutoExtracting}
         disabled={!canAutoExtract}
-        className="mb-4 w-full border-0 bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-none shadow-violet-500/30 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500"
+        className="mb-4 w-full rounded-xl"
       >
         ✨ Auto-Extract with AI
       </Button>
 
-      <div className="mb-4 border-b border-border pb-4">
-        <h2 className="text-2xl font-semibold text-slate-800">Sections</h2>
-        <p className="mt-1 text-sm text-text-secondary">
+      <div className="mb-4 border-b border-border pb-3">
+        <h2 className="text-lg font-semibold text-text-primary">Sections</h2>
+        <p className="mt-1 truncate text-xs text-text-secondary" title={selectedTemplateName}>
           {selectedTemplateName || "Extraction Template"}
         </p>
       </div>
@@ -65,32 +66,41 @@ export default function ReviewerSidebar({
             <button
               key={sectionId}
               type="button"
+              aria-pressed={isActive}
               onClick={() => onSectionChange(sectionId)}
-              className={
+              className={`group flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 isActive
-                  ? "w-full rounded-[4px] border border-blue-500 bg-blue-50 px-4 py-3 text-left text-xl font-semibold text-blue-700"
-                  : "w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-left text-xl font-semibold text-text-secondary"
-              }
+                  ? "border-primary/25 bg-blue-50/80 text-primary shadow-sm"
+                  : "border-border bg-surface-white text-text-secondary hover:border-primary/25 hover:bg-bg-secondary hover:text-text-primary"
+              }`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span>{section.name}</span>
-                <span className="text-xs font-medium uppercase tracking-wide text-text-secondary">
-                  {section.sectionType === SectionTypeEnum.MatrixGrid
-                    ? "Matrix"
-                    : "Flat"}
-                </span>
-              </div>
+              <span className="min-w-0 truncate text-sm font-semibold">
+                {section.name}
+              </span>
+              <span
+                className={`shrink-0 rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${
+                  isActive
+                    ? "bg-white/80 text-primary/75"
+                    : "bg-bg-secondary text-text-secondary"
+                }`}
+              >
+                {section.sectionType === SectionTypeEnum.MatrixGrid
+                  ? "Matrix"
+                  : "Flat"}
+              </span>
             </button>
           );
         })}
       </div>
 
-      <div className="mt-5 space-y-3">
+      </div>
+
+      <div className="shrink-0 space-y-2 border-t border-border bg-surface-white p-3 sm:p-4">
         <Button
           variant="ghost"
           size="sm"
           onClick={onBack}
-          className="w-full justify-start"
+          className="w-full justify-start rounded-xl"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back to Dashboard
@@ -99,7 +109,7 @@ export default function ReviewerSidebar({
         <Button
           type="button"
           variant="success"
-          className="w-full"
+          className="w-full rounded-xl"
           isLoading={isSubmittingExtraction}
           disabled={!canSubmit}
           onClick={onSubmitExtraction}

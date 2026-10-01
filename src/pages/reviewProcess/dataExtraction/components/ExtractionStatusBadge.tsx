@@ -9,10 +9,10 @@ const EXTRACTION_STATUS_LABELS: Record<ExtractionPaperStatus, string> = {
 };
 
 const EXTRACTION_STATUS_STYLES: Record<ExtractionPaperStatus, string> = {
-  todo: "bg-bg-secondary text-text-primary border-border",
-  "in-progress": "bg-blue-50 text-blue-700 border-blue-200",
-  "awaiting-consensus": "bg-amber-50 text-amber-700 border-amber-200",
-  completed: "bg-surface-white text-green-700 border-border",
+  todo: "bg-slate-400",
+  "in-progress": "bg-blue-600",
+  "awaiting-consensus": "bg-amber-600",
+  completed: "bg-green-600",
 };
 
 interface ExtractionStatusBadgeProps {
@@ -26,12 +26,12 @@ export default function ExtractionStatusBadge({
 }: ExtractionStatusBadgeProps) {
   return (
     <span
-      className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold",
-        EXTRACTION_STATUS_STYLES[status],
-        className,
-      )}
+      className={cn("inline-flex items-center gap-2 text-xs font-medium text-text-secondary", className)}
     >
+      <span
+        aria-hidden="true"
+        className={cn("h-1.5 w-1.5 rounded-full", EXTRACTION_STATUS_STYLES[status])}
+      />
       {EXTRACTION_STATUS_LABELS[status]}
     </span>
   );

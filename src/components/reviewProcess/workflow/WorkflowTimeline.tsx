@@ -12,20 +12,20 @@ interface WorkflowTimelineProps {
   onReopenPhase?: (phaseKey: string) => void;
   onAddPapers?: () => void;
   canManageActions?: boolean;
-  /** Map of phaseKey → loading state for start action */
+  /** Map of phaseKey to loading state for start action */
   startLoadingMap?: Record<string, boolean>;
-  /** Map of phaseKey → loading state for complete action */
+  /** Map of phaseKey to loading state for complete action */
   completeLoadingMap?: Record<string, boolean>;
-  /** Map of phaseKey → loading state for reopen action */
+  /** Map of phaseKey to loading state for reopen action */
   reopenLoadingMap?: Record<string, boolean>;
   disabled?: boolean;
   isStudySelectionCompleted?: boolean;
 }
 
 const CONNECTOR_COLORS: Record<string, string> = {
-  completed: "text-green-400",
-  active: "text-blue-400",
-  default: "text-gray-300",
+  completed: "text-success",
+  active: "text-primary",
+  default: "text-text-muted",
 };
 
 function getConnectorColor(currentStatus: string, nextStatus: string): string {
@@ -51,203 +51,126 @@ export default function WorkflowTimeline({
   reopenLoadingMap = {},
   disabled = false,
 }: WorkflowTimelineProps) {
-  // Filter out identification if it accidentally comes through
-  const activePhases = phases.filter((p) => p.key !== "identification");
+  const activePhases = phases.filter((phase) => phase.key !== "identification");
   const completedCount = activePhases.filter(
-    (p) => p.status === "Completed",
+    (phase) => phase.status === "Completed",
   ).length;
   const totalActivePhases = activePhases.length || 1;
-
+  const progressPercent = Math.round((completedCount / totalActivePhases) * 100);
   const hasPapers = (paperStats?.total ?? 0) > 0;
 
   return (
-    <div
-      className={`relative bg-surface-white border border-border rounded-[4px] p-8 mb-8 shadow-none transition-all duration-300 ${disabled ? "opacity-60 grayscale-[0.3]" : ""}`}
-    >
-      {/* Disabled Overlay */}
+    <section className="relative mb-8 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:p-7 lg:p-8">
       {disabled && (
-        <div className="absolute inset-0 z-20 bg-surface-white/10 backdrop-blur-[1px] flex items-center justify-center rounded-[4px] transition-all duration-500">
-          <div className="bg-surface-white/90 shadow-none border border-border rounded-[4px] px-6 py-4 flex flex-col items-center gap-3 animate-in fade-in zoom-in duration-500">
-            <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center border border-amber-100">
-              <FiLock className="w-6 h-6 text-amber-500" />
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-surface-white/75 p-4 backdrop-blur-[2px]">
+          <div className="flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-border bg-surface-white px-6 py-5 text-center shadow-lg">
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-warning/10 text-warning">
+              <FiLock className="h-5 w-5" aria-hidden="true" />
             </div>
-            <div className="text-center">
-              <h4 className="text-base font-bold text-text-primary tracking-tight">
-                Workflow Locked
-              </h4>
-              <p className="text-xs text-text-secondary max-w-[200px]">
-                Start the review process to begin tracking your work across
-                phases.
+            <div>
+              <h3 className="text-base font-semibold text-text-primary">
+                Workflow locked
+              </h3>
+              <p className="mt-1 text-sm leading-5 text-text-secondary">
+                Start the review process to begin tracking progress across phases.
               </p>
             </div>
           </div>
         </div>
       )}
 
-      {/* Header Area: Title & Overall Progress */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10">
+      <div className="mb-6 flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
         <div>
-          <div className="flex items-center gap-3 mb-2">
-            <h2 className="text-2xl font-black text-text-primary tracking-tight uppercase">
-              Review Workflow
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+              Review workflow
             </h2>
-            <div className="px-2.5 py-1 bg-bg-secondary text-accent text-[10px] font-black uppercase tracking-widest rounded-[4px] border border-indigo-100 shadow-xs">
+            <span className="rounded-full bg-primary-light px-2.5 py-1 text-[10px] font-semibold text-primary">
               PRISMA 2020
-            </div>
+            </span>
           </div>
-          <p className="text-sm text-text-secondary font-medium">
-            Track and manage your systematic review progress across all core
-            phases.
+          <p className="mt-1.5 max-w-2xl text-sm leading-5 text-text-secondary">
+            Track your systematic review progress across each phase.
           </p>
         </div>
 
-        <div className="flex flex-col items-end gap-2.5 min-w-[320px]">
-          <div className="flex justify-between w-full text-xs font-black text-text-primary px-0.5 uppercase tracking-widest">
-            <span className="opacity-50">Overall Progress</span>
-            <span className="text-accent">
-              {Math.round((completedCount / totalActivePhases) * 100)}%
+        <div className="w-full md:max-w-xs">
+          <div className="mb-2 flex items-center justify-between text-xs">
+            <span className="font-medium text-text-secondary">Overall progress</span>
+            <span className="font-semibold tabular-nums text-primary">
+              {progressPercent}%
             </span>
           </div>
-          <div className="w-full h-3 bg-bg-secondary rounded-full overflow-hidden border border-border shadow-inner">
+          <div
+            className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary"
+            role="progressbar"
+            aria-label="Overall workflow progress"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={progressPercent}
+          >
             <div
-              className="h-full bg-linear-to-r from-blue-500 via-indigo-500 to-violet-500 rounded-full transition-all duration-1000 ease-out shadow-[0_0_15px_rgba(79,70,229,0.4)]"
-              style={{
-                width: `${(completedCount / totalActivePhases) * 100}%`,
-              }}
+              className="h-full rounded-full bg-primary transition-[width] duration-500"
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
-          <span className="text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em]">
+          <p className="mt-2 text-right text-xs text-text-muted">
             {completedCount} of {totalActivePhases} phases completed
-          </span>
+          </p>
         </div>
       </div>
 
-      {/* Stats Summary - Now on Top */}
-      <div className="mb-12">
-        <div className="bg-bg-secondary/50 border border-border rounded-[4px] p-8 relative overflow-hidden group transition-all hover:shadow-none hover:shadow-slate-200/50">
-          {/* Background Decorative Element */}
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-bg-secondary rounded-full blur-[80px] opacity-40 group-hover:opacity-70 transition-opacity" />
-          <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-blue-50 rounded-full blur-[80px] opacity-40 group-hover:opacity-70 transition-opacity" />
-
-          <div className="relative z-10">
-            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
-              {/* Left Column: Total Papers */}
-              <div className="flex items-center gap-8 border-r border-border pr-12 hidden lg:flex">
-                <div className="w-14 h-14 rounded-[4px] bg-surface-white shadow-none border border-border flex items-center justify-center transform group-hover:rotate-6 transition-transform">
-                  <FiFileText className="w-7 h-7 text-accent" />
-                </div>
-                <div>
-                  <div className="text-5xl font-black text-text-primary tracking-tighter mb-0.5">
-                    {paperStats?.total}
-                  </div>
-                  <div className="text-[11px] font-black text-text-secondary uppercase tracking-[0.2em]">
-                    Papers in Review
-                  </div>
-                </div>
+      <div className="mb-7 rounded-xl border border-border bg-bg-primary p-4 sm:p-5">
+        <div className="flex flex-col gap-5 lg:flex-row lg:items-center">
+          <div className="flex shrink-0 items-center gap-3 lg:min-w-56 lg:border-r lg:border-border lg:pr-6">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-white text-primary">
+              <FiFileText className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div>
+              <div className="text-2xl font-semibold leading-none tabular-nums text-text-primary">
+                {paperStats?.total ?? 0}
               </div>
-
-              {/* Mobile Total Papers */}
-              <div className="lg:hidden flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-[4px] bg-surface-white shadow-none border border-border flex items-center justify-center">
-                    <FiFileText className="w-5 h-5 text-accent" />
-                  </div>
-                  <span className="text-sm font-black text-slate-800 uppercase tracking-tight">
-                    Papers in Review
-                  </span>
-                </div>
-                <span className="text-3xl font-black text-text-primary">
-                  {paperStats?.total}
-                </span>
-              </div>
-
-              {!hasPapers ? (
-                <div className="flex-1 flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="text-left">
-                    <h3 className="text-lg font-bold text-text-primary mb-1">
-                      No papers have been added yet
-                    </h3>
-                    <p className="text-sm text-text-secondary font-medium">
-                      Start your review process by adding papers from the
-                      project pool.
-                    </p>
-                  </div>
-                  {/* <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={onAddPapers}
-                    disabled={isStudySelectionCompleted}
-                    className="rounded-[4px] px-10 shadow-none shadow-indigo-500/25 hover:shadow-indigo-500/40 transform hover:-translate-y-1 transition-all font-black uppercase tracking-widest text-xs disabled:opacity-50"
-                  >
-                    Add Papers
-                  </Button> */}
-                </div>
-              ) : (
-                <>
-                  {/* Stats Breakdown Row */}
-                  <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-12">
-                    <HorizontalStat
-                      label="Not Screened"
-                      value={paperStats?.notScreened}
-                      color="bg-slate-400"
-                    />
-                    <HorizontalStat
-                      label="In Screening"
-                      value={paperStats?.screening}
-                      color="bg-amber-400"
-                    />
-                    <HorizontalStat
-                      label="Included"
-                      value={paperStats?.included}
-                      color="bg-emerald-500"
-                    />
-                    <HorizontalStat
-                      label="Excluded"
-                      value={paperStats?.excluded}
-                      color="bg-rose-400"
-                    />
-                  </div>
-
-                  {/* Add Button */}
-                  <div className="lg:pl-8 lg:border-l border-border">
-                    {/* <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={onAddPapers}
-                      disabled={isStudySelectionCompleted}
-                      className="w-full lg:w-auto rounded-[4px] border-border bg-surface-white hover:border-indigo-300 hover:text-accent transition-all shadow-none hover:shadow-none font-black text-[10px] uppercase tracking-widest px-6 disabled:opacity-50"
-                    >
-                      Add Papers
-                    </Button> */}
-                  </div>
-                </>
-              )}
+              <div className="mt-1 text-xs text-text-secondary">Papers in review</div>
             </div>
           </div>
+
+          {hasPapers ? (
+            <div className="grid flex-1 grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-5">
+              <HorizontalStat label="Not screened" value={paperStats?.notScreened} color="bg-text-muted" />
+              <HorizontalStat label="In screening" value={paperStats?.screening} color="bg-warning" />
+              <HorizontalStat label="Included" value={paperStats?.included} color="bg-success" />
+              <HorizontalStat label="Excluded" value={paperStats?.excluded} color="bg-error" />
+            </div>
+          ) : (
+            <div className="flex-1 rounded-xl border border-dashed border-border bg-surface-white px-4 py-4">
+              <h3 className="text-sm font-semibold text-text-primary">
+                No papers have been added yet
+              </h3>
+              <p className="mt-1 text-sm text-text-secondary">
+                Add papers from the project pool to start your review.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Section Divider */}
-      <div className="flex items-center gap-4 mb-8">
-        <div className="h-px flex-1 bg-bg-secondary" />
-        <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
-          Phase Progression
-        </span>
-        <div className="h-px flex-1 bg-bg-secondary" />
+      <div className="mb-5 flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs font-medium text-text-muted">Phase progression</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
-      {/* Workflow Phases - Bottom Section */}
       <div className="min-w-0">
-        <div className="flex items-start gap-0 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-slate-200 scrollbar-track-transparent">
+        <div className="flex items-stretch gap-3 overflow-x-auto pb-3">
           {activePhases.map((phase, index) => {
-            const definition = WORKFLOW_PHASES.find((d) => d.key === phase.key);
+            const definition = WORKFLOW_PHASES.find((item) => item.key === phase.key);
             if (!definition) return null;
 
             const isLast = index === activePhases.length - 1;
             const nextPhase = !isLast ? activePhases[index + 1] : null;
 
             return (
-              <div key={phase.key} className="flex items-start shrink-0">
+              <div key={phase.key} className="flex shrink-0 items-stretch gap-3">
                 <PhaseCard
                   phase={phase}
                   icon={definition.icon}
@@ -263,8 +186,7 @@ export default function WorkflowTimeline({
                   }
                   onOpen={
                     onOpenPhase &&
-                    (phase.status === "InProgress" ||
-                      phase.status === "Completed")
+                    (phase.status === "InProgress" || phase.status === "Completed")
                       ? () => onOpenPhase(phase.key)
                       : undefined
                   }
@@ -280,15 +202,10 @@ export default function WorkflowTimeline({
                   disabled={disabled}
                 />
 
-                {/* Connector arrow */}
                 {!isLast && nextPhase && (
-                  <div className="flex items-center self-center px-2 shrink-0">
-                    <div
-                      className={`p-2 rounded-full bg-surface-white shadow-none border border-border flex items-center justify-center transition-all duration-500 hover:scale-110 ${getConnectorColor(phase.status, nextPhase.status).replace("text-", "bg-").replace("400", "50").replace("300", "50")}`}
-                    >
-                      <FiChevronRight
-                        className={`w-4 h-4 ${getConnectorColor(phase.status, nextPhase.status)} transition-colors duration-500`}
-                      />
+                  <div className="flex shrink-0 items-center" aria-hidden="true">
+                    <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-bg-primary ${getConnectorColor(phase.status, nextPhase.status)}`}>
+                      <FiChevronRight className="h-4 w-4" />
                     </div>
                   </div>
                 )}
@@ -297,7 +214,7 @@ export default function WorkflowTimeline({
           })}
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
@@ -311,18 +228,14 @@ function HorizontalStat({
   color: string;
 }) {
   return (
-    <div className="flex flex-col gap-2 group/stat">
+    <div className="min-w-0">
       <div className="flex items-center gap-2">
-        <div
-          className={`w-2.5 h-2.5 rounded-full ${color} shadow-[0_0_8px_rgba(0,0,0,0.1)] group-hover/stat:scale-125 transition-transform duration-300`}
-        />
-        <span className="text-[10px] font-black text-text-secondary group-hover/stat:text-text-secondary transition-colors uppercase tracking-widest whitespace-nowrap">
-          {label}
-        </span>
+        <span className={`h-2 w-2 shrink-0 rounded-full ${color}`} aria-hidden="true" />
+        <span className="truncate text-xs text-text-secondary">{label}</span>
       </div>
-      <span className="text-2xl font-black text-slate-800 tabular-nums group-hover/stat:text-accent transition-colors">
+      <div className="mt-1 text-xl font-semibold tabular-nums text-text-primary">
         {value ?? 0}
-      </span>
+      </div>
     </div>
   );
 }

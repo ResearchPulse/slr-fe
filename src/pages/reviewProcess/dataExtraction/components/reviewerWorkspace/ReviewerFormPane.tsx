@@ -102,13 +102,13 @@ export default function ReviewerFormPane({
   renderCommentButton,
 }: ReviewerFormPaneProps) {
   return (
-    <section className="flex h-full min-h-0 w-[25%] flex-col bg-surface-white">
-      <div className="flex h-full min-h-0 flex-col border-r border-border">
-        <div className="shrink-0 border-b border-border px-5 py-4">
-          <h2 className="line-clamp-3 text-xl font-semibold text-text-primary">
+    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="shrink-0 border-b border-border bg-surface-white px-4 py-3 sm:px-5">
+          <h2 className="line-clamp-2 text-lg font-semibold text-text-primary">
             {activeSection?.name ?? "Section"}
           </h2>
-          <p className="mt-1 text-sm text-text-secondary">
+          <p className="mt-1 text-xs text-text-secondary">
             {activeSectionDescription}
           </p>
           {activeEvidenceTargetLabel ? (
@@ -121,21 +121,21 @@ export default function ReviewerFormPane({
           ) : null}
         </div>
 
-        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 pb-24">
+        <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
           {!activeSection ? (
-            <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+            <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
               No section selected.
             </p>
           ) : activeSection.sectionType === SectionTypeEnum.MatrixGrid ? (
             <div className="space-y-4">
               {matrixFields.length === 0 ? (
-                <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+                <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
                   No matrix fields in this section yet.
                 </p>
               ) : null}
 
               {currentRows.length === 0 ? (
-                <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+                <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
                   No items added yet. Add your first item below.
                 </p>
               ) : null}
@@ -152,7 +152,7 @@ export default function ReviewerFormPane({
                 return (
                   <div
                     key={`${activeSectionId}-row-${rowIndex}`}
-                    className="rounded-[4px] border border-border bg-bg-secondary p-4"
+                    className="rounded-xl border border-border bg-bg-secondary p-4"
                   >
                     <div className="mb-4 flex items-center justify-between gap-2">
                       <h3 className="text-sm font-semibold text-slate-800">
@@ -185,7 +185,7 @@ export default function ReviewerFormPane({
 
                         {isPredefinedRow ? (
                           <>
-                            <div className="w-full rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-base font-semibold text-text-primary">
+                            <div className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-base font-semibold text-text-primary">
                               {itemName || "Predefined column"}
                             </div>
                             <p className="mt-1 text-xs text-text-secondary">
@@ -208,7 +208,7 @@ export default function ReviewerFormPane({
                               )
                             }
                             placeholder="e.g. Group A, Baseline Tool"
-                            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500"
+                            className="w-full rounded-lg border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500"
                           />
                         )}
                       </div>
@@ -375,13 +375,13 @@ export default function ReviewerFormPane({
                 type="button"
                 onClick={() => onAddMatrixRow(activeSectionId)}
                 disabled={isReadOnly}
-                className="w-full rounded-[4px] border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-blue-400 hover:text-blue-700"
+                className="w-full rounded-xl border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-blue-400 hover:text-blue-700"
               >
                 + Add New {activeSection.name} Item
               </button>
             </div>
           ) : flattenedFields.length === 0 ? (
-            <p className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+            <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
               No fields in this section yet.
             </p>
           ) : (

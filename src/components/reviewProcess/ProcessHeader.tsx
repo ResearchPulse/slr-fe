@@ -22,97 +22,95 @@ export default function ProcessHeader({
   completeLoading,
   disabled = false,
 }: ProcessHeaderProps) {
-  return (
-    <div className="bg-surface-white border-b border-border px-6 py-3 grid grid-cols-3 items-center flex-shrink-0 z-50">
-      {/* Left side: Back + Icon + Title */}
-      <div className="flex items-center gap-4">
-        <button
-          onClick={onBack}
-          className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
-          title="Back to Project"
-        >
-          <FiArrowLeft className="w-5 h-5" />
-        </button>
+  const statusLabel = process.statusText === "InProgress"
+    ? "Active"
+    : process.statusText;
 
-        <div className="flex items-center gap-3">
-          <div className="p-2 bg-bg-secondary rounded-[4px]">
-            <FiPackage className="w-5 h-5 text-accent" />
+  return (
+    <header className="border-b border-border bg-surface-white">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:gap-6 lg:px-8">
+        <div className="flex min-w-0 items-center gap-3 lg:flex-1">
+          <button
+            onClick={onBack}
+            className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+            title="Back to project"
+            aria-label="Back to project"
+          >
+            <FiArrowLeft className="h-5 w-5" aria-hidden="true" />
+          </button>
+
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+            <FiPackage className="h-5 w-5" aria-hidden="true" />
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-text-primary leading-none mb-1">
+
+          <div className="min-w-0">
+            <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
               {process.name || "Systematic Review Process"}
             </h1>
-            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
-              Process Overview •{" "}
-              {process.statusText === "InProgress"
-                ? "Active"
-                : process.statusText}
-            </p>
+            <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <span className="text-xs text-text-secondary">Process overview</span>
+              <span className="h-1 w-1 rounded-full bg-text-muted" aria-hidden="true" />
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${process.statusText === "InProgress" ? "bg-success/10 text-success" : process.statusText === "Completed" ? "bg-primary-light text-primary" : "bg-bg-secondary text-text-secondary"}`}>
+                {statusLabel}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 pl-1 sm:pl-14 lg:pl-0">
+          <div className="flex items-center gap-3 text-xs text-text-secondary sm:gap-5">
+            <div>
+              <div className="text-[10px] font-medium text-text-muted">Started</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(process.startedAt ?? "") || "—"}
+              </div>
+            </div>
+            <div className="h-8 w-px bg-border" aria-hidden="true" />
+            <div>
+              <div className="text-[10px] font-medium text-text-muted">Last updated</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(process.modifiedAt ?? "") || "—"}
+              </div>
+            </div>
+            {process.completedAt && (
+              <>
+                <div className="h-8 w-px bg-border" aria-hidden="true" />
+                <div>
+                  <div className="text-[10px] font-medium text-text-muted">Completed</div>
+                  <div className="mt-0.5 font-medium text-text-primary">
+                    {formatDate(process.completedAt)}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+
+          <div className="ml-auto lg:ml-1">
+            {process.statusText === "NotStarted" && (
+              <Button
+                onClick={onStartProcess}
+                disabled={startLoading || disabled}
+                title={disabled ? "Select a protocol first" : ""}
+              >
+                <FiPlay className="mr-2 h-4 w-4" aria-hidden="true" />
+                {startLoading ? "Starting..." : "Start process"}
+              </Button>
+            )}
+
+            {process.statusText === "InProgress" && (
+              <Button
+                onClick={onCompleteProcess}
+                disabled={completeLoading || disabled}
+                variant="success"
+                title={disabled ? "Select a protocol first" : ""}
+              >
+                <FiCheck className="mr-2 h-4 w-4" aria-hidden="true" />
+                {completeLoading ? "Completing..." : "Complete process"}
+              </Button>
+            )}
           </div>
         </div>
       </div>
-
-      {/* Center: Info/Stats */}
-      <div className="flex items-center justify-self-center gap-6 text-xs text-text-secondary">
-        <div className="flex flex-col items-center">
-          <span className="font-bold text-text-secondary uppercase tracking-tighter text-[9px]">
-            Started
-          </span>
-          <span className="font-medium">
-            {formatDate(process.startedAt ?? "") || "-"}
-          </span>
-        </div>
-        <div className="w-px h-6 bg-slate-200" />
-        <div className="flex flex-col items-center">
-          <span className="font-bold text-text-secondary uppercase tracking-tighter text-[9px]">
-            Last Update
-          </span>
-          <span className="font-medium">
-            {formatDate(process.modifiedAt ?? "")}
-          </span>
-        </div>
-        {process.completedAt && (
-          <>
-            <div className="w-px h-6 bg-slate-200" />
-            <div className="flex flex-col items-center">
-              <span className="font-bold text-text-secondary uppercase tracking-tighter text-[9px]">
-                Completed
-              </span>
-              <span className="font-medium">
-                {formatDate(process.completedAt)}
-              </span>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Right side: Actions */}
-      <div className="flex items-center gap-3 justify-self-end">
-        {process.statusText === "NotStarted" && (
-          <Button
-            onClick={onStartProcess}
-            disabled={startLoading || disabled}
-            className="flex items-center gap-2"
-            title={disabled ? "Select a protocol first" : ""}
-          >
-            <FiPlay className="w-4 h-4" />
-            {startLoading ? "Starting..." : "Start Process"}
-          </Button>
-        )}
-
-        {process.statusText === "InProgress" && (
-          <Button
-            onClick={onCompleteProcess}
-            disabled={completeLoading || disabled}
-            variant="success"
-            className="flex items-center gap-2"
-            title={disabled ? "Select a protocol first" : ""}
-          >
-            <FiCheck className="w-4 h-4" />
-            {completeLoading ? "Completing..." : "Complete Process"}
-          </Button>
-        )}
-      </div>
-    </div>
+    </header>
   );
 }

@@ -47,177 +47,166 @@ export default function ReviewProcessPanel({
   const hasSelected = selectedPaperIds.length > 0;
 
   return (
-    <div className="mt-12 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700 bg-surface-white p-8 rounded-[4px] border border-border shadow-none shadow-slate-200/50">
+    <section className="mt-10 mb-8 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:p-7 lg:p-8">
       <div className="flex flex-col gap-6">
-        {/* Hierarchy Hint - REMOVED since we have the new indicator in the parent */}
-
-        {/* Section Title */}
-        <div className="flex items-center justify-between px-2">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-surface-white shadow-none border border-border rounded-[4px] flex items-center justify-center text-text-primary">
-              <FiFolder className="w-5 h-5" />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+              <FiFolder className="h-5 w-5" aria-hidden="true" />
             </div>
-            <div>
-              <h3 className="text-xl font-serif text-text-primary uppercase tracking-tight">
-                Review Processes{" "}
-                <span className="text-text-secondary text-sm normal-case font-medium ml-2">
-                  (Each process applies its own criteria)
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+                <h2 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
+                  Review processes
+                </h2>
+                <span className="text-sm text-text-secondary">
+                  Each process applies its own criteria
                 </span>
-              </h3>
-              <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-0.5">
-                Papers from the repository can be added to one or multiple
-                processes for independent screening.
+              </div>
+              <p className="mt-1 max-w-3xl text-sm leading-5 text-text-secondary">
+                Add repository papers to one or more processes for independent screening.
               </p>
             </div>
           </div>
+
           {processes.length > 0 && onCreateProcess && isLeader && (
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
-              className="rounded-[4px] border-border"
+              className="shrink-0 self-start normal-case tracking-normal sm:self-auto"
               onClick={onCreateProcess}
             >
-              <FiPlus className="mr-2" />
-              New Process
+              <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" />
+              New process
             </Button>
           )}
         </div>
 
-        {/* Floating Selection Hint */}
         {hasSelected && isLeader && (
-          <div className="flex justify-center -mt-2 mb-2">
-            <div className="bg-surface-white text-text-primary px-6 py-3 rounded-[4px] shadow-sm flex items-center gap-4 animate-in slide-in-from-top-4 duration-500 border border-border">
-              <div className="w-8 h-8 bg-surface-white border border-border rounded-[4px] flex items-center justify-center">
-                <FiLayers className="w-4 h-4 text-accent" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
-                You have selected{" "}
-                <span className="text-accent text-sm mx-1">
-                  {selectedPaperIds.length}
-                </span>{" "}
-                papers → Choose a process to add them
-              </span>
+          <div className="flex items-center gap-3 rounded-xl border border-primary/15 bg-primary-light px-4 py-3 text-sm text-text-primary">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-white text-primary">
+              <FiLayers className="h-4 w-4" aria-hidden="true" />
             </div>
+            <p>
+              <span className="font-semibold tabular-nums">{selectedPaperIds.length}</span>{" "}
+              {selectedPaperIds.length === 1 ? "paper is" : "papers are"} selected. Choose a process to add them.
+            </p>
           </div>
         )}
 
-        {/* Processes Grid */}
         {processes.length === 0 ? (
-          <div className="bg-bg-primary/50 border-2 border-dashed border-border rounded-[4px] p-12 flex flex-col items-center justify-center text-center">
-            <div className="w-16 h-16 bg-surface-white shadow-none rounded-[4px] flex items-center justify-center text-gray-300 mb-4">
-              <FiFolder className="w-8 h-8" />
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-5 py-12 text-center">
+            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
+              <FiFolder className="h-6 w-6" aria-hidden="true" />
             </div>
-            <h4 className="text-sm font-black text-text-primary uppercase tracking-tight">
+            <h3 className="text-base font-semibold text-text-primary">
               No review processes yet
-            </h4>
-            <p className="text-xs text-text-secondary mt-1 max-w-xs">
-              Create one to start screening papers from the paper repository.
+            </h3>
+            <p className="mt-1 max-w-sm text-sm leading-5 text-text-secondary">
+              Create a process to start screening papers from this repository.
             </p>
             {onCreateProcess && isLeader && (
-              <Button className="mt-6 rounded-[4px]" onClick={onCreateProcess}>
-                Create Review Process
+              <Button
+                className="mt-5 normal-case tracking-normal"
+                onClick={onCreateProcess}
+              >
+                <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" />
+                Create review process
               </Button>
             )}
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {processes.map((process) => (
-              <div
+              <article
                 key={process.processId}
-                className={`group relative bg-surface-white border border-border rounded-[4px] p-6 shadow-sm hover:shadow-sm hover:border-accent transition-all duration-300 ${hasSelected && isLeader ? "ring-2 ring-accent/10" : ""}`}
+                className={`group relative rounded-xl border bg-surface-white p-5 transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md ${hasSelected && isLeader ? "border-primary/40 ring-2 ring-primary/10" : "border-border"}`}
               >
-                {/* Process Header */}
-                <div className="flex items-start justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-surface-white border border-border text-accent rounded-[4px] flex items-center justify-center transition-colors group-hover:bg-accent group-hover:text-surface-white shadow-sm">
-                      <FiUsers className="w-6 h-6" />
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary transition-colors group-hover:bg-primary group-hover:text-text-on-primary">
+                      <FiUsers className="h-5 w-5" aria-hidden="true" />
                     </div>
-                    <div>
-                      <h4 className="text-sm font-serif font-bold text-text-primary uppercase tracking-tight line-clamp-1">
+                    <div className="min-w-0 pt-0.5">
+                      <h3 className="line-clamp-2 text-sm font-semibold leading-5 text-text-primary">
                         {process.processName}
-                      </h4>
-                      <div className="flex items-center gap-2 mt-1">
+                      </h3>
+                      <div className="mt-1.5 flex items-center gap-2">
                         <ProcessStatusIcon statusText={process.statusText} />
-                        <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
-                          {process.statusText}
+                        <span className="text-xs font-medium text-text-secondary">
+                          {process.statusText === "InProgress"
+                            ? "In progress"
+                            : process.statusText}
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    <span className="px-2 py-1 bg-surface-white text-text-primary rounded-[4px] text-[8px] font-bold uppercase tracking-widest border border-border shadow-sm">
-                      Independent Screening
-                    </span>
-                  </div>
+                  <span className="shrink-0 rounded-full bg-bg-secondary px-2.5 py-1 text-[10px] font-medium text-text-secondary">
+                    Independent screening
+                  </span>
                 </div>
 
-                {/* Statistics & Progress */}
-                <div className="space-y-3 mb-8">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
-                      Progress
-                    </span>
-                    <span className="text-xs font-bold text-accent">
+                <div className="mt-5 space-y-2.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-text-secondary">Progress</span>
+                    <span className="font-semibold tabular-nums text-primary">
                       {process.progressPercent}%
                     </span>
                   </div>
-                  <div className="h-2 w-full bg-bg-primary rounded-full overflow-hidden border border-border">
+                  <div
+                    className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary"
+                    role="progressbar"
+                    aria-label={`${process.processName} progress`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={process.progressPercent}
+                  >
                     <div
-                      className="h-full bg-accent rounded-full transition-all duration-1000"
+                      className="h-full rounded-full bg-primary transition-[width] duration-500"
                       style={{ width: `${process.progressPercent}%` }}
                     />
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-3 gap-2 mt-6 pt-4 border-t border-border">
-                    <div className="flex flex-col">
-                      <span className="text-[8px] font-black text-text-secondary uppercase tracking-[0.1em]">
-                        Papers
-                      </span>
-                      <span className="text-base font-black text-text-primary leading-none mt-1">
-                        {process.totalPapers ?? 0}
-                      </span>
+                <div className="mt-5 grid grid-cols-3 divide-x divide-border border-t border-border pt-4">
+                  <div className="pr-2">
+                    <div className="text-[11px] text-text-secondary">Papers</div>
+                    <div className="mt-1 text-base font-semibold tabular-nums text-text-primary">
+                      {process.totalPapers ?? 0}
                     </div>
-                    <div className="flex flex-col border-l border-border pl-3">
-                      <span className="text-[8px] font-bold text-text-secondary uppercase tracking-[0.1em]">
-                        Included
-                      </span>
-                      <span className="text-base font-bold text-text-primary leading-none mt-1">
-                        {process.totalIncludedPapers ?? 0}
-                      </span>
+                  </div>
+                  <div className="px-3">
+                    <div className="text-[11px] text-text-secondary">Included</div>
+                    <div className="mt-1 text-base font-semibold tabular-nums text-text-primary">
+                      {process.totalIncludedPapers ?? 0}
                     </div>
-                    <div className="flex flex-col border-l border-border pl-3">
-                      <span className="text-[8px] font-bold text-text-secondary uppercase tracking-[0.1em]">
-                        Excluded
-                      </span>
-                      <span className="text-base font-bold text-text-primary leading-none mt-1">
-                        {process.totalExcludedPapers ?? 0}
-                      </span>
+                  </div>
+                  <div className="pl-3">
+                    <div className="text-[11px] text-text-secondary">Excluded</div>
+                    <div className="mt-1 text-base font-semibold tabular-nums text-text-primary">
+                      {process.totalExcludedPapers ?? 0}
                     </div>
                   </div>
                 </div>
 
-                {/* Actions */}
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className="col-span-2 rounded-[4px] text-[10px] font-black uppercase tracking-widest py-3 mb-1"
-                    onClick={() => onNavigate(process.processId)}
-                  >
-                    <FiExternalLink className="mr-2" />
-                    View Process
-                  </Button>
-                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  className="mt-5 w-full rounded-xl normal-case tracking-normal"
+                  onClick={() => onNavigate(process.processId)}
+                >
+                  <FiExternalLink className="mr-2 h-4 w-4" aria-hidden="true" />
+                  View process
+                </Button>
 
-                {/* Highlight Effect for Drop Target */}
                 {hasSelected && isLeader && (
-                  <div className="absolute inset-0 border-2 border-accent border-dashed rounded-[4px] pointer-events-none animate-pulse" />
+                  <div className="pointer-events-none absolute inset-0 rounded-xl border-2 border-dashed border-primary/50" />
                 )}
-              </div>
+              </article>
             ))}
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

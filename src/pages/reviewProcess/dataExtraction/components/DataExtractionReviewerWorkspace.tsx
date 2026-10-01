@@ -1663,8 +1663,8 @@ export default function DataExtractionReviewerWorkspace({
 
   if (!ws.selectedTemplate) {
     return (
-      <div className="h-[calc(100vh-5rem)] overflow-hidden bg-bg-secondary p-6">
-        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-[4px] border border-border bg-surface-white p-8">
+      <div className="h-[calc(100dvh-10.5rem)] min-h-[420px] overflow-hidden bg-[#F4F7FA] p-4">
+        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-2xl border border-border bg-surface-white p-8 shadow-sm">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-text-primary">
               {ws.isLoading ? "Loading template..." : "No template found"}
@@ -1695,21 +1695,25 @@ export default function DataExtractionReviewerWorkspace({
       : "Capture extraction values for this section.";
 
   return (
-    <div className="h-[calc(100vh-5rem)] bg-bg-secondary pb-16">
+    <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] flex-col overflow-hidden bg-[#F4F7FA]">
       {ws.isDirectMode ? (
-        <div className="border-b border-indigo-200 bg-bg-secondary px-6 py-3 text-sm font-semibold text-indigo-800">
+        <div className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-medium text-blue-800">
           ⚡️ Direct Extraction Mode (Leader). Submitting this will finalize the
           data and skip the consensus phase.
         </div>
       ) : null}
 
       {isWorkspaceLocked ? (
-        <div className="border-b border-amber-200 bg-amber-50 px-6 py-3 text-sm font-medium text-amber-800">
+        <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-5 py-2.5 text-sm font-medium text-amber-800">
           Your submission is locked. Waiting for consensus or leader review.
         </div>
       ) : null}
 
-      <div className="flex h-full min-w-[1080px]">
+      <div className={`grid min-h-0 min-w-[1080px] flex-1 gap-3 p-3 sm:gap-4 sm:p-4 ${
+        effectiveDocumentUrl
+          ? "grid-cols-[minmax(0,1.12fr)_280px_minmax(360px,0.9fr)]"
+          : "grid-cols-[minmax(0,0.64fr)_260px_minmax(420px,1fr)]"
+      }`}>
         <ReviewerPdfPanel
           effectiveDocumentUrl={effectiveDocumentUrl}
           activeHighlights={ws.activeHighlights}
