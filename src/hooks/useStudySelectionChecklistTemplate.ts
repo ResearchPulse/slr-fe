@@ -43,7 +43,9 @@ export const useStudySelectionChecklistTemplate = (projectId: string | undefined
 
   const activateMutation = useMutation({
     mutationFn: (templateId: string) =>
-      studySelectionChecklistTemplateService.activateTemplate(templateId),
+      projectId
+        ? studySelectionChecklistTemplateService.activateTemplate(projectId, templateId)
+        : Promise.reject("No Project ID"),
     onSuccess: (response) => {
       if (response.isSuccess && projectId) {
         queryClient.invalidateQueries({

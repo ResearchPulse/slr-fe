@@ -110,14 +110,16 @@ export const studySelectionService = {
   // 1.1 Get Phase Status
   async getPhaseStatus(studySelectionProcessId: string): Promise<GetPhaseStatusResponse> {
     const response = await api.get<GetPhaseStatusResponse>(
-      `/study-selection/${studySelectionProcessId}/phase-status`,
+      `/projects/${projectIdFromProcessId(studySelectionProcessId)}/screening/phase-status`,
     );
     return response.data;
   },
 
   // 2. Get Study Selection Process by ID
   async getById(id: string): Promise<GetStudySelectionResponse> {
-    const response = await api.get<GetStudySelectionResponse>(`/study-selection/${id}`);
+    const response = await api.get<GetStudySelectionResponse>(
+      `/projects/${projectIdFromProcessId(id)}/screening/process`,
+    );
     return response.data;
   },
 
@@ -226,7 +228,7 @@ export const studySelectionService = {
   // 10. Get Paper Selection Status
   async getPaperStatus(processId: string, paperId: string): Promise<GetPaperStatusResponse> {
     const response = await api.get<GetPaperStatusResponse>(
-      `/study-selection/${processId}/papers/${paperId}/status`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}/status`,
     );
     return response.data;
   },
@@ -344,7 +346,7 @@ export const studySelectionService = {
     params: ConflictsByPhaseParams,
   ): Promise<GetConflictsByPhaseResponse> {
     const response = await api.get<GetConflictsByPhaseResponse>(
-      `/study-selection/${id}/conflicts-by-phase`,
+      `/projects/${projectIdFromProcessId(id)}/screening/conflicts-by-phase`,
       { params },
     );
     return response.data;
@@ -363,7 +365,7 @@ export const studySelectionService = {
     phase: number,
   ): Promise<GetConflictDetailResponse> {
     const response = await api.get<GetConflictDetailResponse>(
-      `/study-selection/${processId}/papers/${paperId}/conflict-detail`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}/conflict-detail`,
       { params: { phase } },
     );
     return response.data;
@@ -412,7 +414,7 @@ export const studySelectionService = {
     phase: number,
   ): Promise<GetAiAnalysisResultResponse> {
     const response = await api.get<GetAiAnalysisResultResponse>(
-      `/study-selection/${processId}/papers/${paperId}/ai-result`,
+      `/projects/${projectIdFromProcessId(processId)}/ai/papers/${paperId}/screen-assist`,
       { params: { phase } },
     );
     return response.data;
@@ -421,7 +423,7 @@ export const studySelectionService = {
   // 25. Evaluate AI (Trigger Analysis)
   async evaluateAi(processId: string, paperId: string): Promise<GetAiAnalysisResultResponse> {
     const response = await api.post<GetAiAnalysisResultResponse>(
-      `/study-selection/${processId}/papers/${paperId}/ai-evaluate`,
+      `/projects/${projectIdFromProcessId(processId)}/ai/papers/${paperId}/screen-assist`,
     );
     return response.data;
   },
@@ -429,30 +431,30 @@ export const studySelectionService = {
   // 25.1 Evaluate AI Full-text (Trigger Analysis)
   async evaluateFullTextAi(processId: string, paperId: string): Promise<EvaluateFullTextAiResponse> {
     const response = await api.post<EvaluateFullTextAiResponse>(
-      `/study-selection/${processId}/papers/${paperId}/full-text/ai-evaluate`,
+      `/projects/${projectIdFromProcessId(processId)}/ai/papers/${paperId}/screen-assist`,
     );
     return response.data;
   },
 
   // 26. Add Exclusion Reasons (Bulk)
   async addExclusionReasons(
-    processId: string,
+    _processId: string,
     request: AddExclusionReasonsRequest,
   ): Promise<AddExclusionReasonsResponse> {
     const response = await api.post<AddExclusionReasonsResponse>(
-      `/study-selection/${processId}/exclusion-reasons`,
-      request,
+      `/exclusion-reason-libraries/bulk`,
+      request.customReasons,
     );
     return response.data;
   },
 
   // 27. Get Exclusion Reasons
   async getExclusionReasons(
-    processId: string,
+    _processId: string,
     params?: GetExclusionReasonsParams,
   ): Promise<GetExclusionReasonsResponse> {
     const response = await api.get<GetExclusionReasonsResponse>(
-      `/study-selection/${processId}/exclusion-reasons`,
+      `/exclusion-reason-libraries`,
       { params },
     );
     return response.data;
@@ -461,14 +463,14 @@ export const studySelectionService = {
   // 28. Toggle Exclusion Reason Active Status
   async toggleExclusionReasonActive(id: string): Promise<ToggleExclusionReasonActiveResponse> {
     const response = await api.patch<ToggleExclusionReasonActiveResponse>(
-      `/study-selection/exclusion-reasons/${id}/toggle-active`,
+      `/exclusion-reason-libraries/${id}/toggle-active`,
     );
     return response.data;
   },
 
   // 29. Delete Exclusion Reason
   async deleteExclusionReason(id: string): Promise<ApiResponse<any>> {
-    const response = await api.delete<ApiResponse<any>>(`/study-selection/exclusion-reasons/${id}`);
+    const response = await api.delete<ApiResponse<any>>(`/exclusion-reason-libraries/${id}`);
     return response.data;
   },
 
@@ -478,7 +480,7 @@ export const studySelectionService = {
     request: BulkResolvePapersRequest,
   ): Promise<BulkResolvePapersResponse> {
     const response = await api.post<BulkResolvePapersResponse>(
-      `/study-selection/${id}/papers/bulk-resolve`,
+      `/projects/${projectIdFromProcessId(id)}/screening/bulk-resolve`,
       request,
     );
     return response.data;
@@ -491,7 +493,7 @@ export const studySelectionService = {
     phase: number,
   ): Promise<GetReviewerDecisionsResponse> {
     const response = await api.get<GetReviewerDecisionsResponse>(
-      `/study-selection/${id}/papers/${paperId}/reviewer-decisions`,
+      `/projects/${projectIdFromProcessId(id)}/screening/papers/${paperId}/reviewer-decisions`,
       { params: { phase } },
     );
     return response.data;
@@ -504,7 +506,7 @@ export const studySelectionService = {
     params?: GetIncludedFullTextPapersParams,
   ): Promise<GetIncludedFullTextPapersResponse> {
     const response = await api.get<GetIncludedFullTextPapersResponse>(
-      `/study-selection/${id}/included-full-text-papers`,
+      `/projects/${projectIdFromProcessId(id)}/screening/included-full-text-papers`,
       { params },
     );
     return response.data;
@@ -516,7 +518,7 @@ export const studySelectionService = {
     params?: GetIncludedPapersParams,
   ): Promise<GetIncludedPapersResponse> {
     const response = await api.get<GetIncludedPapersResponse>(
-      `/study-selection/${id}/included-papers`,
+      `/projects/${projectIdFromProcessId(id)}/screening/included-papers`,
       { params },
     );
     return response.data;
@@ -528,7 +530,7 @@ export const studySelectionService = {
     request: BulkAddToDatasetRequest,
   ): Promise<BulkAddToDatasetResponse> {
     const response = await api.post<BulkAddToDatasetResponse>(
-      `/study-selection/${id}/bulk-dataset`,
+      `/projects/${projectIdFromProcessId(id)}/screening/bulk-dataset`,
       request,
     );
     return response.data;
@@ -542,7 +544,7 @@ export const studySelectionService = {
     reviewerId: string,
   ): Promise<GetReviewerAssignmentTableResponse> {
     const response = await api.get<GetReviewerAssignmentTableResponse>(
-      `/study-selection/${processId}/reviewers/${reviewerId}/assignment-table`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/reviewers/${reviewerId}/assignment-table`,
     );
     return response.data;
   },
@@ -550,7 +552,7 @@ export const studySelectionService = {
   // 38. Get Conflict Status for Papers
   async getConflictStatus(processId: string, phase: number): Promise<GetConflictStatusResponse> {
     const response = await api.get<GetConflictStatusResponse>(
-      `/study-selection/${processId}/papers/conflict-status`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/conflict-status`,
       { params: { phase } },
     );
     return response.data;
@@ -558,7 +560,9 @@ export const studySelectionService = {
 
   // 39. Live Review Import (Fetch criteria from protocol/live review)
   async getLiveReviewImport(id: string): Promise<ApiResponse<any>> {
-    const response = await api.get<ApiResponse<any>>(`/study-selection/${id}/live-review-import`);
+    const response = await api.get<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(id)}/screening/live-review-import`,
+    );
     return response.data;
   },
   
@@ -568,7 +572,7 @@ export const studySelectionService = {
     params?: FinalResolutionProgressParams,
   ): Promise<GetFinalResolutionProgressResponse> {
     const response = await api.get<GetFinalResolutionProgressResponse>(
-      `/study-selection/${id}/final-resolution-progress`,
+      `/projects/${projectIdFromProcessId(id)}/screening/final-resolution-progress`,
       { params },
     );
     return response.data;

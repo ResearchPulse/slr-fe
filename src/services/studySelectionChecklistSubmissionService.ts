@@ -14,15 +14,15 @@ export const studySelectionChecklistSubmissionService = {
     phase: number;
   }): Promise<GetStudySelectionChecklistSubmissionContextResponse> {
     const response = await api.get<GetStudySelectionChecklistSubmissionContextResponse>(
-      "/study-selection-checklist-submissions/context",
+      `/projects/${params.processId.replace(/^(?:sp_|rp_)/, "")}/screening/checklist-submissions/context`,
       { params }
     );
     return response.data;
   },
   async submit(data: CreateStudySelectionChecklistSubmissionRequest): Promise<CreateStudySelectionChecklistSubmissionResponse> {
     const response = await api.post<CreateStudySelectionChecklistSubmissionResponse>(
-      "/study-selection-checklist-submissions",
-      data
+      `/projects/${data.studySelectionProcessId.replace(/^(?:sp_|rp_)/, "")}/screening/checklist-submissions`,
+      { ...data, paperId: data.paperId },
     );
     return response.data;
   },
@@ -33,7 +33,7 @@ export const studySelectionChecklistSubmissionService = {
     phase: number;
   }): Promise<GetReviewerSubmissionResponse> {
     const response = await api.get<GetReviewerSubmissionResponse>(
-      "/study-selection-checklist-submissions/reviewer-submission",
+      `/projects/${params.processId.replace(/^(?:sp_|rp_)/, "")}/screening/checklist-submissions/reviewer-submission`,
       { params }
     );
     return response.data;

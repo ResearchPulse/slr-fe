@@ -33,9 +33,9 @@ export const studySelectionChecklistTemplateService = {
     return response.data;
   },
 
-  async activateTemplate(templateId: string): Promise<ApiResponse<boolean>> {
+  async activateTemplate(projectId: string, templateId: string): Promise<ApiResponse<boolean>> {
     const response = await api.post<ApiResponse<boolean>>(
-      `/study-selection-checklist-templates/${templateId}/activate`
+      `/projects/${projectId}/study-selection-checklist-templates/${templateId}/activate`
     );
     return response.data;
   },

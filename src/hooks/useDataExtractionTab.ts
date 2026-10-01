@@ -43,26 +43,26 @@ export function useDataExtractionTab(): UseDataExtractionTabResult {
 
   const handleSelectTemplate = useCallback(
     async (templateId: string) => {
-      const template = await loadTemplate(templateId);
+      const template = await loadTemplate(templateId, currentProcessId);
       if (template) {
         setCurrentTemplate(template);
         const formId = `form_${generateId()}`;
         setDataItems(templateToDataItems(template, formId));
       }
     },
-    [loadTemplate]
+    [loadTemplate, currentProcessId]
   );
 
   const handleDeleteTemplate = useCallback(
     async (templateId: string) => {
-      const success = await deleteTemplate(templateId);
+      const success = await deleteTemplate(templateId, currentProcessId);
       if (success && currentTemplate?.templateId === templateId) {
         setCurrentTemplate(null);
         setDataItems([]);
       }
       return success;
     },
-    [deleteTemplate, currentTemplate]
+    [deleteTemplate, currentTemplate, currentProcessId]
   );
 
   const handleCreateNewTemplate = useCallback(() => {

@@ -142,7 +142,7 @@ export const qualityAssessmentService = {
   },
 
   async submitDecisions(request: CreateQualityAssessmentDecisionRequest): Promise<ApiResponse<null>> {
-    const scores = Object.fromEntries(request.decisionItems.map((item) => [
+    const scores: Record<string, { score: number; comment?: string }> = Object.fromEntries(request.decisionItems.map((item) => [
       item.qualityCriterionId,
       { score: item.value, comment: item.comment || undefined },
     ]));
@@ -157,7 +157,7 @@ export const qualityAssessmentService = {
     if (!request.paperId || !request.qualityAssessmentProcessId) {
       throw new Error("Paper and quality assessment process are required to update a decision");
     }
-    const scores = Object.fromEntries(request.decisionItems.map((item) => [
+    const scores: Record<string, { score: number; comment?: string }> = Object.fromEntries(request.decisionItems.map((item) => [
       item.qualityCriterionId,
       { score: item.value, comment: item.comment || undefined },
     ]));

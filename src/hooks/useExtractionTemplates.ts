@@ -8,9 +8,9 @@ interface UseExtractionTemplatesResult {
   isLoading: boolean;
   error: string | null;
   loadTemplates: (processId: string) => Promise<void>;
-  loadTemplate: (templateId: string) => Promise<ExtractionTemplateDto | null>;
+  loadTemplate: (templateId: string, processId?: string) => Promise<ExtractionTemplateDto | null>;
   saveTemplate: (template: ExtractionTemplateDto) => Promise<ExtractionTemplateResponseDto | null>;
-  deleteTemplate: (templateId: string) => Promise<boolean>;
+  deleteTemplate: (templateId: string, processId?: string) => Promise<boolean>;
 }
 
 export function useExtractionTemplates(): UseExtractionTemplatesResult {
@@ -39,7 +39,7 @@ export function useExtractionTemplates(): UseExtractionTemplatesResult {
     }
   }, []);
 
-  const loadTemplate = useCallback(async (templateId: string) => {
+  const loadTemplate = useCallback(async (templateId: string, processId?: string) => {
     if (!templateId) {
       setError("Template ID is required");
       return null;
@@ -49,7 +49,8 @@ export function useExtractionTemplates(): UseExtractionTemplatesResult {
       setIsLoading(true);
       setError(null);
 
-      const template = await dataExtractionTemplateService.getById(templateId);
+      if (!processId) throw new Error("Data Extraction Process ID is required");
+      const template = await dataExtractionTemplateService.getById(processId, templateId);
       return template;
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Failed to load template";
@@ -100,12 +101,13 @@ export function useExtractionTemplates(): UseExtractionTemplatesResult {
     }
   }, []);
 
-  const deleteTemplate = useCallback(async (templateId: string) => {
+  const deleteTemplate = useCallback(async (templateId: string, processId?: string) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      await dataExtractionTemplateService.delete(templateId);
+      if (!processId) throw new Error("Data Extraction Process ID is required");
+      await dataExtractionTemplateService.delete(processId, templateId);
 
       // Remove from local state
       setTemplates((prev) => prev.filter((t) => t.templateId !== templateId));

@@ -146,7 +146,11 @@ export const dataExtractionConductingService = {
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/consensus`
     );
 
-    return response.data;
+    const raw = response.data.data as any;
+    return {
+      ...response.data,
+      data: raw?.sections ? raw : { ...raw, sections: [] },
+    };
   },
 
   async getReviewerWorkspace(
@@ -212,7 +216,10 @@ export const dataExtractionConductingService = {
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`
     );
 
-    return response.data;
+    const snapshot = response.data.data as any;
+    const rows = Array.isArray(snapshot?.rows) ? snapshot.rows : [];
+    const headers = Array.from(new Set(rows.flatMap((row: Record<string, unknown>) => Object.keys(row)))) as string[];
+    return { ...response.data, data: { headers, rows } };
   },
 
   async getEditableGrid(
@@ -266,7 +273,14 @@ export const dataExtractionConductingService = {
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/progress`
     );
 
-    return response.data;
+    const progress = response.data.data as any;
+    return {
+      ...response.data,
+      data: {
+        overallProgressPercentage: progress?.completionPercentage ?? 0,
+        reviewerWorkloads: [],
+      },
+    };
   },
 
   async reopenExtraction(

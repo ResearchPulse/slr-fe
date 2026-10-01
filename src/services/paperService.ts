@@ -61,10 +61,37 @@ export const paperService = {
     if (params.pageSize) queryParams.set("pageSize", params.pageSize.toString());
 
     const queryString = queryParams.toString();
-    const url = `/data-extraction-processes/${params.dataExtractionProcessId}/unique-papers${queryString ? `?${queryString}` : ""}`;
-
-    const response = await api.get<GetDataExtractionUniquePapersResponse>(url);
-    return response.data;
+    const projectId = params.dataExtractionProcessId.replace(/^(?:de_|rp_)/, "");
+    const response = await api.get<ApiResponse<any[]>>(
+      `/projects/${projectId}/extraction/papers${queryString ? `?${queryString}` : ""}`,
+    );
+    const items = Array.isArray(response.data.data)
+      ? response.data.data.map((item) => ({
+          paperId: item.paperId,
+          title: item.title,
+          authors: item.authors ?? null,
+          publicationYear: item.publicationYear ?? null,
+          doi: item.doi ?? null,
+          abstract: item.abstract ?? null,
+          pdfUrl: item.pdfUrl ?? null,
+        }))
+      : [];
+    const pageNumber = Number(params.pageNumber) || 1;
+    const pageSize = Number(params.pageSize) || Math.max(items.length, 1);
+    return {
+      ...response.data,
+      data: {
+        items,
+        totalCount: items.length,
+        pageNumber,
+        pageSize,
+        totalPages: Math.max(1, Math.ceil(items.length / pageSize)),
+        hasPreviousPage: pageNumber > 1,
+        hasNextPage: pageNumber < Math.max(1, Math.ceil(items.length / pageSize)),
+        currentPhase: 4,
+        currentPhaseText: "Data Extraction",
+      },
+    } as unknown as GetDataExtractionUniquePapersResponse;
   },
 
   async assignPapers(request: AssignPapersRequest): Promise<AssignPapersResponse> {

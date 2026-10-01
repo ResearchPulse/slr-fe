@@ -245,6 +245,7 @@ function mapExtractionTemplateToBackend(
 function normalizeTemplateFromBackend(template: ExtractionTemplateDto): ExtractionTemplateDto {
   return {
     ...template,
+    templateId: template.templateId || (template as unknown as { id?: string }).id || undefined,
     dataExtractionProcessId:
       template.dataExtractionProcessId ||
       (template as unknown as { protocolId?: string }).protocolId ||
@@ -257,6 +258,7 @@ function normalizeTemplateResponseFromBackend(
 ): ExtractionTemplateResponseDto {
   return {
     ...template,
+    templateId: template.templateId || (template as unknown as { id?: string }).id || "",
     dataExtractionProcessId:
       template.dataExtractionProcessId ||
       (template as unknown as { protocolId?: string }).protocolId ||
@@ -285,9 +287,10 @@ export const dataExtractionTemplateService = {
   async upsert(template: ExtractionTemplateDto): Promise<ExtractionTemplateResponseDto> {
     try {
       const payload = sanitizeTemplatePayloadForUpsert(template);
+      const projectId = template.dataExtractionProcessId.replace(/^(?:de_|rp_)/, "");
 
       const response = await api.post<ApiResponse<ExtractionTemplateResponseDto>>(
-        "/data-extraction/templates/upsert",
+        `/projects/${projectId}/extraction/templates`,
         payload
       );
 
@@ -305,7 +308,7 @@ export const dataExtractionTemplateService = {
    */
   async getByProcessId(processId: string): Promise<ExtractionTemplateDto[]> {
     const response = await api.get<ApiResponse<ExtractionTemplateDto[]>>(
-      `/data-extraction/process/${processId}/templates`
+      `/projects/${processId.replace(/^(?:de_|rp_)/, "")}/extraction/templates`
     );
 
     return handleResponse(response).map(normalizeTemplateFromBackend);
@@ -316,9 +319,9 @@ export const dataExtractionTemplateService = {
    * @param templateId - Template ID
    * @returns Template with full field tree structure
    */
-  async getById(templateId: string): Promise<ExtractionTemplateDto> {
+  async getById(projectId: string, templateId: string): Promise<ExtractionTemplateDto> {
     const response = await api.get<ApiResponse<ExtractionTemplateDto>>(
-      `/data-extraction/templates/${templateId}`
+      `/projects/${projectId.replace(/^(?:de_|rp_)/, "")}/extraction/templates/${templateId}`
     );
 
     return normalizeTemplateFromBackend(handleResponse(response));
@@ -328,9 +331,9 @@ export const dataExtractionTemplateService = {
    * Delete template
    * @param templateId - Template ID to delete
    */
-  async delete(templateId: string): Promise<void> {
+  async delete(projectId: string, templateId: string): Promise<void> {
     const response = await api.delete<ApiResponse<void>>(
-      `/data-extraction/templates/${templateId}`
+      `/projects/${projectId.replace(/^(?:de_|rp_)/, "")}/extraction/templates/${templateId}`
     );
 
     handleResponse(response);
