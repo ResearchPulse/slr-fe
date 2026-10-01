@@ -1,4 +1,3 @@
-import React from "react";
 import {
   FiFileText,
   FiDatabase,
@@ -7,6 +6,7 @@ import {
   FiChevronRight,
   FiInfo,
   FiSearch,
+  FiUserCheck,
 } from "react-icons/fi";
 
 export interface PoolWorkflowStep {
@@ -45,7 +45,7 @@ const STEPS: PoolWorkflowStep[] = [
     id: 5,
     title: "Select & Assign",
     description: "Assign Papers",
-    icon: FiCheckCircle,
+    icon: FiUserCheck,
   },
 ];
 
