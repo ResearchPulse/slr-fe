@@ -48,9 +48,14 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
     pageSize: 100, // Large enough for member selection
   });
 
-  // 2. Only reviewers vote on screening decisions.
+  // 2. Reviewers, Lecturers, and Owners can vote on screening decisions.
   const reviewers = useMemo(() => {
-    return members.filter((m) => m.role === ProjectRole.Reviewer);
+    return members.filter(
+      (m) =>
+        m.role === ProjectRole.Reviewer ||
+        m.role === ProjectRole.Lecturer ||
+        m.role === ProjectRole.Owner,
+    );
   }, [members]);
 
   // 3. Selection State (Map ID to Name for chip display)
