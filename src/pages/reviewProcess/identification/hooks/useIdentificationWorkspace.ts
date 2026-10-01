@@ -21,11 +21,13 @@ import { useReadyPapers } from "../../../../hooks/useReadyPapers";
 import { useFileImport } from "./useFileImport";
 import { QUERY_KEYS } from "../../../../constants/queryKeys";
 import type { CreateSearchExecutionRequest } from "../../../../types/identification";
+import type { SearchExecutionResponse } from "../../../../types/searchExecution";
 import type { PaperResponse } from "../../../../types/paper";
 import type { TabType, PhaseStatus } from "../types";
 import { DEFAULT_PRISMA_STATS, LIBRARY_PAGE_SIZE } from "../constants";
 import { identificationProcessService } from "../../../../services/identificationProcessService";
 import { deduplicationService } from "../../../../services/deduplicationService";
+import { useProjectMember } from "../../../../hooks/useProjectMember";
 import toast from "react-hot-toast";
 
 export const useIdentificationWorkspace = () => {
@@ -38,6 +40,7 @@ export const useIdentificationWorkspace = () => {
     identificationPhaseId: string;
   }>();
   const navigate = useNavigate();
+  const { member } = useProjectMember(projectId);
 
   // Tab state
   const [activeTab, setActiveTab] = useState<TabType>("strategies");
@@ -73,13 +76,14 @@ export const useIdentificationWorkspace = () => {
     }
   })();
 
-  const canEdit = phaseStatus === "in-progress";
+  const canEdit = phaseStatus === "in-progress" && (member?.isLeader === true || member?.role === 2);
 
   // Drag state (for import tab)
   const [isDragging, setIsDragging] = useState(false);
 
   // Modal state
   const [isCreateStrategyModalOpen, setIsCreateStrategyModalOpen] = useState(false);
+  const [editingStrategy, setEditingStrategy] = useState<SearchExecutionResponse | null>(null);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importModalMode, setImportModalMode] = useState<"from-strategy" | "quick-import">(
     "quick-import",
@@ -122,7 +126,7 @@ export const useIdentificationWorkspace = () => {
     refetch: refetchStatistics,
   } = usePrismaStatistics(identificationPhaseId);
 
-  const { createSearchExecution, deleteSearchExecution } = useSearchExecutionMutations();
+  const { createSearchExecution, updateSearchExecution, deleteSearchExecution, isCreating, isUpdating } = useSearchExecutionMutations();
 
   const {
     importBatches,
@@ -227,6 +231,34 @@ export const useIdentificationWorkspace = () => {
     },
     [identificationPhaseId, createSearchExecution],
   );
+
+  const handleEditStrategy = useCallback((strategyId: string) => {
+    const strategy = searchExecutions.find((item) => item.id === strategyId);
+    if (!strategy) {
+      toast.error("Search strategy could not be found");
+      return;
+    }
+    setEditingStrategy(strategy);
+  }, [searchExecutions]);
+
+  const handleUpdateStrategy = useCallback(async (data: CreateSearchExecutionRequest) => {
+    if (!editingStrategy) return;
+    try {
+      const response = await updateSearchExecution({
+        id: editingStrategy.id,
+        data: {
+          id: editingStrategy.id,
+          searchSourceId: data.searchSourceId,
+          searchQuery: data.searchQuery,
+          type: editingStrategy.type,
+          notes: data.notes || null,
+        },
+      });
+      if (response?.isSuccess) setEditingStrategy(null);
+    } catch (error) {
+      console.error("Failed to update search strategy:", error);
+    }
+  }, [editingStrategy, updateSearchExecution]);
 
   const handleImportToStrategy = useCallback((strategyId: string) => {
     setSelectedStrategyId(strategyId);
@@ -492,6 +524,10 @@ export const useIdentificationWorkspace = () => {
     // Modal state
     isCreateStrategyModalOpen,
     setIsCreateStrategyModalOpen,
+    editingStrategy,
+    setEditingStrategy,
+    isUpdating,
+    isCreating,
     isImportModalOpen,
     setIsImportModalOpen,
     importModalMode,
@@ -557,6 +593,8 @@ export const useIdentificationWorkspace = () => {
 
     // Handlers
     handleCreateStrategy,
+    handleEditStrategy,
+    handleUpdateStrategy,
     handleImportToStrategy,
     handleQuickImport,
     handleImportSubmit,

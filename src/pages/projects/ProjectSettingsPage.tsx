@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useProject } from "../../hooks/useProjects";
 import { useProjectMutations } from "../../hooks/useProjects";
+import { getProjectRoleLabel } from "../../types/project";
 import Button from "../../components/ui/Button";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
 import {
@@ -34,6 +35,26 @@ export default function ProjectSettingsPage() {
       // handled by mutation
     }
   };
+
+  const isLeader = project?.isLeader === true ||
+    getProjectRoleLabel(project?.role ?? project?.roleText) === "Owner";
+
+  if (project && !isLeader) {
+    return (
+      <div className="min-h-screen bg-bg-primary">
+        <div className="container mx-auto max-w-3xl px-4 py-16">
+          <div className="border border-border bg-surface-white p-8">
+            <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mb-3">Project settings</p>
+            <h1 className="font-cormorant text-3xl text-text-primary mb-3">Leader access required</h1>
+            <p className="text-sm leading-relaxed text-text-secondary mb-6">
+              Your role is {project.roleText || "Project Member"}. You can view project details and contribute to the review workflow, while project settings are managed by the leader.
+            </p>
+            <Button onClick={() => navigate(`/projects/${id}`)}>Back to project</Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -204,7 +225,6 @@ export default function ProjectSettingsPage() {
           onClose={() => setIsMemberModalOpen(false)}
           projectId={id}
           projectName={project?.title ?? ""}
-          hideLeaderRole={true}
         />
       </div>
     </div>

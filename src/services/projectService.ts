@@ -169,8 +169,8 @@ class ProjectService {
    * Get current user's membership/role in a project
    * GET /api/projects/{projectId}/my-membership
    */
-  getMyMembership = async (projectId: string): Promise<ApiResponse<{ role: number; roleText: string }>> => {
-    const response = await api.get<ApiResponse<{ role: number; roleText: string }>>(`${this.endpoint}/${projectId}/my-membership`);
+  getMyMembership = async (projectId: string): Promise<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>> => {
+    const response = await api.get<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>>(`${this.endpoint}/${projectId}/my-membership`);
     return response.data;
   };
 
@@ -180,6 +180,18 @@ class ProjectService {
    */
   sendInvitations = async (projectId: string, data: SendInvitationsRequest): Promise<ApiResponse<null>> => {
     const response = await api.post<ApiResponse<null>>(`${this.endpoint}/${projectId}/invitations`, data);
+    return response.data;
+  };
+
+  updateMemberRole = async (
+    projectId: string,
+    userId: string,
+    role: "OWNER" | "LECTURER" | "REVIEWER",
+  ): Promise<ApiResponse<unknown>> => {
+    const response = await api.put<ApiResponse<unknown>>(
+      `${this.endpoint}/${projectId}/members/${userId}`,
+      { role },
+    );
     return response.data;
   };
 

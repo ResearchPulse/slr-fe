@@ -58,7 +58,10 @@ src/
 npm install
 
 # Setup environment variables
-cp .env 
+cp .env.example .env
+# Leave VITE_API_URL and VITE_BE_URL empty to use the local Vite proxy.
+# Set VITE_GOOGLE_CLIENT_ID and VITE_FIREBASE_API_KEY from the same Firebase
+# project to enable Google sign-in.
 
 # Start development server
 npm run dev 

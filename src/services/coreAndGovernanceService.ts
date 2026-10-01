@@ -30,13 +30,20 @@ interface ApiError {
 // ==================== PROPERTY MAPPING HELPERS — GOVERNANCE ====================
 
 function mapReviewNeedFromBackend(d: any): ReviewNeed {
+  const identifiedBy =
+    d.identifiedBy ??
+    d.identified_by ??
+    d.createdBy ??
+    d.created_by ??
+    "System";
+
   return {
-    need_id: d.needId,
-    project_id: d.projectId,
-    description: d.description,
-    justification: d.justification,
-    identified_by: d.identifiedBy,
-    created_at: d.createdAt,
+    need_id: d.needId ?? d.need_id ?? d.id ?? "unknown",
+    project_id: d.projectId ?? d.project_id ?? "",
+    description: d.description ?? d.title ?? "",
+    justification: d.justification ?? "",
+    identified_by: identifiedBy,
+    created_at: d.createdAt ?? d.created_at ?? "",
   };
 }
 

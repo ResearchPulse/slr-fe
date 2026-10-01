@@ -227,7 +227,7 @@ export default function ManageStudySelectionPage() {
         className="relative flex flex-1 overflow-hidden select-none"
       >
         {/* Main Content: Paper Viewer - Occupies full space */}
-        <div className="flex-1 min-w-0 bg-surface-white z-0 px-12 overflow-hidden">
+        <div className="order-2 flex-1 min-w-0 bg-surface-white z-0 px-12 overflow-hidden">
           <PaperViewer
             paper={
               selectedPaper
@@ -261,7 +261,7 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isLeftCollapsed ? "48px" : `${leftWidth}px` }}
           className={cn(
-            "absolute left-0 top-0 bottom-0 z-20 flex flex-col border-r border-border shadow-2xl",
+            "order-1 relative h-full shrink-0 flex flex-col border-r border-border shadow-2xl",
             isAssignmentMode ? "bg-bg-secondary/30" : "bg-surface-white",
             isLeftCollapsed ? "shadow-none" : "shadow-slate-300/50",
             !isResizing && "transition-all duration-300",
@@ -350,7 +350,7 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isRightCollapsed ? "48px" : `${rightWidth}px` }}
           className={cn(
-            "absolute right-0 top-0 bottom-0 z-20 bg-surface-white border-l border-border shadow-2xl",
+            "order-3 relative h-full shrink-0 bg-surface-white border-l border-border shadow-2xl",
             isRightCollapsed ? "shadow-none" : "shadow-slate-300/50",
             !isResizing && "transition-all duration-300",
           )}

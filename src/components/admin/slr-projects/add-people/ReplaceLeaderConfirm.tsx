@@ -24,12 +24,12 @@ export default function ReplaceLeaderConfirm({
         </div>
         <div className="space-y-2">
           <h4 className="text-xl font-black text-slate-900 tracking-tight leading-tight">
-            Replace Current Leader?
+            Chuyển quyền Trưởng nhóm?
           </h4>
           <p className="text-sm text-slate-500 font-medium leading-relaxed">
-            This project already has a lead researcher. Assigning this role to{" "}
-            <span className="text-accent font-bold">{selectedUserName}</span>{" "}
-            will revoke the current leadership status.
+            Chuyển vai trò Project Leader cho{" "}
+            <span className="text-accent font-bold">{selectedUserName}</span>.{" "}
+            Trưởng nhóm hiện tại sẽ được chuyển về vai trò Reviewer.
           </p>
         </div>
         <div className="flex flex-col gap-3">
@@ -37,13 +37,13 @@ export default function ReplaceLeaderConfirm({
             onClick={onConfirm}
             className="w-full py-4 bg-amber-500 text-white text-xs font-black rounded-md hover:bg-amber-600 transition-all active:scale-95 uppercase tracking-widest shadow-none shadow-amber-100"
           >
-            Confirm Replace
+            Xác nhận chuyển quyền
           </button>
           <button
             onClick={onCancel}
             className="w-full py-4 text-xs font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest"
           >
-            Cancel
+            Quay lại
           </button>
         </div>
       </div>

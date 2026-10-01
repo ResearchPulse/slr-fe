@@ -24,11 +24,11 @@ export function ProcessStatusIcon({
   statusText: ProcessSnapshot["statusText"];
 }) {
   if (statusText === "Completed")
-    return <FiCheckCircle className="h-4 w-4 text-[#2d5a2d]" />;
+    return <FiCheckCircle className="h-4 w-4 text-success" />;
   if (statusText === "InProgress")
     return <FiLoader className="h-4 w-4 text-accent animate-spin" />;
   if (statusText === "Cancelled")
-    return <FiXCircle className="h-4 w-4 text-[#7a0000]" />;
+    return <FiXCircle className="h-4 w-4 text-error" />;
   return <FiClock className="h-4 w-4 text-text-secondary" />;
 }
 

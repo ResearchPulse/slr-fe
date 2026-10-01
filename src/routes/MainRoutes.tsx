@@ -5,6 +5,7 @@ import type { RootState } from "../redux/store";
 import AdminProfileRedirect from "../components/profile/AdminProfileRedirect";
 import MainLayout from "../layouts/MainLayout";
 import ProjectLayout from "../layouts/ProjectLayout";
+import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteForProject from "../components/routes/ProtectedRouteForProject";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
@@ -60,7 +61,8 @@ function MainRoutes() {
 
           {/* Project Routes */}
           <Route>
-            <Route path="projects" element={<ProjectLayout />}>
+            <Route element={<ProtectedRoute />}>
+              <Route path="projects" element={<ProjectLayout />}>
               <Route index element={<ProjectListPage />} />
               <Route path=":id/*" element={<ProjectDetailPage />} />
               <Route path=":id/settings" element={<ProjectSettingsPage />} />
@@ -75,7 +77,19 @@ function MainRoutes() {
                 element={<ChecklistEditorPage />}
               />
 
-              {/* Review Process Workspace (from dev branch) */}
+              {/* Canonical Project-Centric Routes (FR-G0-01) */}
+              <Route path=":projectId/workspace" element={<ReviewProcessWorkspace />} />
+              <Route path=":projectId/identification" element={<IdentificationPhaseWorkspace />} />
+              <Route path=":projectId/screening" element={<ScreeningPhaseRouter />} />
+              <Route path=":projectId/screening/dashboard" element={<ManageStudySelectionPage />} />
+              <Route path=":projectId/screening/full-text" element={<FullTextScreeningWorkspace />} />
+              <Route path=":projectId/quality-assessment" element={<QualityAssessmentWorkspace />} />
+              <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
+              <Route path=":projectId/extraction/grid" element={<ExtractionGridWorkspace />} />
+              <Route path=":projectId/synthesis/*" element={<SynthesisPhaseWorkspace />} />
+              <Route path=":projectId/prisma-report" element={<PrismaReportWorkspace />} />
+
+              {/* Review Process Workspace (Legacy paths kept for backward compatibility) */}
               <Route
                 path=":projectId/processes/:processId"
                 element={<ReviewProcessWorkspace />}
@@ -85,7 +99,7 @@ function MainRoutes() {
               <Route
                 element={
                   <ProtectedRouteForProject
-                    allowedRoles={[1, 2]}
+                    allowedRoles={["OWNER", "ADMIN", 1, 2]}
                     redirectTo="/projects"
                     forbiddenTo="/projects"
                   />
@@ -101,7 +115,7 @@ function MainRoutes() {
                 path=":projectId/processes/:processId/screening/:screeningProcessId"
                 element={
                   <ProtectedRouteForProject
-                    allowedRoles={[1, 2]}
+                    allowedRoles={[1, 3]}
                     redirectTo="/projects"
                   />
                 }
@@ -156,6 +170,7 @@ function MainRoutes() {
                 element={<PaperDetailsPage />}
               />
               <Route path=":id/audit-logs" element={<ProjectAuditLogPage />} />
+              </Route>
             </Route>
 
             {/* Invitation Routes */}

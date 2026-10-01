@@ -25,16 +25,19 @@ const AdminNotification: React.FC = () => {
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
+        aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+        aria-expanded={showNotifications}
         onClick={() => setShowNotifications(!showNotifications)}
-        className={`p-2 rounded-[4px] transition-all relative ${
+        className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
           showNotifications
-            ? "text-accent bg-bg-secondary"
-            : "text-text-secondary hover:text-accent hover:bg-bg-secondary"
+            ? "bg-[#EEF6FB] text-[#087BC1]"
+            : "text-[#71838F] hover:bg-[#F1F7FA] hover:text-[#087BC1]"
         }`}
       >
-        <FiBell size={20} />
+        <FiBell size={19} />
         {unreadCount > 0 && (
-          <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 border-2 border-white rounded-full"></span>
+          <span className="absolute right-[7px] top-[7px] h-2 w-2 rounded-full border-2 border-white bg-rose-500" />
         )}
       </button>
 

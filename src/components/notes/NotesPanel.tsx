@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  HiOutlineUserCircle,
   HiOutlineAtSymbol,
   HiOutlineLink,
 } from "react-icons/hi";
@@ -37,42 +36,6 @@ const NotesTabs: React.FC<{
           )}
         </button>
       ))}
-    </div>
-  );
-};
-
-// --- CommentItem Component ---
-interface CommentItemProps {
-  user: string;
-  role: string;
-  content: string;
-  timestamp: string;
-}
-
-const CommentItem: React.FC<CommentItemProps> = ({
-  user,
-  role,
-  content,
-  timestamp,
-}) => {
-  return (
-    <div className="p-4 border-b border-border-default hover:bg-surface-ground transition-colors group">
-      <div className="flex items-start gap-3">
-        <HiOutlineUserCircle className="w-10 h-10 text-slate-300 flex-shrink-0" />
-        <div className="flex-1 min-w-0">
-          <div className="flex justify-between items-baseline mb-1">
-            <h4 className="font-semibold text-text-main truncate text-sm">
-              {user} ({role})
-            </h4>
-            <span className="text-[10px] text-text-muted whitespace-nowrap">
-              {timestamp}
-            </span>
-          </div>
-          <p className="text-sm text-text-main line-clamp-3 group-hover:line-clamp-none transition-all">
-            {content}
-          </p>
-        </div>
-      </div>
     </div>
   );
 };
@@ -118,35 +81,14 @@ const CommentEditor: React.FC = () => {
 const NotesPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Notes");
 
-  const mockComments = [
-    {
-      id: 1,
-      user: "Vong Tai Dong",
-      role: "K18 HCM",
-      content:
-        "This looks like a solid start for the protocol. We should refine the research questions next week.",
-      timestamp: "2026-02-12, 11:00 am",
-    },
-    {
-      id: 2,
-      user: "System AI",
-      role: "Assistant",
-      content:
-        "I recommend adding more specific PICO criteria to ensure clear screening guidelines.",
-      timestamp: "2026-02-12, 11:05 am",
-    },
-  ];
-
   return (
     <div className="flex flex-col h-full bg-surface-card">
       <NotesTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="flex-1 overflow-y-auto">
         {activeTab === "Notes" ? (
-          <div className="divide-y divide-border-default">
-            {mockComments.map((comment) => (
-              <CommentItem key={comment.id} {...comment} />
-            ))}
+          <div className="p-8 text-center text-text-muted text-sm italic">
+            No notes yet.
           </div>
         ) : (
           <div className="p-8 text-center text-text-muted text-sm italic">

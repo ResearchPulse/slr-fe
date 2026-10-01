@@ -120,6 +120,7 @@ interface PaperRepositoryPageProps {
   isDeletingPaper?: string | null;
   onOpenCreateProcessModal: () => void;
   isLeader?: boolean;
+  canUploadPdf?: boolean;
 }
 
 export default function PaperRepositoryPage({
@@ -186,6 +187,7 @@ export default function PaperRepositoryPage({
   isDeletingPaper,
   onOpenCreateProcessModal,
   isLeader = false,
+  canUploadPdf = false,
 }: PaperRepositoryPageProps) {
   const [isReviewRailOpen, setIsReviewRailOpen] = React.useState(false);
   const allPageSelected =
@@ -311,6 +313,7 @@ export default function PaperRepositoryPage({
             onDeletePaper={onDeletePaper}
             isDeletingPaper={isDeletingPaper}
             isLeader={isLeader}
+            canUploadPdf={canUploadPdf}
           />
         </div>
       </div>

@@ -10,7 +10,7 @@ const SystemSignature = forwardRef<HTMLDivElement, SystemSignatureProps>(
   (
     {
       className = "",
-      primaryClassName = "text-[#111111]",
+      primaryClassName = "text-text-primary",
       accentClassName = "text-accent",
     },
     ref,
@@ -18,11 +18,11 @@ const SystemSignature = forwardRef<HTMLDivElement, SystemSignatureProps>(
     return (
       <div className={`flex flex-col items-start justify-center ${className}`} ref={ref}>
         <div
-          className={`font-cormorant text-[26px] lg:text-[28px] leading-none tracking-[0.2em] font-medium ${primaryClassName}`}
+          className={`font-sans text-[24px] lg:text-[26px] leading-none tracking-[0.06em] font-bold ${primaryClassName}`}
         >
-          SLR<span className={`italic ${accentClassName}`}>S</span>
+          SLR<span className={accentClassName}>S</span>
         </div>
-        <p className="text-[9px] sm:text-[9.5px] text-[#666666] uppercase tracking-[0.15em] mt-1 font-medium">
+        <p className="text-[8.5px] sm:text-[9px] text-text-muted uppercase tracking-[0.18em] mt-1 font-semibold">
           Systematic Literature Review System
         </p>
       </div>

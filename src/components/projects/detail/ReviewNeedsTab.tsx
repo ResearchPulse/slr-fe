@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "../../ui/Button";
 import type { ReviewNeed } from "../../../types/coreAndGovernance";
 
@@ -13,63 +13,78 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
   onAdd,
   isLeader = true,
 }) => {
+  const [showAll, setShowAll] = useState(false);
+  const visibleNeeds = showAll ? reviewNeeds : reviewNeeds.slice(0, 2);
+
   return (
-    <div>
-      <div className="flex justify-between items-center mb-5">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary">
-          {reviewNeeds.length} {reviewNeeds.length === 1 ? "need" : "needs"}{" "}
-          identified
+    <section>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-text-secondary">
+          {reviewNeeds.length} {reviewNeeds.length === 1 ? "review need" : "review needs"}
         </p>
-        {isLeader && (
+        {isLeader && reviewNeeds.length > 0 && (
           <Button size="sm" onClick={onAdd}>
-            Add Review Need
+            Add review need
           </Button>
         )}
       </div>
-      <div className="space-y-3">
-        {reviewNeeds.map((need) => (
-          <div
-            key={need.need_id}
-            className="border border-border bg-surface-white p-5"
-          >
-            <div className="space-y-3">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary mb-1.5">
-                  Description
-                </p>
-                <p className="text-text-primary leading-[1.7] text-sm">
+
+      {reviewNeeds.length ? (
+        <ul className="divide-y divide-border">
+          {visibleNeeds.map((need) => {
+            const systemSuggested =
+              need.identified_by?.trim().toLowerCase() === "system";
+            return (
+              <li key={need.need_id} className="py-4 first:pt-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h3 className="text-sm font-semibold text-text-primary">
+                    Review need
+                  </h3>
+                  <span className="text-xs text-text-secondary">
+                    {systemSuggested
+                      ? "System suggested"
+                      : `Added by ${need.identified_by || "Project team"}`}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-text-primary">
                   {need.description}
                 </p>
-              </div>
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary mb-1.5">
-                  Justification
-                </p>
-                <p className="text-text-secondary leading-[1.7] text-sm">
-                  {need.justification}
-                </p>
-              </div>
-              <div className="flex items-center gap-2 pt-3 border-t border-border">
-                <div className="w-5 h-5 bg-accent flex items-center justify-center text-[9px] text-bg-primary font-medium uppercase">
-                  {need.identified_by.charAt(0)}
-                </div>
-                <p className="text-[11px] text-text-secondary">
-                  Identified by{" "}
-                  <span className="font-medium text-text-primary">
-                    {need.identified_by}
-                  </span>
-                </p>
-              </div>
-            </div>
-          </div>
-        ))}
-        {reviewNeeds.length === 0 && (
-          <div className="border border-dashed border-border py-14 text-center">
-            <p className="text-[#A0998C] text-sm">No review needs added yet.</p>
-          </div>
-        )}
-      </div>
-    </div>
+                {need.justification && (
+                  <p className="mt-1 text-sm leading-6 text-text-secondary">
+                    {need.justification}
+                  </p>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <div className="border-t border-border py-7">
+          <p className="text-sm font-medium text-text-primary">
+            No review needs recorded
+          </p>
+          <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
+            Describe the research gap this review will address and why a synthesis is needed.
+          </p>
+          {isLeader && (
+            <Button size="sm" onClick={onAdd} className="mt-4">
+              Add review need
+            </Button>
+          )}
+        </div>
+      )}
+
+      {reviewNeeds.length > 2 && (
+        <button
+          type="button"
+          onClick={() => setShowAll((current) => !current)}
+          className="mt-3 text-sm font-medium text-accent hover:underline"
+          aria-expanded={showAll}
+        >
+          {showAll ? "Show fewer needs" : `View all ${reviewNeeds.length} needs`}
+        </button>
+      )}
+    </section>
   );
 };
 

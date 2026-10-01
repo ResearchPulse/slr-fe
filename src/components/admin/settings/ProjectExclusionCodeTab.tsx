@@ -163,15 +163,23 @@ const ProjectExclusionCodeTab: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* 🛠️ Action Bar 🛠️ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-md border border-slate-100 shadow-none">
+      <div>
+        <h2 className="text-base font-semibold text-text-primary">
+          Project exclusion codes
+        </h2>
+        <p className="mt-1 text-sm text-text-secondary">
+          Maintain the reasons reviewers can use to exclude studies.
+        </p>
+      </div>
+
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-4 sm:p-5 rounded-xl border border-border">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
           <div className="relative flex-1 max-w-md">
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               placeholder="Filter by code or name..."
-              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border-none rounded-[4px] text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -180,50 +188,50 @@ const ProjectExclusionCodeTab: React.FC = () => {
           <button
             onClick={handleToggleOnlyActive}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-[10px] font-black uppercase transition-all border",
+              "flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors border",
               onlyActive
-                ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-none"
-                : "bg-surface-white text-slate-400 border-slate-200 hover:text-slate-600 hover:bg-slate-50",
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-white text-text-secondary border-border hover:bg-bg-primary",
             )}
           >
             <div
               className={cn(
                 "w-2 h-2 rounded-full transition-all duration-300",
                 onlyActive
-                  ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                  ? "bg-emerald-500"
                   : "bg-slate-300",
               )}
             />
-            {onlyActive ? "Active Only" : "Show Only Active"}
+            {onlyActive ? "Active only" : "Show active only"}
           </button>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-accent text-white text-sm font-black rounded-[4px] hover:bg-indigo-700 transition-all shadow-none shadow-indigo-100"
+            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-primary-hover transition-colors"
           >
             <FiPlus size={18} />
-            New Code
+            New code
           </button>
         </div>
       </div>
 
-      <div className="bg-surface-white rounded-md border border-slate-100 shadow-none overflow-hidden min-h-[400px] flex flex-col">
-        <div className="flex-1">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
+      <div className="bg-surface-white rounded-xl border border-border overflow-hidden flex flex-col">
+        <div className="flex-1 overflow-x-auto">
+          <Table className="min-w-[620px]">
+            <TableHeader className="bg-bg-primary">
               <TableRow>
-                <TableHead className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 w-[120px]">
+                <TableHead className="w-[120px] px-5 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Code
                 </TableHead>
-                <TableHead className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                <TableHead className="px-5 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Name
                 </TableHead>
-                <TableHead className="px-6 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center w-[150px]">
+                <TableHead className="w-[140px] px-5 py-3 text-center text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Status
                 </TableHead>
-                <TableHead className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right w-[150px]">
+                <TableHead className="w-[110px] px-5 py-3 text-right text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Actions
                 </TableHead>
               </TableRow>
@@ -231,11 +239,11 @@ const ProjectExclusionCodeTab: React.FC = () => {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={4} className="py-20">
-                    <div className="flex flex-col items-center justify-center gap-4 text-slate-400">
+                  <TableCell colSpan={4} className="py-16">
+                    <div className="flex flex-col items-center justify-center gap-3 text-text-secondary">
                       <LoadingSpinner size="lg" />
-                      <span className="text-sm font-black uppercase tracking-widest">
-                        Loading Library...
+                      <span className="text-sm">
+                        Loading exclusion codes...
                       </span>
                     </div>
                   </TableCell>
@@ -244,19 +252,19 @@ const ProjectExclusionCodeTab: React.FC = () => {
                 items.map((item) => (
                   <TableRow
                     key={item.id}
-                    className="group hover:bg-slate-50/50 transition-colors"
+                    className="group hover:bg-bg-primary/70 transition-colors"
                   >
-                    <TableCell className="px-8 py-6">
-                      <span className="inline-flex px-3 py-1 bg-bg-secondary text-indigo-700 text-xs font-black rounded-[4px] border border-indigo-100 uppercase tracking-tighter">
+                    <TableCell className="px-5 py-4">
+                      <span className="inline-flex rounded-md border border-border bg-bg-primary px-2.5 py-1 font-mono text-xs text-text-secondary">
                         {item.code}
                       </span>
                     </TableCell>
-                    <TableCell className="px-6 py-6">
-                      <div className="text-sm font-extrabold text-slate-900">
+                    <TableCell className="px-5 py-4">
+                      <div className="text-sm text-text-primary">
                         {item.name}
                       </div>
                     </TableCell>
-                    <TableCell className="px-6 py-6 text-center">
+                    <TableCell className="px-5 py-4 text-center">
                       <div className="flex justify-center">
                         <Switch
                           checked={item.isActive}
@@ -267,7 +275,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="px-8 py-6 text-right">
+                    <TableCell className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <ActionButton
                           icon={FiTrash2}
@@ -282,16 +290,16 @@ const ProjectExclusionCodeTab: React.FC = () => {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="py-20 text-center">
+                  <TableCell colSpan={4} className="py-16 text-center">
                     <div className="space-y-3">
-                      <div className="w-16 h-16 bg-slate-50 rounded-md flex items-center justify-center text-slate-300 mx-auto">
+                      <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-lg bg-bg-primary text-text-secondary">
                         <FiInfo size={32} />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="font-black text-slate-900">
+                        <h4 className="font-semibold text-text-primary">
                           No results found
                         </h4>
-                        <p className="text-slate-500 text-sm max-w-xs mx-auto">
+                        <p className="mx-auto max-w-xs text-sm text-text-secondary">
                           We couldn't find any exclusion codes matching your
                           criteria.
                         </p>
@@ -304,10 +312,9 @@ const ProjectExclusionCodeTab: React.FC = () => {
           </Table>
         </div>
 
-        {/* 🔢 Pagination 🔢 */}
         {!isLoading && totalPages > 1 && (
-          <div className="px-8 py-6 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
-            <div className="text-xs font-black text-slate-400 uppercase tracking-widest">
+          <div className="px-6 py-4 bg-bg-primary border-t border-border flex items-center justify-between">
+            <div className="text-xs text-text-secondary">
               Showing {items.length} of {totalCount} reasons
             </div>
             <Pagination

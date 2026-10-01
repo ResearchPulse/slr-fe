@@ -19,6 +19,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       "/admin/audit-logs": "Audit Logs",
       "/admin/projects": "SLR Projects",
       "/admin/users": "Users Management",
+      "/admin/templates": "Checklist Templates",
       "/admin/master-sources": "Search Sources",
       "/admin/analytics": "Analytics",
       "/admin/settings": "System Settings",
@@ -33,45 +34,37 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <header className="h-16 bg-surface-white border-b border-border flex items-center justify-between px-4 sm:px-6 shrink-0 z-20">
-      <div className="flex items-center gap-4">
+    <header className="sticky top-0 z-20 flex h-[72px] shrink-0 items-center justify-between border-b border-[#E3EAEE] bg-white/95 px-5 backdrop-blur-sm sm:px-7 lg:px-9">
+      <div className="flex min-w-0 items-center gap-3.5">
         <button
           onClick={onMenuClick}
-          className="p-2 -ml-2 text-text-secondary hover:text-accent hover:bg-bg-primary rounded-[4px] transition-all lg:hidden"
+          className="-ml-2 flex h-9 w-9 items-center justify-center rounded-lg text-[#617582] transition-colors hover:bg-[#F1F7FA] hover:text-primary lg:hidden"
           aria-label="Toggle Menu"
         >
-          <FiMenu className="w-6 h-6" />
+          <FiMenu className="h-5 w-5" />
         </button>
-        <h2 className="font-cormorant text-2xl font-normal text-text-primary tracking-tight">
-          {pageTitle}
-        </h2>
+        <div className="min-w-0">
+          <p className="hidden text-[9px] font-bold uppercase tracking-[0.13em] text-[#91A0A9] sm:block">Admin workspace</p>
+          <h2 className="truncate text-[16px] font-bold tracking-[-0.02em] text-[#173247] sm:mt-0.5 sm:text-[18px]">{pageTitle}</h2>
+        </div>
       </div>
 
-      <div className="flex items-center gap-4">
-        {/* <div className="hidden md:flex relative group">
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-accent transition-colors" />
-          <input
-            type="text"
-            placeholder="Search anything..."
-            className="pl-10 pr-4 py-2 bg-slate-50 border-transparent focus:border-indigo-100 focus:bg-surface-white focus:ring-4 focus:ring-indigo-50/50 rounded-[4px] text-sm transition-all outline-none border w-64"
-          />
-        </div> */}
-
+      <div className="flex shrink-0 items-center gap-2.5 sm:gap-4">
         <AdminNotification />
 
-        <div className="h-8 w-px bg-bg-secondary mx-1"></div>
+        <div className="mx-0.5 h-7 w-px bg-[#E3EAEE]"></div>
 
-        <div className="flex items-center gap-3 p-1">
-          <div className="hidden sm:block text-right ml-2">
-            <p className="text-[13px] font-medium text-text-primary leading-tight tracking-wide">
+        <div className="flex items-center gap-2.5 rounded-lg py-1 pl-1 sm:gap-3">
+          <div className="hidden text-right sm:block">
+            <p className="text-[12px] font-bold leading-tight text-[#173247]">
               {user?.name || "Admin Account"}
             </p>
-            <p className="text-[10px] uppercase font-medium text-text-secondary tracking-[0.2em] mt-0.5">
+            <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#8797A1]">
               {user?.role || "Super Admin"}
             </p>
           </div>
-          <div className="h-9 w-9 rounded-[4px] bg-accent text-bg-primary flex items-center justify-center font-medium text-sm shadow-none ring-1 ring-border">
-            {user?.name ? getUserInitials(user.name) : "AD"}
+          <div className="flex h-9 w-9 items-center justify-center rounded-[9px] bg-[#087BC1] text-sm font-bold text-white">
+            {user?.name ? getUserInitials(user.name) : "A"}
           </div>
         </div>
       </div>

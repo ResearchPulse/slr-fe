@@ -1,15 +1,19 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import {
-  FiEdit2,
-  FiCopy,
   FiCheck,
-  FiShield,
-  FiUser,
-  FiMail,
-  FiKey,
-  FiX,
+  FiCheckCircle,
+  FiCopy,
   FiInfo,
+  FiKey,
+  FiLock,
+  FiMail,
+  FiShield,
+  FiX,
+  FiEdit2,
+  FiBriefcase,
 } from "react-icons/fi";
+import { toast } from "react-hot-toast";
 import Button from "../../components/ui/Button";
 import FormField from "../../components/ui/FormField";
 import Input from "../../components/ui/Input";
@@ -19,165 +23,62 @@ import {
   useUpdateUserMutation,
   useChangePasswordMutation,
 } from "../../hooks/useUsers";
-import { toast } from "react-hot-toast";
-
-// Role Badge Styles — aligned to design system
-const ROLE_BADGE_STYLES: Record<string, string> = {
-  Admin: "border-accent text-accent",
-  Reviewer: "border-border text-text-secondary",
-  Client: "border-border text-text-secondary",
-};
+import { useMyProjects } from "../../hooks/useProjects";
 
 const getInitials = (name: string) =>
-  name ? name.trim().charAt(0).toUpperCase() : "";
+  name.trim().charAt(0).toUpperCase() || "S";
 
-/** Inline editable field component */
-const EditableField: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  onSave: (val: string) => void;
-}> = ({ icon, label, value, onSave }) => {
-  const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState(value);
-
-  useEffect(() => {
-    if (!editing) setDraft(value);
-  }, [value, editing]);
-
-  const handleSave = () => {
-    if (draft.trim() && draft.trim() !== value) {
-      onSave(draft.trim());
-    }
-    setEditing(false);
-  };
-
-  const handleCancel = () => {
-    setDraft(value);
-    setEditing(false);
-  };
-
-  return (
-    <div className="flex items-start gap-4 py-4 group border-b border-border last:border-0">
-      <div className="flex-shrink-0 w-8 h-8 border border-border flex items-center justify-center text-text-secondary mt-0.5">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <label className="text-[11px] uppercase tracking-[0.2em] text-text-secondary font-medium">
-          {label}
-        </label>
-        {editing ? (
-          <div className="flex items-center gap-2 mt-2">
-            <Input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSave();
-                if (e.key === "Escape") handleCancel();
-              }}
-              autoFocus
-              className="h-9 text-sm"
-              aria-label={`Edit ${label}`}
-            />
-            <button
-              onClick={handleSave}
-              className="flex-shrink-0 w-9 h-9 bg-text-primary text-bg-primary flex items-center justify-center hover:bg-[#2a2a2a] transition-colors"
-              aria-label="Save"
-            >
-              <FiCheck className="w-4 h-4" />
-            </button>
-            <button
-              onClick={handleCancel}
-              className="flex-shrink-0 w-9 h-9 border border-border text-text-secondary flex items-center justify-center hover:bg-bg-secondary transition-colors"
-              aria-label="Cancel"
-            >
-              <FiX className="w-4 h-4" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex items-center justify-between gap-2 mt-1">
-            <span className="text-text-primary font-medium text-sm truncate">
-              {value}
-            </span>
-            <button
-              onClick={() => setEditing(true)}
-              className="opacity-0 group-hover:opacity-100 flex-shrink-0 w-7 h-7 text-text-secondary hover:text-accent flex items-center justify-center transition-all"
-              aria-label={`Edit ${label}`}
-            >
-              <FiEdit2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const ReadOnlyField: React.FC<{
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  copyable?: boolean;
-}> = ({ icon, label, value, copyable }) => {
+function CopyField({ label, value, displayValue }: { label: string; value: string; displayValue?: string }) {
   const [copied, setCopied] = useState(false);
+  const hasValue = value.length > 0;
 
-  const handleCopy = async () => {
+  const copyValue = async () => {
     try {
       await navigator.clipboard.writeText(value);
       setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy text: ", err);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      toast.error(`Could not copy ${label.toLowerCase()}.`);
     }
   };
 
   return (
-    <div className="flex items-start gap-4 py-4 group border-b border-border last:border-0">
-      <div className="flex-shrink-0 w-8 h-8 border border-border flex items-center justify-center text-text-secondary mt-0.5">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <label className="text-[11px] uppercase tracking-[0.2em] text-text-secondary font-medium">
-          {label}
-        </label>
-        <div className="flex items-center justify-between gap-2 mt-1">
-          <span
-            className={cn(
-              "text-text-primary font-medium text-sm truncate",
-              label.toLowerCase().includes("id") &&
-                "font-mono text-xs tracking-tight text-text-secondary",
-            )}
-          >
-            {value}
-          </span>
-          {copyable && (
-            <button
-              onClick={handleCopy}
-              className="flex-shrink-0 w-7 h-7 text-text-secondary hover:text-accent flex items-center justify-center transition-colors relative"
-              aria-label={`Copy ${label}`}
-            >
-              {copied ? (
-                <FiCheck className="w-3.5 h-3.5 text-accent" />
-              ) : (
-                <FiCopy className="w-3.5 h-3.5" />
-              )}
-              {copied && (
-                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-text-primary text-bg-primary text-[10px] px-2 py-0.5 whitespace-nowrap">
-                  Copied!
-                </span>
-              )}
-            </button>
-          )}
-        </div>
+    <div className="min-w-0 rounded-xl bg-[#F7F9FA] px-4 py-3.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">{label}</p>
+      <div className="mt-1.5 flex min-w-0 items-center justify-between gap-2">
+        <p className={`min-w-0 truncate text-[13px] font-semibold text-[#173247] ${label === "User ID" ? "font-mono text-[11px] tracking-[0.14em]" : ""}`} title={displayValue || value}>{displayValue ?? value}</p>
+        <button
+          type="button"
+          onClick={copyValue}
+          title={copied ? "Copied" : "Copy"}
+          aria-label={`${copied ? "Copied" : "Copy"} ${label}`}
+          disabled={!hasValue}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#718591] transition hover:bg-white hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          {copied ? <FiCheck className="h-3.5 w-3.5 text-[#2E8B60]" /> : <FiCopy className="h-3.5 w-3.5" />}
+        </button>
       </div>
     </div>
   );
-};
+}
+
+function InformationField({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-xl bg-[#F7F9FA] px-4 py-3.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">{label}</p>
+      <p className="mt-1.5 truncate text-[13px] font-semibold text-[#173247]" title={value}>{value}</p>
+    </div>
+  );
+}
 
 const MyProfilePage: React.FC = () => {
   const { user, isLoading, isError, error } = useUserProfile();
-  const { updateUser } = useUpdateUserMutation();
+  const { updateUser, isLoading: isProfileSaving } = useUpdateUserMutation();
   const { changePassword } = useChangePasswordMutation();
+  const { projects, data: projectsData } = useMyProjects({ pageNumber: 1, pageSize: 100 });
+
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [profileDraft, setProfileDraft] = useState({ fullName: "", username: "" });
   const [isResettingPassword, setIsResettingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -188,63 +89,93 @@ const MyProfilePage: React.FC = () => {
     message: string;
   } | null>(null);
 
-  const handleUpdateProfile = async (
-    field: "fullName" | "username",
-    value: string,
-  ) => {
-    if (!user) return;
+  useEffect(() => {
+    if (user && !isEditingProfile) {
+      setProfileDraft({ fullName: user.fullName || "", username: user.username || "" });
+    }
+  }, [user, isEditingProfile]);
 
-    // Safety check to ensure we only update allowed fields
-    if (field !== "fullName" && field !== "username") return;
+  useEffect(() => {
+    const revealItems = document.querySelectorAll<HTMLElement>(".profile-scroll-reveal");
+    if (!("IntersectionObserver" in window)) {
+      revealItems.forEach((item) => item.classList.add("is-visible"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -24px 0px" },
+    );
+
+    revealItems.forEach((item) => observer.observe(item));
+    return () => observer.disconnect();
+  }, [isLoading, user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    const fullName = profileDraft.fullName.trim();
+    const username = profileDraft.username.trim();
+    if (!fullName || !username) {
+      toast.error("Full name and username are required.");
+      return;
+    }
+    if (fullName === user.fullName && username === user.username) {
+      setIsEditingProfile(false);
+      return;
+    }
 
     try {
-      await updateUser({
-        id: user.id,
-        fullName: field === "fullName" ? value : user.fullName,
-        email: user.email, // Keep existing email as it cannot be changed from this page
-        username: field === "username" ? value : user.username,
-      });
-      toast.success(
-        `${field === "fullName" ? "Full Name" : "Username"} updated successfully`,
-      );
-    } catch (err) {
-      toast.error("Failed to update profile");
+      await updateUser({ id: user.id, fullName, email: user.email, username });
+      toast.success("Profile updated successfully.");
+      setIsEditingProfile(false);
+    } catch {
+      toast.error("Could not update your profile.");
     }
   };
 
-  const handleResetPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus(null);
+  const handleCancelProfileEdit = () => {
+    setProfileDraft({ fullName: user?.fullName || "", username: user?.username || "" });
+    setIsEditingProfile(false);
+  };
 
+  const resetPasswordForm = () => {
+    setIsResettingPassword(false);
+    setStatus(null);
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleResetPassword = async (event: FormEvent) => {
+    event.preventDefault();
+    setStatus(null);
     if (newPassword !== confirmPassword) {
-      setStatus({ type: "error", message: "Passwords don't match." });
+      setStatus({ type: "error", message: "Passwords do not match." });
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await changePassword({
-        oldPassword: currentPassword,
-        newPassword: newPassword,
-      });
-
-      const successMsg = response.message || "Password successfully updated!";
-      setStatus({ type: "success", message: successMsg });
-      toast.success(successMsg);
-
+      const response = await changePassword({ oldPassword: currentPassword, newPassword });
+      const successMessage = response.message || "Password successfully updated.";
+      setStatus({ type: "success", message: successMessage });
+      toast.success(successMessage);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-
-      setTimeout(() => {
+      window.setTimeout(() => {
         setIsResettingPassword(false);
         setStatus(null);
-      }, 2500);
+      }, 2200);
     } catch (err: any) {
-      const errorMessage =
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to update password.";
+      const errorMessage = err?.response?.data?.message || err?.message || "Could not update password.";
       setStatus({ type: "error", message: errorMessage });
       toast.error(errorMessage);
     } finally {
@@ -254,12 +185,10 @@ const MyProfilePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-8 h-8 border-2 border-text-primary border-t-transparent rounded-full animate-spin" />
-          <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary">
-            Loading profile...
-          </p>
+      <div className="flex min-h-[65vh] items-center justify-center bg-[#F6F9FB]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#087BC1] border-t-transparent" />
+          <p className="text-[11px] font-semibold text-[#71838F]">Loading profile…</p>
         </div>
       </div>
     );
@@ -267,246 +196,160 @@ const MyProfilePage: React.FC = () => {
 
   if (isError || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-primary">
-        <div className="bg-surface-white border border-border p-8 text-center max-w-md mx-4">
-          <div className="w-12 h-12 border border-accent flex items-center justify-center text-accent mx-auto mb-6">
-            <FiInfo className="w-6 h-6" />
-          </div>
-          <h2 className="font-cormorant text-[28px] font-normal text-text-primary mb-2">
-            Something went wrong
-          </h2>
-          <p className="text-text-secondary text-sm mb-6">
-            {error || "Failed to load profile. Please try again later."}
-          </p>
-          <Button onClick={() => window.location.reload()}>Retry</Button>
+      <div className="flex min-h-[65vh] items-center justify-center bg-[#F6F9FB] px-4">
+        <div className="w-full max-w-md rounded-2xl border border-[#DCE6EC] bg-white p-8 text-center shadow-[0_12px_35px_rgba(19,43,60,0.06)]">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF6FB] text-primary"><FiInfo className="h-5 w-5" /></div>
+          <h2 className="text-xl font-bold text-[#173247]">Could not load your profile</h2>
+          <p className="mt-2 text-sm leading-6 text-[#71838F]">{error || "Please try again in a moment."}</p>
+          <Button className="mt-6" onClick={() => window.location.reload()}>Try again</Button>
         </div>
       </div>
     );
   }
 
-  const roleBadgeStyle =
-    ROLE_BADGE_STYLES[user.role] || "border-border text-text-secondary";
+  const displayName = user.fullName?.trim() || user.username?.trim() || "SLRS User";
+  const displayUsername = user.username?.trim() || "Username not set";
+  const userId = user.id || (user as typeof user & { uid?: string }).uid || "";
+  const roleLabel = user.role?.trim() || "User";
+  const isAccountActive = user.isActive !== false;
+  const activeProjects = projects.filter((project) => project.statusText === "Active").length;
+  const roleBadgeStyle = user.role?.toLowerCase() === "admin"
+    ? "bg-[#EEF3FA] text-[#405F91]"
+    : "bg-[#EAF4FA] text-[#236E99]";
 
   return (
-    <div className="min-h-screen bg-bg-primary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto space-y-6">
-        {/* Profile Header */}
-        <div className="border border-border overflow-hidden">
-          {/* Dark editorial banner */}
-          <div className="h-28 bg-text-primary relative">
-            {/* Subtle decorative lines */}
-            <div className="absolute inset-0 opacity-10">
-              <div className="absolute bottom-0 left-0 right-0 h-[1px] bg-bg-primary" />
-            </div>
-            <p className="absolute bottom-4 left-6 text-[10px] uppercase tracking-[0.3em] text-bg-primary/40">
-              User Profile
-            </p>
-          </div>
+    <div className="min-h-[calc(100vh-72px)] bg-[#F6F9FB] px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
+      <main className="mx-auto max-w-[1160px] space-y-8">
+        <header className="profile-scroll-reveal scroll-reveal mb-1">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Account settings</p>
+          <h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#102B3D] sm:text-[38px]">Profile</h1>
+          <p className="mt-2 text-[14px] text-[#6C7C88]">Manage your personal information and account settings.</p>
+        </header>
 
-          <div className="px-6 pb-6 bg-surface-white">
-            <div className="relative flex items-end justify-between -mt-8 mb-6">
-              {/* Avatar */}
-              <div className="w-16 h-16 bg-accent flex items-center justify-center text-bg-primary text-xl font-medium border-2 border-surface-white select-none">
-                {getInitials(user.fullName)}
+        <section aria-labelledby="profile-overview-title" className="profile-scroll-reveal scroll-reveal overflow-hidden rounded-[20px] border border-[#DCE6EC] bg-white shadow-[0_10px_32px_rgba(19,43,60,0.045)]">
+          <div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:p-8">
+            <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
+              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-[#087BC1] text-[30px] font-bold tracking-[-0.05em] text-white">
+                {getInitials(displayName)}
               </div>
-
-              <span
-                className={cn(
-                  "px-2.5 py-0.5 text-[11px] uppercase tracking-[0.1em] font-medium border",
-                  roleBadgeStyle,
-                )}
-              >
-                {user.role}
-              </span>
-            </div>
-
-            <div className="space-y-1">
-              <h1 className="font-cormorant text-[32px] font-normal text-text-primary leading-tight">
-                {user.fullName}
-              </h1>
-              <p className="text-text-secondary text-sm">{user.email}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Account Information Section */}
-        <section className="border border-border bg-surface-white">
-          <div className="px-6 py-4 border-b border-border bg-bg-primary">
-            <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
-              Account Information
-            </p>
-          </div>
-
-          <div className="px-6 grid grid-cols-1 sm:grid-cols-2 gap-x-8">
-            <ReadOnlyField
-              icon={<FiKey className="w-4 h-4" />}
-              label="User ID"
-              value={user.id}
-              copyable
-            />
-            <ReadOnlyField
-              icon={<FiMail className="w-4 h-4" />}
-              label="Email Address"
-              value={user.email}
-            />
-            <EditableField
-              icon={<FiUser className="w-4 h-4" />}
-              label="Full Name"
-              value={user.fullName}
-              onSave={(val) => handleUpdateProfile("fullName", val)}
-            />
-            <EditableField
-              icon={<FiUser className="w-4 h-4" />}
-              label="Username"
-              value={user.username}
-              onSave={(val) => handleUpdateProfile("username", val)}
-            />
-          </div>
-        </section>
-
-        {/* Security & Password Section */}
-        <section className="border border-border bg-surface-white">
-          <div className="px-6 py-4 border-b border-border bg-bg-primary">
-            <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
-              Security
-            </p>
-          </div>
-
-          <div className="p-6">
-            {!isResettingPassword ? (
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-8 h-8 border border-border flex items-center justify-center text-text-secondary">
-                    <FiShield className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-medium text-text-primary">
-                      Password
-                    </p>
-                    <p className="text-[12px] text-text-secondary">
-                      Protect your account with a strong password.
-                    </p>
-                  </div>
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2.5">
+                  <h2 id="profile-overview-title" className="text-[25px] font-bold leading-tight tracking-[-0.04em] text-[#173247] sm:text-[29px]">{displayName}</h2>
+                  <span className={cn("rounded-full px-2.5 py-1 text-[9px] font-bold", roleBadgeStyle)}>{roleLabel}</span>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setIsResettingPassword(true)}
-                >
-                  Change
-                </Button>
+                <p className="mt-1 text-[12px] font-medium text-[#81919B]">@{displayUsername}</p>
+                <p className="mt-2 flex min-w-0 items-center gap-1.5 text-[12px] text-[#607582]"><FiMail className="h-3.5 w-3.5 shrink-0 text-[#8A9AA4]" /><span className="truncate">{user.email}</span></p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
+              <div className="rounded-xl bg-[#F7F9FA] px-3.5 py-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Role</p>
+                <p className="mt-1.5 truncate text-[12px] font-bold text-[#173247]">{roleLabel}</p>
+              </div>
+              <div className="rounded-xl bg-[#F7F9FA] px-3.5 py-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Projects</p>
+                <p className="mt-1.5 text-[12px] font-bold text-[#173247]">{projectsData?.totalCount ?? projects.length} total <span className="font-medium text-[#84949E]">· {activeProjects} active</span></p>
+              </div>
+              <div className="col-span-2 rounded-xl bg-[#F7F9FA] px-3.5 py-3 sm:col-span-1">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Account status</p>
+                <p className={`mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${isAccountActive ? "bg-[#2E9B68]" : "bg-[#C66B5E]"}`} />{isAccountActive ? "Active" : "Inactive"}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2 border-t border-[#EDF1F3] bg-[#FCFDFD] px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <p className="text-[11px] text-[#85949D]">Keep your account details up to date.</p>
+            {isEditingProfile ? (
+              <div className="flex w-full gap-2 sm:w-auto">
+                <Button size="sm" variant="outline" onClick={handleCancelProfileEdit} disabled={isProfileSaving} className="flex-1 sm:flex-none">Cancel</Button>
+                <Button size="sm" onClick={handleSaveProfile} isLoading={isProfileSaving} className="flex-1 sm:flex-none"><FiCheck className="mr-1.5" />Save changes</Button>
               </div>
             ) : (
-              <form onSubmit={handleResetPassword} className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary">
-                    Change Password
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsResettingPassword(false);
-                      setStatus(null);
-                      setCurrentPassword("");
-                      setNewPassword("");
-                      setConfirmPassword("");
-                    }}
-                    className="text-text-secondary hover:text-text-primary transition-colors"
-                  >
-                    <FiX className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {status && (
-                  <div
-                    className={cn(
-                      "p-3 flex items-center gap-3 text-sm border",
-                      status.type === "success"
-                        ? "bg-bg-primary text-text-primary border-border"
-                        : "bg-surface-white text-accent border-accent",
-                    )}
-                  >
-                    {status.type === "success" ? (
-                      <FiCheck className="w-4 h-4 shrink-0" />
-                    ) : (
-                      <FiInfo className="w-4 h-4 shrink-0" />
-                    )}
-                    {status.message}
-                  </div>
-                )}
-
-                <div className="space-y-5">
-                  <FormField
-                    id="current-password"
-                    label="Current Password"
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                    <FormField
-                      id="new-password"
-                      label="New Password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      helperText="At least 8 characters"
-                    />
-                    <FormField
-                      id="confirm-password"
-                      label="Confirm Password"
-                      type="password"
-                      placeholder="••••••••"
-                      required
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      errorMessage={
-                        confirmPassword && newPassword !== confirmPassword
-                          ? "Passwords do not match"
-                          : undefined
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <Button
-                    type="submit"
-                    isLoading={isSubmitting}
-                    disabled={
-                      isSubmitting ||
-                      (!!newPassword && newPassword !== confirmPassword)
-                    }
-                    className="flex-1"
-                  >
-                    Update Password
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setIsResettingPassword(false);
-                      setStatus(null);
-                      setCurrentPassword("");
-                      setNewPassword("");
-                      setConfirmPassword("");
-                    }}
-                    disabled={isSubmitting}
-                    className="px-8"
-                  >
-                    Cancel
-                  </Button>
-                </div>
-              </form>
+              <Button size="sm" variant="secondary" onClick={() => setIsEditingProfile(true)} className="w-full sm:w-auto"><FiEdit2 className="mr-2 h-3.5 w-3.5" />Edit profile</Button>
             )}
           </div>
         </section>
-      </div>
+
+        <section aria-labelledby="personal-info-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-[#DCE6EC] bg-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+          <div className="mb-5">
+            <h2 id="personal-info-title" className="text-[20px] font-bold tracking-[-0.03em] text-[#173247]">Personal information</h2>
+            <p className="mt-1 text-[12px] text-[#7A8B96]">Manage your identity and contact details.</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {isEditingProfile ? (
+              <label className="rounded-xl bg-[#F7F9FA] px-4 py-3.5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">Full name</span>
+                <Input value={profileDraft.fullName} onChange={(event) => setProfileDraft((draft) => ({ ...draft, fullName: event.target.value }))} autoFocus className="mt-2 h-9 rounded-lg border-[#DCE6EC] bg-white text-[13px]" />
+              </label>
+            ) : <InformationField label="Full name" value={displayName} />}
+
+            {isEditingProfile ? (
+              <label className="rounded-xl bg-[#F7F9FA] px-4 py-3.5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">Username</span>
+                <Input value={profileDraft.username} onChange={(event) => setProfileDraft((draft) => ({ ...draft, username: event.target.value }))} className="mt-2 h-9 rounded-lg border-[#DCE6EC] bg-white text-[13px]" />
+              </label>
+            ) : <InformationField label="Username" value={displayUsername} />}
+
+            <CopyField label="Email address" value={user.email || "Not provided"} />
+            <CopyField label="User ID" value={userId} displayValue={userId ? "••••••••••••" : "Unavailable"} />
+          </div>
+          {isEditingProfile && <p className="mt-3 text-[10px] text-[#84949E]">Email address cannot be changed here.</p>}
+        </section>
+
+        <section aria-labelledby="security-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-[#DCE6EC] bg-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+          <div className="mb-5">
+            <h2 id="security-title" className="text-[20px] font-bold tracking-[-0.03em] text-[#173247]">Security & account</h2>
+            <p className="mt-1 text-[12px] text-[#7A8B96]">Manage how you access and protect your account.</p>
+          </div>
+
+          <div className="flex flex-col gap-4 rounded-2xl bg-[#F7F9FA] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <div className="flex items-start gap-3.5">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#397FA8]"><FiLock className="h-[17px] w-[17px]" /></span>
+              <div>
+                <p className="text-[13px] font-bold text-[#173247]">Password</p>
+                <p className="mt-1 text-[11px] leading-5 text-[#7A8B96]">Use a strong password to keep your account secure.</p>
+              </div>
+            </div>
+            {!isResettingPassword && <Button size="sm" variant="secondary" onClick={() => setIsResettingPassword(true)} className="w-full sm:w-auto"><FiKey className="mr-2 h-3.5 w-3.5" />Change password</Button>}
+          </div>
+
+          {isResettingPassword && (
+            <form onSubmit={handleResetPassword} className="mt-4 rounded-2xl border border-[#E5ECEF] bg-white p-4 sm:p-5">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div><p className="text-[13px] font-bold text-[#173247]">Update password</p><p className="mt-1 text-[11px] text-[#7A8B96]">Choose a new password you do not use elsewhere.</p></div>
+                <button type="button" onClick={resetPasswordForm} aria-label="Cancel password change" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#80909A] transition hover:bg-[#F1F5F7] hover:text-[#173247]"><FiX /></button>
+              </div>
+
+              {status && <div className={cn("mb-4 flex items-center gap-2 rounded-lg px-3 py-2.5 text-[12px]", status.type === "success" ? "bg-[#EFF8F2] text-[#327B55]" : "bg-[#FBF2F1] text-[#A04F4B]")}>{status.type === "success" ? <FiCheckCircle className="shrink-0" /> : <FiInfo className="shrink-0" />}{status.message}</div>}
+
+              <div className="space-y-4">
+                <FormField id="current-password" label="Current password" type="password" placeholder="Enter current password" required value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <FormField id="new-password" label="New password" type="password" placeholder="Enter new password" required value={newPassword} onChange={(event) => setNewPassword(event.target.value)} helperText="At least 8 characters" />
+                  <FormField id="confirm-password" label="Confirm new password" type="password" placeholder="Re-enter new password" required value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} errorMessage={confirmPassword && newPassword !== confirmPassword ? "Passwords do not match" : undefined} />
+                </div>
+              </div>
+              <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                <Button type="button" variant="outline" size="sm" onClick={resetPasswordForm} disabled={isSubmitting}>Cancel</Button>
+                <Button type="submit" size="sm" isLoading={isSubmitting} disabled={isSubmitting || (!!newPassword && newPassword !== confirmPassword)}><FiCheck className="mr-1.5" />Save password</Button>
+              </div>
+            </form>
+          )}
+
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div className="flex items-center gap-3 rounded-xl border border-[#E8EEF1] px-4 py-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF5FA] text-[#547F9A]"><FiShield className="h-4 w-4" /></span>
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#8797A1]">Account status</p><p className={`mt-1 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>{isAccountActive ? "Active" : "Inactive"}</p></div>
+            </div>
+            <div className="flex items-center gap-3 rounded-xl border border-[#E8EEF1] px-4 py-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF5FA] text-[#547F9A]"><FiBriefcase className="h-4 w-4" /></span>
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#8797A1]">Account role</p><p className="mt-1 text-[12px] font-bold text-[#173247]">{roleLabel}</p></div>
+            </div>
+          </div>
+        </section>
+      </main>
     </div>
   );
 };

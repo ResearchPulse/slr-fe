@@ -122,19 +122,19 @@ const Drawer: React.FC<DrawerProps> = ({
         <div
           ref={drawerRef}
           className={cn(
-            "pointer-events-auto w-screen bg-[#F4F0E8] shadow-2xl",
+            "pointer-events-auto w-screen bg-bg-primary shadow-2xl",
             maxWidth,
           )}
         >
           <div className="flex h-full flex-col overflow-y-auto">
             {/* Drawer Header */}
-            <div className="p-6 border-b border-[#D8D2C8] flex items-center justify-between sticky top-0 bg-[#F4F0E8] z-10">
-              <div className="flex-1 text-lg font-bold text-[#111111]">
+            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-bg-primary z-10">
+              <div className="flex-1 text-lg font-bold text-text-primary">
                 {title}
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-[#5C5C5C] hover:text-[#111111] hover:bg-[#ECE8E1] rounded-full transition-all"
+                className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-full transition-all"
                 aria-label="Close"
               >
                 <FiX className="w-6 h-6" />
@@ -146,7 +146,7 @@ const Drawer: React.FC<DrawerProps> = ({
 
             {/* Drawer Footer */}
             {footer && (
-              <div className="p-6 border-t border-[#D8D2C8] bg-[#ECE8E1] sticky bottom-0">
+              <div className="p-6 border-t border-border bg-bg-secondary sticky bottom-0">
                 {footer}
               </div>
             )}

@@ -241,13 +241,10 @@ export const useReplaceLeaderMutation = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ projectId, newLeaderUserId }: { projectId: string; newLeaderUserId: string }) => {
-      // TODO: Replace with actual API call
-      // return projectService.replaceLeader(projectId, newLeaderUserId);
-      console.log(`Replacing leader for project ${projectId} with user ${newLeaderUserId}`);
-      return { success: true };
+      return projectService.updateMemberRole(projectId, newLeaderUserId, "OWNER");
     },
     onSuccess: (_, variables) => {
-      // Invalidate members and invitations to recompute leader state
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.members(variables.projectId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.invitations(variables.projectId) });
     },
@@ -283,6 +280,28 @@ export const useSendInvitations = (projectId: string | undefined) => {
     isSending: mutation.isPending,
     error: mutation.error ? getErrorMessage(mutation.error, "Failed to send invitations") : null,
     isSuccess: mutation.isSuccess,
+  };
+};
+
+export const useUpdateProjectMemberRole = (projectId: string | undefined) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: ({ userId, role }: { userId: string; role: "OWNER" | "LECTURER" | "REVIEWER" }) =>
+      projectId
+        ? projectService.updateMemberRole(projectId, userId, role)
+        : Promise.reject("No Project ID"),
+    onSuccess: () => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.members(projectId) });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.myMembership(projectId) });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.all });
+      }
+    },
+  });
+
+  return {
+    updateMemberRole: mutation.mutateAsync,
+    isUpdating: mutation.isPending,
   };
 };
 /**

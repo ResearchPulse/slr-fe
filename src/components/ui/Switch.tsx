@@ -36,7 +36,7 @@ const Switch: React.FC<SwitchProps> = ({
         <div
           className={cn(
             "w-11 h-6 rounded-full transition-colors duration-200 ease-in-out",
-            checked ? "bg-accent" : "bg-border group-hover:bg-[#A0998C]",
+            checked ? "bg-accent" : "bg-border group-hover:bg-text-muted",
           )}
         />
         {/* Thumb */}

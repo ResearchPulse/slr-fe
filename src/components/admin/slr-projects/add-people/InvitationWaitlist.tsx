@@ -6,7 +6,7 @@ interface WaitlistUser {
   id: string;
   fullName: string;
   userName: string;
-  role: "Leader" | "Member";
+  role: "Lecturer" | "Reviewer";
 }
 
 interface InvitationWaitlistProps {
@@ -64,12 +64,12 @@ export default function InvitationWaitlist({
                   <span
                     className={cn(
                       "px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider",
-                      user.role === "Leader"
+                      user.role === "Lecturer"
                         ? "bg-amber-50 text-amber-600"
                         : "bg-blue-50 text-blue-600",
                     )}
                   >
-                    {user.role === "Leader" ? "Lead" : "Member"}
+                    {user.role}
                   </span>
                   <span className="text-[9px] font-bold text-slate-300 italic">
                     @{user.userName}

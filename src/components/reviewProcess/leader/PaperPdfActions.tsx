@@ -31,6 +31,7 @@ interface PaperPdfActionsProps {
   pdfRequired?: boolean;
   studySelectionProcessId?: string;
   isLeader?: boolean;
+  canUploadPdf?: boolean;
 }
 
 const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
@@ -43,6 +44,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
   isRemovingPdf,
   pdfRequired = false,
   isLeader = false,
+  canUploadPdf = false,
 }) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isConfirmNotRetrievedOpen, setIsConfirmNotRetrievedOpen] =
@@ -162,7 +164,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
 
   return (
     <div className="flex items-center gap-1.5">
-      {isLeader && (
+      {(isLeader || canUploadPdf) && (
         <button
           onClick={(e) => {
             e.stopPropagation();

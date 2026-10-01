@@ -8,6 +8,7 @@ export interface SidebarItem {
   icon: IconType;
   label: string;
   path: string;
+  group?: string;
   onClick?: () => void;
 }
 
@@ -19,97 +20,81 @@ interface SidebarProps {
   className?: string;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({
-  items,
-  footerItems,
-  isCollapsed,
-  onToggle,
-  className,
-}) => {
+const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onToggle, className }) => {
   const location = useLocation();
+  let previousGroup = "";
 
   const renderItem = (item: SidebarItem) => {
-    const isActive = location.pathname === item.path;
+    const isActive = !item.onClick && (
+      location.pathname === item.path ||
+      (item.path !== "/admin" && location.pathname.startsWith(`${item.path}/`))
+    );
+    const showGroup = Boolean(item.group && item.group !== previousGroup);
+    previousGroup = item.group || previousGroup;
+
     const commonClasses = cn(
-      "flex items-center gap-3 p-3 transition-all group overflow-hidden whitespace-nowrap w-full text-left relative",
+      "group relative flex min-h-10 w-full items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 text-left transition-colors duration-150",
+      isCollapsed && "justify-center px-2",
       isActive
-        ? "text-text-primary bg-bg-primary"
-        : "text-text-secondary hover:text-text-primary hover:bg-bg-primary/60",
+        ? "bg-[#EAF4FB] text-[#087BC1]"
+        : "text-[#617582] hover:bg-white hover:text-[#173247]",
     );
 
     const content = (
       <>
-        {isActive && (
-          <div className="absolute left-0 top-2 bottom-2 w-0.5 bg-accent" />
-        )}
-        <item.icon
-          className={cn(
-            "w-4 h-4 shrink-0 transition-opacity duration-200",
-            isActive
-              ? "text-text-primary"
-              : "text-text-secondary group-hover:text-text-primary",
-          )}
-        />
-        <span
-          className={cn(
-            "text-[11px] font-medium uppercase tracking-[0.15em] transition-all duration-300 ease-in-out",
-            isCollapsed
-              ? "opacity-0 invisible -translate-x-4 w-0"
-              : "opacity-100 visible translate-x-0",
-          )}
-        >
+        <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-[#087BC1]" : "text-[#80919B] group-hover:text-[#397FA8]")} />
+        <span className={cn("truncate text-[13px] font-semibold transition-all duration-200", isCollapsed ? "invisible w-0 opacity-0" : "visible w-auto opacity-100")}>
           {item.label}
         </span>
+        {isActive && !isCollapsed && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-[#087BC1]" />}
       </>
     );
 
-    if (item.onClick) {
-      return (
-        <button
-          key={item.label}
-          onClick={item.onClick}
-          className={commonClasses}
-        >
-          {content}
-        </button>
-      );
-    }
-
-    return (
-      <Link key={item.path} to={item.path} className={commonClasses}>
+    const itemNode = item.onClick ? (
+      <button key={item.label} type="button" onClick={item.onClick} title={isCollapsed ? item.label : undefined} aria-label={item.label} className={commonClasses}>
+        {content}
+      </button>
+    ) : (
+      <Link key={item.path} to={item.path} title={isCollapsed ? item.label : undefined} aria-label={item.label} aria-current={isActive ? "page" : undefined} className={commonClasses}>
         {content}
       </Link>
+    );
+
+    return (
+      <React.Fragment key={item.path || item.label}>
+        {showGroup && !isCollapsed && (
+          <p className="px-3 pb-1 pt-5 text-[9px] font-bold uppercase tracking-[0.15em] text-[#9AA8B0] first:pt-1">{item.group}</p>
+        )}
+        {itemNode}
+      </React.Fragment>
     );
   };
 
   return (
-    <aside
-      className={cn(
-        "flex flex-col bg-bg-secondary border-r border-border transition-all duration-500 ease-in-out relative z-30",
-        isCollapsed ? "w-16" : "w-64",
-        className,
-      )}
-    >
-      {/* Toggle Button */}
+    <aside className={cn("relative z-30 flex shrink-0 flex-col border-r border-[#E3EAEE] bg-[#F8FAFC] transition-[width] duration-200 ease-out", isCollapsed ? "w-[76px]" : "w-[252px]", className)}>
+      <div className={cn("flex h-[82px] shrink-0 items-center border-b border-[#E9EEF1]", isCollapsed ? "justify-center px-2" : "px-6")}>
+        <Link to="/admin" className="min-w-0" aria-label="SLRS Admin overview">
+          <span className="block text-[21px] font-extrabold leading-none tracking-[0.05em] text-[#102B3D]">SLR<span className="text-[#087BC1]">S</span></span>
+          {!isCollapsed && <span className="mt-1.5 block whitespace-nowrap text-[8px] font-semibold uppercase tracking-[0.12em] text-[#81919B]">Systematic Literature Review System</span>}
+        </Link>
+      </div>
+
       <button
+        type="button"
         onClick={onToggle}
-        className="absolute -right-3.5 top-8 w-7 h-7 bg-bg-primary border border-border rounded-[4px] flex items-center justify-center text-text-secondary hover:text-text-primary transition-colors z-40 cursor-pointer"
+        aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+        className="absolute -right-3 top-[68px] z-40 flex h-6 w-6 items-center justify-center rounded-full border border-[#DCE6EC] bg-white text-[#71838F] shadow-[0_2px_7px_rgba(19,43,60,0.08)] transition hover:text-primary"
       >
-        {isCollapsed ? (
-          <FiChevronRight size={14} />
-        ) : (
-          <FiChevronLeft size={14} />
-        )}
+        {isCollapsed ? <FiChevronRight size={13} /> : <FiChevronLeft size={13} />}
       </button>
 
-      {/* Navigation */}
-      <nav className="flex-1 py-8 px-3 space-y-0.5 overflow-y-auto no-scrollbar">
+      <nav aria-label="Admin navigation" className={cn("no-scrollbar flex-1 overflow-y-auto py-5", isCollapsed ? "space-y-1 px-3" : "space-y-1 px-3.5")}>
         {items.map(renderItem)}
       </nav>
 
-      {/* Footer Items */}
       {footerItems && footerItems.length > 0 && (
-        <div className="px-3 pb-4 border-t border-border pt-3 space-y-0.5">
+        <div className={cn("shrink-0 border-t border-[#E9EEF1] py-3", isCollapsed ? "space-y-1 px-3" : "space-y-1 px-3.5")}>
           {footerItems.map(renderItem)}
         </div>
       )}

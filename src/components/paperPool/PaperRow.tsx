@@ -21,6 +21,7 @@ interface PaperRowProps {
   onDeletePaper?: (paperId: string, reason: string) => void;
   isDeletingPaper?: boolean;
   isLeader?: boolean;
+  canUploadPdf?: boolean;
 }
 
 export default function PaperRow({
@@ -37,6 +38,7 @@ export default function PaperRow({
   // onDeletePaper,
   // isDeletingPaper,
   isLeader = false,
+  canUploadPdf = false,
 }: PaperRowProps) {
   return (
     <tr
@@ -112,6 +114,7 @@ export default function PaperRow({
           onRemovePdf={onRemovePdf}
           isRemovingPdf={isRemovingPdf}
           isLeader={isLeader}
+          canUploadPdf={canUploadPdf}
         />
       </td>
 

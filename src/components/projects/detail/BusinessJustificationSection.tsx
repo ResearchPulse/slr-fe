@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import Button from "../../ui/Button";
 import ReviewNeedsTab from "./ReviewNeedsTab";
 import DocumentsTab from "./DocumentsTab";
 import ProjectTimetableTab from "./ProjectTimetableTab";
@@ -43,11 +42,11 @@ const BusinessJustificationSection: React.FC<
   );
 
   const bjTabs = [
-    { key: "needs", label: "Review Needs", count: reviewNeeds.length },
+    { key: "needs", label: "Review needs", count: reviewNeeds.length },
     { key: "documents", label: "Documents", count: documents.length },
     {
       key: "dates",
-      label: "Project Dates",
+      label: "Timeline",
       count: project.startDate && project.endDate ? 1 : 0,
     },
   ] as const;
@@ -55,41 +54,29 @@ const BusinessJustificationSection: React.FC<
   return (
     <div>
       {!isProjectActive && onSkip && (
-        <div className="flex justify-end mb-4">
-          <Button
-            variant="ghost"
-            className="text-text-secondary hover:text-text-primary flex items-center gap-2 group text-sm"
+        <div className="mb-3 flex justify-end">
+          <button
+            type="button"
             onClick={onSkip}
+            className="text-sm text-text-secondary transition-colors hover:text-accent"
           >
-            Skip and go to Activation
-            <svg
-              className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 7l5 5m0 0l-5 5m5-5H6"
-              />
-            </svg>
-          </Button>
+            Continue to activation →
+          </button>
         </div>
       )}
 
       {/* Sub-tabs */}
-      <div className="border-b border-border mb-6">
-        <nav className="flex gap-8">
+      <div className="mb-5 border-b border-border">
+        <nav aria-label="Review justification sections" className="flex gap-6 overflow-x-auto">
           {bjTabs.map((tab) => (
             <button
               key={tab.key}
+              type="button"
+              aria-pressed={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`
-                pb-3
-                text-[11px] uppercase tracking-[0.15em] font-medium
-                transition-colors border-b-2
+                -mb-px whitespace-nowrap border-b-2 pb-3 text-sm font-medium
+                transition-colors
                 ${
                   activeTab === tab.key
                     ? "text-accent border-accent"
@@ -98,8 +85,8 @@ const BusinessJustificationSection: React.FC<
               `}
             >
               {tab.label}
-              <span className="ml-1.5 text-[10px] text-[#A0998C]">
-                ({tab.count})
+              <span className="ml-1.5 text-xs text-text-secondary">
+                {tab.count}
               </span>
             </button>
           ))}
@@ -128,7 +115,7 @@ const BusinessJustificationSection: React.FC<
             projectId={projectId}
             startDate={project.startDate}
             endDate={project.endDate}
-            isLeader={Boolean(project.isLeader)}
+            isLeader={isLeader}
             isSaving={isUpdatingDates}
             onSave={handleSaveProjectDates}
           />

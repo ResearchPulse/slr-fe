@@ -13,7 +13,7 @@ import {
   FiAlertCircle,
 } from "react-icons/fi";
 import { useInvitation } from "../../hooks/useProjects";
-import { InvitationStatus, ProjectRole } from "../../types/project";
+import { InvitationStatus, getProjectRoleLabel } from "../../types/project";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Card from "../../components/ui/Card";
 import Button from "../../components/ui/Button";
@@ -43,7 +43,7 @@ export default function InvitationDetailPage() {
         return {
           label: "Accepted",
           icon: FiCheckCircle,
-          color: "text-[#2d5a2d]",
+          color: "text-success",
           bg: "bg-surface-white border border-border shadow-sm",
           description: "You have already joined this project.",
         };
@@ -51,7 +51,7 @@ export default function InvitationDetailPage() {
         return {
           label: "Rejected",
           icon: FiXCircle,
-          color: "text-[#7a0000]",
+          color: "text-error",
           bg: "bg-surface-white border border-border shadow-sm",
           description: "This invitation was declined.",
         };
@@ -148,8 +148,8 @@ export default function InvitationDetailPage() {
           <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-[4px]">
             <div className="bg-slate-900 p-10 sm:p-12 text-white relative overflow-hidden">
               {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-[#7a0000]/20 rounded-full blur-3xl -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-[#7a0000]/10 rounded-full blur-3xl -ml-24 -mb-24" />
+              <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl -mr-32 -mt-32" />
+              <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl -ml-24 -mb-24" />
 
               <div className="relative z-10">
                 <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest mb-6">
@@ -183,9 +183,7 @@ export default function InvitationDetailPage() {
                       </div>
                       <div>
                         <p className="text-lg font-black text-slate-900">
-                          {invitation.role === ProjectRole.Leader
-                            ? "Project Leader"
-                            : "Standard Member"}
+                          {getProjectRoleLabel(invitation.role)}
                         </p>
                         <p className="text-xs text-slate-400 font-medium">
                           Full collaboration access
@@ -294,14 +292,14 @@ export default function InvitationDetailPage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsRejectModalOpen(true)}
-                    className="flex-1 sm:flex-none border-border text-[#7a0000] hover:bg-bg-secondary hover:border-accent transition-all duration-200"
+                    className="flex-1 sm:flex-none border-border text-error hover:bg-bg-secondary hover:border-accent transition-all duration-200"
                   >
                     Reject
                   </Button>
 
                   <Button
                     onClick={() => setIsAcceptModalOpen(true)}
-                    className="flex-1 sm:flex-none bg-accent hover:bg-[#7a0000] text-surface-white transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="flex-1 sm:flex-none bg-accent hover:bg-primary-hover text-surface-white transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     Accept
                   </Button>

@@ -30,7 +30,7 @@ export default function PaperImportModal({
 }: PaperImportModalProps) {
   const [mode, setMode] = useState<ImportMode>("ris");
   const { member } = useProjectMember(projectId);
-  const isLeader = member?.isLeader ?? false;
+  const canImportPapers = member?.isLeader === true || member?.role === 2;
 
   const {
     importRis,
@@ -159,7 +159,7 @@ export default function PaperImportModal({
       title="Import Papers to Repository"
       size="xl"
     >
-      {!isLeader ? (
+      {!canImportPapers ? (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
           <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-[4px] flex items-center justify-center mb-4">
             <FiAlertCircle className="w-8 h-8" />

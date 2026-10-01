@@ -219,6 +219,7 @@ export default function PaperPoolTab({
   const setupState = useAIProjectSetupState(projectId);
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
+  const canUploadPdf = isLeader || member?.role === 2;
 
   const { searchSources: definedSources } = useSearchSources(projectId);
   const hasSearchSources = (definedSources?.length ?? 0) > 0;
@@ -797,6 +798,7 @@ export default function PaperPoolTab({
                   setIsCreateProcessModalOpen(true)
                 }
                 isLeader={isLeader}
+                canUploadPdf={canUploadPdf}
               />
 
               <CreateProcessModal

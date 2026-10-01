@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FiPlus, FiChevronLeft, FiCopy } from "react-icons/fi";
+import { FiPlus, FiChevronLeft } from "react-icons/fi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
@@ -379,17 +379,17 @@ export default function TemplateManager() {
 
   if (showEditor) {
     return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="bg-surface-white border-b border-border px-6 py-4 sticky top-0 z-10">
+      <div className="min-h-full bg-bg-primary">
+        <div className="bg-surface-white border-b border-border px-5 sm:px-8 py-4 sticky top-0 z-10">
           <button
             onClick={() => {
               setShowEditor(false);
               setSelectedTemplateId(null);
             }}
-            className="inline-flex items-center gap-2 text-accent hover:text-indigo-800 font-medium"
+            className="inline-flex items-center gap-2 text-accent hover:text-primary-hover font-medium transition-colors"
           >
             <FiChevronLeft className="w-5 h-5" />
-            Back to Templates
+            Back to templates
           </button>
         </div>
         <TemplateCustoimzer
@@ -410,54 +410,73 @@ export default function TemplateManager() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-white">
-      <div className="bg-linear-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 px-6 py-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary mb-1">
-              Checklist Templates
-            </h1>
-            <p className="text-text-secondary">
-              Manage PRISMA and custom checklist templates for your organization
-            </p>
-          </div>
-          <Button
-            onClick={() => {
-              setSelectedTemplateId(null);
-              setShowEditor(true);
-            }}
-            className="inline-flex items-center gap-2"
-          >
-            <FiPlus className="w-5 h-5" />
-            New Template
-          </Button>
+    <div className="mx-auto max-w-[1600px] space-y-6 pb-2">
+      <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+            Review configuration
+          </p>
+          <h1 className="mb-1 text-[28px] font-semibold tracking-tight text-text-primary">
+            Checklist Templates
+          </h1>
+          <p className="text-sm text-text-secondary">
+            Manage PRISMA and custom checklist templates for your organization.
+          </p>
         </div>
+        <Button
+          onClick={() => {
+            setSelectedTemplateId(null);
+            setShowEditor(true);
+          }}
+          className="inline-flex items-center gap-2"
+        >
+          <FiPlus className="w-5 h-5" />
+          Create template
+        </Button>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <section className="overflow-hidden rounded-xl border border-border bg-surface-white">
+        <div className="flex flex-col gap-1 border-b border-border bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div>
+            <h2 className="text-sm font-semibold text-text-primary">
+              Available templates
+            </h2>
+            <p className="mt-0.5 text-xs text-text-secondary">
+              Select a template to review its checklist or create a copy.
+            </p>
+          </div>
+          {!templatesQuery.isLoading && (
+            <span className="w-fit rounded-full border border-border bg-bg-primary px-3 py-1 text-xs font-medium text-text-secondary">
+              {(templatesQuery.data ?? []).length}{" "}
+              {(templatesQuery.data ?? []).length === 1 ? "template" : "templates"}
+            </span>
+          )}
+        </div>
         {templatesQuery.isLoading ? (
-          <div className="flex justify-center items-center py-12">
+          <div className="flex min-h-56 justify-center items-center">
             <LoadingSpinner size="lg" />
           </div>
         ) : (templatesQuery.data ?? []).length === 0 ? (
-          <div className="text-center py-12 border-2 border-dashed border-border rounded-[4px]">
+          <div className="px-5 py-14 text-center">
             <h3 className="text-lg font-semibold text-text-primary mb-1">
               No templates yet
             </h3>
             <p className="text-text-secondary mb-4">
               Create your first checklist template to get started
             </p>
-            <Button
-              onClick={() => {
-                setSelectedTemplateId(null);
-                setShowEditor(true);
-              }}
-            >
-              Create First Template
-            </Button>
+            <div className="flex justify-center">
+              <Button
+                onClick={() => {
+                  setSelectedTemplateId(null);
+                  setShowEditor(true);
+                }}
+              >
+                Create First Template
+              </Button>
+            </div>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="divide-y divide-border">
             {(templatesQuery.data ?? []).map((template) => (
               <TemplateCard
                 key={template.id}
@@ -470,7 +489,7 @@ export default function TemplateManager() {
             ))}
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }
@@ -482,65 +501,55 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
   return (
-    <div className="border rounded-[4px] p-5 hover:shadow-none transition-all group bg-surface-white border-border">
-      <div className="flex items-start justify-between mb-3">
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <h3 className="font-semibold text-text-primary">{template.name}</h3>
-            <span
-              className={cn(
-                "text-xs font-semibold px-2 py-0.5 rounded",
-                template.isSystem
-                  ? "bg-indigo-100 text-indigo-700"
-                  : "bg-emerald-100 text-emerald-700",
-              )}
-            >
-              {template.isSystem ? "System" : "Custom"}
-            </span>
-            <span
-              className={cn(
-                "text-xs font-semibold px-2 py-0.5 rounded",
-                template.type === ChecklistTypeValue.ABSTRACT
-                  ? "bg-amber-100 text-amber-700"
-                  : "bg-sky-100 text-sky-700",
-              )}
-            >
-              {template.type === ChecklistTypeValue.ABSTRACT
-                ? "Abstract"
-                : "Full"}
-            </span>
-          </div>
-          <p className="text-sm text-text-secondary line-clamp-2">
-            {template.description || "No description"}
-          </p>
-        </div>
-      </div>
-
-      <div className="mb-4 py-3 border-t border-border space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-text-secondary">Items:</span>
-          <span className="font-semibold text-text-primary">
-            {template.itemCount}
+    <article className="flex flex-col gap-5 px-5 py-5 transition-colors hover:bg-bg-primary/50 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+      <div className="min-w-0 flex-1">
+        <div className="mb-2 flex flex-wrap items-center gap-2">
+          <h3 className="mr-1 text-base font-semibold text-text-primary">
+            {template.name}
+          </h3>
+          <span
+            className={cn(
+              "rounded-full px-2.5 py-1 text-[11px] font-medium",
+              template.isSystem
+                ? "bg-bg-secondary text-accent"
+                : "bg-emerald-50 text-emerald-700",
+            )}
+          >
+            {template.isSystem ? "System" : "Custom"}
+          </span>
+          <span
+            className={cn(
+              "rounded-full px-2.5 py-1 text-[11px] font-medium",
+              template.type === ChecklistTypeValue.ABSTRACT
+                ? "bg-amber-50 text-amber-700"
+                : "bg-sky-50 text-sky-700",
+            )}
+          >
+            {template.type === ChecklistTypeValue.ABSTRACT
+              ? "Abstract"
+              : "Full"}
           </span>
         </div>
-        <div className="flex justify-between text-sm">
-          <span className="text-text-secondary">Version:</span>
-          <span className="font-semibold text-text-primary">
-            {template.version}
-          </span>
-        </div>
+        <p className="max-w-3xl text-sm text-text-secondary line-clamp-2">
+          {template.description || "No description provided."}
+        </p>
       </div>
 
-      <div className="flex gap-2 pt-3 border-t border-border">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 lg:justify-end">
+        <p className="text-sm text-text-secondary">
+          {template.itemCount} {template.itemCount === 1 ? "item" : "items"}
+        </p>
+        <span aria-hidden="true" className="h-4 border-l border-border" />
+        <p className="text-sm text-text-secondary">Version {template.version}</p>
         <button
+          type="button"
           onClick={onOpen}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-[4px] bg-bg-secondary hover:bg-indigo-100 text-accent hover:text-indigo-700 text-sm font-medium transition-colors"
+          className="ml-0 min-h-10 w-full text-left text-sm font-medium text-accent transition-colors hover:text-primary-hover hover:underline sm:ml-2 sm:w-auto sm:text-center"
           title="Use template"
         >
-          <FiCopy className="w-4 h-4" />
-          <span>{template.isSystem ? "Use as Base" : "Edit as Copy"}</span>
+          {template.isSystem ? "Use as base" : "Edit as copy"} <span aria-hidden="true">→</span>
         </button>
       </div>
-    </div>
+    </article>
   );
 };

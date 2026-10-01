@@ -135,7 +135,7 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
   // ---------- Query: selected historical report ----------
   const selectedQuery = useQuery({
     queryKey: QUERY_KEYS.prismaReports.detail(selectedReportId || ""),
-    queryFn: () => prismaReportService.getReportById(selectedReportId!),
+    queryFn: () => prismaReportService.getReportById(selectedReportId!, reviewProcessId),
     enabled: !!selectedReportId,
   });
 

@@ -1,7 +1,7 @@
 import { FiCheckCircle } from "react-icons/fi";
 import Modal from "../../../ui/Modal";
 import Button from "../../../ui/Button";
-import { ProjectRole } from "../../../../types/project";
+import { getProjectRoleLabel } from "../../../../types/project";
 
 import { useAcceptInvitation } from "../../../../hooks/useProjects";
 import { toastSuccess, toastError } from "../../../../utils/toast";
@@ -9,7 +9,7 @@ import { toastSuccess, toastError } from "../../../../utils/toast";
 interface AcceptInvitationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  role: number;
+  role: number | string;
   invitationId: string;
   onSuccess?: () => void;
 }
@@ -36,13 +36,13 @@ export default function AcceptInvitationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Join Project">
       <div className="p-6">
-        <div className="w-16 h-16 bg-bg-secondary text-[#2d5a2d] rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-success rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
           <FiCheckCircle size={32} />
         </div>
         <p className="text-center text-text-secondary font-medium mb-8">
           Do you want to join this project as{" "}
           <span className="text-text-primary font-bold">
-            {role === ProjectRole.Leader ? "Project Leader" : "Standard Member"}
+            {getProjectRoleLabel(role)}
           </span>
           ?
         </p>
@@ -51,7 +51,7 @@ export default function AcceptInvitationModal({
             No, Cancel
           </Button>
           <Button
-            className="flex-1 bg-accent hover:bg-[#7a0000] text-surface-white shadow-sm"
+            className="flex-1 bg-accent hover:bg-primary-hover text-surface-white shadow-sm"
             onClick={handleAccept}
             disabled={isAccepting}
           >

@@ -1,5 +1,6 @@
 import LoadingSpinner from "../ui/LoadingSpinner";
 import Button from "../ui/Button";
+import Select from "../ui/Select";
 import PaperRow from "./PaperRow";
 import type { PaperPoolItem } from "./types";
 
@@ -31,6 +32,7 @@ interface PaperTableProps {
   onDeletePaper?: (paperId: string, reason: string) => void;
   isDeletingPaper?: string | null; // PaperId being deleted
   isLeader?: boolean;
+  canUploadPdf?: boolean;
 }
 
 export default function PaperTable({
@@ -57,6 +59,7 @@ export default function PaperTable({
   onDeletePaper,
   isDeletingPaper,
   isLeader = false,
+  canUploadPdf = false,
 }: PaperTableProps) {
   if (isLoading && papers.length === 0) {
     return (
@@ -91,15 +94,16 @@ export default function PaperTable({
           <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
             Rows per page:
           </label>
-          <select
-            className="rounded-[4px] border border-border bg-surface-white px-2 py-1.5 text-xs font-medium text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all"
+          <Select
+            className="w-20"
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-          >
-            <option value={25}>25</option>
-            <option value={50}>50</option>
-            <option value={100}>100</option>
-          </select>
+            options={[
+              { value: "25", label: "25" },
+              { value: "50", label: "50" },
+              { value: "100", label: "100" },
+            ]}
+          />
         </div>
       </div>
 
@@ -162,6 +166,7 @@ export default function PaperTable({
                 onDeletePaper={onDeletePaper}
                 isDeletingPaper={isDeletingPaper === paper.id}
                 isLeader={isLeader}
+                canUploadPdf={canUploadPdf}
               />
             ))}
             {papers.length === 0 && !isLoading && (

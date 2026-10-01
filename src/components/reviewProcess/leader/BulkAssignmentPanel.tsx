@@ -48,9 +48,9 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
     pageSize: 100, // Large enough for member selection
   });
 
-  // 2. Filter out leaders (they shouldn't be assigned to papers as reviewers in this list)
+  // 2. Only reviewers vote on screening decisions.
   const reviewers = useMemo(() => {
-    return members.filter((m) => m.role !== ProjectRole.Leader);
+    return members.filter((m) => m.role === ProjectRole.Reviewer);
   }, [members]);
 
   // 3. Selection State (Map ID to Name for chip display)
@@ -74,8 +74,8 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
 
     if (selectedPaperIds.length === 0) return;
 
-    // Use currentPhase from props. If not provided, fallback to 1 (TitleAbstract)
-    const phase = currentPhase ?? 1;
+    // PaperPhase uses 0/1 in the FE; the assignment API uses 1/2.
+    const phase = (currentPhase ?? 0) + 1;
 
     assignPapers(
       {

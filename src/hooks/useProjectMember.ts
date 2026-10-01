@@ -22,29 +22,48 @@ export const useProjectMember = (projectId: string | undefined) => {
     staleTime: 5 * 60 * 1000,
   });
 
+  const membership = query.data?.isSuccess ? query.data.data : undefined;
+  const roleNames: Record<string, number> = {
+    OWNER: 1,
+    ADMIN: 1,
+    LEADER: 1,
+    LECTURER: 2,
+    MEMBER: 2,
+    REVIEWER: 3,
+  };
+  const normalizedRole = membership
+    ? typeof membership.roleNumber === "number"
+      ? membership.roleNumber
+      : typeof membership.role === "number"
+        ? membership.role
+        : roleNames[String(membership.roleText || membership.role).toUpperCase()] || 3
+    : null;
+  const member = membership && normalizedRole !== null
+    ? {
+        role: normalizedRole,
+        roleText: membership.roleText || String(membership.role),
+        isLeader: normalizedRole === 1,
+      }
+    : null;
+
   useEffect(() => {
-    if (query.data?.isSuccess && query.data.data) {
-      const { role, roleText } = query.data.data;
+    if (member) {
       
       // Update Redux if the data is different or missing
       if (
         !currentProjectMember ||
-        currentProjectMember.role !== role ||
-        currentProjectMember.roleText !== roleText
+        currentProjectMember.role !== member.role ||
+        currentProjectMember.roleText !== member.roleText
       ) {
-        dispatch(
-          setProjectMember({
-            role,
-            roleText,
-            isLeader: role === 1,
-          })
-        );
+        dispatch(setProjectMember(member));
       }
     }
-  }, [query.data, dispatch, currentProjectMember]);
+  }, [member, dispatch, currentProjectMember]);
 
   return {
-    member: currentProjectMember,
+    // Use membership for this query key to avoid showing another project's
+    // cached Redux role while the current membership request is loading.
+    member,
     isLoading: query.isLoading,
     isFetching: query.isFetching,
     error: query.error,

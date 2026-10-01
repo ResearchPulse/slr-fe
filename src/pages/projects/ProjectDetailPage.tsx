@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
-import { ProjectRole } from "../../types/project";
+import { getProjectRoleLabel, ProjectRole } from "../../types/project";
 import {
   useNavigate,
   useParams,
@@ -9,7 +9,7 @@ import {
   Route,
   Navigate,
 } from "react-router";
-import { useProject, useProjectMutations } from "../../hooks/useProjects";
+import { useMyProjects, useProject, useProjectMutations } from "../../hooks/useProjects";
 import { useReviewProcessesByProject } from "../../hooks/useReviewProcesses";
 import { useReviewNeeds, useDocuments } from "../../hooks/useProjectGovernance";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
@@ -31,6 +31,7 @@ import BusinessJustificationSection from "../../components/projects/detail/Busin
 import PaperPoolTab from "../../components/paperPool/PaperPoolTab";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
+import { useProjectMember } from "../../hooks/useProjectMember";
 
 type WorkflowStepKey =
   | "business-justification"
@@ -49,6 +50,23 @@ export default function ProjectDetailPage() {
     error: projectError,
     refetch: refetchProject,
   } = useProject(id);
+
+  const { projects: myProjects } = useMyProjects({ pageNumber: 1, pageSize: 100 });
+  const { member: currentProjectMember } = useProjectMember(id);
+  const projectSummary = useMemo(
+    () => myProjects.find((item) => item.id === id),
+    [id, myProjects],
+  );
+  const projectForHeader = useMemo(() => {
+    if (!project) return null;
+    return {
+      ...project,
+      roleText: currentProjectMember?.roleText || project.roleText || projectSummary?.roleText,
+      role: currentProjectMember?.role ?? project.role ?? projectSummary?.role,
+      isLeader: currentProjectMember?.isLeader ?? project.isLeader ?? projectSummary?.isLeader,
+      leader: project.leader ?? projectSummary?.leader,
+    };
+  }, [project, projectSummary, currentProjectMember]);
 
   const {
     activateProject,
@@ -73,9 +91,14 @@ export default function ProjectDetailPage() {
   const [isProjectSetupReady, setIsProjectSetupReady] = useState(false);
 
   const isLeader = useMemo(() => {
-    if (!project) return false;
-    return project.isLeader === true || project.role === ProjectRole.Leader;
-  }, [project]);
+    if (!projectForHeader) return false;
+    if (currentProjectMember) return currentProjectMember.isLeader;
+    return (
+      projectForHeader.isLeader === true ||
+      Number(projectForHeader.role) === ProjectRole.Leader ||
+      getProjectRoleLabel(projectForHeader.role ?? projectForHeader.roleText) === "Owner"
+    );
+  }, [projectForHeader, currentProjectMember]);
 
   const isProjectActive =
     project?.statusText === "Active" || project?.statusText === "Completed";
@@ -108,15 +131,15 @@ export default function ProjectDetailPage() {
 
       const data = response.data;
       const hasSetup =
-        data.researchTopic.trim().length > 0 ||
-        data.researchObjective.trim().length > 0 ||
-        data.domain.trim().length > 0 ||
-        data.picoc.population.trim().length > 0 ||
-        data.picoc.intervention.trim().length > 0 ||
-        data.picoc.comparator.trim().length > 0 ||
-        data.picoc.outcome.trim().length > 0 ||
-        data.picoc.context.trim().length > 0 ||
-        data.researchQuestions.length > 0;
+        Boolean(data?.researchTopic?.trim()) ||
+        Boolean(data?.researchObjective?.trim()) ||
+        Boolean(data?.domain?.trim()) ||
+        Boolean(data?.picoc?.population?.trim()) ||
+        Boolean(data?.picoc?.intervention?.trim()) ||
+        Boolean(data?.picoc?.comparator?.trim()) ||
+        Boolean(data?.picoc?.outcome?.trim()) ||
+        Boolean(data?.picoc?.context?.trim()) ||
+        (data?.researchQuestions?.length ?? 0) > 0;
 
       setIsProjectSetupReady(hasSetup);
     } catch {
@@ -158,17 +181,17 @@ export default function ProjectDetailPage() {
     return [
       {
         key: "project-setup",
-        label: "Project Setup",
+        label: "Review Protocol",
         status: getStatus("project-setup"),
       },
       {
         key: "business-justification",
-        label: "Business Justification",
+        label: "Review Justification",
         status: getStatus("business-justification"),
       },
       {
         key: "activate-project",
-        label: "Activate Project",
+        label: "Activate Review",
         status: getStatus("activate-project"),
       },
     ];
@@ -313,7 +336,7 @@ export default function ProjectDetailPage() {
           </p>
           <button
             onClick={() => navigate("/projects")}
-            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-[#7a0000] transition-colors text-[12px] uppercase tracking-[0.1em]"
+            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-primary-hover transition-colors text-[12px] uppercase tracking-[0.1em]"
           >
             Back to Project List
           </button>
@@ -360,11 +383,13 @@ export default function ProjectDetailPage() {
       return (
         <div>
           {/* Review Processes Section */}
-          <div className="border-b border-border mb-8">
-            <nav className="flex gap-8">
+          <div className="mb-6 border-b border-border">
+            <nav className="flex gap-6">
               <button
+                type="button"
+                aria-current={activeMainSection === "overview" ? "page" : undefined}
                 onClick={() => setActiveMainSection("overview")}
-                className={`pb-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all border-b-2 ${
+                className={`-mb-px border-b-2 pb-3 text-sm font-medium transition-colors ${
                   activeMainSection === "overview"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"
@@ -374,14 +399,16 @@ export default function ProjectDetailPage() {
               </button>
 
               <button
+                type="button"
+                aria-current={activeMainSection === "paper-pool" ? "page" : undefined}
                 onClick={() => setActiveMainSection("paper-pool")}
-                className={`pb-4 text-[11px] uppercase tracking-[0.2em] font-medium transition-all border-b-2 ${
+                className={`-mb-px border-b-2 pb-3 text-sm font-medium transition-colors ${
                   activeMainSection === "paper-pool"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"
                 }`}
               >
-                Workspace
+                Review workspace
               </button>
             </nav>
           </div>
@@ -392,18 +419,21 @@ export default function ProjectDetailPage() {
               element={
                 <div className="animate-in fade-in slide-in-from-top-2 duration-300">
                   <OverviewTabContent
-                    project={project}
+                    project={projectForHeader ?? project}
                     projectId={id || ""}
                     isLeader={isLeader}
                     isProjectActive={isProjectActive}
                     isProjectSetupReady={isProjectSetupReady}
                     reviewNeeds={reviewNeeds}
                     documents={documents}
+                    processes={processes}
                     isUpdatingDates={isUpdatingDates}
                     handleSaveProjectDates={handleSaveProjectDates}
                     setIsNeedModalOpen={setIsNeedModalOpen}
                     setIsDocModalOpen={setIsDocModalOpen}
+                    setIsMemberModalOpen={setIsMemberModalOpen}
                     onSetupSaved={() => void checkProjectSetupReady()}
+                    onOpenWorkspace={() => setActiveMainSection("paper-pool")}
                   />
                 </div>
               }
@@ -453,11 +483,12 @@ export default function ProjectDetailPage() {
               setSelectedStep("business-justification");
             }}
             embedded={true}
+            hideEditButton={!isLeader}
           />
         );
 
       case "activate-project":
-        return (
+        return isLeader ? (
           <ActivateProjectStep
             projectId={id || ""}
             isActive={false}
@@ -465,6 +496,10 @@ export default function ProjectDetailPage() {
             onActivate={handleActivate}
             isActivating={activateLoading}
           />
+        ) : (
+          <div className="border border-border bg-surface-white p-6 text-sm text-text-secondary">
+            Project activation is managed by the project leader. You can review the setup and project information here.
+          </div>
         );
 
       default:
@@ -473,50 +508,24 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       {/* ── Top Area: Project Header + Settings ───────────────────────────── */}
       <ProjectHeader
-        project={project}
+        project={projectForHeader ?? project}
+        isLeader={isLeader}
         onBack={() => navigate("/projects")}
-        onEdit={() => navigate(`/projects/${id}/edit`)}
+        onEdit={() => navigate(`/projects/${id}/overview`)}
         onSettings={() => navigate(`/projects/${id}/settings`)}
       />
 
       {/* ── Middle Area: Step Progress Navigation ─────────────────────────── */}
       {project.statusText === "Draft" && (
-        <StepProgressNav steps={workflowSteps} onStepClick={handleStepClick} />
-      )}
-
-      {/* All-steps-complete banner for active projects */}
-      {isProjectActive && (
-        <div className="border border-border bg-surface-white rounded-[4px] p-4 mb-6 flex items-center gap-3">
-          <div className="w-7 h-7 rounded-full bg-[#2d5a2d] flex items-center justify-center shrink-0">
-            <svg
-              className="w-3.5 h-3.5 text-white"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={3}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.2em] font-medium text-[#2d5a2d]">
-              Project Setup Complete
-            </p>
-            <p className="text-xs text-text-secondary mt-0.5">
-              All preparation steps completed. Status:{" "}
-              <span className="font-semibold text-text-primary">
-                {project.statusText}
-              </span>
-            </p>
-          </div>
-        </div>
+        <StepProgressNav
+          steps={workflowSteps}
+          onStepClick={handleStepClick}
+          actionLabel={isLeader && isProjectSetupReady ? "Continue to activation" : undefined}
+          onAction={() => setSelectedStep("activate-project")}
+        />
       )}
 
       {/* ── Bottom Area: Stage Workspace ──────────────────────────────────── */}
@@ -548,7 +557,6 @@ export default function ProjectDetailPage() {
         onClose={() => setIsMemberModalOpen(false)}
         projectId={id}
         projectName={project.title}
-        hideLeaderRole={true}
       />
     </div>
   );

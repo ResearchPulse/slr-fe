@@ -431,7 +431,7 @@ const PrismaFlowDiagram = forwardRef<
 
     return (
       <>
-        <div className="flex justify-end items-center gap-3 mb-4 px-4 font-inter">
+        <div className="flex justify-end items-center gap-3 mb-4 px-4">
           <button
             onClick={handleExportImage}
             className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-[4px] text-sm font-semibold hover:bg-indigo-700 transition-all shadow-none active:scale-95"

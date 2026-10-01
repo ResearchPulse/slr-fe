@@ -36,7 +36,7 @@ export default function RejectInvitationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Decline Invitation">
       <div className="p-6">
-        <div className="w-16 h-16 bg-bg-secondary text-[#7a0000] rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-error rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
           <FiXCircle size={32} />
         </div>
         <p className="text-center text-text-secondary font-medium mb-4">
@@ -53,7 +53,7 @@ export default function RejectInvitationModal({
             Cancel
           </Button>
           <Button
-            className="flex-1 bg-accent hover:bg-[#7a0000] text-surface-white shadow-sm"
+            className="flex-1 bg-accent hover:bg-primary-hover text-surface-white shadow-sm"
             onClick={handleReject}
             disabled={isRejecting}
           >

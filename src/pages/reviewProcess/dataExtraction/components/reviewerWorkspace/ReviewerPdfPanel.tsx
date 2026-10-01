@@ -13,8 +13,7 @@ import "@react-pdf-viewer/highlight/lib/styles/index.css";
 import type { PdfHighlightCoordinate } from "../../types";
 
 interface ReviewerPdfPanelProps {
-  effectiveDocumentUrl: string;
-  isUsingFallbackDocument: boolean;
+  effectiveDocumentUrl: string | null;
   activeHighlights: PdfHighlightCoordinate[];
   activeEvidenceTargetLabel: string | null;
   canUseEvidenceSelection: boolean;
@@ -29,7 +28,6 @@ const PAGE_HEIGHT = 792;
 
 export default function ReviewerPdfPanel({
   effectiveDocumentUrl,
-  isUsingFallbackDocument,
   activeHighlights,
   activeEvidenceTargetLabel,
   canUseEvidenceSelection,
@@ -171,12 +169,6 @@ export default function ReviewerPdfPanel({
   return (
     <section className="w-[55%] p-4">
       <div className="flex h-full flex-col overflow-hidden rounded-[4px] border border-border bg-surface-white">
-        {isUsingFallbackDocument ? (
-          <p className="border-b border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-700">
-            This study has no PDF URL yet, so a mock PDF is shown for UI
-            testing.
-          </p>
-        ) : null}
         <div className="flex items-center justify-between gap-3 border-b border-border bg-bg-secondary px-4 py-2">
           <p className="text-xs font-medium text-text-secondary">
             {activeEvidenceTargetLabel
@@ -191,12 +183,18 @@ export default function ReviewerPdfPanel({
           ) : null}
         </div>
         <div className="h-full min-h-0 flex-1 overflow-hidden relative">
-          <Worker workerUrl={PDF_WORKER_URL}>
-            <Viewer
-              fileUrl={effectiveDocumentUrl}
-              plugins={[highlightPluginInstance]}
-            />
-          </Worker>
+          {effectiveDocumentUrl ? (
+            <Worker workerUrl={PDF_WORKER_URL}>
+              <Viewer
+                fileUrl={effectiveDocumentUrl}
+                plugins={[highlightPluginInstance]}
+              />
+            </Worker>
+          ) : (
+            <div className="flex h-full items-center justify-center p-8 text-center text-sm text-text-secondary">
+              This study does not have a full-text PDF yet.
+            </div>
+          )}
         </div>
       </div>
     </section>
