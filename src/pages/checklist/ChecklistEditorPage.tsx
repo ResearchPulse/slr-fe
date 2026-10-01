@@ -113,19 +113,70 @@ const mapChecklist = (
   const sampleAnswers = mapTemplateSampleAnswers(template);
   const checklistCompletionPercentage = checklist?.completionPercentage ?? 0;
 
-  const mappedSections = (checklist?.sections ?? [])
+  const rawSections = Array.isArray(checklist?.sections)
+    ? checklist.sections
+    : [];
+  const rawItems = Array.isArray(checklist?.items) ? checklist.items : [];
+
+  const mappedSections = rawSections
     .slice()
     .sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0))
-    .map((section) => ({
-      sectionId: section.sectionId ?? null,
-      sectionNumber: section.sectionNumber ?? "",
-      section: toChecklistSection(section.section),
-      displayName: section.sectionNumber
-        ? `${section.sectionNumber}. ${section.section}`
-        : section.section,
-      description: section.description ?? null,
-      order: section.order ?? 0,
-      items: (section.items ?? []).map((item) =>
+    .map((section) => {
+      const rawName =
+        (section as unknown as { name?: string }).name ||
+        section.section ||
+        "";
+      const normalizedSection = toChecklistSection(rawName);
+      const displayLabel =
+        (section as unknown as { name?: string }).name ||
+        section.section ||
+        normalizedSection;
+
+      // If the section object already has items, use them; otherwise pull matching items from checklist.items
+      const sourceSectionItems =
+        Array.isArray(section.items) && section.items.length > 0
+          ? section.items
+          : rawItems.filter(
+              (item) => toChecklistSection(item.section) === normalizedSection,
+            );
+
+      return {
+        sectionId: section.sectionId ?? null,
+        sectionNumber: section.sectionNumber ?? "",
+        section: normalizedSection,
+        displayName: section.sectionNumber
+          ? `${section.sectionNumber}. ${displayLabel}`
+          : displayLabel,
+        description: section.description ?? null,
+        order: section.order ?? 0,
+        items: sourceSectionItems.map((item) =>
+          mapChecklistResponseItem(
+            item,
+            checklist.reviewChecklistId,
+            sampleAnswers,
+            checklistCompletionPercentage,
+          ),
+        ),
+      };
+    });
+
+  // Ensure any items in checklist.items that didn't match any section are retained
+  const mappedTemplateIds = new Set<string>();
+  mappedSections.forEach((s) =>
+    s.items.forEach((item) => mappedTemplateIds.add(item.itemTemplateId)),
+  );
+  const unmappedItems = rawItems.filter(
+    (item) => !mappedTemplateIds.has(item.itemTemplateId),
+  );
+  if (unmappedItems.length > 0) {
+    mappedSections.push({
+      sectionId: null,
+      sectionNumber: String(mappedSections.length + 1),
+      section: "OTHER_INFORMATION",
+      displayName: `${mappedSections.length + 1}. Other Information`,
+      description: null,
+      order: mappedSections.length + 1,
+      items: unmappedItems.map((item) =>
         mapChecklistResponseItem(
           item,
           checklist.reviewChecklistId,
@@ -133,7 +184,8 @@ const mapChecklist = (
           checklistCompletionPercentage,
         ),
       ),
-    }));
+    });
+  }
 
   const flatResponses = flattenChecklistTree(
     mappedSections.flatMap((section) => section.items ?? []),
