@@ -52,8 +52,10 @@ const mapTemplateSampleAnswers = (
 ) => {
   const sampleAnswerById = new Map<string, string | null>();
 
-  template?.items.forEach((item: ChecklistItemTemplateDto) => {
-    sampleAnswerById.set(item.id, item.defaultSampleAnswer ?? null);
+  (template?.items ?? []).forEach((item: ChecklistItemTemplateDto) => {
+    if (item?.id) {
+      sampleAnswerById.set(item.id, item.defaultSampleAnswer ?? null);
+    }
   });
 
   return sampleAnswerById;
@@ -65,27 +67,27 @@ const mapChecklistResponseItem = (
   sampleAnswers: Map<string, string | null>,
   completionPercentage: number,
 ): ChecklistItemResponse => ({
-  id: item.responseId ?? item.itemTemplateId,
+  id: item?.responseId ?? item?.itemTemplateId ?? "",
   checklistId: reviewChecklistId,
-  itemTemplateId: item.itemTemplateId,
-  itemNumber: item.itemNumber,
-  topic: item.topic,
-  section: toChecklistSection(item.section),
-  parentId: item.parentId,
-  description: item.description,
-  hasLocationField: item.hasLocationField,
-  isSectionHeaderOnly: item.isSectionHeaderOnly,
-  hasChildren: item.hasChildren,
-  canRespond: item.canRespond,
-  defaultSampleAnswer: sampleAnswers.get(item.itemTemplateId) ?? null,
-  reportLocation: item.location ?? "",
-  isReported: item.isReported,
-  isCompleted: item.isCompleted,
-  lastUpdated: item.lastUpdatedAt ?? new Date().toISOString(),
-  lastUpdatedAt: item.lastUpdatedAt ?? undefined,
+  itemTemplateId: item?.itemTemplateId ?? "",
+  itemNumber: item?.itemNumber ?? "",
+  topic: item?.topic ?? "",
+  section: toChecklistSection(item?.section),
+  parentId: item?.parentId ?? null,
+  description: item?.description ?? "",
+  hasLocationField: Boolean(item?.hasLocationField),
+  isSectionHeaderOnly: Boolean(item?.isSectionHeaderOnly),
+  hasChildren: Boolean(item?.hasChildren),
+  canRespond: Boolean(item?.canRespond),
+  defaultSampleAnswer: sampleAnswers.get(item?.itemTemplateId) ?? null,
+  reportLocation: item?.location ?? "",
+  isReported: Boolean(item?.isReported),
+  isCompleted: Boolean(item?.isCompleted),
+  lastUpdated: item?.lastUpdatedAt ?? new Date().toISOString(),
+  lastUpdatedAt: item?.lastUpdatedAt ?? undefined,
   completionPercentage,
-  pdfCoordinates: item.pdfCoordinates ?? null,
-  children: item.children.map((child) =>
+  pdfCoordinates: item?.pdfCoordinates ?? null,
+  children: (item?.children ?? []).map((child) =>
     mapChecklistResponseItem(
       child,
       reviewChecklistId,
@@ -98,9 +100,9 @@ const mapChecklistResponseItem = (
 const flattenChecklistTree = (
   items: ChecklistItemResponse[],
 ): ChecklistItemResponse[] => {
-  return items.flatMap((item) => [
+  return (items ?? []).flatMap((item) => [
     item,
-    ...flattenChecklistTree(item.children ?? []),
+    ...flattenChecklistTree(item?.children ?? []),
   ]);
 };
 
@@ -109,21 +111,21 @@ const mapChecklist = (
   template?: ChecklistTemplateDetailDto | null,
 ): ReviewChecklist => {
   const sampleAnswers = mapTemplateSampleAnswers(template);
-  const checklistCompletionPercentage = checklist.completionPercentage;
+  const checklistCompletionPercentage = checklist?.completionPercentage ?? 0;
 
-  const mappedSections = checklist.sections
+  const mappedSections = (checklist?.sections ?? [])
     .slice()
-    .sort((a, b) => a.order - b.order)
+    .sort((a, b) => (a?.order ?? 0) - (b?.order ?? 0))
     .map((section) => ({
       sectionId: section.sectionId ?? null,
-      sectionNumber: section.sectionNumber,
+      sectionNumber: section.sectionNumber ?? "",
       section: toChecklistSection(section.section),
       displayName: section.sectionNumber
         ? `${section.sectionNumber}. ${section.section}`
         : section.section,
       description: section.description ?? null,
-      order: section.order,
-      items: section.items.map((item) =>
+      order: section.order ?? 0,
+      items: (section.items ?? []).map((item) =>
         mapChecklistResponseItem(
           item,
           checklist.reviewChecklistId,
@@ -134,7 +136,7 @@ const mapChecklist = (
     }));
 
   const flatResponses = flattenChecklistTree(
-    mappedSections.flatMap((section) => section.items),
+    mappedSections.flatMap((section) => section.items ?? []),
   );
   const eligibleItems = flatResponses.filter((item) =>
     isResponseEligibleLeaf({
@@ -162,7 +164,7 @@ const mapChecklist = (
     updatedAt: checklist.lastUpdatedAt,
     responses: flatResponses,
     sections: mappedSections,
-    completionPercentage: checklist.completionPercentage,
+    completionPercentage: checklist.completionPercentage ?? 0,
     totalItems: eligibleItems.length,
     completedItems: completedEligibleItems.length,
   };
@@ -243,7 +245,7 @@ export default function ChecklistEditorPage() {
     if (!checklistQuery.data) return;
 
     const itemByTemplateId = new Map(
-      checklistQuery.data.items.map((item) => [item.itemTemplateId, item]),
+      (checklistQuery.data.items ?? []).map((item) => [item.itemTemplateId, item]),
     );
 
     const eligibleChanges = changes.filter((change) => {

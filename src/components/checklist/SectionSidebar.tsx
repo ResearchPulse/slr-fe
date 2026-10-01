@@ -65,7 +65,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
           </h3>
         )}
 
-        {sections.map((section) => {
+        {(sections ?? []).map((section) => {
           const isActive = activeSection === section.section;
           const percentage = section.completionPercentage;
           const isComplete = percentage === 100;
