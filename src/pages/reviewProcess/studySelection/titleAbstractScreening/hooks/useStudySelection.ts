@@ -207,8 +207,9 @@ export function useStudySelection(
     queryKey: QUERY_KEYS.studySelection.paperDetails(
       screeningProcessId ?? "",
       resolvedSelectedId ?? "",
+      phase,
     ),
-    queryFn: () => studySelectionService.getPaperDetails(screeningProcessId!, resolvedSelectedId!),
+    queryFn: () => studySelectionService.getPaperDetails(screeningProcessId!, resolvedSelectedId!, phase),
     enabled: !!screeningProcessId && !!resolvedSelectedId && isLeader,
     staleTime: 30_000,
   });

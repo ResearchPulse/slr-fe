@@ -236,12 +236,12 @@ export default function ManageStudySelectionPage() {
             }
             isLeaderView={true}
             onInclude={
-              !isCompleted && selectedPaper?.hasConflict
+              !isCompleted && paperHasConflict
                 ? handleInclude
                 : undefined
             }
             onExclude={
-              !isCompleted && selectedPaper?.hasConflict
+              !isCompleted && paperHasConflict
                 ? handleExclude
                 : undefined
             }

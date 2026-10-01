@@ -92,7 +92,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [yearFilter, setYearFilter] = useState<string>("all");
-  const [decisionFilter, setDecisionFilter] = useState<string>("0");
+  const [decisionFilter, setDecisionFilter] = useState<string>("all");
   const [assignmentFilter, setAssignmentFilter] = useState<string>("all");
   const [reviewersModal, setReviewersModal] = useState<{
     isOpen: boolean;
@@ -125,7 +125,8 @@ export const PaperList: React.FC<PaperListProps> = ({
           : assignmentFilter === "not_assigned"
             ? 2
             : 0,
-      decisionStatus: parseInt(decisionFilter),
+      decisionStatus:
+        decisionFilter === "all" ? undefined : Number(decisionFilter),
       pageSize,
     }),
     [searchQuery, yearFilter, decisionFilter, assignmentFilter],
@@ -370,10 +371,11 @@ export const PaperList: React.FC<PaperListProps> = ({
               handleFilterChange(setDecisionFilter, e.target.value)
             }
           >
-            <option value="0">All Decisions</option>
-            <option value="1">Not Decided</option>
-            <option value="2">Included</option>
-            <option value="3">Excluded</option>
+            <option value="all">All Decisions</option>
+            <option value="0">Pending</option>
+            <option value="1">Included</option>
+            <option value="2">Excluded</option>
+            <option value="3">Conflict</option>
           </select>
 
           <select
