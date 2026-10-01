@@ -12,6 +12,18 @@ interface FirebaseIdentityResponse {
   idToken: string;
 }
 
+const describeGoogleAuthError = (error: unknown) => {
+  if (axios.isAxiosError(error)) {
+    const response = error.response?.data as
+      | { error?: { message?: string }; message?: string }
+      | undefined;
+    const reason = response?.error?.message || response?.message || error.message;
+    const status = error.response?.status;
+    return `${status ? `HTTP ${status}: ` : ""}${reason}`;
+  }
+  return error instanceof Error ? error.message : "Unknown error";
+};
+
 export const authService = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
     const response = await api.post<LoginResponse>("/auth/login", credentials);
@@ -38,19 +50,32 @@ export const authService = {
       throw new Error("Google sign-in is unavailable");
     }
 
-    const firebaseResponse = await axios.post<FirebaseIdentityResponse>(
-      `${FIREBASE_AUTH_EXCHANGE_URL}?key=${encodeURIComponent(FIREBASE_API_KEY)}`,
-      {
-        postBody: `id_token=${encodeURIComponent(googleIdToken)}&providerId=google.com`,
-        requestUri: window.location.origin,
-        returnSecureToken: true,
-        returnIdpCredential: false,
-      },
-    );
+    let firebaseResponse;
+    try {
+      firebaseResponse = await axios.post<FirebaseIdentityResponse>(
+        `${FIREBASE_AUTH_EXCHANGE_URL}?key=${encodeURIComponent(FIREBASE_API_KEY)}`,
+        {
+          postBody: `id_token=${encodeURIComponent(googleIdToken)}&providerId=google.com`,
+          requestUri: window.location.origin,
+          returnSecureToken: true,
+          returnIdpCredential: false,
+        },
+      );
+    } catch (error) {
+      throw new Error(`Google-to-Firebase exchange failed: ${describeGoogleAuthError(error)}`);
+    }
 
-    const response = await api.post<LoginResponse>("/auth/google/login", {
-      idToken: firebaseResponse.data.idToken,
-    });
-    return response.data;
+    if (!firebaseResponse.data.idToken) {
+      throw new Error("Google-to-Firebase exchange returned no Firebase ID token");
+    }
+
+    try {
+      const response = await api.post<LoginResponse>("/auth/google/login", {
+        idToken: firebaseResponse.data.idToken,
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(`Backend Firebase-token verification failed: ${describeGoogleAuthError(error)}`);
+    }
   },
 };

@@ -95,13 +95,15 @@ const LoginForm: React.FC = () => {
         } else {
           toastError(
             "Login Failed",
-            "Google authentication failed. Please try again.",
+            res.message || "Google authentication was rejected. Please try again.",
           );
         }
-      } catch {
+      } catch (error) {
         toastError(
-          "Error",
-          "Google authentication failed. Please check your credentials or try again later.",
+          "Google sign-in failed",
+          error instanceof Error
+            ? error.message
+            : "Unknown Google authentication error. Please try again.",
         );
       } finally {
         setIsLoading(false);
