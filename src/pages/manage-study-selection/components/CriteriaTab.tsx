@@ -17,12 +17,10 @@ import { useSelectionCriteria } from "../../../hooks/useSelectionCriteria";
 
 interface CriteriaTabProps {
   projectId?: string;
-  screeningProcessId?: string;
 }
 
 export const CriteriaTab: React.FC<CriteriaTabProps> = ({
   projectId,
-  screeningProcessId,
 }) => {
   const [showPicoc, setShowPicoc] = useState(true);
   const [showRq, setShowRq] = useState(true);
@@ -32,7 +30,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
   const { researchQuestions, isLoading: rqLoading } =
     useProjectResearchQuestions(projectId);
   const { data: criteria, isLoading: criteriaLoading } =
-    useSelectionCriteria(screeningProcessId);
+    useSelectionCriteria(projectId);
 
   const isLoading = picocLoading || rqLoading || criteriaLoading;
 

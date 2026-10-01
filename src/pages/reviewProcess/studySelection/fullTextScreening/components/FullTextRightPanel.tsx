@@ -101,7 +101,6 @@ export default function FullTextRightPanel({
           <div className="h-full overflow-y-auto p-4 custom-scrollbar">
             <CriteriaTab
               projectId={projectId}
-              screeningProcessId={screeningProcessId}
             />
           </div>
         )}

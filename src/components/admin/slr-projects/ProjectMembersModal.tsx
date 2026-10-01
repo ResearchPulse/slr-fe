@@ -99,7 +99,7 @@ export default function ProjectMembersModal({
   const { project } = useProject(isOpen ? projectId : undefined);
 
   // Check permission: Global Admin or Project Leader
-  const isGlobalAdmin = currentUser?.role === "Admin";
+  const isGlobalAdmin = String(currentUser?.role || "").trim().toUpperCase() === "ADMIN";
   const isProjectLeader =
     project?.isLeader || project?.role === ProjectRole.Leader;
   const canManageMembers = isGlobalAdmin || isProjectLeader;
@@ -124,7 +124,11 @@ export default function ProjectMembersModal({
   } = useProjectInvitations(projectId, undefined, { enabled: isOpen });
 
   // Search API Hook for Adding People (Old search function)
-  const { users: searchResults, isLoading: isSearchingByKeyword } =
+  const {
+    users: searchResults,
+    isLoading: isSearchingByKeyword,
+    error: searchError,
+  } =
     useUserSearch(
       debouncedInviteSearch,
       projectId,
@@ -136,18 +140,21 @@ export default function ProjectMembersModal({
     users: adminListUsers,
     data: adminListData,
     isLoading: isLoadingAdminList,
+    error: adminListError,
   } = useUsers(
-    isGlobalAdmin && activeTab === "add" && !debouncedInviteSearch
+    canManageMembers && activeTab === "add" && !debouncedInviteSearch
       ? {
+          projectId,
           isActive: true,
           pageNumber: addMemberPageNumber,
           pageSize: addMemberPageSize,
         }
       : undefined,
-    isGlobalAdmin && activeTab === "add" && !debouncedInviteSearch,
+    canManageMembers && activeTab === "add" && !debouncedInviteSearch,
   );
 
   const isSearching = isSearchingByKeyword || isLoadingAdminList;
+  const userDirectoryError = adminListError || searchError || null;
 
   // 2. Invitation Flow State
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -166,10 +173,10 @@ export default function ProjectMembersModal({
 
   // 3. Derived State
   const users = useMemo(() => {
-    // If it's an admin and they aren't searching, show the full user list
-    if (isGlobalAdmin && !debouncedInviteSearch) {
+    // Project leaders and global admins can browse active users when no search term is entered.
+    if (canManageMembers && !debouncedInviteSearch) {
       return adminListUsers
-        .filter((u) => u.role !== "Admin") // Hide other admins from the list
+        .filter((u) => String(u.role || "").toUpperCase() !== "ADMIN")
         .map((u) => {
           const isMember = members.some((m) => m.userId === u.id);
           const hasPendingInvite = invitations?.some(
@@ -207,7 +214,7 @@ export default function ProjectMembersModal({
         return user;
       });
   }, [
-    isGlobalAdmin,
+    canManageMembers,
     debouncedInviteSearch,
     adminListUsers,
     searchResults,
@@ -700,13 +707,14 @@ export default function ProjectMembersModal({
                     onSelectUser={handleSelectUser}
                     assignedRoles={assignedRoles}
                     getInitials={getInitials}
+                    error={userDirectoryError}
                     currentPage={
-                      isGlobalAdmin && !debouncedInviteSearch
+                      canManageMembers && !debouncedInviteSearch
                         ? addMemberPageNumber
                         : undefined
                     }
                     totalPages={
-                      isGlobalAdmin && !debouncedInviteSearch
+                      canManageMembers && !debouncedInviteSearch
                         ? adminListData?.totalPages
                         : undefined
                     }

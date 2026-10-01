@@ -125,7 +125,6 @@ export default function TitleAbstractScreeningWorkspace() {
               <div className="h-full overflow-y-auto p-4 custom-scrollbar">
                 <CriteriaTab
                   projectId={projectId}
-                  screeningProcessId={screeningProcessId}
                 />
               </div>
             )}

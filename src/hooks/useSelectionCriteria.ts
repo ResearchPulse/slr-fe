@@ -4,8 +4,8 @@ import type { AICriteriaResponse, SaveAiResultRequest, StudySelectionCriteriaDto
 
 export const useGenerateAiCriteria = () => {
   return useMutation<AICriteriaResponse, Error, string>({
-    mutationFn: async (studySelectionProcessId: string) => {
-      const response = await selectionCriteriaService.generateAi(studySelectionProcessId);
+    mutationFn: async (projectId: string) => {
+      const response = await selectionCriteriaService.generateAi(projectId);
       if (!response.isSuccess) {
         throw new Error(response.message || "Failed to generate AI criteria");
       }
@@ -15,9 +15,9 @@ export const useGenerateAiCriteria = () => {
 };
 
 export const useSaveAiCriteria = () => {
-  return useMutation<void, Error, SaveAiResultRequest>({
-    mutationFn: async (data: SaveAiResultRequest) => {
-      const response = await selectionCriteriaService.saveAiResult(data);
+  return useMutation<void, Error, { projectId: string; data: SaveAiResultRequest }>({
+    mutationFn: async ({ projectId, data }) => {
+      const response = await selectionCriteriaService.saveAiResult(projectId, data);
       if (!response.isSuccess) {
         throw new Error(response.message || "Failed to save selection criteria");
       }
@@ -25,16 +25,16 @@ export const useSaveAiCriteria = () => {
   });
 };
 
-export const useSelectionCriteria = (studySelectionProcessId: string | undefined) => {
+export const useSelectionCriteria = (projectId: string | undefined) => {
   return useQuery<StudySelectionCriteriaDto[]>({
-    queryKey: ["selection-criteria", studySelectionProcessId],
+    queryKey: ["selection-criteria", projectId],
     queryFn: async () => {
-      const response = await selectionCriteriaService.getByProcessId(studySelectionProcessId!);
+      const response = await selectionCriteriaService.getByProjectId(projectId!);
       if (!response.isSuccess) {
         throw new Error(response.message || "Failed to fetch selection criteria");
       }
       return response.data;
     },
-    enabled: !!studySelectionProcessId,
+    enabled: !!projectId,
   });
 };

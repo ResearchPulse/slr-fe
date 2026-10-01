@@ -5,11 +5,11 @@ import type { ApiResponse } from "../types/project";
 export const selectionCriteriaService = {
   /**
    * Generate study selection criteria using AI
-   * @param studySelectionProcessId The ID of the study selection process
+   * @param projectId The project ID
    */
-  async generateAi(studySelectionProcessId: string): Promise<GenerateAICriteriaResponse> {
+  async generateAi(projectId: string): Promise<GenerateAICriteriaResponse> {
     const response = await api.post<GenerateAICriteriaResponse>(
-      `/selection-criteria/generate-ai/${studySelectionProcessId}`
+      `/projects/${projectId}/screening/criteria/ai-suggest`,
     );
     return response.data;
   },
@@ -18,21 +18,21 @@ export const selectionCriteriaService = {
    * Save AI suggested and custom criteria result
    * @param data The criteria data to save
    */
-  async saveAiResult(data: SaveAiResultRequest): Promise<ApiResponse<void>> {
+  async saveAiResult(projectId: string, data: SaveAiResultRequest): Promise<ApiResponse<void>> {
     const response = await api.post<ApiResponse<void>>(
-      `/selection-criteria/save-ai-result`,
-      data
+      `/projects/${projectId}/screening/criteria`,
+      data,
     );
     return response.data;
   },
 
   /**
-   * Get criteria groups by process ID
-   * @param studySelectionProcessId The ID of the study selection process
+   * Get criteria groups by project ID
+   * @param projectId The project ID
    */
-  async getByProcessId(studySelectionProcessId: string): Promise<ApiResponse<StudySelectionCriteriaDto[]>> {
+  async getByProjectId(projectId: string): Promise<ApiResponse<StudySelectionCriteriaDto[]>> {
     const response = await api.get<ApiResponse<StudySelectionCriteriaDto[]>>(
-      `/selection-criteria/process/${studySelectionProcessId}`
+      `/projects/${projectId}/screening/criteria`,
     );
     return response.data;
   },

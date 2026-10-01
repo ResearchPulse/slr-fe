@@ -131,6 +131,7 @@ export default function TemplateWizard({
         return (
           <Step2_FlatSetup
             section={currentSection}
+            projectId={projectId}
             initialItems={currentSectionItems}
             onComplete={handleCompleteFlatSetup}
             onBack={() => goToStep(1)}

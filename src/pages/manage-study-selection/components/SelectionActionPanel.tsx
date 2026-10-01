@@ -99,7 +99,6 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
             {activeTab === "criteria" && (
               <CriteriaTab
                 projectId={projectId}
-                screeningProcessId={screeningProcessId}
               />
             )}
 

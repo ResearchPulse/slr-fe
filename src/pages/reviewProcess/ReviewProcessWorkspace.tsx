@@ -136,7 +136,7 @@ export default function ReviewProcessWorkspace() {
         <StudySelectionCriteriaModal
           isOpen={isCriteriaModalOpen}
           onClose={() => setIsCriteriaModalOpen(false)}
-          studySelectionProcessId={process.studySelectionProcess?.id || ""}
+          projectId={projectId || ""}
         />
 
         <QualityAssessmentCriteriaModal

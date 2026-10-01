@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
-import { useParams } from "react-router";
 import {
   useProjectPicocs,
   useProjectResearchQuestions,
@@ -26,13 +25,12 @@ import ManageStuSeCriteria from "./ManageStuSeCriteria";
 interface StudySelectionCriteriaModalProps {
   isOpen: boolean;
   onClose: () => void;
-  studySelectionProcessId: string; // Required for AI generation
+  projectId: string;
 }
 
 const StudySelectionCriteriaModal: React.FC<
   StudySelectionCriteriaModalProps
-> = ({ isOpen, onClose, studySelectionProcessId }) => {
-  const { projectId } = useParams<{ projectId: string }>();
+> = ({ isOpen, onClose, projectId }) => {
   const { picocs, isLoading: picocLoading } = useProjectPicocs(projectId);
   const { researchQuestions, isLoading: rqLoading } =
     useProjectResearchQuestions(projectId);
@@ -49,7 +47,12 @@ const StudySelectionCriteriaModal: React.FC<
   const isLoading = picocLoading || rqLoading;
 
   const handleAiSuggest = () => {
-    generateAi(studySelectionProcessId, {
+    if (!projectId) {
+      toast.error("A project context is required before generating criteria.");
+      return;
+    }
+
+    generateAi(projectId, {
       onSuccess: (data) => {
         // Capture rawJson - fallback to stringified criteria if rawJson field is missing
         const jsonContent =
@@ -193,7 +196,6 @@ const StudySelectionCriteriaModal: React.FC<
     }
 
     const requestData: SaveAiResultRequest = {
-      studySelectionProcessId,
       rawJson: rawJson || "{}", // Default if no AI result used
       criteriaGroups: criteriaGroups.map((group) => ({
         description: group.description,
@@ -206,7 +208,7 @@ const StudySelectionCriteriaModal: React.FC<
       })),
     };
 
-    saveCriteria(requestData, {
+    saveCriteria({ projectId, data: requestData }, {
       onSuccess: () => {
         toast.success("Study selection criteria saved successfully!");
         onClose();

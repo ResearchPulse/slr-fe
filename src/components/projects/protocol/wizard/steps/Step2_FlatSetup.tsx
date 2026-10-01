@@ -20,6 +20,7 @@ import Textarea from "../../../../ui/Textarea";
 
 interface Step2_FlatSetupProps {
   section: WizardSection | undefined;
+  projectId?: string;
   initialItems?: DataItemDefinitionExtended[];
   onComplete: (items: DataItemDefinitionExtended[]) => void;
   onBack: () => void;
@@ -122,6 +123,7 @@ function mapSuggestedFieldToEditorState(
 
 export default function Step2_FlatSetup({
   section,
+  projectId,
   initialItems = [],
   onComplete,
   onBack,
@@ -205,13 +207,19 @@ export default function Step2_FlatSetup({
       return;
     }
 
+    if (!projectId) {
+      toastError("AI suggestions unavailable", "A project context is required.");
+      return;
+    }
+
     setIsSuggestingFields(true);
 
     try {
       const response = await api.post<ApiResponse<ExtractionFieldDto[]>>(
-        "/data-extraction/suggest-fields",
+        `/projects/${projectId}/ai-setup/suggest-extraction-fields`,
         {
           sectionName: section.name,
+          researchQuestion: sectionResearchQuestion?.questionText,
         },
       );
 

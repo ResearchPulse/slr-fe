@@ -46,7 +46,6 @@ export interface AICriteriaResponse {
 }
 
 export interface SaveAiResultRequest {
-  studySelectionProcessId: string;
   rawJson: string;
   criteriaGroups: {
     description: string;

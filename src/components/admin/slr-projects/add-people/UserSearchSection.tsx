@@ -19,6 +19,7 @@ interface UserSearchSectionProps {
   onSelectUser: (user: User) => void;
   assignedRoles: Record<string, "Lecturer" | "Reviewer">;
   getInitials: (name: string) => string;
+  error?: string | null;
   // Pagination for admin list
   currentPage?: number;
   totalPages?: number;
@@ -34,6 +35,7 @@ export default function UserSearchSection({
   onSelectUser,
   assignedRoles,
   getInitials,
+  error,
   currentPage,
   totalPages,
   onPageChange,
@@ -53,6 +55,16 @@ export default function UserSearchSection({
           className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
         />
       </div>
+
+      {error && !isSearching && (
+        <div
+          role="alert"
+          className="rounded-md border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-700"
+        >
+          <p className="font-bold">Could not load users.</p>
+          <p className="mt-1">{error}</p>
+        </div>
+      )}
 
       <div className="max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
         {isSearching && (
@@ -158,7 +170,7 @@ export default function UserSearchSection({
               </div>
             );
           })
-        ) : searchTerm.length > 0 && searchTerm.length < 2 && !isSearching ? (
+        ) : error && !isSearching ? null : searchTerm.length > 0 && searchTerm.length < 2 && !isSearching ? (
           <div className="py-10 text-center space-y-2 text-slate-300">
             <p className="text-xs font-bold">Continue typing to search...</p>
           </div>
