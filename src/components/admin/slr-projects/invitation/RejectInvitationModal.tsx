@@ -28,7 +28,7 @@ export default function RejectInvitationModal({
       toastSuccess("Invitation declined successfully.");
       onSuccess?.();
       onClose();
-    } catch (error) {
+    } catch {
       toastError("Failed to decline invitation.");
     }
   };

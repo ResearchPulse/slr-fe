@@ -1,4 +1,5 @@
 import { HubConnectionState } from "@microsoft/signalr";
+import type { SignalREvents } from "../types/signalr";
 
 /**
  * SignalRManager (Polling Adapter Mode)
@@ -17,17 +18,28 @@ class SignalRManager {
     return SignalRManager.instance;
   }
 
-  public async start(_accessToken: string): Promise<any> {
+  public async start(accessToken: string): Promise<null> {
     // No-op: Realtime handled via TanStack Query Polling
+    void accessToken;
     return null;
   }
 
-  public async registerHandler(_eventName: string, _handler: (...args: any[]) => void) {
+  public async registerHandler<E extends keyof SignalREvents>(
+    eventName: E,
+    handler: SignalREvents[E],
+  ): Promise<void> {
     // No-op
+    void eventName;
+    void handler;
   }
 
-  public removeHandler(_eventName: string, _handler: (...args: any[]) => void) {
+  public removeHandler<E extends keyof SignalREvents>(
+    eventName: E,
+    handler: SignalREvents[E],
+  ): void {
     // No-op
+    void eventName;
+    void handler;
   }
 
   public async stop() {
@@ -41,7 +53,12 @@ class SignalRManager {
 
 export const signalRService = SignalRManager.getInstance();
 
-export const getSignalRConnection = (_accessToken?: string) => Promise.resolve(null);
-export const startSignalRConnection = (_accessToken?: string) => Promise.resolve(null);
+export const getSignalRConnection = (accessToken?: string) => {
+  void accessToken;
+  return Promise.resolve(null);
+};
+export const startSignalRConnection = (accessToken?: string) => {
+  void accessToken;
+  return Promise.resolve(null);
+};
 export const stopSignalRConnection = () => Promise.resolve();
-

@@ -88,7 +88,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
 
         if (result.errors) {
           const apiErrors: Record<string, string> = {};
-          result.errors.forEach((err: any) => {
+          result.errors.forEach((err) => {
             const field = err.code.toLowerCase();
             if (field.includes("email")) apiErrors.email = err.message;
             if (field.includes("username")) apiErrors.username = err.message;
@@ -96,7 +96,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
           setFieldErrors((prev) => ({ ...prev, ...apiErrors }));
         }
       }
-    } catch (err: any) {
+    } catch {
       toastError(
         "System Error",
         "An unexpected error occurred while creating the user.",

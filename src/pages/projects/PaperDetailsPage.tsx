@@ -15,6 +15,7 @@ import {
   FiUploadCloud,
 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import type { ScreeningPaper } from "../reviewProcess/studySelection/titleAbstractScreening/types";
 import { usePaperDetails } from "../../hooks/usePaperDetails";
 import {
   usePaperReferences,
@@ -77,7 +78,7 @@ export default function PaperDetailsPage() {
   const [sidebarWidth, setSidebarWidth] = useState(200);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
-  const [activeSection, setActiveSection] = useState<any>(null);
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -147,13 +148,48 @@ export default function PaperDetailsPage() {
     },
   });
 
-  // Adapt PaperDetailsResponse to include calculated discovery counts
-  const adaptedPaper = useMemo(() => {
+  // Adapt API metadata to the shared paper viewer model.
+  const adaptedPaper = useMemo<ScreeningPaper | null>(() => {
     if (!paper) return null;
+    const publicationYear = paper.publicationYearInt ??
+      (paper.publicationYear ? Number.parseInt(paper.publicationYear, 10) : null);
     return {
-      ...paper,
+      id: paper.id,
+      title: paper.title,
+      authors: paper.authors ?? null,
+      doi: paper.doi ?? null,
+      publicationYear: Number.isNaN(publicationYear) ? null : publicationYear,
+      publicationDate: paper.publicationDate ?? null,
+      abstract: paper.abstract ?? null,
+      journal: paper.journal ?? null,
+      source: paper.source ?? null,
+      keywords: paper.keywords ?? null,
+      publicationType: paper.publicationType ?? null,
+      volume: paper.volume ?? null,
+      issue: paper.issue ?? null,
+      pages: paper.pages ?? null,
+      publisher: paper.publisher ?? null,
+      language: paper.language ?? null,
+      url: paper.url ?? null,
+      pdfUrl: paper.pdfUrl ?? null,
+      pdfFileName: null,
+      conferenceName: paper.conferenceName ?? null,
+      conferenceLocation: paper.conferenceLocation ?? null,
+      journalIssn: paper.journalIssn ?? null,
+      journalEIssn: paper.journalEIssn ?? null,
+      md5: paper.md5 ?? null,
       referenceCount: references?.length || 0,
       citationCount: citations?.length || 0,
+      screeningStatus: "pending",
+      finalDecision: null,
+      finalDecisionText: null,
+      decisions: [],
+      extraction: null,
+      metadataSources: null,
+      extractionResult: null,
+      extractionSuggestion: paper.extractionSuggestion ?? null,
+      resolution: null,
+      fullTextSections: paper.fullTextSections ?? null,
     };
   }, [paper, references, citations]);
 
@@ -249,7 +285,7 @@ export default function PaperDetailsPage() {
           {/* 1. Hero Header */}
           {adaptedPaper && (
             <PaperHeroHeader
-              paper={adaptedPaper as any}
+              paper={adaptedPaper!}
               isLeaderView={true} // Hide status badge for general view
               isFieldUpdated={isFieldUpdated}
             />
@@ -296,22 +332,22 @@ export default function PaperDetailsPage() {
             {activeTab === "abstract" && (
               <>
                 <ContentSection
-                  paper={paper as any}
+                  paper={paper}
                   isFieldUpdated={isFieldUpdated}
                 />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <PublicationInfoCard
-                    paper={paper as any}
+                    paper={adaptedPaper!}
                     isFieldUpdated={isFieldUpdated}
                   />
                   <IdentifierSection
-                    paper={paper as any}
+                    paper={adaptedPaper!}
                     isFieldUpdated={isFieldUpdated}
                   />
                 </div>
 
-                <SystemMetadataCollapse paper={paper as any} />
+                <SystemMetadataCollapse paper={adaptedPaper!} />
               </>
             )}
 

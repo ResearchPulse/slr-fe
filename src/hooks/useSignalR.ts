@@ -32,12 +32,12 @@ export const useSignalRSubscription = <E extends keyof SignalREvents>(
     if (!event) return;
 
     // Stable wrapper that delegates to the latest handler via ref
-    const wrappedHandler = (...args: any[]) => {
+    const wrappedHandler = ((...args: unknown[]) => {
       console.log(`[useSignalRSubscription] Event received: ${event}`, args);
       if (handlerRef.current) {
-        (handlerRef.current as any)(...args);
+        Reflect.apply(handlerRef.current, undefined, args);
       }
-    };
+    }) as SignalREvents[E];
 
     console.log(`[useSignalRSubscription] Subscribing to: ${event}`);
     signalRService.registerHandler(event, wrappedHandler);

@@ -11,6 +11,7 @@ export interface PhaseStats {
     totalPapers: number;
     included: number;
     excluded: number;
+    inScreeningCount: number;
     conflictCount: number;
     pendingCount: number;
   };

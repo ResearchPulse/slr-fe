@@ -129,7 +129,7 @@ export default function ProjectFormModal({
                 endDate: formData.endDate ? formData.endDate : null,
               },
             });
-          } catch (dateErr: any) {
+          } catch (dateErr) {
             console.warn("Không thể cập nhật ngày tháng do phân quyền:", dateErr);
             toastError("Lưu ngày tháng thất bại", "Chỉ có Trưởng nhóm dự án (Project Leader) mới có quyền thay đổi ngày bắt đầu/kết thúc.");
           }

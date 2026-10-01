@@ -43,7 +43,6 @@ const StudySelectionCriteriaModal: React.FC<
 
   const [criteriaGroups, setCriteriaGroups] = useState<CriteriaGroup[]>([]);
   const [rawJson, setRawJson] = useState<string>("");
-  const [_showRawJson, setShowRawJson] = useState(false);
   const [showRefData, setShowRefData] = useState(true);
 
   const isLoading = picocLoading || rqLoading;
@@ -74,7 +73,6 @@ const StudySelectionCriteriaModal: React.FC<
 
         setCriteriaGroups((prev) => [...prev, ...newGroups]);
         toast.success("AI Criteria suggested successfully!");
-        setShowRawJson(true); // Automatically show JSON when generated
       },
       onError: (error) => {
         toast.error(

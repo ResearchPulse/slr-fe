@@ -416,7 +416,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   );
 
   const handleNavigateToPdf = useCallback((coordinateString: string) => {
-    var coors = coordinateString
+    const coors = coordinateString
       .split(";")
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0)

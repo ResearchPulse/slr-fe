@@ -46,78 +46,81 @@ export default function SavedFilterDropdown({
   return (
     <div className="relative" ref={dropdownRef}>
       <button
+        type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-3 px-4 py-2.5 rounded-[4px] border-2 transition-all ${
+        className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-2 transition-colors ${
           isOpen
-            ? "border-blue-500 bg-blue-50 shadow-sm"
-            : "border-border bg-surface-white hover:border-border"
+            ? "border-accent bg-blue-50"
+            : "border-border bg-white hover:border-accent/40"
         }`}
       >
         <div
-          className={`w-8 h-8 rounded-[4px] flex items-center justify-center ${selectedFilter ? "bg-blue-500 text-white" : "bg-bg-secondary text-text-secondary"}`}
+          className={`flex h-8 w-8 items-center justify-center rounded-md ${selectedFilter ? "bg-accent text-white" : "bg-slate-100 text-text-secondary"}`}
         >
-          <FiFilter className="w-4 h-4" />
+          <FiFilter className="h-4 w-4" />
         </div>
         <div className="text-left">
-          <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest leading-none mb-1">
+          <div className="mb-1 text-[9px] font-medium uppercase leading-none tracking-wider text-text-secondary">
             Active View
           </div>
-          <div className="text-sm font-bold text-text-primary leading-none">
+          <div className="max-w-36 truncate text-sm font-semibold leading-none text-text-primary">
             {selectedFilter ? selectedFilter.name : "Unsaved View"}
           </div>
         </div>
         <FiChevronDown
-          className={`w-4 h-4 text-text-secondary transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`h-4 w-4 text-text-secondary transition-transform ${isOpen ? "rotate-180" : ""}`}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-2 w-72 bg-surface-white rounded-[4px] shadow-2xl border border-border overflow-hidden z-[60] animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="p-2 border-b border-border bg-bg-primary/50">
+        <div className="absolute right-0 top-full z-[60] mt-2 w-72 animate-in fade-in slide-in-from-top-2 overflow-hidden rounded-xl border border-border bg-white shadow-xl duration-200">
+          <div className="border-b border-border bg-slate-50/70 p-2">
             <button
+              type="button"
               onClick={() => {
                 onSaveNew();
                 setIsOpen(false);
               }}
               disabled={isCreating}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-[4px] text-blue-600 hover:bg-blue-50 transition-colors"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-accent transition-colors hover:bg-blue-50"
             >
-              <div className="w-8 h-8 rounded-[4px] bg-blue-100 flex items-center justify-center">
-                <FiPlus className="w-4 h-4" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-blue-100">
+                <FiPlus className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-widest">
+              <span className="text-xs font-semibold">
                 Save Current View
               </span>
             </button>
           </div>
 
-          <div className="max-h-64 overflow-y-auto custom-scrollbar p-2 space-y-1">
-            <div className="px-3 py-2 text-[10px] font-black text-text-secondary uppercase tracking-widest">
+          <div className="max-h-64 space-y-1 overflow-y-auto p-2 custom-scrollbar">
+            <div className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Saved Filter Collections
             </div>
             {savedFilters.length === 0 ? (
-              <div className="px-3 py-8 text-center text-xs text-text-secondary italic">
+              <div className="px-3 py-8 text-center text-xs text-text-secondary">
                 No saved filters yet
               </div>
             ) : (
               savedFilters.map((filter) => (
                 <button
                   key={filter.id}
+                  type="button"
                   onClick={() => {
                     onSelect(filter);
                     setIsOpen(false);
                   }}
-                  className={`w-full flex items-center justify-between px-3 py-3 rounded-[4px] transition-colors ${
+                  className={`flex w-full items-center justify-between rounded-lg px-3 py-3 transition-colors ${
                     selectedFilterId === filter.id
                       ? "bg-blue-50 text-blue-700"
                       : "hover:bg-bg-primary text-text-primary"
                   }`}
                 >
                   <div className="flex flex-col text-left overflow-hidden">
-                    <span className="text-sm font-bold truncate">
+                    <span className="truncate text-sm font-semibold">
                       {filter.name}
                     </span>
-                    <span className="text-[10px] text-text-secondary truncate">
+                    <span className="truncate text-[10px] text-text-secondary">
                       {filter.searchText || "No search term"}
                     </span>
                   </div>
@@ -129,18 +132,19 @@ export default function SavedFilterDropdown({
             )}
           </div>
 
-          <div className="p-2 border-t border-border bg-bg-primary/50">
+          <div className="border-t border-border bg-slate-50/70 p-2">
             <button
+              type="button"
               onClick={() => {
                 onManage();
                 setIsOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-[4px] text-text-secondary hover:bg-surface-white hover:text-text-primary hover:shadow-sm border border-transparent hover:border-border transition-all"
+              className="flex w-full items-center gap-3 rounded-lg border border-transparent px-3 py-2.5 text-text-secondary transition-colors hover:border-border hover:bg-white hover:text-text-primary"
             >
-              <div className="w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center">
-                <FiSettings className="w-4 h-4" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-slate-100">
+                <FiSettings className="h-4 w-4" />
               </div>
-              <span className="text-xs font-black uppercase tracking-widest">
+              <span className="text-xs font-semibold">
                 Manage Filters
               </span>
             </button>

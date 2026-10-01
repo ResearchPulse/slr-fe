@@ -120,11 +120,11 @@ export default function DecisionBar({
         <button
           onClick={() => onInclude(paper.id)}
           disabled={isSubmitting}
-          className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white font-semibold text-sm rounded-[4px] hover:bg-green-700 active:bg-green-800 transition-colors shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FiCheck className="w-4 h-4" />
           Include
-          <kbd className="ml-1 px-1 py-0.5 bg-green-500/50 rounded text-[9px] font-mono">
+          <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
             1
           </kbd>
         </button>

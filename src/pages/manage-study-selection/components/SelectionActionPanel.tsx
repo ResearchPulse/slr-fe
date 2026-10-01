@@ -72,27 +72,28 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
 
   return (
     <div className="flex flex-col h-full bg-surface-white border-l border-border overflow-hidden">
-      <div className="p-3 border-b border-border bg-bg-secondary/50 flex items-center justify-between">
-        <h2 className="text-[10px] font-black text-text-secondary uppercase tracking-widest pl-1">
-          Screening Tools
-        </h2>
+      <div className="flex items-center justify-between border-b border-[#e4ebf0] bg-white px-4 py-3.5">
+        <div>
+          <h2 className="text-sm font-bold text-slate-900">Review context</h2>
+          <p className="mt-0.5 text-[10px] text-slate-500">Criteria, team and AI support</p>
+        </div>
         <button
           onClick={onToggleCollapse}
-          className="p-1.5 hover:bg-surface-white hover:shadow-none rounded-[4px] transition-all text-text-secondary hover:text-accent border border-transparent hover:border-indigo-100"
+          className="rounded-lg border border-transparent p-2 text-slate-500 transition-colors hover:border-slate-200 hover:bg-slate-50 hover:text-blue-700"
           title="Collapse Panel"
         >
           <PanelRightClose className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="flex-1 flex flex-col p-3 overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden bg-white p-3">
         <Tabs
           items={tabItems}
           activeTabId={activeTab}
           onTabChange={setActiveTab}
           className="flex-1 flex flex-col min-h-0 gap-3"
-          listClassName="w-full flex-nowrap overflow-x-auto no-scrollbar bg-bg-secondary/50 p-1 rounded-[4px]"
-          itemClassName="flex-1 justify-center px-3 py-2 text-[11px] rounded-[4px] min-w-fit"
+          listClassName="w-full flex-nowrap overflow-x-auto no-scrollbar rounded-lg border border-slate-100 bg-slate-50 p-1"
+          itemClassName="min-w-fit flex-1 justify-center rounded-md px-2.5 py-2 text-[11px]"
           contentClassName="flex-1 min-h-0"
         >
           <div className="flex-1 overflow-y-auto h-full custom-scrollbar pr-1">

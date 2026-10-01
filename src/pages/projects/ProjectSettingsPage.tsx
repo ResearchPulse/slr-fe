@@ -31,7 +31,7 @@ export default function ProjectSettingsPage() {
       await completeProject(id);
       await refetch();
       navigate(`/projects/${id}`);
-    } catch (err) {
+    } catch {
       // handled by mutation
     }
   };

@@ -119,11 +119,9 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                   : "Select paper"
           }
           className={`w-4 h-4 text-blue-600 border-border rounded focus:ring-blue-500 ${
-            !!(
-              paper.assignmentStatusText === "Assigned" ||
+            paper.assignmentStatusText === "Assigned" ||
               (paper.decidedStatus && paper.decidedStatus !== "None") ||
               (selectionMode === "assignment" && pdfRequired && !paper.pdfUrl)
-            )
               ? "cursor-not-allowed opacity-50"
               : "cursor-pointer"
           }`}

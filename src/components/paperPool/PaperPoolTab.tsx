@@ -4,6 +4,7 @@ import { useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
 
 import type { ReviewProcess } from "../../types/reviewProcess";
+import type { CreateReviewProcessRequest } from "../../types/reviewProcess";
 import { useDebounce } from "../../hooks/useDebounce";
 
 import {
@@ -630,12 +631,12 @@ export default function PaperPoolTab({
     }
   };
 
-  const handleCreateProcess = async (data: any) => {
+  const handleCreateProcess = async (data: CreateReviewProcessRequest) => {
     try {
       await createReviewProcess({ projectId, data });
       setIsCreateProcessModalOpen(false);
       toast.success("Review process created successfully");
-    } catch (error) {
+    } catch {
       // Error handled in hook
     }
   };

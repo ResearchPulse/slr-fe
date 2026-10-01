@@ -38,7 +38,11 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
       setSuccess(true);
       onSuccess?.();
     } catch (error) {
-      toast.error("Failed to extract references. Please try again.");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to extract references. Please try again.",
+      );
       setIsConfirmModalOpen(false);
     }
   };

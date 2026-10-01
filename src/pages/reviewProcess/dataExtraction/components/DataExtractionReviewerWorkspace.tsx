@@ -1166,6 +1166,7 @@ export default function DataExtractionReviewerWorkspace({
     }
 
     const missingRequiredFields: string[] = [];
+    let firstMissingSectionId: string | null = null;
 
     sections.forEach((section) => {
       const sectionId = getSectionId(section);
@@ -1178,6 +1179,7 @@ export default function DataExtractionReviewerWorkspace({
             !isFieldNotReported(fieldKey) &&
             isValueEmpty(formValues[fieldKey]?.value)
           ) {
+            if (!firstMissingSectionId) firstMissingSectionId = sectionId;
             missingRequiredFields.push(`${section.name} - ${field.name}`);
           }
         });
@@ -1193,6 +1195,7 @@ export default function DataExtractionReviewerWorkspace({
                 !isMatrixFieldNotReported(sectionId, rowIndex, fieldKey) &&
                 isValueEmpty(row[fieldKey]?.value)
               ) {
+                if (!firstMissingSectionId) firstMissingSectionId = sectionId;
                 missingRequiredFields.push(
                   `${section.name} - ${field.name} (Row ${rowIndex + 1})`,
                 );
@@ -1204,6 +1207,9 @@ export default function DataExtractionReviewerWorkspace({
     });
 
     if (missingRequiredFields.length > 0) {
+      if (firstMissingSectionId) {
+        setActiveSectionIdState(firstMissingSectionId);
+      }
       const uniqueMissingFields = [...new Set(missingRequiredFields)];
 
       toastError(

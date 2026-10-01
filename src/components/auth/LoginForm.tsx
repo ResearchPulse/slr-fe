@@ -47,8 +47,18 @@ declare global {
   }
 }
 
+<<<<<<< HEAD
 const normalizeGlobalRole = (role?: string | null) =>
   role?.toUpperCase() === "ADMIN" ? "Admin" : role ?? undefined;
+=======
+const normalizeGlobalRole = (role?: string | null) => {
+  if (!role) return undefined;
+
+  const normalizedRole = role.trim().toUpperCase();
+
+  return normalizedRole === "ADMIN" ? "Admin" : role.trim();
+};
+>>>>>>> origin/dev
 
 const LoginForm: React.FC = () => {
   const [keyLogin, setKeyLogin] = useState("");

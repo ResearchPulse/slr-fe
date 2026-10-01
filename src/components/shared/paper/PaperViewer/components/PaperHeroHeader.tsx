@@ -18,9 +18,9 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
   isFieldUpdated,
 }) => {
   return (
-    <div className="bg-surface-white rounded-[4px] border border-border p-8 shadow-none relative overflow-hidden group">
+    <div className="group relative overflow-hidden rounded-xl border border-[#dce6ed] bg-white p-5 shadow-sm lg:p-6">
       {/* Background Decor */}
-      <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary rounded-full opacity-50 group-hover:scale-110 transition-transform duration-700" />
+      <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-blue-50/70 transition-transform duration-700 group-hover:scale-110" />
 
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2 mb-4">
@@ -39,13 +39,13 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
           )}
         </div>
 
-        <h1 className="text-2xl md:text-3xl font-black text-text-primary leading-tight tracking-tight mb-4 group-hover:text-blue-600 transition-colors">
+        <h1 className="mb-3 max-w-5xl text-xl font-bold leading-snug tracking-tight text-slate-900 transition-colors group-hover:text-blue-700 md:text-2xl">
           {paper.title}
         </h1>
 
         <div className="space-y-4">
           <div className="flex items-start gap-2">
-            <p className="text-base font-bold text-text-secondary leading-relaxed">
+            <p className="text-sm font-medium leading-relaxed text-slate-600">
               {formatAuthors(paper.authors) ?? "Unknown authors"}
             </p>
             {isFieldUpdated("Authors") && (
@@ -72,7 +72,7 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
               href={`https://doi.org/${encodeURIComponent(paper.doi)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-[4px] bg-blue-50 text-blue-600 text-xs font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all shadow-none border border-blue-100 w-fit"
+              className="inline-flex w-fit items-center gap-2 rounded-lg border border-blue-100 bg-blue-50 px-3.5 py-2 text-xs font-semibold tracking-wide text-blue-700 transition-colors hover:bg-blue-700 hover:text-white"
             >
               DOI: {paper.doi}
               <FiExternalLink className="w-3.5 h-3.5" />
