@@ -93,7 +93,10 @@ export const qualityAssessmentService = {
   },
 
   async autoResolve(data: AutoResolveQualityAssessmentRequest): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(`/quality-assessment/auto-resolve`, data);
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(data.qualityAssessmentProcessId)}/quality/auto-resolve`,
+      data,
+    );
     return response.data;
   },
 
@@ -114,8 +117,28 @@ export const qualityAssessmentService = {
   },
 
   async getProcessStrategies(qaProcessId: string): Promise<ApiResponse<QualityAssessmentStrategy[]>> {
-    const response = await api.get<ApiResponse<QualityAssessmentStrategy[]>>(`/quality-assessment/${qaProcessId}/strategies`);
-    return response.data;
+    const response = await api.get<ApiResponse<any[]>>(
+      `/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/templates`,
+    );
+    const templates = Array.isArray(response.data.data) ? response.data.data : [];
+    return {
+      ...response.data,
+      data: templates.map((template) => ({
+        qaStrategyId: template.id,
+        qualityAssessmentProcessId: qaProcessId,
+        description: template.name,
+        checklists: template.checklists ?? [{
+          checklistId: template.id,
+          qaStrategyId: template.id,
+          name: template.name,
+          criteria: (template.criteria ?? []).map((criterion: any) => ({
+            criterionId: criterion.id,
+            checklistId: template.id,
+            question: criterion.question,
+          })),
+        }],
+      })),
+    };
   },
 
   async submitDecisions(request: CreateQualityAssessmentDecisionRequest): Promise<ApiResponse<null>> {
@@ -131,7 +154,17 @@ export const qualityAssessmentService = {
   },
 
   async updateDecisions(request: UpdateQualityAssessmentDecisionRequest): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(`/quality/assessments/${request.id}`, request);
+    if (!request.paperId || !request.qualityAssessmentProcessId) {
+      throw new Error("Paper and quality assessment process are required to update a decision");
+    }
+    const scores = Object.fromEntries(request.decisionItems.map((item) => [
+      item.qualityCriterionId,
+      { score: item.value, comment: item.comment || undefined },
+    ]));
+    const response = await api.put<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(request.qualityAssessmentProcessId)}/quality/papers/${request.paperId}/assessment`,
+      { scores, totalScore: Object.values(scores).reduce((total, item) => total + item.score, 0) },
+    );
     return response.data;
   },
 
@@ -144,33 +177,69 @@ export const qualityAssessmentService = {
   },
 
   async updateResolution(data: UpdateQualityAssessmentResolutionRequest): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(`/quality-assessment/resolutions/${data.id}`, data);
+    if (!data.paperId || !data.qualityAssessmentProcessId) {
+      throw new Error("Paper and quality assessment process are required to update a resolution");
+    }
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(data.qualityAssessmentProcessId)}/quality/papers/${data.paperId}/resolve`,
+      { scores: { final: { score: data.finalScore, comment: data.resolutionNotes || undefined } }, totalScore: data.finalScore, comment: data.resolutionNotes || undefined },
+    );
     return response.data;
   },
 
   async getAiDecision(data: AiDecisionRequest): Promise<ApiResponse<AutomateQualityAssessmentResponse>> {
-    const response = await api.post<ApiResponse<AutomateQualityAssessmentResponse>>(`/quality-assessment/decisions/ai`, data);
+    const response = await api.post<ApiResponse<AutomateQualityAssessmentResponse>>(
+      `/projects/${this.projectIdFromProcessId(data.qualityAssessmentProcessId)}/quality/papers/${data.paperId}/ai-decision`,
+      data,
+    );
     return response.data;
   },
 
   async upsertStrategy(data: QualityAssessmentStrategy): Promise<ApiResponse<QualityAssessmentStrategy>> {
-    const response = await api.post<ApiResponse<QualityAssessmentStrategy>>(`/quality-assessment/strategies/upsert`, data);
+    const projectId = this.projectIdFromProcessId(data.qualityAssessmentProcessId);
+    const response = await api.post<ApiResponse<any>>(`/projects/${projectId}/quality/templates`, {
+      name: data.description,
+      criteria: data.checklists.flatMap((checklist) => checklist.criteria).map((criterion) => ({
+        id: criterion.criterionId || `${Date.now()}`,
+        question: criterion.question,
+      })),
+    });
+    const template = response.data.data;
+    return {
+      ...response.data,
+      data: {
+        qaStrategyId: template.id,
+        qualityAssessmentProcessId: data.qualityAssessmentProcessId,
+        description: template.name,
+        checklists: [],
+      },
+    };
+  },
+
+  async bulkChecklists(qualityAssessmentProcessId: string, data: QualityAssessmentChecklist[]): Promise<ApiResponse<QualityAssessmentChecklist[]>> {
+    const templateId = data[0]?.qaStrategyId;
+    if (!templateId) throw new Error("A quality strategy is required before saving checklists");
+    const response = await api.post<ApiResponse<QualityAssessmentChecklist[]>>(
+      `/projects/${this.projectIdFromProcessId(qualityAssessmentProcessId)}/quality/templates/${templateId}/checklists`,
+      { checklists: data },
+    );
     return response.data;
   },
 
-  async bulkChecklists(data: QualityAssessmentChecklist[]): Promise<ApiResponse<QualityAssessmentChecklist[]>> {
-    const response = await api.post<ApiResponse<QualityAssessmentChecklist[]>>(`/quality-assessment/checklists/bulk`, data);
-    return response.data;
-  },
-
-  async bulkCriteria(data: QualityAssessmentCriterion[]): Promise<ApiResponse<QualityAssessmentCriterion[]>> {
-    const response = await api.post<ApiResponse<QualityAssessmentCriterion[]>>(`/quality-assessment/criteria/bulk`, data);
+  async bulkCriteria(qualityAssessmentProcessId: string, data: QualityAssessmentCriterion[]): Promise<ApiResponse<QualityAssessmentCriterion[]>> {
+    const templateId = data[0]?.checklistId;
+    if (!templateId) throw new Error("A checklist is required before saving criteria");
+    const response = await api.post<ApiResponse<QualityAssessmentCriterion[]>>(
+      `/projects/${this.projectIdFromProcessId(qualityAssessmentProcessId)}/quality/templates/${templateId}/criteria`,
+      { criteria: data },
+    );
     return response.data;
   },
 
   async exportExcel(qaProcessId: string): Promise<Blob> {
     const response = await api.get(`/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/export`, {
-      responseType: 'blob'
+      responseType: 'blob',
+      params: { format: 'csv' },
     });
     return response.data;
   }

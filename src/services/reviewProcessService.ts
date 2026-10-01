@@ -82,14 +82,17 @@ class ReviewProcessService {
 
   /**
    * Update review process notes and description
-   * PUT /api/review-processes/{id}
+   * PATCH /api/projects/{projectId}/review-processes
    */
   async updateReviewProcess(
     id: string,
     data: UpdateReviewProcessRequest,
   ): Promise<ApiResponse<ReviewProcess>> {
-    const response = await api.put<ApiResponse<ReviewProcess>>(`/review-processes/${id}`, data);
-    return response.data;
+    const response = await api.patch<ApiResponse<ReviewProcess>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes`,
+      data,
+    );
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -127,11 +130,11 @@ class ReviewProcessService {
 
   /**
    * Delete a review process
-   * DELETE /api/review-processes/{id}
+   * Canonical lifecycle deletion is represented by cancellation.
    */
   async deleteReviewProcess(id: string): Promise<ApiResponse<null>> {
-    const response = await api.delete<ApiResponse<null>>(`/review-processes/${id}`);
-    return response.data;
+    await this.cancelReviewProcess(id);
+    return { isSuccess: true, data: null, message: '', errors: null };
   }
 
 

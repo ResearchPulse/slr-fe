@@ -243,9 +243,11 @@ export default function QualityAssessmentWorkspace() {
       const myDecision = sp?.decisions?.[0]; // Get current decision record
 
       if (myDecision?.id) {
-        updateDecisions({
-          id: myDecision.id,
-          notes,
+          updateDecisions({
+            id: myDecision.id,
+            paperId: selectedPaperId,
+            qualityAssessmentProcessId: qualityAssessmentId,
+            notes,
           decisionItems: decisionitems.map((item) => ({
             id: item.itemId || null,
             qualityCriterionId: item.criterionId,
@@ -289,6 +291,8 @@ export default function QualityAssessmentWorkspace() {
         if (myDecision?.id) {
           updateDecisions({
             id: myDecision.id,
+            paperId: selectedPaperId,
+            qualityAssessmentProcessId: qualityAssessmentId,
             notes: decisionData.notes,
             decisionItems: decisionData.items.map((item) => ({
               id: item.itemId || null,
@@ -316,6 +320,8 @@ export default function QualityAssessmentWorkspace() {
       if (sp?.resolution?.id) {
         updateResolution({
           id: sp.resolution.id,
+          paperId: selectedPaperId,
+          qualityAssessmentProcessId: qualityAssessmentId,
           finalDecision: data.finalDecision,
           finalScore: data.finalScore,
           resolutionNotes: data.resolutionNotes,

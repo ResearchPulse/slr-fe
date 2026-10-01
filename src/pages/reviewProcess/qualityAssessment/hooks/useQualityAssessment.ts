@@ -162,7 +162,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
   });
 
   const bulkChecklistsMutation = useMutation({
-    mutationFn: (data: QualityAssessmentChecklist[]) => qualityAssessmentService.bulkChecklists(data),
+    mutationFn: (data: QualityAssessmentChecklist[]) => qualityAssessmentService.bulkChecklists(id!, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.strategies(id ?? "") });
     },
@@ -173,7 +173,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
 
   // Strategies upsert end at criteria 
   const bulkCriteriaMutation = useMutation({
-    mutationFn: (data: QualityAssessmentCriterion[]) => qualityAssessmentService.bulkCriteria(data),
+    mutationFn: (data: QualityAssessmentCriterion[]) => qualityAssessmentService.bulkCriteria(id!, data),
     onSuccess: () => {
       toast.success("Quality Assessment Strategies saved successfully");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.strategies(id ?? "") });

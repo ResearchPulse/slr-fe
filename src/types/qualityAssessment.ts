@@ -107,6 +107,8 @@ export interface CreateQualityAssessmentDecisionItem {
 
 export interface UpdateQualityAssessmentDecisionRequest {
     id: string;
+    paperId?: string;
+    qualityAssessmentProcessId?: string;
     notes: string | null;
     decisionItems: UpdateQualityAssessmentDecisionItem[];
 }
@@ -129,6 +131,8 @@ export interface QualityAssessmentResolutionRequest {
 
 export interface UpdateQualityAssessmentResolutionRequest {
     id: string;
+    paperId?: string;
+    qualityAssessmentProcessId?: string;
     finalDecision: number;
     finalScore: number;
     resolutionNotes?: string | null;

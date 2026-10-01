@@ -119,7 +119,7 @@ export const dataExtractionConductingService = {
     templateId: string
   ): Promise<ApiResponse<ExtractedValueDto[]>> {
     const response = await api.post<ApiResponse<ExtractedValueDto[]>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/auto-extract`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/auto-extract`,
       { templateId }
     );
 
@@ -131,7 +131,7 @@ export const dataExtractionConductingService = {
     payload: AskAiFieldRequestDto
   ): Promise<ApiResponse<ExtractedValueDto>> {
     const response = await api.post<ApiResponse<ExtractedValueDto>>(
-      `/data-extraction-processes/${extractionProcessId}/ask-ai-field`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${payload.paperId}/ask-ai-field`,
       payload
     );
 
@@ -190,7 +190,7 @@ export const dataExtractionConductingService = {
   async exportExtractedData(extractionProcessId: string): Promise<Blob> {
     const response = await api.get<Blob>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`,
-      { responseType: "blob" }
+      { responseType: "blob", params: { format: "csv" } }
     );
 
     return response.data;
@@ -199,7 +199,7 @@ export const dataExtractionConductingService = {
   async exportExtractedDataCsv(extractionProcessId: string): Promise<Blob> {
     const response = await api.get<Blob>(
       `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`,
-      { responseType: "blob" }
+      { responseType: "blob", params: { format: "csv" } }
     );
 
     return response.data;
@@ -219,7 +219,7 @@ export const dataExtractionConductingService = {
     extractionProcessId: string
   ): Promise<ApiResponse<ExtractionEditableGridDto>> {
     const response = await api.get<ApiResponse<ExtractionEditableGridDto>>(
-      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/grid`
     );
 
     return response.data;
@@ -245,7 +245,7 @@ export const dataExtractionConductingService = {
     matrixRowIndex: number | null
   ): Promise<ApiResponse<ExtractedDataAuditLogDto[]>> {
     const response = await api.get<ApiResponse<ExtractedDataAuditLogDto[]>>(
-      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/workspace`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/audit`,
       {
         params: {
           paperId,
@@ -275,7 +275,7 @@ export const dataExtractionConductingService = {
     payload: ReopenExtractionRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/reopen`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/reopen`,
       payload
     );
 
