@@ -67,17 +67,44 @@ import type {
   GetFinalResolutionProgressResponse,
 } from "../types/studySelection";
 
+const projectIdFromProcessId = (id: string): string =>
+  id.replace(/^(?:rp_|sp_|qa_|de_|sy_)/, "");
+
+const phaseToCanonical = (phase: number): "TITLE_ABSTRACT" | "FULL_TEXT" =>
+  phase === 1 ? "FULL_TEXT" : "TITLE_ABSTRACT";
+
+const decisionToCanonical = (decision: number): "INCLUDE" | "EXCLUDE" =>
+  decision === 0 ? "INCLUDE" : "EXCLUDE";
+
+const mapCanonicalDecision = (decision: any, processId: string, paperId: string) => ({
+  id: decision.id,
+  studySelectionProcessId: `sp_${projectIdFromProcessId(processId)}`,
+  paperId: decision.paperId || paperId,
+  paperTitle: decision.paperTitle || "",
+  reviewerId: decision.reviewerId,
+  reviewerName: decision.reviewerId,
+  decision: decision.decision === "INCLUDE" ? 0 : 1,
+  decisionText: decision.decision === "INCLUDE" ? "Include" : "Exclude",
+  phase: decision.stage === "FULL_TEXT" ? 1 : 0,
+  phaseText: decision.stage === "FULL_TEXT" ? "Full Text" : "Title/Abstract",
+  exclusionReasonId: decision.exclusionReasonId || null,
+  exclusionReasonCode: null,
+  exclusionReasonName: null,
+  reason: decision.comment || null,
+  decidedAt: decision.updatedAt || decision.createdAt,
+});
+
 export const studySelectionService = {
   // 1. Create Study Selection Process
   async create(
     reviewProcessId: string,
     request?: CreateStudySelectionProcessRequest,
   ): Promise<CreateStudySelectionResponse> {
-    const response = await api.post<CreateStudySelectionResponse>(
-      `/review-processes/${reviewProcessId}/study-selection`,
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(reviewProcessId)}/review-processes`,
       request ?? {},
     );
-    return response.data;
+    return response.data as CreateStudySelectionResponse;
   },
 
   // 1.1 Get Phase Status
@@ -96,32 +123,29 @@ export const studySelectionService = {
 
   // 3. Start Study Selection Process
   async start(id: string): Promise<StartStudySelectionResponse> {
-    const response = await api.post<StartStudySelectionResponse>(`/study-selection/${id}/start`);
-    const data = response.data;
-    if (!data.isSuccess) {
-      throw new Error(data.message || "Failed to start study selection");
-    }
-    return data;
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(id)}/review-processes/start`,
+    );
+    return response.data as StartStudySelectionResponse;
   },
 
   // 4. Complete Study Selection Process
   async complete(id: string): Promise<CompleteStudySelectionResponse> {
-    const response = await api.post<CompleteStudySelectionResponse>(
-      `/study-selection/${id}/complete`,
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(id)}/review-processes/complete`,
     );
-    const data = response.data;
-    if (!data.isSuccess) {
-      throw new Error(data.message || "Failed to complete study selection");
-    }
-    return data;
+    return response.data as CompleteStudySelectionResponse;
   },
 
   // 5. Get Eligible Papers (returns paper IDs only)
   async getEligiblePapers(id: string): Promise<GetEligiblePapersResponse> {
-    const response = await api.get<GetEligiblePapersResponse>(
-      `/study-selection/${id}/eligible-papers`,
+    const response = await api.get<ApiResponse<{ items: Array<{ paperId: string }> }>>(
+      `/projects/${projectIdFromProcessId(id)}/screening/papers`,
     );
-    return response.data;
+    return {
+      ...response.data,
+      data: response.data.data.items.map((paper) => paper.paperId),
+    };
   },
 
   // 6. Submit Screening Decision
@@ -130,11 +154,19 @@ export const studySelectionService = {
     paperId: string,
     request: SubmitScreeningDecisionRequest,
   ): Promise<SubmitDecisionResponse> {
-    const response = await api.post<SubmitDecisionResponse>(
-      `/study-selection/${processId}/papers/${paperId}/decision`,
-      request,
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}/decisions`,
+      {
+        stage: phaseToCanonical(request.phase),
+        decision: decisionToCanonical(request.decision),
+        exclusionReasonId: request.exclusionReasonId || undefined,
+        comment: request.reason || undefined,
+      },
     );
-    return response.data;
+    return {
+      ...response.data,
+      data: mapCanonicalDecision(response.data.data, processId, paperId),
+    } as SubmitDecisionResponse;
   },
 
   // 7. Get Decisions by Paper
@@ -142,16 +174,19 @@ export const studySelectionService = {
     processId: string,
     paperId: string,
   ): Promise<GetDecisionsByPaperResponse> {
-    const response = await api.get<GetDecisionsByPaperResponse>(
-      `/study-selection/${processId}/papers/${paperId}/decisions`,
+    const response = await api.get<ApiResponse<any[]>>(
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}/decisions`,
     );
-    return response.data;
+    return {
+      ...response.data,
+      data: response.data.data.map((decision) => mapCanonicalDecision(decision, processId, paperId)),
+    } as GetDecisionsByPaperResponse;
   },
 
   // 8. Get Conflicted Papers
   async getConflictedPapers(processId: string): Promise<GetConflictedPapersResponse> {
     const response = await api.get<GetConflictedPapersResponse>(
-      `/study-selection/${processId}/conflicts`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/conflicts`,
     );
     return response.data;
   },
@@ -162,11 +197,30 @@ export const studySelectionService = {
     paperId: string,
     request: ResolveScreeningConflictRequest,
   ): Promise<ResolveConflictResponse> {
-    const response = await api.post<ResolveConflictResponse>(
-      `/study-selection/${processId}/papers/${paperId}/resolve`,
-      request,
+    const response = await api.post<ApiResponse<any>>(
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}/resolve`,
+      {
+        stage: phaseToCanonical(request.phase),
+        finalDecision: decisionToCanonical(request.finalDecision),
+        reason: request.resolutionNotes || undefined,
+        exclusionReasonId: request.exclusionReasonId || undefined,
+      },
     );
-    return response.data;
+    return {
+      ...response.data,
+      data: {
+        ...response.data.data,
+        studySelectionProcessId: `sp_${projectIdFromProcessId(processId)}`,
+        finalDecision: response.data.data.status === "EXCLUDED" ? 1 : 0,
+        finalDecisionText: response.data.data.status === "EXCLUDED" ? "Exclude" : "Include",
+        phase: request.phase,
+        phaseText: request.phase === 1 ? "Full Text" : "Title/Abstract",
+        resolutionNotes: request.resolutionNotes || null,
+        resolvedBy: request.resolvedBy,
+        resolverName: request.resolvedBy,
+        resolvedAt: new Date().toISOString(),
+      },
+    } as ResolveConflictResponse;
   },
 
   // 10. Get Paper Selection Status
@@ -183,7 +237,7 @@ export const studySelectionService = {
     phase?: ScreeningPhaseQuery,
   ): Promise<GetSelectionStatisticsResponse> {
     const response = await api.get<GetSelectionStatisticsResponse>(
-      `/study-selection/${processId}/statistics`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/statistics`,
       { params: { phase } },
     );
     return response.data;
@@ -195,7 +249,7 @@ export const studySelectionService = {
     params?: PapersWithDecisionsParams,
   ): Promise<GetPapersWithDecisionsResponse> {
     const response = await api.get<GetPapersWithDecisionsResponse>(
-      `/study-selection/${processId}/papers`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers`,
       { params },
     );
     return response.data;
@@ -233,7 +287,7 @@ export const studySelectionService = {
     params?: GetAssignmentPapersParams,
   ): Promise<GetAssignmentPapersResponse> {
     const response = await api.get<GetAssignmentPapersResponse>(
-      `/study-selection/${studySelectionProcessId}/title-abstract/papers`,
+      `/projects/${projectIdFromProcessId(studySelectionProcessId)}/screening/papers`,
       { params },
     );
     return response.data;
@@ -245,7 +299,7 @@ export const studySelectionService = {
     params?: GetAssignmentPapersParams,
   ): Promise<GetAssignmentPapersResponse> {
     const response = await api.get<GetAssignmentPapersResponse>(
-      `/study-selection/${studySelectionProcessId}/full-text/papers`,
+      `/projects/${projectIdFromProcessId(studySelectionProcessId)}/screening/papers`,
       { params },
     );
     return response.data;
@@ -279,7 +333,7 @@ export const studySelectionService = {
     params?: AssignedPapersParams,
   ): Promise<GetAssignedPapersResponse> {
     const response = await api.get<GetAssignedPapersResponse>(
-      `/study-selection/${id}/assigned-papers`,
+      `/projects/${projectIdFromProcessId(id)}/screening/papers`,
       { params },
     );
     return response.data;
@@ -298,7 +352,7 @@ export const studySelectionService = {
   // 18. Get Detailed Paper Info (with decisions/resolution)
   async getPaperDetails(processId: string, paperId: string): Promise<GetPaperDetailsResponse> {
     const response = await api.get<GetPaperDetailsResponse>(
-      `/study-selection/${processId}/papers/${paperId}`,
+      `/projects/${projectIdFromProcessId(processId)}/screening/papers/${paperId}`,
     );
     return response.data;
   },
