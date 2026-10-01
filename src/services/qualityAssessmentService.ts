@@ -19,6 +19,10 @@ import type {
 } from "../types/qualityAssessment";
 
 export const qualityAssessmentService = {
+  projectIdFromProcessId(id: string): string {
+    return id.replace(/^(?:qa_|rp_)/, "");
+  },
+
   async getProcess(id: string): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
     const response = await api.get<ApiResponse<QualityAssessmentProcessResponse>>(`/quality-assessment/${id}`);
     return response.data;
@@ -35,7 +39,10 @@ export const qualityAssessmentService = {
   },
 
   async assignReviewers(data: QualityAssessmentAssignmentRequest): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(`/quality-assessment/assignments`, data);
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(data.qualityAssessmentProcessId)}/quality/assignments`,
+      { paperIds: data.paperIds, reviewerIds: data.userIds, phase: "QUALITY_ASSESSMENT" },
+    );
     return response.data;
   },
 
@@ -45,12 +52,18 @@ export const qualityAssessmentService = {
   },
 
   async getPapers(qaProcessId: string, params?: QADashboardParams): Promise<ApiResponse<LeaderQADashboardResponse>> {
-    const response = await api.get<ApiResponse<LeaderQADashboardResponse>>(`/quality-assessment/${qaProcessId}/leader`, { params });
+    const response = await api.get<ApiResponse<LeaderQADashboardResponse>>(
+      `/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/papers`,
+      { params },
+    );
     return response.data;
   },
 
   async getMyAssignedPapers(qaProcessId: string, params?: QADashboardParams): Promise<ApiResponse<QAMemberDashboardResponse>> {
-    const response = await api.get<ApiResponse<QAMemberDashboardResponse>>(`/quality-assessment/${qaProcessId}/assignments/my`, { params });
+    const response = await api.get<ApiResponse<QAMemberDashboardResponse>>(
+      `/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/papers/my`,
+      { params },
+    );
     return response.data;
   },
 
@@ -60,17 +73,27 @@ export const qualityAssessmentService = {
   },
 
   async submitDecisions(request: CreateQualityAssessmentDecisionRequest): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(`/quality-assessment/decisions`, request);
+    const scores = Object.fromEntries(request.decisionItems.map((item) => [
+      item.qualityCriterionId,
+      { score: item.value, comment: item.comment || undefined },
+    ]));
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(request.qualityAssessmentProcessId)}/quality/papers/${request.paperId}/assessment`,
+      { scores, totalScore: Object.values(scores).reduce((total, item) => total + item.score, 0) },
+    );
     return response.data;
   },
 
   async updateDecisions(request: UpdateQualityAssessmentDecisionRequest): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(`/quality-assessment/decisions/${request.id}`, request);
+    const response = await api.put<ApiResponse<null>>(`/quality/assessments/${request.id}`, request);
     return response.data;
   },
 
   async submitResolution(data: QualityAssessmentResolutionRequest): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(`/quality-assessment/resolutions/`, data);
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(data.qualityAssessmentProcessId)}/quality/papers/${data.paperId}/resolve`,
+      { scores: { final: { score: data.finalScore, comment: data.resolutionNotes || undefined } }, totalScore: data.finalScore, comment: data.resolutionNotes || undefined },
+    );
     return response.data;
   },
 
@@ -100,7 +123,7 @@ export const qualityAssessmentService = {
   },
 
   async exportExcel(qaProcessId: string): Promise<Blob> {
-    const response = await api.get(`/quality-assessment/${qaProcessId}/export/excel`, {
+    const response = await api.get(`/projects/${this.projectIdFromProcessId(qaProcessId)}/quality/export`, {
       responseType: 'blob'
     });
     return response.data;

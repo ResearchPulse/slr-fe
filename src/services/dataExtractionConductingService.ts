@@ -20,12 +20,16 @@ import type {
 import type { ApiResponse } from "../types/project";
 
 export const dataExtractionConductingService = {
+  projectIdFromProcessId(extractionProcessId: string): string {
+    return extractionProcessId.replace(/^(?:de_|rp_)/, "");
+  },
+
   async getDashboard(
     extractionProcessId: string,
     filters: ExtractionDashboardFilterDto
   ): Promise<ApiResponse<ExtractionDashboardResponseDto>> {
     const response = await api.get<ApiResponse<ExtractionDashboardResponseDto>>(
-      `/data-extraction-processes/${extractionProcessId}/dashboard`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers`,
       {
         params: filters,
       }
@@ -39,9 +43,9 @@ export const dataExtractionConductingService = {
     paperId: string,
     payload: AssignReviewersDto
   ): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/assign`,
-      payload
+    const response = await api.post<ApiResponse<null>>(
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/assignments`,
+      { paperIds: [paperId], reviewerIds: [payload.reviewer1Id, payload.reviewer2Id].filter(Boolean), phase: "DATA_EXTRACTION" },
     );
 
     return response.data;
@@ -53,7 +57,7 @@ export const dataExtractionConductingService = {
     payload: SubmitExtractionRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/submit`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/submit`,
       payload
     );
 
@@ -66,7 +70,7 @@ export const dataExtractionConductingService = {
     payload: SubmitExtractionRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/direct-extract`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/submit`,
       payload
     );
 
@@ -103,7 +107,7 @@ export const dataExtractionConductingService = {
     paperId: string
   ): Promise<ApiResponse<ConsensusWorkspaceDto>> {
     const response = await api.get<ApiResponse<ConsensusWorkspaceDto>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/consensus`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/consensus`
     );
 
     return response.data;
@@ -114,7 +118,7 @@ export const dataExtractionConductingService = {
     paperId: string
   ): Promise<ApiResponse<ReviewerWorkspaceDto>> {
     const response = await api.get<ApiResponse<ReviewerWorkspaceDto>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/reviewer-workspace`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/workspace`
     );
 
     return response.data;
@@ -127,8 +131,8 @@ export const dataExtractionConductingService = {
     payload: AddCommentRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/fields/${fieldId}/comments`,
-      payload
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/comments`,
+      { ...payload, fieldId },
     );
 
     return response.data;
@@ -140,7 +144,7 @@ export const dataExtractionConductingService = {
     payload: SubmitConsensusRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/consensus/submit`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/consensus`,
       payload
     );
 
@@ -149,7 +153,7 @@ export const dataExtractionConductingService = {
 
   async exportExtractedData(extractionProcessId: string): Promise<Blob> {
     const response = await api.get<Blob>(
-      `/data-extraction-processes/${extractionProcessId}/export`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`,
       { responseType: "blob" }
     );
 
@@ -158,7 +162,7 @@ export const dataExtractionConductingService = {
 
   async exportExtractedDataCsv(extractionProcessId: string): Promise<Blob> {
     const response = await api.get<Blob>(
-      `/data-extraction-processes/${extractionProcessId}/export/csv`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`,
       { responseType: "blob" }
     );
 
@@ -169,7 +173,7 @@ export const dataExtractionConductingService = {
     extractionProcessId: string
   ): Promise<ApiResponse<ExtractionPreviewDto>> {
     const response = await api.get<ApiResponse<ExtractionPreviewDto>>(
-      `/data-extraction-processes/${extractionProcessId}/export/preview`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/export`
     );
 
     return response.data;
@@ -179,7 +183,7 @@ export const dataExtractionConductingService = {
     extractionProcessId: string
   ): Promise<ApiResponse<ExtractionEditableGridDto>> {
     const response = await api.get<ApiResponse<ExtractionEditableGridDto>>(
-      `/data-extraction-processes/${extractionProcessId}/editable-grid`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers`
     );
 
     return response.data;
@@ -190,7 +194,7 @@ export const dataExtractionConductingService = {
     payload: UpdateGridCellRequestDto
   ): Promise<ApiResponse<null>> {
     const response = await api.put<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/editable-grid/cell`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${payload.paperId}/draft`,
       payload
     );
 
@@ -205,7 +209,7 @@ export const dataExtractionConductingService = {
     matrixRowIndex: number | null
   ): Promise<ApiResponse<ExtractedDataAuditLogDto[]>> {
     const response = await api.get<ApiResponse<ExtractedDataAuditLogDto[]>>(
-      `/data-extraction-processes/${extractionProcessId}/audit-logs`,
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/papers/${paperId}/workspace`,
       {
         params: {
           paperId,
@@ -223,7 +227,7 @@ export const dataExtractionConductingService = {
     extractionProcessId: string
   ): Promise<ApiResponse<ExtractionWorkloadSummaryDto>> {
     const response = await api.get<ApiResponse<ExtractionWorkloadSummaryDto>>(
-      `/data-extraction-processes/${extractionProcessId}/workload-summary`
+      `/projects/${this.projectIdFromProcessId(extractionProcessId)}/extraction/progress`
     );
 
     return response.data;

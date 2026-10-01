@@ -16,6 +16,27 @@ import type { ApiResponse } from "../types/project";
  * Handles all API calls related to review processes following PRISMA 2020 workflow
  */
 class ReviewProcessService {
+  private projectIdFromProcessId(id: string): string {
+    return id.replace(/^(?:rp_|sp_|qa_|de_|sy_)/, "");
+  }
+
+  private toReviewProcess(data: any): ReviewProcess {
+    const statusText = data.status === "ACTIVE" || data.status === "REOPENED"
+      ? "InProgress"
+      : data.status === "COMPLETED"
+        ? "Completed"
+        : data.status === "CANCELLED"
+          ? "Cancelled"
+          : "NotStarted";
+    return {
+      ...data,
+      id: data.id || "current",
+      processId: data.id || "current",
+      projectId: data.projectId,
+      statusText,
+      completedAt: data.completedAt || null,
+    };
+  }
   /**
    * Create a new review process for a project
    * POST /api/projects/{projectId}/review-processes
@@ -31,7 +52,7 @@ class ReviewProcessService {
     if (!response.data.isSuccess) {
       throw new Error(response.data.message || "Failed to create review process");
     }
-    return response.data;
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -44,7 +65,8 @@ class ReviewProcessService {
     const response = await api.get<ApiResponse<ReviewProcessSnapshotResponse[]>>(
       `/projects/${projectId}/review-processes`,
     );
-    return response.data;
+    const data = response.data.data;
+    return { ...response.data, data: (Array.isArray(data) ? data : [data]).map((item) => this.toReviewProcess(item)) };
   }
 
   /**
@@ -52,8 +74,10 @@ class ReviewProcessService {
    * GET /api/review-processes/{id}
    */
   async getReviewProcessById(id: string): Promise<ApiResponse<ReviewProcess>> {
-    const response = await api.get<ApiResponse<ReviewProcess>>(`/review-processes/${id}`);
-    return response.data;
+    const response = await api.get<ApiResponse<ReviewProcess>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes`,
+    );
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -73,8 +97,10 @@ class ReviewProcessService {
    * POST /api/review-processes/{id}/start
    */
   async startReviewProcess(id: string): Promise<ApiResponse<ReviewProcess>> {
-    const response = await api.post<ApiResponse<ReviewProcess>>(`/review-processes/${id}/start`);
-    return response.data;
+    const response = await api.post<ApiResponse<ReviewProcess>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/start`,
+    );
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -82,8 +108,10 @@ class ReviewProcessService {
    * POST /api/review-processes/{id}/complete
    */
   async completeReviewProcess(id: string): Promise<ApiResponse<ReviewProcess>> {
-    const response = await api.post<ApiResponse<ReviewProcess>>(`/review-processes/${id}/complete`);
-    return response.data;
+    const response = await api.post<ApiResponse<ReviewProcess>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/complete`,
+    );
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -91,8 +119,10 @@ class ReviewProcessService {
    * POST /api/review-processes/{id}/cancel
    */
   async cancelReviewProcess(id: string): Promise<ApiResponse<ReviewProcess>> {
-    const response = await api.post<ApiResponse<ReviewProcess>>(`/review-processes/${id}/cancel`);
-    return response.data;
+    const response = await api.post<ApiResponse<ReviewProcess>>(
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/cancel`,
+    );
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -113,10 +143,11 @@ class ReviewProcessService {
    * POST /api/review-processes/{id}/reopen-phase/{phase}
    */
   async reopenPhase(id: string, phase: number): Promise<ApiResponse<ReviewProcess>> {
+    void phase;
     const response = await api.post<ApiResponse<ReviewProcess>>(
-      `/review-processes/${id}/reopen-phase/${phase}`,
+      `/projects/${this.projectIdFromProcessId(id)}/review-processes/reopen`,
     );
-    return response.data;
+    return { ...response.data, data: this.toReviewProcess(response.data.data) };
   }
 
   /**
@@ -141,7 +172,7 @@ class ReviewProcessService {
     data: AddSelectedPapersRequest,
   ): Promise<ApiResponse<AddPapersToReviewProcessResponse>> {
     const response = await api.post<ApiResponse<AddPapersToReviewProcessResponse>>(
-      `/review-processes/${reviewProcessId}/papers`,
+      `/projects/${this.projectIdFromProcessId(reviewProcessId)}/review-processes/papers`,
       data,
     );
     return response.data;
@@ -156,7 +187,7 @@ class ReviewProcessService {
     data: AddFromFilterSettingRequest,
   ): Promise<ApiResponse<AddPapersFromFilterResponse>> {
     const response = await api.post<ApiResponse<AddPapersFromFilterResponse>>(
-      `/review-processes/${processId}/papers/add-from-filter-setting`,
+      `/projects/${this.projectIdFromProcessId(processId)}/review-processes/papers/add-from-filter-setting`,
       data,
     );
     return response.data;
