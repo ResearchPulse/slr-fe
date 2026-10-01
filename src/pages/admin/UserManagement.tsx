@@ -122,7 +122,7 @@ const UserManagement: React.FC = () => {
         "Export Successful",
         "Your user account data has been downloaded.",
       );
-    } catch (err) {
+    } catch {
       toastError("Export Failed", "Could not generate user account file.");
     }
   };
@@ -160,7 +160,7 @@ const UserManagement: React.FC = () => {
           result.message || "Could not update user status.",
         );
       }
-    } catch (err) {
+    } catch {
       toastError("System Error", "An unexpected error occurred.");
     }
   };

@@ -32,7 +32,7 @@ export const useReviewNeeds = (projectId?: string) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.needs(projectId || "") });
       toast.success("Review need added successfully");
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add review need"),
+    onError: (err) => toast.error(err.message || "Failed to add review need"),
   });
 
   return {
@@ -64,7 +64,7 @@ export const useDocuments = (projectId?: string) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.documents(projectId || "") });
       toast.success("Document added successfully");
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add document"),
+    onError: (err) => toast.error(err.message || "Failed to add document"),
   });
 
   return {
@@ -96,7 +96,7 @@ export const useObjectives = (projectId?: string) => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.objectives(projectId || "") });
       toast.success("Objective added successfully");
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add objective"),
+    onError: (err) => toast.error(err.message || "Failed to add objective"),
   });
 
   return {
@@ -130,7 +130,7 @@ export const useResearchQuestions = (projectId?: string) => {
       });
       toast.success("Research question added successfully");
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add research question"),
+    onError: (err) => toast.error(err.message || "Failed to add research question"),
   });
 
   return {
@@ -191,7 +191,7 @@ export const usePicoc = (questionIds: string[] = []) => {
       });
       toast.success("PICOC element added successfully");
     },
-    onError: (err: any) => toast.error(err.message || "Failed to add PICOC element"),
+    onError: (err) => toast.error(err.message || "Failed to add PICOC element"),
   });
 
   return {
@@ -231,5 +231,4 @@ export const useProjectGovernance = (projectId?: string) => {
     addPicoc,
   };
 };
-
 

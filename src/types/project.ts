@@ -78,6 +78,7 @@ export interface UserSearchResult {
   email: string;
   username: string;
   fullName: string;
+  role?: string;
   projectRole?: number;
   isAlreadyMember: boolean;
 }
@@ -168,9 +169,7 @@ export interface GetProjectsParams {
   pageSize?: number;
 }
 
-export interface ProjectExportRequest {
-  // Currently no filters or pagination required for export
-}
+export type ProjectExportRequest = Record<string, never>;
 
 
 export interface GetProjectMembersParams {

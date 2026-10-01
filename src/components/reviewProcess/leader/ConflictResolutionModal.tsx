@@ -70,9 +70,6 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
   processId,
   phase,
 }) => {
-  const [_activeTab, setActiveTab] = useState<
-    "abstract" | "full-text" | "metadata"
-  >("abstract");
   const [resolution, setResolution] = useState<"Include" | "Exclude" | null>(
     null,
   );
@@ -157,7 +154,6 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      setActiveTab("abstract");
       setResolution(null);
       setExclusionReason("");
       setResolutionNotes("");

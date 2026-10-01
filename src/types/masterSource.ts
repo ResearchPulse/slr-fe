@@ -43,4 +43,5 @@ export interface MasterSourceFilters {
 export interface AvailableMasterSearchSourceResponse {
   id: string;
   name: string;
+  baseUrl: string;
 }

@@ -144,7 +144,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
         setSelectedReviewers(new Map());
         onAssignmentComplete();
       }
-    } catch (err: any) {
+    } catch {
       toastError(
         "Assignment Error",
         "An unexpected error occurred during assignment.",

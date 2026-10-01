@@ -3,9 +3,11 @@ import { searchSourceService } from "../services/searchSourceService";
 import { masterSourceService } from "../services/masterSourceService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import type { SearchSourceDto } from "../types/searchSource";
+import type { SearchStrategyDto } from "../components/paperPool/types/search-strategy";
 import toast from "react-hot-toast";
+import { getErrorMessage } from "../utils/errorUtils";
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_SEARCH_SOURCES: SearchSourceDto[] = [];
 
 export const useSearchSources = (projectId: string) => {
   const queryClient = useQueryClient();
@@ -39,8 +41,8 @@ export const useSearchSources = (projectId: string) => {
         toast.error(response.message || "Failed to update search sources");
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || error.message || "An error occurred");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "An error occurred"));
     },
   });
 
@@ -55,13 +57,13 @@ export const useSearchSources = (projectId: string) => {
         toast.error(response.message || "Failed to update search source");
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || error.message || "An error occurred");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "An error occurred"));
     },
   });
 
   const { mutateAsync: updateStrategies, isPending: isUpdatingStrategies } = useMutation({
-    mutationFn: ({ sourceId, strategies }: { sourceId: string; strategies: any[] }) => 
+    mutationFn: ({ sourceId, strategies }: { sourceId: string; strategies: SearchStrategyDto[] }) =>
       searchSourceService.updateStrategies(sourceId, strategies),
     onSuccess: (response) => {
       if (response.isSuccess) {
@@ -73,15 +75,15 @@ export const useSearchSources = (projectId: string) => {
         toast.error(response.message || "Failed to synchronize strategies");
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || error.message || "An error occurred");
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "An error occurred"));
     },
   });
 
   return {
-    searchSources: searchSources || EMPTY_ARRAY,
+    searchSources: searchSources || EMPTY_SEARCH_SOURCES,
     isLoadingSources,
-    availableMasterSources: availableMasterSources || EMPTY_ARRAY,
+    availableMasterSources: availableMasterSources || [],
     isLoadingMasterSources,
     bulkUpsert,
     isUpserting,

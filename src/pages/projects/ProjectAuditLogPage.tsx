@@ -129,7 +129,7 @@ const ProjectAuditLogPage: React.FC = () => {
   const [exportHistory, setExportHistory] = useState<ExportHistoryItem[]>([]);
 
   const queryParams = useMemo(() => {
-    const params: Record<string, any> = {
+    const params: Record<string, string | number> = {
       pageNumber: currentPage,
       pageSize: AUDIT_LOG_PAGE_SIZE,
     };

@@ -69,8 +69,8 @@ export default function PhaseStatsGrid({
           },
           { label: "Excluded", value: phaseStats.screening.excluded },
           {
-            label: "Pending",
-            value: phaseStats.screening.pendingCount,
+            label: "In Progress",
+            value: phaseStats.screening.inScreeningCount,
             variant: "warning",
           },
         ]}

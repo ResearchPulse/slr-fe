@@ -413,8 +413,8 @@ export const studySelectionService = {
   },
 
   // 29. Delete Exclusion Reason
-  async deleteExclusionReason(id: string): Promise<ApiResponse<any>> {
-    const response = await api.delete<ApiResponse<any>>(`/study-selection/exclusion-reasons/${id}`);
+  async deleteExclusionReason(id: string): Promise<ApiResponse<null>> {
+    const response = await api.delete<ApiResponse<null>>(`/study-selection/exclusion-reasons/${id}`);
     return response.data;
   },
 
@@ -503,8 +503,8 @@ export const studySelectionService = {
   },
 
   // 39. Live Review Import (Fetch criteria from protocol/live review)
-  async getLiveReviewImport(id: string): Promise<ApiResponse<any>> {
-    const response = await api.get<ApiResponse<any>>(`/study-selection/${id}/live-review-import`);
+  async getLiveReviewImport(id: string): Promise<ApiResponse<unknown>> {
+    const response = await api.get<ApiResponse<unknown>>(`/study-selection/${id}/live-review-import`);
     return response.data;
   },
   

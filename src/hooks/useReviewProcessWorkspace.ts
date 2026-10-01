@@ -50,6 +50,7 @@ const EMPTY_PHASE_STATS: PhaseStats = {
     totalPapers: 0,
     included: 0,
     excluded: 0,
+    inScreeningCount: 0,
     conflictCount: 0,
     pendingCount: 0,
   },
@@ -798,6 +799,7 @@ export const useReviewProcessWorkspace = ({
             totalPapers: selectionStats.totalPapers,
             included: selectionStats.includedCount,
             excluded: selectionStats.excludedCount,
+            inScreeningCount: selectionStats.inScreeningCount ?? 0,
             conflictCount: selectionStats.conflictCount,
             pendingCount: selectionStats.pendingCount,
           }
@@ -898,9 +900,8 @@ export const useReviewProcessWorkspace = ({
     const excluded = stats?.excludedCount ?? process?.totalExcludedPapers ?? 0;
     const pending = stats?.pendingCount ?? 0;
 
-    // The API does not expose a granular in-screening count yet.
-    const inScreening = 0;
-    const notScreened = pending - inScreening;
+    const inScreening = stats?.inScreeningCount ?? 0;
+    const notScreened = pending;
 
     return {
       total,

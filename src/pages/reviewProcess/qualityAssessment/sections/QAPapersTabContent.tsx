@@ -47,7 +47,7 @@ interface QAPapersTabContentProps {
     decisionData?: { notes: string | null; items: ReviewerDecisionPayload[] },
   ) => void;
   onAiAnalyze?: (paperId: string) => Promise<AutomateQualityAssessmentResponse>;
-  highlightsByCriterion?: Record<string, any[]>;
+  highlightsByCriterion?: Record<string, HighlightData[]>;
   isSaving?: boolean;
   canEdit?: boolean;
 }
@@ -111,7 +111,9 @@ export function QAPapersTabContent({
                   bgColor: "rgba(245, 158, 11, 0.4)",
                 }),
               );
-            } catch (e) {}
+            } catch {
+              // Skip malformed stored highlight coordinates.
+            }
           }
         });
         setHighlightsByCriterion(initialHighlights);
@@ -181,7 +183,9 @@ export function QAPapersTabContent({
                   reviewerInitials: initials,
                   bgColor,
                 });
-              } catch (e) {}
+              } catch {
+                // Skip malformed stored highlight coordinates.
+              }
             }
           });
         });

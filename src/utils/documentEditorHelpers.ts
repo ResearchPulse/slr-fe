@@ -1,8 +1,11 @@
 import { v4 as uuidv4 } from "uuid";
 import type { DocumentDraft } from "../types/documentEditor";
 
-export const validateChecklistDraftJson = (json: any): { isValid: boolean; error?: string } => {
-  if (typeof json !== 'object' || json === null) return { isValid: false, error: "Invalid JSON format" };
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === "object" && value !== null && !Array.isArray(value);
+
+export const validateChecklistDraftJson = (json: unknown): { isValid: boolean; error?: string } => {
+  if (!isRecord(json)) return { isValid: false, error: "Invalid JSON format" };
   
   // Basic structures
   if (json.title !== undefined && typeof json.title !== 'string') return { isValid: false, error: "Invalid 'title' format" };
@@ -10,20 +13,23 @@ export const validateChecklistDraftJson = (json: any): { isValid: boolean; error
   if (json.sections !== undefined && !Array.isArray(json.sections)) return { isValid: false, error: "Invalid 'sections' format" };
 
   // Validate paragraphs if present
-  if (json.paragraphs) {
-    for (const p of json.paragraphs) {
-      if (typeof p.text !== 'string') return { isValid: false, error: "A paragraph is missing 'text' property" };
+  const paragraphs = json.paragraphs;
+  if (Array.isArray(paragraphs)) {
+    for (const p of paragraphs) {
+      if (!isRecord(p) || typeof p.text !== 'string') return { isValid: false, error: "A paragraph is missing 'text' property" };
     }
   }
 
   // Validate sections if present
-  if (json.sections) {
-    for (const s of json.sections) {
-      if (typeof s.title !== 'string') return { isValid: false, error: "A section is missing 'title' property" };
-      if (s.items && !Array.isArray(s.items)) return { isValid: false, error: "Section 'items' must be an array" };
-      if (s.items) {
-        for (const item of s.items) {
-          if (typeof item.text !== 'string') return { isValid: false, error: "An item is missing 'text' property" };
+  const sections = json.sections;
+  if (Array.isArray(sections)) {
+    for (const s of sections) {
+      if (!isRecord(s) || typeof s.title !== 'string') return { isValid: false, error: "A section is missing 'title' property" };
+      const items = s.items;
+      if (items !== undefined && !Array.isArray(items)) return { isValid: false, error: "Section 'items' must be an array" };
+      if (Array.isArray(items)) {
+        for (const item of items) {
+          if (!isRecord(item) || typeof item.text !== 'string') return { isValid: false, error: "An item is missing 'text' property" };
         }
       }
     }

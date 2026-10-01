@@ -67,7 +67,7 @@ export default function CrossrefWorksExplorer({
       const response = await fetchDetail(doi);
       setSelectedWork(response.data);
       setIsDetailOpen(true);
-    } catch (error) {
+    } catch {
       // Error handled by mutation toast if added, or here
     }
   };

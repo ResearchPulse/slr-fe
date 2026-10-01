@@ -52,7 +52,7 @@ export interface RegisterResponse {
   isSuccess: boolean;
   message: string;
   errors: ApiError[] | null;
-  data: any;
+  data: unknown;
 }
 
 export interface RefreshResponseData {

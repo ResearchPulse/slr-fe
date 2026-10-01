@@ -1,16 +1,34 @@
 import Header from "../components/layout/Header";
 import Footer from "../components/layout/Footer";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import AdminAccessGuard from "../components/auth/AdminAccessGuard";
 import SectionGuard from "../components/auth/SectionGuard";
 import SignalRConnectionManager from "../components/SignalRConnectionManager";
 
 export default function MainLayout() {
+  const { pathname } = useLocation();
+  const isScreeningWorkspace =
+    /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?screening(?:\/|$)/.test(
+      pathname,
+    );
+
   return (
-    <div className="min-h-screen bg-bg-primary flex flex-col">
+    <div
+      className={
+        isScreeningWorkspace
+          ? "flex h-dvh min-h-0 flex-col overflow-hidden bg-bg-primary"
+          : "flex min-h-screen flex-col bg-bg-primary"
+      }
+    >
       <SignalRConnectionManager />
-      <Header />
-      <main className="flex-grow">
+      {!isScreeningWorkspace && <Header />}
+      <main
+        className={
+          isScreeningWorkspace
+            ? "min-h-0 flex-1 overflow-hidden overscroll-none"
+            : "flex-grow"
+        }
+      >
         <AdminAccessGuard />
         <SectionGuard section="client">
           {/* <InteractionGuard> */}
@@ -18,7 +36,7 @@ export default function MainLayout() {
           {/* </InteractionGuard> */}
         </SectionGuard>
       </main>
-      <Footer />
+      {!isScreeningWorkspace && <Footer />}
     </div>
   );
 }

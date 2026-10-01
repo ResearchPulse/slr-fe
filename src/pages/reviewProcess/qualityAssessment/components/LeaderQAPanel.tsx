@@ -5,10 +5,12 @@ import type {
   QualityAssessmentStrategy,
   QualityAssessmentResolutionRequest,
   AutomateQualityAssessmentResponse,
+  QualityAssessmentDecisionItemResponse,
 } from "../../../../types/qualityAssessment";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import type { ReviewerDecisionPayload } from "./ReviewerQAPanel";
+import type { HighlightData } from "../sections/QAPapersTabContent";
 
 interface LeaderQAPanelProps {
   paper: LeaderQAPaperResponse;
@@ -24,7 +26,7 @@ interface LeaderQAPanelProps {
   isResolving?: boolean;
   activeCriterionId?: string | null;
   onSelectCriterion?: (id: string | null) => void;
-  highlightsByCriterion?: Record<string, any[]>;
+  highlightsByCriterion?: Record<string, HighlightData[]>;
   canEdit?: boolean;
   activeTab?: "reviewers" | "my-assessment";
   onTabChange?: (tab: "reviewers" | "my-assessment") => void;
@@ -214,7 +216,7 @@ export default function LeaderQAPanel({
 
   // Group reviewers' decisions by criterion ID
   const criteriaDecisions = useMemo(() => {
-    const map: Record<string, Record<string, any>> = {};
+    const map: Record<string, Record<string, QualityAssessmentDecisionItemResponse>> = {};
     if (!paper.decisions) return map;
 
     paper.decisions.forEach((decision) => {
@@ -275,19 +277,19 @@ export default function LeaderQAPanel({
                 const groupedDecisions = {
                   yes: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   no: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   unclear: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   unanswered: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                 };
 

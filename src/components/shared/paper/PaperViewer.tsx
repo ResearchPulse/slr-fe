@@ -138,7 +138,7 @@ export default function PaperViewer({
   }, [activeSection, paper]);
 
   const { data: reviewerDecisions, isLoading: isLoadingReviewers } =
-    useReviewerDecisions(screeningProcessId, paper?.id, phase);
+    useReviewerDecisions(screeningProcessId, paper?.id, phase, isLeaderView);
 
   const hasPendingAssignedReviewer = !!reviewerDecisions?.some(
     (rd) => !rd.decision,
@@ -163,10 +163,10 @@ export default function PaperViewer({
   // const hasPendingAssignedReviewer = !!paper.assignedReviewers?.some((r) => !r.decision);
 
   return (
-    <div className="flex flex-col h-full bg-bg-secondary/50">
+    <div className="flex h-full flex-col bg-[#f7f9fb]">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className={cn("px-6 py-8 space-y-6 transition-all duration-300")}>
+        <div className={cn("space-y-5 px-4 py-5 transition-all duration-300 lg:px-6 lg:py-6")}>
           {openGraph && citationGraph && (
             <CitationGraphModal
               isOpen={openGraph}
@@ -196,7 +196,7 @@ export default function PaperViewer({
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-[4px] border border-border shadow-none">
+          <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-[#dce6ed] bg-white p-1 shadow-sm">
             <TabButton
               active={activeTab === "abstract"}
               onClick={() => setActiveTab("abstract")}
@@ -419,17 +419,68 @@ export default function PaperViewer({
         </div>
       </div>
 
+      {!hideActions && isLeaderView && (
+        <div className="border-t border-[#dce6ed] bg-white px-4 py-3 lg:px-6">
+          <div className="mx-auto flex max-w-5xl flex-col gap-2.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+                Assigned reviewer progress
+              </span>
+              <span className="text-xs font-semibold text-slate-700">
+                {isLoadingReviewers
+                  ? "Checking submissions…"
+                  : `${reviewerDecisions?.filter((item) => item.decision).length ?? 0} of ${reviewerDecisions?.length ?? 0} submitted`}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {reviewerDecisions?.map((item) => {
+                const decisionText = item.decision?.decisionText;
+                const decisionTone = decisionText?.toLowerCase().includes("include")
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : decisionText?.toLowerCase().includes("exclude")
+                    ? "border-rose-200 bg-rose-50 text-rose-700"
+                    : "border-slate-200 bg-slate-50 text-slate-600";
+                return (
+                  <span
+                    key={item.reviewerId}
+                    title={decisionText || "Waiting for reviewer"}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
+                      decisionTone,
+                    )}
+                  >
+                    {item.reviewerName}: {decisionText || "Pending"}
+                  </span>
+                );
+              })}
+              {!isLoadingReviewers && !reviewerDecisions?.length && (
+                <span className="text-xs text-slate-500">No reviewers are assigned to this paper.</span>
+              )}
+            </div>
+            {!paper.hasConflict && !isLoadingReviewers && reviewerDecisions?.length ? (
+              <p className="text-xs text-slate-500">
+                {hasPendingAssignedReviewer
+                  ? "Waiting for the remaining reviewer. The paper will advance after reviewer consensus."
+                  : "Reviewer submissions are complete. Leader action is only needed if a conflict is raised."}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      )}
+
       {/* Decision Action Bar */}
       {!hideActions && (
-        <div className="border-t border-border bg-surface-white/80 backdrop-blur-md px-8 py-4 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.05)]">
-          <div className="max-w-4xl mx-auto">
+        <div className="border-t border-[#dce6ed] bg-white/95 px-4 py-3 backdrop-blur-md lg:px-6">
+          <div className="mx-auto max-w-5xl">
             {(!isLeaderView && canReview) ||
             (isLeaderView && (onInclude || onExclude)) ? (
               <div className="flex flex-col gap-4">
                 {exclusionReasons.length === 0 && !isLoadingReasons && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-amber-50 border border-amber-100 rounded-[4px] text-amber-700 text-xs font-bold animate-pulse">
+                  <div className="flex items-center gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
                     <FiAlertTriangle className="w-4 h-4" />
-                    Waiting for leader to define exclusion codes...
+                    {isLeaderView
+                      ? "Add exclusion codes in Review Context → Criteria to enable Exclude."
+                      : "Waiting for the project leader to define exclusion codes."}
                   </div>
                 )}
                 {hasPendingAssignedReviewer && isLeaderView && (
@@ -475,7 +526,7 @@ export default function PaperViewer({
                           (isLeaderView && hasPendingAssignedReviewer) ||
                           isLoadingReviewers
                         }
-                        className="flex-1 inline-flex items-center justify-center gap-2 h-12 bg-emerald-600 text-white font-black uppercase tracking-wider text-xs rounded-[4px] hover:bg-emerald-700 active:scale-[0.98] transition-all shadow-none shadow-emerald-900/10 disabled:opacity-50"
+                      className="flex-1 inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-emerald-600 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <FiCheck className="w-4 h-4" />
                         Include{" "}

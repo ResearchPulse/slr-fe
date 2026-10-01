@@ -195,7 +195,7 @@ export default function ProjectMembersModal({
     // Note: UserSearchResult doesn't explicitly have a 'role' field in its type,
     // but if it exists in the response, we should filter it.
     return searchResults
-      .filter((result: any) => result.role !== "Admin")
+      .filter((result) => result.role !== "Admin")
       .map((result) => {
         const user = mapSearchResultToUser(result);
         const hasPendingInvite = invitations?.some(
@@ -310,8 +310,12 @@ export default function ProjectMembersModal({
     try {
       await updateMemberRole({ userId, role });
       toastSuccess(`Role updated to ${role === "LECTURER" ? "Lecturer" : "Reviewer"}.`);
-    } catch (error: any) {
-      toastError(error?.message || "Could not update this member's role.");
+    } catch (error) {
+      toastError(
+        error instanceof Error
+          ? error.message
+          : "Could not update this member's role.",
+      );
     }
   };
 
@@ -354,8 +358,10 @@ export default function ProjectMembersModal({
       setInviteSearchTerm("");
       refetchInvitations();
       refetchMembers();
-    } catch (error: any) {
-      toastError(error?.message || "Không thể gửi một số lời mời.");
+    } catch (error) {
+      toastError(
+        error instanceof Error ? error.message : "Không thể gửi một số lời mời.",
+      );
     }
   };
 
@@ -559,7 +565,7 @@ export default function ProjectMembersModal({
                               {canManageMembers && member.role !== ProjectRole.Owner ? (
                                 <select
                                   aria-label={`Role for ${member.fullName}`}
-                                  value={member.role === ProjectRole.Owner ? "OWNER" : member.role === ProjectRole.Lecturer ? "LECTURER" : "REVIEWER"}
+                                  value={member.role === ProjectRole.Lecturer ? "LECTURER" : "REVIEWER"}
                                   disabled={isUpdatingMemberRole}
                                   onChange={(event) =>
                                     void handleExistingMemberRoleChange(
@@ -567,7 +573,7 @@ export default function ProjectMembersModal({
                                       event.target.value as "OWNER" | "LECTURER" | "REVIEWER",
                                     )
                                   }
-                                  className="px-2 py-0.5 rounded border border-slate-200 text-[10px] font-bold"
+                                  className="h-8 min-w-[132px] rounded-lg border border-[#D8E3E9] bg-white px-2.5 text-[11px] font-semibold text-[#334B5A] shadow-sm hover:border-[#9FB4C0] focus:border-primary focus:ring-2 focus:ring-primary/15"
                                 >
                                   {!hideLeaderRole && <option value="OWNER">Project Leader</option>}
                                   <option value="LECTURER">Lecturer</option>

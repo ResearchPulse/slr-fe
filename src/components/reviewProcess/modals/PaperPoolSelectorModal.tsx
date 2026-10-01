@@ -108,7 +108,7 @@ export default function PaperPoolSelectorModal({
       // We don't close immediately if the user wants to see the result or add more?
       // Actually, the requirements imply a CTA that opens it, usually closing on success is fine.
       // But let's show a success state if the hook provides one.
-    } catch (err) {
+    } catch {
       // Error handled by hook
     }
   };

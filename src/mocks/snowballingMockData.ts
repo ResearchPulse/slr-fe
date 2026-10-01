@@ -1,8 +1,6 @@
 import { type CandidatePaperDto, CandidateStatus } from "../types/paper";
 
-export interface MockCandidate extends CandidatePaperDto {
-  // Any UI-only fields for mocks
-}
+export type MockCandidate = CandidatePaperDto;
 
 export interface OriginPaperSummary {
   id: string;

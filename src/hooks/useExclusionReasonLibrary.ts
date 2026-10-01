@@ -4,7 +4,7 @@ import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
 import type { GetExclusionReasonLibraryParams } from "../types/exclusionReasonLibrary";
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: never[] = [];
 
 /**
  * Custom hook for fetching all exclusion reason library items with filtering and pagination

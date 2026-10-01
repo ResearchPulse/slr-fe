@@ -111,6 +111,8 @@ export interface AssignedPapersParams {
   pageSize?: number;
   hasFullText?: boolean | null;
   hasConflict?: boolean | null;
+  hasReferences?: boolean;
+  hasCitations?: boolean;
   phase?: PaperPhase;
 }
 
@@ -239,7 +241,7 @@ export interface GetAssignmentPapersParams {
 // RESPONSE TYPES
 // ============================================
 
-export interface AssignedPaperResponse extends PaperWithDecisionsResponse {}
+export type AssignedPaperResponse = PaperWithDecisionsResponse;
 
 export interface StudySelectionProcessResponse {
   id: string;

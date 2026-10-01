@@ -4,6 +4,7 @@ import { useProjectResearchQuestions } from "../../../../hooks/useProjects";
 import type { ExtractionTemplateDto } from "../../../../types/dataExtraction";
 import type { ExtractionTemplateResponseDto } from "../../../../types/dataExtraction";
 import type { DataItemDefinitionExtended } from "../../../../types/dataExtraction";
+import type { ResearchQuestion } from "../../../../types/coreAndGovernance";
 import type {
   WizardSection,
   WizardStep,
@@ -55,15 +56,30 @@ export default function TemplateWizard({
     error: planningError,
   } = useProjectResearchQuestions(projectId);
 
+  const normalizedResearchQuestions = useMemo<ResearchQuestion[]>(
+    () =>
+      researchQuestions.map((question) => ({
+        researchQuestionId: question.id,
+        projectId: question.projectId,
+        questionText: question.questionText,
+        createdAt: question.createdAt,
+      })),
+    [researchQuestions],
+  );
+
   useEffect(() => {
-    if (!isPlanningLoading && !planningError && researchQuestions.length > 0) {
-      initializeSectionsForNewTemplate(researchQuestions);
+    if (
+      !isPlanningLoading &&
+      !planningError &&
+      normalizedResearchQuestions.length > 0
+    ) {
+      initializeSectionsForNewTemplate(normalizedResearchQuestions);
     }
   }, [
     initializeSectionsForNewTemplate,
     isPlanningLoading,
     planningError,
-    researchQuestions,
+    normalizedResearchQuestions,
   ]);
 
   const currentSection = useMemo(
@@ -121,7 +137,7 @@ export default function TemplateWizard({
             )}
             onSetupSection={startSectionSetup}
             isViewOnly={isViewOnly}
-            researchQuestions={researchQuestions}
+            researchQuestions={normalizedResearchQuestions}
             isGuidedGenerationLoading={isPlanningLoading}
             guidedGenerationError={planningError}
           />
@@ -134,7 +150,7 @@ export default function TemplateWizard({
             initialItems={currentSectionItems}
             onComplete={handleCompleteFlatSetup}
             onBack={() => goToStep(1)}
-            researchQuestions={researchQuestions}
+            researchQuestions={normalizedResearchQuestions}
           />
         );
 
@@ -146,7 +162,7 @@ export default function TemplateWizard({
             initialColumns={currentMatrixData?.columns}
             onComplete={handleCompleteMatrixSetup}
             onBack={() => goToStep(1)}
-            researchQuestions={researchQuestions}
+            researchQuestions={normalizedResearchQuestions}
           />
         );
 
@@ -161,7 +177,7 @@ export default function TemplateWizard({
             }}
             onBack={() => goToStep(1)}
             isViewOnly={isViewOnly}
-            researchQuestions={researchQuestions}
+            researchQuestions={normalizedResearchQuestions}
           />
         );
 
