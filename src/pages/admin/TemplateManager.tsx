@@ -163,7 +163,7 @@ const mapTreeNodeToCreateItem = (
     isSectionHeaderOnly: hasChildren,
     defaultSampleAnswer: node.defaultSampleAnswer ?? null,
     parentItemNumber: null,
-    subItems: node.children.map((child) =>
+    subItems: (node.children ?? []).map((child) =>
       mapTreeNodeToCreateItem(child, sectionName, checklistType),
     ),
   };

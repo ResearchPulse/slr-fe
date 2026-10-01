@@ -73,7 +73,7 @@ export default function TitleAbstractScreeningWorkspace() {
       {/* 3-Column Layout */}
       <div className="flex flex-1 min-h-0">
         {/* Left Panel — Paper Queue */}
-        <div className="w-80 shrink-0">
+        <div className="w-80 shrink-0 overflow-hidden">
           <PaperQueue
             papers={ws.papers}
             selectedPaperId={ws.selectedPaper?.id ?? null}

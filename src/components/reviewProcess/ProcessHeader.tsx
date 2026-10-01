@@ -11,6 +11,8 @@ interface ProcessHeaderProps {
   startLoading: boolean;
   completeLoading: boolean;
   disabled?: boolean;
+  canManageActions?: boolean;
+  isReadyToComplete?: boolean;
 }
 
 export default function ProcessHeader({
@@ -21,6 +23,8 @@ export default function ProcessHeader({
   startLoading,
   completeLoading,
   disabled = false,
+  canManageActions = true,
+  isReadyToComplete = true,
 }: ProcessHeaderProps) {
   const statusLabel = process.statusText === "InProgress"
     ? "Active"
@@ -102,7 +106,15 @@ export default function ProcessHeader({
                 onClick={onCompleteProcess}
                 disabled={completeLoading || disabled}
                 variant="success"
-                title={disabled ? "Select a protocol first" : ""}
+                title={
+                  disabled
+                    ? "Select a protocol first"
+                    : canManageActions === false
+                      ? "Only Lead Reviewer can complete the process"
+                      : isReadyToComplete === false
+                        ? "Complete all 4 workflow phases first"
+                        : "Complete review process"
+                }
               >
                 <FiCheck className="mr-2 h-4 w-4" aria-hidden="true" />
                 {completeLoading ? "Completing..." : "Complete process"}

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import { FiChevronRight, FiAlertCircle } from "react-icons/fi";
+import { FiChevronRight, FiAlertCircle, FiArrowDown } from "react-icons/fi";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
 
@@ -252,6 +252,11 @@ export default function PaperPoolTab({
           return (papersPage?.totalCount ?? 0) > 0;
         case 4:
           return (reviewProcesses?.length ?? 0) > 0;
+        case 5:
+          return (
+            (reviewProcesses?.length ?? 0) > 0 &&
+            reviewProcesses.some((rp: any) => (rp.totalPapersImported ?? 0) > 0)
+          );
         default:
           return false;
       }
@@ -267,50 +272,29 @@ export default function PaperPoolTab({
   const initialCheckPerformed = useRef(false);
 
   useEffect(() => {
-    // If we've already performed the initial progress check or the user has moved past step 1,
-    // stop auto-advancing so they can manually return to previous steps.
+    // Only determine initial starting step once on mount when user arrives at step 1
     if (initialCheckPerformed.current) return;
 
     if (workflowStep === 1) {
-      if (isStepCompleted(4)) {
-        setWorkflowStep(5);
-        initialCheckPerformed.current = true;
-      } else if (isStepCompleted(3)) {
-        setWorkflowStep(4);
-        initialCheckPerformed.current = true;
-      } else if (isStepCompleted(2)) {
-        setWorkflowStep(3);
-        initialCheckPerformed.current = true;
-      } else if (isStepCompleted(1)) {
+      // Find the first incomplete step sequentially so earlier steps are never skipped
+      if (!isStepCompleted(1)) {
+        // Step 1 not complete: stay on step 1
+      } else if (!isStepCompleted(2)) {
         setWorkflowStep(2);
-        initialCheckPerformed.current = true;
+      } else if (!isStepCompleted(3)) {
+        setWorkflowStep(3);
+      } else if (!isStepCompleted(4)) {
+        setWorkflowStep(4);
+      } else {
+        setWorkflowStep(5);
       }
-    } else {
-      // User is already on a later step or manually navigated
-      initialCheckPerformed.current = true;
     }
+    initialCheckPerformed.current = true;
   }, [
-    hasSearchSources,
-    setupState.topic,
     workflowStep,
     isStepCompleted,
-    papersPage?.totalCount,
-    reviewProcesses,
+    setWorkflowStep,
   ]);
-
-  // Reactive auto-advance from Step 3 to 4 when first papers are imported
-  useEffect(() => {
-    if (workflowStep === 3 && (papersPage?.totalCount ?? 0) > 0) {
-      setWorkflowStep(4);
-    }
-  }, [workflowStep, papersPage?.totalCount, setWorkflowStep]);
-
-  // Reactive auto-advance from Step 4 to 5 when first review process is created
-  useEffect(() => {
-    if (workflowStep === 4 && (reviewProcesses?.length ?? 0) > 0) {
-      setWorkflowStep(5);
-    }
-  }, [workflowStep, reviewProcesses?.length, setWorkflowStep]);
 
   const workflowActions = useMemo(() => {
     switch (workflowStep) {
@@ -391,6 +375,22 @@ export default function PaperPoolTab({
             : []),
         ];
       case 5:
+        if (!isLeader) {
+          return [
+            {
+              label: "View Review Processes",
+              primary: true,
+              icon: FiArrowDown,
+              onClick: () => {
+                setActiveTab("library");
+                setTimeout(() => {
+                  const el = document.getElementById("review-process-panel");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              },
+            },
+          ];
+        }
         return [
           {
             label: "Start Assigning Papers",
@@ -406,7 +406,7 @@ export default function PaperPoolTab({
       default:
         return [];
     }
-  }, [workflowStep, setActiveTab]);
+  }, [workflowStep, setActiveTab, isLeader, reviewProcesses?.length]);
 
   const {
     uploadPaperPdf,
@@ -650,6 +650,7 @@ export default function PaperPoolTab({
         onStepClick={setWorkflowStep}
         actions={workflowActions}
         isCompleted={isStepCompleted}
+        isLeader={isLeader}
       />
 
       {workflowStep === 1 && (

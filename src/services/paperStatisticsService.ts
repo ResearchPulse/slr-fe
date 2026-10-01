@@ -24,9 +24,7 @@ function cleanQueryParams(params: PaperStatisticsFilter & { top?: number }): Rec
 
 class PaperStatisticsService {
   private getBaseUrl(projectId: string) {
-    // Following user's doc: /api/project/{projectId}/papers
-    // axios baseURL handles /api, so we use /project/{projectId}/papers
-    return `/project/${projectId}/papers`;
+    return `/projects/${projectId}/papers`;
   }
 
   async getOverview(projectId: string, filter: PaperStatisticsFilter): Promise<PaperOverviewDto> {

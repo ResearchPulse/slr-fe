@@ -14,6 +14,7 @@ import AdminRoutes from "./routes/AdminRoutes";
 import MainRoutes from "./routes/MainRoutes";
 import NotFoundPage from "./pages/not-found/NotFoundPage";
 import { authService } from "./services/authService";
+import ErrorBoundary from "./components/common/ErrorBoundary";
 
 function App() {
   const dispatch = useDispatch();
@@ -67,12 +68,14 @@ function App() {
   }
 
   return (
-    <Routes>
-      <Route path="auth/*" element={<AuthRoutes />} />
-      <Route path="admin/*" element={<AdminRoutes />} />
-      <Route path="404" element={<NotFoundPage />} />
-      <Route path="*" element={<MainRoutes />} />
-    </Routes>
+    <ErrorBoundary>
+      <Routes>
+        <Route path="auth/*" element={<AuthRoutes />} />
+        <Route path="admin/*" element={<AdminRoutes />} />
+        <Route path="404" element={<NotFoundPage />} />
+        <Route path="*" element={<MainRoutes />} />
+      </Routes>
+    </ErrorBoundary>
   );
 }
 

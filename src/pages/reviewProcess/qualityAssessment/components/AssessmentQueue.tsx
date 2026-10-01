@@ -72,7 +72,7 @@ export default function AssessmentQueue({
       </div>
 
       {/* List */}
-      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto p-3 sm:p-3.5">
+      <div className="min-h-0 min-w-0 flex-1 space-y-2 overflow-x-hidden overflow-y-auto p-3 sm:p-3.5">
         {papers.map((paper) => {
           const isSelected = selectedPaperId === paper.paperId;
 
@@ -121,7 +121,7 @@ export default function AssessmentQueue({
                 if (e.key === "Enter") onSelectPaper(paper.paperId);
               }}
               className={cn(
-                "cursor-pointer rounded-xl border px-3.5 py-3 transition-[background-color,border-color,box-shadow]",
+                "w-full cursor-pointer select-none overflow-hidden rounded-xl border px-3.5 py-3 text-left outline-none transition-[background-color,border-color,box-shadow] focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary",
                 isSelected
                   ? "border-primary/30 bg-primary-light shadow-[0_1px_4px_rgba(0,113,188,0.08)]"
                   : "border-transparent bg-surface-white hover:border-border hover:bg-surface-white hover:shadow-sm",

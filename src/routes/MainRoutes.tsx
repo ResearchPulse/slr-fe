@@ -8,6 +8,7 @@ import ProjectLayout from "../layouts/ProjectLayout";
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRouteForProject from "../components/routes/ProtectedRouteForProject";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
+import ErrorBoundary from "../components/common/ErrorBoundary";
 
 // Lazy loaded page components
 const HomePage = lazy(() => import("../pages/home/HomePage"));
@@ -64,18 +65,33 @@ function MainRoutes() {
             <Route element={<ProtectedRoute />}>
               <Route path="projects" element={<ProjectLayout />}>
               <Route index element={<ProjectListPage />} />
-              <Route path=":id/*" element={<ProjectDetailPage />} />
-              <Route path=":id/settings" element={<ProjectSettingsPage />} />
 
               {/* Checklist Routes */}
               <Route
                 path=":projectId/checklists"
-                element={<ChecklistDashboardWrapper />}
+                element={
+                  <ErrorBoundary
+                    fallbackTitle="Không thể tải Checklist"
+                    fallbackMessage="Đã xảy ra lỗi khi hiển thị bảng quản lý Checklist."
+                  >
+                    <ChecklistDashboardWrapper />
+                  </ErrorBoundary>
+                }
               />
               <Route
                 path=":projectId/checklists/:checklistId"
-                element={<ChecklistEditorPage />}
+                element={
+                  <ErrorBoundary
+                    fallbackTitle="Không thể tải nội dung Checklist"
+                    fallbackMessage="Đã xảy ra lỗi khi tải trình chỉnh sửa Checklist."
+                  >
+                    <ChecklistEditorPage />
+                  </ErrorBoundary>
+                }
               />
+
+              <Route path=":id/settings" element={<ProjectSettingsPage />} />
+              <Route path=":id/*" element={<ProjectDetailPage />} />
 
               {/* Canonical Project-Centric Routes (FR-G0-01) */}
               <Route path=":projectId/workspace" element={<ReviewProcessWorkspace />} />

@@ -28,6 +28,8 @@ interface PrismaExportActionsProps {
   generatedAt?: string | null;
   /** Callback to export the diagram as PNG */
   onExportPNG?: () => void;
+  /** Remaining cooldown seconds before user can regenerate again */
+  cooldown?: number;
   /** Nodes for text copy */
   nodes?: PrismaNodeResponse[];
   /** Included node for text copy */
@@ -38,6 +40,7 @@ export default function PrismaExportActions({
   hasReport,
   isGenerating,
   isDownloading,
+  cooldown = 0,
   onGenerate,
   onDownloadDiagram,
   onExportPNG,
@@ -115,7 +118,7 @@ export default function PrismaExportActions({
       {/* Generate / Regenerate button */}
       <button
         onClick={onGenerate}
-        disabled={isGenerating}
+        disabled={isGenerating || cooldown > 0}
         className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-[4px] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <FiRefreshCw
@@ -123,9 +126,11 @@ export default function PrismaExportActions({
         />
         {isGenerating
           ? "Generating…"
-          : hasReport
-            ? "Regenerate Diagram"
-            : "Generate Diagram"}
+          : cooldown > 0
+            ? `Wait ${cooldown}s`
+            : hasReport
+              ? "Regenerate Diagram"
+              : "Generate Diagram"}
       </button>
 
       {/* Export buttons — only enabled when a report exists */}

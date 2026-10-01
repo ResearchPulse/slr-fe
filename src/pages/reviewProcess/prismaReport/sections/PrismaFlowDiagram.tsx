@@ -7,10 +7,13 @@ import {
   useCallback,
   forwardRef,
   useImperativeHandle,
+  useEffect,
 } from "react";
-import { FiArrowDown, FiMaximize2, FiDownload } from "react-icons/fi";
+import { createPortal } from "react-dom";
+import { FiArrowDown, FiMaximize2, FiDownload, FiX } from "react-icons/fi";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
+import toast from "react-hot-toast";
 import type {
   PrismaNodeResponse,
   PrismaBreakdownResponse,
@@ -328,28 +331,59 @@ const PrismaFlowDiagram = forwardRef<
     ref,
   ) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const diagramRef = useRef<HTMLDivElement>(null);
+    const mainDiagramRef = useRef<HTMLDivElement>(null);
+    const modalDiagramRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      if (!isModalOpen) return;
+      const handleKeyDown = (e: KeyboardEvent) => {
+        if (e.key === "Escape") {
+          setIsModalOpen(false);
+        }
+      };
+      window.addEventListener("keydown", handleKeyDown);
+      return () => window.removeEventListener("keydown", handleKeyDown);
+    }, [isModalOpen]);
 
     const handleExportImage = useCallback(async () => {
-      if (diagramRef.current === null) return;
+      const targetElement = isModalOpen
+        ? (modalDiagramRef.current || mainDiagramRef.current)
+        : mainDiagramRef.current;
 
+      if (!targetElement) {
+        toast.error("Diagram element not ready for export.");
+        return;
+      }
+
+      const toastId = toast.loading("Generating high-resolution PNG...");
       try {
-        // Export with a slight delay to ensure all styles are applied
-        const dataUrl = await toPng(diagramRef.current, {
-          cacheBust: true,
-          backgroundColor: "#ffffff",
-          pixelRatio: 3, // Higher resolution
-          style: {
-            padding: "40px",
-            margin: "0",
+        let dataUrl: string;
+        try {
+          dataUrl = await toPng(targetElement, {
+            cacheBust: false,
             backgroundColor: "#ffffff",
-          },
-        });
-        saveAs(dataUrl, "prisma-flow-diagram.png");
+            pixelRatio: 2,
+            fontEmbedCSS: "",
+            style: {
+              padding: "32px",
+              margin: "0",
+              backgroundColor: "#ffffff",
+            },
+          });
+        } catch {
+          dataUrl = await toPng(targetElement, {
+            backgroundColor: "#ffffff",
+            pixelRatio: 1.5,
+          });
+        }
+
+        saveAs(dataUrl, `PRISMA_Flow_Diagram_${new Date().toISOString().split("T")[0]}.png`);
+        toast.success("PRISMA flow diagram exported as PNG!", { id: toastId });
       } catch (err) {
         console.error("Failed to export PRISMA diagram:", err);
+        toast.error("Failed to export PRISMA diagram as PNG.", { id: toastId });
       }
-    }, []);
+    }, [isModalOpen]);
 
     useImperativeHandle(ref, () => ({
       exportImage: handleExportImage,
@@ -372,9 +406,9 @@ const PrismaFlowDiagram = forwardRef<
       ].includes(n.stage),
     );
 
-    const renderDiagram = (isExpanded: boolean) => (
+    const renderDiagram = (isExpanded: boolean, isModalView: boolean = false) => (
       <div
-        ref={diagramRef}
+        ref={isModalView ? modalDiagramRef : mainDiagramRef}
         className={`prisma-flow-diagram py-10 ${isExpanded ? "px-12 w-fit" : "px-6 md:px-10 w-full max-w-[1000px] overflow-x-hidden"} mx-auto print:py-2 transition-all duration-300 bg-surface-white`}
         role="figure"
         aria-label="PRISMA 2020 flow diagram"
@@ -451,42 +485,49 @@ const PrismaFlowDiagram = forwardRef<
           )}
         </div>
 
-        {renderDiagram(initialIsExpanded)}
+        {renderDiagram(initialIsExpanded, false)}
 
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200">
-            <div className="bg-surface-white w-full h-full rounded-[4px] shadow-2xl relative flex flex-col overflow-hidden border border-border">
-              {/* Header */}
-              <div className="flex items-center justify-between px-8 py-4 border-b border-border bg-bg-primary/50">
-                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                  <span className="w-2 h-6 bg-accent rounded-full" />
-                  PRISMA 2020 Flow Diagram - Detailed View
-                </h3>
-                <div className="flex items-center gap-4">
-                  <button
-                    onClick={handleExportImage}
-                    className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-[4px] text-sm font-semibold hover:bg-indigo-700 transition-all shadow-none active:scale-95"
-                  >
-                    <FiDownload className="w-4 h-4" />
-                    Export PNG
-                  </button>
-                  <button
-                    onClick={() => setIsModalOpen(false)}
-                    className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
-                    aria-label="Close modal"
-                  >
-                    <FiMaximize2 className="w-6 h-6 rotate-45" />
-                  </button>
+        {isModalOpen &&
+          createPortal(
+            <div
+              className="fixed inset-0 z-[5000] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) setIsModalOpen(false);
+              }}
+            >
+              <div className="bg-surface-white w-full h-full rounded-[4px] shadow-2xl relative flex flex-col overflow-hidden border border-border">
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 md:px-8 py-4 border-b border-border bg-bg-primary/50 shrink-0">
+                  <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                    <span className="w-2 h-6 bg-accent rounded-full shrink-0" />
+                    <span>PRISMA 2020 Flow Diagram - Detailed View</span>
+                  </h3>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleExportImage}
+                      className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-[4px] text-sm font-semibold hover:bg-indigo-700 transition-all shadow-none active:scale-95 cursor-pointer"
+                    >
+                      <FiDownload className="w-4 h-4" />
+                      Export PNG
+                    </button>
+                    <button
+                      onClick={() => setIsModalOpen(false)}
+                      className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary cursor-pointer"
+                      aria-label="Close modal"
+                    >
+                      <FiX className="w-6 h-6" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="flex-1 overflow-auto bg-bg-primary/30 p-8 md:p-12">
+                  <div className="min-w-fit mx-auto">{renderDiagram(true, true)}</div>
                 </div>
               </div>
-
-              {/* Content */}
-              <div className="flex-1 overflow-auto bg-bg-primary/30 p-8 md:p-12">
-                <div className="min-w-fit mx-auto">{renderDiagram(true)}</div>
-              </div>
-            </div>
-          </div>
-        )}
+            </div>,
+            document.body,
+          )}
       </>
     );
   },

@@ -41,7 +41,7 @@ export default function CrossrefFilterSidebar({
 }: CrossrefFilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-[4px] sticky top-24 h-[calc(100vh-200px)] shadow-none transition-all duration-300">
+      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-[4px] sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none transition-all duration-300">
         <button
           onClick={onToggleCollapse}
           className="p-3 bg-purple-50 text-purple-600 rounded-[4px] hover:bg-purple-100 transition-colors mb-8"
@@ -61,7 +61,7 @@ export default function CrossrefFilterSidebar({
   }
 
   return (
-    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-[4px] sticky top-24 h-[calc(100vh-200px)] shadow-none overflow-hidden transition-all duration-300">
+    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-[4px] sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none overflow-hidden transition-all duration-300">
       {/* Header */}
       <div className="px-6 py-6 border-b border-border flex items-center justify-between bg-purple-50/30">
         <div className="flex items-center gap-3">

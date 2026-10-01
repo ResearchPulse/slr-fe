@@ -128,18 +128,24 @@ export default function PaperTable({
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 border-b border-border bg-white">
             <tr className="text-left">
-              <th className="w-12 px-4 py-3.5 sm:px-5">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={allPageSelected}
-                    onChange={(e) => onToggleAllPage(e.target.checked)}
-                    className="h-4 w-4 cursor-pointer rounded border-border text-accent focus:ring-accent"
-                    aria-label="Select all papers in current page"
-                  />
-                </div>
-              </th>
-              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              {isLeader && (
+                <th className="w-12 px-4 py-3.5 sm:px-5">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allPageSelected}
+                      onChange={(e) => onToggleAllPage(e.target.checked)}
+                      className="h-4 w-4 cursor-pointer rounded border-border text-accent focus:ring-accent"
+                      aria-label="Select all papers in current page"
+                    />
+                  </div>
+                </th>
+              )}
+              <th
+                className={`whitespace-nowrap ${
+                  isLeader ? "px-3" : "px-4 sm:px-5"
+                } py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary`}
+              >
                 Paper ID
               </th>
               <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
@@ -184,7 +190,10 @@ export default function PaperTable({
             ))}
             {papers.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={8} className="px-5 py-16 sm:py-20">
+                <td
+                  colSpan={isLeader ? 8 : 7}
+                  className="px-5 py-16 sm:py-20"
+                >
                   <div className="flex flex-col items-center justify-center text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-300 ring-1 ring-inset ring-border/70">
                       <svg

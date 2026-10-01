@@ -61,7 +61,7 @@ class PrismaReportService {
 
   /** Download the latest PRISMA flow diagram for a review process as .docx */
   async downloadPrismaFlowDiagram(reviewProcessId: string): Promise<Blob> {
-    const response = await api.get(`/projects/${reviewProcessId}/prisma/reports/latest`, {
+    const response = await api.get(`/projects/${reviewProcessId}/prisma/reports/latest/docx`, {
       responseType: "blob",
     });
     return response.data;

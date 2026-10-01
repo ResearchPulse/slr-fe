@@ -1,4 +1,3 @@
-import React from "react";
 import {
   FiFileText,
   FiDatabase,
@@ -7,6 +6,7 @@ import {
   FiChevronRight,
   FiInfo,
   FiSearch,
+  FiUserCheck,
 } from "react-icons/fi";
 
 export interface PoolWorkflowStep {
@@ -45,7 +45,7 @@ const STEPS: PoolWorkflowStep[] = [
     id: 5,
     title: "Select & Assign",
     description: "Assign Papers",
-    icon: FiCheckCircle,
+    icon: FiUserCheck,
   },
 ];
 
@@ -59,6 +59,7 @@ interface PoolWorkflowStepperProps {
     primary?: boolean;
     icon?: React.ElementType;
   }[];
+  isLeader?: boolean;
 }
 
 export default function PoolWorkflowStepper({
@@ -66,6 +67,7 @@ export default function PoolWorkflowStepper({
   onStepClick,
   actions,
   isCompleted = (id) => id < currentStep,
+  isLeader = true,
 }: PoolWorkflowStepperProps) {
   const progressPercent = ((currentStep - 1) / (STEPS.length - 1)) * 80;
 
@@ -149,6 +151,11 @@ export default function PoolWorkflowStepper({
               <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
                 Instruction
               </span>
+              {!isLeader && currentStep === 5 && (
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-700">
+                  Read-Only
+                </span>
+              )}
               <FiChevronRight className="h-3 w-3" />
               <span className="text-xs font-semibold text-text-secondary">
                 {STEPS[currentStep - 1].title}
@@ -156,10 +163,10 @@ export default function PoolWorkflowStepper({
             </div>
 
             <h2 className="mb-2 text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
-              {getInstructionTitle(currentStep)}
+              {getInstructionTitle(currentStep, isLeader)}
             </h2>
             <p className="max-w-3xl text-sm leading-6 text-text-secondary">
-              {getInstructionDescription(currentStep)}
+              {getInstructionDescription(currentStep, isLeader)}
             </p>
 
             <div className="mt-5 flex flex-wrap gap-3">
@@ -186,7 +193,7 @@ export default function PoolWorkflowStepper({
   );
 }
 
-function getInstructionTitle(step: number) {
+function getInstructionTitle(step: number, isLeader = true) {
   switch (step) {
     case 1:
       return "Review Research Strategy";
@@ -197,13 +204,13 @@ function getInstructionTitle(step: number) {
     case 4:
       return "Setup Review Processes";
     case 5:
-      return "Assign Papers to Process";
+      return isLeader ? "Assign Papers to Process" : "Review Papers & Processes";
     default:
       return "";
   }
 }
 
-function getInstructionDescription(step: number) {
+function getInstructionDescription(step: number, isLeader = true) {
   switch (step) {
     case 1:
       return "Ensure your Research Questions and PICO-C elements are correctly defined. This forms the foundation of your systematic review.";
@@ -214,7 +221,9 @@ function getInstructionDescription(step: number) {
     case 4:
       return "Create one or more review processes (e.g., Screening) to begin evaluating your collected papers.";
     case 5:
-      return "Select specific papers or use filters to bulk assign papers to your newly created review processes.";
+      return isLeader
+        ? "Select specific papers or use filters to bulk assign papers to your newly created review processes."
+        : "Browse collected papers in the repository. As a Reviewer, you can inspect papers or jump directly to the review processes below to begin screening.";
     default:
       return "";
   }
