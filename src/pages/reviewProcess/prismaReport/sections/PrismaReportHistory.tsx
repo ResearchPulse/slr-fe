@@ -32,11 +32,18 @@ export default function PrismaReportHistory({
 }: PrismaReportHistoryProps) {
   return (
     <section aria-label="Report generation history">
-      <h3 className="text-base font-semibold text-text-primary mb-4">
-        Report History
-      </h3>
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-base font-semibold text-text-primary">
+          Report History
+        </h3>
+        {reports.length > 0 && (
+          <span className="text-xs font-semibold px-2.5 py-0.5 bg-bg-secondary text-text-secondary rounded-full border border-border">
+            {reports.length} {reports.length === 1 ? "version" : "versions"}
+          </span>
+        )}
+      </div>
 
-      <div className="border border-border rounded-[4px] overflow-hidden">
+      <div className="border border-border rounded-[4px] overflow-hidden bg-surface-white">
         {isLoading ? (
           <div className="divide-y divide-gray-100">
             {Array.from({ length: 3 }).map((_, i) => (
@@ -54,7 +61,7 @@ export default function PrismaReportHistory({
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100">
+          <ul className="divide-y divide-gray-100 max-h-[380px] overflow-y-auto custom-scrollbar">
             {reports.map((report) => {
               const isActive = report.id === activeReportId;
               return (
