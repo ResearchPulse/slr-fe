@@ -72,7 +72,7 @@ function InformationField({ label, value }: { label: string; value: string }) {
 }
 
 const MyProfilePage: React.FC = () => {
-  const { user, isLoading, isError, error } = useUserProfile();
+  const { user, isLoading, isError, error, refetch, isFetching } = useUserProfile();
   const { updateUser, isLoading: isProfileSaving } = useUpdateUserMutation();
   const { changePassword } = useChangePasswordMutation();
   const { projects, data: projectsData } = useMyProjects({ pageNumber: 1, pageSize: 100 });
@@ -201,7 +201,9 @@ const MyProfilePage: React.FC = () => {
           <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF6FB] text-primary"><FiInfo className="h-5 w-5" /></div>
           <h2 className="text-xl font-bold text-[#173247]">Could not load your profile</h2>
           <p className="mt-2 text-sm leading-6 text-[#71838F]">{error || "Please try again in a moment."}</p>
-          <Button className="mt-6" onClick={() => window.location.reload()}>Try again</Button>
+          <Button className="mx-auto mt-6" onClick={() => void refetch()} isLoading={isFetching}>
+            Try again
+          </Button>
         </div>
       </div>
     );

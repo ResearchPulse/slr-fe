@@ -47,6 +47,7 @@ export const useUserProfile = () => {
     error: query.error ? getErrorMessage(query.error, "Failed to get profile") : null,
     refetch: query.refetch,
     isSuccess: query.isSuccess,
+    isFetching: query.isFetching,
   };
 };
 
