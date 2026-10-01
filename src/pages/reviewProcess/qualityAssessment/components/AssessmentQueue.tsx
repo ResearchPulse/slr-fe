@@ -72,7 +72,7 @@ export default function AssessmentQueue({
       </div>
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">
         {papers.map((paper) => {
           const isSelected = selectedPaperId === paper.paperId;
 
@@ -121,7 +121,7 @@ export default function AssessmentQueue({
                 if (e.key === "Enter") onSelectPaper(paper.paperId);
               }}
               className={cn(
-                "px-4 py-3 border-b border-border cursor-pointer transition-colors",
+                "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-indigo-500 select-none overflow-hidden",
                 isSelected
                   ? "bg-bg-secondary border-l-2 border-l-indigo-500"
                   : "hover:bg-bg-primary border-l-2 border-l-transparent",

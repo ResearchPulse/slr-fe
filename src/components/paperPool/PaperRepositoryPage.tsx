@@ -6,6 +6,7 @@ import {
   FiPlus,
   FiLayers,
   FiArrowDown,
+  FiInfo,
 } from "react-icons/fi";
 import Button from "../ui/Button";
 import PaperTable from "./PaperTable";
@@ -280,6 +281,23 @@ export default function PaperRepositoryPage({
           )}
         </div>
       </div>
+
+      {/* Read-Only Banner for Non-Leaders */}
+      {!isLeader && (
+        <div className="flex items-center gap-3 rounded-xl border border-blue-200/80 bg-blue-50/60 p-4 text-sm text-blue-900 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-accent">
+            <FiInfo className="h-5 w-5" />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+            <span className="font-semibold text-blue-950">
+              View-Only Repository:
+            </span>
+            <span className="text-blue-800/90">
+              Only Project Leaders can import sources and assign papers to review processes. You can search, inspect papers, or navigate to your review processes below.
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Main Content: Sidebar + Table */}
       <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:gap-5">

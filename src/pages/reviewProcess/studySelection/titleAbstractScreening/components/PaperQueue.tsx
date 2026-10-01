@@ -57,13 +57,14 @@ export default function PaperQueue({
     selectedRef.current?.scrollIntoView({
       behavior: "smooth",
       block: "nearest",
+      inline: "nearest",
     });
   }, [selectedPaperId]);
 
   const currentSort = SORT_OPTIONS.find((o) => o.value === filters.sortBy);
 
   return (
-    <div className="flex flex-col h-full bg-surface-white border-r border-border">
+    <div className="flex flex-col h-full bg-surface-white border-r border-border min-w-0 overflow-hidden">
       {/* Header */}
       <div className="px-4 py-3 border-b border-border">
         <div className="flex items-center justify-between mb-3">
@@ -151,7 +152,7 @@ export default function PaperQueue({
       </div>
 
       {/* Paper List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">
         {papers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <FiSearch className="w-8 h-8 text-gray-200 mb-3" />
@@ -251,34 +252,34 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
           if (e.key === "Enter") onClick();
         }}
         className={cn(
-          "px-4 py-3 border-b border-border cursor-pointer transition-colors",
+          "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-blue-500 select-none overflow-hidden",
           isSelected
-            ? "bg-blue-50 border-l-2 border-l-blue-500"
+            ? "bg-blue-50/70 border-l-2 border-l-blue-600"
             : "hover:bg-bg-primary border-l-2 border-l-transparent",
         )}
       >
         {/* Status indicator + Title */}
-        <div className="flex items-start gap-2">
+        <div className="flex items-start gap-2 min-w-0">
           <StatusDot status={paper.screeningStatus} />
           <div className="min-w-0 flex-1">
-            <h3 className="text-sm font-medium text-text-primary leading-snug line-clamp-2">
+            <h3 className="text-sm font-medium text-text-primary leading-snug line-clamp-2 break-words">
               {paper.title}
             </h3>
             <p className="text-xs text-text-secondary mt-1 truncate">
               {paper.authors ?? "Unknown authors"}
             </p>
-            <div className="flex items-center gap-2 mt-1.5">
+            <div className="flex items-center gap-2 mt-1.5 min-w-0">
               {paper.publicationYear && (
-                <span className="text-[10px] text-text-secondary font-medium">
+                <span className="text-[10px] text-text-secondary font-medium shrink-0">
                   {paper.publicationYear}
                 </span>
               )}
               {paper.source && (
-                <span className="text-[10px] text-text-secondary">
+                <span className="text-[10px] text-text-secondary truncate">
                   · {paper.source}
                 </span>
               )}
-              <div className="flex items-center gap-1.5 ml-auto">
+              <div className="flex items-center gap-1.5 ml-auto shrink-0">
                 {paper.referenceCount !== undefined &&
                   paper.referenceCount > 0 && (
                     <span className="flex items-center gap-0.5 text-[9px] font-bold text-accent bg-purple-50 px-1 rounded">
@@ -298,23 +299,24 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
 
             {/* Reviewer decisions */}
             {paper.decisions.length > 0 && (
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-1.5 mt-2">
                 {paper.decisions.map((d) => (
                   <span
                     key={d.id}
+                    title={`${d.reviewerName}: ${d.decision}`}
                     className={cn(
-                      "inline-flex items-center gap-0.5 text-[10px] px-1.5 py-0.5 rounded-full",
+                      "inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border max-w-full font-medium transition-colors",
                       d.decision === "included"
-                        ? "bg-surface-white text-green-600"
-                        : "bg-surface-white text-red-600",
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : "bg-rose-50 text-rose-700 border-rose-200",
                     )}
                   >
                     {d.decision === "included" ? (
-                      <FiCheck className="w-2.5 h-2.5" />
+                      <FiCheck className="w-2.5 h-2.5 shrink-0 text-emerald-600" />
                     ) : (
-                      <FiX className="w-2.5 h-2.5" />
+                      <FiX className="w-2.5 h-2.5 shrink-0 text-rose-600" />
                     )}
-                    {d.reviewerName}
+                    <span className="truncate max-w-[100px]">{d.reviewerName}</span>
                   </span>
                 ))}
               </div>
@@ -323,8 +325,8 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
             {/* Conflict badge */}
             {paper.screeningStatus === "conflicted" && (
               <div className="flex items-center gap-1 mt-1.5 text-[10px] text-amber-600 font-medium">
-                <FiAlertTriangle className="w-3 h-3" />
-                Conflict — needs resolution
+                <FiAlertTriangle className="w-3 h-3 shrink-0" />
+                <span className="truncate">Conflict — needs resolution</span>
               </div>
             )}
           </div>

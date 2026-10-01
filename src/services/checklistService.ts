@@ -222,5 +222,5 @@ export const mapReviewChecklistItem = (
   location: item.location ?? "",
   isCompleted: item.isCompleted,
   lastUpdated: item.lastUpdatedAt ?? new Date().toISOString(),
-  children: item.children.map(mapReviewChecklistItem),
+  children: (item.children ?? []).map(mapReviewChecklistItem),
 });

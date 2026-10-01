@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
-import { FiChevronRight, FiAlertCircle } from "react-icons/fi";
+import { FiChevronRight, FiAlertCircle, FiArrowDown } from "react-icons/fi";
 import { useNavigate, useParams, useSearchParams } from "react-router";
 import toast from "react-hot-toast";
 
@@ -391,6 +391,22 @@ export default function PaperPoolTab({
             : []),
         ];
       case 5:
+        if (!isLeader) {
+          return [
+            {
+              label: "View Review Processes",
+              primary: true,
+              icon: FiArrowDown,
+              onClick: () => {
+                setActiveTab("library");
+                setTimeout(() => {
+                  const el = document.getElementById("review-process-panel");
+                  el?.scrollIntoView({ behavior: "smooth" });
+                }, 100);
+              },
+            },
+          ];
+        }
         return [
           {
             label: "Start Assigning Papers",
@@ -406,7 +422,7 @@ export default function PaperPoolTab({
       default:
         return [];
     }
-  }, [workflowStep, setActiveTab]);
+  }, [workflowStep, setActiveTab, isLeader, reviewProcesses?.length]);
 
   const {
     uploadPaperPdf,
@@ -650,6 +666,7 @@ export default function PaperPoolTab({
         onStepClick={setWorkflowStep}
         actions={workflowActions}
         isCompleted={isStepCompleted}
+        isLeader={isLeader}
       />
 
       {workflowStep === 1 && (
