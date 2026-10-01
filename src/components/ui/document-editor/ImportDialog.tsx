@@ -17,7 +17,7 @@ import { studySelectionService } from "../../../services/studySelectionService";
 interface ImportDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onImport?: (data: any) => void;
+  onImport?: (data: unknown) => void;
   screeningProcessId?: string;
   allowImportCriterias?: boolean;
 }
@@ -53,9 +53,11 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           response.message || "Failed to import criteria from protocol",
         );
       }
-    } catch (error: any) {
+    } catch (error) {
       toast.error(
-        error.message || "An error occurred while importing criteria",
+        error instanceof Error
+          ? error.message
+          : "An error occurred while importing criteria",
       );
     } finally {
       setIsImportingFromProtocol(false);
@@ -83,7 +85,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
       setValidationError(null);
       onClose();
       setJsonInput("");
-    } catch (e) {
+    } catch {
       setValidationError("Invalid JSON format. Please check your syntax.");
     }
   };

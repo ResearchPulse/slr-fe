@@ -94,6 +94,7 @@ export const useFullTextAssignmentPapers = (
 export const useInfiniteTitleAbstractAssignmentPapers = (
   studySelectionProcessId: string | undefined,
   params: GetAssignmentPapersParams,
+  poll = false,
 ) => {
   return useInfiniteQuery({
     queryKey: ["infinite-title-abstract-assignment-papers", studySelectionProcessId, params],
@@ -110,6 +111,7 @@ export const useInfiniteTitleAbstractAssignmentPapers = (
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.pageNumber < lastPage.totalPages ? lastPage.pageNumber + 1 : undefined,
+    refetchInterval: poll ? 8000 : false,
     enabled: !!studySelectionProcessId,
   });
 };
@@ -117,6 +119,7 @@ export const useInfiniteTitleAbstractAssignmentPapers = (
 export const useInfiniteFullTextAssignmentPapers = (
   studySelectionProcessId: string | undefined,
   params: GetAssignmentPapersParams,
+  poll = false,
 ) => {
   return useInfiniteQuery({
     queryKey: ["infinite-full-text-assignment-papers", studySelectionProcessId, params],
@@ -133,6 +136,7 @@ export const useInfiniteFullTextAssignmentPapers = (
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.pageNumber < lastPage.totalPages ? lastPage.pageNumber + 1 : undefined,
+    refetchInterval: poll ? 8000 : false,
     enabled: !!studySelectionProcessId,
   });
 };
@@ -281,7 +285,7 @@ export const useStudySelectionExclusionReasons = (
   params: GetExclusionReasonsParams,
 ) => {
   return useQuery<StudySelectionExclusionReason[]>({
-    queryKey: QUERY_KEYS.studySelection.exclusionCodes(processId ?? "", params as any),
+    queryKey: QUERY_KEYS.studySelection.exclusionCodes(processId ?? "", params),
     queryFn: async () => {
       const response = await studySelectionService.getExclusionReasons(processId!, params);
       if (!response.isSuccess) {
@@ -378,6 +382,7 @@ export const useReviewerDecisions = (
   id: string | undefined,
   paperId: string | undefined,
   phase: number,
+  poll = false,
 ) => {
   return useQuery<ReviewerDecisionDetail[]>({
     queryKey: ["reviewer-decisions", id, paperId, phase],
@@ -389,6 +394,7 @@ export const useReviewerDecisions = (
       return response.data;
     },
     enabled: !!id && !!paperId,
+    refetchInterval: poll ? 5000 : false,
   });
 };
 
@@ -508,7 +514,7 @@ export const useFinalResolutionProgress = (
   params: FinalResolutionProgressParams,
 ) => {
   return useQuery<FinalResolutionProgressResponse>({
-    queryKey: QUERY_KEYS.studySelection.finalResolutionProgress(id ?? "", params as any),
+    queryKey: QUERY_KEYS.studySelection.finalResolutionProgress(id ?? "", params),
     queryFn: async () => {
       const response = await studySelectionService.getFinalResolutionProgress(id!, params);
       if (!response.isSuccess) {

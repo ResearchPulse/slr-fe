@@ -189,7 +189,7 @@ export default function SearchStrategyForm({
   // Generate Boolean Query
   const generatedQuery = useMemo(() => {
     const groups = Object.entries(keywords)
-      .map(([_, terms]) => {
+      .map(([, terms]) => {
         if (terms.length === 0) return null;
         const joined = terms.map((t: string) => `"${t}"`).join(" OR ");
         return terms.length > 1 ? `(${joined})` : joined;
@@ -483,7 +483,7 @@ export default function SearchStrategyForm({
                 </div>
                 <div className="p-6 bg-gray-900 rounded-[4px] text-blue-100 space-y-4 font-mono text-xs">
                   {Object.entries(keywords)
-                    .filter(([_, terms]) => terms.length > 0)
+                    .filter(([, terms]) => terms.length > 0)
                     .map(([key, terms], idx, arr) => {
                       const queryPart = `(${terms.join(" OR ")})`;
                       return (

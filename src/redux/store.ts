@@ -1,4 +1,9 @@
-import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import {
+  combineReducers,
+  configureStore,
+  type Middleware,
+  type UnknownAction,
+} from "@reduxjs/toolkit";
 import { 
   persistStore, 
   persistReducer, 
@@ -7,11 +12,13 @@ import {
   createMigrate
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import type { PersistedState } from "redux-persist";
 import authReducer from "./slices/authSlice";
 import uiReducer from "./slices/uiSlice";
 import projectReducer from "./slices/projectSlice";
 import documentEditorReducer from "./slices/documentEditorSlice";
 import { queryClient } from "../config/queryClient";
+import type { AuthState } from "../types/auth";
 
 /**
  * Persist Transform: Blacklist volatile fields from the auth slice.
@@ -19,7 +26,7 @@ import { queryClient } from "../config/queryClient";
  * on a fresh application load.
  */
 const authTransform = createTransform(
-  (inboundState: any) => ({ ...inboundState, isInitialized: false }),
+  (inboundState: AuthState) => ({ ...inboundState, isInitialized: false }),
   (outboundState) => outboundState,
   { whitelist: ["auth"] }
 );
@@ -28,8 +35,11 @@ const authTransform = createTransform(
  * Migration: Handle state transitions between versions.
  * This is useful for clearing stale data after significant architecture changes.
  */
-const migrations: any = {
-  0: (state: any) => ({ ...state, auth: undefined }), // Reset auth if coming from unversioned/double-persisted state
+const migrations = {
+  0: (state: PersistedState): PersistedState =>
+    state
+      ? ({ ...state, auth: undefined } as PersistedState)
+      : state, // Reset auth if coming from unversioned/double-persisted state
 };
 
 const appReducer = combineReducers({
@@ -44,7 +54,10 @@ const appReducer = combineReducers({
  * When auth/logout is dispatched, we reset the entire state to undefined,
  * which forces all slices to return to their initialState.
  */
-const rootReducer = (state: any, action: any) => {
+const rootReducer = (
+  state: ReturnType<typeof appReducer> | undefined,
+  action: UnknownAction,
+) => {
   if (action.type === "auth/logout") {
     state = undefined;
   }
@@ -62,21 +75,27 @@ const persistConfig: PersistConfig<ReturnType<typeof appReducer>> = {
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
+const logoutCleanupMiddleware: Middleware = () => (next) => (action) => {
+  if (
+    typeof action === "object" &&
+    action !== null &&
+    "type" in action &&
+    action.type === "auth/logout"
+  ) {
+    queryClient.clear();
+    persistor.purge();
+    // Manually clear old legacy persist key if it exists
+    localStorage.removeItem("persist:auth");
+  }
+  return next(action);
+};
+
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: false,
-    }).concat((_: any) => (next: any) => (action: any) => {
-      // Global cleanup on logout
-      if (action.type === "auth/logout") {
-        queryClient.clear();
-        persistor.purge();
-        // Manually clear old legacy persist key if it exists
-        localStorage.removeItem("persist:auth");
-      }
-      return next(action);
-    }),
+    }).concat(logoutCleanupMiddleware),
 });
 
 export const persistor = persistStore(store);

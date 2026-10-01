@@ -1,10 +1,16 @@
 import type { ScreeningPaper } from "../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
+import type { UploadPdfOptions } from "../../../../pages/reviewProcess/studySelection/uploadTypes";
+import type { PaperWithDecisionsResponse } from "../../../../types/studySelection";
 
 export interface PaperViewerProps {
   paper: ScreeningPaper | null;
   onInclude?: (paperId: string) => void;
   onExclude?: (paperId: string, exclusionReasonId: string | null, reason: string | null) => void;
-  onUploadPdf?: (paperId: string, file: File, options?: any) => Promise<any>;
+  onUploadPdf?: (
+    paperId: string,
+    file: File,
+    options?: UploadPdfOptions,
+  ) => Promise<PaperWithDecisionsResponse>;
   onApplyMetadataSuggestion?: (
     paperId: string,
     sourceMetadataId: string,

@@ -197,6 +197,11 @@ export interface PaperResponse {
   // Journal Metadata
   journal?: string | null;
   journalIssn?: string | null;
+  journalEIssn?: string | null;
+  pdfFileName?: string | null;
+  md5?: string | null;
+  referenceCount?: number | null;
+  citationCount?: number | null;
 
   // Source Tracking
   source?: string | null;

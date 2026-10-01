@@ -51,7 +51,7 @@ export const useUserProfile = () => {
   };
 };
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: never[] = [];
 
 /**
  * Custom hook for searching users with debounced input and project context

@@ -2,6 +2,19 @@ import { FiEye, FiLink } from "react-icons/fi";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
+import type { UploadPdfOptions } from "../../pages/reviewProcess/studySelection/uploadTypes";
+import type { PaperWithDecisionsResponse } from "../../types/studySelection";
+
+type UploadPdfHandler = (
+  paperId: string,
+  file: File,
+  options?: UploadPdfOptions,
+) => Promise<PaperWithDecisionsResponse>;
+type ApplyMetadataSuggestionHandler = (
+  paperId: string,
+  sourceMetadataId: string,
+  fields: string[],
+) => Promise<void>;
 
 interface PaperRowProps {
   paper: PaperPoolItem;
@@ -10,9 +23,9 @@ interface PaperRowProps {
   onViewDetails: (paper: PaperPoolItem) => void;
 
   // PDF Actions
-  onUploadPdf?: any;
+  onUploadPdf?: UploadPdfHandler;
   isUploadingPdf?: boolean;
-  onApplyMetadataSuggestion?: any;
+  onApplyMetadataSuggestion?: ApplyMetadataSuggestionHandler;
   isApplyingMetadataSuggestion?: boolean;
   onRemovePdf?: (paperId: string) => Promise<void>;
   isRemovingPdf?: boolean;

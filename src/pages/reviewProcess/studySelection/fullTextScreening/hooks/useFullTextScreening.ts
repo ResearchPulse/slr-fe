@@ -311,7 +311,19 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         ),
       });
       queryClient.invalidateQueries({
+        queryKey: ["reviewer-decisions", screeningProcessId, variables.paperId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["infinite-title-abstract-assignment-papers", screeningProcessId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["infinite-full-text-assignment-papers", screeningProcessId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "conflict-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
       });
     },
     onError: (error) => {
@@ -388,8 +400,8 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
   // ---- Mutation: Upload Full-Text PDF ----
   const uploadFullTextMutation = useMutation({
     mutationFn: async (vars: { paperId: string; file: File; options?: UploadPdfOptions }) => {
-      if (!projectId || !screeningProcessId) {
-        throw new Error("Cannot upload PDF: missing project or screening process context.");
+      if (!projectId) {
+        throw new Error("Cannot upload PDF: missing project context.");
       }
 
       return studySelectionService.uploadPaperFullText({
@@ -400,9 +412,11 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       });
     },
     onSuccess: (response, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["study-selection", screeningProcessId!, "papers"],
-      });
+      if (screeningProcessId) {
+        queryClient.invalidateQueries({
+          queryKey: ["study-selection", screeningProcessId, "papers"],
+        });
+      }
 
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.all,
@@ -516,6 +530,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       });
       queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "conflict-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
       });
       toast.success("Conflict resolved");
     },

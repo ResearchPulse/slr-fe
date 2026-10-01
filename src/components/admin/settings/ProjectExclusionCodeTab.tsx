@@ -81,7 +81,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
         "Success",
         `Exclusion reason has been ${currentStatus ? "disabled" : "enabled"}.`,
       );
-    } catch (error) {
+    } catch {
       dismissToast(loadingId);
       toastError("Error", "Failed to update status.");
     }
@@ -100,7 +100,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
       toastSuccess("Success", "Exclusion code has been permanently deleted.");
       setIsConfirmOpen(false);
       setDeletingId(null);
-    } catch (error) {
+    } catch {
       toastError("Error", "Failed to delete the exclusion code.");
     }
   };
@@ -156,7 +156,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
       );
       setIsModalOpen(false);
       setNewCodes([{ code: "", name: "" }]);
-    } catch (error) {
+    } catch {
       toastError("Error", "Failed to add exclusion codes to the library.");
     }
   };

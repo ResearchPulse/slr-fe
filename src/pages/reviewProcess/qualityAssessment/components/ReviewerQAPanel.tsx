@@ -11,6 +11,13 @@ import type {
   QualityAssessmentStrategy,
   AutomateQualityAssessmentResponse,
 } from "../../../../types/qualityAssessment";
+import type { HighlightArea } from "@react-pdf-viewer/highlight";
+
+interface HighlightData {
+  areas: HighlightArea[];
+  reviewerInitials: string;
+  bgColor: string;
+}
 
 export interface ReviewerDecisionPayload {
   /** this is protocol.qualityCriterionId */
@@ -32,7 +39,7 @@ interface ReviewerQAPanelProps {
   isSaving?: boolean;
   activeCriterionId?: string | null;
   onSelectCriterion?: (id: string | null) => void;
-  highlightsByCriterion?: Record<string, any[]>;
+  highlightsByCriterion?: Record<string, HighlightData[]>;
   canEdit?: boolean;
 }
 

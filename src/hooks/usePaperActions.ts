@@ -264,7 +264,7 @@ export function usePaperActions(
     mutationFn: async (vars: { paperId: string; reason: string }) => {
       return paperService.deletePaper(vars.paperId, vars.reason);
     },
-    onSuccess: (_response) => {
+    onSuccess: () => {
       if (finalProjectId) {
         // Invalidate both the papers list and metadata
         queryClient.invalidateQueries({

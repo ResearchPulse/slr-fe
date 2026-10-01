@@ -5,6 +5,11 @@ import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
 import type { RootState } from "../redux/store";
 import type { GetNotificationsParams } from "../types/notification";
+import type {
+  ApiResponse,
+  NotificationItem,
+  PaginatedData,
+} from "../types/notification";
 
 /**
  * Custom hook for fetching paginated notifications
@@ -76,29 +81,31 @@ export const useNotificationMutations = () => {
       });
 
       // Snapshot the previous values
-      const previousNotifications = queryClient.getQueryData(
+      const previousNotifications = queryClient.getQueryData<
+        ApiResponse<PaginatedData<NotificationItem>>
+      >(
         QUERY_KEYS.user.notifications.list(userId, {
           pageNumber: 1,
           pageSize: 10,
         })
       );
-      const previousCount = queryClient.getQueryData(
+      const previousCount = queryClient.getQueryData<ApiResponse<number>>(
         QUERY_KEYS.user.notifications.unreadCount(userId)
       );
 
       // Optimistically update the list
-      queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
         QUERY_KEYS.user.notifications.list(userId, {
           pageNumber: 1,
           pageSize: 10,
         }),
-        (old: any) => {
+        (old) => {
           if (!old?.data?.items) return old;
           return {
             ...old,
             data: {
               ...old.data,
-              items: old.data.items.map((item: any) =>
+              items: old.data.items.map((item) =>
                 item.id === id ? { ...item, isRead: true } : item
               ),
             },
@@ -107,9 +114,9 @@ export const useNotificationMutations = () => {
       );
 
       // Optimistically update the count
-      queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<number>>(
         QUERY_KEYS.user.notifications.unreadCount(userId),
-        (old: any) => {
+        (old) => {
           if (!old?.data || old.data <= 0) return old;
           return { ...old, data: Math.max(0, old.data - 1) };
         }
@@ -117,7 +124,7 @@ export const useNotificationMutations = () => {
 
       return { previousNotifications, previousCount };
     },
-    onError: (_err, _id, context: any) => {
+    onError: (_err, _id, context) => {
       // Rollback on error
       if (context) {
         queryClient.setQueryData(
@@ -148,29 +155,31 @@ export const useNotificationMutations = () => {
         queryKey: QUERY_KEYS.user.notifications.all(userId),
       });
 
-      const previousNotifications = queryClient.getQueryData(
+      const previousNotifications = queryClient.getQueryData<
+        ApiResponse<PaginatedData<NotificationItem>>
+      >(
         QUERY_KEYS.user.notifications.list(userId, {
           pageNumber: 1,
           pageSize: 10,
         })
       );
-      const previousCount = queryClient.getQueryData(
+      const previousCount = queryClient.getQueryData<ApiResponse<number>>(
         QUERY_KEYS.user.notifications.unreadCount(userId)
       );
 
       // Optimistically mark all in current list as read
-      queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
         QUERY_KEYS.user.notifications.list(userId, {
           pageNumber: 1,
           pageSize: 10,
         }),
-        (old: any) => {
+        (old) => {
           if (!old?.data?.items) return old;
           return {
             ...old,
             data: {
               ...old.data,
-              items: old.data.items.map((item: any) => ({
+              items: old.data.items.map((item) => ({
                 ...item,
                 isRead: true,
               })),
@@ -180,23 +189,23 @@ export const useNotificationMutations = () => {
       );
 
       // Optimistically set count to 0
-      queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<number>>(
         QUERY_KEYS.user.notifications.unreadCount(userId),
-        (old: any) => (old ? { ...old, data: 0 } : old)
+        (old) => (old ? { ...old, data: 0 } : old)
       );
 
       return { previousNotifications, previousCount };
     },
-    onError: (_err, _variables, context: any) => {
+    onError: (_err, _variables, context) => {
       if (context) {
-        queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
           QUERY_KEYS.user.notifications.list(userId, {
             pageNumber: 1,
             pageSize: 10,
           }),
           context.previousNotifications
         );
-        queryClient.setQueryData(
+      queryClient.setQueryData<ApiResponse<number>>(
           QUERY_KEYS.user.notifications.unreadCount(userId),
           context.previousCount
         );

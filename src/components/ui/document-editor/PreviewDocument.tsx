@@ -1,12 +1,26 @@
 import React from "react";
-import type { DocumentDraft } from "../../../types/documentEditor";
-import type { StudySelectionChecklistTemplate } from "../../../types/studySelectionChecklistTemplate";
+import type {
+  DocumentDraft,
+  ItemBlock,
+  SectionBlock,
+} from "../../../types/documentEditor";
+import type {
+  StudySelectionChecklistItem,
+  StudySelectionChecklistTemplate,
+  StudySelectionChecklistTemplateSection,
+} from "../../../types/studySelectionChecklistTemplate";
 
 interface PreviewDocumentProps {
   draft?: DocumentDraft;
   template?: StudySelectionChecklistTemplate | null;
-  renderItem?: (item: any) => React.ReactNode;
-  renderSectionTitle?: (section: any) => React.ReactNode;
+  renderItem?: (
+    item: (ItemBlock | StudySelectionChecklistItem) & { isChecked?: boolean },
+  ) => React.ReactNode;
+  renderSectionTitle?: (
+    section: (SectionBlock | StudySelectionChecklistTemplateSection) & {
+      isChecked?: boolean;
+    },
+  ) => React.ReactNode;
 }
 
 export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
@@ -39,7 +53,7 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
       {/* Title */}
       <header>
         <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
-          {(displayData as any)?.title || (displayData as any)?.name || (
+          {displayData.title || (
             <span className="text-gray-300 italic">Untitled Document</span>
           )}
         </h1>

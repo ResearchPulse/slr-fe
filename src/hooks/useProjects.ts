@@ -14,7 +14,7 @@ import type {
   ProjectExportRequest
 } from "../types/project";
 
-const EMPTY_ARRAY: any[] = [];
+const EMPTY_ARRAY: never[] = [];
 
 /**
  * Custom hook for fetching all projects with filtering and pagination

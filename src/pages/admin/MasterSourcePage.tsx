@@ -92,7 +92,7 @@ const MasterSourcePage: React.FC = () => {
         await createSource(data);
       }
       setIsModalOpen(false);
-    } catch (error) {
+    } catch {
       // Error handled in hook
     }
   };

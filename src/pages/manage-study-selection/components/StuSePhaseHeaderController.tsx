@@ -51,36 +51,40 @@ export const StuSePhaseHeaderController: React.FC<
   const [isDataSetOpen, setIsDataSetOpen] = React.useState(false);
 
   const handleBack = () => {
-    navigate(`/projects/${projectId}/processes/${processId}`);
+    navigate(
+      processId
+        ? `/projects/${projectId}/processes/${processId}`
+        : `/projects/${projectId}/workspace`,
+    );
   };
 
   return (
-    <div className="bg-surface-white border-b border-border px-6 py-3 grid grid-cols-3 items-center">
+    <div className="z-10 grid shrink-0 grid-cols-1 items-center gap-2 border-b border-[#dce6ed] bg-white px-3 py-1.5 shadow-sm xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] xl:px-4">
       <div className="flex items-center gap-4">
         <button
           onClick={handleBack}
-          className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
+          className="rounded-lg border border-[#dce6ed] p-2 text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
           title="Back to Process Workspace"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-2">
-          <div className="p-2 bg-bg-secondary rounded-[4px]">
-            <LayoutList className="w-5 h-5 text-accent" />
+            <div className="rounded-xl bg-blue-50 p-2.5">
+            <LayoutList className="h-5 w-5 text-blue-700" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-text-primary leading-none mb-1">
+            <h1 className="mb-1 text-base font-bold leading-none text-slate-900">
               Study Selection
             </h1>
-            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
-              Manage Phase Progress
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+              Project leader workspace
             </p>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-self-center bg-bg-secondary p-1 rounded-[4px] border border-border">
+      <div className="mx-auto flex w-fit max-w-full items-center">
         {PHASES.map((phase, index) => {
           const isActive = currentPhase === phase.id;
           const Icon = phase.icon;
@@ -90,27 +94,27 @@ export const StuSePhaseHeaderController: React.FC<
               <button
                 onClick={() => onPhaseChange(phase.id)}
                 className={cn(
-                  "flex items-center gap-3 px-4 py-2 rounded-[4px] transition-all duration-200 group relative",
+                  "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 sm:px-4",
                   isActive
-                    ? "bg-surface-white text-accent shadow-none ring-1 ring-slate-200"
-                    : "text-text-secondary hover:text-text-primary hover:bg-surface-white/50",
+                    ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200"
+                    : "text-slate-500 hover:bg-white/70 hover:text-slate-900",
                 )}
               >
                 <Icon
                   className={cn(
                     "w-4 h-4 transition-transform duration-200",
                     isActive
-                      ? "text-accent"
-                      : "text-text-secondary group-hover:scale-110",
+                    ? "text-blue-700"
+                      : "text-slate-400 group-hover:text-blue-600",
                   )}
                 />
                 <div className="text-left">
-                  <div className="text-sm font-bold leading-none">
+                  <div className="whitespace-nowrap text-xs font-semibold leading-none sm:text-sm">
                     {phase.label}
                   </div>
                 </div>
                 {isActive && (
-                  <div className="absolute -bottom-[5px] left-1/2 -translate-x-1/2 w-1 h-1 bg-accent rounded-full" />
+                  <div className="absolute -bottom-1 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-blue-600" />
                 )}
               </button>
               {index < PHASES.length - 1 && (
@@ -123,21 +127,20 @@ export const StuSePhaseHeaderController: React.FC<
         })}
       </div>
 
-      <div className="justify-self-end flex items-center gap-3">
-        <div className="h-8 w-[1px] bg-slate-200 mx-2" />
+      <div className="flex items-center justify-self-end gap-3">
+        <div className="mr-1 hidden h-8 w-px bg-slate-200 xl:block" />
         <button
           onClick={() => setIsDataSetOpen(true)}
-          className="flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-[4px] shadow-none shadow-emerald-200/50 hover:shadow-emerald-300/50 transition-all hover:scale-[1.02] active:scale-[0.98] group relative overflow-hidden"
+          className="group relative flex items-center gap-2.5 overflow-hidden rounded-lg bg-emerald-600 px-3.5 py-2.5 text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800 sm:px-4"
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
-          <div className="p-1.5 bg-surface-white/20 rounded-[4px] group-hover:bg-surface-white/30 transition-colors">
-            <Database className="w-4 h-4 text-white" />
+          <div className="rounded-md bg-white/15 p-1.5 transition-colors group-hover:bg-white/25">
+            <Database className="h-4 w-4 text-white" />
           </div>
           <div className="text-left">
-            <div className="text-[10px] font-black uppercase tracking-widest leading-none mb-1 opacity-80">
-              Final Step
+            <div className="mb-1 text-[9px] font-semibold uppercase leading-none tracking-[0.14em] text-white/75">
+              Final review
             </div>
-            <div className="text-xs font-bold leading-none">
+            <div className="whitespace-nowrap text-xs font-semibold leading-none">
               Review Included
             </div>
           </div>

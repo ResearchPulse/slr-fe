@@ -89,7 +89,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   }, [data, rootPaperId]);
 
   // Stable Stylesheet with conditional classes for edges
-  const stylesheet = useMemo<any>(
+  const stylesheet = useMemo<
+    NonNullable<React.ComponentProps<typeof CytoscapeComponent>["stylesheet"]>
+  >(
     () => [
       {
         selector: "node",
@@ -204,7 +206,8 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         animationDuration: 800,
         fit: true,
         padding: 100,
-        positions: (node: any) => node.data("timelinePos"),
+        positions: (nodeId: string) =>
+          cy.getElementById(nodeId).data("timelinePos"),
       }).run();
     } else {
       cy.edges().removeClass("timeline-curve");
@@ -219,7 +222,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
           animationDuration: 800,
           fit: true,
           padding: 100,
-          positions: (node: any) => radialPositionsRef.current[node.id()],
+          positions: (nodeId: string) => radialPositionsRef.current[nodeId],
         }).run();
       } else {
         // Run full fcose engine
@@ -231,9 +234,10 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
           padding: 100,
           nodeDimensionsIncludeLabels: true,
           nodeSeparation: 120,
-          idealEdgeLength: (edge: any) => 120 / (edge.data("weight") || 0.5),
+          idealEdgeLength: (edge: cytoscape.EdgeSingular) =>
+            120 / (edge.data("weight") || 0.5),
           randomize: forceRegenerateRadial, // Randomize only on force refresh
-        } as any);
+        } as cytoscape.LayoutOptions);
 
         layout.on("layoutstop", () => {
           // Cache the results

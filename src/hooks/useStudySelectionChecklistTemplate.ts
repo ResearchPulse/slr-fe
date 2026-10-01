@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { studySelectionChecklistTemplateService } from "../services/studySelectionChecklistTemplateService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
+import { isAxiosError } from "axios";
 import type { CreateStudySelectionChecklistTemplateRequest } from "../types/studySelectionChecklistTemplate";
 
 export const useStudySelectionChecklistTemplate = (projectId: string | undefined) => {
@@ -13,10 +14,10 @@ export const useStudySelectionChecklistTemplate = (projectId: string | undefined
       if (!projectId) throw new Error("No Project ID");
       try {
         return await studySelectionChecklistTemplateService.getTemplate(projectId);
-      } catch (error: any) {
+      } catch (error) {
         // If it's a 404 or the backend specifically says 'not found' in the message
         const message = getErrorMessage(error, "");
-        if (error?.response?.status === 404 || message.toLowerCase().includes("not found")) {
+        if ((isAxiosError(error) && error.response?.status === 404) || message.toLowerCase().includes("not found")) {
           return { isSuccess: true, data: null, message: "Not found", errors: null };
         }
         throw error;

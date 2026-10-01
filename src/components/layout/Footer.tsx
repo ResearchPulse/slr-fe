@@ -28,9 +28,9 @@ const Footer: React.FC = () => {
   }
 
   return (
-    <footer className="bg-surface-white border-t border-border py-10 mt-auto">
+    <footer className="mt-auto border-t border-border bg-surface-white py-4 sm:py-5">
       <div className="container mx-auto px-5 sm:px-8 lg:px-12">
-        <p className="text-center text-text-muted text-[13px] tracking-[0.05em]">
+        <p className="text-center text-[11px] tracking-[0.04em] text-text-muted sm:text-xs">
           © {currentYear} Systematic Review Support System
           <span className="mx-3 text-border">|</span>
           Following PRISMA Framework

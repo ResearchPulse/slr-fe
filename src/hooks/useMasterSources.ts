@@ -48,7 +48,7 @@ export const useMasterSourceActions = () => {
         toastError("Error", response.message || "Failed to create master source");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toastError("Error", error.message || "An unexpected error occurred");
     },
   });
@@ -64,7 +64,7 @@ export const useMasterSourceActions = () => {
         toastError("Error", response.message || "Failed to update master source");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toastError("Error", error.message || "An unexpected error occurred");
     },
   });
@@ -99,7 +99,7 @@ export const useMasterSourceActions = () => {
         toastError("Error", response.message || "Failed to delete master source");
       }
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toastError("Action Blocked", error.message);
     },
   });
