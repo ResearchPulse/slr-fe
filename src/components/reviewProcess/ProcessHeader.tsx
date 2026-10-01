@@ -11,6 +11,8 @@ interface ProcessHeaderProps {
   startLoading: boolean;
   completeLoading: boolean;
   disabled?: boolean;
+  canManageActions?: boolean;
+  isReadyToComplete?: boolean;
 }
 
 export default function ProcessHeader({
@@ -21,6 +23,8 @@ export default function ProcessHeader({
   startLoading,
   completeLoading,
   disabled = false,
+  canManageActions = true,
+  isReadyToComplete = true,
 }: ProcessHeaderProps) {
   return (
     <div className="bg-surface-white border-b border-border px-6 py-3 grid grid-cols-3 items-center flex-shrink-0 z-50">
@@ -106,7 +110,15 @@ export default function ProcessHeader({
             disabled={completeLoading || disabled}
             variant="success"
             className="flex items-center gap-2"
-            title={disabled ? "Select a protocol first" : ""}
+            title={
+              disabled
+                ? "Select a protocol first"
+                : canManageActions === false
+                  ? "Only Lead Reviewer can complete the process"
+                  : isReadyToComplete === false
+                    ? "Complete all 4 workflow phases first"
+                    : "Complete review process"
+            }
           >
             <FiCheck className="w-4 h-4" />
             {completeLoading ? "Completing..." : "Complete Process"}
