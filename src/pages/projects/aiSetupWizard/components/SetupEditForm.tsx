@@ -40,9 +40,9 @@ export default function SetupEditForm({
     <section className="space-y-6">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-bold text-text-primary">Edit Setup</h2>
+          <h2 className="text-xl font-semibold text-text-primary">Edit protocol</h2>
           <p className="text-sm text-text-secondary">
-            Update objective, PICO-C and research questions.
+            Update the scope, PICO-C framework, and research questions.
           </p>
         </div>
       </div>
@@ -53,7 +53,7 @@ export default function SetupEditForm({
           rows={3}
           value={topic}
           onChange={(e) => onTopicChange(e.target.value)}
-          className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+          className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
         />
       </div>
 
@@ -64,7 +64,7 @@ export default function SetupEditForm({
             rows={3}
             value={scopeForm.objectives}
             onChange={(e) => onScopeChange("objectives", e.target.value)}
-            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
           />
         </div>
         <div className="rounded-[4px] border border-border bg-surface-white p-5">
@@ -73,7 +73,7 @@ export default function SetupEditForm({
             rows={3}
             value={scopeForm.domain}
             onChange={(e) => onScopeChange("domain", e.target.value)}
-            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
           />
         </div>
       </div>
@@ -100,7 +100,7 @@ export default function SetupEditForm({
               rows={3}
               value={picocForm[key]}
               onChange={(e) => onPicocChange(key, e.target.value)}
-              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>
         ))}
@@ -130,7 +130,7 @@ export default function SetupEditForm({
                 rows={3}
                 value={rq.questionText}
                 onChange={(e) => onEditRQTextChange(index, e.target.value)}
-                className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
           ))}
@@ -141,7 +141,7 @@ export default function SetupEditForm({
               value={editNewRQInput}
               onChange={(e) => onEditNewRQInputChange(e.target.value)}
               placeholder="Type a new research question"
-              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
             <div className="mt-2 flex justify-end">
               <button
@@ -168,7 +168,7 @@ export default function SetupEditForm({
           type="button"
           onClick={onSave}
           disabled={isSavingSetup}
-          className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSavingSetup ? "Saving..." : "Save Changes"}
         </button>

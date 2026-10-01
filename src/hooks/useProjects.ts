@@ -241,12 +241,10 @@ export const useReplaceLeaderMutation = () => {
 
   const mutation = useMutation({
     mutationFn: async ({ projectId, newLeaderUserId }: { projectId: string; newLeaderUserId: string }) => {
-      void projectId;
-      void newLeaderUserId;
-      throw new Error("Replacing a project leader is not available yet");
+      return projectService.updateMemberRole(projectId, newLeaderUserId, "OWNER");
     },
     onSuccess: (_, variables) => {
-      // Invalidate members and invitations to recompute leader state
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.members(variables.projectId) });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.invitations(variables.projectId) });
     },
@@ -288,7 +286,7 @@ export const useSendInvitations = (projectId: string | undefined) => {
 export const useUpdateProjectMemberRole = (projectId: string | undefined) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: ({ userId, role }: { userId: string; role: "LECTURER" | "REVIEWER" }) =>
+    mutationFn: ({ userId, role }: { userId: string; role: "OWNER" | "LECTURER" | "REVIEWER" }) =>
       projectId
         ? projectService.updateMemberRole(projectId, userId, role)
         : Promise.reject("No Project ID"),
@@ -296,6 +294,7 @@ export const useUpdateProjectMemberRole = (projectId: string | undefined) => {
       if (projectId) {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.members(projectId) });
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.myMembership(projectId) });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.all });
       }
     },
   });

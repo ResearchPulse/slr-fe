@@ -1,5 +1,5 @@
 import type { PicoCForm, ScopeForm, Step } from "../types";
-import { AISkeleton, FieldLabel, SparkleIcon, StepBadge } from "./Common";
+import { AISkeleton, FieldLabel, StepBadge } from "./Common";
 
 interface SetupWizardFlowProps {
   currentStep: Step;
@@ -66,29 +66,29 @@ export default function SetupWizardFlow({
 }: SetupWizardFlowProps) {
   return (
     <>
-      <div className="mb-8 grid gap-4 rounded-[4px] border border-border bg-surface-white p-5 shadow-none sm:grid-cols-2 lg:grid-cols-5">
+      <div className="mb-8 grid grid-cols-2 gap-4 border-b border-border pb-4 sm:grid-cols-3 lg:grid-cols-5">
         <StepBadge
           step={1}
           currentStep={currentStep}
-          label="The Spark"
+          label="Research idea"
           complete={completionMap[1]}
         />
         <StepBadge
           step={2}
           currentStep={currentStep}
-          label="Scope Definition"
+          label="Scope"
           complete={completionMap[2]}
         />
         <StepBadge
           step={3}
           currentStep={currentStep}
-          label="PICO-C Breakdown"
+          label="PICO-C"
           complete={completionMap[3]}
         />
         <StepBadge
           step={4}
           currentStep={currentStep}
-          label="RQ Formulation"
+          label="Research questions"
           complete={completionMap[4]}
         />
         <StepBadge
@@ -99,25 +99,25 @@ export default function SetupWizardFlow({
         />
       </div>
 
-      <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
+      <div className="bg-surface-white py-2">
         {isAnalyzingIdea && (
-          <AISkeleton title="Analyzing your topic and drafting objectives + domain..." />
+          <AISkeleton title="Preparing objective and domain suggestions…" />
         )}
 
         {!isAnalyzingIdea && currentStep === 1 && (
           <section>
             <h2 className="mb-1 text-xl font-bold text-text-primary">
-              Step 1: The Spark
+              Step 1: Research idea
             </h2>
             <p className="mb-6 text-sm text-text-secondary">
-              Provide your initial thought. The AI will extract foundational
-              scope signals.
+              Start with the research idea, then refine its scope in the next
+              steps.
             </p>
 
             <FieldLabel title="Research Topic / Raw Idea" />
             <textarea
               rows={7}
-              className="w-full rounded-[4px] border border-slate-300 bg-bg-secondary px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+              className="w-full rounded-[4px] border border-slate-300 bg-bg-secondary px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               placeholder="Describe your idea..."
               value={topic}
               onChange={(e) => onTopicChange(e.target.value)}
@@ -128,7 +128,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(2)}
                 disabled={!topic.trim()}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -144,37 +144,36 @@ export default function SetupWizardFlow({
                   Step 2: Scope Definition
                 </h2>
                 <p className="text-sm text-text-secondary">
-                  Confirm your objective and domain so AI can produce better
-                  PICO-C suggestions.
+                  Set the objective and domain that will guide the PICO-C
+                  framework.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onAnalyzeIdea}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-indigo-200 bg-bg-secondary px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100"
+                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary"
               >
-                <SparkleIcon className="h-4 w-4" />
-                Suggest with AI
+                Generate suggestions
               </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[4px] border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/50 p-4">
+              <div className="rounded-[4px] border border-border bg-surface-white p-4">
                 <FieldLabel title="Objectives (Goal)" />
                 <textarea
                   rows={3}
                   value={scopeForm.objectives}
                   onChange={(e) => onScopeChange("objectives", e.target.value)}
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
-              <div className="rounded-[4px] border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/50 p-4">
+              <div className="rounded-[4px] border border-border bg-surface-white p-4">
                 <FieldLabel title="Domain" />
                 <textarea
                   rows={3}
                   value={scopeForm.domain}
                   onChange={(e) => onScopeChange("domain", e.target.value)}
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
             </div>
@@ -191,7 +190,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(3)}
                 disabled={!isStep2Valid}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -200,7 +199,7 @@ export default function SetupWizardFlow({
         )}
 
         {isGeneratingPicoc && (
-          <AISkeleton title="Generating PICO-C suggestions from topic, objective, and domain..." />
+          <AISkeleton title="Preparing PICO-C suggestions…" />
         )}
 
         {!isGeneratingRQ && !isGeneratingPicoc && currentStep === 3 && (
@@ -211,7 +210,7 @@ export default function SetupWizardFlow({
                   Step 3: PICO-C Breakdown
                 </h2>
                 <p className="text-sm text-text-secondary">
-                  Review AI-suggested fields. Accept, refine, or clear each
+                  Review suggested fields. Accept, refine, or clear each
                   element.
                 </p>
               </div>
@@ -219,10 +218,9 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGeneratePicoc}
                 disabled={!isStep2Valid}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-indigo-200 bg-bg-secondary px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SparkleIcon className="h-4 w-4" />
-                Suggest with AI
+                Generate suggestions
               </button>
             </div>
 
@@ -264,7 +262,7 @@ export default function SetupWizardFlow({
                 <div
                   key={key}
                   className={[
-                    "rounded-[4px] border border-indigo-100 bg-gradient-to-br from-white to-indigo-50/50 p-4",
+                    "rounded-[4px] border border-border bg-surface-white p-4",
                     key === "context" ? "sm:col-span-2" : "",
                   ].join(" ")}
                 >
@@ -276,7 +274,7 @@ export default function SetupWizardFlow({
                     rows={rows}
                     value={picocForm[key]}
                     onChange={(e) => onPicocChange(key, e.target.value)}
-                    className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                    className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                   />
                   <div className="mt-2 text-right">
                     <button
@@ -303,7 +301,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(4)}
                 disabled={!isStep3Valid}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -330,17 +328,15 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGenerateRQ}
                 disabled={!isStep3Valid}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-indigo-200 bg-bg-secondary px-4 py-2 text-sm font-semibold text-indigo-700 transition hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <SparkleIcon className="h-4 w-4" />
-                Suggest with AI
+                Generate suggestions
               </button>
             </div>
 
             {/* PICO-C Reference Section */}
-            <div className="mb-8 rounded-[4px] border border-indigo-100 bg-bg-secondary/40 p-5">
-              <div className="mb-3 flex items-center gap-2 text-indigo-700">
-                <SparkleIcon className="h-4 w-4" />
+            <div className="mb-8 rounded-[4px] border border-border bg-bg-primary p-5">
+              <div className="mb-3 flex items-center gap-2 text-accent">
                 <p className="text-xs font-bold uppercase tracking-wider">
                   PICO-C Reference
                 </p>
@@ -392,7 +388,7 @@ export default function SetupWizardFlow({
             <div className="grid gap-4">
               {rqOptions.length === 0 && (
                 <div className="rounded-[4px] border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
-                  AI did not return suggestions. Please add custom research
+                  No suggestions were returned. Please add custom research
                   questions manually.
                 </div>
               )}
@@ -407,11 +403,11 @@ export default function SetupWizardFlow({
                     className={[
                       "w-full rounded-[4px] border p-4 text-left transition",
                       selected
-                        ? "border-indigo-500 bg-bg-secondary ring-4 ring-indigo-100"
+                        ? "border-accent bg-bg-secondary"
                         : "border-border bg-surface-white hover:border-slate-300",
                     ].join(" ")}
                   >
-                    <span className="inline-flex items-center gap-1 text-xs font-medium text-indigo-700">
+                    <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
                       Option {String.fromCharCode(65 + index)}
                     </span>
                     <p className="text-sm leading-relaxed text-text-primary">
@@ -430,7 +426,7 @@ export default function SetupWizardFlow({
                   value={customRQInput}
                   onChange={(e) => onCustomRQInputChange(e.target.value)}
                   placeholder="Write a custom research question, then click Add"
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100"
+                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
                 <div className="flex justify-end">
                   <button
@@ -476,7 +472,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={onConfirmAndReview}
-                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700"
+                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover"
               >
                 Confirm & Review
               </button>
@@ -573,9 +569,8 @@ export default function SetupWizardFlow({
                 </div>
               </div>
 
-              <div className="rounded-[4px] border border-indigo-100 bg-bg-secondary/60 p-5">
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-100/70 px-3 py-1 text-xs font-semibold text-indigo-700">
-                  <SparkleIcon className="h-3.5 w-3.5" />
+              <div className="rounded-[4px] border border-border bg-bg-primary p-5">
+                <div className="mb-2 border-b border-border pb-2 text-sm font-semibold text-text-primary">
                   Final Research Questions
                 </div>
                 <div className="space-y-2">
@@ -587,9 +582,9 @@ export default function SetupWizardFlow({
                   {finalizedWizardRQs.map((rq, index) => (
                     <div
                       key={`${rq}-${index}`}
-                      className="rounded-[4px] border border-indigo-100 bg-surface-white/70 p-3"
+                      className="rounded-[4px] border border-border bg-surface-white p-3"
                     >
-                      <p className="text-xs font-semibold text-indigo-700">
+                      <p className="text-xs font-semibold text-accent">
                         RQ {index + 1}
                       </p>
                       <p className="text-sm leading-relaxed text-slate-800">
@@ -613,7 +608,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onSaveWizardSetup}
                 disabled={isSavingSetup}
-                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSavingSetup ? "Saving..." : "Save Details"}
               </button>

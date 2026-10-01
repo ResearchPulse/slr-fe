@@ -212,7 +212,7 @@ export default function ProjectFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-3 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95 cursor-pointer"
+            className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
           >
             Hủy
           </button>
@@ -221,7 +221,7 @@ export default function ProjectFormModal({
             form="project-form"
             disabled={isSubmitting}
             className={cn(
-              "flex items-center gap-2 px-10 py-4 bg-accent text-white text-[11px] font-black rounded-md hover:bg-primary-hover transition-all active:scale-95 disabled:opacity-50 disabled:pointer-events-none uppercase tracking-widest cursor-pointer shadow-none",
+              "flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:pointer-events-none disabled:opacity-50",
               isSubmitting && "animate-pulse",
             )}
           >
@@ -326,15 +326,12 @@ export default function ProjectFormModal({
       ) : (
         /* --- CHẾ ĐỘ 2: CHỈNH SỬA / TẠO MỚI (EDIT / CREATE MODE) --- */
         /* Đặt ID form để kích hoạt nút submit từ footer cố định của Modal bên ngoài */
-        <form id="project-form" onSubmit={handleSubmit} className="space-y-6 h-full flex flex-col">
-          <div className="space-y-6 shrink-0">
-            <div className="grid grid-cols-1 gap-6">
+        <form id="project-form" onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 gap-5">
               {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                  <FiFileText size={12} className="text-indigo-400" />
-                  Tiêu đề nghiên cứu
-                </div>
+
                 <FormField
                   id="title"
                   label="Tiêu đề nghiên cứu"
@@ -344,7 +341,7 @@ export default function ProjectFormModal({
                   errorMessage={errors.title}
                   placeholder="Ví dụ: Tác động của Generative AI trong Tự động hóa Lập trình"
                   containerClassName="space-y-1.5"
-                  className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md py-4 font-bold text-slate-800 placeholder:text-slate-300 transition-all shadow-none"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
                   required
                 />
               </div>
@@ -352,10 +349,7 @@ export default function ProjectFormModal({
               {/* LĨNH VỰC NGHIÊN CỨU (Chỉ hiển thị khi TẠO MỚI, ẩn hoàn toàn khi CHỈNH SỬA) */}
               {!isEditMode ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">
-                    <FiLayers size={12} className="text-indigo-400" />
-                    Lĩnh vực nghiên cứu
-                  </div>
+
                   <FormField
                     id="domain"
                     label="Lĩnh vực nghiên cứu"
@@ -365,7 +359,7 @@ export default function ProjectFormModal({
                     errorMessage={errors.domain}
                     placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
                     containerClassName="space-y-1.5"
-                    className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md py-4 font-bold text-slate-800 placeholder:text-slate-300 transition-all shadow-none"
+                    className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
                     required
                   />
                 </div>
@@ -377,11 +371,8 @@ export default function ProjectFormModal({
           </div>
 
           {/* TÓM TẮT DỰ ÁN / MÔ TẢ (Kéo dài tối đa ra toàn bộ khung Drawer để cân đối với chiều cao màn hình) */}
-          <div className="space-y-2 flex-1 flex flex-col min-h-[320px]">
-            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1 shrink-0">
-              <FiInfo size={12} className="text-indigo-400" />
-              Tóm tắt dự án (Mô tả)
-            </div>
+          <div className="space-y-2">
+
             <FormTextarea
               id="description"
               label="Tóm tắt dự án"
@@ -389,9 +380,9 @@ export default function ProjectFormModal({
               value={formData.description || ""}
               onChange={handleChange}
               placeholder="Mô tả ngắn gọn về mục tiêu và tầm quan trọng của nghiên cứu..."
-              rows={12}
-              containerClassName="space-y-1.5 flex-1 flex flex-col"
-              className="bg-slate-50 border-slate-100 focus:bg-surface-white rounded-md p-4 font-medium text-slate-700 italic leading-relaxed placeholder:text-slate-300 transition-all shadow-none flex-1 resize-none min-h-[280px]"
+              rows={7}
+              containerClassName="space-y-2"
+              className="min-h-[200px] resize-y rounded-lg border-border bg-white p-3.5 font-normal not-italic leading-6 text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
             />
           </div>
 

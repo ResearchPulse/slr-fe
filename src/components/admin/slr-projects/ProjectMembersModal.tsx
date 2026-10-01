@@ -23,7 +23,6 @@ import { toastSuccess, toastError } from "../../../utils/toast";
 import {
   useProjectMembers,
   useProjectInvitations,
-  useReplaceLeaderMutation,
   useSendInvitations,
   useUpdateProjectMemberRole,
   useProject,
@@ -81,6 +80,7 @@ export default function ProjectMembersModal({
   onClose,
   projectId,
   projectName,
+  hideLeaderRole = false,
 }: ProjectMembersModalProps) {
   const [activeTab, setActiveTab] = useState<
     "collaboration" | "add" | "invites"
@@ -157,8 +157,8 @@ export default function ProjectMembersModal({
   const [userCache, setUserCache] = useState<Record<string, User>>({});
   const [previewRole, setPreviewRole] = useState<"Lecturer" | "Reviewer">("Lecturer");
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
+  const [pendingLeader, setPendingLeader] = useState<{ userId: string; fullName: string } | null>(null);
 
-  const { replaceLeader } = useReplaceLeaderMutation();
   const { sendInvitations, isSending: isSendingInvitations } =
     useSendInvitations(projectId);
   const { updateMemberRole, isUpdating: isUpdatingMemberRole } =
@@ -244,8 +244,7 @@ export default function ProjectMembersModal({
     if (currentLeader) return false;
     return true;
   }, [isLeaderResolved, currentLeader]);
-  // Project ownership belongs to the creator; invitations assign working roles only.
-  const effectivelyHideLeaderRole = true;
+  const effectivelyHideLeaderRole = hideLeaderRole;
 
   const selectedUser = useMemo(
     () => (selectedUserId ? userCache[selectedUserId] : null),
@@ -299,8 +298,15 @@ export default function ProjectMembersModal({
 
   const handleExistingMemberRoleChange = async (
     userId: string,
-    role: "LECTURER" | "REVIEWER",
+    role: "OWNER" | "LECTURER" | "REVIEWER",
   ) => {
+    if (role === "OWNER") {
+      const target = members.find((member) => member.userId === userId);
+      setPendingLeader({ userId, fullName: target?.fullName || "this member" });
+      setShowReplaceConfirm(true);
+      return;
+    }
+
     try {
       await updateMemberRole({ userId, role });
       toastSuccess(`Role updated to ${role === "LECTURER" ? "Lecturer" : "Reviewer"}.`);
@@ -354,21 +360,17 @@ export default function ProjectMembersModal({
   };
 
   const confirmReplaceLeader = async () => {
-    if (!selectedUserId || !projectId) return;
+    if (!pendingLeader || !projectId) return;
     try {
-      await replaceLeader({ projectId, newLeaderUserId: selectedUserId });
-      setAssignedRoles((prev) => {
-        const updated = { ...prev };
-        delete updated[selectedUserId];
-        return updated;
-      });
+      await updateMemberRole({ userId: pendingLeader.userId, role: "OWNER" });
       setShowReplaceConfirm(false);
-      toastSuccess("Đã thay đổi Trưởng nhóm dự án thành công.");
+      setPendingLeader(null);
+      await refetchMembers();
+      toastSuccess("Đã chuyển quyền Trưởng nhóm dự án.");
     } catch (error) {
-      toastError("Không thể thay đổi Trưởng nhóm dự án.");
+      toastError(error instanceof Error ? error.message : "Không thể chuyển quyền Trưởng nhóm dự án.");
     }
   };
-
   const totalSelections = Object.keys(assignedRoles).length;
 
   const totalMembersPages = membersPaginatedData?.totalPages || 0;
@@ -557,16 +559,17 @@ export default function ProjectMembersModal({
                               {canManageMembers && member.role !== ProjectRole.Owner ? (
                                 <select
                                   aria-label={`Role for ${member.fullName}`}
-                                  value={member.role === ProjectRole.Lecturer ? "LECTURER" : "REVIEWER"}
+                                  value={member.role === ProjectRole.Owner ? "OWNER" : member.role === ProjectRole.Lecturer ? "LECTURER" : "REVIEWER"}
                                   disabled={isUpdatingMemberRole}
                                   onChange={(event) =>
                                     void handleExistingMemberRoleChange(
                                       member.userId,
-                                      event.target.value as "LECTURER" | "REVIEWER",
+                                      event.target.value as "OWNER" | "LECTURER" | "REVIEWER",
                                     )
                                   }
                                   className="px-2 py-0.5 rounded border border-slate-200 text-[10px] font-bold"
                                 >
+                                  {!hideLeaderRole && <option value="OWNER">Project Leader</option>}
                                   <option value="LECTURER">Lecturer</option>
                                   <option value="REVIEWER">Reviewer</option>
                                 </select>
@@ -578,7 +581,9 @@ export default function ProjectMembersModal({
                                     : "bg-slate-50 text-slate-500 border-slate-100",
                                 )}
                               >
-                                {getProjectRoleLabel(member.role)}
+                                {member.role === ProjectRole.Owner
+                                  ? "Project Leader"
+                                  : getProjectRoleLabel(member.role)}
                               </span>}
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-400">
@@ -749,8 +754,8 @@ export default function ProjectMembersModal({
       <ReplaceLeaderConfirm
         isOpen={showReplaceConfirm}
         onConfirm={confirmReplaceLeader}
-        onCancel={() => setShowReplaceConfirm(false)}
-        selectedUserName={selectedUser?.fullName}
+        onCancel={() => { setShowReplaceConfirm(false); setPendingLeader(null); }}
+        selectedUserName={pendingLeader?.fullName}
       />
     </Modal>
   );

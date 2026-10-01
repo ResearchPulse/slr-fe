@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
+import { FiExternalLink, FiFileText, FiPlus } from "react-icons/fi";
 import Button from "../../ui/Button";
 import type { CommissioningDocument } from "../../../types/coreAndGovernance";
-import { FiPlus, FiExternalLink, FiBriefcase } from "react-icons/fi";
 
 interface DocumentsTabProps {
   documents: CommissioningDocument[];
@@ -14,88 +14,93 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
   onAdd,
   isLeader = true,
 }) => {
-  console.log("Check doc: ", documents);
+  const [showAll, setShowAll] = useState(false);
+  const visibleDocuments = showAll ? documents : documents.slice(0, 3);
+
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5">
-        <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary">
+    <section>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-text-secondary">
           {documents.length} {documents.length === 1 ? "document" : "documents"}
         </p>
-        {isLeader && (
-          <Button size="sm" onClick={onAdd} className="flex items-center gap-2">
-            <FiPlus size={14} />
-            Add Document
+        {isLeader && documents.length > 0 && (
+          <Button
+            size="sm"
+            onClick={onAdd}
+            className="inline-flex items-center gap-2"
+          >
+            <FiPlus size={14} /> Add document
           </Button>
         )}
       </div>
 
-      <div className="space-y-3">
-        {documents.map((doc) => (
-          <div
-            key={doc.document_id}
-            className="border border-border bg-surface-white p-5"
-          >
-            <div className="space-y-4">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary mb-1.5">
-                  Scope &amp; Requirements
-                </p>
-                <p className="text-text-primary leading-[1.7] text-sm">
-                  {doc.scope}
-                </p>
-              </div>
-
-              <div className="pt-4 border-t border-border grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary mb-1.5">
-                    Sponsor
-                  </p>
+      {documents.length ? (
+        <ul className="divide-y divide-border">
+          {visibleDocuments.map((document) => (
+            <li
+              key={document.document_id}
+              className="flex flex-col gap-4 py-4 sm:flex-row sm:items-start sm:justify-between"
+            >
+              <div className="flex min-w-0 gap-3">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-bg-secondary text-text-secondary">
+                  <FiFileText size={17} />
+                </span>
+                <div className="min-w-0">
                   <p className="text-sm font-medium text-text-primary">
-                    {doc.sponsor}
+                    {document.sponsor || "Supporting review document"}
+                  </p>
+                  <p className="mt-1 text-sm leading-5 text-text-secondary">
+                    {document.scope}
+                  </p>
+                  <p className="mt-2 text-xs text-text-secondary">
+                    Allocated budget · ${document.budget?.toLocaleString() ?? "—"}
                   </p>
                 </div>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary mb-1.5">
-                    Budget
-                  </p>
-                  <p className="text-sm font-medium text-text-primary">
-                    $
-                    {doc.budget?.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                    })}
-                  </p>
-                </div>
-
-                {doc.document_url && (
-                  <div className="col-span-2">
-                    <a
-                      href={doc.document_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 py-2 px-4 bg-primary text-text-on-primary text-[11px] uppercase tracking-[0.1em] hover:bg-primary-hover transition-colors"
-                    >
-                      <FiExternalLink className="w-3.5 h-3.5" />
-                      View Full Document
-                    </a>
-                  </div>
-                )}
               </div>
-            </div>
-          </div>
-        ))}
-        {documents.length === 0 && (
-          <div className="border border-dashed border-border py-14 text-center">
-            <FiBriefcase className="w-8 h-8 text-text-muted mx-auto mb-3" />
-            <p className="text-text-secondary text-sm">
-              No commissioning documents added yet
-            </p>
-            <p className="text-[11px] text-text-muted mt-1">
-              Add documents to define the project's financial and legal scope.
-            </p>
-          </div>
-        )}
-      </div>
-    </div>
+              {document.document_url && (
+                <a
+                  href={document.document_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+                >
+                  View document <FiExternalLink size={14} />
+                </a>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <div className="border-t border-border py-7">
+          <p className="text-sm font-medium text-text-primary">No documents yet</p>
+          <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
+            Add supporting review material with its scope, sponsor, and source link.
+          </p>
+          {isLeader && (
+            <Button
+              size="sm"
+              onClick={onAdd}
+              className="mt-4 inline-flex items-center gap-2"
+            >
+              <FiPlus size={14} /> Add document
+            </Button>
+          )}
+        </div>
+      )}
+
+      {documents.length > 3 && (
+        <button
+          type="button"
+          onClick={() => setShowAll((current) => !current)}
+          className="mt-3 text-sm font-medium text-accent hover:underline"
+          aria-expanded={showAll}
+        >
+          {showAll
+            ? "Show fewer documents"
+            : `View all ${documents.length} documents`}
+        </button>
+      )}
+    </section>
   );
 };
 

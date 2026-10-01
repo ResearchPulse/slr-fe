@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { FiSearch, FiFolder, FiUsers, FiEye, FiShield } from "react-icons/fi";
+import { FiSearch, FiFolder, FiPlus } from "react-icons/fi";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
@@ -13,28 +13,9 @@ import {
   clearProjectMember,
 } from "../../redux/slices/projectSlice";
 import { getProjectRoleLabel } from "../../types/project";
+import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 
 type RoleFilter = "All" | "Owner" | "Lecturer" | "Reviewer";
-
-/** Small summary card for the dashboard header. */
-function StatCard({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) {
-  return (
-    <div className="bg-surface-white border border-border rounded-[4px] px-5 py-4">
-      <p className="text-[11px] uppercase tracking-[0.15em] text-text-secondary mb-1.5">
-        {label}
-      </p>
-      <p className="font-cormorant text-[28px] leading-none text-text-primary">
-        {value}
-      </p>
-    </div>
-  );
-}
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
@@ -46,6 +27,7 @@ export default function ProjectListPage() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const pageSize = 10;
 
   const { data, projects, isLoading, error } = useMyProjects({
@@ -66,10 +48,6 @@ export default function ProjectListPage() {
       : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === roleFilter),
     [allList, roleFilter],
   );
-  const totalCount = roleProjects.length;
-  const activeCount = roleProjects.filter((p: Project) => p.statusText === "Active").length;
-  const completedCount = roleProjects.filter((p: Project) => p.statusText === "Completed").length;
-
   const roleFilteredResults = useMemo(() => {
     let list = roleProjects;
     if (statusFilter) {
@@ -116,31 +94,35 @@ export default function ProjectListPage() {
   const hasNoResults = !isLoading && filteredProjects.length === 0;
 
   return (
-    <div className="flex flex-col min-h-screen bg-bg-primary">
-      <main className="flex-1 w-full max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="font-cormorant text-[32px] sm:text-[40px] font-normal text-text-primary leading-tight mb-2">
-            {roleFilter === "All" ? "Research Projects" : `${roleFilter === "Owner" ? "Leader" : roleFilter} Projects`}
-          </h1>
-          <p className="text-text-secondary text-sm leading-relaxed">
-            {roleFilter === "Reviewer"
-              ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
-              : roleFilter === "Lecturer"
-                ? "Projects where you support the research team and contribute to the review workflow."
-                : roleFilter === "Owner"
-                  ? "Projects you lead, with setup, team coordination, and review process controls."
-                  : "Your research workspace, organized around the role you hold in each project."}
-          </p>
+    <div className="min-h-[calc(100vh-72px)] bg-bg-primary">
+      <main className="mx-auto w-full max-w-[1480px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
+        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <h1 className="mb-1 text-[28px] font-semibold leading-tight tracking-tight text-text-primary sm:text-[32px]">
+              {roleFilter === "All" ? "Research Projects" : `${roleFilter === "Owner" ? "Leader" : roleFilter} Projects`}
+            </h1>
+            <p className="max-w-3xl text-sm leading-relaxed text-text-secondary">
+              {roleFilter === "Reviewer"
+                ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
+                : roleFilter === "Lecturer"
+                  ? "Projects where you support the research team and contribute to the review workflow."
+                  : roleFilter === "Owner"
+                    ? "Projects you lead, with setup, team coordination, and review process controls."
+                    : "Your research workspace, organized around the role you hold in each project."}
+            </p>
+          </div>
+          <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2">
+            <FiPlus size={16} /> Create project
+          </Button>
         </div>
 
-        <div className="flex flex-wrap gap-2 mb-6" aria-label="Filter projects by role">
+        <div className="mb-4 flex flex-wrap gap-2" aria-label="Filter projects by role">
           {([
-            { value: "All", label: "All roles", icon: FiUsers },
-            { value: "Owner", label: "Leader", icon: FiShield },
-            { value: "Lecturer", label: "Lecturer", icon: FiEye },
-            { value: "Reviewer", label: "Reviewer", icon: FiEye },
-          ] as const).map(({ value, label, icon: Icon }) => {
+            { value: "All", label: "All roles" },
+            { value: "Owner", label: "Leader" },
+            { value: "Lecturer", label: "Lecturer" },
+            { value: "Reviewer", label: "Reviewer" },
+          ] as const).map(({ value, label }) => {
             const count = value === "All"
               ? allList.length
               : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === value).length;
@@ -150,37 +132,28 @@ export default function ProjectListPage() {
                 type="button"
                 onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
                 aria-pressed={roleFilter === value}
-                className={`inline-flex items-center gap-2 px-3 py-2 border rounded-[4px] text-[11px] uppercase tracking-[0.12em] transition-colors ${
+                className={`inline-flex min-h-9 items-center gap-2 rounded-lg border px-3 text-sm transition-colors ${
                   roleFilter === value
-                    ? "bg-text-primary text-bg-primary border-text-primary"
-                    : "bg-surface-white text-text-secondary border-border hover:border-accent hover:text-text-primary"
+                    ? "border-accent bg-bg-secondary font-medium text-accent"
+                    : "border-border bg-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                {label}<span className="opacity-70">{count}</span>
+                {label}
+                <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Summary Cards */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 mb-8">
-          <StatCard label="Total Projects" value={totalCount} />
-          <StatCard label="Active" value={activeCount} />
-          <StatCard label="Completed" value={completedCount} />
-        </div>
-
-        {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-6">
-          {/* Search */}
-          <div className="relative w-full sm:w-72">
+        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+          <div className="relative w-full sm:max-w-sm">
             <FiSearch
               className="absolute left-3 top-1/2 -translate-y-1/2 text-placeholder"
               size={14}
             />
             <Input
               placeholder="Search projects..."
-              className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-[4px] text-sm"
+              className="h-10 rounded-lg border-border bg-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
@@ -188,55 +161,40 @@ export default function ProjectListPage() {
             />
           </div>
 
-          {/* Status Filter */}
-          <div className="flex gap-2 flex-wrap items-center sm:ml-auto">
-            <Button
-              size="sm"
-              variant={statusFilter === undefined ? "primary" : "outline"}
-              onClick={() => {
-                setStatusFilter(undefined);
-                setCurrentPage(1);
-              }}
-            >
-              All
-            </Button>
-            {(["Draft", "Active", "Completed"] as ProjectStatus[]).map(
-              (status) => (
-                <Button
-                  key={status}
-                  size="sm"
-                  variant={statusFilter === status ? "primary" : "outline"}
-                  onClick={() => {
-                    setStatusFilter(status);
-                    setCurrentPage(1);
-                  }}
-                >
-                  {status}
-                </Button>
-              ),
-            )}
+          <div className="flex flex-wrap items-center gap-1 rounded-lg bg-bg-primary p-1">
+            {([undefined, "Draft", "Active", "Completed"] as (ProjectStatus | undefined)[]).map((status) => (
+              <button
+                key={status ?? "All"}
+                type="button"
+                aria-pressed={statusFilter === status}
+                onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
+                className={`min-h-8 rounded-md px-3 text-xs font-medium transition-colors ${statusFilter === status ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+              >
+                {status ?? "All"}
+              </button>
+            ))}
           </div>
         </div>
 
         {error && (
-          <div className="bg-surface-white border border-accent text-accent px-4 py-3 rounded-[4px] mb-6 text-sm">
+          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
             {error}
           </div>
         )}
 
         {/* Projects Table or Skeleton */}
-        <div className="border border-border rounded-[4px] overflow-hidden bg-surface-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
           ) : hasNoResults ? (
-            <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-              <div className="w-12 h-12 border border-border rounded-[4px] flex items-center justify-center text-text-secondary mb-5">
+            <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-bg-primary text-text-secondary">
                 <FiFolder className="w-5 h-5" />
               </div>
-              <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-2">
+              <h3 className="mb-2 text-lg font-semibold text-text-primary">
                 No projects yet
               </h3>
-              <p className="text-text-secondary text-sm leading-relaxed max-w-sm">
+              <p className="max-w-sm text-sm leading-relaxed text-text-secondary">
                 {searchQuery || statusFilter
                   ? "No projects match your search or filter. Try different keywords or clear the filters."
                   : "You haven't created or joined any projects yet. Ask a project leader to invite you, or set up your first review."}
@@ -246,7 +204,7 @@ export default function ProjectListPage() {
             <ProjectTable
               projects={filteredProjects}
               onView={(id) => {
-                const project = projects.find((p: Project) => p.id === id);
+                const project = filteredProjects.find((p: Project) => p.id === id);
                 if (project) {
                   dispatch(
                     setCurrentProject({ id: project.id, title: project.title }),
@@ -263,7 +221,7 @@ export default function ProjectListPage() {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-8 flex flex-wrap justify-center items-center gap-2">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             <Button
               size="sm"
               variant="outline"
@@ -320,12 +278,21 @@ export default function ProjectListPage() {
               Next →
             </Button>
 
-            <span className="ml-4 text-[11px] uppercase tracking-[0.15em] text-text-secondary">
+            <span className="ml-2 text-xs text-text-secondary">
               Page {currentPage} / {totalPages}
             </span>
           </div>
         )}
       </main>
+      <ProjectFormModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={(project) => {
+          dispatch(setCurrentProject({ id: project.id, title: project.title }));
+          dispatch(clearProjectMember());
+          navigate(`/projects/${project.id}`);
+        }}
+      />
     </div>
   );
 }

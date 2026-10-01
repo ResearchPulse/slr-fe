@@ -225,7 +225,6 @@ export default function ProjectSettingsPage() {
           onClose={() => setIsMemberModalOpen(false)}
           projectId={id}
           projectName={project?.title ?? ""}
-          hideLeaderRole={true}
         />
       </div>
     </div>

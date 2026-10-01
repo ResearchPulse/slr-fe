@@ -40,7 +40,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
           All steps complete
         </p>
         <h2 className="font-cormorant text-[36px] font-normal text-text-primary mb-3">
-          Project Setup Complete
+          Review workspace ready
         </h2>
         <p className="text-text-secondary text-sm mb-8 max-w-md mx-auto leading-[1.7]">
           Your project is now active. You can invite reviewers and create review

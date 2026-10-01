@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { FiChevronUp, FiChevronDown, FiCheckSquare } from "react-icons/fi";
+import React, { useMemo, useState } from "react";
+import { FiArrowDown, FiArrowUp, FiCheckSquare, FiEye } from "react-icons/fi";
 import type { Project } from "../../types/project";
 import { cn } from "../../utils/cn";
 import {
@@ -20,29 +20,13 @@ interface ProjectTableProps {
 type SortField = "title" | "domain" | "status" | "createdAt" | "modifiedAt";
 type SortOrder = "asc" | "desc";
 
-const renderSortIndicator = (
-  activeField: SortField,
-  sortField: SortField,
-  sortOrder: SortOrder,
-) => {
-  if (sortField !== activeField) {
-    return (
-      <div className="w-4 h-4 opacity-0 group-hover:opacity-30 flex flex-col items-center justify-center ml-1">
-        <FiChevronUp size={10} />
-        <FiChevronDown size={10} />
-      </div>
-    );
-  }
+const formatDate = (value: string) =>
+  value ? new Date(value).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "—";
 
-  return (
-    <span className="ml-1 text-accent">
-      {sortOrder === "asc" ? (
-        <FiChevronUp size={14} />
-      ) : (
-        <FiChevronDown size={14} />
-      )}
-    </span>
-  );
+const statusClass = (status: Project["statusText"]) => {
+  if (status === "Active") return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  if (status === "Completed") return "border-sky-200 bg-sky-50 text-sky-700";
+  return "border-border bg-bg-primary text-text-secondary";
 };
 
 const ProjectTable: React.FC<ProjectTableProps> = ({
@@ -50,209 +34,160 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   onView,
   onChecklistClick,
 }) => {
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<SortField>("title");
-  const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
+  const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
 
-  const toggleSelectAll = () => {
-    if (selectedIds.size === projects.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(projects.map((p) => p.id)));
-    }
-  };
-
-  const toggleSelectRow = (id: string) => {
-    const newSelected = new Set(selectedIds);
-    if (newSelected.has(id)) {
-      newSelected.delete(id);
-    } else {
-      newSelected.add(id);
-    }
-    setSelectedIds(newSelected);
-  };
+  const sortedProjects = useMemo(() => {
+    const direction = sortOrder === "asc" ? 1 : -1;
+    return [...projects].sort((left, right) => {
+      const leftValue = left[sortField] ?? "";
+      const rightValue = right[sortField] ?? "";
+      if (sortField === "createdAt" || sortField === "modifiedAt") {
+        return (new Date(String(leftValue)).getTime() - new Date(String(rightValue)).getTime()) * direction;
+      }
+      return String(leftValue).localeCompare(String(rightValue)) * direction;
+    });
+  }, [projects, sortField, sortOrder]);
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+      setSortOrder((order) => (order === "asc" ? "desc" : "asc"));
     } else {
       setSortField(field);
       setSortOrder("asc");
     }
   };
 
+  const SortLabel: React.FC<{ label: string; field: SortField }> = ({ label, field }) => (
+    <button
+      type="button"
+      onClick={() => handleSort(field)}
+      className="inline-flex items-center gap-1.5 text-left font-medium text-text-secondary hover:text-text-primary"
+    >
+      {label}
+      {sortField === field && (sortOrder === "asc" ? <FiArrowUp size={13} /> : <FiArrowDown size={13} />)}
+    </button>
+  );
+
+  const handleChecklist = (event: React.MouseEvent, projectId: string) => {
+    event.stopPropagation();
+    onChecklistClick?.(projectId);
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow className="hover:bg-transparent cursor-default">
-          <TableHead className="w-12">
-            <input
-              type="checkbox"
-              className="w-4 h-4 rounded-[2px] border-border text-accent focus:ring-accent"
-              checked={
-                selectedIds.size === projects.length && projects.length > 0
-              }
-              onChange={toggleSelectAll}
-            />
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("title")}
-          >
-            <div className="flex items-center">Code</div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("title")}
-          >
-            <div className="flex items-center">
-              Name {renderSortIndicator("title", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("domain")}
-          >
-            <div className="flex items-center">
-              Domain {renderSortIndicator("domain", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("status")}
-          >
-            <div className="flex items-center">
-              Status {renderSortIndicator("status", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead>Role</TableHead>
-          <TableHead>Leader</TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("createdAt")}
-          >
-            <div className="flex items-center">
-              Created {renderSortIndicator("createdAt", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead
-            className="cursor-pointer group"
-            onClick={() => handleSort("modifiedAt")}
-          >
-            <div className="flex items-center">
-              Modified {renderSortIndicator("modifiedAt", sortField, sortOrder)}
-            </div>
-          </TableHead>
-          <TableHead className="text-center">Checklist</TableHead>
-          <TableHead className="text-right">View</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {projects.map((project) => (
-          <TableRow key={project.id} onClick={() => onView(project.id)}>
-            <TableCell onClick={(e) => e.stopPropagation()}>
-              <input
-                type="checkbox"
-                className="w-4 h-4 rounded-[2px] border-border text-accent focus:ring-accent"
-                checked={selectedIds.has(project.id)}
-                onChange={() => toggleSelectRow(project.id)}
-              />
-            </TableCell>
-            <TableCell className="font-mono text-[11px] tracking-wider text-accent font-medium">
-              {project.code}
-            </TableCell>
-            <TableCell className="font-medium text-text-primary group-hover:text-accent transition-colors">
-              {project.title}
-            </TableCell>
-            <TableCell className="text-text-secondary text-sm">
-              {project.domain}
-            </TableCell>
-            <TableCell>
-              <span
-                className={cn(
-                  "inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border rounded-[2px] font-medium",
-                  project.statusText === "Active"
-                    ? "border-accent text-accent"
-                    : project.statusText === "Completed"
-                      ? "border-success text-success"
-                      : "border-border text-text-secondary",
-                )}
+    <>
+      <div className="hidden overflow-x-auto lg:block">
+        <Table className="w-full min-w-[1120px] table-fixed">
+          <TableHeader className="bg-bg-primary">
+            <TableRow className="cursor-default hover:bg-transparent">
+              <TableHead className="w-[34%] px-5 py-3 text-xs font-semibold normal-case tracking-normal">Project</TableHead>
+              <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Status</TableHead>
+              <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
+              <TableHead className="w-[12%] px-4 py-3 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {sortedProjects.map((project) => (
+              <TableRow
+                key={project.id}
+                onClick={() => onView(project.id)}
+                className="group bg-white transition-colors hover:bg-bg-primary/60"
               >
-                {project.statusText}
-              </span>
-            </TableCell>
-            <TableCell>
-              <span
-                className={cn(
-                  "inline-block px-2 py-0.5 text-[11px] uppercase tracking-wider border rounded-[2px] font-medium",
-                  project.roleText === "Leader"
-                    ? "border-accent text-accent"
-                    : "border-border text-text-secondary",
-                )}
-              >
-                {project.roleText || "Member"}
-              </span>
-            </TableCell>
-            <TableCell className="whitespace-nowrap">
-              {project.leader ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-accent flex items-center justify-center text-[10px] text-bg-primary font-bold uppercase">
-                    {project.leader.fullName.charAt(0)}
+                <TableCell className="px-5 py-4">
+                  <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
+                    {project.title}
                   </div>
-                  <span className="text-sm text-text-primary">
-                    {project.leader.fullName}
+                  <div className="mt-1 flex min-w-0 items-center gap-2 text-xs text-text-secondary">
+                    <span className="shrink-0 font-mono text-accent">{project.code}</span>
+                    <span aria-hidden="true">·</span>
+                    <span className="truncate">{project.domain}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="px-4 py-4">
+                  <span className={cn("inline-flex rounded-md border px-2 py-1 text-xs font-medium", statusClass(project.statusText))}>
+                    {project.statusText}
                   </span>
-                </div>
-              ) : (
-                <span className="text-text-muted text-sm">—</span>
-              )}
-            </TableCell>
-            <TableCell className="text-text-secondary text-sm whitespace-nowrap">
-              {new Date(project.createdAt).toLocaleDateString()}
-            </TableCell>
-            <TableCell className="text-text-secondary text-sm whitespace-nowrap">
-              {new Date(project.modifiedAt).toLocaleDateString()}
-            </TableCell>
-            <TableCell
-              className="text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
+                </TableCell>
+                <TableCell className="px-4 py-4 text-sm text-text-primary">
+                  {project.roleText || "Member"}
+                </TableCell>
+                <TableCell className="px-4 py-4">
+                  <span className="block truncate text-sm text-text-primary" title={project.leader?.fullName}>
+                    {project.leader?.fullName || "—"}
+                  </span>
+                </TableCell>
+                <TableCell className="px-4 py-4 text-xs leading-5 text-text-secondary">
+                  <div>Created {formatDate(project.createdAt)}</div>
+                  <div>Updated {formatDate(project.modifiedAt)}</div>
+                </TableCell>
+                <TableCell className="px-4 py-4">
+                  <div className="flex items-center justify-end gap-1.5">
+                    {onChecklistClick && (
+                      <button
+                        type="button"
+                        onClick={(event) => handleChecklist(event, project.id)}
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-accent"
+                        title="Open checklists"
+                        aria-label={`Open checklists for ${project.title}`}
+                      >
+                        <FiCheckSquare size={16} />
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(event) => { event.stopPropagation(); onView(project.id); }}
+                      className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
+                    >
+                      <FiEye size={15} /> View
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+            {sortedProjects.length === 0 && (
+              <TableRow className="cursor-default hover:bg-transparent">
+                <TableCell colSpan={6} className="p-10 text-center text-sm text-text-secondary">
+                  No projects to show.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      <div className="divide-y divide-border lg:hidden">
+        {sortedProjects.map((project) => (
+          <article key={project.id} className="space-y-4 bg-white p-4 sm:p-5">
+            <button type="button" onClick={() => onView(project.id)} className="block w-full text-left">
+              <div className="text-sm font-semibold text-text-primary">{project.title}</div>
+              <div className="mt-1 text-xs text-text-secondary">
+                <span className="font-mono text-accent">{project.code}</span> · {project.domain}
+              </div>
+            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className={cn("inline-flex rounded-md border px-2 py-1 text-xs font-medium", statusClass(project.statusText))}>{project.statusText}</span>
+              <span className="rounded-md border border-border px-2 py-1 text-xs text-text-secondary">{project.roleText || "Member"}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+              <div><span className="block text-text-secondary">Leader</span><span className="mt-1 block truncate text-text-primary">{project.leader?.fullName || "—"}</span></div>
+              <div><span className="block text-text-secondary">Updated</span><span className="mt-1 block text-text-primary">{formatDate(project.modifiedAt)}</span></div>
+            </div>
+            <div className="flex gap-2">
               {onChecklistClick && (
-                <button
-                  onClick={() => onChecklistClick(project.id)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border border-border bg-surface-white hover:border-accent hover:text-accent text-text-secondary text-[11px] uppercase tracking-wider font-medium transition-colors"
-                  title="View checklists"
-                >
-                  <FiCheckSquare className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Checklist</span>
+                <button type="button" onClick={(event) => handleChecklist(event, project.id)} className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-xs font-medium text-text-primary hover:bg-bg-primary">
+                  <FiCheckSquare size={15} /> Checklists
                 </button>
               )}
-            </TableCell>
-            <TableCell
-              className="text-right"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <button
-                className="text-[11px] uppercase tracking-wider text-text-secondary hover:text-accent font-medium transition-colors"
-                onClick={() => onView(project.id)}
-              >
-                View →
+              <button type="button" onClick={() => onView(project.id)} className="inline-flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-xs font-medium text-white hover:bg-primary-hover">
+                <FiEye size={15} /> View project
               </button>
-            </TableCell>
-          </TableRow>
+            </div>
+          </article>
         ))}
-        {projects.length === 0 && (
-          <TableRow className="hover:bg-transparent cursor-default">
-            <TableCell
-              colSpan={12}
-              className="p-12 text-center text-text-muted text-sm tracking-wide"
-            >
-              You don't have any projects or haven't joined any projects.
-            </TableCell>
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+      </div>
+    </>
   );
 };
 

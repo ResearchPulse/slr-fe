@@ -1,5 +1,5 @@
 // Create Search Execution Modal
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FiAlertCircle } from "react-icons/fi";
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
@@ -12,6 +12,8 @@ interface CreateSearchExecutionModalProps {
   onClose: () => void;
   onSubmit: (data: CreateSearchExecutionRequest) => Promise<void>;
   isSubmitting?: boolean;
+  mode?: "create" | "edit";
+  initialValues?: { searchSource: string; searchQuery: string; notes?: string | null };
 }
 
 export default function CreateSearchExecutionModal({
@@ -20,6 +22,8 @@ export default function CreateSearchExecutionModal({
   onClose,
   onSubmit,
   isSubmitting = false,
+  mode = "create",
+  initialValues,
 }: CreateSearchExecutionModalProps) {
   const [formData, setFormData] = useState({
     searchSource: "",
@@ -29,6 +33,23 @@ export default function CreateSearchExecutionModal({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    if (!isOpen) return;
+    setFormData({
+      searchSource: initialValues?.searchSource || "",
+      searchQuery: initialValues?.searchQuery || "",
+      executedAt: new Date().toISOString().split("T")[0],
+      notes: initialValues?.notes || "",
+    });
+    setErrors({});
+  }, [
+    isOpen,
+    mode,
+    initialValues?.searchSource,
+    initialValues?.searchQuery,
+    initialValues?.notes,
+  ]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,11 +104,11 @@ export default function CreateSearchExecutionModal({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Create Search Strategy"
+      title={mode === "edit" ? "Edit Search Strategy" : "Create Search Strategy"}
       size="xl"
     >
       {/* Info Banner */}
-      <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
+      {mode === "create" && <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
         <div className="flex gap-2 text-sm text-blue-800">
           <FiAlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
@@ -99,7 +120,7 @@ export default function CreateSearchExecutionModal({
             </p>
           </div>
         </div>
-      </div>
+      </div>}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -143,7 +164,7 @@ export default function CreateSearchExecutionModal({
         </div>
 
         {/* Executed Date */}
-        <div className="grid grid-cols-2 gap-4">
+        {mode === "create" && <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">
               Executed Date <span className="text-red-500">*</span>
@@ -158,7 +179,7 @@ export default function CreateSearchExecutionModal({
               disabled={isSubmitting}
             />
           </div>
-        </div>
+        </div>}
 
         {/* Notes */}
         <div>
@@ -191,7 +212,9 @@ export default function CreateSearchExecutionModal({
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Creating..." : "Create Strategy"}
+            {isSubmitting
+              ? mode === "edit" ? "Saving..." : "Creating..."
+              : mode === "edit" ? "Save Changes" : "Create Strategy"}
           </Button>
         </div>
       </form>

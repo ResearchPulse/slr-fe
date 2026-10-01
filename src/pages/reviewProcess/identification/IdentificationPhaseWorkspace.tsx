@@ -3,6 +3,7 @@
 
 import { useIdentificationWorkspace } from "./hooks/useIdentificationWorkspace";
 import ImportRISModal from "../../../components/identification/modals/ImportRISModal";
+import CreateSearchExecutionModal from "../../../components/identification/modals/CreateSearchExecutionModal";
 import PaperDetailsView from "../../../components/papers/PaperDetailsView";
 
 import IdentificationHeader from "./sections/IdentificationHeader";
@@ -67,10 +68,7 @@ export default function IdentificationPhaseWorkspace() {
                 onRetry={ws.handleRetryLoadStrategies}
                 onCreateStrategy={() => ws.setIsCreateStrategyModalOpen(true)}
                 onImportToStrategy={ws.handleImportToStrategy}
-                onEditStrategy={(id) => {
-                  console.log("Edit strategy:", id);
-                  // TODO: implement edit
-                }}
+                onEditStrategy={ws.handleEditStrategy}
                 onDeleteStrategy={ws.handleDeleteStrategy}
                 onViewImportPapers={ws.handleViewImportPapers}
                 onDeleteImportBatch={ws.handleDeleteImportBatch}
@@ -153,6 +151,23 @@ export default function IdentificationPhaseWorkspace() {
         onSubmit={ws.handleImportSubmit}
         isUploading={ws.isUploading}
         uploadProgress={ws.uploadProgress}
+      />
+
+      <CreateSearchExecutionModal
+        identificationProcessId={ws.identificationPhaseId || ""}
+        isOpen={ws.isCreateStrategyModalOpen || !!ws.editingStrategy}
+        mode={ws.editingStrategy ? "edit" : "create"}
+        initialValues={ws.editingStrategy ? {
+          searchSource: ws.editingStrategy.searchSource,
+          searchQuery: ws.editingStrategy.searchQuery,
+          notes: ws.editingStrategy.notes,
+        } : undefined}
+        onClose={() => {
+          ws.setIsCreateStrategyModalOpen(false);
+          ws.setEditingStrategy(null);
+        }}
+        onSubmit={ws.editingStrategy ? ws.handleUpdateStrategy : ws.handleCreateStrategy}
+        isSubmitting={ws.editingStrategy ? ws.isUpdating : ws.isCreating}
       />
 
       <IdentificationCompleteModal

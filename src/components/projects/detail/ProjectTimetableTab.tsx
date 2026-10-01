@@ -15,6 +15,17 @@ interface ProjectTimetableTabProps {
   }) => Promise<unknown>;
 }
 
+const formatDate = (value: string) => {
+  if (!value) return "Not set";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Not set";
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+};
+
 export default function ProjectTimetableTab({
   projectId,
   startDate,
@@ -25,17 +36,14 @@ export default function ProjectTimetableTab({
 }: ProjectTimetableTabProps) {
   const initialStartDate = toDateInputValue(startDate);
   const initialEndDate = toDateInputValue(endDate);
-
   const [formStartDate, setFormStartDate] = useState(initialStartDate);
   const [formEndDate, setFormEndDate] = useState(initialEndDate);
-
   const hasInvalidRange =
-    formStartDate.length > 0 &&
-    formEndDate.length > 0 &&
+    Boolean(formStartDate && formEndDate) &&
     new Date(formStartDate).getTime() > new Date(formEndDate).getTime();
-
   const canSave = useMemo(
     () =>
+      isLeader &&
       !isSaving &&
       !hasInvalidRange &&
       (formStartDate !== initialStartDate || formEndDate !== initialEndDate),
@@ -43,9 +51,10 @@ export default function ProjectTimetableTab({
       formStartDate,
       formEndDate,
       hasInvalidRange,
-      isSaving,
       initialStartDate,
       initialEndDate,
+      isLeader,
+      isSaving,
     ],
   );
 
@@ -58,61 +67,55 @@ export default function ProjectTimetableTab({
   };
 
   return (
-    <div>
-      <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mb-5">
-        Project Date Window
-      </p>
+    <section>
+      <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
+        <h3 className="text-sm font-medium text-text-primary">Review window</h3>
+        <p className="text-sm text-text-secondary">
+          {formatDate(formStartDate)} – {formatDate(formEndDate)}
+        </p>
+      </div>
 
-      <div className="border border-border bg-surface-white p-5">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.15em] text-text-secondary font-medium mb-2">
-              Expected Start Date
-            </label>
-            <input
-              type="date"
-              value={formStartDate}
-              onChange={(event) => setFormStartDate(event.target.value)}
-              disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-text-muted outline-none transition-colors"
-            />
-          </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <label className="block text-sm text-text-secondary">
+          Start date
+          <input
+            type="date"
+            value={formStartDate}
+            onChange={(event) => setFormStartDate(event.target.value)}
+            disabled={!isLeader || isSaving}
+            className="mt-2 w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:bg-bg-primary disabled:text-text-muted"
+          />
+        </label>
+        <label className="block text-sm text-text-secondary">
+          End date
+          <input
+            type="date"
+            value={formEndDate}
+            onChange={(event) => setFormEndDate(event.target.value)}
+            disabled={!isLeader || isSaving}
+            className="mt-2 w-full rounded-md border border-border bg-white px-3 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:bg-bg-primary disabled:text-text-muted"
+          />
+        </label>
+      </div>
 
-          <div>
-            <label className="block text-[11px] uppercase tracking-[0.15em] text-text-secondary font-medium mb-2">
-              Expected End Date
-            </label>
-            <input
-              type="date"
-              value={formEndDate}
-              onChange={(event) => setFormEndDate(event.target.value)}
-              disabled={!isLeader || isSaving}
-              className="w-full px-3 py-2 border border-border bg-surface-white text-sm text-text-primary focus:ring-1 focus:ring-accent focus:border-accent disabled:bg-bg-secondary disabled:text-text-muted outline-none transition-colors"
-            />
-          </div>
-        </div>
+      {hasInvalidRange && (
+        <p className="mt-3 text-sm text-red-700">
+          End date must be the same as or later than the start date.
+        </p>
+      )}
+      {!isLeader && (
+        <p className="mt-3 text-sm text-text-secondary">
+          Only project leaders can update the review timeline.
+        </p>
+      )}
 
-        {hasInvalidRange && (
-          <p className="text-sm text-accent mt-3">
-            End Date must be the same as or after Start Date.
-          </p>
-        )}
-
-        {!isLeader && (
-          <p className="text-sm text-text-secondary mt-3">
-            Only project leaders can update project dates.
-          </p>
-        )}
-
-        <div className="flex justify-end mt-5 pt-4 border-t border-border">
-          <Button
-            onClick={() => void handleSave()}
-            disabled={!isLeader || !canSave}
-          >
-            {isSaving ? "Saving..." : "Save Dates"}
+      {isLeader && (
+        <div className="mt-4 flex justify-end">
+          <Button onClick={() => void handleSave()} disabled={!canSave} size="sm">
+            {isSaving ? "Saving…" : "Save timeline"}
           </Button>
         </div>
-      </div>
-    </div>
+      )}
+    </section>
   );
 }

@@ -1,7 +1,7 @@
 import { useParams } from "react-router";
 import { FiAlertCircle } from "react-icons/fi";
 import type { AIProjectSetupWizardProps } from "./aiSetupWizard/types";
-import { AISkeleton, SparkleIcon } from "./aiSetupWizard/components/Common";
+import { AISkeleton } from "./aiSetupWizard/components/Common";
 import SetupEditForm from "./aiSetupWizard/components/SetupEditForm";
 import SetupSummaryView from "./aiSetupWizard/components/SetupSummaryView";
 import SetupWizardFlow from "./aiSetupWizard/components/SetupWizardFlow";
@@ -11,6 +11,7 @@ import { useProjectMember } from "../../hooks/useProjectMember";
 export default function AIProjectSetupWizard({
   embedded = false,
   projectId,
+  projectDomain,
   onSetupSaved,
   hideEditButton = false,
   hidePicoc = false,
@@ -29,7 +30,7 @@ export default function AIProjectSetupWizard({
         className={[
           embedded
             ? "bg-transparent"
-            : "min-h-screen bg-[radial-gradient(circle_at_top_right,_#e0e7ff_0%,_#f8fafc_45%,_#f1f5f9_100%)] px-4 py-8",
+            : "min-h-screen bg-bg-primary px-4 py-8",
         ].join(" ")}
       >
         <div className="mx-auto max-w-6xl">
@@ -44,24 +45,20 @@ export default function AIProjectSetupWizard({
       className={[
         embedded
           ? "bg-transparent"
-          : "min-h-screen bg-[radial-gradient(circle_at_top_right,_#e0e7ff_0%,_#f8fafc_45%,_#f1f5f9_100%)] px-4 py-8",
+          : "min-h-screen bg-bg-primary px-4 py-8",
       ].join(" ")}
     >
       <div className="mx-auto max-w-6xl">
-        <div className="mb-8 rounded-[4px] border border-indigo-100 bg-surface-white/90 p-6 shadow-none backdrop-blur">
-          <div className="text-center mb-10">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-accent/10 text-accent mb-4 ring-1 ring-accent/20">
-              <SparkleIcon className="w-6 h-6" />
-            </div>
-            <h1 className="text-2xl font-bold text-text-primary sm:text-3xl">
-              Project Setup Wizard for SLRS
-            </h1>
-            <p className="mt-2 max-w-3xl text-sm text-text-secondary sm:text-base">
-              Transform your raw research idea into structured PICO-C elements and
-              finalized research questions with guided AI support.
+        {state.viewMode === "wizard" && (
+          <div className="mb-6 border-b border-border pb-5">
+            <h2 className="text-xl font-semibold text-text-primary sm:text-2xl">
+              Review protocol
+            </h2>
+            <p className="mt-1 max-w-3xl text-sm text-text-secondary">
+              Define the scope, objectives, research questions, and review criteria.
             </p>
           </div>
-        </div>
+        )}
 
         {state.viewMode === "wizard" &&
           (isLeader ? (
@@ -107,24 +104,22 @@ export default function AIProjectSetupWizard({
               onSaveWizardSetup={() => void state.handleSaveWizardSetup()}
             />
           ) : (
-            <div className="rounded-[4px] border border-amber-100 bg-amber-50 p-10 text-center">
-              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-[4px] bg-amber-100 text-amber-600">
-                <FiAlertCircle className="h-8 w-8" />
+            <div className="border-l-2 border-accent bg-bg-primary px-4 py-3">
+              <div className="flex items-start gap-3">
+                <FiAlertCircle className="mt-0.5 shrink-0 text-text-secondary" />
+                <p className="text-sm leading-6 text-text-secondary">
+                  The review protocol has not been completed. A project leader
+                  must complete the initial setup.
+                </p>
               </div>
-              <h2 className="text-xl font-bold text-text-primary">
-                Setup Required
-              </h2>
-              <p className="mt-2 text-text-secondary">
-                This project has not been set up yet. Only the project leader
-                can perform the initial AI-assisted setup.
-              </p>
             </div>
           ))}
 
         {state.viewMode === "summary" && (
-          <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
+          <div>
             <SetupSummaryView
               topic={state.topic}
+              projectDomain={projectDomain}
               scopeForm={state.scopeForm}
               picocForm={state.picocForm}
               researchQuestions={state.editResearchQuestions}
