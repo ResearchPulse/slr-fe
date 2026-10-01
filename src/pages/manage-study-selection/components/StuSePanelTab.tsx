@@ -24,15 +24,14 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "Define the eligibility criteria and checklist structure for reviewers.",
       icon: FileText,
-      color: "indigo",
+      iconTone: "bg-indigo-50 text-indigo-600",
       onClick: () => setIsChecklistOpen(true),
     },
     {
-      title: "Screening Settings",
-      description:
-        "Configure exclusion codes and other process-specific parameters.",
+      title: "Exclusion Codes",
+      description: "Manage the reasons reviewers can use to exclude papers.",
       icon: Settings,
-      color: "slate",
+      iconTone: "bg-slate-100 text-slate-600",
       onClick: () => setIsSettingsOpen(true),
     },
     {
@@ -40,7 +39,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "Monitor reviewer workloads and real-time screening completion status.",
       icon: UserCheck,
-      color: "emerald",
+      iconTone: "bg-emerald-50 text-emerald-600",
       onClick: () => setIsProgressOpen(true),
     },
     {
@@ -48,6 +47,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "View detailed statistics and metrics for the screening process.",
       icon: BarChart2,
+      iconTone: "bg-blue-50 text-blue-600",
       onClick: () => {
         if (!isDisabled)
           navigate(
@@ -59,49 +59,47 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
 
   return (
     <div className="flex flex-col h-full animate-in fade-in duration-500">
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
         {/* Action Strategies */}
-        <div className="grid gap-4">
+        <div className="grid gap-2.5">
           {actions.map((action, index) => (
             <button
               key={index}
               onClick={() => !isDisabled && action.onClick()}
               disabled={isDisabled}
               className={cn(
-                "group relative flex items-start gap-4 p-5 bg-surface-white border border-border rounded-[4px] text-left transition-all",
+                "group flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-surface-white p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200",
                 !isDisabled
-                  ? "hover:border-blue-200 hover:shadow-none hover:shadow-blue-500/5 active:scale-[0.98]"
+                  ? "hover:border-blue-300 hover:bg-blue-50/40"
                   : "opacity-60 cursor-not-allowed",
               )}
             >
               <div
                 className={cn(
-                  "shrink-0 w-12 h-12 rounded-[4px] flex items-center justify-center transition-colors",
-                  `bg-${action.color}-50 group-hover:bg-${action.color}-100`,
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
+                  action.iconTone,
                 )}
               >
-                <action.icon className={`w-6 h-6 text-${action.color}-500`} />
+                <action.icon className="h-5 w-5" />
               </div>
 
-              <div className="flex-1 pr-8">
-                <h4 className="text-sm font-bold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors">
+              <div className="min-w-0 flex-1">
+                <h4 className="text-sm font-semibold leading-5 text-slate-800 transition-colors group-hover:text-blue-700">
                   {action.title}
                 </h4>
-                <p className="text-xs text-text-secondary leading-relaxed">
+                <p className="mt-1 text-[11px] leading-4 text-text-secondary">
                   {action.description}
                 </p>
               </div>
 
-              <div className="absolute right-5 top-1/2 -translate-y-1/2 opacity-0 -translate-x-2 transition-all group-hover:opacity-100 group-hover:translate-x-0">
-                <ArrowRight className="w-4 h-4 text-blue-400" />
-              </div>
+              <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
             </button>
           ))}
         </div>
 
         {/* Helper Note */}
-        <div className="mt-8 p-4 bg-bg-secondary rounded-[4px] border border-dashed border-border">
-          <p className="text-[10px] text-text-secondary font-medium text-center uppercase tracking-widest leading-relaxed">
+        <div className="mt-2 rounded-xl border border-dashed border-border bg-bg-secondary p-3">
+          <p className="text-[9px] font-medium text-center uppercase leading-4 tracking-[0.12em] text-text-secondary">
             These actions are primary for leaders to setup and maintain the
             review integrity
           </p>

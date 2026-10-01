@@ -189,8 +189,7 @@ export const PaperList: React.FC<PaperListProps> = ({
       const allIds = papers
         .filter(
           (p) =>
-            !["Included", "Excluded", "Resolved"].includes(p.status) &&
-            !p.isAssigned,
+            !["Included", "Excluded", "Resolved"].includes(p.status),
         )
         .map((p) => p.id);
       const newSelectedIds = Array.from(new Set([...selectedIds, ...allIds]));
@@ -435,9 +434,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                       className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       checked={isPaperSelected}
                       disabled={
-                        ["Included", "Excluded", "Resolved"].includes(
-                          paper.status,
-                        ) || paper.isAssigned
+                        ["Included", "Excluded", "Resolved"].includes(paper.status)
                       }
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => handleSelectPaper(e, paper.id)}

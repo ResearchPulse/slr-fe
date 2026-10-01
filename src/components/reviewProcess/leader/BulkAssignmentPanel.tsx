@@ -50,7 +50,12 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
 
   // 2. Only reviewers vote on screening decisions.
   const reviewers = useMemo(() => {
-    return members.filter((m) => m.role === ProjectRole.Reviewer);
+    return members.filter((member) => {
+      const role = String(member.roleText ?? member.role).trim().toUpperCase();
+      const isAdmin = ["ADMIN", "OWNER", "1"].includes(role);
+      const isReviewer = member.role === ProjectRole.Reviewer || role === "REVIEWER";
+      return isReviewer && !isAdmin;
+    });
   }, [members]);
 
   // 3. Selection State (Map ID to Name for chip display)
