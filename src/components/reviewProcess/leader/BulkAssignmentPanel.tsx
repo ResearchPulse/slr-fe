@@ -48,7 +48,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
     pageSize: 100, // Large enough for member selection
   });
 
-  // 2. Only reviewers vote on screening decisions.
+  // 2. Keep this list aligned with the API: only non-admin reviewers can be assigned.
   const reviewers = useMemo(() => {
     return members.filter((member) => {
       const role = String(member.roleText ?? member.role).trim().toUpperCase();
