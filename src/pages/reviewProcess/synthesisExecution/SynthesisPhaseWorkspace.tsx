@@ -96,7 +96,6 @@ export default function SynthesisPhaseWorkspace() {
   };
 
   const isReadOnly = workspace.processStatus === "Completed";
-  const canCompletePhase = workspace.allFindingsFinalized;
 
   const tabs = useMemo(
     () => [
