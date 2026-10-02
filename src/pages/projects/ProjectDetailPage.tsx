@@ -223,11 +223,17 @@ export default function ProjectDetailPage() {
     ? "paper-pool"
     : "overview";
 
+  const savedStep = useSelector(
+    (state: RootState) => state.project.paperPoolSteps?.[id || ""],
+  );
+  const defaultLeaderStep = (processes && processes.length > 0) ? 4 : 2;
+  const targetStep = isLeader ? (savedStep && savedStep > 1 ? savedStep : defaultLeaderStep) : 5;
+
   const setActiveMainSection = (tab: "overview" | "paper-pool") => {
     if (tab === "overview") {
       navigate(`/projects/${id}/overview`, { replace: true });
     } else {
-      navigate(`/projects/${id}/workspace/1`, { replace: true });
+      navigate(`/projects/${id}/workspace/${targetStep}`, { replace: true });
     }
   };
 
@@ -375,7 +381,9 @@ export default function ProjectDetailPage() {
     const savedStep = useSelector(
       (state: RootState) => state.project.paperPoolSteps?.[id || ""],
     );
-    return <Navigate to={`workspace/${savedStep || 1}`} replace />;
+    const defaultLeaderStep = (processes && processes.length > 0) ? 4 : 2;
+    const targetStep = isLeader ? (savedStep && savedStep > 1 ? savedStep : defaultLeaderStep) : 5;
+    return <Navigate to={`workspace/${targetStep}`} replace />;
   };
 
   // ── Render workspace based on selected step ──────────────────────────────

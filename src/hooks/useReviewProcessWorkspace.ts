@@ -496,7 +496,7 @@ export const useReviewProcessWorkspace = ({
 
   // Navigation handlers
   const handleBack = useCallback(() => {
-    navigate(`/projects/${projectId}/workspace/1`);
+    navigate(`/projects/${projectId}/workspace/4`);
   }, [navigate, projectId]);
 
   const handleOpenPhase = useCallback(
