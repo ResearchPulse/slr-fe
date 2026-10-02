@@ -1,5 +1,4 @@
-// PRISMA 2020 Flow Diagram — Visual representation of the systematic review pipeline
-// Layout follows PRISMA 2020 standard: Identification → Screening → Eligibility → Included
+// PRISMA 2020 flow diagram presentation. Report data and export behavior stay in the existing services.
 
 import {
   useState,
@@ -10,14 +9,11 @@ import {
   useEffect,
 } from "react";
 import { createPortal } from "react-dom";
-import { FiArrowDown, FiMaximize2, FiDownload, FiX } from "react-icons/fi";
+import { FiArrowDown, FiArrowRight, FiMaximize2, FiDownload, FiX } from "react-icons/fi";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
 import toast from "react-hot-toast";
-import type {
-  PrismaNodeResponse,
-  PrismaBreakdownResponse,
-} from "../../../../types/prismaReport";
+import type { PrismaNodeResponse, PrismaBreakdownResponse } from "../../../../types/prismaReport";
 import { PRISMA_STAGE_LABELS } from "../../../../types/prismaReport";
 
 interface PrismaFlowDiagramProps {
@@ -27,507 +23,280 @@ interface PrismaFlowDiagramProps {
   isExpanded?: boolean;
 }
 
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
-
-// ─────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────
-
-function formatCount(n: number): string {
-  return n.toLocaleString();
-}
-
-// ─────────────────────────────────────────────
-// Skeleton loader
-// ─────────────────────────────────────────────
-
-function DiagramSkeleton() {
-  return (
-    <div className="animate-pulse space-y-6 py-4">
-      {Array.from({ length: 4 }).map((_, i) => (
-        <div key={i} className="flex flex-col items-center gap-3">
-          <div className="h-5 w-24 bg-bg-secondary rounded" />
-          <div className="flex items-center gap-4 w-full max-w-2xl mx-auto">
-            <div className="flex-1 h-20 bg-bg-secondary border border-border rounded-[4px]" />
-            {i < 3 && (
-              <div className="h-20 w-36 bg-bg-secondary border border-border rounded-[4px]" />
-            )}
-          </div>
-          {i < 3 && <div className="w-0.5 h-8 bg-bg-secondary" />}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────
-
-interface FlowBoxProps {
-  label: string;
-  count?: number;
-  variant: "primary" | "secondary" | "success" | "muted";
-  breakdown?: PrismaBreakdownResponse[];
-  reasons?: PrismaBreakdownResponse[];
-  notes?: string[];
-  className?: string;
-  isExpanded?: boolean;
-}
-
-const VARIANT_STYLES: Record<FlowBoxProps["variant"], string> = {
-  primary:
-    "bg-surface-white border-2 border-indigo-300 shadow-none hover:shadow-none hover:border-indigo-400",
-  secondary:
-    "bg-surface-white border border-border shadow-none hover:shadow-none hover:border-gray-400",
-  success:
-    "bg-surface-white border-2 border-green-500 shadow-none hover:shadow-none hover:border-green-600",
-  muted: "bg-bg-primary border border-border text-text-secondary",
-};
-
-function FlowBox({
-  label,
-  count,
-  variant,
-  breakdown,
-  reasons,
-  notes,
-  isExpanded = false,
-}: FlowBoxProps) {
-  const isSideBox = variant === "muted";
-  const widthClass = isExpanded
-    ? isSideBox
-      ? "max-w-[300px]"
-      : "max-w-[400px]"
-    : isSideBox
-      ? "max-w-[240px]"
-      : "max-w-[320px]";
-
-  return (
-    <div
-      className={`rounded-[4px] px-5 py-4 text-left transition-all duration-150 ${VARIANT_STYLES[variant]} ${widthClass} w-full flex flex-col gap-2 shrink-0 ${isExpanded ? "shadow-none" : ""}`}
-      role="group"
-    >
-      <div className="flex justify-between items-start gap-4">
-        <p
-          className={`text-sm font-semibold leading-tight uppercase tracking-tight ${isSideBox ? "text-text-secondary" : "text-text-primary"}`}
-        >
-          {label}
-        </p>
-        {count !== undefined && (
-          <p
-            className={`text-lg font-bold tabular-nums whitespace-nowrap ${isSideBox ? "text-text-secondary outline-none" : "text-text-primary"}`}
-          >
-            (n = {formatCount(count)})
-          </p>
-        )}
-      </div>
-
-      {breakdown && breakdown.length > 0 && (
-        <div className="mt-1 border-t border-border pt-2 space-y-1">
-          {breakdown.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex justify-between text-xs text-text-secondary"
-            >
-              <span className="truncate mr-2">{item.label}</span>
-              <span className="font-medium whitespace-nowrap">
-                (n={formatCount(item.count)})
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {reasons && reasons.length > 0 && (
-        <div className="mt-1 border-t border-border pt-2 space-y-1">
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-tighter">
-            Reasons for exclusion:
-          </p>
-          {reasons.map((item, idx) => (
-            <div
-              key={idx}
-              className="flex justify-between text-xs text-text-secondary italic"
-            >
-              <span className="truncate mr-2 leading-tight">
-                - {item.label}
-              </span>
-              <span className="font-medium whitespace-nowrap">
-                (n={formatCount(item.count)})
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {notes && notes.length > 0 && (
-        <div className="mt-1 border-t border-border pt-2">
-          {notes.map((note, idx) => (
-            <p
-              key={idx}
-              className={`text-[11px] leading-snug ${isSideBox ? "text-text-secondary" : "text-indigo-400"} italic`}
-            >
-              * {note}
-            </p>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function VerticalConnector({ color = "gray" }: { color?: string }) {
-  const colorClass =
-    color === "indigo"
-      ? "bg-indigo-300"
-      : color === "blue"
-        ? "bg-blue-300"
-        : color === "amber"
-          ? "bg-amber-300"
-          : color === "green"
-            ? "bg-green-300"
-            : "bg-gray-300";
-
-  return (
-    <div className="flex flex-col items-center py-1">
-      <div className={`w-0.5 h-8 ${colorClass}`} />
-      <FiArrowDown
-        className={`w-4 h-4 ${colorClass.replace("bg-", "text-")}`}
-      />
-    </div>
-  );
-}
-
-function SideArrow() {
-  return (
-    <div className="flex flex-row md:flex-row items-center justify-center h-full min-w-[40px]">
-      <div className="hidden md:block w-8 h-0.5 bg-bg-secondary" />
-      <FiArrowDown className="w-4 h-4 text-gray-300 md:-rotate-90 md:ml-[-2px]" />
-    </div>
-  );
-}
-
-interface SectionLabelProps {
-  label: string;
-  color: string;
-}
-
-function SectionLabel({ label, color }: SectionLabelProps) {
-  const colorClasses: Record<string, string> = {
-    indigo: "bg-bg-secondary text-indigo-700 border-indigo-200",
-    blue: "bg-blue-50 text-blue-700 border-blue-200",
-    amber: "bg-amber-50 text-amber-700 border-amber-200",
-    green: "bg-surface-white text-green-700 border-border",
-  };
-
-  return (
-    <div className="flex items-start md:items-center mb-6">
-      <div className="flex-1 border-t-2 border-dashed border-border" />
-      <span
-        className={`mx-4 px-4 py-1.5 text-xs font-bold uppercase tracking-widest rounded-full border shadow-none ${colorClasses[color] ?? "bg-bg-primary text-text-primary border-border"}`}
-      >
-        {label}
-      </span>
-      <div className="flex-1 border-t-2 border-dashed border-border" />
-    </div>
-  );
-}
-
-function PrismaFlowColumn({
-  nodes,
-  variant = "primary",
-  isExpanded = false,
-}: {
-  nodes: PrismaNodeResponse[];
-  variant?: "primary" | "secondary";
-  isExpanded?: boolean;
-}) {
-  const mainWidthClass = isExpanded ? "md:w-[400px]" : "md:w-[320px]";
-  const sideMinWidthClass = isExpanded
-    ? "md:min-w-[340px]"
-    : "md:min-w-[280px]";
-
-  return (
-    <div
-      className={`w-full flex flex-col items-center ${isExpanded ? "gap-y-6" : "gap-y-1"}`}
-    >
-      {nodes.map((node, idx) => (
-        <div key={idx} className="w-full flex flex-col items-center">
-          {/* Row Layout: Main Box + Arrow + Side Box */}
-          <div
-            className={`flex flex-col md:flex-row items-center justify-center gap-2 ${isExpanded ? "md:gap-8" : "md:gap-4"} w-full`}
-          >
-            {/* Main Node Vertical Stack */}
-            <div
-              className={`w-full flex flex-col items-center md:items-end shrink-0 ${mainWidthClass}`}
-            >
-              <FlowBox
-                label={PRISMA_STAGE_LABELS[node.stage] ?? node.stage}
-                count={node.total}
-                breakdown={node.breakdown}
-                reasons={node.reasons}
-                notes={node.notes}
-                variant={variant}
-                isExpanded={isExpanded}
-              />
-
-              {/* Vertical Connector */}
-              {idx < nodes.length - 1 && (
-                <div className="flex justify-center w-full">
-                  <VerticalConnector
-                    color={variant === "primary" ? "indigo" : "blue"}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Side Box Connector */}
-            <div
-              className={`flex flex-col md:flex-row items-center justify-center min-w-0 ${sideMinWidthClass} w-full md:w-auto`}
-            >
-              {node.sideBox ? (
-                <div className="flex flex-col md:flex-row items-center w-full">
-                  <SideArrow />
-                  <FlowBox
-                    label={
-                      PRISMA_STAGE_LABELS[node.sideBox.stage] ??
-                      node.sideBox.stage
-                    }
-                    count={node.sideBox.total}
-                    breakdown={node.sideBox.breakdown}
-                    reasons={node.sideBox.reasons}
-                    variant="muted"
-                    className="border-dashed bg-bg-primary/30"
-                    isExpanded={isExpanded}
-                  />
-                </div>
-              ) : (
-                <div className="hidden md:block w-full" />
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────
-// Main component
-// ─────────────────────────────────────────────
-
 export interface PrismaFlowDiagramRef {
   exportImage: () => Promise<void>;
 }
 
-const PrismaFlowDiagram = forwardRef<
-  PrismaFlowDiagramRef,
-  PrismaFlowDiagramProps
->(
-  (
-    { nodes, includedNode, isLoading, isExpanded: initialIsExpanded = false },
-    ref,
-  ) => {
+const MAIN_STAGES = [
+  "RecordsIdentified",
+  "RecordsScreened",
+  "ReportsSoughtForRetrieval",
+  "ReportsAssessed",
+] as const;
+
+const SIDE_STAGES = [
+  "DuplicateRecordsRemoved",
+  "RecordsExcluded",
+  "ReportsNotRetrieved",
+  "ReportsExcluded",
+] as const;
+
+function countLabel(value: number) {
+  return value.toLocaleString();
+}
+
+function DiagramNode({
+  label,
+  count,
+  muted = false,
+  included = false,
+  breakdown,
+  reasons,
+}: {
+  label: string;
+  count: number;
+  muted?: boolean;
+  included?: boolean;
+  breakdown?: PrismaBreakdownResponse[];
+  reasons?: PrismaBreakdownResponse[];
+}) {
+  return (
+    <div
+      className={`w-full rounded-xl border px-4 py-3 shadow-sm ${
+        included
+          ? "border-green-200 border-l-[3px] bg-green-50/50"
+          : muted
+            ? "border-border/70 bg-bg-secondary/75 text-text-secondary shadow-none"
+            : "border-border/80 bg-surface-white text-text-primary"
+      }`}
+      role="group"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <p className={`text-sm font-medium leading-snug ${muted ? "text-text-secondary" : "text-text-primary"}`}>
+          {label.trim()}
+        </p>
+        <p className={`shrink-0 text-sm font-semibold tabular-nums ${included ? "text-green-700" : "text-text-primary"}`}>
+          n = {countLabel(count)}
+        </p>
+      </div>
+      {(breakdown?.length || reasons?.length) ? (
+        <div className="mt-2 border-t border-border/80 pt-2 space-y-1">
+          {(breakdown ?? reasons ?? []).map((item, index) => (
+            <div key={`${item.label}-${index}`} className="flex justify-between gap-3 text-xs text-text-secondary">
+              <span>{item.label}</span><span className="shrink-0 tabular-nums">n = {countLabel(item.count)}</span>
+            </div>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function StageDivider({ children }: { children: string }) {
+  return (
+    <div className="flex items-center gap-3 py-3" aria-label={children}>
+      <div className="h-px flex-1 bg-border/60" />
+      <span className="rounded-md bg-primary-light/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">{children}</span>
+      <div className="h-px flex-1 bg-border/60" />
+    </div>
+  );
+}
+
+function DiagramSkeleton() {
+  return (
+    <div className="mx-auto max-w-4xl animate-pulse space-y-3 py-4">
+      {Array.from({ length: 5 }).map((_, index) => (
+        <div key={index} className="grid grid-cols-1 md:grid-cols-[1fr_32px_1fr] gap-3">
+          <div className="h-[54px] rounded-xl border border-border/70 bg-bg-secondary" />
+          <div className="hidden md:block" />
+          <div className="h-[54px] rounded-xl border border-border/70 bg-bg-secondary" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProps>(
+  ({ nodes, includedNode, isLoading, isExpanded: initialIsExpanded = false }, ref) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const mainDiagramRef = useRef<HTMLDivElement>(null);
     const modalDiagramRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
       if (!isModalOpen) return;
-      const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === "Escape") {
-          setIsModalOpen(false);
-        }
+      const handleKeyDown = (event: KeyboardEvent) => {
+        if (event.key === "Escape") setIsModalOpen(false);
       };
       window.addEventListener("keydown", handleKeyDown);
       return () => window.removeEventListener("keydown", handleKeyDown);
     }, [isModalOpen]);
 
     const handleExportImage = useCallback(async () => {
-      const targetElement = isModalOpen
-        ? (modalDiagramRef.current || mainDiagramRef.current)
-        : mainDiagramRef.current;
-
-      if (!targetElement) {
+      const target = isModalOpen ? modalDiagramRef.current || mainDiagramRef.current : mainDiagramRef.current;
+      if (!target) {
         toast.error("Diagram element not ready for export.");
         return;
       }
-
       const toastId = toast.loading("Generating high-resolution PNG...");
       try {
         let dataUrl: string;
         try {
-          dataUrl = await toPng(targetElement, {
+          dataUrl = await toPng(target, {
             cacheBust: false,
             backgroundColor: "#ffffff",
             pixelRatio: 2,
             fontEmbedCSS: "",
-            style: {
-              padding: "32px",
-              margin: "0",
-              backgroundColor: "#ffffff",
-            },
+            style: { padding: "24px", margin: "0", backgroundColor: "#ffffff" },
           });
         } catch {
-          dataUrl = await toPng(targetElement, {
-            backgroundColor: "#ffffff",
-            pixelRatio: 1.5,
-          });
+          dataUrl = await toPng(target, { backgroundColor: "#ffffff", pixelRatio: 1.5 });
         }
-
         saveAs(dataUrl, `PRISMA_Flow_Diagram_${new Date().toISOString().split("T")[0]}.png`);
         toast.success("PRISMA flow diagram exported as PNG!", { id: toastId });
-      } catch (err) {
-        console.error("Failed to export PRISMA diagram:", err);
+      } catch (error) {
+        console.error("Failed to export PRISMA diagram:", error);
         toast.error("Failed to export PRISMA diagram as PNG.", { id: toastId });
       }
     }, [isModalOpen]);
 
-    useImperativeHandle(ref, () => ({
-      exportImage: handleExportImage,
-    }));
+    useImperativeHandle(ref, () => ({ exportImage: handleExportImage }));
 
     if (isLoading) return <DiagramSkeleton />;
 
-    // Identify nodes by stage groups for visual separation
-    const identificationNodes = nodes.filter((n) =>
-      ["RecordsIdentified", "DuplicateRecordsRemoved"].includes(n.stage),
+    const nodeByStage = new Map<PrismaNodeResponse["stage"], PrismaNodeResponse>();
+    nodes.forEach((node) => nodeByStage.set(node.stage, node));
+    const mainNodes = MAIN_STAGES.map((stage) => nodeByStage.get(stage)).filter(
+      (node): node is PrismaNodeResponse => Boolean(node),
     );
-    const filteringNodes = nodes.filter((n) =>
-      [
-        "RecordsScreened",
-        "RecordsExcluded",
-        "ReportsSoughtForRetrieval",
-        "ReportsNotRetrieved",
-        "ReportsAssessed",
-        "ReportsExcluded",
-      ].includes(n.stage),
-    );
+    const sideFor = (node: PrismaNodeResponse) => {
+      if (node.sideBox) return node.sideBox;
+      const stageByParent: Record<string, (typeof SIDE_STAGES)[number]> = {
+        RecordsIdentified: "DuplicateRecordsRemoved",
+        RecordsScreened: "RecordsExcluded",
+        ReportsSoughtForRetrieval: "ReportsNotRetrieved",
+        ReportsAssessed: "ReportsExcluded",
+      };
+      const stage = stageByParent[node.stage];
+      if (!stage) return undefined;
+      const sideNode = nodeByStage.get(stage);
+      return sideNode ? {
+        stage: sideNode.stage,
+        total: sideNode.total,
+        breakdown: sideNode.breakdown,
+        reasons: sideNode.reasons,
+      } : undefined;
+    };
 
-    const renderDiagram = (isExpanded: boolean, isModalView: boolean = false) => (
+    const renderDiagram = (modal = false) => (
       <div
-        ref={isModalView ? modalDiagramRef : mainDiagramRef}
-        className={`prisma-flow-diagram py-10 ${isExpanded ? "px-12 w-fit" : "px-6 md:px-10 w-full max-w-[1000px] overflow-x-hidden"} mx-auto print:py-2 transition-all duration-300 bg-surface-white`}
+        ref={modal ? modalDiagramRef : mainDiagramRef}
+        className={`prisma-flow-diagram mx-auto w-full rounded-xl ${modal ? "max-w-5xl bg-surface-white px-4 py-6 sm:px-8" : "max-w-5xl bg-bg-primary/45 px-3 py-4 sm:px-5 sm:py-5"}`}
         role="figure"
         aria-label="PRISMA 2020 flow diagram"
       >
-        {/* ── IDENTIFICATION ── */}
-        <div className="mb-12">
-          <SectionLabel label="Identification" color="indigo" />
-          <PrismaFlowColumn
-            nodes={identificationNodes}
-            variant="primary"
-            isExpanded={isExpanded}
-          />
+        <StageDivider>Identification</StageDivider>
+        <div className="space-y-1">
+          {mainNodes.map((node, index) => {
+            const branch = sideFor(node);
+            const isLastIdentification = node.stage === "RecordsIdentified";
+            const isIncludedParent = node.stage === "ReportsAssessed";
+            return (
+              <div key={node.stage}>
+                <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] items-center gap-x-3 gap-y-2">
+                  <div className="md:col-start-1 md:row-start-1">
+                    <DiagramNode
+                      label={PRISMA_STAGE_LABELS[node.stage] ?? node.stage}
+                      count={node.total}
+                      breakdown={node.breakdown}
+                      reasons={node.reasons}
+                    />
+                  </div>
+                  <div className="hidden md:flex md:col-start-2 md:row-start-1 justify-center self-stretch">
+                    {branch && <div className="relative flex items-center w-full"><div className="w-full h-px bg-[#B7C8D4]" /><FiArrowRight className="absolute right-[-2px] w-3.5 h-3.5 text-[#91A8B8]" /></div>}
+                  </div>
+                  <div className="md:col-start-3 md:row-start-1">
+                    {branch ? (
+                      <DiagramNode
+                        label={PRISMA_STAGE_LABELS[branch.stage] ?? branch.stage}
+                        count={branch.total}
+                        breakdown={branch.breakdown}
+                        reasons={branch.reasons}
+                        muted
+                      />
+                    ) : <div className="hidden md:block" />}
+                  </div>
+                </div>
+                {!isIncludedParent && index < mainNodes.length - 1 && (
+                  <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] h-5">
+                    <div className="hidden md:flex md:justify-center"><div className="w-px h-full bg-[#A9C5D7]" /></div>
+                    <div className="flex md:hidden justify-center"><FiArrowDown className="w-4 h-4 text-[#91A8B8]" /></div>
+                  </div>
+                )}
+                {isLastIdentification && <StageDivider>Screening &amp; Eligibility</StageDivider>}
+              </div>
+            );
+          })}
         </div>
-
-        {/* ── SCREENING & ELIGIBILITY ── */}
-        <div className="mb-12">
-          <div className="flex justify-center mb-6">
-            <VerticalConnector color="indigo" />
-          </div>
-          <SectionLabel label="Screening & Eligibility" color="blue" />
-          <PrismaFlowColumn
-            nodes={filteringNodes}
-            variant="secondary"
-            isExpanded={isExpanded}
-          />
-        </div>
-
-        {/* ── INCLUDED ── */}
         {includedNode && (
-          <div
-            className={`mt-4 flex flex-col items-center ${isExpanded ? "mt-12" : "mt-4"}`}
-          >
-            <div className="flex justify-center mb-6">
-              <VerticalConnector color="blue" />
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] h-5">
+              <div className="hidden md:flex md:justify-center"><div className="w-px h-full bg-[#A9C5D7]" /></div>
+              <div className="flex md:hidden justify-center"><FiArrowDown className="w-4 h-4 text-[#91A8B8]" /></div>
             </div>
-            <SectionLabel label="Studies Included" color="green" />
-            <div
-              className={`w-full flex justify-center ${isExpanded ? "max-w-[700px]" : "max-w-[540px]"}`}
-            >
-              <FlowBox
-                label={
-                  PRISMA_STAGE_LABELS[includedNode.stage] ?? includedNode.stage
-                }
+            <StageDivider>Studies Included</StageDivider>
+            <div className="w-full md:w-[calc(50%-16px)] md:ml-[calc(25%-8px)] md:mr-0">
+              <DiagramNode
+                label={PRISMA_STAGE_LABELS[includedNode.stage] ?? includedNode.stage}
                 count={includedNode.total}
-                variant="success"
-                className="border-green-600 shadow-none ring-4 ring-green-50 text-center"
-                isExpanded={isExpanded}
+                breakdown={includedNode.breakdown}
+                reasons={includedNode.reasons}
+                included
               />
             </div>
-          </div>
+          </>
         )}
       </div>
     );
 
     return (
       <>
-        <div className="flex justify-end items-center gap-3 mb-4 px-4">
+        <div className="flex flex-wrap justify-end items-center gap-2 mb-3">
           <button
             onClick={handleExportImage}
-            className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-[4px] text-sm font-semibold hover:bg-indigo-700 transition-all shadow-none active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-[4px] text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             title="Download diagram as high-quality PNG"
           >
-            <FiDownload className="w-4 h-4" />
-            Export PNG
+            <FiDownload className="w-4 h-4" />Export PNG
           </button>
           {!initialIsExpanded && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="group flex items-center gap-2 px-4 py-2 bg-surface-white border border-border rounded-[4px] text-sm font-semibold text-text-secondary hover:text-accent hover:border-indigo-200 hover:bg-bg-secondary/50 transition-all shadow-none active:scale-95"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-[4px] text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              aria-label="View full diagram"
             >
-              <FiMaximize2 className="w-4 h-4 text-text-secondary group-hover:text-accent" />
-              View Full Diagram
+              <FiMaximize2 className="w-4 h-4" />View Full Diagram
             </button>
           )}
         </div>
-
-        {renderDiagram(initialIsExpanded, false)}
-
-        {isModalOpen &&
-          createPortal(
-            <div
-              className="fixed inset-0 z-[5000] bg-gray-900/60 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 animate-in fade-in duration-200"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) setIsModalOpen(false);
-              }}
-            >
-              <div className="bg-surface-white w-full h-full rounded-[4px] shadow-2xl relative flex flex-col overflow-hidden border border-border">
-                {/* Header */}
-                <div className="flex items-center justify-between px-6 md:px-8 py-4 border-b border-border bg-bg-primary/50 shrink-0">
-                  <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                    <span className="w-2 h-6 bg-accent rounded-full shrink-0" />
-                    <span>PRISMA 2020 Flow Diagram - Detailed View</span>
-                  </h3>
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={handleExportImage}
-                      className="flex items-center gap-2 px-4 py-2 bg-accent text-white rounded-[4px] text-sm font-semibold hover:bg-indigo-700 transition-all shadow-none active:scale-95 cursor-pointer"
-                    >
-                      <FiDownload className="w-4 h-4" />
-                      Export PNG
-                    </button>
-                    <button
-                      onClick={() => setIsModalOpen(false)}
-                      className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary cursor-pointer"
-                      aria-label="Close modal"
-                    >
-                      <FiX className="w-6 h-6" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 overflow-auto bg-bg-primary/30 p-8 md:p-12">
-                  <div className="min-w-fit mx-auto">{renderDiagram(true, true)}</div>
+        {renderDiagram()}
+        {isModalOpen && createPortal(
+          <div
+            className="fixed inset-0 z-[5000] bg-gray-900/50 flex items-center justify-center p-3 sm:p-6"
+            onClick={(event) => { if (event.target === event.currentTarget) setIsModalOpen(false); }}
+          >
+            <div className="bg-surface-white w-full h-full max-w-[1500px] rounded-xl relative flex flex-col overflow-hidden border border-border/70 shadow-xl">
+              <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border/70 bg-bg-primary/50 shrink-0">
+                <h3 className="text-base font-semibold text-text-primary">PRISMA 2020 Flow Diagram</h3>
+                <div className="flex items-center gap-2">
+                  <button onClick={handleExportImage} className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent text-white rounded-[4px] text-sm font-medium hover:bg-primary-hover"><FiDownload className="w-4 h-4" />Export PNG</button>
+                  <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-[4px] hover:bg-bg-secondary text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/30" aria-label="Close full diagram"><FiX className="w-5 h-5" /></button>
                 </div>
               </div>
-            </div>,
-            document.body,
-          )}
+              <div className="flex-1 overflow-auto bg-bg-primary/50">{renderDiagram(true)}</div>
+            </div>
+          </div>,
+          document.body,
+        )}
       </>
     );
   },

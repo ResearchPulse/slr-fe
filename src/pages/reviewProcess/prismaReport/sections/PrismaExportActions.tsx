@@ -119,7 +119,7 @@ export default function PrismaExportActions({
       <button
         onClick={onGenerate}
         disabled={isGenerating || cooldown > 0}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-[4px] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <FiRefreshCw
           className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`}
@@ -134,12 +134,12 @@ export default function PrismaExportActions({
       </button>
 
       {/* Export buttons — only enabled when a report exists */}
-      <div className="flex items-center gap-2 border-l border-border pl-3">
+      <div className="inline-flex items-center border border-border/70 rounded-lg overflow-hidden shadow-sm">
         <button
           onClick={handleExportPNG}
           disabled={!hasReport}
           title="Export as PNG"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border border-border rounded-[4px] hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <FiImage className="w-4 h-4" />
           <span className="hidden sm:inline">PNG</span>
@@ -149,7 +149,7 @@ export default function PrismaExportActions({
           onClick={handleExportPDF}
           disabled={!hasReport}
           title="Export as PDF (print)"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border border-border rounded-[4px] hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <FiFileText className="w-4 h-4" />
           <span className="hidden sm:inline">PDF</span>
@@ -159,7 +159,7 @@ export default function PrismaExportActions({
           onClick={onDownloadDiagram}
           disabled={!hasReport || isDownloading}
           title="Download PRISMA Flow Diagram (.docx)"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-blue-700 bg-blue-50 border border-blue-200 rounded-[4px] hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium shadow-none"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium shadow-none"
         >
           <FiFileText
             className={`w-4 h-4 ${isDownloading ? "animate-pulse" : ""}`}
@@ -173,7 +173,7 @@ export default function PrismaExportActions({
           onClick={handleCopyNumbers}
           disabled={!hasReport}
           title="Copy numbers to clipboard"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border border-border rounded-[4px] hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           <FiCopy className="w-4 h-4" />
           <span className="hidden sm:inline">Copy</span>

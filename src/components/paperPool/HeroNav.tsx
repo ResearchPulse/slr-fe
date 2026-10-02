@@ -52,7 +52,7 @@ export default function HeroNav({
 
   return (
     <nav className="w-full max-w-4xl mx-auto mb-8">
-      <div className="bg-surface-white/70 backdrop-blur-xl border border-border rounded-[4px] shadow-sm px-6 py-4 flex items-center gap-4">
+      <div className="bg-surface-white/70 backdrop-blur-xl border border-border rounded-2xl shadow-sm px-6 py-4 flex items-center gap-4">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -62,7 +62,7 @@ export default function HeroNav({
               key={item.id}
               onClick={() => onChange(item.id)}
               className={`
-                flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-[4px]
+                flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl
                 transition-all duration-300 relative group
                 ${
                   isActive
@@ -73,7 +73,7 @@ export default function HeroNav({
             >
               {/* Active Indicator Background (Subtle) */}
               {isActive && (
-                <div className="absolute inset-0 bg-bg-secondary/30 rounded-[4px] -z-10 animate-in fade-in zoom-in-95 duration-300" />
+                <div className="absolute inset-0 bg-bg-secondary/30 rounded-xl -z-10 animate-in fade-in zoom-in-95 duration-300" />
               )}
 
               <Icon

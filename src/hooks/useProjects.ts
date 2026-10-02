@@ -304,6 +304,27 @@ export const useUpdateProjectMemberRole = (projectId: string | undefined) => {
     isUpdating: mutation.isPending,
   };
 };
+
+export const useRemoveProjectMember = (projectId: string | undefined) => {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (userId: string) =>
+      projectId
+        ? projectService.removeProjectMember(projectId, userId)
+        : Promise.reject("No Project ID"),
+    onSuccess: () => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.members(projectId) });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.all });
+      }
+    },
+  });
+
+  return {
+    removeMember: mutation.mutateAsync,
+    isRemoving: mutation.isPending,
+  };
+};
 /**
  * Custom hook for cancelling project invitations
  */

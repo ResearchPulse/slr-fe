@@ -97,6 +97,11 @@ export default function ProjectFormModal({
     if (!formData.domain.trim()) {
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
     }
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.startDate).getTime() > new Date(formData.endDate).getTime()) {
+        newErrors.endDate = "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+      }
+    }
     if (formData.description && formData.description.length > 2000) {
       newErrors.description = `Tóm tắt dự án không được vượt quá 2000 ký tự (hiện tại: ${formData.description.length}/2000).`;
     }
@@ -403,6 +408,31 @@ export default function ProjectFormModal({
                   containerClassName="space-y-1.5"
                   className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
                   required
+                />
+              </div>
+              {/* DÒNG THỜI GIAN (Ngày bắt đầu & Ngày kết thúc) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  id="startDate"
+                  label="Ngày bắt đầu"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  errorMessage={errors.startDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
+                />
+                <FormField
+                  id="endDate"
+                  label="Ngày kết thúc"
+                  name="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  errorMessage={errors.endDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
                 />
               </div>
             </div>

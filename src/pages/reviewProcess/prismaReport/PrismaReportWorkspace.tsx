@@ -117,7 +117,7 @@ export default function PrismaReportWorkspace() {
   const isLoading = isLoadingLatest || isLoadingSelected;
 
   return (
-    <div className="min-h-screen bg-bg-primary print:bg-surface-white">
+    <div className="min-h-screen bg-bg-secondary print:bg-surface-white">
       {/* ── Sticky Header ── */}
       <PrismaReportHeader onBack={handleBack}>
         <PrismaExportActions
@@ -136,11 +136,11 @@ export default function PrismaReportWorkspace() {
       </PrismaReportHeader>
 
       {/* ── Main Content ── */}
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
         {/* Error banner */}
         {(latestError || generateError || selectedError) && (
           <div
-            className="flex items-start gap-3 p-4 bg-surface-white border border-border rounded-[4px]"
+            className="flex items-start gap-3 p-4 bg-surface-white border border-border/70 rounded-xl shadow-sm"
             role="alert"
           >
             <FiAlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -160,7 +160,7 @@ export default function PrismaReportWorkspace() {
 
         {/* Historical version banner */}
         {isViewingHistorical && activeReport && (
-          <div className="flex items-center gap-3 p-4 bg-amber-50 border border-amber-200 rounded-[4px]">
+          <div className="flex items-center gap-3 p-4 bg-amber-50/70 border border-amber-200/70 rounded-xl">
             <FiAlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
             <div className="flex-1">
               <p className="text-sm font-medium text-amber-800">
@@ -196,7 +196,7 @@ export default function PrismaReportWorkspace() {
         {/* Empty state — no report yet */}
         {!isLoading && !hasReport && !latestError && (
           <div className="text-center py-16 px-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-indigo-100 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-light flex items-center justify-center">
               <FiClipboard className="w-8 h-8 text-accent" />
             </div>
             <h2 className="text-xl font-semibold text-text-primary mb-2">
@@ -210,7 +210,7 @@ export default function PrismaReportWorkspace() {
             <button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-[4px] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
             >
               {isGenerating ? "Generating…" : "Generate PRISMA Report"}
             </button>
@@ -220,7 +220,7 @@ export default function PrismaReportWorkspace() {
         {/* Report content (visible when report exists or loading) */}
         {(isLoading || hasReport) && (
           <>
-            {/* Summary cards */}
+            {/* Report overview */}
             <PrismaSummaryHeader
               stats={summaryStats}
               isLoading={isLoading}
@@ -228,14 +228,15 @@ export default function PrismaReportWorkspace() {
             />
 
             {/* Flow diagram — core visual */}
-            <section className="bg-surface-white border border-border rounded-[4px] p-8 shadow-none print:shadow-none print:border-0">
-              <h2 className="text-lg font-bold text-text-primary mb-1">
-                PRISMA 2020 Flow Diagram
-              </h2>
-              <p className="text-xs text-text-secondary mb-6">
-                Preferred Reporting Items for Systematic Reviews and
-                Meta-Analyses
-              </p>
+            <section className="bg-surface-white border border-border/70 rounded-xl p-4 sm:p-6 shadow-sm print:shadow-none print:border-0">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-text-primary mb-1">
+                  PRISMA 2020 Flow Diagram
+                </h2>
+                <p className="text-xs sm:text-sm text-text-secondary">
+                  Preferred Reporting Items for Systematic Reviews and Meta-Analyses
+                </p>
+              </div>
               <PrismaFlowDiagram
                 ref={diagramRef}
                 nodes={nodes}
@@ -245,11 +246,11 @@ export default function PrismaReportWorkspace() {
             </section>
 
             {/* Bottom grid: Exclusion table + Report history */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-              <div className="lg:col-span-3">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5 items-start">
+              <div className="lg:col-span-3 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-sm">
                 <PrismaExclusionTable nodes={nodes} isLoading={isLoading} />
               </div>
-              <div className="lg:col-span-2">
+              <div className="lg:col-span-2 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-sm">
                 <PrismaReportHistory
                   reports={reportHistory}
                   isLoading={isLoadingHistory}

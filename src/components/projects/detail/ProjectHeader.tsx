@@ -40,7 +40,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         Back to projects
       </button>
 
-      <header className="rounded-[14px] border border-border bg-white px-5 py-5 sm:px-7 sm:py-6">
+      <header className="rounded-2xl border border-border bg-white px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             {project.domain && (
@@ -82,7 +82,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               <button
                 type="button"
                 onClick={onEdit}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
+                className="inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
               >
                 <FiEdit3 size={15} /> Edit project
               </button>
@@ -92,7 +92,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   title="Project settings"
                   aria-label="Project settings"
                   onClick={onSettings}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
                 >
                   <FiSettings size={16} />
                 </button>

@@ -30,11 +30,14 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
 
   useEffect(() => {
     if (user) {
-      setFormData({
-        fullName: user.fullName,
-        email: user.email,
-        username: user.username,
-      });
+      const timer = setTimeout(() => {
+        setFormData({
+          fullName: user.fullName,
+          email: user.email,
+          username: user.username,
+        });
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [user]);
 

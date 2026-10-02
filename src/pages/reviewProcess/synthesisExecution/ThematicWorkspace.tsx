@@ -322,31 +322,31 @@ export default function ThematicWorkspace({
       : "Unlink Evidence";
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+    <div className="space-y-5">
+      <div className="rounded-2xl border border-border/80 bg-surface-white p-6 shadow-sm shadow-slate-200/30">
+        <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
               Thematic Analysis Workspace
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-text-primary">
+            <h2 className="mt-1.5 text-xl font-semibold text-text-primary sm:text-2xl">
               Link raw evidence to conceptual themes
             </h2>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-text-secondary">
+            <p className="mt-1.5 max-w-3xl text-sm leading-6 text-text-secondary">
               Review extracted study data on the left, create themes on the
               right, and attach evidence to the best-fitting concept as you code
               the synthesis.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center rounded-[4px] bg-bg-primary p-1 shadow-none ring-1 ring-gray-200">
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex items-center rounded-xl bg-bg-primary p-1">
               <button
                 type="button"
                 onClick={() => onViewModeChange("cards")}
-                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "cards"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
                 }`}
               >
@@ -356,9 +356,9 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("matrix")}
-                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "matrix"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
                 }`}
               >
@@ -368,9 +368,9 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("subgroup")}
-                className={`inline-flex items-center gap-2 rounded-[4px] px-3 py-2 text-sm font-semibold transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "subgroup"
-                    ? "bg-blue-600 text-white"
+                    ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
                 }`}
               >
@@ -382,15 +382,15 @@ export default function ThematicWorkspace({
               variant="ghost"
               size="sm"
               onClick={onViewStrategyGuidelines}
-              className="text-text-secondary hover:text-text-primary"
+              className="rounded-lg text-text-secondary hover:bg-bg-primary hover:text-text-primary"
             >
               <BookOpen className="mr-2 h-4 w-4" />
               View Strategy Guidelines
             </Button>
-            <span className="rounded-full border border-border bg-bg-primary px-4 py-2 text-sm font-semibold text-text-primary">
+            <span className="rounded-xl bg-bg-primary px-3.5 py-2 text-sm font-medium text-text-primary">
               {workspace.themes.length} themes
             </span>
-            <span className="rounded-full border border-border bg-bg-primary px-4 py-2 text-sm font-semibold text-text-primary">
+            <span className="rounded-xl bg-bg-primary px-3.5 py-2 text-sm font-medium text-text-primary">
               {evidenceCount} evidences
             </span>
             <Button
@@ -405,7 +405,7 @@ export default function ThematicWorkspace({
       </div>
 
       {viewMode === "matrix" ? (
-        <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+        <section className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -428,7 +428,7 @@ export default function ThematicWorkspace({
           </div>
 
           {workspace.themes.length === 0 ? (
-            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+            <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
               <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
               <p className="text-sm font-medium text-text-secondary">
                 No themes created yet.
@@ -438,7 +438,7 @@ export default function ThematicWorkspace({
               </p>
             </div>
           ) : filteredThemes.every((theme) => theme.evidences.length === 0) ? (
-            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+            <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
               <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
               <p className="text-sm font-medium text-text-secondary">
                 No evidence meets the current QA threshold.
@@ -452,7 +452,7 @@ export default function ThematicWorkspace({
           )}
         </section>
       ) : viewMode === "subgroup" ? (
-        <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+        <section className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -470,7 +470,7 @@ export default function ThematicWorkspace({
           </div>
 
           {workspace.themes.length === 0 ? (
-            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+            <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
               <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
               <p className="text-sm font-medium text-text-secondary">
                 No themes created yet.
@@ -493,8 +493,8 @@ export default function ThematicWorkspace({
           onDragEnd={handleDragEnd}
           onDragCancel={handleDragCancel}
         >
-          <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
-            <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+          <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
+            <section className="min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -521,7 +521,7 @@ export default function ThematicWorkspace({
               />
             </section>
 
-            <section className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+            <section className="min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -544,7 +544,7 @@ export default function ThematicWorkspace({
               </div>
 
               {workspace.themes.length === 0 ? (
-                <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+                <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
                   <NotebookPen className="mx-auto h-8 w-8 text-text-secondary" />
                   <p className="text-sm font-medium text-text-secondary">
                     No themes created yet.
@@ -577,7 +577,7 @@ export default function ThematicWorkspace({
 
           <DragOverlay>
             {activeDragEvidence ? (
-              <div className="pointer-events-none w-[340px] overflow-hidden rounded-[4px] border border-blue-200 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
+              <div className="pointer-events-none w-[340px] overflow-hidden rounded-2xl border border-blue-200 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
                 <div className="h-1.5 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-3">

@@ -40,12 +40,15 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
 
   useEffect(() => {
     if (!isOpen) return;
-    setFormat("csv");
-    setStartDate(defaultStartDate);
-    setEndDate(defaultEndDate);
-    setIsExporting(false);
-    setProgress(0);
-    setErrorMessage(null);
+    const timer = setTimeout(() => {
+      setFormat("csv");
+      setStartDate(defaultStartDate);
+      setEndDate(defaultEndDate);
+      setIsExporting(false);
+      setProgress(0);
+      setErrorMessage(null);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [defaultEndDate, defaultStartDate, isOpen]);
 
   useEffect(() => {
