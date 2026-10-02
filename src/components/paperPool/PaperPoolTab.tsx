@@ -210,17 +210,26 @@ export default function PaperPoolTab({
   const workflowStep = Number.parseInt(stepId || "1", 10);
   const dispatch = useDispatch();
 
-  const setWorkflowStep = useCallback(
-    (step: number) => {
-      navigate(`/projects/${projectId}/workspace/${step}`, { replace: true });
-      dispatch(setPaperPoolStep({ projectId, step }));
-    },
-    [navigate, projectId, dispatch],
-  );
-  const setupState = useAIProjectSetupState(projectId);
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
   const canUploadPdf = isLeader || member?.role === 2;
+
+  // Reviewers are restricted from setup steps (1-4) and automatically land on step 5 (Select & Assign)
+  useEffect(() => {
+    if (member && !isLeader && workflowStep !== 5) {
+      navigate(`/projects/${projectId}/workspace/5`, { replace: true });
+    }
+  }, [member, isLeader, workflowStep, navigate, projectId]);
+
+  const setWorkflowStep = useCallback(
+    (step: number) => {
+      if (!isLeader) return;
+      navigate(`/projects/${projectId}/workspace/${step}`, { replace: true });
+      dispatch(setPaperPoolStep({ projectId, step }));
+    },
+    [navigate, projectId, dispatch, isLeader],
+  );
+  const setupState = useAIProjectSetupState(projectId);
 
   const { searchSources: definedSources } = useSearchSources(projectId);
   const hasSearchSources = (definedSources?.length ?? 0) > 0;

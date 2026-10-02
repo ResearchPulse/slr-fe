@@ -227,7 +227,7 @@ export default function ProjectDetailPage() {
     if (tab === "overview") {
       navigate(`/projects/${id}/overview`, { replace: true });
     } else {
-      navigate(`/projects/${id}/workspace/1`, { replace: true });
+      navigate(`/projects/${id}/workspace/${isLeader ? 1 : 5}`, { replace: true });
     }
   };
 
@@ -375,7 +375,8 @@ export default function ProjectDetailPage() {
     const savedStep = useSelector(
       (state: RootState) => state.project.paperPoolSteps?.[id || ""],
     );
-    return <Navigate to={`workspace/${savedStep || 1}`} replace />;
+    const targetStep = isLeader ? (savedStep || 1) : 5;
+    return <Navigate to={`workspace/${targetStep}`} replace />;
   };
 
   // ── Render workspace based on selected step ──────────────────────────────

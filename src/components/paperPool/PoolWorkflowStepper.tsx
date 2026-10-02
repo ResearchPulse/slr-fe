@@ -74,10 +74,10 @@ export default function PoolWorkflowStepper({
   return (
     <section className="mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
       <div className="relative mx-auto w-full max-w-6xl px-1 sm:px-4">
-        <div className="absolute left-[10%] right-[10%] top-6 h-1 rounded-full bg-slate-200" />
+        <div className="absolute left-[10%] right-[10%] top-6 sm:top-7 h-1 -translate-y-1/2 rounded-full bg-slate-200 z-0" />
         <div
           aria-hidden="true"
-          className="absolute left-[10%] top-6 h-1 rounded-full bg-accent transition-[width] duration-500"
+          className="absolute left-[10%] top-6 sm:top-7 h-1 -translate-y-1/2 rounded-full bg-accent transition-[width] duration-500 z-0"
           style={{ width: `${progressPercent}%` }}
         />
 
@@ -93,16 +93,27 @@ export default function PoolWorkflowStepper({
                   type="button"
                   aria-current={isActive ? "step" : undefined}
                   aria-label={`Step ${step.id}: ${step.title}`}
-                  onClick={() => onStepClick(step.id)}
+                  onClick={() => {
+                    if (isLeader) {
+                      onStepClick(step.id);
+                    }
+                  }}
+                  disabled={!isLeader}
+                  title={!isLeader ? "Workflow steps are managed by the project leader" : undefined}
                   className={`
-                    mx-auto flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 sm:h-14 sm:w-14
+                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 sm:h-14 sm:w-14
                     ${
                       isActive
                         ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
                         : isDone
-                          ? "border-blue-200 bg-blue-50 text-accent hover:bg-blue-100"
-                          : "border-border bg-white text-text-secondary shadow-sm hover:border-accent/40 hover:text-accent"
+                          ? isLeader
+                            ? "border-blue-200 bg-white text-accent hover:bg-blue-50 shadow-sm cursor-pointer"
+                            : "border-blue-200 bg-white text-accent/70 shadow-sm cursor-default"
+                          : isLeader
+                            ? "border-border bg-white text-text-secondary shadow-sm hover:border-accent/40 hover:text-accent cursor-pointer"
+                            : "border-slate-200 bg-slate-50 text-slate-400 shadow-none cursor-default"
                     }
+                    ${!isLeader ? "cursor-default select-none" : ""}
                   `}
                 >
                   {isDone ? (
