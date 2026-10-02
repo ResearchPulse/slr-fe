@@ -237,9 +237,11 @@ export default function SynthesisPhaseWorkspace() {
                 >
                   {workspace.processStatus === "InProgress"
                     ? "In progress"
+
                     : (workspace.processStatus as string) === "NotStarted"
                       ? "Not started"
                       : workspace.processStatus}
+
                 </span>
               </div>
             </div>
@@ -266,6 +268,7 @@ export default function SynthesisPhaseWorkspace() {
                 {formatDate(reviewProcess?.modifiedAt ?? workspace.workspace?.process.completedAt ?? workspace.workspace?.process.startedAt ?? "")}
               </div>
             </div>
+
             {(workspace.processStatus as string) !== "NotStarted" ? (
               <Button
                 variant={
@@ -289,6 +292,7 @@ export default function SynthesisPhaseWorkspace() {
                 Complete phase
               </Button>
             ) : null}
+
           </div>
         </div>
       </header>
