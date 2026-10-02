@@ -5,10 +5,12 @@ import type {
   QualityAssessmentStrategy,
   QualityAssessmentResolutionRequest,
   AutomateQualityAssessmentResponse,
+  QualityAssessmentDecisionItemResponse,
 } from "../../../../types/qualityAssessment";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../../redux/store";
 import type { ReviewerDecisionPayload } from "./ReviewerQAPanel";
+import type { HighlightData } from "../sections/QAPapersTabContent";
 
 interface LeaderQAPanelProps {
   paper: LeaderQAPaperResponse;
@@ -24,7 +26,7 @@ interface LeaderQAPanelProps {
   isResolving?: boolean;
   activeCriterionId?: string | null;
   onSelectCriterion?: (id: string | null) => void;
-  highlightsByCriterion?: Record<string, any[]>;
+  highlightsByCriterion?: Record<string, HighlightData[]>;
   canEdit?: boolean;
   activeTab?: "reviewers" | "my-assessment";
   onTabChange?: (tab: "reviewers" | "my-assessment") => void;
@@ -214,7 +216,7 @@ export default function LeaderQAPanel({
 
   // Group reviewers' decisions by criterion ID
   const criteriaDecisions = useMemo(() => {
-    const map: Record<string, Record<string, any>> = {};
+    const map: Record<string, Record<string, QualityAssessmentDecisionItemResponse>> = {};
     if (!paper.decisions) return map;
 
     paper.decisions.forEach((decision) => {
@@ -239,23 +241,23 @@ export default function LeaderQAPanel({
   );
 
   return (
-    <div className="flex flex-col h-full bg-surface-white relative">
-      <div className="flex border-b border-border bg-bg-primary/50">
+    <div className="relative flex h-full flex-col bg-surface-white">
+      <div className="flex shrink-0 border-b border-border bg-bg-primary/60 px-2 pt-2">
         <button
-          className={`flex-1 py-2.5 text-xs font-semibold focus:outline-none border-b-2 transition-colors ${
+          className={`flex-1 rounded-t-lg py-2.5 text-xs font-semibold transition-colors focus:outline-none ${
             activeTab === "reviewers"
-              ? "border-indigo-600 text-accent bg-surface-white"
-              : "border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
+              ? "bg-surface-white text-primary shadow-[0_-1px_0_0_#DCE4E9,1px_0_0_0_#DCE4E9,-1px_0_0_0_#DCE4E9]"
+              : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
           }`}
           onClick={() => setActiveTab("reviewers")}
         >
           Reviewers' Decisions
         </button>
         <button
-          className={`flex-1 py-2.5 text-xs font-semibold focus:outline-none border-b-2 transition-colors ${
+          className={`flex-1 rounded-t-lg py-2.5 text-xs font-semibold transition-colors focus:outline-none ${
             activeTab === "my-assessment"
-              ? "border-indigo-600 text-accent bg-surface-white"
-              : "border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
+              ? "bg-surface-white text-primary shadow-[0_-1px_0_0_#DCE4E9,1px_0_0_0_#DCE4E9,-1px_0_0_0_#DCE4E9]"
+              : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
           }`}
           onClick={() => setActiveTab("my-assessment")}
         >
@@ -263,7 +265,7 @@ export default function LeaderQAPanel({
         </button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 space-y-6">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 pb-24">
         {activeTab === "reviewers" ? (
           <>
             <div className="space-y-4 pb-4">
@@ -275,19 +277,19 @@ export default function LeaderQAPanel({
                 const groupedDecisions = {
                   yes: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   no: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   unclear: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                   unanswered: [] as Array<{
                     reviewer: (typeof paper.reviewers)[0];
-                    decision: any;
+                    decision: QualityAssessmentDecisionItemResponse | undefined;
                   }>,
                 };
 
@@ -318,7 +320,7 @@ export default function LeaderQAPanel({
                   <div
                     key={crit.criterionId}
                     onClick={() => onSelectCriterion?.(crit.criterionId)}
-                    className={`p-3 rounded-[4px] border transition-colors cursor-pointer ${activeCriterionId === crit.criterionId ? "bg-bg-secondary border-indigo-200" : "bg-bg-primary border-border hover:border-indigo-100"}`}
+                    className={`cursor-pointer rounded-xl border p-3.5 transition-colors ${activeCriterionId === crit.criterionId ? "border-primary/30 bg-primary-light/70" : "border-border bg-bg-primary hover:border-primary/20"}`}
                   >
                     <p className="text-xs font-medium text-text-primary mb-3">
                       {idx + 1}. {crit.question}
@@ -445,7 +447,7 @@ export default function LeaderQAPanel({
               <button
                 onClick={handleAiAnalyze}
                 disabled={isAiLoading}
-                className="w-full mb-4 py-2 px-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-[4px] shadow-none hover:from-indigo-600 hover:to-purple-700 disabled:opacity-50 flex items-center justify-center gap-2 text-xs font-semibold"
+                className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
               >
                 <FiZap className={isAiLoading ? "animate-pulse" : ""} />
                 {isAiLoading
@@ -461,10 +463,10 @@ export default function LeaderQAPanel({
                 <div
                   key={crit.criterionId}
                   onClick={() => onSelectCriterion?.(crit.criterionId)}
-                  className={`p-3 rounded-[4px] border transition-colors cursor-pointer ${
+                  className={`cursor-pointer rounded-xl border p-3.5 transition-colors ${
                     activeCriterionId === crit.criterionId
-                      ? "bg-bg-secondary border-indigo-200"
-                      : "bg-bg-primary border-border hover:border-indigo-100"
+                      ? "bg-primary-light/70 border-primary/30"
+                      : "bg-bg-primary border-border hover:border-primary/20"
                   }`}
                 >
                   <div className="flex gap-2">
@@ -550,7 +552,7 @@ export default function LeaderQAPanel({
                               handleComment(crit.criterionId, e.target.value)
                             }
                             placeholder="Add your reasoning..."
-                            className="w-full px-2 py-1.5 text-xs border border-border rounded focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-surface-white resize-none"
+                            className="w-full resize-none rounded-lg border border-border bg-surface-white px-3 py-2 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
                             rows={2}
                             onClick={(e) => e.stopPropagation()}
                             disabled={!canEdit}
@@ -608,11 +610,11 @@ export default function LeaderQAPanel({
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 right-0 p-4 bg-surface-white border-t border-border shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <div className="absolute inset-x-0 bottom-0 border-t border-border bg-surface-white p-4 shadow-[0_-4px_12px_-6px_rgba(18,35,49,0.16)]">
         <button
           onClick={handleResolve}
           disabled={isResolving || finalDecision === null || !canEdit}
-          className="w-full py-2.5 bg-accent text-white text-sm font-medium rounded-[4px] hover:bg-indigo-700 transition disabled:opacity-50"
+          className="w-full rounded-xl bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isResolving ? "Submitting..." : "Submit"}
         </button>

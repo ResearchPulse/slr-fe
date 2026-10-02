@@ -8,10 +8,10 @@ export const QUERY_KEYS = {
   // Projects
   projects: {
     all: ["projects"] as const,
-    list: (userId: string, params?: any) => ["projects", "list", { userId, ...params }] as const,
-    myList: (userId: string, params?: any) => ["projects", "my", { userId, ...params }] as const,
+    list: (userId: string, params?: object) => ["projects", "list", { userId, ...params }] as const,
+    myList: (userId: string, params?: object) => ["projects", "my", { userId, ...params }] as const,
     detail: (id: string, userId: string) => ["projects", "detail", id, { userId }] as const,
-    members: (projectId: string, params?: any) =>
+    members: (projectId: string, params?: object) =>
       ["projects", projectId, "members", { ...params }] as const,
 
     // Governance nested in projects
@@ -43,7 +43,7 @@ export const QUERY_KEYS = {
       ["paper-pool", projectId, "filter-settings", filterId] as const,
     savedFilterPreview: (projectId: string, filterId: string, params?: Record<string, unknown>) =>
       ["paper-pool", projectId, "saved-filter-preview", filterId, params ?? {}] as const,
-    duplicatePairs: (projectId: string, filters?: any) =>
+    duplicatePairs: (projectId: string, filters?: object) =>
       ["paper-pool", projectId, "duplicate-pairs", filters] as const,
   },
 
@@ -71,11 +71,11 @@ export const QUERY_KEYS = {
       ["identification-processes", processId, "search-executions"] as const,
     statistics: (processId: string) =>
       ["identification-processes", processId, "statistics"] as const,
-    uniquePapers: (processId: string, filters?: any) =>
+    uniquePapers: (processId: string, filters?: object) =>
       ["identification-processes", processId, "unique-papers", filters] as const,
-    readyPapers: (processId: string, filters?: any) =>
+    readyPapers: (processId: string, filters?: object) =>
       ["identification-processes", processId, "ready-papers", filters] as const,
-    snapshotPapers: (processId: string, filters?: any) =>
+    snapshotPapers: (processId: string, filters?: object) =>
       ["identification-processes", processId, "snapshot", filters] as const,
   },
 
@@ -116,7 +116,7 @@ export const QUERY_KEYS = {
     reports: (userId: string) => ["reports", { userId }] as const,
     notifications: {
       all: (userId: string) => ["notifications", { userId }] as const,
-      list: (userId: string, params?: any) =>
+      list: (userId: string, params?: object) =>
         ["notifications", "list", { userId, ...params }] as const,
       unreadCount: (userId: string) => ["notifications", "unread-count", { userId }] as const,
     },
@@ -142,11 +142,11 @@ export const QUERY_KEYS = {
     conflicts: (processId: string) => ["study-selection", processId, "conflicts"] as const,
     decisionsByPaper: (processId: string, paperId: string) =>
       ["study-selection", processId, "papers", paperId, "decisions"] as const,
-    paperDetails: (processId: string, paperId: string) =>
-      ["study-selection", processId, "papers", paperId, "detail"] as const,
+    paperDetails: (processId: string, paperId: string, phase?: number) =>
+      ["study-selection", processId, "papers", paperId, "detail", phase ?? 0] as const,
     aiAnalysis: (processId: string, paperId: string, phase: number) =>
       ["study-selection", processId, "papers", paperId, "ai-analysis", phase] as const,
-    exclusionCodes: (processId: string, params?: Record<string, unknown>) =>
+    exclusionCodes: (processId: string, params?: object) =>
       ["study-selection", processId, "exclusion-codes", params ?? {}] as const,
     checklistTemplate: (projectId: string) =>
       ["study-selection", projectId, "checklist-template"] as const,
@@ -156,14 +156,14 @@ export const QUERY_KEYS = {
       ["study-selection", processId, "reviewers", reviewerId, "assignment-table"] as const,
     conflictStatus: (processId: string, phase: number) =>
       ["study-selection", processId, "conflict-status", phase] as const,
-    finalResolutionProgress: (processId: string, params?: Record<string, unknown>) =>
+    finalResolutionProgress: (processId: string, params?: object) =>
       ["study-selection", processId, "final-resolution-progress", params ?? {}] as const,
   },
 
   // Snowballing Candidates
   candidates: {
     all: ["candidates"] as const,
-    byReviewProcess: (processId: string, filters?: any) =>
+    byReviewProcess: (processId: string, filters?: object) =>
       ["candidates", processId, filters] as const,
   },
 
@@ -189,21 +189,21 @@ export const QUERY_KEYS = {
   // Master Search Sources
   masterSources: {
     all: ["master-sources"] as const,
-    list: (params?: any) => ["master-sources", "list", params] as const,
+    list: (params?: object) => ["master-sources", "list", params] as const,
     detail: (id: string) => ["master-sources", "detail", id] as const,
   },
 
   // Exclusion Reason Library
   exclusionReasonLibrary: {
     all: ["exclusion-reason-library"] as const,
-    list: (params?: any) => ["exclusion-reason-library", "list", { ...params }] as const,
+    list: (params?: object) => ["exclusion-reason-library", "list", { ...params }] as const,
     detail: (id: string) => ["exclusion-reason-library", "detail", id] as const,
   },
 
   // Audit Logs
   auditLogs: {
-    admin: (params?: any) => ["audit-logs", "admin", params] as const,
-    projectLeader: (projectId: string, params?: any) =>
+    admin: (params?: object) => ["audit-logs", "admin", params] as const,
+    projectLeader: (projectId: string, params?: object) =>
       ["audit-logs", "project-leader", projectId, params] as const,
   },
 

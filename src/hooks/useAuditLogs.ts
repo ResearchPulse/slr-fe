@@ -2,8 +2,9 @@ import { useQuery } from "@tanstack/react-query";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { auditLogService } from "../services/auditLogService";
 import { getErrorMessage } from "../utils/errorUtils";
+import type { AuditLogQueryParams } from "../types/auditLog";
 
-export const useAdminAuditLogs = (params?: any) => {
+export const useAdminAuditLogs = (params?: AuditLogQueryParams) => {
   const query = useQuery({
     queryKey: QUERY_KEYS.auditLogs.admin(params),
     queryFn: () => auditLogService.getAdminAuditLogs(params),
@@ -19,7 +20,7 @@ export const useAdminAuditLogs = (params?: any) => {
   };
 };
 
-export const useProjectLeaderAuditLogs = (projectId: string | undefined, params?: any) => {
+export const useProjectLeaderAuditLogs = (projectId: string | undefined, params?: AuditLogQueryParams) => {
   const query = useQuery({
     queryKey: QUERY_KEYS.auditLogs.projectLeader(projectId || "", params),
     queryFn: () =>

@@ -12,16 +12,16 @@ export function ReviewerProgressPanel({
   if (!memberProgresses || memberProgresses.length === 0) return null;
 
   return (
-    <Card className="rounded-[4px] border border-border outline-none shadow-none overflow-hidden bg-surface-white">
-      <div className="p-6 border-b border-border bg-surface-white rounded-t-2xl">
-        <h2 className="text-lg font-semibold text-text-primary">
+    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
+      <div className="border-b border-border bg-surface-white px-4 py-4 sm:px-5">
+        <h2 className="text-base font-semibold text-text-primary">
           Reviewer Progress
         </h2>
-        <p className="text-sm text-text-secondary mt-1">
+        <p className="mt-1 text-sm text-text-secondary">
           Track individual completion rates
         </p>
       </div>
-      <div className="p-6 space-y-6">
+      <div className="space-y-5 p-4 sm:p-5">
         {memberProgresses.map((progress) => (
           <div key={progress.reviewerId} className="flex flex-col gap-3">
             <div className="flex items-center justify-between text-sm">
@@ -31,12 +31,12 @@ export function ReviewerProgressPanel({
               >
                 {progress.reviewerName || "Unknown Reviewer"}
               </span>
-              <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md whitespace-nowrap border border-blue-100">
+              <span className="whitespace-nowrap rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
                 {progress.completionPercentage.toFixed(0)}%
               </span>
             </div>
 
-            <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden shadow-inner">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary">
               <div
                 className="h-full bg-blue-500 rounded-full transition-all duration-500"
                 style={{ width: `${progress.completionPercentage}%` }}

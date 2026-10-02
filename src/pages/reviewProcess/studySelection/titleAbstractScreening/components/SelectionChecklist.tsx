@@ -273,12 +273,12 @@ export default function SelectionChecklist({
             <PreviewDocument
               draft={mappedDraft as any}
               renderSectionTitle={(section) =>
-                renderStatusIndicator(section.isChecked, () =>
+                renderStatusIndicator(!!section.isChecked, () =>
                   toggleSection(section.id),
                 )
               }
               renderItem={(item) =>
-                renderStatusIndicator(item.isChecked, () => toggleItem(item.id))
+                renderStatusIndicator(!!item.isChecked, () => toggleItem(item.id))
               }
             />
           </div>

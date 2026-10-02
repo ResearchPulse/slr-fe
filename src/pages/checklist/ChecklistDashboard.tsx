@@ -6,6 +6,7 @@ import {
   FiClock,
   FiChevronRight,
   FiTrash2,
+  FiArrowLeft,
 } from "react-icons/fi";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
@@ -32,6 +33,8 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
   const { projectId: paramProjectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
   const projectId = propsProjectId || paramProjectId;
+  const safeChecklists = Array.isArray(propChecklists) ? propChecklists : [];
+  const safeTemplates = Array.isArray(templates) ? templates : [];
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -52,13 +55,23 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
     <div className="min-h-screen bg-surface-white">
       <div className="bg-linear-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 px-6 py-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-text-primary mb-1">
-              PRISMA 2020 Checklists
-            </h1>
-            <p className="text-text-secondary">
-              Manage systematic review reporting checklists for this project
-            </p>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate(projectId ? `/projects/${projectId}` : "/projects")}
+              className="p-2 -ml-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/60 transition-colors"
+              title="Quay lại dự án"
+            >
+              <FiArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-3xl font-bold text-text-primary mb-1">
+                PRISMA 2020 Checklists
+              </h1>
+              <p className="text-text-secondary">
+                Manage systematic review reporting checklists for this project
+              </p>
+            </div>
           </div>
           <Button
             onClick={() => setShowCreateModal(true)}
@@ -75,7 +88,7 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
           <div className="flex justify-center items-center py-12">
             <LoadingSpinner size="lg" />
           </div>
-        ) : propChecklists.length === 0 ? (
+        ) : safeChecklists.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center py-16 px-6 border-2 border-dashed border-border rounded-xl bg-surface-white/60 max-w-xl mx-auto my-6 shadow-xs">
             <div className="w-16 h-16 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-4 ring-1 ring-accent/20">
               <FiCheckCircle className="w-8 h-8" />
@@ -100,7 +113,7 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {propChecklists.map((checklist) => (
+            {safeChecklists.map((checklist) => (
               <ChecklistCard
                 key={checklist.id}
                 checklist={checklist}
@@ -116,7 +129,7 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
       <CreateChecklistModal
         isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
-        templates={templates}
+        templates={safeTemplates}
         onSelectTemplate={handleCreateChecklist}
         isLoading={isCreating}
       />
@@ -130,14 +143,25 @@ interface ChecklistCardProps {
 }
 
 const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
-  const formatDate = (dateString: string) =>
-    new Date(dateString).toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return "N/A";
+    try {
+      const date = new Date(dateString);
+      if (isNaN(date.getTime())) return "N/A";
+      return date.toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+    } catch {
+      return "N/A";
+    }
+  };
 
-  const isComplete = checklist.completionPercentage === 100;
+  const completionPercentage = Number(checklist?.completionPercentage) || 0;
+  const isComplete = completionPercentage >= 100;
+  const completedItems = Number(checklist?.completedItems) || 0;
+  const totalItems = Number(checklist?.totalItems) || 0;
 
   return (
     <div
@@ -152,10 +176,10 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
           <h3 className="font-semibold text-text-primary group-hover:text-accent transition-colors">
-            {checklist.title}
+            {checklist?.title || "Checklist"}
           </h3>
           <p className="text-xs text-text-secondary mt-1">
-            Based on {checklist.templateName} ({checklist.typeName})
+            Based on {checklist?.templateName || "PRISMA"} ({checklist?.typeName || "Standard"})
           </p>
         </div>
         <FiChevronRight className="w-5 h-5 text-text-secondary group-hover:text-accent transition-colors shrink-0" />
@@ -172,7 +196,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
               isComplete ? "text-emerald-600" : "text-accent",
             )}
           >
-            {checklist.completionPercentage}%
+            {completionPercentage}%
           </span>
         </div>
         <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
@@ -183,11 +207,11 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
                 ? "bg-linear-to-r from-emerald-400 to-emerald-600"
                 : "bg-linear-to-r from-indigo-400 to-indigo-600",
             )}
-            style={{ width: `${checklist.completionPercentage}%` }}
+            style={{ width: `${Math.min(100, Math.max(0, completionPercentage))}%` }}
           />
         </div>
         <p className="text-xs text-text-secondary mt-1">
-          {checklist.completedItems} of {checklist.totalItems} items completed
+          {completedItems} of {totalItems} items completed
         </p>
       </div>
 
@@ -195,7 +219,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
         <div className="flex items-center gap-4 text-text-secondary">
           <div className="flex items-center gap-1">
             <FiClock className="w-4 h-4" />
-            <span>{formatDate(checklist.updatedAt)}</span>
+            <span>{formatDate(checklist?.updatedAt)}</span>
           </div>
           {isComplete && (
             <div className="flex items-center gap-1 text-emerald-600 font-medium">
@@ -230,6 +254,7 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
   onSelectTemplate,
   isLoading = false,
 }) => {
+  const safeTemplates = Array.isArray(templates) ? templates : [];
   const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(
     null,
   );
@@ -249,7 +274,7 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
       size="lg"
     >
       <div className="space-y-4">
-        {templates.map((template) => (
+        {safeTemplates.map((template) => (
           <button
             key={template.id}
             onClick={() => handleSelect(template.id)}

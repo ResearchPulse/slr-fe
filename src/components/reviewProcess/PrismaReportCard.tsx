@@ -18,32 +18,34 @@ export default function PrismaReportCard({
   };
 
   return (
-    <div className="bg-gradient-to-r from-indigo-600 to-violet-700 rounded-[4px] p-6 mb-8 text-white shadow-none overflow-hidden relative">
-      {/* Decorative element */}
-      <div className="absolute top-0 right-0 -mt-4 -mr-4 w-32 h-32 bg-surface-white/10 rounded-full blur-2xl animate-pulse" />
-      <div className="absolute bottom-0 left-0 -mb-8 -ml-8 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl" />
-
-      <div className="relative flex flex-col md:flex-row items-center justify-between gap-6">
-        <div className="flex items-center gap-5">
-          <div className="w-14 h-14 rounded-[4px] bg-surface-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 shadow-inner">
-            <FiBarChart2 className="w-8 h-8 text-white" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold">PRISMA 2020 Flow Report</h2>
-            <p className="text-indigo-100 text-sm max-w-md">
-              Visualise your systematic review pipeline with a flow diagram.
-            </p>
-          </div>
+    <section className="mb-6 flex flex-col gap-4 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+      <div className="flex min-w-0 items-center gap-4">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+          <FiBarChart2 className="h-6 w-6" aria-hidden="true" />
         </div>
-
-        <Button
-          onClick={handleNavigate}
-          className="bg-surface-white text-accent hover:bg-bg-secondary border-none px-6 py-2.5 font-bold shadow-none hover:shadow-none transition-all flex items-center gap-2 group shrink-0"
-        >
-          View Full Report
-          <FiArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </Button>
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-base font-semibold text-text-primary sm:text-lg">
+              PRISMA 2020 flow report
+            </h2>
+            <span className="rounded-full bg-bg-secondary px-2.5 py-1 text-[10px] font-medium text-text-secondary">
+              Report
+            </span>
+          </div>
+          <p className="mt-1 text-sm leading-5 text-text-secondary">
+            View your review pipeline as a PRISMA flow diagram.
+          </p>
+        </div>
       </div>
-    </div>
+
+      <Button
+        onClick={handleNavigate}
+        variant="secondary"
+        className="w-full shrink-0 normal-case tracking-normal sm:w-auto"
+      >
+        View full report
+        <FiArrowRight className="ml-2 h-4 w-4" aria-hidden="true" />
+      </Button>
+    </section>
   );
 }

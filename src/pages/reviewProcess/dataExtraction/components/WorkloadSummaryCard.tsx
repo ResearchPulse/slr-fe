@@ -52,7 +52,7 @@ export default function WorkloadSummaryCard({
 
   if (isLoading) {
     return (
-      <Card className="rounded-[4px] border border-blue-100 bg-surface-white/95 shadow-none shadow-slate-200/50 backdrop-blur">
+      <Card className="rounded-xl border-border bg-white shadow-none">
         <div className="animate-pulse space-y-5 p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
@@ -73,7 +73,7 @@ export default function WorkloadSummaryCard({
 
   if (!summary) {
     return (
-      <Card className="rounded-[4px] border border-blue-100 bg-surface-white/95 shadow-none shadow-slate-200/50 backdrop-blur">
+      <Card className="rounded-xl border-border bg-white shadow-none">
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
@@ -93,8 +93,8 @@ export default function WorkloadSummaryCard({
   }
 
   return (
-    <Card className="overflow-hidden rounded-[4px] border border-blue-100 bg-surface-white/95 shadow-none shadow-slate-200/50 backdrop-blur">
-      <div className="space-y-5 p-6">
+    <Card className="overflow-hidden rounded-xl border-border bg-white shadow-none">
+      <div className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
@@ -113,17 +113,17 @@ export default function WorkloadSummaryCard({
             </p>
           </div>
 
-          <div className="rounded-[4px] border border-blue-100 bg-blue-50 px-4 py-3 text-right">
-            <p className="text-xs font-semibold uppercase tracking-wide text-blue-700">
+          <div className="text-right">
+            <p className="text-xs font-medium text-text-secondary">
               {isLeader ? "Overall Progress" : "My Progress"}
             </p>
-            <p className="mt-1 text-2xl font-bold text-text-primary">
+            <p className="mt-1 text-2xl font-semibold text-text-primary">
               {Math.round(progressValue)}%
             </p>
           </div>
         </div>
 
-        <div className="space-y-2 rounded-[4px] border border-border bg-bg-secondary/70 p-4">
+        <div className="space-y-2 border-y border-border py-3">
           <div className="flex items-center justify-between text-sm">
             <span className="font-medium text-text-primary">
               {isLeader ? "Global completion" : "Your completion"}
@@ -132,9 +132,9 @@ export default function WorkloadSummaryCard({
               {Math.round(progressValue)}%
             </span>
           </div>
-          <div className="h-3 overflow-hidden rounded-full bg-slate-200">
+          <div className="h-1.5 overflow-hidden rounded-full bg-bg-secondary">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 transition-all duration-500"
+              className="h-full rounded-full bg-primary transition-[width] duration-150"
               style={{ width: `${progressValue}%` }}
             />
           </div>
@@ -146,8 +146,8 @@ export default function WorkloadSummaryCard({
         </div>
 
         {isLeader ? (
-          <div className="max-h-[300px] overflow-y-auto rounded-[4px] border border-border bg-surface-white">
-            <div className="divide-y divide-slate-100">
+          <div className="max-h-[300px] overflow-y-auto border-y border-border">
+            <div className="divide-y divide-border">
               {reviewerWorkloads.length === 0 ? (
                 <div className="px-4 py-5 text-sm text-text-secondary">
                   Reviewer workload details will appear here once assignments
@@ -190,20 +190,20 @@ export default function WorkloadSummaryCard({
                           </div>
                           <div className="h-2 overflow-hidden rounded-full bg-bg-secondary">
                             <div
-                              className="h-full rounded-full bg-gradient-to-r from-blue-600 to-cyan-400 transition-all duration-500"
+                              className="h-full rounded-full bg-primary transition-[width] duration-150"
                               style={{ width: `${reviewerProgress}%` }}
                             />
                           </div>
                         </div>
 
-                        <div className="flex flex-wrap items-center gap-2 text-xs font-medium text-text-secondary">
-                          <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-emerald-700">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-text-secondary">
+                          <span className="text-green-700">
                             Completed {workload.completed}
                           </span>
-                          <span className="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">
+                          <span className="text-amber-700">
                             In Progress {workload.inProgress}
                           </span>
-                          <span className="inline-flex items-center rounded-full bg-bg-secondary px-2.5 py-1 text-text-primary">
+                          <span>
                             Not Started {workload.notStarted}
                           </span>
                         </div>
@@ -216,7 +216,7 @@ export default function WorkloadSummaryCard({
           </div>
         ) : (
           <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
-            <div className="rounded-[4px] border border-border bg-surface-white px-4 py-4 shadow-none shadow-slate-100/80">
+            <div className="border-y border-border py-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
                 <TrendingUp className="h-4 w-4 text-blue-600" />
                 Your completion rate
@@ -241,7 +241,7 @@ export default function WorkloadSummaryCard({
               </div>
             </div>
 
-            <div className="rounded-[4px] border border-border bg-bg-secondary/80 px-4 py-4 shadow-none shadow-slate-100/80">
+            <div className="border-y border-border py-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
                 <Clock3 className="h-4 w-4 text-amber-600" />
                 Queue breakdown

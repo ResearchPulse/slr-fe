@@ -1,4 +1,3 @@
-import React from "react";
 import {
   FiFileText,
   FiDatabase,
@@ -7,6 +6,7 @@ import {
   FiChevronRight,
   FiInfo,
   FiSearch,
+  FiUserCheck,
 } from "react-icons/fi";
 
 export interface PoolWorkflowStep {
@@ -45,7 +45,7 @@ const STEPS: PoolWorkflowStep[] = [
     id: 5,
     title: "Select & Assign",
     description: "Assign Papers",
-    icon: FiCheckCircle,
+    icon: FiUserCheck,
   },
 ];
 
@@ -59,6 +59,7 @@ interface PoolWorkflowStepperProps {
     primary?: boolean;
     icon?: React.ElementType;
   }[];
+  isLeader?: boolean;
 }
 
 export default function PoolWorkflowStepper({
@@ -66,110 +67,118 @@ export default function PoolWorkflowStepper({
   onStepClick,
   actions,
   isCompleted = (id) => id < currentStep,
+  isLeader = true,
 }: PoolWorkflowStepperProps) {
-  return (
-    <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
-      <div className="relative flex items-center justify-between max-w-5xl mx-auto px-10">
-        {/* Progress Line Background */}
-        <div className="absolute top-[28px] left-[60px] right-[60px] h-1 bg-bg-secondary rounded-full" />
+  const progressPercent = ((currentStep - 1) / (STEPS.length - 1)) * 80;
 
-        {/* Progress Line Active */}
+  return (
+    <section className="mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
+      <div className="relative mx-auto w-full max-w-6xl px-1 sm:px-4">
+        <div className="absolute left-[10%] right-[10%] top-6 h-1 rounded-full bg-slate-200" />
         <div
-          className="absolute top-[28px] left-[60px] h-1 bg-accent rounded-full transition-all duration-700"
-          style={{
-            width: `calc(${((currentStep - 1) / (STEPS.length - 1)) * 100}% - 0px)`,
-          }}
+          aria-hidden="true"
+          className="absolute left-[10%] top-6 h-1 rounded-full bg-accent transition-[width] duration-500"
+          style={{ width: `${progressPercent}%` }}
         />
 
-        {STEPS.map((step) => {
-          const isActive = step.id === currentStep;
-          const isDone = isCompleted(step.id);
-          const Icon = step.icon;
+        <ol className="relative z-10 grid grid-cols-5 gap-1 sm:gap-3">
+          {STEPS.map((step) => {
+            const isActive = step.id === currentStep;
+            const isDone = !isActive && isCompleted(step.id);
+            const Icon = step.icon;
 
-          return (
-            <div
-              key={step.id}
-              className="relative flex flex-col items-center z-10"
-            >
-              <button
-                onClick={() => onStepClick(step.id)}
-                className={`
-                  w-14 h-14 rounded-[4px] flex items-center justify-center transition-all duration-300 shadow-none
-                  ${
-                    isActive
-                      ? "bg-accent text-bg-primary scale-110 ring-4 ring-accent/20"
-                      : isDone
-                        ? "bg-surface-white text-text-primary border border-border shadow-sm"
-                        : "bg-surface-white text-text-secondary hover:text-text-primary border border-border"
-                  }
-                `}
-              >
-                {isDone ? (
-                  <FiCheckCircle className="w-7 h-7 text-text-primary" />
-                ) : (
-                  <Icon className="w-7 h-7" />
-                )}
-              </button>
+            return (
+              <li key={step.id} className="min-w-0 text-center">
+                <button
+                  type="button"
+                  aria-current={isActive ? "step" : undefined}
+                  aria-label={`Step ${step.id}: ${step.title}`}
+                  onClick={() => onStepClick(step.id)}
+                  className={`
+                    mx-auto flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 sm:h-14 sm:w-14
+                    ${
+                      isActive
+                        ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
+                        : isDone
+                          ? "border-blue-200 bg-blue-50 text-accent hover:bg-blue-100"
+                          : "border-border bg-white text-text-secondary shadow-sm hover:border-accent/40 hover:text-accent"
+                    }
+                  `}
+                >
+                  {isDone ? (
+                    <FiCheckCircle className="h-6 w-6 sm:h-7 sm:w-7" />
+                  ) : (
+                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                  )}
+                </button>
 
-              <div className="absolute top-16 text-center w-40">
-                <p
-                  className={`text-[10px] font-black uppercase tracking-widest ${isActive ? "text-accent" : "text-text-secondary"}`}
-                >
-                  Step {step.id}
-                </p>
-                <p
-                  className={`text-sm font-bold truncate ${isActive ? "text-text-primary" : "text-text-secondary"}`}
-                >
-                  {step.title}
-                </p>
-              </div>
-            </div>
-          );
-        })}
+                <div className="mt-3 px-0.5 sm:px-2">
+                  <p
+                    className={`text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-[10px] ${isActive ? "text-accent" : "text-text-muted"}`}
+                  >
+                    Step {step.id}
+                  </p>
+                  <p
+                    className={`mt-0.5 truncate text-[10px] font-semibold sm:text-sm ${isActive ? "text-text-primary" : "text-text-secondary"}`}
+                  >
+                    {step.title}
+                  </p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
       </div>
 
-      {/* Guide Banner */}
-      <div className="mt-28 max-w-5xl mx-auto bg-surface-white rounded-[4px] border border-border shadow-sm overflow-hidden">
+      <div className="mx-auto mt-8 w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:mt-10">
         <div className="flex flex-col md:flex-row">
-          <div className="bg-bg-primary border-r border-border p-8 text-text-primary flex flex-col justify-center items-center md:w-64 text-center">
-            <div className="w-16 h-16 bg-surface-white border border-border rounded-[4px] flex items-center justify-center mb-4 shadow-sm">
-              <FiInfo className="w-8 h-8 text-accent" />
+          <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-64 md:flex-col md:justify-center md:border-b-0 md:border-r md:p-7 md:text-center">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
+              <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
-            <h3 className="text-xl font-serif font-semibold tracking-tight">
-              Step Guide
-            </h3>
-            <p className="text-text-secondary text-[10px] font-bold uppercase tracking-widest mt-1">
-              Workflow Assistance
-            </p>
+            <div>
+              <h3 className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
+                Step Guide
+              </h3>
+              <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+                Workflow Assistance
+              </p>
+            </div>
           </div>
 
-          <div className="flex-1 p-8">
-            <div className="flex items-center gap-2 text-accent mb-2">
-              <span className="text-[10px] font-black uppercase tracking-[0.2em] bg-bg-primary border border-border px-3 py-1 rounded-full">
+          <div className="min-w-0 flex-1 p-5 sm:p-7">
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-accent">
+              <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
                 Instruction
               </span>
-              <FiChevronRight className="w-3 h-3" />
-              <span className="text-xs font-black text-text-secondary uppercase tracking-widest">
+              {!isLeader && currentStep === 5 && (
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-700">
+                  Read-Only
+                </span>
+              )}
+              <FiChevronRight className="h-3 w-3" />
+              <span className="text-xs font-semibold text-text-secondary">
                 {STEPS[currentStep - 1].title}
               </span>
             </div>
 
-            <h2 className="text-2xl font-serif text-text-primary mb-2">
-              {getInstructionTitle(currentStep)}
+            <h2 className="mb-2 text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+              {getInstructionTitle(currentStep, isLeader)}
             </h2>
-            <p className="text-text-secondary text-sm font-medium leading-relaxed max-w-2xl">
-              {getInstructionDescription(currentStep)}
+            <p className="max-w-3xl text-sm leading-6 text-text-secondary">
+              {getInstructionDescription(currentStep, isLeader)}
             </p>
 
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-wrap gap-3">
               {actions.map((action, i) => (
                 <button
                   key={i}
+                  type="button"
                   onClick={action.onClick}
-                  className={`px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-[0.2em] transition-all shadow-none flex items-center gap-2 ${
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors ${
                     action.primary
-                      ? "bg-accent text-bg-primary hover:bg-primary-hover"
-                      : "bg-surface-white border border-border text-text-secondary hover:text-text-primary hover:bg-bg-primary"
+                      ? "bg-accent text-white shadow-sm hover:bg-primary-hover"
+                      : "border border-border bg-white text-text-secondary hover:bg-slate-50 hover:text-text-primary"
                   }`}
                 >
                   {action.label}
@@ -180,11 +189,11 @@ export default function PoolWorkflowStepper({
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-function getInstructionTitle(step: number) {
+function getInstructionTitle(step: number, isLeader = true) {
   switch (step) {
     case 1:
       return "Review Research Strategy";
@@ -195,13 +204,13 @@ function getInstructionTitle(step: number) {
     case 4:
       return "Setup Review Processes";
     case 5:
-      return "Assign Papers to Process";
+      return isLeader ? "Assign Papers to Process" : "Review Papers & Processes";
     default:
       return "";
   }
 }
 
-function getInstructionDescription(step: number) {
+function getInstructionDescription(step: number, isLeader = true) {
   switch (step) {
     case 1:
       return "Ensure your Research Questions and PICO-C elements are correctly defined. This forms the foundation of your systematic review.";
@@ -212,7 +221,9 @@ function getInstructionDescription(step: number) {
     case 4:
       return "Create one or more review processes (e.g., Screening) to begin evaluating your collected papers.";
     case 5:
-      return "Select specific papers or use filters to bulk assign papers to your newly created review processes.";
+      return isLeader
+        ? "Select specific papers or use filters to bulk assign papers to your newly created review processes."
+        : "Browse collected papers in the repository. As a Reviewer, you can inspect papers or jump directly to the review processes below to begin screening.";
     default:
       return "";
   }

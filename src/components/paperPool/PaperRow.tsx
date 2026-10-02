@@ -2,6 +2,19 @@ import { FiEye, FiLink } from "react-icons/fi";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
+import type { UploadPdfOptions } from "../../pages/reviewProcess/studySelection/uploadTypes";
+import type { PaperWithDecisionsResponse } from "../../types/studySelection";
+
+type UploadPdfHandler = (
+  paperId: string,
+  file: File,
+  options?: UploadPdfOptions,
+) => Promise<PaperWithDecisionsResponse>;
+type ApplyMetadataSuggestionHandler = (
+  paperId: string,
+  sourceMetadataId: string,
+  fields: string[],
+) => Promise<void>;
 
 interface PaperRowProps {
   paper: PaperPoolItem;
@@ -10,9 +23,9 @@ interface PaperRowProps {
   onViewDetails: (paper: PaperPoolItem) => void;
 
   // PDF Actions
-  onUploadPdf?: any;
+  onUploadPdf?: UploadPdfHandler;
   isUploadingPdf?: boolean;
-  onApplyMetadataSuggestion?: any;
+  onApplyMetadataSuggestion?: ApplyMetadataSuggestionHandler;
   isApplyingMetadataSuggestion?: boolean;
   onRemovePdf?: (paperId: string) => Promise<void>;
   isRemovingPdf?: boolean;
@@ -46,18 +59,24 @@ export default function PaperRow({
         isSelected ? "bg-bg-secondary/40" : "hover:bg-bg-secondary/80"
       }`}
     >
-      <td className="px-6 py-4 align-top">
-        <div className="flex items-center pt-0.5">
-          <input
-            type="checkbox"
-            checked={isSelected}
-            onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
-            className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
-            aria-label={`Select paper ${paper.id}`}
-          />
-        </div>
-      </td>
-      <td className="px-3 py-4 align-top">
+      {isLeader && (
+        <td className="px-6 py-4 align-top">
+          <div className="flex items-center pt-0.5">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
+              className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
+              aria-label={`Select paper ${paper.id}`}
+            />
+          </div>
+        </td>
+      )}
+      <td
+        className={`${
+          isLeader ? "px-3" : "px-4 sm:px-5"
+        } py-4 align-top`}
+      >
         <span className="text-[10px] font-mono font-bold text-text-secondary bg-bg-secondary/50 px-1.5 py-0.5 rounded leading-none">
           {paper.id.slice(0, 8)}...
         </span>

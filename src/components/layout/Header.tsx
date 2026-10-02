@@ -118,7 +118,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className="bg-surface-white border-b border-border sticky top-0 z-[100] transition-[box-shadow] duration-300 h-[60px] md:h-[72px]"
+        className="sticky top-0 z-[100] h-16 border-b border-border bg-surface-white transition-[box-shadow] duration-150"
         onClickCapture={handleHeaderInteraction}
         onKeyDownCapture={handleHeaderInteraction}
       >

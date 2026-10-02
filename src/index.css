@@ -137,7 +137,7 @@ html {
   background-color: var(--color-bg-primary);
   color: var(--color-text-primary);
   scroll-behavior: smooth;
-  scroll-padding-top: 88px;
+  scroll-padding-top: 64px;
 }
 
 @media (prefers-reduced-motion: reduce) {

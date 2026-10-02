@@ -130,15 +130,18 @@ const ReviewerProgressPage: React.FC = () => {
 
   const sortedData = useMemo(() => {
     if (!reviewers) return [];
-    let result = [...reviewers];
+    const result = [...reviewers];
 
     if (sortConfig) {
       result.sort((a, b) => {
-        const aValue = a[sortConfig.key as keyof UserProgress] as any;
-        const bValue = b[sortConfig.key as keyof UserProgress] as any;
-        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
+        const key = sortConfig.key as keyof UserProgress;
+        const aValue = a[key];
+        const bValue = b[key];
+        const comparison =
+          typeof aValue === "number" && typeof bValue === "number"
+            ? aValue - bValue
+            : String(aValue).localeCompare(String(bValue));
+        return sortConfig.direction === "asc" ? comparison : -comparison;
       });
     }
 
@@ -386,8 +389,13 @@ const ReviewerProgressPage: React.FC = () => {
                 inProgress: 0,
                 notStarted: 0,
                 progress: selectedReviewer.progress,
-                status: selectedReviewer.statusText as any,
-                phase: "Title/Abstract" as any,
+                status:
+                  selectedReviewer.progress >= 100
+                    ? "Done"
+                    : selectedReviewer.progress > 0
+                      ? "In Progress"
+                      : "Not Started",
+                phase: "Title/Abstract",
                 papers: [], // Now fetched from API
               }
             : null

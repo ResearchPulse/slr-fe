@@ -31,7 +31,7 @@ import type {
   ProcessPaperStats,
 } from "../components/reviewProcess/workflow/types";
 import { WORKFLOW_PHASES } from "../components/reviewProcess/workflow/constants";
-import { toastWarning } from "../utils/toast";
+import { toastWarning, toastSuccess } from "../utils/toast";
 
 
 interface UseReviewProcessWorkspaceParams {
@@ -50,6 +50,7 @@ const EMPTY_PHASE_STATS: PhaseStats = {
     totalPapers: 0,
     included: 0,
     excluded: 0,
+    inScreeningCount: 0,
     conflictCount: 0,
     pendingCount: 0,
   },
@@ -607,17 +608,6 @@ export const useReviewProcessWorkspace = ({
     }
   }, [processId, startReviewProcess]);
 
-  const handleCompleteProcess = useCallback(async () => {
-    if (!processId || !process) return;
-    if (window.confirm("Are you sure you want to complete this review process?")) {
-      try {
-        await completeReviewProcess(processId);
-      } catch {
-        // Error already handled by mutation
-      }
-    }
-  }, [processId, process, completeReviewProcess]);
-
   // Phase-level action handlers
   const handleStartPhase = useCallback(
     async (phaseKey: string) => {
@@ -798,6 +788,7 @@ export const useReviewProcessWorkspace = ({
             totalPapers: selectionStats.totalPapers,
             included: selectionStats.includedCount,
             excluded: selectionStats.excludedCount,
+            inScreeningCount: selectionStats.inScreeningCount ?? 0,
             conflictCount: selectionStats.conflictCount,
             pendingCount: selectionStats.pendingCount,
           }
@@ -889,6 +880,37 @@ export const useReviewProcessWorkspace = ({
     }).filter((p): p is WorkflowPhase => p !== null);
   }, [process, phaseStats]);
 
+  const handleCompleteProcess = useCallback(async () => {
+    if (!processId || !process) return;
+
+    if (!currentProjectMember?.isLeader) {
+      toastWarning(
+        "Permission Denied",
+        "Only the Lead Reviewer can complete the review process.",
+      );
+      return;
+    }
+
+    const uncompletedPhases = workflowPhases.filter((p) => p.status !== "Completed");
+    if (uncompletedPhases.length > 0) {
+      const names = uncompletedPhases.map((p) => p.name).join(", ");
+      toastWarning(
+        "Phases Incomplete",
+        `Cannot complete review process yet. Please complete all phases first: ${names}.`,
+      );
+      return;
+    }
+
+    if (window.confirm("Are you sure you want to complete this review process? Once completed, the process is finalized.")) {
+      try {
+        await completeReviewProcess(processId);
+        toastSuccess("Process Completed", "The review process has been completed successfully.");
+      } catch {
+        // Error already handled by mutation
+      }
+    }
+  }, [processId, process, currentProjectMember, workflowPhases, completeReviewProcess]);
+
   // Derive paper pool stats for the whole process
   const paperStats: ProcessPaperStats = useMemo(() => {
     const stats = process?.studySelectionProcess?.selectionStatistics;
@@ -898,9 +920,8 @@ export const useReviewProcessWorkspace = ({
     const excluded = stats?.excludedCount ?? process?.totalExcludedPapers ?? 0;
     const pending = stats?.pendingCount ?? 0;
 
-    // The API does not expose a granular in-screening count yet.
-    const inScreening = 0;
-    const notScreened = pending - inScreening;
+    const inScreening = stats?.inScreeningCount ?? 0;
+    const notScreened = pending;
 
     return {
       total,

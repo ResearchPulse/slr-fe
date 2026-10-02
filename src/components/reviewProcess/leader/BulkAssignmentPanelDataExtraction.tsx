@@ -40,7 +40,12 @@ const BulkAssignmentPanelDataExtraction: React.FC<
   });
 
   const reviewers = useMemo(
-    () => members.filter((m) => m.role === ProjectRole.Lecturer),
+    () =>
+      members.filter(
+        (m) =>
+          m.role === ProjectRole.Lecturer ||
+          m.role === ProjectRole.Owner,
+      ),
     [members],
   );
 
@@ -144,7 +149,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
         setSelectedReviewers(new Map());
         onAssignmentComplete();
       }
-    } catch (err: any) {
+    } catch {
       toastError(
         "Assignment Error",
         "An unexpected error occurred during assignment.",

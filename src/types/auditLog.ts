@@ -43,3 +43,13 @@ export interface AuditLogFiltersState {
   startDate: string;
   endDate: string;
 }
+
+export interface AuditLogQueryParams {
+  pageNumber?: number;
+  pageSize?: number;
+  search?: string;
+  actionType?: string;
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}

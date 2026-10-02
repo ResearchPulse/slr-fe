@@ -16,9 +16,7 @@ export interface GetUsersParams {
   pageSize?: number;
 }
 
-export interface UserExportRequest {
-  // Currently no filters or pagination required for export
-}
+export type UserExportRequest = Record<string, never>;
 
 export type GetUsersResponse = ApiResponse<PaginatedResponse<User>>;
 

@@ -133,25 +133,27 @@ export default function AssessmentPaperViewer({
   });
 
   return (
-    <div className="flex-1 min-w-0 bg-surface-white flex flex-col h-full overflow-y-auto">
+    <div className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto bg-bg-primary/50">
       {paper ? (
-        <div className="p-8 flex flex-col gap-8">
-          <QAPaperDetails paper={paper} />
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 p-4 sm:p-6 xl:p-8">
+          <div className="rounded-2xl border border-border bg-surface-white p-5 shadow-[0_1px_3px_rgba(18,35,49,0.04)] sm:p-7">
+            <QAPaperDetails paper={paper} />
+          </div>
 
           {paper.pdfUrl && (
-            <div className="bg-bg-primary rounded-[4px] border border-border overflow-hidden mt-2 flex flex-col h-[800px]">
-              <div className="px-6 py-4 border-b border-border bg-surface-white shadow-none flex-none">
-                <h3 className="text-base font-semibold text-text-primary">
+            <div className="mt-1 flex h-[min(72vh,800px)] min-h-[480px] flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+              <div className="flex-none border-b border-border bg-surface-white px-5 py-4 sm:px-6">
+                <h3 className="text-sm font-semibold text-text-primary">
                   Full Text PDF
                 </h3>
                 {!isLeader && (
-                  <p className="text-xs text-text-secondary mt-1">
+                  <p className="mt-1 text-xs leading-5 text-text-secondary">
                     Select text to add highlight to the selected criterion.
                     Click a highlight to remove it.
                   </p>
                 )}
               </div>
-              <div className="flex-[1] w-full bg-bg-secondary overflow-hidden relative">
+              <div className="relative w-full flex-1 overflow-hidden bg-bg-secondary">
                 <Worker
                   workerUrl={PDF_WORKER_URL}
                 >
@@ -170,8 +172,11 @@ export default function AssessmentPaperViewer({
           )}
         </div>
       ) : (
-        <div className="flex-1 flex items-center justify-center text-text-secondary h-full">
-          Select a paper to begin assessment
+        <div className="flex h-full flex-1 items-center justify-center p-6 text-center text-text-secondary">
+          <div className="max-w-sm rounded-2xl border border-border bg-surface-white p-8 shadow-sm">
+            <p className="text-sm font-semibold text-text-primary">Study details</p>
+            <p className="mt-1 text-sm leading-6">Choose a study from the queue to inspect its abstract, metadata, and full text.</p>
+          </div>
         </div>
       )}
     </div>

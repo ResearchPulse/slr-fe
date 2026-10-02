@@ -39,72 +39,76 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-[4px] sticky top-4 h-[calc(100vh-120px)] shadow-none transition-all duration-300">
+      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-fit lg:flex-col lg:py-6">
         <button
+          type="button"
           onClick={onToggleCollapse}
-          className="p-3 bg-bg-secondary text-text-primary border border-border rounded-[4px] hover:bg-surface-white transition-colors mb-8"
+          className="rounded-lg border border-border bg-white p-2.5 text-text-secondary transition-colors hover:bg-slate-50 hover:text-accent lg:mb-8"
           title="Expand Filters"
+          aria-label="Expand filters"
         >
-          <FiChevronRight className="w-5 h-5" />
+          <FiChevronRight className="h-5 w-5" />
         </button>
-        <div className="flex flex-col gap-6 text-text-secondary">
-          <FiFilter className="w-5 h-5" />
-          <FiSearch className="w-5 h-5" />
-          <FiCalendar className="w-5 h-5" />
-          <FiDatabase className="w-5 h-5" />
+        <div className="flex items-center gap-5 text-text-muted lg:flex-col lg:gap-6">
+          <FiFilter className="h-5 w-5" />
+          <FiSearch className="h-5 w-5" />
+          <FiCalendar className="h-5 w-5" />
+          <FiDatabase className="h-5 w-5" />
         </div>
       </aside>
     );
   }
 
   return (
-    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-[4px] sticky top-4 h-[calc(100vh-120px)] shadow-none overflow-hidden transition-all duration-300">
+    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-fit lg:max-h-[calc(100vh-2rem)]">
       {/* Header */}
-      <div className="px-6 py-6 border-b border-border flex items-center justify-between">
+      <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-surface-white border border-border rounded-[4px] flex items-center justify-center text-accent shadow-sm">
-            <FiFilter className="w-5 h-5" />
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-accent">
+            <FiFilter className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">
+            <h3 className="text-sm font-semibold text-text-primary">
               Filters
             </h3>
-            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">
+            <p className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
               Refine Paper Pool
             </p>
           </div>
         </div>
         <button
+          type="button"
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-bg-primary rounded-[4px] text-text-secondary hover:text-text-primary transition-colors"
+          className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-slate-50 hover:text-text-primary"
+          aria-label="Collapse filters"
         >
-          <FiChevronLeft className="w-5 h-5" />
+          <FiChevronLeft className="h-5 w-5" />
         </button>
       </div>
 
       {/* Filter Content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+      <div className="space-y-6 overflow-y-auto p-4 custom-scrollbar sm:p-5 max-h-[calc(100vh-16rem)]">
         {/* Search Input */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+        <div className="space-y-2">
+          <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
             Keywords
           </label>
           <div className="relative group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
+            <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
             <input
               value={filters.keyword}
               onChange={(e) =>
                 onChange({ ...filters, keyword: e.target.value })
               }
               placeholder="Search concepts..."
-              className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none shadow-inner"
+              className="h-11 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>
         </div>
 
         {/* Year Range */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+        <div className="space-y-2">
+          <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
             Publication Year
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -119,7 +123,7 @@ export default function FilterSidebar({
                   })
                 }
                 placeholder="From"
-                className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+                className="h-11 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
             <div className="relative group">
@@ -133,16 +137,16 @@ export default function FilterSidebar({
                   })
                 }
                 placeholder="To"
-                className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+                className="h-11 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
           </div>
         </div>
 
         {/* Source & Batch */}
-        <div className="space-y-6">
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Search Source
             </label>
             <select
@@ -150,7 +154,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, searchSourceId: e.target.value })
               }
-              className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none"
+              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">All Sources</option>
               {availableSources.map((source) => (
@@ -160,8 +164,8 @@ export default function FilterSidebar({
               ))}
             </select>
           </div>
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+          <div className="space-y-2">
+            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Import Batch
             </label>
             <select
@@ -169,7 +173,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, importBatchId: e.target.value })
               }
-              className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none"
+              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">All Batches</option>
               {availableBatches.map((batch) => (
@@ -180,8 +184,8 @@ export default function FilterSidebar({
             </select>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+          <div className="space-y-2">
+            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               DOI Availability
             </label>
             <select
@@ -192,7 +196,7 @@ export default function FilterSidebar({
                   doiState: e.target.value as PaperPoolFilters["doiState"],
                 })
               }
-              className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none"
+              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">Any DOI Status</option>
               <option value="has">Has DOI</option>
@@ -200,8 +204,8 @@ export default function FilterSidebar({
             </select>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+          <div className="space-y-2">
+            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Fulltext Availability
             </label>
             <select
@@ -213,7 +217,7 @@ export default function FilterSidebar({
                     .value as PaperPoolFilters["fullTextState"],
                 })
               }
-              className="w-full bg-surface-white border border-border focus:border-accent shadow-sm rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none"
+              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">Any Fulltext Status</option>
               <option value="has">Has Fulltext PDF</option>
@@ -223,30 +227,30 @@ export default function FilterSidebar({
         </div>
 
         {/* State Filters */}
-        <div className="space-y-3 pt-4 border-t border-border">
-          <label className="flex items-center gap-3 p-3 rounded-[4px] hover:bg-bg-primary transition-colors cursor-pointer group">
+        <div className="space-y-2 border-t border-border pt-4">
+          <label className="group flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.onlyUnused}
               onChange={(e) =>
                 onChange({ ...filters, onlyUnused: e.target.checked })
               }
-              className="w-5 h-5 rounded-[4px] border border-border text-accent focus:ring-accent transition-all"
+              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
             />
-            <span className="text-xs font-bold text-text-secondary group-hover:text-text-primary transition-colors">
+            <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
               Only Unused Papers
             </span>
           </label>
-          <label className="flex items-center gap-3 p-3 rounded-[4px] hover:bg-bg-primary transition-colors cursor-pointer group">
+          <label className="group flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.recentlyImported}
               onChange={(e) =>
                 onChange({ ...filters, recentlyImported: e.target.checked })
               }
-              className="w-5 h-5 rounded-[4px] border border-border text-accent focus:ring-accent transition-all"
+              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
             />
-            <span className="text-xs font-bold text-text-secondary group-hover:text-text-primary transition-colors">
+            <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
               Recently Imported
             </span>
           </label>
@@ -254,11 +258,11 @@ export default function FilterSidebar({
       </div>
 
       {/* Footer Actions */}
-      <div className="p-6 bg-bg-primary/50 border-t border-border space-y-3">
+      <div className="space-y-2 border-t border-border bg-slate-50/70 p-4">
         <Button
           variant="secondary"
           onClick={onAddToProcess}
-          className="w-full py-4 rounded-[4px] font-black uppercase tracking-widest text-[10px] border-border"
+          className="w-full rounded-lg text-xs font-semibold"
         >
           <FiLayers className="w-4 h-4 mr-2" />
           Add to Review Process
@@ -266,14 +270,14 @@ export default function FilterSidebar({
         <Button
           onClick={onSaveCurrent}
           isLoading={isSaving}
-          className="w-full py-4 rounded-[4px] font-black uppercase tracking-widest text-[10px] shadow-none shadow-blue-500/20"
+          className="w-full rounded-lg text-xs font-semibold"
         >
           <FiSave className="w-4 h-4 mr-2" />
           Save As Collection
         </Button>
         <button
           onClick={onReset}
-          className="w-full flex items-center justify-center gap-2 py-3 text-[10px] font-black text-text-secondary hover:text-text-secondary uppercase tracking-widest transition-colors"
+          className="flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
         >
           <FiRotateCcw className="w-3.5 h-3.5" />
           Reset All Filters

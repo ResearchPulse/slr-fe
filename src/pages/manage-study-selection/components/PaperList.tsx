@@ -92,7 +92,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [yearFilter, setYearFilter] = useState<string>("all");
-  const [decisionFilter, setDecisionFilter] = useState<string>("0");
+  const [decisionFilter, setDecisionFilter] = useState<string>("all");
   const [assignmentFilter, setAssignmentFilter] = useState<string>("all");
   const [reviewersModal, setReviewersModal] = useState<{
     isOpen: boolean;
@@ -125,7 +125,8 @@ export const PaperList: React.FC<PaperListProps> = ({
           : assignmentFilter === "not_assigned"
             ? 2
             : 0,
-      decisionStatus: parseInt(decisionFilter),
+      decisionStatus:
+        decisionFilter === "all" ? undefined : Number(decisionFilter),
       pageSize,
     }),
     [searchQuery, yearFilter, decisionFilter, assignmentFilter],
@@ -135,11 +136,13 @@ export const PaperList: React.FC<PaperListProps> = ({
   const titleAbstractQuery = useInfiniteTitleAbstractAssignmentPapers(
     studySelectionProcessId,
     params,
+    isLeader && currentPhase === "TITLE_ABSTRACT",
   );
 
   const fullTextQuery = useInfiniteFullTextAssignmentPapers(
     studySelectionProcessId,
     params,
+    isLeader && currentPhase === "FULL_TEXT",
   );
 
   const query =
@@ -187,8 +190,7 @@ export const PaperList: React.FC<PaperListProps> = ({
       const allIds = papers
         .filter(
           (p) =>
-            !["Included", "Excluded", "Resolved"].includes(p.status) &&
-            !p.isAssigned,
+            !["Included", "Excluded", "Resolved"].includes(p.status),
         )
         .map((p) => p.id);
       const newSelectedIds = Array.from(new Set([...selectedIds, ...allIds]));
@@ -294,9 +296,9 @@ export const PaperList: React.FC<PaperListProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full bg-surface-white overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-surface-white">
       {/* Header & Search */}
-      <div className="p-4 space-y-4 bg-bg-secondary/50 border-b border-border">
+      <div className="space-y-4 border-b border-[#e4ebf0] bg-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isAssignmentMode && (
@@ -312,12 +314,15 @@ export const PaperList: React.FC<PaperListProps> = ({
                 />
               </div>
             )}
-            <h2 className="text-lg font-bold text-slate-800">Papers</h2>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900">Review queue</h2>
+              <p className="mt-0.5 text-[11px] text-slate-500">Select a paper to inspect and decide</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onToggleCollapse}
-              className="p-1.5 hover:bg-surface-white hover:shadow-none rounded-[4px] transition-all text-text-secondary hover:text-accent border border-transparent hover:border-indigo-100"
+              className="rounded-lg border border-transparent p-2 text-slate-500 transition-colors hover:border-slate-200 hover:bg-slate-50 hover:text-blue-700"
               title="Collapse List"
             >
               <PanelLeftClose className="w-4 h-4" />
@@ -336,7 +341,7 @@ export const PaperList: React.FC<PaperListProps> = ({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
           <Input
             placeholder="Search title or authors..."
-            className="pl-10 bg-surface-white border-border focus:ring-blue-500 focus:border-blue-500 rounded-[4px] transition-all"
+            className="rounded-lg border-[#dce6ed] bg-white pl-10 transition-all focus:border-blue-400 focus:ring-blue-100"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -344,7 +349,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
         <div className="grid grid-cols-2 gap-2">
           <select
-            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
+            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             value={yearFilter}
             onChange={(e) => handleFilterChange(setYearFilter, e.target.value)}
           >
@@ -360,20 +365,21 @@ export const PaperList: React.FC<PaperListProps> = ({
           </select>
 
           <select
-            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
+            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             value={decisionFilter}
             onChange={(e) =>
               handleFilterChange(setDecisionFilter, e.target.value)
             }
           >
-            <option value="0">All Decisions</option>
-            <option value="1">Not Decided</option>
-            <option value="2">Included</option>
-            <option value="3">Excluded</option>
+            <option value="all">All Decisions</option>
+            <option value="0">Pending</option>
+            <option value="1">Included</option>
+            <option value="2">Excluded</option>
+            <option value="3">Conflict</option>
           </select>
 
           <select
-            className="text-[11px] font-bold p-2 bg-surface-white border border-border rounded-[4px] outline-none focus:ring-1 focus:ring-blue-500"
+            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             value={assignmentFilter}
             onChange={(e) =>
               handleFilterChange(setAssignmentFilter, e.target.value)
@@ -388,7 +394,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
       {/* List */}
       <div
-        className="flex-1 overflow-y-auto custom-scrollbar p-2 space-y-2 bg-bg-secondary/30"
+        className="min-h-0 flex-1 touch-pan-y space-y-2 overflow-y-auto overscroll-contain bg-[#f7f9fb] p-3 custom-scrollbar"
         onScroll={handleScroll}
       >
         {isLoading ? (
@@ -396,7 +402,7 @@ export const PaperList: React.FC<PaperListProps> = ({
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-32 bg-bg-secondary animate-pulse rounded-[4px]"
+                className="h-32 animate-pulse rounded-xl border border-slate-100 bg-white"
               />
             ))}
           </div>
@@ -413,10 +419,10 @@ export const PaperList: React.FC<PaperListProps> = ({
                 key={paper.id}
                 onClick={() => onSelectPaper(paper.id)}
                 className={cn(
-                  "group relative p-4 rounded-[4px] border transition-all cursor-pointer flex gap-4",
+                  "group relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all",
                   isPaperActive
-                    ? "bg-surface-white border-blue-200 shadow-none ring-1 ring-blue-500/10"
-                    : "bg-surface-white border-border hover:border-blue-100 hover:shadow-none",
+                    ? "border-blue-300 bg-white shadow-sm ring-2 ring-blue-100"
+                    : "border-[#e2e9ef] bg-white hover:border-blue-200 hover:shadow-sm",
                 )}
               >
                 {isPaperActive && (
@@ -430,9 +436,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                       className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       checked={isPaperSelected}
                       disabled={
-                        ["Included", "Excluded", "Resolved"].includes(
-                          paper.status,
-                        ) || paper.isAssigned
+                        ["Included", "Excluded", "Resolved"].includes(paper.status)
                       }
                       onClick={(e) => e.stopPropagation()}
                       onChange={(e) => handleSelectPaper(e, paper.id)}
@@ -443,7 +447,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                 <div className="flex-1 space-y-3 min-w-0">
                   <h3
                     className={cn(
-                      "text-sm font-bold leading-snug line-clamp-2 transition-colors",
+                      "line-clamp-2 text-[13px] font-semibold leading-5 transition-colors",
                       isPaperActive
                         ? "text-blue-700"
                         : "text-slate-800 group-hover:text-blue-600",
@@ -490,7 +494,9 @@ export const PaperList: React.FC<PaperListProps> = ({
                         )}
                       >
                         <Users className="w-3 h-3" />
-                        {paper.isAssigned ? "Assigned" : "Unassigned"}
+                        {paper.isAssigned
+                          ? `${paper.assignedReviewers?.filter((reviewer) => reviewer.decision !== "Pending").length ?? 0}/${paper.assignedReviewers?.length ?? 0} reviewed`
+                          : "Unassigned"}
                         {paper.isAssigned && (
                           <button
                             onClick={(e) =>

@@ -3,6 +3,19 @@ import Button from "../ui/Button";
 import Select from "../ui/Select";
 import PaperRow from "./PaperRow";
 import type { PaperPoolItem } from "./types";
+import type { UploadPdfOptions } from "../../pages/reviewProcess/studySelection/uploadTypes";
+import type { PaperWithDecisionsResponse } from "../../types/studySelection";
+
+type UploadPdfHandler = (
+  paperId: string,
+  file: File,
+  options?: UploadPdfOptions,
+) => Promise<PaperWithDecisionsResponse>;
+type ApplyMetadataSuggestionHandler = (
+  paperId: string,
+  sourceMetadataId: string,
+  fields: string[],
+) => Promise<void>;
 
 interface PaperTableProps {
   papers: PaperPoolItem[];
@@ -21,9 +34,9 @@ interface PaperTableProps {
   onPageSizeChange: (size: number) => void;
 
   // PDF Actions
-  onUploadPdf?: any;
+  onUploadPdf?: UploadPdfHandler;
   isUploadingPdf?: boolean;
-  onApplyMetadataSuggestion?: any;
+  onApplyMetadataSuggestion?: ApplyMetadataSuggestionHandler;
   isApplyingMetadataSuggestion?: boolean;
   onRemovePdf?: (paperId: string) => Promise<void>;
   isRemovingPdf?: boolean;
@@ -63,7 +76,7 @@ export default function PaperTable({
 }: PaperTableProps) {
   if (isLoading && papers.length === 0) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center bg-surface-white rounded-[4px] border border-border">
+      <div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-border bg-white">
         <div className="flex flex-col items-center gap-3">
           <LoadingSpinner size="lg" />
           <p className="text-sm text-text-secondary animate-pulse">
@@ -75,27 +88,27 @@ export default function PaperTable({
   }
 
   return (
-    <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden flex flex-col shadow-none">
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
       {/* Table Header / Toolbar */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-bg-primary/50">
+      <div className="flex flex-col gap-3 border-b border-border bg-slate-50/70 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-text-primary">
             {totalCount.toLocaleString()}{" "}
             <span className="font-normal text-text-secondary">Results</span>
           </span>
           {isFetching && (
-            <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-bg-secondary text-[10px] font-bold text-accent uppercase tracking-wider border border-border">
-              <div className="w-1 h-1 rounded-full bg-accent animate-ping" />
+            <div className="flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-medium text-accent">
+              <div className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
               Refreshing
             </div>
           )}
         </div>
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+        <div className="flex items-center justify-between gap-3 sm:justify-end">
+          <label className="text-xs font-medium text-text-secondary">
             Rows per page:
           </label>
           <Select
-            className="w-20"
+            className="w-[76px]"
             value={pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
             options={[
@@ -113,43 +126,49 @@ export default function PaperTable({
         style={{ maxHeight: "calc(100vh - 400px)", minHeight: "400px" }}
       >
         <table className="w-full border-collapse">
-          <thead className="sticky top-0 z-10 bg-surface-white border-b border-border shadow-none">
+          <thead className="sticky top-0 z-10 border-b border-border bg-white">
             <tr className="text-left">
-              <th className="px-6 py-4 w-12">
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    checked={allPageSelected}
-                    onChange={(e) => onToggleAllPage(e.target.checked)}
-                    className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
-                    aria-label="Select all papers in current page"
-                  />
-                </div>
-              </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              {isLeader && (
+                <th className="w-12 px-4 py-3.5 sm:px-5">
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      checked={allPageSelected}
+                      onChange={(e) => onToggleAllPage(e.target.checked)}
+                      className="h-4 w-4 cursor-pointer rounded border-border text-accent focus:ring-accent"
+                      aria-label="Select all papers in current page"
+                    />
+                  </div>
+                </th>
+              )}
+              <th
+                className={`whitespace-nowrap ${
+                  isLeader ? "px-3" : "px-4 sm:px-5"
+                } py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary`}
+              >
                 Paper ID
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Title & Authors
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Year
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 DOI
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Source
               </th>
-              <th className="px-3 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Full Text
               </th>
-              <th className="px-6 py-4 text-right text-[10px] font-black uppercase tracking-widest text-text-secondary">
+              <th className="whitespace-nowrap px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-50">
+          <tbody className="divide-y divide-border/60">
             {papers.map((paper) => (
               <PaperRow
                 key={paper.id}
@@ -171,11 +190,14 @@ export default function PaperTable({
             ))}
             {papers.length === 0 && !isLoading && (
               <tr>
-                <td colSpan={7} className="px-6 py-20">
+                <td
+                  colSpan={isLeader ? 8 : 7}
+                  className="px-5 py-16 sm:py-20"
+                >
                   <div className="flex flex-col items-center justify-center text-center">
-                    <div className="w-16 h-16 bg-bg-primary rounded-full flex items-center justify-center mb-4">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-300 ring-1 ring-inset ring-border/70">
                       <svg
-                        className="w-8 h-8 text-gray-300"
+                        className="h-8 w-8"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -191,7 +213,7 @@ export default function PaperTable({
                     <h3 className="text-base font-semibold text-text-primary">
                       No papers found
                     </h3>
-                    <p className="mt-1 text-sm text-text-secondary max-w-xs">
+                    <p className="mt-1 max-w-sm text-sm leading-6 text-text-secondary">
                       We couldn't find any papers matching your current filter
                       criteria. Try adjusting your search or filters.
                     </p>
@@ -204,17 +226,17 @@ export default function PaperTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-between border-t border-border px-6 py-4 bg-bg-primary/30">
-        <div className="text-xs font-medium text-text-secondary">
+      <div className="flex flex-col gap-3 border-t border-border bg-slate-50/50 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="text-xs text-text-secondary">
           Showing page{" "}
-          <span className="text-text-primary font-bold">{pageNumber}</span> of{" "}
-          <span className="text-text-primary font-bold">{totalPages}</span>
+          <span className="font-semibold text-text-primary">{pageNumber}</span> of{" "}
+          <span className="font-semibold text-text-primary">{totalPages}</span>
         </div>
         <div className="flex items-center gap-2">
           <Button
             size="sm"
             variant="outline"
-            className="h-8 px-3 text-xs font-bold uppercase tracking-wider"
+            className="h-9 rounded-lg px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1 || isFetching}
           >
@@ -226,7 +248,7 @@ export default function PaperTable({
           <Button
             size="sm"
             variant="outline"
-            className="h-8 px-3 text-xs font-bold uppercase tracking-wider"
+            className="h-9 rounded-lg px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages || isFetching}
           >

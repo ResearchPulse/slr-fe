@@ -10,17 +10,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
-  AlertTriangle,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  CheckCircle2,
-  Clock3,
   Download,
   Eye,
   FileSpreadsheet,
   FileText,
-  Files,
+  Package,
   RefreshCw,
   Search,
   Zap,
@@ -28,7 +25,6 @@ import {
 } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Checkbox from "../../../../components/ui/Checkbox";
-import Card from "../../../../components/ui/Card";
 import Input from "../../../../components/ui/Input";
 import Modal from "../../../../components/ui/Modal";
 import TemplateWizard from "../../../../components/projects/protocol/wizard/TemplateWizard";
@@ -55,6 +51,7 @@ import {
   type ExtractionTemplateResponseDto,
 } from "../../../../types/dataExtraction";
 import { useReviewProcess } from "../../../../hooks/useReviewProcesses";
+import { formatDate } from "../../../../utils/dateFormat";
 import { dataExtractionConductingService } from "../../../../services/dataExtractionConductingService";
 import ExtractionStatusBadge from "./ExtractionStatusBadge";
 import AssignReviewersModal from "./AssignReviewersModal";
@@ -442,8 +439,8 @@ export default function DataExtractionDashboard({
 
     const rect = exportMenuRef.current.getBoundingClientRect();
     setExportMenuPosition({
-      top: rect.bottom + window.scrollY + 8,
-      left: rect.left + window.scrollX,
+      top: rect.bottom + 8,
+      left: rect.left,
       minWidth: Math.max(rect.width, 224),
     });
   }, []);
@@ -608,183 +605,229 @@ export default function DataExtractionDashboard({
   const templateActionLabel = ws.selectedTemplate
     ? "Edit Template"
     : "Define Template";
+  const completedPercent =
+    ws.summary.totalIncluded > 0
+      ? Math.min(
+          100,
+          (ws.summary.completed / ws.summary.totalIncluded) * 100,
+        )
+      : 0;
+  const extractionStatusLabel =
+    ws.extractionProcessStatus === "InProgress"
+      ? "Active"
+      : ws.extractionProcessStatus === "NotStarted"
+        ? "Not started"
+        : ws.extractionProcessStatus;
 
   return (
-    <div className="flex min-h-full flex-col bg-bg-secondary">
-      {/* Header */}
-      <div className="bg-surface-white border-b border-border px-6 py-3 grid grid-cols-3 items-center flex-shrink-0 z-50 shadow-none sticky top-16 sm:top-20">
-        <div className="flex items-center gap-4">
-          <button
-            onClick={ws.handleBack}
-            className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
-            title="Back to Process Workspace"
-          >
-            <ArrowLeft className="w-5 h-5" />
-          </button>
-
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-[4px]">
-              <FileSpreadsheet className="w-5 h-5 text-blue-600" />
+    <div className="min-h-full bg-[#F7F9FC]">
+      <header className="border-b border-border bg-white">
+        <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              onClick={ws.handleBack}
+              className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+              title="Back to Process Workspace"
+              aria-label="Back to Process Workspace"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+              <Package className="h-6 w-6" />
             </div>
-            <div>
-              <h1 className="text-lg font-bold text-text-primary leading-none mb-1">
-                Data Extraction Dashboard
+            <div className="min-w-0">
+              <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+                {process?.name || process?.processName || "Study extraction"}
               </h1>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
-                Conducting Phase •{" "}
-                {ws.isCurrentUserLeader ? "Leader View" : "Reviewer View"}
-              </p>
+              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                <span className="text-xs text-text-secondary">
+                  Data extraction / {ws.isCurrentUserLeader ? "Leader view" : "Reviewer view"}
+                </span>
+                <span className="h-1 w-1 rounded-full bg-text-muted" aria-hidden="true" />
+                <span
+                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                    ws.extractionProcessStatus === "InProgress"
+                      ? "bg-success/10 text-success"
+                      : ws.extractionProcessStatus === "Completed"
+                        ? "bg-primary-light text-primary"
+                        : "bg-bg-secondary text-text-secondary"
+                  }`}
+                >
+                  {extractionStatusLabel}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex items-center justify-self-center">
-          {/* Center Content if any - currently matching StuSe style */}
-        </div>
-
-        <div className="flex items-center gap-4 justify-self-end">
-          <div className="hidden md:flex items-center gap-3 px-4 py-1.5 bg-bg-secondary rounded-[4px] border border-border">
-            <div className="text-right">
-              <p className="text-[9px] font-bold text-text-secondary uppercase tracking-widest leading-none mb-1">
-                Visible Studies
-              </p>
-              <p className="text-sm font-black text-text-primary leading-none">
-                {ws.dashboardTotalCount}
-              </p>
+          <div className="flex flex-wrap items-center gap-3 pl-12 sm:pl-14 lg:gap-5 lg:pl-0">
+            <div className="text-xs text-text-secondary">
+              <div className="text-[10px] font-medium text-text-muted">Studies</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {ws.dashboardTotalCount} visible
+              </div>
             </div>
+            <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
+            <div className="text-xs text-text-secondary">
+              <div className="text-[10px] font-medium text-text-muted">Started</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(process?.dataExtractionProcess?.startedAt ?? "")}
+              </div>
+            </div>
+            <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
+            <div className="text-xs text-text-secondary">
+              <div className="text-[10px] font-medium text-text-muted">Last updated</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(
+                  process?.dataExtractionProcess?.modifiedAt ??
+                    process?.dataExtractionProcess?.createdAt ??
+                    "",
+                )}
+              </div>
+            </div>
+            {ws.isCurrentUserLeader && (
+              <Button
+                variant={
+                  ws.summary.completed === ws.summary.totalIncluded &&
+                  ws.summary.totalIncluded > 0
+                    ? "success"
+                    : "outline"
+                }
+                onClick={() => setIsCompletePhaseModalOpen(true)}
+                disabled={
+                  isProcessCompleted || !canCompletePhase || ws.isCompleting
+                }
+                isLoading={ws.isCompleting}
+                size="sm"
+                className="normal-case tracking-normal"
+              >
+                Complete phase
+              </Button>
+            )}
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Main Content Area */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar pb-24">
-        <div className="mx-auto max-w-7xl px-6 py-8 space-y-6">
-          <div className="flex flex-col gap-2">
-            <h2 className="text-2xl font-bold text-text-primary">
-              Manage Extraction Tasks
-            </h2>
-            <p className="text-sm text-text-secondary max-w-3xl">
-              Assign reviewers, monitor double extraction progress, and move
-              each included study into the extraction workspace.
-            </p>
-          </div>
+      <div className="mx-auto max-w-[1520px] space-y-5 px-4 py-5 sm:px-6 lg:px-8">
 
-          {ws.isCurrentUserLeader && (
-            <div className="space-y-4">
-              <Card className="rounded-[4px] border border-indigo-100 bg-surface-white/90 shadow-none shadow-indigo-100/40">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                  <div>
-                    <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
-                      Extraction Template
-                    </p>
-                    <h2 className="mt-1 text-lg font-semibold text-text-primary">
-                      {selectedTemplateLabel}
-                    </h2>
-                    <p className="mt-1 text-sm text-text-secondary">
-                      Leaders define and maintain the extraction template used
-                      by reviewers.
-                    </p>
-                  </div>
-
-                  <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto">
-                    <div className="w-full rounded-[4px] border border-border bg-bg-secondary px-4 py-3 text-sm text-text-secondary sm:w-80">
-                      <div className="font-medium text-text-primary">
-                        Current template
-                      </div>
-                      <div className="mt-1 truncate">
-                        {selectedTemplateLabel}
-                      </div>
-                    </div>
-
-                    <Button
-                      onClick={handleOpenCreateTemplate}
-                      disabled={isProcessCompleted}
-                    >
-                      {templateActionLabel}
-                    </Button>
-                  </div>
+        {ws.isCurrentUserLeader && (
+          <div className="mb-5 space-y-4">
+            <section className="flex flex-col gap-2 rounded-xl border border-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-secondary">
+                  Extraction form
+                </p>
+                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
+                  <span className="font-semibold text-text-primary">
+                    {selectedTemplateLabel}
+                  </span>
+                  <span className="text-text-muted">|</span>
+                  <span className="text-text-secondary">
+                    {ws.answerFields.length} fields
+                  </span>
                 </div>
-              </Card>
+              </div>
+              <Button
+                variant="outline"
+                onClick={handleOpenCreateTemplate}
+                disabled={isProcessCompleted}
+                size="sm"
+                className="normal-case tracking-normal"
+              >
+                {templateActionLabel}
+                <ChevronRight className="ml-1 h-4 w-4" />
+              </Button>
+            </section>
 
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
+            <section className="rounded-xl border border-border bg-white px-4 py-4 sm:px-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
                 <MetricCard
-                  title="Total Included"
+                  title="Included"
                   value={ws.summary.totalIncluded}
-                  subtitle="Studies ready for data extraction"
-                  icon={<Files className="h-5 w-5" />}
-                  iconClassName="bg-bg-secondary text-text-primary"
+                  className="border-b border-border sm:border-r sm:pr-5 xl:border-b-0"
                 />
                 <MetricCard
-                  title="In Progress"
+                  title="In progress"
                   value={ws.summary.inProgress}
-                  subtitle="Active reviewer work in flight"
-                  icon={<Clock3 className="h-5 w-5" />}
-                  iconClassName="bg-blue-50 text-blue-700"
+                  className="border-b border-border sm:pl-5 xl:border-r xl:border-b-0 xl:pr-5"
                 />
                 <MetricCard
-                  title="Awaiting Consensus"
+                  title="Awaiting consensus"
                   value={ws.summary.awaitingConsensus}
-                  subtitle="Needs adjudication or follow-up"
-                  icon={<AlertTriangle className="h-5 w-5" />}
-                  iconClassName="bg-amber-50 text-amber-700"
-                  className="ring-1 ring-amber-200"
+                  status="warning"
+                  className="border-b border-border sm:border-r sm:border-b-0 sm:pr-5"
                 />
                 <MetricCard
                   title="Completed"
                   value={ws.summary.completed}
-                  subtitle="Extraction finalized"
-                  icon={<CheckCircle2 className="h-5 w-5" />}
-                  iconClassName="bg-surface-white text-green-700"
+                  status="success"
+                  className="sm:pl-5"
                 />
               </div>
-
-              <div className="rounded-[4px] border border-border bg-surface-white/85 p-4 shadow-none shadow-slate-200/40">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <p className="text-sm text-text-secondary">
-                    Complete this phase to lock all extraction data.
-                  </p>
-                  <Button
-                    variant="success"
-                    onClick={() => setIsCompletePhaseModalOpen(true)}
-                    disabled={
-                      isProcessCompleted || !canCompletePhase || ws.isCompleting
-                    }
-                    isLoading={ws.isCompleting}
-                  >
-                    Complete Phase
-                  </Button>
+              <div className="mt-4 border-t border-border pt-3">
+                <div className="mb-2 flex items-center justify-between gap-4 text-xs">
+                  <span className="font-medium text-text-secondary">
+                    Extraction progress
+                  </span>
+                  <span className="text-text-secondary">
+                    <span className="font-semibold text-text-primary">
+                      {ws.summary.completed} of {ws.summary.totalIncluded}
+                    </span>{" "}
+                    completed <span className="mx-1 text-text-muted">|</span>
+                    {Math.round(completedPercent)}%
+                  </span>
+                </div>
+                <div
+                  className="h-1.5 overflow-hidden rounded-full bg-bg-secondary"
+                  role="progressbar"
+                  aria-label="Extraction progress"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(completedPercent)}
+                >
+                  <div
+                    className="h-full rounded-full bg-primary transition-[width] duration-150"
+                    style={{ width: `${completedPercent}%` }}
+                  />
                 </div>
               </div>
-            </div>
-          )}
+            </section>
+          </div>
+        )}
 
-          <Card className="rounded-[4px] border border-white/70 bg-surface-white/85 p-2 shadow-none shadow-slate-200/50 backdrop-blur">
-            <div className="inline-flex w-full rounded-[4px] bg-bg-secondary p-1">
-              <button
-                type="button"
-                onClick={() => setActiveViewTab("queue")}
-                disabled={isProcessCompleted}
-                className={`flex-1 rounded-[4px] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
-                  activeViewTab === "queue"
-                    ? "bg-surface-white text-text-primary shadow-none"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                Studies Queue
-              </button>
-              <button
-                type="button"
-                onClick={() => setActiveViewTab("workload")}
-                className={`flex-1 rounded-[4px] px-4 py-2 text-sm font-semibold transition-all duration-200 ${
-                  activeViewTab === "workload"
-                    ? "bg-surface-white text-text-primary shadow-none"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-              >
-                Workload Summary
-              </button>
-            </div>
-          </Card>
+        <div className="flex items-center justify-between border-b border-border">
+          <h2 className="pb-3 text-lg font-semibold tracking-tight text-text-primary">
+            Studies
+          </h2>
+          <div className="flex items-center gap-5" role="tablist" aria-label="Study views">
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeViewTab === "queue"}
+              onClick={() => setActiveViewTab("queue")}
+              disabled={isProcessCompleted}
+              className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors duration-150 ${
+                activeViewTab === "queue"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              Studies queue
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activeViewTab === "workload"}
+              onClick={() => setActiveViewTab("workload")}
+              className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors duration-150 ${
+                activeViewTab === "workload"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-text-secondary hover:text-text-primary"
+              }`}
+            >
+              Workload
+            </button>
+          </div>
+        </div>
 
           {activeViewTab === "workload" ? (
             <WorkloadSummaryCard
@@ -797,8 +840,9 @@ export default function DataExtractionDashboard({
 
           {activeViewTab === "queue" ? (
             <>
-              <Card className="relative z-30 rounded-[4px] border border-white/70 bg-surface-white/85 shadow-none shadow-slate-200/50 backdrop-blur">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
+              <section className="overflow-hidden rounded-xl border border-border bg-white">
+                <div className="border-b border-border px-4 py-3 sm:px-5">
+                  <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                   <div className="relative flex-1">
                     <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" />
                     <Input
@@ -838,7 +882,7 @@ export default function DataExtractionDashboard({
                       </Button>
 
                       <div
-                        className="relative z-50 w-full lg:w-auto"
+                        className="relative w-full lg:w-auto"
                         ref={exportMenuRef}
                       >
                         <Button
@@ -865,7 +909,7 @@ export default function DataExtractionDashboard({
                           ? createPortal(
                               <div
                                 ref={exportMenuPanelRef}
-                                className="fixed z-[9999] rounded-[4px] border border-border bg-surface-white p-1.5 shadow-2xl"
+                                className="fixed z-[1000] rounded-lg border border-border bg-surface-white p-1.5 shadow-lg"
                                 style={{
                                   top: `${exportMenuPosition.top}px`,
                                   left: `${exportMenuPosition.left}px`,
@@ -899,18 +943,37 @@ export default function DataExtractionDashboard({
                       </div>
                     </div>
                   )}
+                  </div>
+                  {selectedPaperIds.length > 0 && !isProcessCompleted ? (
+                  <div className="mt-3 border-t border-border pt-3">
+                    <p className="mb-2 text-xs text-text-secondary">
+                      Bulk assignment applies to unassigned studies only.
+                    </p>
+                    <BulkAssignmentPanelDataExtraction
+                      selectedPaperIds={selectedPaperIds}
+                      ws={ws}
+                      onAssignmentComplete={() => {
+                        setSelectedPaperIds([]);
+                        queryClient.invalidateQueries({
+                          queryKey: ["data-extraction-conducting", "dashboard"],
+                        });
+                        queryClient.invalidateQueries({
+                          queryKey: ["data-extraction-conducting", "workload-summary"],
+                        });
+                      }}
+                    />
+                  </div>
+                  ) : null}
                 </div>
-              </Card>
 
-              <Card className="overflow-hidden rounded-[4px] border border-white/70 bg-surface-white/90 p-0 shadow-none shadow-slate-200/50 backdrop-blur">
-                <div className="flex flex-col gap-2 border-b border-border px-6 py-5 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex flex-col gap-3 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
                   <div>
-                    <h2 className="text-lg font-semibold text-text-primary">
+                    <h2 className="text-lg font-semibold tracking-tight text-text-primary">
                       {ws.isCurrentUserLeader
                         ? "Included Studies Queue"
                         : "My Assigned Studies"}
                     </h2>
-                    <p className="text-sm text-text-secondary">
+                    <p className="mt-1 text-sm text-text-secondary">
                       {ws.isCurrentUserLeader
                         ? "Assign reviewers and launch the extraction workspace for each paper."
                         : "Extract data from your assigned studies."}
@@ -922,9 +985,9 @@ export default function DataExtractionDashboard({
                   </p>
                 </div>
 
-                <div className="overflow-x-auto pb-32">
+                <div className="overflow-x-auto">
                   <Table className="min-w-[1060px]">
-                    <TableHeader className="bg-bg-secondary/80">
+                    <TableHeader className="bg-bg-secondary/70">
                       <tr>
                         {ws.isCurrentUserLeader && (
                           <TableHead>
@@ -944,12 +1007,12 @@ export default function DataExtractionDashboard({
                             />
                           </TableHead>
                         )}
-                        <TableHead>Study</TableHead>
+                        <TableHead className="px-5 py-3.5">Study</TableHead>
                         {ws.isCurrentUserLeader && (
-                          <TableHead>Reviewers</TableHead>
+                          <TableHead className="px-5 py-3.5">Reviewers</TableHead>
                         )}
-                        <TableHead>Status</TableHead>
-                        <TableHead className="text-right">Action</TableHead>
+                        <TableHead className="px-5 py-3.5">Status</TableHead>
+                        <TableHead className="px-5 py-3.5 text-right">Action</TableHead>
                       </tr>
                     </TableHeader>
 
@@ -958,7 +1021,7 @@ export default function DataExtractionDashboard({
                         <TableRow className="cursor-default hover:bg-transparent">
                           <TableCell
                             colSpan={tableColSpan}
-                            className="px-6 py-16 text-center text-sm text-text-secondary"
+                            className="px-6 py-12 text-center text-sm text-text-secondary"
                           >
                             Loading dashboard data...
                           </TableCell>
@@ -967,7 +1030,7 @@ export default function DataExtractionDashboard({
                         <TableRow className="cursor-default hover:bg-transparent">
                           <TableCell
                             colSpan={tableColSpan}
-                            className="px-6 py-16 text-center"
+                            className="px-6 py-12 text-center"
                           >
                             <div className="mx-auto max-w-md">
                               <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-bg-secondary text-text-secondary">
@@ -997,10 +1060,10 @@ export default function DataExtractionDashboard({
                           return (
                             <TableRow
                               key={task.taskId || task.paperId}
-                              className="cursor-default hover:bg-bg-secondary/80"
+                              className="cursor-default hover:bg-primary-light/60"
                             >
                               {ws.isCurrentUserLeader && (
-                                <TableCell className="w-12">
+                              <TableCell className="w-12 px-4 py-3">
                                   <Checkbox
                                     aria-label={`Select paper ${task.title}`}
                                     checked={selectedPaperIds.includes(
@@ -1024,12 +1087,12 @@ export default function DataExtractionDashboard({
                                 </TableCell>
                               )}
 
-                              <TableCell className="min-w-[320px]">
+                              <TableCell className="min-w-[320px] px-4 py-3">
                                 <div>
-                                  <p className="font-semibold text-text-primary">
+                                  <p className="text-sm font-semibold leading-5 text-text-primary">
                                     {task.title}
                                   </p>
-                                  <p className="mt-1 text-sm text-text-secondary">
+                                  <p className="mt-1 text-xs text-text-secondary">
                                     {task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
                                   </p>
@@ -1037,7 +1100,7 @@ export default function DataExtractionDashboard({
                               </TableCell>
 
                               {ws.isCurrentUserLeader && (
-                                <TableCell className="min-w-[260px]">
+                                <TableCell className="min-w-[260px] px-4 py-3">
                                   {assignedReviewerIds.length > 0 ? (
                                     <div className="flex flex-wrap gap-2">
                                       {[
@@ -1068,7 +1131,7 @@ export default function DataExtractionDashboard({
                                                   ? "Completed"
                                                   : "In Progress"
                                               }
-                                              className={`inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-xs font-semibold shadow-none max-w-[220px] truncate ${
+                                              className={`inline-flex max-w-[220px] items-center gap-2 truncate rounded-full border px-2 py-1 text-xs font-medium ${
                                                 isCompleted
                                                   ? "bg-surface-white text-green-700 border border-border"
                                                   : "bg-bg-secondary text-text-secondary border border-border opacity-60"
@@ -1098,16 +1161,16 @@ export default function DataExtractionDashboard({
                                 </TableCell>
                               )}
 
-                              <TableCell>
+                              <TableCell className="px-4 py-3">
                                 <ExtractionStatusBadge status={task.status} />
                               </TableCell>
 
-                              <TableCell className="text-right">
+                              <TableCell className="px-4 py-3 text-right">
                                 <div className="relative flex items-center justify-end gap-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="!px-2"
+                                    className="!rounded-lg !px-2"
                                     onClick={() =>
                                       handleOpenPaperDetails(task.paperId)
                                     }
@@ -1122,7 +1185,7 @@ export default function DataExtractionDashboard({
                                       <>
                                         <Button
                                           size="sm"
-                                          variant="outline"
+                                          variant="primary"
                                           onClick={() =>
                                             ws.handleOpenDirectWorkspace(
                                               task.paperId,
@@ -1204,7 +1267,7 @@ export default function DataExtractionDashboard({
                                           )
                                         }
                                         disabled={isProcessCompleted}
-                                        className="bg-amber-500 text-white shadow-amber-500/20 hover:bg-amber-600 hover:shadow-amber-500/30"
+                                        className="!rounded-lg bg-amber-500 text-white shadow-sm hover:bg-amber-600"
                                       >
                                         Resolve
                                       </Button>
@@ -1279,7 +1342,7 @@ export default function DataExtractionDashboard({
                   </Table>
                 </div>
 
-                <div className="flex flex-col gap-4 border-t border-border px-6 py-4 md:flex-row md:items-center md:justify-between">
+                <div className="flex flex-col gap-3 border-t border-border px-4 py-4 md:flex-row md:items-center md:justify-between sm:px-6">
                   <p className="text-sm text-text-secondary">
                     Page {safeCurrentPage} of {totalPages} • Showing{" "}
                     {visibleRange.start}-{visibleRange.end} of{" "}
@@ -1331,41 +1394,10 @@ export default function DataExtractionDashboard({
                     </Button>
                   </div>
                 </div>
-              </Card>
+              </section>
             </>
           ) : null}
-        </div>
       </div>
-
-      {selectedPaperIds.length > 0 && !isProcessCompleted ? (
-        <div className="fixed bottom-6 left-0 right-0 z-50 flex justify-center pointer-events-none">
-          <div className="w-full max-w-7xl px-6 pointer-events-auto">
-            <div className="flex items-center justify-between mb-2">
-              <div className="text-xs text-text-secondary">
-                Note: papers that already have assigned reviewers are excluded
-                from bulk assignment.
-              </div>
-              <div className="text-xs text-text-secondary">
-                Only unassigned papers can be selected
-              </div>
-            </div>
-            <BulkAssignmentPanelDataExtraction
-              selectedPaperIds={selectedPaperIds}
-              ws={ws}
-              onAssignmentComplete={() => {
-                // clear selection and refresh dashboard queries
-                setSelectedPaperIds([]);
-                queryClient.invalidateQueries({
-                  queryKey: ["data-extraction-conducting", "dashboard"],
-                });
-                queryClient.invalidateQueries({
-                  queryKey: ["data-extraction-conducting", "workload-summary"],
-                });
-              }}
-            />
-          </div>
-        </div>
-      ) : null}
 
       <PaperViewerModal
         paper={selectedPaper}
@@ -1578,37 +1610,24 @@ export default function DataExtractionDashboard({
 interface MetricCardProps {
   title: string;
   value: number;
-  subtitle: string;
-  icon: React.ReactNode;
-  iconClassName: string;
+  status?: "warning" | "success";
   className?: string;
 }
 
-function MetricCard({
-  title,
-  value,
-  subtitle,
-  icon,
-  iconClassName,
-  className,
-}: MetricCardProps) {
-  return (
-    <Card
-      className={`rounded-[4px] border border-white/70 bg-surface-white/90 shadow-none shadow-slate-200/50 ${className ?? ""}`}
-    >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-text-secondary">{title}</p>
-          <p className="mt-3 text-3xl font-bold text-text-primary">{value}</p>
-          <p className="mt-2 text-sm text-text-secondary">{subtitle}</p>
-        </div>
+function MetricCard({ title, value, status, className }: MetricCardProps) {
+  const statusColor =
+    status === "warning" && value > 0
+      ? "text-amber-700"
+      : status === "success"
+        ? "text-green-700"
+        : "text-text-primary";
 
-        <div
-          className={`flex h-11 w-11 items-center justify-center rounded-[4px] ${iconClassName}`}
-        >
-          {icon}
-        </div>
-      </div>
-    </Card>
+  return (
+    <div className={`py-2 ${className ?? ""}`}>
+      <p className="text-xs font-medium text-text-secondary">{title}</p>
+      <p className={`mt-1 text-[28px] font-semibold leading-none tracking-tight ${statusColor}`}>
+        {value}
+      </p>
+    </div>
   );
 }

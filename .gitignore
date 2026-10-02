@@ -57,3 +57,5 @@ bun.lockb
 .hs.json
 .mcp.json
 AGENTS.md
+.github/skills/
+.fk-skills/

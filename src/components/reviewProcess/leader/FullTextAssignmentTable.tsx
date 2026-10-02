@@ -55,21 +55,17 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
   const papers = useMemo(
     () =>
       rawPapers.map((p) => {
-        const members = p.assignedReviewers || (p as any).assignedMembers || [];
+        const members = p.assignedReviewers ?? [];
+        const now = new Date().toISOString();
         return {
           ...p,
           authors: p.author,
           publicationYear: p.year,
-          createdAt: (p as any).createdAt || new Date().toISOString(),
-          modifiedAt: (p as any).modifiedAt || new Date().toISOString(),
-          assignedReviewers: members.map((r: any) => ({
-            id: r.reviewerId || r.id || r.userId || "",
-            name:
-              r.reviewerName ||
-              r.name ||
-              r.fullName ||
-              r.reviewerFullName ||
-              "Unknown",
+          createdAt: now,
+          modifiedAt: now,
+          assignedReviewers: members.map((reviewer) => ({
+            id: reviewer.reviewerId,
+            name: reviewer.reviewerName || "Unknown",
           })),
         };
       }) as PaperResponse[],

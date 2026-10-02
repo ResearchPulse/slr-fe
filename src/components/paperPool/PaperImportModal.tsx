@@ -89,7 +89,7 @@ export default function PaperImportModal({
       });
       setSelectedFile(null);
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled by hook toast
     }
   };
@@ -105,7 +105,7 @@ export default function PaperImportModal({
       });
       setBibFile(null);
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled by hook toast
     }
   };
@@ -121,7 +121,7 @@ export default function PaperImportModal({
       });
       setDoi("");
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled by hook toast
     }
   };
@@ -147,7 +147,7 @@ export default function PaperImportModal({
         rows: 20,
       });
       onClose();
-    } catch (error) {
+    } catch {
       // Error handled by hook toast
     }
   };

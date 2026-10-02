@@ -87,7 +87,7 @@ const SLRProjectManagement: React.FC = () => {
     try {
       await exportProjects(undefined);
       toast.success("Export successful! Your file is downloading.");
-    } catch (err) {
+    } catch {
       toast.error("Export failed. Please try again.");
     }
   };
@@ -121,7 +121,7 @@ const SLRProjectManagement: React.FC = () => {
     try {
       await deleteProject(id);
       toast.success("Project deleted successfully");
-    } catch (err) {
+    } catch {
       // Error toast handled in hook
     }
   };

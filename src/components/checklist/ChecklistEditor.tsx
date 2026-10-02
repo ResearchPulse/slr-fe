@@ -24,6 +24,7 @@ import SectionSidebar from "./SectionSidebar";
 import ChecklistItem from "./ChecklistItem";
 import SampleAnswerModal from "./SampleAnswerModal";
 import ChecklistPdfPanel from "./ChecklistPdfPanel";
+import ChecklistPreviewModal from "./ChecklistPreviewModal";
 import {
   useChecklistData,
   useChecklistEditorState,
@@ -90,6 +91,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [sampleAnswerData, setSampleAnswerData] =
     useState<SampleAnswerData | null>(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [savingItemId, setSavingItemId] = useState<string | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -416,7 +418,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   );
 
   const handleNavigateToPdf = useCallback((coordinateString: string) => {
-    var coors = coordinateString
+    const coors = coordinateString
       .split(";")
       .map((entry) => entry.trim())
       .filter((entry) => entry.length > 0)
@@ -622,8 +624,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           <Button
             variant="secondary"
             size="sm"
-            onClick={() => handleGenerateReport("pdf")}
-            disabled={isSaving}
+            onClick={() => setIsPreviewModalOpen(true)}
             className="inline-flex items-center gap-2"
           >
             <FiEye className="w-4 h-4" />
@@ -684,10 +685,9 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           <Button
             variant="secondary"
             onClick={() => {
-              handleGenerateReport("pdf");
+              setIsPreviewModalOpen(true);
               setIsMobileMenuOpen(false);
             }}
-            disabled={isSaving}
             className="w-full justify-center"
           >
             <FiEye className="w-4 h-4 mr-2" />
@@ -998,6 +998,15 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         isOpen={showSampleModal}
         onClose={closeSample}
         data={sampleAnswerData}
+      />
+
+      {/* Report Preview Modal */}
+      <ChecklistPreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={() => setIsPreviewModalOpen(false)}
+        checklist={checklist}
+        onDownloadWord={() => handleGenerateReport("word")}
+        isDownloading={isSaving}
       />
     </div>
   );

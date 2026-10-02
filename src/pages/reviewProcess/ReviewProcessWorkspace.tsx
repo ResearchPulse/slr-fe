@@ -44,6 +44,7 @@ export default function ReviewProcessWorkspace() {
     setIsQualityCriteriaModalOpen,
     isSynthesisStrategyModalOpen,
     setIsSynthesisStrategyModalOpen,
+    completedPhases,
   } = useReviewProcessWorkspace({ projectId, processId });
 
   const [isAddPapersModalOpen, setIsAddPapersModalOpen] = useState(false);
@@ -88,6 +89,8 @@ export default function ReviewProcessWorkspace() {
         onCompleteProcess={handleCompleteProcess}
         startLoading={startLoading}
         completeLoading={completeLoading}
+        canManageActions={canManagePhaseActions}
+        isReadyToComplete={completedPhases.length === workflowPhases.length && workflowPhases.length > 0}
       />
 
       {/* Main Content */}

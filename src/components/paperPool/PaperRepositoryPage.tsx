@@ -6,6 +6,7 @@ import {
   FiPlus,
   FiLayers,
   FiArrowDown,
+  FiInfo,
 } from "react-icons/fi";
 import Button from "../ui/Button";
 import PaperTable from "./PaperTable";
@@ -28,6 +29,19 @@ import type {
   SelectionInsertResult,
   PaperPoolFilterMetadata,
 } from "./types";
+import type { UploadPdfOptions } from "../../pages/reviewProcess/studySelection/uploadTypes";
+import type { PaperWithDecisionsResponse } from "../../types/studySelection";
+
+type UploadPdfHandler = (
+  paperId: string,
+  file: File,
+  options?: UploadPdfOptions,
+) => Promise<PaperWithDecisionsResponse>;
+type ApplyMetadataSuggestionHandler = (
+  paperId: string,
+  sourceMetadataId: string,
+  fields: string[],
+) => Promise<void>;
 
 interface PaperRepositoryPageProps {
   projectId: string;
@@ -110,9 +124,9 @@ interface PaperRepositoryPageProps {
   pendingDuplicatesCount: number;
 
   // PDF Actions
-  onUploadPdf?: any;
+  onUploadPdf?: UploadPdfHandler;
   isUploadingPdf?: boolean;
-  onApplyMetadataSuggestion?: any;
+  onApplyMetadataSuggestion?: ApplyMetadataSuggestionHandler;
   isApplyingMetadataSuggestion?: boolean;
   onRemovePdf?: (paperId: string) => Promise<void>;
   isRemovingPdf?: boolean;
@@ -215,37 +229,34 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-[4px]">
+    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header Area */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-8 rounded-[4px] border border-border shadow-none">
-        <div className="flex items-center gap-5">
-          <div className="w-14 h-14 bg-surface-white border border-border text-accent rounded-[4px] flex items-center justify-center shadow-sm">
-            <FiLayers className="w-7 h-7" />
+      <div className="flex flex-col gap-5 rounded-2xl border border-border bg-white p-5 shadow-sm sm:p-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-center gap-4 sm:gap-5">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
+            <FiLayers className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
-          <div>
-            <h2 className="text-2xl font-serif text-text-primary uppercase tracking-tight">
-              Paper <span className="text-accent italic font-medium">Identification</span>{" "}
-              Repository
+          <div className="min-w-0">
+            <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+              Paper <span className="text-accent">Identification</span> Repository
             </h2>
-            <p className="text-xs font-bold text-text-secondary uppercase tracking-widest mt-1 max-w-md leading-relaxed">
+            <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
               Centralized repository of all imported papers. Select and assign
               papers to review processes below.
             </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="h-8 w-px bg-bg-secondary mx-1 hidden md:block" />
-
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center xl:justify-end">
           {/* Search Box */}
-          <div className="relative group">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
+          <div className="group relative min-w-0 flex-1 sm:min-w-[250px] sm:flex-none">
+            <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
             <input
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search title, DOI, authors..."
-              className="w-64 bg-surface-white border border-border focus:border-accent rounded-[4px] pl-11 pr-4 py-2.5 text-sm font-medium text-text-primary transition-all outline-none shadow-sm"
+              className="h-11 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10 sm:w-[260px]"
             />
           </div>
 
@@ -261,7 +272,7 @@ export default function PaperRepositoryPage({
           {isLeader && (
             <Button
               variant="outline"
-              className="rounded-[4px] border-border hover:border-accent hover:text-accent px-5"
+              className="w-full rounded-lg border-border px-4 hover:border-accent hover:text-accent sm:w-auto"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FiUpload className="w-4 h-4 mr-2" />
@@ -271,8 +282,25 @@ export default function PaperRepositoryPage({
         </div>
       </div>
 
+      {/* Read-Only Banner for Non-Leaders */}
+      {!isLeader && (
+        <div className="flex items-center gap-3 rounded-xl border border-blue-200/80 bg-blue-50/60 p-4 text-sm text-blue-900 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-accent">
+            <FiInfo className="h-5 w-5" />
+          </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+            <span className="font-semibold text-blue-950">
+              View-Only Repository:
+            </span>
+            <span className="text-blue-800/90">
+              Only Project Leaders can import sources and assign papers to review processes. You can search, inspect papers, or navigate to your review processes below.
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Main Content: Sidebar + Table */}
-      <div className="flex gap-6 items-start">
+      <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:gap-5">
         <FilterSidebar
           filters={filters}
           availableSources={metadata?.searchSources ?? []}
@@ -319,18 +347,18 @@ export default function PaperRepositoryPage({
       </div>
 
       {/* Flow Indicator */}
-      <div className="flex items-center gap-6 my-4 px-4">
-        <div className="flex-1 h-px bg-gradient-to-r from-transparent to-gray-200" />
+      <div className="my-2 flex items-center gap-4 px-1 sm:gap-6 sm:px-4">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
         <div className="flex flex-col items-center gap-2">
-          <div className="bg-surface-white border border-border px-6 py-2.5 rounded-full shadow-sm flex items-center gap-3">
-            <FiPlus className="w-4 h-4 text-accent" />
-            <span className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em]">
+          <div className="flex items-center gap-2.5 rounded-full border border-border bg-white px-4 py-2 shadow-sm sm:px-5">
+            <FiPlus className="h-4 w-4 text-accent" />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Assign papers to review processes
             </span>
-            <FiArrowDown className="w-4 h-4 text-accent animate-bounce" />
+            <FiArrowDown className="h-4 w-4 text-accent" />
           </div>
         </div>
-        <div className="flex-1 h-px bg-gradient-to-l from-transparent to-gray-200" />
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
       </div>
 
       <div id="review-process-panel">

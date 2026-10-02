@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { FileText } from "lucide-react";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
 import { PDF_WORKER_URL } from "../../../../../config/pdfWorker";
 import {
@@ -167,9 +168,9 @@ export default function ReviewerPdfPanel({
   }, [canUseEvidenceSelection, highlightPluginInstance]);
 
   return (
-    <section className="w-[55%] p-4">
-      <div className="flex h-full flex-col overflow-hidden rounded-[4px] border border-border bg-surface-white">
-        <div className="flex items-center justify-between gap-3 border-b border-border bg-bg-secondary px-4 py-2">
+    <section className="h-full min-h-0 min-w-0">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+        <div className="flex min-h-11 items-center justify-between gap-3 border-b border-border bg-[#F2F6F9] px-4 py-2">
           <p className="text-xs font-medium text-text-secondary">
             {activeEvidenceTargetLabel
               ? `Evidence mode: ${activeEvidenceTargetLabel}. Select text then click Use as Evidence.`
@@ -182,7 +183,7 @@ export default function ReviewerPdfPanel({
             </span>
           ) : null}
         </div>
-        <div className="h-full min-h-0 flex-1 overflow-hidden relative">
+        <div className="relative min-h-0 flex-1 overflow-hidden bg-[#F8FAFC]">
           {effectiveDocumentUrl ? (
             <Worker workerUrl={PDF_WORKER_URL}>
               <Viewer
@@ -191,8 +192,18 @@ export default function ReviewerPdfPanel({
               />
             </Worker>
           ) : (
-            <div className="flex h-full items-center justify-center p-8 text-center text-sm text-text-secondary">
-              This study does not have a full-text PDF yet.
+            <div className="flex h-full items-center justify-center p-8 text-center">
+              <div className="max-w-sm">
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-primary">
+                  <FileText className="h-6 w-6" />
+                </span>
+                <h3 className="mt-4 text-sm font-semibold text-text-primary">
+                  Full-text PDF unavailable
+                </h3>
+                <p className="mt-1 text-xs leading-5 text-text-secondary">
+                  You can continue recording extraction values, but evidence linking is unavailable until a PDF is added.
+                </p>
+              </div>
             </div>
           )}
         </div>

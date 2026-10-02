@@ -31,6 +31,7 @@ import type {
   GetAssignmentPapersResponse,
   ScreeningPhaseQuery,
   AssignedPapersParams,
+  PaperPhase,
   GetAssignedPapersResponse,
   ConflictsByPhaseParams,
   GetConflictsByPhaseResponse,
@@ -296,9 +297,14 @@ export const studySelectionService = {
     return response.data;
   },
   // 18. Get Detailed Paper Info (with decisions/resolution)
-  async getPaperDetails(processId: string, paperId: string): Promise<GetPaperDetailsResponse> {
+  async getPaperDetails(
+    processId: string,
+    paperId: string,
+    phase?: PaperPhase,
+  ): Promise<GetPaperDetailsResponse> {
     const response = await api.get<GetPaperDetailsResponse>(
       `/study-selection/${processId}/papers/${paperId}`,
+      { params: phase === undefined ? undefined : { phase } },
     );
     return response.data;
   },
@@ -413,8 +419,8 @@ export const studySelectionService = {
   },
 
   // 29. Delete Exclusion Reason
-  async deleteExclusionReason(id: string): Promise<ApiResponse<any>> {
-    const response = await api.delete<ApiResponse<any>>(`/study-selection/exclusion-reasons/${id}`);
+  async deleteExclusionReason(id: string): Promise<ApiResponse<null>> {
+    const response = await api.delete<ApiResponse<null>>(`/study-selection/exclusion-reasons/${id}`);
     return response.data;
   },
 
@@ -503,8 +509,8 @@ export const studySelectionService = {
   },
 
   // 39. Live Review Import (Fetch criteria from protocol/live review)
-  async getLiveReviewImport(id: string): Promise<ApiResponse<any>> {
-    const response = await api.get<ApiResponse<any>>(`/study-selection/${id}/live-review-import`);
+  async getLiveReviewImport(id: string): Promise<ApiResponse<unknown>> {
+    const response = await api.get<ApiResponse<unknown>>(`/study-selection/${id}/live-review-import`);
     return response.data;
   },
   

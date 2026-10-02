@@ -27,27 +27,38 @@ interface ApiError {
   message: string;
 }
 
+type BackendRecord = Record<string, unknown>;
+
+const readString = (...values: unknown[]): string => {
+  const value = values.find((item) => typeof item === "string");
+  return typeof value === "string" ? value : "";
+};
+
+const readNumber = (value: unknown): number =>
+  typeof value === "number" ? value : Number(value) || 0;
+
 // ==================== PROPERTY MAPPING HELPERS — GOVERNANCE ====================
 
-function mapReviewNeedFromBackend(d: any): ReviewNeed {
-  const identifiedBy =
-    d.identifiedBy ??
-    d.identified_by ??
-    d.createdBy ??
-    d.created_by ??
-    "System";
+function mapReviewNeedFromBackend(d: BackendRecord): ReviewNeed {
+  const identifiedBy = readString(
+    d.identifiedBy,
+    d.identified_by,
+    d.createdBy,
+    d.created_by,
+    "System",
+  );
 
   return {
-    need_id: d.needId ?? d.need_id ?? d.id ?? "unknown",
-    project_id: d.projectId ?? d.project_id ?? "",
-    description: d.description ?? d.title ?? "",
-    justification: d.justification ?? "",
+    need_id: readString(d.needId, d.need_id, d.id) || "unknown",
+    project_id: readString(d.projectId, d.project_id),
+    description: readString(d.description, d.title),
+    justification: readString(d.justification),
     identified_by: identifiedBy,
-    created_at: d.createdAt ?? d.created_at ?? "",
+    created_at: readString(d.createdAt, d.created_at),
   };
 }
 
-function mapReviewNeedToBackend(data: CreateReviewNeedInput): any {
+function mapReviewNeedToBackend(data: CreateReviewNeedInput): BackendRecord {
   return {
     projectId: data.project_id,
     description: data.description,
@@ -56,19 +67,19 @@ function mapReviewNeedToBackend(data: CreateReviewNeedInput): any {
   };
 }
 
-function mapCommissioningDocumentFromBackend(d: any): CommissioningDocument {
+function mapCommissioningDocumentFromBackend(d: BackendRecord): CommissioningDocument {
   return {
-    document_id: d.documentId,
-    project_id: d.projectId,
-    sponsor: d.sponsor,
-    scope: d.scope,
-    budget: d.budget,
-    document_url: d.documentUrl,
-    created_at: d.createdAt,
+    document_id: readString(d.documentId),
+    project_id: readString(d.projectId),
+    sponsor: readString(d.sponsor),
+    scope: readString(d.scope),
+    budget: readNumber(d.budget),
+    document_url: readString(d.documentUrl),
+    created_at: readString(d.createdAt),
   };
 }
 
-function mapCommissioningDocumentToBackend(data: CreateCommissioningDocumentInput): any {
+function mapCommissioningDocumentToBackend(data: CreateCommissioningDocumentInput): BackendRecord {
   return {
     projectId: data.project_id,
     sponsor: data.sponsor,
@@ -78,43 +89,47 @@ function mapCommissioningDocumentToBackend(data: CreateCommissioningDocumentInpu
   };
 }
 
-function mapReviewObjectiveFromBackend(d: any): ReviewObjective {
+function mapReviewObjectiveFromBackend(d: BackendRecord): ReviewObjective {
   return {
-    objective_id: d.objectiveId,
-    project_id: d.projectId,
-    objective_statement: d.objectiveStatement,
-    created_at: d.createdAt,
+    objective_id: readString(d.objectiveId),
+    project_id: readString(d.projectId),
+    objective_statement: readString(d.objectiveStatement),
+    created_at: readString(d.createdAt),
   };
 }
 
-function mapReviewObjectiveToBackend(data: CreateReviewObjectiveInput): any {
+function mapReviewObjectiveToBackend(data: CreateReviewObjectiveInput): BackendRecord {
   return {
     projectId: data.project_id,
     objectiveStatement: data.objective_statement,
   };
 }
 
-function mapQuestionTypeFromBackend(d: any): QuestionType {
+function mapQuestionTypeFromBackend(d: BackendRecord): QuestionType {
   return {
-    question_type_id: d.questionTypeId,
-    name: d.name,
-    description: d.description,
+    question_type_id: readString(d.questionTypeId),
+    name: readString(d.name),
+    description: readString(d.description),
   };
 }
 
-function mapResearchQuestionFromBackend(d: any): ResearchQuestion {
+function mapResearchQuestionFromBackend(d: BackendRecord): ResearchQuestion {
+  const questionType = d.questionType;
   return {
-    researchQuestionId: d.researchQuestionId,
-    projectId: d.projectId,
-    questionType: d.questionType,
-    questionText: d.questionText,
-    rationale: d.rationale,
-    createdAt: d.createdAt,
-    question_type: d.questionType ? mapQuestionTypeFromBackend(d.questionType) : undefined,
+    researchQuestionId: readString(d.researchQuestionId),
+    projectId: readString(d.projectId),
+    questionType: typeof questionType === "string" ? questionType : null,
+    questionText: readString(d.questionText),
+    rationale: typeof d.rationale === "string" ? d.rationale : null,
+    createdAt: readString(d.createdAt),
+    question_type:
+      questionType && typeof questionType === "object"
+        ? mapQuestionTypeFromBackend(questionType as BackendRecord)
+        : undefined,
   };
 }
 
-function mapResearchQuestionToBackend(data: CreateResearchQuestionInput): any {
+function mapResearchQuestionToBackend(data: CreateResearchQuestionInput): BackendRecord {
   return {
     projectId: data.projectId,
     questionType: data.questionType,
@@ -123,16 +138,16 @@ function mapResearchQuestionToBackend(data: CreateResearchQuestionInput): any {
   };
 }
 
-function mapPicocElementFromBackend(d: any): PICOCElement {
+function mapPicocElementFromBackend(d: BackendRecord): PICOCElement {
   return {
-    picoc_id: d.picocId,
-    research_question_id: d.researchQuestionId,
-    element_type: d.elementType,
-    description: d.description,
+    picoc_id: readString(d.picocId),
+    research_question_id: readString(d.researchQuestionId),
+    element_type: readString(d.elementType) as PICOCElement["element_type"],
+    description: readString(d.description),
   };
 }
 
-function mapPicocElementToBackend(data: CreatePICOCElementInput): any {
+function mapPicocElementToBackend(data: CreatePICOCElementInput): BackendRecord {
   return {
     researchQuestionId: data.research_question_id,
     elementType: data.element_type,
@@ -148,14 +163,14 @@ export const coreAndGovernanceService = {
   // ── Review Needs ────────────────────────────────────────────────────────
 
   async getReviewNeeds(projectId: string): Promise<ApiResponse<ReviewNeed[]>> {
-    const response = await api.get<ApiResponse<any[]>>(
+    const response = await api.get<ApiResponse<BackendRecord[]>>(
       `${GOVERN_BASE}/review-needs/project/${projectId}`,
     );
     return { ...response.data, data: response.data.data.map(mapReviewNeedFromBackend) };
   },
 
   async createReviewNeed(data: CreateReviewNeedInput): Promise<ApiResponse<ReviewNeed>> {
-    const response = await api.post<ApiResponse<any>>(
+    const response = await api.post<ApiResponse<BackendRecord>>(
       `${GOVERN_BASE}/review-needs`,
       mapReviewNeedToBackend(data),
     );
@@ -170,7 +185,7 @@ export const coreAndGovernanceService = {
   // ── Commissioning Documents ─────────────────────────────────────────────
 
   async getDocuments(projectId: string): Promise<ApiResponse<CommissioningDocument[]>> {
-    const response = await api.get<ApiResponse<any[]>>(
+    const response = await api.get<ApiResponse<BackendRecord[]>>(
       `${GOVERN_BASE}/commissioning-documents/project/${projectId}`,
     );
 
@@ -180,7 +195,7 @@ export const coreAndGovernanceService = {
   async createDocument(
     data: CreateCommissioningDocumentInput,
   ): Promise<ApiResponse<CommissioningDocument>> {
-    const response = await api.post<ApiResponse<any>>(
+    const response = await api.post<ApiResponse<BackendRecord>>(
       `${GOVERN_BASE}/commissioning-documents`,
       mapCommissioningDocumentToBackend(data),
     );
@@ -197,14 +212,14 @@ export const coreAndGovernanceService = {
   // ── Review Objectives ───────────────────────────────────────────────────
 
   async getObjectives(projectId: string): Promise<ApiResponse<ReviewObjective[]>> {
-    const response = await api.get<ApiResponse<any[]>>(
+    const response = await api.get<ApiResponse<BackendRecord[]>>(
       `${GOVERN_BASE}/review-objectives/project/${projectId}`,
     );
     return { ...response.data, data: response.data.data.map(mapReviewObjectiveFromBackend) };
   },
 
   async createObjective(data: CreateReviewObjectiveInput): Promise<ApiResponse<ReviewObjective>> {
-    const response = await api.post<ApiResponse<any>>(
+    const response = await api.post<ApiResponse<BackendRecord>>(
       `${GOVERN_BASE}/review-objectives`,
       mapReviewObjectiveToBackend(data),
     );
@@ -221,14 +236,14 @@ export const coreAndGovernanceService = {
   // ── Research Questions ──────────────────────────────────────────────────
 
   async getResearchQuestions(projectId: string): Promise<ApiResponse<ResearchQuestion[]>> {
-    const response = await api.get<ApiResponse<any[]>>(`/research-questions/project/${projectId}`);
+    const response = await api.get<ApiResponse<BackendRecord[]>>(`/research-questions/project/${projectId}`);
     return { ...response.data, data: response.data.data.map(mapResearchQuestionFromBackend) };
   },
 
   async createResearchQuestion(
     data: CreateResearchQuestionInput,
   ): Promise<ApiResponse<ResearchQuestion>> {
-    const response = await api.post<ApiResponse<any>>(
+    const response = await api.post<ApiResponse<BackendRecord>>(
       `${GOVERN_BASE}/research-questions`,
       mapResearchQuestionToBackend(data),
     );
@@ -245,7 +260,7 @@ export const coreAndGovernanceService = {
   // ── Question Types ──────────────────────────────────────────────────────
 
   async getQuestionTypes(): Promise<ApiResponse<QuestionType[]>> {
-    const response = await api.get<ApiResponse<any[]>>(`${GOVERN_BASE}/question-types`);
+    const response = await api.get<ApiResponse<BackendRecord[]>>(`${GOVERN_BASE}/question-types`);
     return { ...response.data, data: response.data.data.map(mapQuestionTypeFromBackend) };
   },
 
@@ -253,21 +268,21 @@ export const coreAndGovernanceService = {
     id: string,
     data: Partial<Pick<QuestionType, "name" | "description">>,
   ): Promise<ApiResponse<QuestionType>> {
-    const response = await api.put<ApiResponse<any>>(`${GOVERN_BASE}/question-types/${id}`, data);
+    const response = await api.put<ApiResponse<BackendRecord>>(`${GOVERN_BASE}/question-types/${id}`, data);
     return { ...response.data, data: mapQuestionTypeFromBackend(response.data.data) };
   },
 
   // ── PICOC Elements ──────────────────────────────────────────────────────
 
   async getPicocElements(questionId: string): Promise<ApiResponse<PICOCElement[]>> {
-    const response = await api.get<ApiResponse<any[]>>(
+    const response = await api.get<ApiResponse<BackendRecord[]>>(
       `${GOVERN_BASE}/picoc-elements/research-question/${questionId}`,
     );
     return { ...response.data, data: response.data.data.map(mapPicocElementFromBackend) };
   },
 
   async createPicocElement(data: CreatePICOCElementInput): Promise<ApiResponse<PICOCElement>> {
-    const response = await api.post<ApiResponse<any>>(
+    const response = await api.post<ApiResponse<BackendRecord>>(
       `${GOVERN_BASE}/picoc-elements`,
       mapPicocElementToBackend(data),
     );

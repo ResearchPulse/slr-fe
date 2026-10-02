@@ -38,7 +38,7 @@ const PaperKeywords = memo(({ keywords }: { keywords?: string | null }) => {
 
   return (
     <section className="mb-6">
-      <h3 className="text-sm font-semibold text-text-secondary uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-text-secondary">
         <FiTag className="w-3.5 h-3.5" />
         Keywords
       </h3>
@@ -46,7 +46,7 @@ const PaperKeywords = memo(({ keywords }: { keywords?: string | null }) => {
         {tags.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-bg-secondary text-indigo-700 border border-indigo-100"
+            className="inline-flex items-center rounded-full border border-primary/15 bg-primary-light px-2.5 py-1 text-xs font-medium text-primary"
           >
             {tag}
           </span>
@@ -72,24 +72,24 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
   }, [paper.doi]);
 
   return (
-    <header className="mb-6 pb-6 border-b border-border">
+    <header className="mb-6 border-b border-border pb-6">
       {/* Title */}
-      <h2 className="text-lg font-bold text-text-primary leading-snug mb-3 wrap-break-word">
+      <h2 className="mb-3 text-xl font-semibold leading-snug text-text-primary wrap-break-word sm:text-2xl">
         {paper.title}
       </h2>
 
       {/* Authors */}
       {paper.authors && (
-        <p className="text-sm text-text-secondary mb-4 flex items-start gap-2">
+        <p className="mb-4 flex items-start gap-2 text-sm leading-6 text-text-secondary">
           <FiUser className="w-4 h-4 text-text-secondary shrink-0 mt-0.5" />
           <span className="wrap-break-word">{paper.authors}</span>
         </p>
       )}
 
       {/* Badges Row */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
+      <div className="mb-5 flex flex-wrap items-center gap-2">
         {paper.publicationYear && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+          <span className="inline-flex items-center gap-1 rounded-full border border-primary/15 bg-primary-light px-2.5 py-1 text-xs font-semibold text-primary">
             <FiCalendar className="w-3 h-3" />
             {paper.publicationYear}
           </span>
@@ -100,7 +100,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
           </span>
         )}
         {paper.source && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-bg-secondary text-text-primary border border-border">
+          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-primary px-2.5 py-1 text-xs font-medium text-text-secondary">
             <FiDatabase className="w-3 h-3" />
             {paper.source}
           </span>
@@ -112,7 +112,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
         {paper.doi && (
           <button
             onClick={handleCopyDoi}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium bg-bg-secondary text-text-primary hover:bg-bg-secondary transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-primary"
             title={`Copy DOI: ${paper.doi}`}
           >
             <FiCopy className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
             href={`https://doi.org/${paper.doi}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open DOI
@@ -135,7 +135,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
             href={paper.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-[4px] text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open URL

@@ -34,7 +34,7 @@ export default function ManageStudySelectionPage() {
   const [isAssignmentMode, setIsAssignmentMode] = useState(false);
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [leftWidth, setLeftWidth] = useState(350); // px
+  const [leftWidth, setLeftWidth] = useState(320); // px
   const [rightWidth, setRightWidth] = useState(300); // px
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
@@ -212,7 +212,7 @@ export default function ManageStudySelectionPage() {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-bg-secondary overflow-hidden">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-[#f2f6f9]">
       <StuSePhaseHeaderController
         currentPhase={currentPhase}
         onPhaseChange={(phase) => {
@@ -224,10 +224,10 @@ export default function ManageStudySelectionPage() {
 
       <div
         ref={containerRef}
-        className="relative flex flex-1 overflow-hidden select-none"
+        className="relative flex min-h-0 flex-1 gap-2 overflow-hidden p-2 select-none"
       >
         {/* Main Content: Paper Viewer - Occupies full space */}
-        <div className="order-2 flex-1 min-w-0 bg-surface-white z-0 px-12 overflow-hidden">
+        <div className="order-2 z-0 min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm">
           <PaperViewer
             paper={
               selectedPaper
@@ -236,18 +236,12 @@ export default function ManageStudySelectionPage() {
             }
             isLeaderView={true}
             onInclude={
-              !isCompleted &&
-              selectedPaper &&
-              (!selectedPaper.resolution ||
-                selectedPaper.resolution.phase < currentPhaseNumeric)
+              !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
                 ? handleInclude
                 : undefined
             }
             onExclude={
-              !isCompleted &&
-              selectedPaper &&
-              (!selectedPaper.resolution ||
-                selectedPaper.resolution.phase < currentPhaseNumeric)
+              !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
                 ? handleExclude
                 : undefined
             }
@@ -261,9 +255,8 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isLeftCollapsed ? "48px" : `${leftWidth}px` }}
           className={cn(
-            "order-1 relative h-full shrink-0 flex flex-col border-r border-border shadow-2xl",
-            isAssignmentMode ? "bg-bg-secondary/30" : "bg-surface-white",
-            isLeftCollapsed ? "shadow-none" : "shadow-slate-300/50",
+            "order-1 relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm",
+            isAssignmentMode && "ring-1 ring-blue-200",
             !isResizing && "transition-all duration-300",
           )}
         >
@@ -279,8 +272,8 @@ export default function ManageStudySelectionPage() {
           {!isLeftCollapsed && (
             <div
               className={cn(
-                "p-4 border-b border-border transition-colors duration-300",
-                isAssignmentMode ? "bg-bg-secondary/50" : "bg-surface-white",
+                "border-b border-[#e4ebf0] p-4 transition-colors duration-300",
+                isAssignmentMode ? "bg-blue-50/50" : "bg-white",
               )}
             >
               <Button
@@ -291,10 +284,10 @@ export default function ManageStudySelectionPage() {
                 }}
                 disabled={isCompleted}
                 className={cn(
-                  "w-full gap-2 transition-all duration-300 shadow-none",
+                  "w-full gap-2 rounded-lg transition-all duration-200",
                   isAssignmentMode
-                    ? "bg-rose-500 hover:bg-rose-600 text-white border-none"
-                    : "bg-accent hover:bg-indigo-700 text-white",
+                    ? "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                    : "bg-blue-700 text-white hover:bg-blue-800",
                   isCompleted && "opacity-50 cursor-not-allowed",
                 )}
                 size="sm"
@@ -313,11 +306,11 @@ export default function ManageStudySelectionPage() {
               </Button>
               {isAssignmentMode && (
                 <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                  <div className="text-[10px] font-black text-accent uppercase tracking-widest flex items-center gap-2 animate-pulse">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-blue-700">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Assignment Mode Active
                   </div>
-                  <div className="p-2.5 bg-amber-50/50 border border-amber-100 rounded-[4px] flex gap-2">
+                  <div className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                     <p className="text-[10px] text-text-secondary leading-relaxed font-medium">
                       Select papers to assign reviewers.{" "}
@@ -331,7 +324,7 @@ export default function ManageStudySelectionPage() {
               )}
             </div>
           )}
-          <div className="flex-1 overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
             <PaperList
               studySelectionProcessId={screeningProcessId || ""}
               currentPhase={currentPhase}
@@ -350,8 +343,8 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isRightCollapsed ? "48px" : `${rightWidth}px` }}
           className={cn(
-            "order-3 relative h-full shrink-0 bg-surface-white border-l border-border shadow-2xl",
-            isRightCollapsed ? "shadow-none" : "shadow-slate-300/50",
+            "order-3 relative h-full min-h-0 shrink-0 overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm",
+            isRightCollapsed && "w-12",
             !isResizing && "transition-all duration-300",
           )}
         >

@@ -113,9 +113,7 @@ export function useStudySelection(
       hasConflict: filters.hasConflict || undefined,
       // Note: the backend AssignedPaperParams might not have these yet,
       // but we include them here for completeness since we're extending the UI.
-      // @ts-ignore
       hasReferences: filters.hasReferences || undefined,
-      // @ts-ignore
       hasCitations: filters.hasCitations || undefined,
     }),
     [
@@ -128,8 +126,7 @@ export function useStudySelection(
       filters.hasConflict,
       filters.hasReferences,
       filters.hasCitations,
-      filters.decidedByMe,
-      currentUser?.id,
+      phase,
     ],
   );
 
@@ -210,8 +207,9 @@ export function useStudySelection(
     queryKey: QUERY_KEYS.studySelection.paperDetails(
       screeningProcessId ?? "",
       resolvedSelectedId ?? "",
+      phase,
     ),
-    queryFn: () => studySelectionService.getPaperDetails(screeningProcessId!, resolvedSelectedId!),
+    queryFn: () => studySelectionService.getPaperDetails(screeningProcessId!, resolvedSelectedId!, phase),
     enabled: !!screeningProcessId && !!resolvedSelectedId && isLeader,
     staleTime: 30_000,
   });
@@ -279,7 +277,19 @@ export function useStudySelection(
         queryKey: QUERY_KEYS.studySelection.paperDetails(screeningProcessId!, variables.paperId),
       });
       queryClient.invalidateQueries({
+        queryKey: ["reviewer-decisions", screeningProcessId, variables.paperId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["infinite-title-abstract-assignment-papers", screeningProcessId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["infinite-full-text-assignment-papers", screeningProcessId],
+      });
+      queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "conflict-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
       });
     },
     onError: (error) => {
@@ -379,8 +389,8 @@ export function useStudySelection(
   // ---- Mutation: Upload Full-Text PDF ----
   const uploadPaperPdfMutation = useMutation({
     mutationFn: async (vars: { paperId: string; file: File; options?: UploadPdfOptions }) => {
-      if (!projectId || !screeningProcessId) {
-        throw new Error("Cannot upload PDF: missing project or screening process context.");
+      if (!projectId) {
+        throw new Error("Cannot upload PDF: missing project context.");
       }
 
       return studySelectionService.uploadPaperFullText({
@@ -391,15 +401,19 @@ export function useStudySelection(
       });
     },
     onSuccess: (response, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["study-selection", screeningProcessId!, "papers"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.studySelection.fullTextAssignmentPapers(screeningProcessId!),
-      });
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.studySelection.titleAbstractAssignmentPapers(screeningProcessId!),
-      });
+      if (screeningProcessId) {
+        queryClient.invalidateQueries({
+          queryKey: ["study-selection", screeningProcessId, "papers"],
+        });
+      }
+      if (screeningProcessId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.studySelection.fullTextAssignmentPapers(screeningProcessId),
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.studySelection.titleAbstractAssignmentPapers(screeningProcessId),
+        });
+      }
 
       if (variables.options?.extractWithGrobid) {
         if (response.data.extractionSuggestion) {
@@ -586,6 +600,9 @@ export function useStudySelection(
       });
       queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "conflict-status"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
       });
       toast.success("Conflict resolved");
     },

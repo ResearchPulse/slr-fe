@@ -29,7 +29,7 @@ export default function AcceptInvitationModal({
       toastSuccess("Successfully joined the project!");
       onSuccess?.();
       onClose();
-    } catch (error) {
+    } catch {
       toastError("Failed to join the project.");
     }
   };

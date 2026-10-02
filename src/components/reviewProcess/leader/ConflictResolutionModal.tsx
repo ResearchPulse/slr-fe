@@ -70,9 +70,6 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
   processId,
   phase,
 }) => {
-  const [_activeTab, setActiveTab] = useState<
-    "abstract" | "full-text" | "metadata"
-  >("abstract");
   const [resolution, setResolution] = useState<"Include" | "Exclude" | null>(
     null,
   );
@@ -147,7 +144,13 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
             resolverName: detailData.resolution.resolverName || "",
           }
         : undefined,
-      isFinishReview: detailData.isFinishReview && !hasPendingReviewer,
+      isFinishReview:
+        Boolean(
+          detailData.isFinishReview ||
+            detailData.status === 3 ||
+            detailData.hasConflict ||
+            (detailData.decisions && detailData.decisions.length >= 2),
+        ) && !hasPendingReviewer,
       assignedReviewerIds: Array.from(
         new Set([...assignedIds, ...decisionIds]),
       ),
@@ -157,7 +160,6 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
-      setActiveTab("abstract");
       setResolution(null);
       setExclusionReason("");
       setResolutionNotes("");

@@ -28,6 +28,7 @@ export interface StudySelectionStatistics {
   totalPapers: number;
   includedCount: number;
   excludedCount: number;
+  inScreeningCount: number;
   conflictCount: number;
   pendingCount: number;
   completionPercentage: number;

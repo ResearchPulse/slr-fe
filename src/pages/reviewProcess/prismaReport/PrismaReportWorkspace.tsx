@@ -3,7 +3,8 @@
 
 import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
-import { useRef, useCallback } from "react";
+import { useRef, useCallback, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 import type { RootState } from "../../../redux/store";
 import { usePrismaReport } from "../../../hooks/usePrismaReport";
 import { FiClipboard, FiAlertCircle, FiArrowLeft } from "react-icons/fi";
@@ -60,6 +61,16 @@ export default function PrismaReportWorkspace() {
 
   // React Query fetches on mount automatically — no useEffect needed
 
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const timer = setInterval(() => {
+      setCooldown((prev) => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldown]);
+
   const handleBack = () => {
     if (projectId && processId) {
       navigate(`/projects/${projectId}/processes/${processId}`);
@@ -69,17 +80,26 @@ export default function PrismaReportWorkspace() {
   };
 
   const handleGenerate = async () => {
+    if (cooldown > 0 || isGenerating) return;
+    setCooldown(5);
+
     const nextVersion = latestReport
-      ? (Number(latestReport.version) + 0.1).toFixed(1)
+      ? (Math.round((Number(latestReport.version) + 0.1) * 10) / 10).toFixed(1)
       : "1.0";
     const result = await generateReport({
       version: nextVersion,
       notes: "Generated from PRISMA Report workspace",
       generatedBy: user?.name ?? user?.email ?? undefined,
     });
-    // Mutation onSuccess already invalidates latest + history queries
-    if (!result) {
-      // generateReport returns null on failure — error handled by hook
+    
+    if (result) {
+      if (result.id === latestReport?.id) {
+        toast("PRISMA diagram is already up-to-date with current review data.", {
+          icon: "ℹ️",
+        });
+      } else {
+        toast.success(`Generated PRISMA Report v${result.version}`);
+      }
     }
   };
 
@@ -104,6 +124,7 @@ export default function PrismaReportWorkspace() {
           hasReport={hasReport}
           isGenerating={isGenerating}
           isDownloading={isDownloading}
+          cooldown={cooldown}
           onGenerate={handleGenerate}
           onDownloadDiagram={downloadPrismaDiagram}
           onExportPNG={handleExportPNG}
@@ -224,7 +245,7 @@ export default function PrismaReportWorkspace() {
             </section>
 
             {/* Bottom grid: Exclusion table + Report history */}
-            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
               <div className="lg:col-span-3">
                 <PrismaExclusionTable nodes={nodes} isLoading={isLoading} />
               </div>

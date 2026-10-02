@@ -8,7 +8,7 @@ export function toISODateTime(dateString: string | null | undefined): string | n
     // Input: "2024-03-15" -> Output: "2024-03-15T00:00:00.000Z"
     const date = new Date(dateString);
     return date.toISOString();
-  } catch (error) {
+  } catch {
     console.error('Invalid date format:', dateString);
     return null;
   }
@@ -23,7 +23,7 @@ export function toDateInputValue(isoString: string | null | undefined): string {
   try {
     // Input: "2024-03-15T00:00:00.000Z" -> Output: "2024-03-15"
     return new Date(isoString).toISOString().split('T')[0];
-  } catch (error) {
+  } catch {
     console.error('Invalid ISO date:', isoString);
     return "";
   }
@@ -41,7 +41,7 @@ export function formatDisplayDate(dateString: string | null | undefined): string
       month: 'long',
       day: 'numeric',
     });
-  } catch (error) {
+  } catch {
     return "Invalid date";
   }
 }

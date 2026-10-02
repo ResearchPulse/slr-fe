@@ -17,6 +17,7 @@ import { ProjectRole } from "../../../types/project";
 import type { ReviewerDecisionPayload } from "./components/ReviewerQAPanel";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
+import { CheckCircle2, CircleDashed, Clock3, Files } from "lucide-react";
 
 export type WorkspaceQAPaper = QAPaperResponse | LeaderQAPaperResponse;
 
@@ -369,14 +370,14 @@ export default function QualityAssessmentWorkspace() {
       <QAHeader
         onBack={viewMode === "edit" ? closeEditSpace : handleBack}
         stats={stats}
+        phaseStatus={phaseStatus ?? "NotStarted"}
         onExport={project?.isLeader ? exportExcel : undefined}
-        isLeader={project?.isLeader}
         rightControls={
           project?.isLeader &&
           canEdit && (
             <button
               onClick={() => setIsAutoResolveOpen(true)}
-              className="flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-indigo-700 bg-bg-secondary border border-indigo-200 rounded-[4px] hover:bg-indigo-100 transition-colors"
+              className="flex h-12 items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
             >
               Auto-Resolve
             </button>
@@ -385,28 +386,64 @@ export default function QualityAssessmentWorkspace() {
       />
 
       {viewMode === "list" ? (
-        <main className="flex-1 overflow-auto p-6 space-y-6 mx-auto w-full max-w-[1600px]">
-          <div>
-            <h1 className="text-2xl font-bold text-text-primary mb-1">
-              Quality Assessment Overview
-            </h1>
-            <p className="text-sm text-text-secondary">
-              Manage quality assessments, assign reviewers, and monitor team
-              progress.
-            </p>
+        <main className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-5 overflow-auto px-5 py-5 sm:px-6 lg:gap-6 lg:px-8">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold tracking-tight text-text-primary">
+                Assessment workspace
+              </h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                Assign studies, track reviewer progress, and resolve assessments.
+              </p>
+            </div>
           </div>
+
+          <section aria-label="Assessment progress" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-surface-white p-4 shadow-sm sm:p-5">
+              <div>
+                <p className="text-sm text-text-secondary">Total studies</p>
+                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.total}</p>
+                <p className="mt-2 text-xs text-text-secondary">Included for quality review</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-primary text-text-secondary"><Files size={19} /></div>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-surface-white p-4 shadow-sm sm:p-5">
+              <div>
+                <p className="text-sm text-text-secondary">Completed</p>
+                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.completed}</p>
+                <p className="mt-2 text-xs text-text-secondary">Assessment submitted</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><CheckCircle2 size={19} /></div>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-surface-white p-4 shadow-sm sm:p-5">
+              <div>
+                <p className="text-sm text-text-secondary">In progress</p>
+                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.inProgress}</p>
+                <p className="mt-2 text-xs text-text-secondary">Reviewer work underway</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><Clock3 size={19} /></div>
+            </div>
+            <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-surface-white p-4 shadow-sm sm:p-5">
+              <div>
+                <p className="text-sm text-text-secondary">{project?.isLeader ? "Not started" : "Pending"}</p>
+                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{project?.isLeader ? stats.notStarted : stats.pending}</p>
+                <p className="mt-2 text-xs text-text-secondary">Waiting for reviewer activity</p>
+              </div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600"><CircleDashed size={19} /></div>
+            </div>
+          </section>
 
           <div
             className={
               project?.isLeader && memberProgresses.length > 0
-                ? "grid grid-cols-1 lg:grid-cols-4 gap-6"
+                ? "grid grid-cols-1 items-start gap-5 xl:grid-cols-4 xl:gap-6"
                 : "block"
             }
           >
             <div
               className={
                 project?.isLeader && memberProgresses.length > 0
-                  ? "col-span-1 lg:col-span-3"
+                  ? "min-w-0 xl:col-span-3"
                   : "w-full"
               }
             >
@@ -428,7 +465,7 @@ export default function QualityAssessmentWorkspace() {
             </div>
 
             {project?.isLeader && memberProgresses.length > 0 && (
-              <div className="col-span-1">
+              <div className="min-w-0 xl:col-span-1">
                 <ReviewerProgressPanel reviewerProgresses={memberProgresses} />
               </div>
             )}

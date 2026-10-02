@@ -44,7 +44,7 @@ export const searchSourceService = {
     return response.data;
   },
 
-  updateStrategies: async (sourceId: string, strategies: any[]): Promise<ApiResponse<SearchSourceDto>> => {
+  updateStrategies: async (sourceId: string, strategies: SearchSourceDto["strategies"]): Promise<ApiResponse<SearchSourceDto>> => {
     const response = await api.put<ApiResponse<SearchSourceDto>>(
       `/search-sources/${sourceId}/strategies`,
       strategies

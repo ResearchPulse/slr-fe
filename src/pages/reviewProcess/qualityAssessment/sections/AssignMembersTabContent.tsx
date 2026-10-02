@@ -66,22 +66,22 @@ export function AssignMembersTabContent({
   const pageSize = 10;
 
   return (
-    <Card className="rounded-[4px] border border-border outline-none shadow-none overflow-hidden bg-surface-white">
-      <div className="p-6 border-b border-border bg-surface-white rounded-t-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
+      <div className="flex flex-col justify-between gap-4 border-b border-border bg-surface-white p-4 sm:flex-row sm:items-center sm:p-5">
         <div>
-          <h2 className="text-lg font-semibold text-text-primary">
+          <h2 className="text-base font-semibold text-text-primary sm:text-lg">
             {isLeader
               ? "Assign Papers to Team Members"
               : "My Assessment Papers"}
           </h2>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="mt-1 text-sm text-text-secondary">
             {isLeader
               ? "Distribute quality assessment tasks among the review team."
               : "Review and evaluate your assigned papers."}
           </p>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex w-full gap-2 sm:w-auto sm:gap-3">
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
             <input
@@ -91,10 +91,10 @@ export function AssignMembersTabContent({
                 if (onSearchChange) onSearchChange(e.target.value);
               }}
               placeholder="Search papers by title..."
-              className="pl-10 pr-4 py-2.5 border border-slate-300 rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 w-full sm:w-72 transition-all bg-bg-secondary focus:bg-surface-white"
+              className="w-full rounded-lg border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-text-secondary/80 focus:border-blue-500 focus:bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/15 sm:w-72"
             />
           </div>
-          <Button variant="outline" className="rounded-[4px] flex gap-2">
+          <Button variant="outline" className="flex shrink-0 gap-2 rounded-lg border-border">
             <Filter size={16} />
             Filter
           </Button>
@@ -103,7 +103,7 @@ export function AssignMembersTabContent({
 
       <div className="overflow-x-auto">
         <Table>
-          <TableHeader className="bg-bg-secondary/50">
+          <TableHeader className="bg-bg-primary">
             <TableRow className="hover:bg-transparent">
               <TableHead className="w-12 text-center">
                 <input
@@ -111,15 +111,15 @@ export function AssignMembersTabContent({
                   className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-600 transition-colors"
                 />
               </TableHead>
-              <TableHead className="font-semibold text-text-secondary">
+              <TableHead className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Paper Details
               </TableHead>
               {isLeader && (
-                <TableHead className="font-semibold text-text-secondary w-48">
+                <TableHead className="w-48 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Assigned Reviewers
                 </TableHead>
               )}
-              <TableHead className="font-semibold text-text-secondary w-40">
+              <TableHead className="w-40 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Status
               </TableHead>
               <TableHead className="w-16">
@@ -131,7 +131,7 @@ export function AssignMembersTabContent({
             {papers.map((paper) => (
               <TableRow
                 key={paper.paperId}
-                className="group cursor-pointer hover:bg-blue-50/30 transition-colors"
+                className="group cursor-pointer transition-colors hover:bg-blue-50/40"
                 onClick={() => onPaperClick(paper.paperId)}
               >
                 <TableCell
@@ -145,7 +145,7 @@ export function AssignMembersTabContent({
                 </TableCell>
                 <TableCell>
                   <div className="flex items-start gap-3">
-                    <div className="mt-1 p-2 bg-blue-50 rounded-[4px] text-blue-600 shrink-0">
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
                       <FileText size={16} />
                     </div>
                     <div className="flex flex-col">
@@ -286,17 +286,19 @@ export function AssignMembersTabContent({
           </TableBody>
         </Table>
         {papers.length === 0 && (
-          <div className="py-12 text-center text-text-secondary flex flex-col items-center">
-            <FileText size={48} className="text-slate-300 mb-4" />
-            <p className="text-sm font-medium text-text-primary">
+          <div className="flex flex-col items-center px-4 py-9 text-center text-text-secondary sm:py-10">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-bg-primary text-slate-400">
+              <FileText size={22} />
+            </div>
+            <p className="text-sm font-semibold text-text-primary">
               No papers found
             </p>
-            <p className="text-xs mt-1">Try adjusting your search filters</p>
+            <p className="mt-1 text-sm">Try adjusting your search filters</p>
           </div>
         )}
       </div>
 
-      <div className="px-6 py-4 border-t border-border bg-bg-secondary flex items-center justify-between">
+      <div className="flex flex-col items-start justify-between gap-3 border-t border-border bg-surface-white px-4 py-3 sm:flex-row sm:items-center sm:px-5">
         <div className="text-sm text-text-secondary">
           Showing {(currentPage - 1) * pageSize + 1} to{" "}
           {Math.min(currentPage * pageSize, totalItems)} of {totalItems} results
