@@ -22,6 +22,7 @@ import {
   Search,
   Zap,
   ArrowLeft,
+  UserPlus,
 } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Checkbox from "../../../../components/ui/Checkbox";
@@ -1008,9 +1009,7 @@ export default function DataExtractionDashboard({
                           </TableHead>
                         )}
                         <TableHead className="px-5 py-3.5">Study</TableHead>
-                        {ws.isCurrentUserLeader && (
-                          <TableHead className="px-5 py-3.5">Reviewers</TableHead>
-                        )}
+                        <TableHead className="px-5 py-3.5">Reviewers</TableHead>
                         <TableHead className="px-5 py-3.5">Status</TableHead>
                         <TableHead className="px-5 py-3.5 text-right">Action</TableHead>
                       </tr>
@@ -1089,9 +1088,16 @@ export default function DataExtractionDashboard({
 
                               <TableCell className="min-w-[320px] px-4 py-3">
                                 <div>
-                                  <p className="text-sm font-semibold leading-5 text-text-primary">
-                                    {task.title}
-                                  </p>
+                                  <div className="flex items-center gap-2 flex-wrap">
+                                    <p className="text-sm font-semibold leading-5 text-text-primary">
+                                      {task.title}
+                                    </p>
+                                    {canExtractTask && (
+                                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-inset ring-blue-700/20 shrink-0">
+                                        Assigned to you
+                                      </span>
+                                    )}
+                                  </div>
                                   <p className="mt-1 text-xs text-text-secondary">
                                     {task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
@@ -1099,67 +1105,88 @@ export default function DataExtractionDashboard({
                                 </div>
                               </TableCell>
 
-                              {ws.isCurrentUserLeader && (
-                                <TableCell className="min-w-[260px] px-4 py-3">
-                                  {assignedReviewerIds.length > 0 ? (
-                                    <div className="flex flex-wrap gap-2">
-                                      {[
-                                        {
-                                          id: task.reviewer1Id,
-                                          status: task.reviewer1Status,
-                                        },
-                                        {
-                                          id: task.reviewer2Id,
-                                          status: task.reviewer2Status,
-                                        },
-                                      ]
-                                        .filter((r) => r.id)
-                                        .map(({ id, status }) => {
-                                          const reviewerId = id as string;
-                                          const reviewerName =
-                                            reviewerLabelById[reviewerId] ??
-                                            "@unknown";
-                                          const isCompleted =
-                                            (status ?? "").toLowerCase() ===
-                                            "completed";
+                              <TableCell className="min-w-[260px] px-4 py-3">
+                                {assignedReviewerIds.length > 0 ? (
+                                  <div className="flex flex-wrap gap-2">
+                                    {[
+                                      {
+                                        id: task.reviewer1Id,
+                                        status: task.reviewer1Status,
+                                      },
+                                      {
+                                        id: task.reviewer2Id,
+                                        status: task.reviewer2Status,
+                                      },
+                                    ]
+                                      .filter((r) => r.id)
+                                      .map(({ id, status }) => {
+                                        const reviewerId = id as string;
+                                        const isCurrentUser =
+                                          Boolean(ws.currentUserId) &&
+                                          reviewerId === ws.currentUserId;
+                                        const rawName =
+                                          reviewerLabelById[reviewerId] ??
+                                          "@unknown";
+                                        const reviewerName = isCurrentUser
+                                          ? `${rawName} (You)`
+                                          : rawName;
+                                        const isCompleted =
+                                          (status ?? "").toLowerCase() ===
+                                          "completed";
 
-                                          return (
+                                        return (
+                                          <span
+                                            key={reviewerId}
+                                            title={
+                                              isCompleted
+                                                ? "Completed"
+                                                : "In Progress"
+                                            }
+                                            className={`inline-flex max-w-[220px] items-center gap-2 truncate rounded-full border px-2 py-1 text-xs font-medium ${
+                                              isCurrentUser
+                                                ? "bg-blue-50 text-blue-700 border-blue-200 font-semibold"
+                                                : isCompleted
+                                                ? "bg-surface-white text-green-700 border border-border"
+                                                : "bg-bg-secondary text-text-secondary border border-border opacity-60"
+                                            }`}
+                                          >
                                             <span
-                                              key={reviewerId}
-                                              title={
-                                                isCompleted
-                                                  ? "Completed"
-                                                  : "In Progress"
-                                              }
-                                              className={`inline-flex max-w-[220px] items-center gap-2 truncate rounded-full border px-2 py-1 text-xs font-medium ${
-                                                isCompleted
-                                                  ? "bg-surface-white text-green-700 border border-border"
-                                                  : "bg-bg-secondary text-text-secondary border border-border opacity-60"
+                                              className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
+                                                isCurrentUser
+                                                  ? "bg-blue-600 text-white"
+                                                  : isCompleted
+                                                  ? "bg-green-100 text-green-700"
+                                                  : "bg-indigo-100 text-indigo-700"
                                               }`}
                                             >
-                                              <span
-                                                className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
-                                                  isCompleted
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-indigo-100 text-indigo-700"
-                                                }`}
-                                              >
-                                                {getInitials(reviewerName)}
-                                              </span>
-                                              <span className="max-w-[140px] truncate">
-                                                {reviewerName}
-                                              </span>
+                                              {getInitials(rawName)}
                                             </span>
-                                          );
-                                        })}
-                                    </div>
+                                            <span className="max-w-[140px] truncate">
+                                              {reviewerName}
+                                            </span>
+                                          </span>
+                                        );
+                                      })}
+                                  </div>
+                                ) : (
+                                  ws.isCurrentUserLeader ? (
+                                    <button
+                                      type="button"
+                                      onClick={() => setAssignModalTask(task)}
+                                      disabled={isProcessCompleted}
+                                      className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent hover:text-accent transition-colors"
+                                      title="Click to assign reviewers"
+                                    >
+                                      <UserPlus className="h-3 w-3" />
+                                      Unassigned
+                                    </button>
                                   ) : (
                                     <span className="text-sm text-text-secondary">
                                       Unassigned
                                     </span>
-                                  )}
-                                </TableCell>
-                              )}
+                                  )
+                                )}
+                              </TableCell>
 
                               <TableCell className="px-4 py-3">
                                 <ExtractionStatusBadge status={task.status} />
@@ -1182,25 +1209,38 @@ export default function DataExtractionDashboard({
 
                                   {task.status === "todo" ? (
                                     ws.isCurrentUserLeader ? (
-                                      <>
-                                        <Button
-                                          size="sm"
-                                          variant="primary"
-                                          onClick={() =>
-                                            ws.handleOpenDirectWorkspace(
-                                              task.paperId,
-                                            )
-                                          }
-                                          disabled={isProcessCompleted}
-                                          title="Directly Extract Data (Bypass Reviewers)"
-                                        >
-                                          <Zap className="mr-1 h-4 w-4" />
-                                          Direct
-                                        </Button>
-                                      </>
+                                      <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() =>
+                                          ws.handleOpenDirectWorkspace(
+                                            task.paperId,
+                                          )
+                                        }
+                                        disabled={isProcessCompleted}
+                                        title="Directly Extract Data (Bypass Reviewers)"
+                                        className="!rounded-lg"
+                                      >
+                                        <Zap className="mr-1 h-4 w-4" />
+                                        Direct
+                                      </Button>
+                                    ) : canExtractTask ? (
+                                      <Button
+                                        size="sm"
+                                        variant="primary"
+                                        onClick={() =>
+                                          handleOpenWorkspace(task.paperId)
+                                        }
+                                        disabled={isProcessCompleted}
+                                        className="!rounded-lg"
+                                      >
+                                        Extract
+                                      </Button>
                                     ) : (
                                       <span className="text-sm font-medium text-text-secondary">
-                                        Leader assigns reviewers
+                                        {assignedReviewerIds.length > 0
+                                          ? "Assigned to others"
+                                          : "Leader assigns reviewers"}
                                       </span>
                                     )
                                   ) : task.status === "in-progress" ? (

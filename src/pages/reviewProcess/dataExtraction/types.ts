@@ -140,7 +140,7 @@ export interface UseDataExtractionWorkspaceReturn {
   getRecord: (paperId: string) => ExtractionPaperRecord;
   canCurrentUserExtractPaper: (paperId: string) => boolean;
 
-  assignPaper: (paperId: string, payload: AssignReviewersDto) => void;
+  assignPaper: (paperId: string, payload: AssignReviewersDto) => Promise<unknown>;
   isAssigningReviewers: boolean;
   completePhase: () => Promise<void>;
   isCompleting: boolean;
