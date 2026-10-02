@@ -237,9 +237,7 @@ export default function SynthesisPhaseWorkspace() {
                 >
                   {workspace.processStatus === "InProgress"
                     ? "In progress"
-                    : workspace.processStatus === "Completed"
-                      ? "Completed"
-                      : (workspace.processStatus ?? "")}
+                    : workspace.processStatus}
                 </span>
               </div>
             </div>
@@ -266,29 +264,27 @@ export default function SynthesisPhaseWorkspace() {
                 {formatDate(reviewProcess?.modifiedAt ?? workspace.workspace?.process.completedAt ?? workspace.workspace?.process.startedAt ?? "")}
               </div>
             </div>
-            {Boolean(workspace.processStatus) && (
-              <Button
-                variant={
-                  workspace.processStatus === "InProgress" &&
-                  workspace.allFindingsFinalized &&
-                  !isReadOnly
-                    ? "success"
-                    : "outline"
-                }
-                onClick={workspace.completeSynthesis}
-                disabled={
-                  workspace.processStatus !== "InProgress" ||
-                  !workspace.allFindingsFinalized ||
-                  isReadOnly ||
-                  workspace.isCompleting
-                }
-                isLoading={workspace.isCompleting}
-                size="sm"
-                className="normal-case tracking-normal"
-              >
-                Complete phase
-              </Button>
-            )}
+            <Button
+              variant={
+                workspace.processStatus === "InProgress" &&
+                workspace.allFindingsFinalized &&
+                !isReadOnly
+                  ? "success"
+                  : "outline"
+              }
+              onClick={workspace.completeSynthesis}
+              disabled={
+                workspace.processStatus !== "InProgress" ||
+                !workspace.allFindingsFinalized ||
+                isReadOnly ||
+                workspace.isCompleting
+              }
+              isLoading={workspace.isCompleting}
+              size="sm"
+              className="normal-case tracking-normal"
+            >
+              Complete phase
+            </Button>
           </div>
         </div>
       </header>
