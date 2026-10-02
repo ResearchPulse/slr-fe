@@ -74,7 +74,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
       {!isModal && (
         <div className="px-6 py-5 border-b border-border flex items-center justify-between bg-bg-secondary/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[4px] bg-blue-50 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
               <FileText className="w-4 h-4 text-blue-600" />
             </div>
             <h3 className="font-black text-text-primary uppercase tracking-widest text-[11px]">
@@ -83,7 +83,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 rounded-[4px] transition-all text-text-secondary hover:text-text-secondary"
+            className="p-2 hover:bg-slate-200 rounded-xl transition-all text-text-secondary hover:text-text-secondary"
           >
             <X className="w-5 h-5" />
           </button>
@@ -132,7 +132,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             {validationNote && (
               <div
                 className={cn(
-                  "mt-4 p-3 rounded-[4px] flex items-start gap-2 text-xs",
+                  "mt-4 p-3 rounded-xl flex items-start gap-2 text-xs",
                   isLowQuality
                     ? "bg-amber-50 text-amber-700 italic border border-amber-100"
                     : "bg-bg-secondary text-text-secondary border border-border",
@@ -148,7 +148,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
 
           {/* Authors & Year */}
           <section className="grid grid-cols-2 gap-4">
-            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border">
+            <div className="bg-bg-secondary p-4 rounded-xl border border-border">
               <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
                 Authors
               </label>
@@ -156,7 +156,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
                 {authors || "Unknown Authors"}
               </p>
             </div>
-            <div className="bg-bg-secondary p-4 rounded-[4px] border border-border">
+            <div className="bg-bg-secondary p-4 rounded-xl border border-border">
               <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
                 Year
               </label>
@@ -168,7 +168,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
 
           {/* Double Progress Bars */}
           <section className="space-y-6">
-            <div className="p-5 bg-surface-white border border-border rounded-[4px] shadow-none space-y-5">
+            <div className="p-5 bg-surface-white border border-border rounded-xl shadow-none space-y-5">
               {/* Extraction Quality */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
@@ -245,11 +245,11 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
               Extracted From (Origin)
             </label>
-            <div className="mt-4 p-5 bg-blue-50/50 border border-blue-100 rounded-[4px]">
+            <div className="mt-4 p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
               <h4 className="text-sm font-bold text-text-primary leading-tight">
                 {originPaperTitle}
               </h4>
-              <div className="mt-3 inline-flex items-center gap-2 px-2 py-1 rounded-[4px] bg-surface-white border border-blue-100 text-[10px] font-bold text-blue-600 uppercase">
+              <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-white border border-blue-100 text-[10px] font-bold text-blue-600 uppercase">
                 <FileText className="w-3 h-3" />
                 Origin Paper
               </div>
@@ -264,7 +264,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
               </label>
               <Quote className="w-4 h-4 text-slate-200" />
             </div>
-            <div className="mt-4 p-5 bg-amber-50/30 border border-amber-100 rounded-[4px] text-[13px] text-amber-900 italic leading-relaxed font-serif shadow-inner">
+            <div className="mt-4 p-5 bg-amber-50/30 border border-amber-100 rounded-xl text-[13px] text-amber-900 italic leading-relaxed font-serif shadow-inner">
               {rawReference || "No raw reference text available."}
             </div>
           </section>
@@ -276,7 +276,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
         {isSelectedInProjectRepository ? (
           <button
             disabled
-            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-[4px] border border-border flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-xl border border-border flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <BookmarkCheck className="w-4 h-4" />
             Already in repository
@@ -284,7 +284,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
         ) : statusText === "Rejected" ? (
           <button
             disabled
-            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-[4px] border border-border flex justify-center items-center gap-2 cursor-not-allowed"
+            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-xl border border-border flex justify-center items-center gap-2 cursor-not-allowed"
           >
             <XCircle className="w-4 h-4" />
             Rejected Candidate
@@ -294,7 +294,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <button
               onClick={() => onAction(candidateId, "select")}
               disabled={isProcessing}
-              className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-sm uppercase tracking-widest rounded-[4px] hover:bg-blue-700 transition shadow-none shadow-blue-200 flex justify-center items-center gap-2 disabled:opacity-70 disabled:shadow-none"
+              className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-blue-700 transition shadow-none shadow-blue-200 flex justify-center items-center gap-2 disabled:opacity-70 disabled:shadow-none"
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               {!isProcessing && <Plus className="w-4 h-4" />}
@@ -303,7 +303,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <button
               onClick={() => onAction(candidateId, "reject")}
               disabled={isProcessing}
-              className="w-full px-6 py-3.5 bg-surface-white border-2 border-border text-rose-600 font-bold text-sm uppercase tracking-widest rounded-[4px] hover:bg-rose-50 hover:border-rose-200 transition flex justify-center items-center gap-2 disabled:opacity-70"
+              className="w-full px-6 py-3.5 bg-surface-white border-2 border-border text-rose-600 font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-rose-50 hover:border-rose-200 transition flex justify-center items-center gap-2 disabled:opacity-70"
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               Reject Candidate

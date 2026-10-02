@@ -43,7 +43,7 @@ export default function ReviewProcessCard({
 }: ReviewProcessCardProps) {
   return (
     <div
-      className={`group relative rounded-[4px] border border-border p-4 transition-all duration-200 ${
+      className={`group relative rounded-2xl border border-border p-4 transition-all duration-200 ${
         isSelected
           ? "border-accent bg-bg-secondary shadow-sm"
           : "border-border bg-surface-white hover:border-accent hover:shadow-sm"
@@ -52,7 +52,7 @@ export default function ReviewProcessCard({
       <div className="flex items-center justify-between gap-3 mb-3">
         <div className="flex items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-[4px] flex items-center justify-center transition-colors shadow-sm ${
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${
               isSelected
                 ? "bg-accent text-surface-white"
                 : "bg-surface-white border border-border text-accent"
@@ -82,7 +82,7 @@ export default function ReviewProcessCard({
                 e.stopPropagation();
                 onNavigate(process.processId);
               }}
-              className="relative z-30 p-2 rounded-[4px] text-accent bg-surface-white hover:bg-bg-secondary hover:text-accent transition-all shadow-sm border border-border"
+              className="relative z-30 p-2 rounded-xl text-accent bg-surface-white hover:bg-bg-secondary hover:text-accent transition-all shadow-sm border border-border"
               title="Go to review process workspace"
             >
               <FiExternalLink className="h-3.5 w-3.5" />
@@ -110,7 +110,7 @@ export default function ReviewProcessCard({
       {actionLabel && isLeader && (
         <button
           onClick={() => onSelect(process.processId)}
-          className={`w-full mt-4 py-2.5 rounded-[4px] text-[10px] font-black uppercase tracking-widest transition-all ${
+          className={`w-full mt-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
             isSelected
               ? "bg-accent text-surface-white shadow-sm"
               : "bg-surface-white border border-border text-text-secondary hover:bg-bg-secondary"

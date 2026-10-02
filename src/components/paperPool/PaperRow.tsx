@@ -141,7 +141,7 @@ export default function PaperRow({
         <div className="flex items-center justify-end gap-2">
           <button
             onClick={() => onViewDetails(paper)}
-            className="inline-flex items-center gap-1.5 rounded-[4px] border border-border px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-text-primary hover:bg-surface-white hover:border-accent hover:text-accent hover:shadow-sm transition-all duration-200"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-text-primary hover:bg-surface-white hover:border-accent hover:text-accent hover:shadow-sm transition-all duration-200"
           >
             <FiEye className="h-3.5 w-3.5" />
           </button>
