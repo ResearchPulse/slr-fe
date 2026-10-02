@@ -47,7 +47,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
 
   // --- Custom Section State ---
   const [customReasons, setCustomReasons] = useState<CustomReason[]>([
-    { id: "initial-reason", code: "", name: "" },
+    { id: Math.random().toString(), code: "", name: "" },
   ]);
 
   const { items: libraryItems, isLoading: isLibraryLoading } =

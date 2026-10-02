@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import { toastSuccess, toastError } from "../../utils/toast";
 import { useParams } from "react-router-dom";
 import { PaperList } from "./components/PaperList";
@@ -104,31 +104,21 @@ export default function ManageStudySelectionPage() {
     isResizingLeft.current = false;
     isResizingRight.current = false;
     setIsResizing(false);
+    document.removeEventListener("mousemove", handleMouseMove);
+    document.removeEventListener("mouseup", stopResizing);
     document.body.style.cursor = "default";
-  }, []);
-
-  useEffect(() => {
-    if (!isResizing) return;
-
-    const onMouseUp = () => stopResizing();
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", onMouseUp);
-
-    return () => {
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-      document.body.style.cursor = "default";
-    };
-  }, [isResizing, handleMouseMove, stopResizing]);
+  }, [handleMouseMove]);
 
   const startResizingLeft = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       isResizingLeft.current = true;
       setIsResizing(true);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", stopResizing);
       document.body.style.cursor = "col-resize";
     },
-    [],
+    [handleMouseMove, stopResizing],
   );
 
   const startResizingRight = useCallback(
@@ -136,9 +126,11 @@ export default function ManageStudySelectionPage() {
       e.preventDefault();
       isResizingRight.current = true;
       setIsResizing(true);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", stopResizing);
       document.body.style.cursor = "col-resize";
     },
-    [],
+    [handleMouseMove, stopResizing],
   );
 
   // ---- Resolution Logic ----
@@ -177,7 +169,7 @@ export default function ManageStudySelectionPage() {
         },
       );
     },
-    [screeningProcessId, currentUser, currentPhaseNumeric, resolveConflict, queryClient],
+    [screeningProcessId, currentUser, currentPhaseNumeric, resolveConflict],
   );
 
   const handleExclude = useCallback(
@@ -216,7 +208,7 @@ export default function ManageStudySelectionPage() {
         },
       );
     },
-    [screeningProcessId, currentUser, currentPhaseNumeric, resolveConflict, queryClient],
+    [screeningProcessId, currentUser, currentPhaseNumeric, resolveConflict],
   );
 
   return (

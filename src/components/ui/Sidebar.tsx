@@ -22,13 +22,15 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onToggle, className }) => {
   const location = useLocation();
+  let previousGroup = "";
 
-  const renderItem = (item: SidebarItem, index: number, array: SidebarItem[]) => {
+  const renderItem = (item: SidebarItem) => {
     const isActive = !item.onClick && (
       location.pathname === item.path ||
       (item.path !== "/admin" && location.pathname.startsWith(`${item.path}/`))
     );
-    const showGroup = Boolean(item.group && (index === 0 || array[index - 1].group !== item.group));
+    const showGroup = Boolean(item.group && item.group !== previousGroup);
+    previousGroup = item.group || previousGroup;
 
     const commonClasses = cn(
       "group relative flex min-h-10 w-full items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 text-left transition-colors duration-150",
