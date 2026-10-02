@@ -1,7 +1,7 @@
 import React from "react";
 import { FiArrowRight, FiCheck, FiLock } from "react-icons/fi";
 
-export type StepStatus = "completed" | "current" | "locked";
+export type StepStatus = "completed" | "current" | "locked" | "upcoming";
 
 export interface WorkflowStep {
   key: string;
@@ -57,7 +57,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
           const isCompleted = step.status === "completed";
           const isCurrent = step.status === "current";
           const isLocked = step.status === "locked";
-          const isClickable = isCompleted || isCurrent;
+          const isClickable = !isLocked;
 
           return (
             <button

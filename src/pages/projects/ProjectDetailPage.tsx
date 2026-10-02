@@ -163,17 +163,20 @@ export default function ProjectDetailPage() {
       if (isProjectActive) return "completed";
 
       if (stepKey === "project-setup") {
-        return isProjectSetupReady ? "completed" : "current";
+        if (!isProjectSetupReady) return "current";
+        return selectedStep === "project-setup" ? "current" : "completed";
       }
 
       if (stepKey === "business-justification") {
         if (!isProjectSetupReady) return "locked";
-        const hasContent = reviewNeeds.length > 0 || documents.length > 0;
-        return hasContent ? "completed" : "current";
+        if (selectedStep === "business-justification") return "current";
+        if (selectedStep === "activate-project") return "completed";
+        return reviewNeeds.length > 0 || documents.length > 0 ? "completed" : "upcoming";
       }
 
       if (stepKey === "activate-project") {
-        return isProjectSetupReady ? "current" : "locked";
+        if (!isProjectSetupReady) return "locked";
+        return selectedStep === "activate-project" ? "current" : "upcoming";
       }
 
       return "locked";
@@ -199,6 +202,7 @@ export default function ProjectDetailPage() {
   }, [
     isProjectActive,
     isProjectSetupReady,
+    selectedStep,
     reviewNeeds.length,
     documents.length,
   ]);
@@ -533,8 +537,22 @@ export default function ProjectDetailPage() {
         <StepProgressNav
           steps={workflowSteps}
           onStepClick={handleStepClick}
-          actionLabel={isLeader && isProjectSetupReady ? "Continue to activation" : undefined}
-          onAction={() => setSelectedStep("activate-project")}
+          actionLabel={
+            isLeader && isProjectSetupReady
+              ? selectedStep === "project-setup"
+                ? "Continue to justification"
+                : selectedStep === "business-justification"
+                  ? "Continue to activation"
+                  : undefined
+              : undefined
+          }
+          onAction={() => {
+            if (selectedStep === "project-setup") {
+              setSelectedStep("business-justification");
+            } else if (selectedStep === "business-justification") {
+              setSelectedStep("activate-project");
+            }
+          }}
         />
       )}
 
