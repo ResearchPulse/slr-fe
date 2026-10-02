@@ -69,14 +69,14 @@ function FindingEditor({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
               RQ Reporting Workspace
             </p>
-            <h2 className="mt-2 text-2xl font-semibold text-text-primary">
+            <h2 className="mt-1.5 text-xl font-semibold text-text-primary sm:text-2xl">
               {finding.questionText}
             </h2>
           </div>
@@ -85,7 +85,7 @@ function FindingEditor({
               variant="ghost"
               size="sm"
               onClick={onViewStrategyGuidelines}
-              className="text-text-secondary hover:text-text-primary"
+              className="rounded-lg text-text-secondary hover:bg-bg-primary hover:text-text-primary"
             >
               <BookOpen className="mr-2 h-4 w-4" />
               View Strategy Guidelines
@@ -119,7 +119,7 @@ function FindingEditor({
         />
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-[4px] border border-border bg-bg-primary p-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border/70 bg-bg-primary/70 p-4">
         <div>
           <p className="text-sm font-semibold text-text-primary">Status</p>
           <p className="mt-1 text-sm text-text-secondary">
@@ -132,7 +132,7 @@ function FindingEditor({
             type="button"
             onClick={() => setDraftStatus("Draft")}
             disabled={isReadOnly}
-            className={`rounded-[4px] border px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
               draftStatus === "Draft"
                 ? "border-amber-300 bg-amber-100 text-amber-800"
                 : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"
@@ -144,7 +144,7 @@ function FindingEditor({
             type="button"
             onClick={() => setDraftStatus("Finalized")}
             disabled={isReadOnly}
-            className={`rounded-[4px] border px-4 py-2 text-sm font-semibold transition-colors ${
+            className={`rounded-lg border px-4 py-2 text-sm font-medium transition-colors ${
               draftStatus === "Finalized"
                 ? "border-emerald-300 bg-emerald-100 text-emerald-800"
                 : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"
@@ -155,7 +155,7 @@ function FindingEditor({
           <button
             type="button"
             onClick={onToggleFullscreen}
-            className="inline-flex items-center rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-semibold text-text-primary transition-colors hover:bg-bg-secondary"
+            className="inline-flex items-center rounded-lg border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary"
           >
             <Maximize className="mr-2 h-4 w-4" />
             {isFullscreen ? "Exit Fullscreen" : "Toggle Fullscreen"}
@@ -174,7 +174,7 @@ function FindingEditor({
         </Button>
       </div>
 
-      <div className="rounded-[4px] border border-border bg-bg-primary p-4">
+      <div className="rounded-xl border border-border/70 bg-bg-primary/70 p-4">
         <div className="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
           <span className="inline-flex items-center gap-2">
             <FileText className="h-4 w-4" />
@@ -212,11 +212,17 @@ export default function RqReportingWorkspace({
 
   if (workspace.findings.length === 0) {
     return (
-      <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
-        <div className="flex flex-col items-center justify-center gap-3 rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
-          <LayoutList className="h-8 w-8 text-text-secondary" />
-          <p className="text-sm font-medium text-text-secondary">
-            No research questions were returned for this synthesis process.
+      <div className="mx-auto max-w-5xl rounded-2xl border border-border/80 bg-surface-white p-4 shadow-sm shadow-slate-200/30 sm:p-6">
+        <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-bg-primary/60 px-6 py-10 text-center">
+          <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-white text-primary shadow-sm shadow-slate-200/50">
+            <LayoutList className="h-6 w-6" />
+          </span>
+          <p className="mt-5 text-base font-semibold text-text-primary">
+            No research questions yet
+          </p>
+          <p className="mt-2 max-w-lg text-sm leading-6 text-text-secondary">
+            No research questions were returned for this synthesis process. Add
+            research questions to the process to start drafting findings here.
           </p>
         </div>
       </div>
@@ -228,13 +234,13 @@ export default function RqReportingWorkspace({
       className={
         isFullscreen
           ? "fixed inset-0 z-50 overflow-y-auto bg-bg-secondary p-4 sm:p-6"
-          : "grid gap-6 2xl:grid-cols-[300px_1fr_320px] xl:grid-cols-[290px_1fr]"
+          : "grid min-w-0 items-start gap-5 2xl:grid-cols-[300px_minmax(0,1fr)_320px] xl:grid-cols-[290px_minmax(0,1fr)]"
       }
     >
       {!isFullscreen ? (
-        <aside className="rounded-[4px] border border-border bg-surface-white p-5 shadow-none">
+        <aside className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30">
           <div className="mb-4 flex items-center gap-2">
-            <LayoutList className="h-5 w-5 text-blue-600" />
+            <LayoutList className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-text-primary">
               Research Questions
             </h2>
@@ -246,10 +252,10 @@ export default function RqReportingWorkspace({
                 key={finding.id}
                 type="button"
                 onClick={() => setActiveFindingId(finding.id)}
-                className={`w-full rounded-[4px] border p-4 text-left transition-all ${
+                className={`w-full rounded-xl border p-4 text-left transition-all ${
                   activeFinding?.id === finding.id
-                    ? "border-blue-200 bg-blue-50/60 shadow-none"
-                    : "border-border bg-surface-white hover:border-border hover:bg-bg-primary"
+                    ? "border-primary/25 bg-blue-50/50 shadow-sm shadow-blue-100/60"
+                    : "border-border/80 bg-surface-white hover:bg-bg-primary/70"
                 }`}
               >
                 <div className="flex items-start justify-between gap-3">
@@ -276,8 +282,8 @@ export default function RqReportingWorkspace({
       <section
         className={
           isFullscreen
-            ? "rounded-[4px] border border-border bg-surface-white p-6 shadow-none min-h-[calc(100vh-2rem)]"
-            : "rounded-[4px] border border-border bg-surface-white p-6 shadow-none"
+            ? "min-w-0 min-h-[calc(100vh-2rem)] rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6"
+            : "min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6"
         }
       >
         {activeFinding ? (
@@ -292,7 +298,7 @@ export default function RqReportingWorkspace({
             onToggleFullscreen={() => setIsFullscreen((current) => !current)}
           />
         ) : (
-          <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+          <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
             <p className="text-sm font-medium text-text-secondary">
               Select a research question to begin drafting its finding.
             </p>
@@ -301,16 +307,16 @@ export default function RqReportingWorkspace({
       </section>
 
       {!isFullscreen ? (
-        <aside className="rounded-[4px] border border-border bg-surface-white p-5 shadow-none xl:col-span-2 2xl:col-span-1">
+        <aside className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 xl:col-span-2 2xl:col-span-1">
           <div className="mb-4 flex items-center gap-2">
-            <BookOpenText className="h-5 w-5 text-violet-600" />
+            <BookOpenText className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold text-text-primary">
               Theme Reference
             </h3>
           </div>
 
           {themes.length === 0 ? (
-            <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-4 py-6 text-center">
+            <div className="rounded-xl border border-dashed border-border bg-bg-primary/60 px-4 py-6 text-center">
               <p className="text-sm text-text-secondary">
                 No themes available yet. Create themes in Thematic Analysis.
               </p>
@@ -320,7 +326,7 @@ export default function RqReportingWorkspace({
               {themes.map((theme) => (
                 <div
                   key={theme.id}
-                  className="rounded-[4px] border border-border bg-bg-primary p-3"
+                  className="rounded-xl border border-border/70 bg-bg-primary/70 p-3"
                 >
                   <div className="flex items-center gap-2">
                     <span
