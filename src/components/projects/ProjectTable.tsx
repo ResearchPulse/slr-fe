@@ -58,7 +58,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     }
   };
 
-  const SortLabel: React.FC<{ label: string; field: SortField }> = ({ label, field }) => (
+  const renderSortLabel = (label: string, field: SortField) => (
     <button
       type="button"
       onClick={() => handleSort(field)}
@@ -84,7 +84,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
               <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Status</TableHead>
               <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
               <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
-              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">{renderSortLabel("Dates", "modifiedAt")}</TableHead>
               <TableHead className="w-[12%] px-4 py-3 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
             </TableRow>
           </TableHeader>

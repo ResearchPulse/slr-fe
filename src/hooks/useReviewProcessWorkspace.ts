@@ -839,8 +839,7 @@ export const useReviewProcessWorkspace = ({
       qualityStats,
       extractionDashboardQuery.data,
       synthesisWorkspaceQuery.data,
-      process?.totalIncludedPapers,
-      process?.synthesisProcess?.statusText,
+      process,
     ],
   );
 
