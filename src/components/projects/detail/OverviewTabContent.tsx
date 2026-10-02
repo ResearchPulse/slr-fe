@@ -75,6 +75,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
         <section aria-label="Review protocol">
           <ProjectSetupSection
             projectId={props.projectId}
+            projectTitle={props.project.title}
             projectDomain={props.project.domain}
             isProjectSetupReady={props.isProjectSetupReady}
             onSetupSaved={props.onSetupSaved}

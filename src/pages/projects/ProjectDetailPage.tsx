@@ -491,6 +491,8 @@ export default function ProjectDetailPage() {
         return (
           <ProjectSetupSection
             projectId={id || ""}
+            projectTitle={project?.title}
+            projectDomain={project?.domain}
             isProjectSetupReady={isProjectSetupReady}
             onSetupSaved={() => {
               setIsProjectSetupReady(true);

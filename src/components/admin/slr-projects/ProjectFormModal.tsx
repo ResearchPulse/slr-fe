@@ -4,10 +4,10 @@ import type { Project } from "../../../types/project";
 import FormField from "../../ui/FormField";
 import FormTextarea from "../../ui/FormTextarea";
 import LoadingSpinner from "../../ui/LoadingSpinner";
-import Modal from "../../ui/Modal";
+import Drawer from "../../ui/Drawer";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { cn } from "../../../utils/cn";
-import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle } from "react-icons/fi";
 
 interface ProjectFormModalProps {
   isOpen: boolean;
@@ -89,10 +89,17 @@ export default function ProjectFormModal({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title.trim())
+    if (!formData.title.trim()) {
       newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
-    if (!isEditMode && !formData.domain.trim())
+    } else if (formData.title.trim().length > 200) {
+      newErrors.title = `Tiêu đề nghiên cứu không được vượt quá 200 ký tự (hiện tại: ${formData.title.trim().length}/200).`;
+    }
+    if (!formData.domain.trim()) {
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
+    }
+    if (formData.description && formData.description.length > 2000) {
+      newErrors.description = `Tóm tắt dự án không được vượt quá 2000 ký tự (hiện tại: ${formData.description.length}/2000).`;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -179,21 +186,27 @@ export default function ProjectFormModal({
     } catch (err: unknown) {
       console.error("Project submission error:", err);
       const maybeErr = err as {
-        response?: { data?: { message?: string } };
+        response?: { data?: { message?: string; errors?: any } };
         message?: string;
       };
-      const errorMessage =
+      let errorMessage =
         maybeErr.response?.data?.message ||
         maybeErr.message ||
         "Đã xảy ra lỗi không xác định trong quá trình gửi biểu mẫu.";
-      toastError("Yêu cầu thất bại", errorMessage);
+
+      if (errorMessage.includes("Validation error") || errorMessage.includes("200")) {
+        if (errorMessage.includes("name") || errorMessage.includes("title")) {
+          errorMessage = "Tiêu đề nghiên cứu vượt quá độ dài tối đa 200 ký tự. Vui lòng rút gọn lại.";
+        }
+      }
+      toastError("Lưu thất bại", errorMessage);
     }
   };
 
   const isSubmitting = isEditMode ? isUpdating : isCreating;
 
   return (
-    <Modal
+    <Drawer
       isOpen={isOpen}
       onClose={onClose}
       title={isViewOnly ? "Chi tiết Dự án" : (isEditMode ? "Cấu hình Dự án" : "Tạo mới dự án SLR")}
@@ -204,8 +217,8 @@ export default function ProjectFormModal({
               ? "Cập nhật các tham số có thể chỉnh sửa của dự án."
               : "Khởi tạo một dự án nghiên cứu mới theo quy trình chuẩn.")
       }
-      size="md"
-      mode="drawer"
+      maxWidth="max-w-2xl"
+      side="right"
       /* Ghìm các nút Hủy / Lưu xuống chân trang của Drawer cố định cực kỳ đẹp mắt */
       footer={!isViewOnly ? (
         <div className="flex items-center justify-end gap-3 w-full">
@@ -330,43 +343,68 @@ export default function ProjectFormModal({
           <div className="space-y-5">
             <div className="grid grid-cols-1 gap-5">
               {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="title" className="text-sm font-semibold text-text-primary">
+                    Tiêu đề nghiên cứu <span className="text-red-500">*</span>
+                  </label>
+                  <span
+                    className={cn(
+                      "text-xs font-mono transition-colors",
+                      formData.title.length > 200
+                        ? "text-red-600 font-bold"
+                        : formData.title.length > 180
+                          ? "text-amber-600 font-semibold"
+                          : "text-slate-400"
+                    )}
+                  >
+                    {formData.title.length}/200 ký tự
+                  </span>
+                </div>
 
                 <FormField
                   id="title"
-                  label="Tiêu đề nghiên cứu"
+                  label=""
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   errorMessage={errors.title}
                   placeholder="Ví dụ: Tác động của Generative AI trong Tự động hóa Lập trình"
+                  containerClassName="space-y-0"
+                  className={cn(
+                    "rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none",
+                    formData.title.length > 200 && "border-red-500 focus:border-red-500 focus:ring-red-100"
+                  )}
+                  required
+                />
+
+                {/* Alert cảnh báo trực quan khi vượt quá 200 ký tự */}
+                {formData.title.length > 200 && (
+                  <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 animate-in fade-in duration-200">
+                    <FiAlertCircle className="mt-0.5 shrink-0 text-red-500" size={16} />
+                    <div className="leading-relaxed">
+                      <span className="font-bold">Cảnh báo vượt quá 200 chữ: </span>
+                      Tiêu đề nghiên cứu đang dài <strong>{formData.title.length} ký tự</strong> (vượt quá giới hạn cho phép là <strong>200 ký tự</strong>). Vui lòng rút gọn tiêu đề để có thể lưu thành công.
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* LĨNH VỰC NGHIÊN CỨU (Hiển thị và cho phép chỉnh sửa ở cả Edit và Create) */}
+              <div className="space-y-2">
+                <FormField
+                  id="domain"
+                  label="Lĩnh vực nghiên cứu"
+                  name="domain"
+                  value={formData.domain}
+                  onChange={handleChange}
+                  errorMessage={errors.domain}
+                  placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
                   containerClassName="space-y-1.5"
                   className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
                   required
                 />
               </div>
-
-              {/* LĨNH VỰC NGHIÊN CỨU (Chỉ hiển thị khi TẠO MỚI, ẩn hoàn toàn khi CHỈNH SỬA) */}
-              {!isEditMode ? (
-                <div className="space-y-2">
-
-                  <FormField
-                    id="domain"
-                    label="Lĩnh vực nghiên cứu"
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleChange}
-                    errorMessage={errors.domain}
-                    placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
-                    containerClassName="space-y-1.5"
-                    className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
-                    required
-                  />
-                </div>
-              ) : (
-                /* Giữ input hidden để không mất dữ liệu của form */
-                <input type="hidden" name="domain" value={formData.domain} />
-              )}
             </div>
           </div>
 
@@ -407,6 +445,6 @@ export default function ProjectFormModal({
           )}
         </form>
       )}
-    </Modal>
+    </Drawer>
   );
 }

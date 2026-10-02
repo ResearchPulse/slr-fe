@@ -8,22 +8,26 @@ interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
   title?: React.ReactNode;
+  description?: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   maxWidth?: string;
   side?: "left" | "right";
   className?: string;
+  contentClassName?: string;
 }
 
 const Drawer: React.FC<DrawerProps> = ({
   isOpen,
   onClose,
   title,
+  description,
   children,
   footer,
   maxWidth = "max-w-md",
-  side = "left",
+  side = "right",
   className,
+  contentClassName,
 }) => {
   const [shouldRender, setShouldRender] = useState(isOpen);
   const backdropRef = useRef<HTMLDivElement>(null);
@@ -63,13 +67,13 @@ const Drawer: React.FC<DrawerProps> = ({
         .fromTo(
           backdropRef.current,
           { opacity: 0 },
-          { opacity: 1, duration: 0.4, ease: "power2.out" },
+          { opacity: 1, duration: 0.25, ease: "power2.out" },
         )
         .fromTo(
           drawerRef.current,
-          { x: side === "left" ? "-100%" : "100%" },
-          { x: "0%", duration: 0.5, ease: "power3.out" },
-          "-=0.3",
+          { x: side === "left" ? "-100%" : "100%", force3D: true },
+          { x: "0%", duration: 0.3, ease: "power2.out", force3D: true },
+          "<",
         );
     } else if (shouldRender) {
       // Exit Animation
@@ -84,12 +88,13 @@ const Drawer: React.FC<DrawerProps> = ({
 
       tl.to(drawerRef.current, {
         x: side === "left" ? "-100%" : "100%",
-        duration: 0.4,
-        ease: "power3.in",
+        duration: 0.25,
+        ease: "power2.in",
+        force3D: true,
       }).to(
         backdropRef.current,
-        { opacity: 0, duration: 0.3, ease: "power2.in" },
-        "-=0.2",
+        { opacity: 0, duration: 0.2, ease: "power2.in" },
+        "-=0.1",
       );
     }
   }, [isOpen, shouldRender, side]);
@@ -108,7 +113,7 @@ const Drawer: React.FC<DrawerProps> = ({
       {/* Backdrop */}
       <div
         ref={backdropRef}
-        className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-slate-900/40"
         onClick={onClose}
       />
 
@@ -122,35 +127,42 @@ const Drawer: React.FC<DrawerProps> = ({
         <div
           ref={drawerRef}
           className={cn(
-            "pointer-events-auto w-screen bg-bg-primary shadow-2xl",
+            "pointer-events-auto w-screen bg-surface-white border-l border-border shadow-2xl transform-gpu will-change-transform flex flex-col h-full",
             maxWidth,
           )}
         >
-          <div className="flex h-full flex-col overflow-y-auto">
-            {/* Drawer Header */}
-            <div className="p-6 border-b border-border flex items-center justify-between sticky top-0 bg-bg-primary z-10">
-              <div className="flex-1 text-lg font-bold text-text-primary">
+          {/* Drawer Header */}
+          <div className="px-6 py-5 border-b border-border flex items-start justify-between sticky top-0 bg-surface-white z-10 shrink-0">
+            <div className="flex-1 space-y-1 pr-4">
+              <div className="text-[18px] font-semibold text-text-primary leading-snug">
                 {title}
               </div>
-              <button
-                onClick={onClose}
-                className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-full transition-all"
-                aria-label="Close"
-              >
-                <FiX className="w-6 h-6" />
-              </button>
+              {description && (
+                <div className="text-sm text-text-secondary leading-relaxed">
+                  {description}
+                </div>
+              )}
             </div>
-
-            {/* Drawer Content */}
-            <div className="flex-1 py-8 px-6">{children}</div>
-
-            {/* Drawer Footer */}
-            {footer && (
-              <div className="p-6 border-t border-border bg-bg-secondary sticky bottom-0">
-                {footer}
-              </div>
-            )}
+            <button
+              onClick={onClose}
+              className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-lg transition-colors shrink-0"
+              aria-label="Close"
+            >
+              <FiX size={18} />
+            </button>
           </div>
+
+          {/* Drawer Content */}
+          <div className={cn("flex-1 p-6 overflow-y-auto bg-surface-white", contentClassName)}>
+            {children}
+          </div>
+
+          {/* Drawer Footer */}
+          {footer && (
+            <div className="px-6 py-4 border-t border-border bg-bg-secondary sticky bottom-0 z-10 shrink-0">
+              {footer}
+            </div>
+          )}
         </div>
       </div>
     </div>,

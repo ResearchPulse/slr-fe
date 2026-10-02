@@ -30,6 +30,7 @@ export type SetupSnapshot = {
 export interface AIProjectSetupWizardProps {
   embedded?: boolean;
   projectId?: string;
+  projectTitle?: string;
   projectDomain?: string;
   onSetupSaved?: () => void;
   hideEditButton?: boolean;

@@ -2,9 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import type { EditableResearchQuestion, PicoCForm, ScopeForm } from "../types";
 
 interface SetupSummaryViewProps {
-  topic: string;
+  topic?: string;
+  projectTitle?: string;
   projectDomain?: string;
-  scopeForm: ScopeForm;
+  scopeForm?: ScopeForm;
   picocForm: PicoCForm;
   researchQuestions: EditableResearchQuestion[];
   onEdit: () => void;
@@ -66,9 +67,8 @@ function PicoCCard({
       ) : (
         <p
           ref={textRef}
-          className={`max-w-[52ch] whitespace-pre-line text-sm leading-[1.6] text-text-secondary ${
-            expanded ? "break-words" : "line-clamp-3 break-words"
-          }`}
+          className={`max-w-[52ch] whitespace-pre-line text-sm leading-[1.6] text-text-secondary ${expanded ? "break-words" : "line-clamp-3 break-words"
+            }`}
         >
           {value}
         </p>
@@ -89,9 +89,6 @@ function PicoCCard({
 }
 
 export default function SetupSummaryView({
-  topic,
-  projectDomain,
-  scopeForm,
   picocForm,
   researchQuestions,
   onEdit,
@@ -101,86 +98,30 @@ export default function SetupSummaryView({
   hideResearchQuestions = false,
 }: SetupSummaryViewProps) {
   const [showAllQuestions, setShowAllQuestions] = useState(false);
-  const [showFullObjective, setShowFullObjective] = useState(false);
-  const objectiveIsLong = scopeForm.objectives.length > 240;
   const questionsToShow = showAllQuestions
     ? researchQuestions
     : researchQuestions.slice(0, 2);
   const hiddenQuestionCount = Math.max(0, researchQuestions.length - 2);
 
+  const editButton = isLeader && !hideEditButton && (
+    <button
+      type="button"
+      onClick={onEdit}
+      className="rounded-lg border border-border bg-white px-3.5 py-1.5 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary shadow-xs"
+    >
+      Edit Protocol
+    </button>
+  );
+
   return (
-    <section>
-      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <h2 className="text-[26px] font-semibold leading-tight text-text-primary">
-            Review Protocol
-          </h2>
-          <p className="mt-1 text-sm text-text-secondary">
-            A concise summary of the scope, objectives, and criteria for this review.
-          </p>
-        </div>
-        {isLeader && !hideEditButton && (
-          <button
-            type="button"
-            onClick={onEdit}
-            className="rounded-lg border border-border bg-white px-3.5 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
-          >
-            Edit Protocol
-          </button>
-        )}
-      </div>
-
-      <section className="rounded-[14px] border border-border bg-white p-5 sm:p-6">
-        <div className="grid gap-x-8 gap-y-5 sm:grid-cols-[minmax(0,1.5fr)_minmax(180px,0.8fr)]">
-          <div className="sm:col-span-2">
-            <h3 className="mb-1.5 text-[13px] font-medium text-text-secondary">
-              Research topic
-            </h3>
-            <p className="max-w-[72ch] text-base font-medium leading-6 text-text-primary">
-              {topic || "Not defined"}
-            </p>
-          </div>
-
-          <div>
-            <h3 className="mb-1.5 text-[13px] font-medium text-text-secondary">
-              Objective
-            </h3>
-            <p
-              className={`max-w-[72ch] text-sm leading-[1.6] text-text-primary ${
-                objectiveIsLong && !showFullObjective ? "line-clamp-3" : ""
-              }`}
-            >
-              {scopeForm.objectives || "Not defined"}
-            </p>
-            {objectiveIsLong && (
-              <button
-                type="button"
-                onClick={() => setShowFullObjective((current) => !current)}
-                className="mt-1 text-xs font-medium text-accent hover:underline"
-                aria-expanded={showFullObjective}
-              >
-                {showFullObjective ? "Show less" : "View full objective"}
-              </button>
-            )}
-          </div>
-
-          <div>
-            <h3 className="mb-1.5 text-[13px] font-medium text-text-secondary">
-              Domain
-            </h3>
-            <p className="text-sm leading-[1.6] text-text-primary">
-              {scopeForm.domain || projectDomain || "Not defined"}
-            </p>
-          </div>
-        </div>
-      </section>
-
+    <section className="space-y-7">
       {!hidePicoc && (
-        <section className="mt-7">
-          <div className="mb-3">
-            <h3 className="text-lg font-semibold text-text-primary">
+        <section>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h3 className="text-xl font-bold tracking-tight text-text-primary">
               PICO-C framework
             </h3>
+            {editButton}
           </div>
           <div className="grid items-start gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {frameworkItems.map(([letter, title, key]) => (
@@ -201,9 +142,12 @@ export default function SetupSummaryView({
             <h3 className="text-lg font-semibold text-text-primary">
               Research questions
             </h3>
-            <span className="text-xs text-text-secondary">
-              {researchQuestions.length} {researchQuestions.length === 1 ? "question" : "questions"} defined
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-text-secondary">
+                {researchQuestions.length} {researchQuestions.length === 1 ? "question" : "questions"} defined
+              </span>
+              {hidePicoc && editButton}
+            </div>
           </div>
 
           {researchQuestions.length ? (
@@ -216,7 +160,7 @@ export default function SetupSummaryView({
                   <span className="shrink-0 pt-0.5 text-xs font-semibold text-accent">
                     RQ{index + 1}
                   </span>
-                  <p className="max-w-[75ch] text-sm leading-[1.6] text-text-primary">
+                  <p className="w-full break-words text-sm leading-[1.6] text-text-primary">
                     {question.questionText}
                   </p>
                 </li>
