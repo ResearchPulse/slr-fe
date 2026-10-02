@@ -119,7 +119,7 @@ export default function DuplicateQueuePanel({
         </h3>
         <button
           onClick={() => setShowFilters((prev) => !prev)}
-          className={`p-1.5 rounded-[4px] transition-colors ${
+          className={`p-1.5 rounded-xl transition-colors ${
             showFilters
               ? "bg-blue-100 text-blue-600"
               : "text-text-secondary hover:text-text-secondary hover:bg-bg-secondary"
@@ -138,13 +138,13 @@ export default function DuplicateQueuePanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by paper title..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+          className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
         />
       </div>
 
       {/* Filter & Sort controls */}
       {showFilters && (
-        <div className="space-y-2 mb-3 p-3 bg-bg-primary rounded-[4px] border border-border">
+        <div className="space-y-2 mb-3 p-3 bg-bg-primary rounded-xl border border-border">
           {/* Filter pills */}
           <div className="flex flex-wrap gap-1.5">
             {FILTER_BUTTONS.map(({ key, label, count }) => (
@@ -167,7 +167,7 @@ export default function DuplicateQueuePanel({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as DuplicateSortType)}
-            className="w-full px-2 py-1.5 text-xs border border-border rounded-[4px] bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="w-full px-2 py-1.5 text-xs border border-border rounded-xl bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
           >
             <option value="similarity-desc">Highest similarity first</option>
             <option value="similarity-asc">Lowest similarity first</option>
@@ -189,7 +189,7 @@ export default function DuplicateQueuePanel({
               <button
                 key={pair.id}
                 onClick={() => onSelectPair(pair)}
-                className={`w-full text-left p-3.5 rounded-[4px] border-2 transition-all group ${
+                className={`w-full text-left p-3.5 rounded-xl border-2 transition-all group ${
                   isSelected
                     ? "border-blue-500 bg-blue-50 shadow-none"
                     : isResolved

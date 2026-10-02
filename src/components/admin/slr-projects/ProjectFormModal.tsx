@@ -93,6 +93,11 @@ export default function ProjectFormModal({
       newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
     if (!isEditMode && !formData.domain.trim())
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.startDate).getTime() > new Date(formData.endDate).getTime()) {
+        newErrors.endDate = "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+      }
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -367,6 +372,31 @@ export default function ProjectFormModal({
                 /* Giữ input hidden để không mất dữ liệu của form */
                 <input type="hidden" name="domain" value={formData.domain} />
               )}
+              {/* DÒNG THỜI GIAN (Ngày bắt đầu & Ngày kết thúc) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  id="startDate"
+                  label="Ngày bắt đầu"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  errorMessage={errors.startDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
+                />
+                <FormField
+                  id="endDate"
+                  label="Ngày kết thúc"
+                  name="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  errorMessage={errors.endDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
+                />
+              </div>
             </div>
           </div>
 

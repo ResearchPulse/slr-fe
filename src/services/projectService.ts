@@ -24,23 +24,35 @@ import { toISODateTime } from "../utils/dateUtils";
 class ProjectService {
   private readonly endpoint = "/projects";
 
-  private mapProjectResearchQuestion = (item: unknown): ProjectResearchQuestion => {
-    const source = (item && typeof item === "object") ? (item as Record<string, unknown>) : {};
-    const id = typeof source.id === "string"
-      ? source.id
-      : typeof source.researchQuestionId === "string"
-        ? source.researchQuestionId
-        : typeof source.questionId === "string"
-          ? source.questionId
+  private mapProjectResearchQuestion = (
+    item: unknown,
+  ): ProjectResearchQuestion => {
+    const source =
+      item && typeof item === "object"
+        ? (item as Record<string, unknown>)
+        : {};
+
+    const id =
+      typeof source.id === "string"
+        ? source.id
+        : typeof source.researchQuestionId === "string"
+          ? source.researchQuestionId
+          : typeof source.questionId === "string"
+            ? source.questionId
+            : "";
+
+    const projectId =
+      typeof source.projectId === "string" ? source.projectId : "";
+
+    const questionText =
+      typeof source.questionText === "string"
+        ? source.questionText
+        : typeof source.question === "string"
+          ? source.question
           : "";
 
-    const projectId = typeof source.projectId === "string" ? source.projectId : "";
-    const questionText = typeof source.questionText === "string"
-      ? source.questionText
-      : typeof source.question === "string"
-        ? source.question
-        : "";
-    const createdAt = typeof source.createdAt === "string" ? source.createdAt : "";
+    const createdAt =
+      typeof source.createdAt === "string" ? source.createdAt : "";
 
     return {
       id,
@@ -54,8 +66,14 @@ class ProjectService {
    * Create a new project
    * POST /api/projects
    */
-  createProject = async (data: CreateProjectRequest): Promise<ApiResponse<Project>> => {
-    const response = await api.post<ApiResponse<Project>>(this.endpoint, data);
+  createProject = async (
+    data: CreateProjectRequest,
+  ): Promise<ApiResponse<Project>> => {
+    const response = await api.post<ApiResponse<Project>>(
+      this.endpoint,
+      data,
+    );
+
     return response.data;
   };
 
@@ -63,8 +81,13 @@ class ProjectService {
    * Get project by ID
    * GET /api/projects/{id}
    */
-  getProjectById = async (id: string): Promise<ApiResponse<ProjectDetail>> => {
-    const response = await api.get<ApiResponse<ProjectDetail>>(`${this.endpoint}/${id}`);
+  getProjectById = async (
+    id: string,
+  ): Promise<ApiResponse<ProjectDetail>> => {
+    const response = await api.get<ApiResponse<ProjectDetail>>(
+      `${this.endpoint}/${id}`,
+    );
+
     return response.data;
   };
 
@@ -72,10 +95,16 @@ class ProjectService {
    * Get projects with pagination and filtering
    * GET /api/projects
    */
-  getProjects = async (params?: GetProjectsParams): Promise<ApiResponse<PaginatedResponse<Project>>> => {
-    const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(this.endpoint, {
-      params,
-    });
+  getProjects = async (
+    params?: GetProjectsParams,
+  ): Promise<ApiResponse<PaginatedResponse<Project>>> => {
+    const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(
+      this.endpoint,
+      {
+        params,
+      },
+    );
+
     return response.data;
   };
 
@@ -83,10 +112,16 @@ class ProjectService {
    * Get current user's projects with pagination and filtering
    * GET /api/projects/my
    */
-  getMyProjects = async (params?: GetProjectsParams): Promise<ApiResponse<PaginatedResponse<Project>>> => {
-    const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(`${this.endpoint}/my`, {
-      params,
-    });
+  getMyProjects = async (
+    params?: GetProjectsParams,
+  ): Promise<ApiResponse<PaginatedResponse<Project>>> => {
+    const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(
+      `${this.endpoint}/my`,
+      {
+        params,
+      },
+    );
+
     return response.data;
   };
 
@@ -94,15 +129,22 @@ class ProjectService {
    * Update project
    * PUT /api/projects/{id}
    */
-  updateProject = async (id: string, data: UpdateProjectRequest): Promise<ApiResponse<Project>> => {
-    // Ensure ID in body matches ID in URL
+  updateProject = async (
+    id: string,
+    data: UpdateProjectRequest,
+  ): Promise<ApiResponse<Project>> => {
     const payload = { ...data, id };
-    const response = await api.put<ApiResponse<Project>>(`${this.endpoint}/${id}`, payload);
+
+    const response = await api.put<ApiResponse<Project>>(
+      `${this.endpoint}/${id}`,
+      payload,
+    );
+
     return response.data;
   };
 
   /**
-   * Update project date window (StartDate / EndDate)
+   * Update project date window
    * PUT /api/projects/{id}/dates
    */
   updateProjectDates = async (
@@ -114,34 +156,54 @@ class ProjectService {
       startDate: toISODateTime(data.startDate),
       endDate: toISODateTime(data.endDate),
     };
-    const response = await api.put<ApiResponse<ProjectDetail>>(`${this.endpoint}/${id}/dates`, payload);
+
+    const response = await api.put<ApiResponse<ProjectDetail>>(
+      `${this.endpoint}/${id}/dates`,
+      payload,
+    );
+
     return response.data;
   };
 
   /**
-   * Activate project (Draft -> Active)
+   * Activate project
    * POST /api/projects/{id}/activate
    */
-  activateProject = async (id: string): Promise<ApiResponse<Project>> => {
-    const response = await api.post<ApiResponse<Project>>(`${this.endpoint}/${id}/activate`);
+  activateProject = async (
+    id: string,
+  ): Promise<ApiResponse<Project>> => {
+    const response = await api.post<ApiResponse<Project>>(
+      `${this.endpoint}/${id}/activate`,
+    );
+
     return response.data;
   };
 
   /**
-   * Complete project (Active -> Completed)
+   * Complete project
    * POST /api/projects/{id}/complete
    */
-  completeProject = async (id: string): Promise<ApiResponse<Project>> => {
-    const response = await api.post<ApiResponse<Project>>(`${this.endpoint}/${id}/complete`);
+  completeProject = async (
+    id: string,
+  ): Promise<ApiResponse<Project>> => {
+    const response = await api.post<ApiResponse<Project>>(
+      `${this.endpoint}/${id}/complete`,
+    );
+
     return response.data;
   };
 
   /**
-   * Archive project (Active/Completed -> Archived)
+   * Archive project
    * POST /api/projects/{id}/archive
    */
-  archiveProject = async (id: string): Promise<ApiResponse<Project>> => {
-    const response = await api.post<ApiResponse<Project>>(`${this.endpoint}/${id}/archive`);
+  archiveProject = async (
+    id: string,
+  ): Promise<ApiResponse<Project>> => {
+    const response = await api.post<ApiResponse<Project>>(
+      `${this.endpoint}/${id}/archive`,
+    );
+
     return response.data;
   };
 
@@ -149,8 +211,13 @@ class ProjectService {
    * Delete project permanently
    * DELETE /api/projects/{id}
    */
-  deleteProject = async (id: string): Promise<ApiResponse<null>> => {
-    const response = await api.delete<ApiResponse<null>>(`${this.endpoint}/${id}`);
+  deleteProject = async (
+    id: string,
+  ): Promise<ApiResponse<null>> => {
+    const response = await api.delete<ApiResponse<null>>(
+      `${this.endpoint}/${id}`,
+    );
+
     return response.data;
   };
 
@@ -158,10 +225,16 @@ class ProjectService {
    * Get project members
    * GET /api/projects/{projectId}/members
    */
-  getProjectMembers = async (projectId: string, params?: GetProjectMembersParams): Promise<ApiResponse<PaginatedResponse<ProjectMember>>> => {
-    const response = await api.get<ApiResponse<PaginatedResponse<ProjectMember>>>(`${this.endpoint}/${projectId}/members`, {
-      params
+  getProjectMembers = async (
+    projectId: string,
+    params?: GetProjectMembersParams,
+  ): Promise<ApiResponse<PaginatedResponse<ProjectMember>>> => {
+    const response = await api.get<
+      ApiResponse<PaginatedResponse<ProjectMember>>
+    >(`${this.endpoint}/${projectId}/members`, {
+      params,
     });
+
     return response.data;
   };
 
@@ -169,8 +242,23 @@ class ProjectService {
    * Get current user's membership/role in a project
    * GET /api/projects/{projectId}/my-membership
    */
-  getMyMembership = async (projectId: string): Promise<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>> => {
-    const response = await api.get<ApiResponse<{ role: number | string; roleNumber?: number; roleText: string }>>(`${this.endpoint}/${projectId}/my-membership`);
+  getMyMembership = async (
+    projectId: string,
+  ): Promise<
+    ApiResponse<{
+      role: number | string;
+      roleNumber?: number;
+      roleText: string;
+    }>
+  > => {
+    const response = await api.get<
+      ApiResponse<{
+        role: number | string;
+        roleNumber?: number;
+        roleText: string;
+      }>
+    >(`${this.endpoint}/${projectId}/my-membership`);
+
     return response.data;
   };
 
@@ -178,11 +266,22 @@ class ProjectService {
    * Send invitations to users for a project
    * POST /api/projects/{projectId}/invitations
    */
-  sendInvitations = async (projectId: string, data: SendInvitationsRequest): Promise<ApiResponse<null>> => {
-    const response = await api.post<ApiResponse<null>>(`${this.endpoint}/${projectId}/invitations`, data);
+  sendInvitations = async (
+    projectId: string,
+    data: SendInvitationsRequest,
+  ): Promise<ApiResponse<null>> => {
+    const response = await api.post<ApiResponse<null>>(
+      `${this.endpoint}/${projectId}/invitations`,
+      data,
+    );
+
     return response.data;
   };
 
+  /**
+   * Update project member role
+   * PUT /api/projects/{projectId}/members/{userId}
+   */
   updateMemberRole = async (
     projectId: string,
     userId: string,
@@ -192,6 +291,22 @@ class ProjectService {
       `${this.endpoint}/${projectId}/members/${userId}`,
       { role },
     );
+
+    return response.data;
+  };
+
+  /**
+   * Remove member from project
+   * DELETE /api/projects/{projectId}/members/{userId}
+   */
+  removeProjectMember = async (
+    projectId: string,
+    userId: string,
+  ): Promise<ApiResponse<null>> => {
+    const response = await api.delete<ApiResponse<null>>(
+      `${this.endpoint}/${projectId}/members/${userId}`,
+    );
+
     return response.data;
   };
 
@@ -199,8 +314,13 @@ class ProjectService {
    * Get project PICOCs
    * GET /api/projects/{projectId}/picocs
    */
-  getProjectPicocs = async (projectId: string): Promise<ApiResponse<ProjectPICOC[]>> => {
-    const response = await api.get<ApiResponse<ProjectPICOC[]>>(`${this.endpoint}/${projectId}/picocs`);
+  getProjectPicocs = async (
+    projectId: string,
+  ): Promise<ApiResponse<ProjectPICOC[]>> => {
+    const response = await api.get<ApiResponse<ProjectPICOC[]>>(
+      `${this.endpoint}/${projectId}/picocs`,
+    );
+
     return response.data;
   };
 
@@ -208,11 +328,18 @@ class ProjectService {
    * Get project research questions
    * GET /api/projects/{projectId}/research-questions
    */
-  getProjectResearchQuestions = async (projectId: string): Promise<ApiResponse<ProjectResearchQuestion[]>> => {
-    const response = await api.get<ApiResponse<ProjectResearchQuestion[]>>(`${this.endpoint}/${projectId}/research-questions`);
+  getProjectResearchQuestions = async (
+    projectId: string,
+  ): Promise<ApiResponse<ProjectResearchQuestion[]>> => {
+    const response = await api.get<
+      ApiResponse<ProjectResearchQuestion[]>
+    >(`${this.endpoint}/${projectId}/research-questions`);
+
     return {
       ...response.data,
-      data: (response.data.data || []).map(this.mapProjectResearchQuestion),
+      data: (response.data.data || []).map(
+        this.mapProjectResearchQuestion,
+      ),
     };
   };
 
@@ -220,11 +347,14 @@ class ProjectService {
    * Export projects to Excel file
    * GET /api/projects/export/excel
    */
-  exportProjects = async (params?: ProjectExportRequest): Promise<Blob> => {
+  exportProjects = async (
+    params?: ProjectExportRequest,
+  ): Promise<Blob> => {
     const response = await api.get(`${this.endpoint}/export/excel`, {
       params,
-      responseType: "blob"
+      responseType: "blob",
     });
+
     return response.data;
   };
 }

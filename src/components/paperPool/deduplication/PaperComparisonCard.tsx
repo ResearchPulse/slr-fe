@@ -98,7 +98,7 @@ export default function PaperComparisonCard({
 
   return (
     <div
-      className={`relative border rounded-[4px] p-4 transition-all ${cardBorderClass}`}
+      className={`relative border rounded-2xl p-4 transition-all ${cardBorderClass}`}
     >
       {/* Resolution outcome badge */}
       {outcome && (

@@ -131,13 +131,20 @@ const ProjectExclusionCodeTab: React.FC = () => {
 
   const handleBulkCreate = async () => {
     // Validate
-    const invalid = newCodes.some(
-      (c) => !c.name.trim() || !c.code.trim() || parseInt(c.code, 10) < 0,
-    );
+    const invalid = newCodes.some((c) => {
+      const parsed = parseInt(c.code, 10);
+      return (
+        !c.name.trim() ||
+        !c.code.trim() ||
+        isNaN(parsed) ||
+        parsed < 0 ||
+        !/^\d+$/.test(c.code.trim())
+      );
+    });
     if (invalid) {
       toastError(
         "Validation Error",
-        "Please provide a valid non-negative code and name for all items.",
+        "Please provide a valid non-negative numeric code and name for all items.",
       );
       return;
     }

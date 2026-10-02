@@ -55,7 +55,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         className={cn(
           // Base Layout & Typography
-          "rounded-[10px] uppercase tracking-[0.1em] font-medium flex items-center justify-center whitespace-nowrap",
+          "rounded-xl uppercase tracking-[0.1em] font-medium flex items-center justify-center whitespace-nowrap",
           // Motion — explicit properties only, never `all`
           "transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200",
           "hover:-translate-y-[1px] active:translate-y-0",
