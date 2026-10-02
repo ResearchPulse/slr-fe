@@ -474,7 +474,14 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
       (member) => member.userId === currentUserId
     );
 
-    return currentMember?.role === ProjectRole.Leader;
+    const role = String(currentMember?.roleText ?? currentMember?.role ?? "").trim().toUpperCase();
+    return (
+      Number(currentMember?.role) === 1 ||
+      role === "OWNER" ||
+      role === "LEADER" ||
+      role === "ADMIN" ||
+      role === "1"
+    );
   }, [currentUserId, projectMembers]);
 
   const dashboardQuery = useQuery({
@@ -834,7 +841,15 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
 
   const reviewerOptions = useMemo<ReviewerOption[]>(() => {
     const options = projectMembers
-      .filter((member) => member.role === ProjectRole.Lecturer)
+      .filter((member) => {
+        const role = String(member.roleText ?? member.role).trim().toUpperCase();
+        return (
+          member.role === ProjectRole.Reviewer ||
+          member.role === ProjectRole.Lecturer ||
+          member.role === ProjectRole.Owner ||
+          ["REVIEWER", "LECTURER", "OWNER", "LEADER", "MEMBER", "3", "2", "1"].includes(role)
+        );
+      })
       .map((member) => ({
         id: member.userId,
         name: member.userName
@@ -1269,7 +1284,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
   );
 
   const assignPaper = useCallback(
-    (paperId: string, payload: AssignReviewersDto) => {
+    async (paperId: string, payload: AssignReviewersDto) => {
       if (!extractionProcessId || !isCurrentUserLeader) {
         return;
       }
@@ -1281,7 +1296,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
         return;
       }
 
-      assignReviewersMutation.mutate({
+      return await assignReviewersMutation.mutateAsync({
         paperId,
         payload: {
           reviewer1Id,
