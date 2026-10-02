@@ -1,7 +1,8 @@
 // Enhanced Deduplication Progress Banner with metrics, ETA, and animated progress
 
 import { useMemo } from "react";
-import { FiClock, FiTrendingUp } from "react-icons/fi";
+import { FiClock, FiTrendingUp, FiRefreshCw } from "react-icons/fi";
+import Button from "../../ui/Button";
 import { estimateRemainingTime } from "../../../pages/reviewProcess/identification/utils";
 import { SIMILARITY_THRESHOLDS } from "../../../pages/reviewProcess/identification/constants";
 import type { DuplicatePair } from "../../../types/deduplication";
@@ -14,6 +15,9 @@ interface DeduplicationProgressBannerProps {
   sessionStartTime: number | null;
   /** Number resolved in this session (for ETA calculation) */
   sessionResolvedCount: number;
+  onRunDeduplication?: () => void;
+  isRunningDeduplication?: boolean;
+  canEdit?: boolean;
 }
 
 export default function DeduplicationProgressBanner({
@@ -22,6 +26,9 @@ export default function DeduplicationProgressBanner({
   resolvedCount,
   sessionStartTime,
   sessionResolvedCount,
+  onRunDeduplication,
+  isRunningDeduplication = false,
+  canEdit = true,
 }: DeduplicationProgressBannerProps) {
   const total = duplicatePairs.length;
   const progressPercent =
@@ -90,14 +97,18 @@ export default function DeduplicationProgressBanner({
           </div>
         </div>
 
-        {/* <Button
-          size="lg"
-          className="flex items-center gap-2 shadow-none"
-          onClick={onRunDeduplication}
-        >
-          <FiRefreshCw className="w-5 h-5" />
-          Run Deduplication
-        </Button> */}
+        {canEdit && onRunDeduplication && (
+          <Button
+            size="md"
+            className="flex items-center gap-2 shadow-none ml-auto"
+            onClick={onRunDeduplication}
+            disabled={isRunningDeduplication}
+            isLoading={isRunningDeduplication}
+          >
+            <FiRefreshCw className={`w-4 h-4 ${isRunningDeduplication ? "animate-spin" : ""}`} />
+            Run Deduplication
+          </Button>
+        )}
       </div>
 
       {/* Contextual tips */}

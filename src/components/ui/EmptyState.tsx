@@ -8,6 +8,7 @@ interface EmptyStateProps {
   description: string;
   actionLabel: string;
   onAction: () => void;
+  isLoading?: boolean;
   secondaryLabel?: string;
   helperText?: string;
 }
@@ -18,6 +19,7 @@ export default function EmptyState({
   description,
   actionLabel,
   onAction,
+  isLoading,
   secondaryLabel,
   helperText,
 }: EmptyStateProps) {
@@ -31,7 +33,11 @@ export default function EmptyState({
         {description}
       </p>
       <div className="flex items-center gap-3">
-        {actionLabel && <Button onClick={onAction}>{actionLabel}</Button>}
+        {actionLabel && (
+          <Button onClick={onAction} isLoading={isLoading}>
+            {actionLabel}
+          </Button>
+        )}
         {secondaryLabel && (
           <Button
             variant="secondary"

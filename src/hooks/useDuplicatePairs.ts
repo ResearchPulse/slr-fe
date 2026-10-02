@@ -189,6 +189,56 @@ export const useDuplicatePairs = ({
     },
   });
 
+  // ---------- Mutation: run automated batch deduplication ----------
+  const runDeduplicationMutation = useMutation({
+    mutationFn: () => {
+      if (!projectId) return Promise.reject("No project ID");
+      return deduplicationService.runDeduplication(projectId);
+    },
+    onSuccess: (response) => {
+      const data = response?.data;
+      const count = data?.duplicatesFound ?? 0;
+      const totalScreenable = data?.totalScreenable ?? 0;
+
+      if (count > 0) {
+        toast.success(`Deduplication completed: found ${count} duplicate paper(s).`);
+      } else if (totalScreenable === 0 && count === 0) {
+        toast.error("No papers found in repository. Please import papers first.");
+      } else {
+        toast.success("Deduplication completed: no duplicates detected.");
+      }
+
+      if (projectId) {
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.paperPool.duplicatePairs(projectId, {}),
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.paperPool.papers(projectId, {}),
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.paperPool.metadata(projectId),
+        });
+      }
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error, "Failed to run deduplication"));
+    },
+  });
+
+  /**
+   * Run automated deduplication on imported papers in project.
+   */
+  const runDeduplication = useCallback(async (): Promise<boolean> => {
+    try {
+      const response = await runDeduplicationMutation.mutateAsync();
+      return !!response?.isSuccess;
+    } catch {
+      return false;
+    }
+  }, [runDeduplicationMutation]);
+
   /**
    * Resolve a duplicate pair. Returns true on success, false on failure.
    */
@@ -245,6 +295,7 @@ export const useDuplicatePairs = ({
     loading: query.isLoading,
     error: query.error ? getErrorMessage(query.error, "Failed to fetch duplicate pairs") : null,
     resolving: resolveMutation.isPending,
+    isRunningDeduplication: runDeduplicationMutation.isPending,
 
     // Filters
     search,
@@ -257,6 +308,7 @@ export const useDuplicatePairs = ({
 
     // Actions
     resolvePair,
+    runDeduplication,
     refetch,
   };
 };
