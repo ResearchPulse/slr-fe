@@ -14,10 +14,10 @@ const OriginPaperCard: React.FC<OriginPaperCardProps> = ({
   return (
     <div
       onClick={() => onClick(paper.id)}
-      className="group bg-surface-white border border-border rounded-[4px] p-6 hover:border-primary hover:shadow-none hover:shadow-primary/5 transition-all cursor-pointer flex flex-col h-full active:scale-[0.98]"
+      className="group bg-surface-white border border-border rounded-2xl p-6 hover:border-primary hover:shadow-none hover:shadow-primary/5 transition-all cursor-pointer flex flex-col h-full active:scale-[0.98]"
     >
       <div className="flex justify-between items-start mb-4">
-        <div className="w-12 h-12 rounded-[4px] bg-bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+        <div className="w-12 h-12 rounded-xl bg-bg-secondary flex items-center justify-center group-hover:bg-primary/10 transition-colors">
           <FileText className="w-6 h-6 text-text-secondary group-hover:text-primary transition-colors" />
         </div>
         <div className="flex flex-col items-end">

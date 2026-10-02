@@ -42,7 +42,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={handlePrevious}
         disabled={disabled || currentPage === 1}
-        className="p-2 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+        className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
@@ -53,9 +53,9 @@ const Pagination: React.FC<PaginationProps> = ({
             key={page}
             onClick={() => onPageChange(page)}
             disabled={disabled}
-            className={`min-w-[34px] h-8 rounded-[4px] text-[11px] font-medium uppercase tracking-[0.05em] transition-colors ${
+            className={`min-w-[34px] h-8 rounded-lg text-[11px] font-medium uppercase tracking-[0.05em] transition-colors ${
               currentPage === page
-                ? "bg-text-primary text-bg-primary"
+                ? "bg-text-primary text-bg-primary shadow-sm"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
             }`}
           >
@@ -67,7 +67,7 @@ const Pagination: React.FC<PaginationProps> = ({
       <button
         onClick={handleNext}
         disabled={disabled || currentPage === totalPages}
-        className="p-2 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+        className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
       >
         <ChevronRight className="w-4 h-4" />
       </button>

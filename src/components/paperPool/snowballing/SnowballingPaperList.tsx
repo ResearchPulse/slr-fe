@@ -69,7 +69,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
         </p>
         <button
           onClick={() => refetch()}
-          className="px-6 py-2.5 bg-slate-900 text-white rounded-[4px] text-xs font-black uppercase tracking-widest flex items-center gap-2"
+          className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2"
         >
           <RefreshCw className="w-3 h-3" />
           Retry Connection
@@ -83,9 +83,9 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
       {/* Top Stats Bar */}
       <div className="p-8 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-accent rounded-4xl p-8 text-white shadow-none shadow-indigo-200">
+          <div className="bg-accent rounded-2xl p-8 text-white shadow-none shadow-indigo-200">
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-surface-white/20 rounded-[4px] backdrop-blur-md">
+              <div className="p-2 bg-surface-white/20 rounded-xl backdrop-blur-md">
                 <Layers className="w-5 h-5" />
               </div>
               <span className="text-xs font-black uppercase tracking-widest text-indigo-100">
@@ -100,7 +100,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
             </div>
           </div>
 
-          <div className="bg-surface-white border border-border rounded-4xl p-8 shadow-none flex flex-col justify-center">
+          <div className="bg-surface-white border border-border rounded-2xl p-8 shadow-none flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-4 text-text-secondary">
               <BarChart3 className="w-5 h-5" />
               <span className="text-xs font-black uppercase tracking-widest">
@@ -117,7 +117,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
             </div>
           </div>
 
-          <div className="bg-bg-secondary border border-border rounded-4xl p-8 flex flex-col justify-center">
+          <div className="bg-bg-secondary border border-border rounded-2xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 text-accent mb-2">
               <Info className="w-4 h-4" />
               <span className="text-xs font-black uppercase tracking-widest">
@@ -133,7 +133,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
         </div>
 
         {/* Paper List Table */}
-        <div className="bg-surface-white border border-border rounded-[4px] overflow-hidden shadow-none">
+        <div className="bg-surface-white border border-border rounded-2xl overflow-hidden shadow-none">
           <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-bg-secondary/50">
             <div className="flex items-center gap-4">
               <div>
@@ -147,7 +147,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
               <button
                 onClick={() => refetch()}
                 disabled={isFetching}
-                className="group p-2 hover:bg-surface-white border border-transparent hover:border-border rounded-[4px] transition-all disabled:opacity-50"
+                className="group p-2 hover:bg-surface-white border border-transparent hover:border-border rounded-xl transition-all disabled:opacity-50"
                 title="Refresh paper list"
               >
                 <RefreshCw
@@ -193,7 +193,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                   >
                     <td className="px-8 py-5">
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-[4px] bg-bg-secondary flex items-center justify-center text-text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-bg-secondary flex items-center justify-center text-text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
                           <FileText className="w-5 h-5" />
                         </div>
                         <div className="min-w-0">
@@ -214,7 +214,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-[4px] bg-bg-secondary text-text-primary text-xs font-black">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-bg-secondary text-text-primary text-xs font-black">
                         {paper.candidateCount}
                       </span>
                     </td>
@@ -280,7 +280,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="p-2 bg-bg-secondary border border-border hover:border-border rounded-[4px] text-text-secondary hover:text-primary transition-all shadow-none"
+                            className="p-2 bg-bg-secondary border border-border hover:border-border rounded-xl text-text-secondary hover:text-primary transition-all shadow-none"
                             title="Open Source DOI"
                           >
                             <ExternalLink className="w-4 h-4" />

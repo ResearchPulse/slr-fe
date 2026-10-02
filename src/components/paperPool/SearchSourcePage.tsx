@@ -157,7 +157,7 @@ export default function SearchSourcePage({
         {/* Add Source Section */}
         {canEditSources && (
           <div className="md:col-span-1">
-            <div className="bg-surface-white rounded-[4px] p-6 shadow-none border border-border sticky top-24">
+            <div className="bg-surface-white rounded-2xl p-6 shadow-none border border-border sticky top-24">
               <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
                 <FiPlus className="text-blue-600" />
                 Add Source
@@ -175,7 +175,7 @@ export default function SearchSourcePage({
                   <select
                     value={selectedMasterId}
                     onChange={(e) => setSelectedMasterId(e.target.value)}
-                    className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                    className="w-full px-4 py-3 bg-bg-primary border-none rounded-xl text-text-primary focus:ring-2 focus:ring-blue-500 transition-all outline-none"
                   >
                     <option value="">Select a source...</option>
                     {availableMasterSources.map((m) => (
@@ -189,14 +189,14 @@ export default function SearchSourcePage({
                 <button
                   onClick={handleAddSource}
                   disabled={!selectedMasterId}
-                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-[4px] font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
+                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-xl font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
                 >
                   <FiPlus />
                   Add to Project
                 </button>
               </div>
 
-              <div className="mt-8 p-4 bg-blue-50 rounded-[4px] border border-blue-100">
+              <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
                 <div className="flex gap-3">
                   <FiInfo className="text-blue-600 shrink-0 mt-1" />
                   <p className="text-xs text-blue-800 leading-relaxed">
@@ -246,9 +246,9 @@ export default function SearchSourcePage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-surface-white border-2 border-dashed border-border rounded-[4px] p-12 text-center"
+                className="bg-surface-white border-2 border-dashed border-border rounded-2xl p-12 text-center"
               >
-                <div className="w-16 h-16 bg-bg-primary rounded-[4px] flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
                   <FiAlertCircle className="w-8 h-8 text-gray-300" />
                 </div>
                 <h4 className="text-lg font-bold text-text-primary mb-1">
@@ -275,10 +275,10 @@ export default function SearchSourcePage({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="group bg-surface-white rounded-[4px] p-4 border border-border hover:border-blue-200 hover:shadow-none transition-all flex items-center justify-between"
+                      className="group bg-surface-white rounded-2xl p-4 border border-border hover:border-blue-200 hover:shadow-none transition-all flex items-center justify-between"
                     >
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 rounded-[4px] flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
                           {source.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -310,7 +310,7 @@ export default function SearchSourcePage({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setConfiguringSourceIndex(index)}
-                          className={`flex items-center gap-2 px-4 py-2 rounded-[4px] font-bold text-xs transition-all ${
+                          className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${
                             hasStrategy
                               ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
                               : "bg-bg-primary text-text-secondary hover:bg-bg-secondary"
@@ -330,7 +330,7 @@ export default function SearchSourcePage({
                         {canEditSources && (
                           <button
                             onClick={() => handleRemoveSource(index)}
-                            className="p-2 text-gray-300 hover:text-red-600 hover:bg-surface-white rounded-[4px] transition-all"
+                            className="p-2 text-gray-300 hover:text-red-600 hover:bg-surface-white rounded-xl transition-all"
                             title="Remove source"
                           >
                             <FiTrash2 />

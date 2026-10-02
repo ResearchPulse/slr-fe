@@ -669,7 +669,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 1 && (
         <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Research <span className="text-blue-600">Context</span> Summary
@@ -692,7 +692,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 2 && (
         <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Search <span className="text-blue-600">Strategy</span> Planning
@@ -705,8 +705,8 @@ export default function PaperPoolTab({
           </div>
 
           {!hasSearchSources && (
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-[4px] flex items-center gap-4 text-amber-800">
-              <div className="w-12 h-12 bg-amber-100 rounded-[4px] flex items-center justify-center shrink-0">
+            <div className="p-6 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-4 text-amber-800">
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
                 <FiAlertCircle className="w-6 h-6" />
               </div>
               <div>

@@ -101,7 +101,7 @@ export default function PoolWorkflowStepper({
                   disabled={!isLeader}
                   title={!isLeader ? "Workflow steps are managed by the project leader" : undefined}
                   className={`
-                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-xl border transition-all duration-200 sm:h-14 sm:w-14
+                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200 sm:h-14 sm:w-14
                     ${
                       isActive
                         ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
@@ -144,7 +144,7 @@ export default function PoolWorkflowStepper({
       <div className="mx-auto mt-8 w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:mt-10">
         <div className="flex flex-col md:flex-row">
           <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-64 md:flex-col md:justify-center md:border-b-0 md:border-r md:p-7 md:text-center">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
               <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <div>
@@ -186,7 +186,7 @@ export default function PoolWorkflowStepper({
                   key={i}
                   type="button"
                   onClick={action.onClick}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors ${
+                  className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                     action.primary
                       ? "bg-accent text-white shadow-sm hover:bg-primary-hover"
                       : "border border-border bg-white text-text-secondary hover:bg-slate-50 hover:text-text-primary"

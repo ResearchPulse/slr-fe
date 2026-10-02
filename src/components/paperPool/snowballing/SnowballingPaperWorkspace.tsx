@@ -181,7 +181,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
         </p>
         <button
           onClick={() => refetch()}
-          className="px-8 py-3 bg-slate-900 text-white rounded-[4px] text-xs font-black uppercase tracking-widest flex items-center gap-3"
+          className="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-3"
         >
           <RefreshCw className="w-4 h-4" />
           Retry Connection
@@ -197,7 +197,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
         <div className="flex items-center gap-6">
           <button
             onClick={onBack}
-            className="p-2 hover:bg-bg-secondary rounded-[4px] text-text-secondary hover:text-text-primary transition-all flex items-center gap-2 pr-4 border border-transparent hover:border-border"
+            className="p-2 hover:bg-bg-secondary rounded-xl text-text-secondary hover:text-text-primary transition-all flex items-center gap-2 pr-4 border border-transparent hover:border-border"
           >
             <ArrowLeft className="w-4 h-4" />
             <span className="text-xs font-black uppercase tracking-widest">
@@ -206,7 +206,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
           </button>
           <div className="w-px h-6 bg-slate-200" />
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-[4px] bg-primary/10 flex items-center justify-center text-primary">
+            <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
               <FileText className="w-4 h-4" />
             </div>
             <h3 className="text-sm font-black text-text-primary truncate max-w-md">
@@ -259,7 +259,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
               <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em] flex items-center gap-2">
                 <Quote className="w-3 h-3" /> Abstract
               </label>
-              <div className="mt-4 p-6 bg-bg-secondary rounded-[4px] border border-border text-sm text-text-secondary italic leading-relaxed">
+              <div className="mt-4 p-6 bg-bg-secondary rounded-xl border border-border text-sm text-text-secondary italic leading-relaxed">
                 {paper.abstract}
               </div>
             </section>
@@ -269,7 +269,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                 Metadata Summary
               </label>
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="bg-bg-secondary p-6 rounded-4xl border border-border">
+                <div className="bg-bg-secondary p-6 rounded-2xl border border-border">
                   <span className="text-[9px] font-black uppercase tracking-tighter text-text-secondary">
                     Total Extracted
                   </span>
@@ -277,7 +277,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                     {paper.candidateCount}
                   </p>
                 </div>
-                <div className="bg-emerald-50/50 p-6 rounded-4xl border border-emerald-100">
+                <div className="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100">
                   <span className="text-[9px] font-black uppercase tracking-tighter text-emerald-500">
                     Suggested
                   </span>
@@ -421,7 +421,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
           {bulkSelectedIds.size > 0 &&
             createPortal(
               <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-8 duration-300">
-                <div className="bg-slate-900 text-white rounded-[4px] shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
+                <div className="bg-slate-900 text-white rounded-2xl shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
                   <div className="flex flex-col mr-4">
                     <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary leading-none">
                       Selected
@@ -437,7 +437,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                     <button
                       onClick={() => handleBulkAction("select")}
                       disabled={isMutationPending}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-[4px] transition-all active:scale-95 disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                     >
                       <UserPlus className="w-4 h-4" />
                       <span className="text-xs font-black uppercase tracking-widest">
@@ -448,7 +448,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                     <button
                       onClick={() => handleBulkAction("reject")}
                       disabled={isMutationPending}
-                      className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 rounded-[4px] transition-all active:scale-95 disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-rose-600 hover:bg-rose-500 rounded-xl transition-all active:scale-95 disabled:opacity-50"
                     >
                       <XCircle className="w-4 h-4" />
                       <span className="text-xs font-black uppercase tracking-widest">
