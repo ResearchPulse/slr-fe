@@ -40,10 +40,10 @@ function DraggableEvidenceRow({
     <div
       ref={setNodeRef}
       style={rowStyle}
-      className={`group relative overflow-hidden rounded-[4px] border border-border bg-surface-white p-3 pl-4 shadow-none transition-all duration-200 ${
+      className={`group relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-3 pl-4 shadow-sm shadow-slate-200/20 transition-all duration-200 ${
         isDragging
-          ? "cursor-grabbing border-blue-300 bg-blue-50/60 shadow-none shadow-blue-100 scale-[1.01]"
-          : "hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-none"
+          ? "cursor-grabbing border-blue-300 bg-blue-50/60 shadow-md shadow-blue-100 scale-[1.01]"
+          : "hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md hover:shadow-slate-200/40"
       } ${disabled ? "opacity-80" : "cursor-grab"}`}
     >
       <div
@@ -56,7 +56,7 @@ function DraggableEvidenceRow({
           {...attributes}
           {...listeners}
           disabled={disabled || !hasThemes}
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] border border-border bg-bg-secondary text-text-secondary transition hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/80 bg-bg-secondary text-text-secondary transition hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50 disabled:cursor-not-allowed disabled:opacity-50"
           aria-label={`Drag evidence from ${value.paperTitle}`}
           title="Drag to a theme"
         >
@@ -97,7 +97,7 @@ export default function SourceDataAccordion({
 }: SourceDataAccordionProps) {
   if (groups.length === 0) {
     return (
-      <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+      <div className="flex min-h-48 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-6 py-10 text-center">
         <p className="text-sm font-medium text-text-secondary">
           No raw extracted data was returned for this synthesis process.
         </p>
@@ -113,12 +113,12 @@ export default function SourceDataAccordion({
         return (
           <div
             key={group.fieldId}
-            className="overflow-hidden rounded-[4px] border border-border bg-surface-white shadow-none"
+            className="overflow-hidden rounded-xl border border-border/80 bg-surface-white shadow-sm shadow-slate-200/20"
           >
             <button
               type="button"
               onClick={() => onToggleGroup(group.fieldId)}
-              className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-bg-primary"
+              className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-bg-primary/70"
             >
               <div>
                 <p className="text-sm font-semibold text-text-primary">

@@ -23,6 +23,10 @@ export default function MainLayout() {
     /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?synthesis(?:\/|$)/.test(
       pathname,
     );
+  const isPrismaReportWorkspace =
+    /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?prisma-report(?:\/|$)/.test(
+      pathname,
+    );
 
   return (
     <div
@@ -37,7 +41,8 @@ export default function MainLayout() {
         !isReviewProcessDashboard &&
         !isDataExtractionWorkspace &&
         !isQualityAssessmentWorkspace &&
-        !isSynthesisWorkspace && <Header />}
+        !isSynthesisWorkspace &&
+        !isPrismaReportWorkspace && <Header />}
       <main
         className={
           isScreeningWorkspace

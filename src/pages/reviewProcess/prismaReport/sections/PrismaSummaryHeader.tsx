@@ -5,7 +5,6 @@ import {
   FiCopy,
   FiFilter,
   FiCheckCircle,
-  FiRefreshCw,
 } from "react-icons/fi";
 import type { PrismaSummaryStats } from "../../../../types/prismaReport";
 import { SUMMARY_CARDS } from "../constants";
@@ -23,39 +22,31 @@ const CARD_ICONS: Record<string, React.ReactNode> = {
   studiesIncluded: <FiCheckCircle className="w-5 h-5" />,
 };
 
-const COLOR_MAP: Record<string, { card: string; icon: string; value: string }> =
+const COLOR_MAP: Record<string, { icon: string; value: string }> =
   {
     indigo: {
-      card: "from-indigo-50 to-indigo-100/60 border-indigo-200",
-      icon: "text-accent",
-      value: "text-indigo-900",
+      icon: "text-primary",
+      value: "text-text-primary",
     },
     orange: {
-      card: "from-orange-50 to-orange-100/60 border-orange-200",
-      icon: "text-orange-600",
-      value: "text-orange-900",
+      icon: "text-amber-600",
+      value: "text-text-primary",
     },
     blue: {
-      card: "from-blue-50 to-blue-100/60 border-blue-200",
-      icon: "text-blue-600",
-      value: "text-blue-900",
+      icon: "text-primary",
+      value: "text-text-primary",
     },
     green: {
-      card: "from-green-50 to-green-100/60 border-border",
-      icon: "text-green-600",
-      value: "text-green-900",
+      icon: "text-green-700",
+      value: "text-text-primary",
     },
   };
 
 function SkeletonCard() {
   return (
-    <div className="bg-linear-to-br from-gray-50 to-gray-100/60 border border-border rounded-[4px] p-5 animate-pulse">
-      <div className="flex items-center justify-between mb-3">
-        <div className="w-8 h-8 bg-bg-secondary rounded" />
-        <FiRefreshCw className="w-4 h-4 text-gray-300 animate-spin" />
-      </div>
-      <div className="h-8 w-16 bg-bg-secondary rounded mb-2" />
-      <div className="h-4 w-24 bg-bg-secondary rounded mb-1" />
+    <div className="px-5 py-4 animate-pulse">
+      <div className="h-7 w-12 bg-bg-secondary rounded mb-2" />
+      <div className="h-4 w-28 bg-bg-secondary rounded mb-2" />
       <div className="h-3 w-32 bg-bg-secondary rounded" />
     </div>
   );
@@ -67,39 +58,42 @@ export default function PrismaSummaryHeader({
   generatedAt,
 }: PrismaSummaryHeaderProps) {
   return (
-    <section aria-label="PRISMA summary statistics">
-      {/* Timestamp label */}
-      {generatedAt && (
-        <p className="text-xs text-text-secondary mb-3 font-medium tracking-wide uppercase">
-          Snapshot from{" "}
-          {new Date(generatedAt).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}
-        </p>
-      )}
+    <section aria-label="Report overview">
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <h2 className="text-base font-semibold text-text-primary">Report Overview</h2>
+        {generatedAt && (
+          <p className="text-xs text-text-secondary">
+            Snapshot ·{" "}
+            {new Date(generatedAt).toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
+        )}
+      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {isLoading
-          ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-          : SUMMARY_CARDS.map((card) => {
+      <div className="overflow-hidden rounded-xl border border-border/70 bg-surface-white p-2 shadow-sm">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {isLoading
+            ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
+            : SUMMARY_CARDS.map((card) => {
               const colors = COLOR_MAP[card.colorScheme];
               const value = stats[card.key];
               return (
                 <div
                   key={card.key}
-                  className={`bg-linear-to-br ${colors.card} border rounded-[4px] p-5 transition-shadow-none hover:shadow-none`}
+                  className="relative min-h-[112px] rounded-lg bg-bg-primary/65 p-4 sm:px-5 sm:py-4"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={colors.icon}>{CARD_ICONS[card.key]}</span>
-                  </div>
-                  <div
-                    className={`text-3xl font-bold ${colors.value} mb-1 tabular-nums`}
-                  >
-                    {value.toLocaleString()}
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg bg-surface-white ${colors.icon}`}>
+                      {CARD_ICONS[card.key]}
+                    </span>
+                    <div className={`text-2xl sm:text-[28px] leading-8 font-semibold ${colors.value} tabular-nums`}>
+                      {value.toLocaleString()}
+                    </div>
                   </div>
                   <div className="text-sm text-text-primary font-medium">
                     {card.label}
@@ -110,6 +104,7 @@ export default function PrismaSummaryHeader({
                 </div>
               );
             })}
+        </div>
       </div>
     </section>
   );

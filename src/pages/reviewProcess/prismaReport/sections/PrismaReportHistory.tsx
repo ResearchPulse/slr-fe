@@ -37,15 +37,15 @@ export default function PrismaReportHistory({
           Report History
         </h3>
         {reports.length > 0 && (
-          <span className="text-xs font-semibold px-2.5 py-0.5 bg-bg-secondary text-text-secondary rounded-full border border-border">
+          <span className="text-xs text-text-secondary">
             {reports.length} {reports.length === 1 ? "version" : "versions"}
           </span>
         )}
       </div>
 
-      <div className="border border-border rounded-[4px] overflow-hidden bg-surface-white">
+      <div className="overflow-hidden bg-surface-white">
         {isLoading ? (
-          <div className="divide-y divide-gray-100">
+          <div className="divide-y divide-border/70">
             {Array.from({ length: 3 }).map((_, i) => (
               <SkeletonItem key={i} />
             ))}
@@ -61,35 +61,27 @@ export default function PrismaReportHistory({
             </p>
           </div>
         ) : (
-          <ul className="divide-y divide-gray-100 max-h-[380px] overflow-y-auto custom-scrollbar">
+          <ul className="divide-y divide-border/70 max-h-[380px] overflow-y-auto custom-scrollbar">
             {reports.map((report) => {
               const isActive = report.id === activeReportId;
               return (
                 <li key={report.id}>
                   <button
                     onClick={() => onSelectReport?.(report.id)}
-                    className={`w-full flex items-center gap-4 px-4 py-3 transition-colors text-left group ${
+                    className={`w-full flex items-center gap-3 px-3 py-3 transition-colors text-left group rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/30 ${
                       isActive
-                        ? "bg-bg-secondary border-l-2 border-indigo-500"
+                        ? "bg-primary-light border-l-2 border-primary"
                         : "hover:bg-bg-primary border-l-2 border-transparent"
                     }`}
                   >
-                    <div
-                      className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                        isActive ? "bg-indigo-200" : "bg-indigo-100"
-                      }`}
-                    >
-                      <FiFileText
-                        className={`w-4 h-4 ${isActive ? "text-indigo-700" : "text-accent"}`}
-                      />
+                    <div className="w-7 h-7 flex items-center justify-center shrink-0 text-primary">
+                      <FiFileText className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-text-primary">
                         Version {report.version}
                         {isActive && (
-                          <span className="ml-2 inline-block px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide bg-indigo-100 text-indigo-700 rounded">
-                            Viewing
-                          </span>
+                          <span className="ml-2 text-xs font-normal text-primary">Current version</span>
                         )}
                         {report.generatedBy && (
                           <span className="text-text-secondary font-normal">
