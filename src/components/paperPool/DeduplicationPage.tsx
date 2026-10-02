@@ -43,10 +43,10 @@ export default function DeduplicationPage({
   return (
     <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       {/* Page Header */}
-      <div className="flex items-center justify-between bg-surface-white p-6 rounded-[4px] border border-border shadow-none">
+      <div className="flex items-center justify-between bg-surface-white p-6 rounded-2xl border border-border shadow-none">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-bg-secondary rounded-[4px] flex items-center justify-center text-accent">
+            <div className="w-12 h-12 bg-bg-secondary rounded-xl flex items-center justify-center text-accent">
               <FiShield className="w-6 h-6" />
             </div>
             <div>
@@ -61,7 +61,7 @@ export default function DeduplicationPage({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 bg-surface-white border border-red-100 rounded-[4px] flex items-center gap-2">
+          <div className="px-4 py-2 bg-surface-white border border-red-100 rounded-full flex items-center gap-2">
             <FiAlertTriangle className="text-red-500" />
             <span className="text-sm font-bold text-red-700">
               {pendingDuplicates.length} Pending Conflicts
@@ -73,7 +73,7 @@ export default function DeduplicationPage({
               onClick={runDeduplication}
               disabled={isLoading || isRunningDeduplication}
               isLoading={isRunningDeduplication}
-              className="rounded-[4px] font-bold uppercase tracking-wider text-xs"
+              className="rounded-xl font-bold uppercase tracking-wider text-xs"
             >
               Run Deduplication
             </Button>
@@ -82,7 +82,7 @@ export default function DeduplicationPage({
             variant="outline"
             onClick={onRefetch}
             disabled={isLoading || isRunningDeduplication}
-            className="rounded-[4px] font-bold uppercase tracking-wider text-xs"
+            className="rounded-xl font-bold uppercase tracking-wider text-xs"
           >
             Refresh Queue
           </Button>
@@ -90,7 +90,7 @@ export default function DeduplicationPage({
       </div>
 
       {/* Main Content */}
-      <div className="bg-surface-white rounded-[4px] border border-border shadow-none overflow-hidden min-h-[600px]">
+      <div className="bg-surface-white rounded-2xl border border-border shadow-none overflow-hidden min-h-[600px]">
         <DeduplicationTabContent
           duplicatePairs={duplicatePairs}
           pendingDuplicates={pendingDuplicates}

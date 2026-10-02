@@ -51,7 +51,7 @@ export default function DeduplicationProgressBanner({
   }, [duplicatePairs, sessionResolvedCount, total, sessionStartTime]);
 
   return (
-    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-[4px] p-6 mb-6 shadow-none">
+    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-6 shadow-none">
       <div className="flex items-center ">
         {/* Metrics row */}
         <div className="flex items-center  gap-8">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "../../ui/Modal";
 import FormField from "../../ui/FormField";
+import Select from "../../ui/Select";
 import Button from "../../ui/Button";
 import { useRegisterMutation } from "../../../hooks/useUsers";
 import { toastSuccess, toastError } from "../../../utils/toast";
@@ -19,6 +20,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
     email: "",
     username: "",
     password: DEFAULT_PASSWORD,
+    role: 0,
   });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
@@ -69,10 +71,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
     if (!validate()) return;
 
     try {
-      const result = await register({
-        ...formData,
-        role: 0,
-      });
+      const result = await register(formData);
 
       if (result.isSuccess) {
         toastSuccess(
@@ -110,6 +109,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
       email: "",
       username: "",
       password: DEFAULT_PASSWORD,
+      role: 0,
     });
     setFieldErrors({});
     onClose();
@@ -147,17 +147,44 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
           />
         </div>
 
-        <FormField
-          id="email"
-          label="Email Address"
-          type="email"
-          placeholder="e.g. alex.s@srss.admin.com"
-          value={formData.email}
-          onChange={handleChange}
-          errorMessage={fieldErrors.email}
-          disabled={isLoading}
-          required
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FormField
+            id="email"
+            label="Email Address"
+            type="email"
+            placeholder="e.g. alex.s@srss.admin.com"
+            value={formData.email}
+            onChange={handleChange}
+            errorMessage={fieldErrors.email}
+            disabled={isLoading}
+            required
+          />
+          <div>
+            <label
+              htmlFor="role"
+              className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+            >
+              Role <span className="text-red-500">*</span>
+            </label>
+            <div className="[&>div]:block [&>div]:w-full">
+              <Select
+                id="role"
+                value={String(formData.role)}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    role: parseInt(e.target.value, 10),
+                  }))
+                }
+                options={[
+                  { value: "0", label: "Student" },
+                  { value: "1", label: "Teacher" },
+                  { value: "2", label: "Admin" },
+                ]}
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-2">
           <FormField
