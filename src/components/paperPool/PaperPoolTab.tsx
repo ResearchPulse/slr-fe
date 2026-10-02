@@ -254,7 +254,8 @@ export default function PaperPoolTab({
     (stepId: number) => {
       switch (stepId) {
         case 1:
-          return (setupState.topic?.length ?? 0) > 0;
+          // In an active project review workspace, protocol definition is already completed
+          return true;
         case 2:
           return hasSearchSources;
         case 3:
@@ -271,7 +272,6 @@ export default function PaperPoolTab({
       }
     },
     [
-      setupState.topic,
       hasSearchSources,
       papersPage?.totalCount,
       reviewProcesses,
@@ -281,6 +281,9 @@ export default function PaperPoolTab({
   const initialCheckPerformed = useRef(false);
 
   useEffect(() => {
+    // Wait until background queries finish loading before evaluating step resolution
+    if (isLoadingPapers || setupState.isLoadingSetup) return;
+
     // Only determine initial starting step once on mount when user arrives at step 1
     if (initialCheckPerformed.current) return;
 
@@ -303,6 +306,8 @@ export default function PaperPoolTab({
     workflowStep,
     isStepCompleted,
     setWorkflowStep,
+    isLoadingPapers,
+    setupState.isLoadingSetup,
   ]);
 
   const workflowActions = useMemo(() => {
@@ -310,7 +315,7 @@ export default function PaperPoolTab({
       case 1:
         return [
           {
-            label: "Confirm & Plan Sources",
+            label: "Next: Search Strategy",
             primary: true,
             onClick: () => setWorkflowStep(2),
             icon: FiChevronRight,
@@ -319,7 +324,7 @@ export default function PaperPoolTab({
       case 2:
         return [
           {
-            label: "Confirm & Move to Repository",
+            label: "Next: Paper Repository",
             primary: true,
             onClick: () => {
               if (!hasSearchSources) {
@@ -351,7 +356,7 @@ export default function PaperPoolTab({
           ...((papersPage?.totalCount ?? 0) > 0
             ? [
                 {
-                  label: "Confirm & Setup Processes",
+                  label: "Next: Review Processes",
                   primary: true,
                   onClick: () => setWorkflowStep(4),
                   icon: FiChevronRight,

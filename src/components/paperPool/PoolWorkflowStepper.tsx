@@ -207,7 +207,7 @@ export default function PoolWorkflowStepper({
 function getInstructionTitle(step: number, isLeader = true) {
   switch (step) {
     case 1:
-      return "Review Research Strategy";
+      return "Research Strategy (Protocol Reference)";
     case 2:
       return "Define Search Strategy";
     case 3:
@@ -224,7 +224,7 @@ function getInstructionTitle(step: number, isLeader = true) {
 function getInstructionDescription(step: number, isLeader = true) {
   switch (step) {
     case 1:
-      return "Ensure your Research Questions and PICO-C elements are correctly defined. This forms the foundation of your systematic review.";
+      return "Your Research Questions and PICO-C definitions established during project setup. You can review or update them here as your reference.";
     case 2:
       return "Define the academic databases (e.g., Scopus, Web of Science) you will search. You must add at least one source to proceed.";
     case 3:
