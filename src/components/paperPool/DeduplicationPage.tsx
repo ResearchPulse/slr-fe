@@ -20,6 +20,8 @@ export default function DeduplicationPage({
     error,
     resolving: isResolving,
     resolvePair,
+    runDeduplication,
+    isRunningDeduplication,
     refetch: onRefetch,
   } = useDuplicatePairs({ projectId });
 
@@ -65,10 +67,21 @@ export default function DeduplicationPage({
               {pendingDuplicates.length} Pending Conflicts
             </span>
           </div>
+          {isLeader && (
+            <Button
+              variant="primary"
+              onClick={runDeduplication}
+              disabled={isLoading || isRunningDeduplication}
+              isLoading={isRunningDeduplication}
+              className="rounded-[4px] font-bold uppercase tracking-wider text-xs"
+            >
+              Run Deduplication
+            </Button>
+          )}
           <Button
             variant="outline"
             onClick={onRefetch}
-            disabled={isLoading}
+            disabled={isLoading || isRunningDeduplication}
             className="rounded-[4px] font-bold uppercase tracking-wider text-xs"
           >
             Refresh Queue
@@ -82,6 +95,8 @@ export default function DeduplicationPage({
           duplicatePairs={duplicatePairs}
           pendingDuplicates={pendingDuplicates}
           onResolveDuplicate={handleResolveDuplicate}
+          onRunDeduplication={runDeduplication}
+          isRunningDeduplication={isRunningDeduplication}
           isLoading={isLoading}
           isResolving={isResolving}
           error={error}

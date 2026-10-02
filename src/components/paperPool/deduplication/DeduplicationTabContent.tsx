@@ -42,6 +42,8 @@ interface DeduplicationTabContentProps {
   isResolving?: boolean;
   /** Refetch duplicate pairs from the API */
   onRefetch?: () => void;
+  onRunDeduplication?: () => void;
+  isRunningDeduplication?: boolean;
   canEdit?: boolean;
 }
 
@@ -55,6 +57,8 @@ export default function DeduplicationTabContent({
   error = null,
   isResolving = false,
   onRefetch,
+  onRunDeduplication,
+  isRunningDeduplication = false,
   canEdit = true,
 }: DeduplicationTabContentProps) {
   const [internalSelectedDuplicate, setInternalSelectedDuplicate] =
@@ -286,6 +290,9 @@ export default function DeduplicationTabContent({
               resolvedCount={resolvedCount}
               sessionStartTime={sessionStartTime}
               sessionResolvedCount={sessionResolvedCount}
+              onRunDeduplication={onRunDeduplication}
+              isRunningDeduplication={isRunningDeduplication}
+              canEdit={canEdit}
             />
           )}
 
@@ -523,9 +530,22 @@ export default function DeduplicationTabContent({
                   ? "All imported records appear to be unique. If you've added new batches, run the deduplication algorithm to check for matches."
                   : "All imported records appear to be unique. No duplicate pairs are currently pending resolution."
               }
-              actionLabel={canEdit ? "Run Deduplication" : ""}
+              actionLabel={
+                canEdit
+                  ? isRunningDeduplication
+                    ? "Running Deduplication..."
+                    : "Run Deduplication"
+                  : ""
+              }
+              isLoading={isRunningDeduplication}
               onAction={() => {
-                if (canEdit) onRefetch?.();
+                if (canEdit && !isRunningDeduplication) {
+                  if (onRunDeduplication) {
+                    onRunDeduplication();
+                  } else {
+                    onRefetch?.();
+                  }
+                }
               }}
             />
           )}
