@@ -3,6 +3,7 @@ import AIProjectSetupWizard from "../../../pages/projects/AIProjectSetupWizard";
 
 interface ProjectSetupSectionProps {
   projectId: string;
+  projectTitle?: string;
   projectDomain?: string;
   isProjectSetupReady: boolean;
   onSetupSaved: () => void;
@@ -14,6 +15,7 @@ interface ProjectSetupSectionProps {
 
 const ProjectSetupSection: React.FC<ProjectSetupSectionProps> = ({
   projectId,
+  projectTitle,
   projectDomain,
   onSetupSaved,
   embedded = true,
@@ -26,6 +28,7 @@ const ProjectSetupSection: React.FC<ProjectSetupSectionProps> = ({
       <AIProjectSetupWizard
         embedded={embedded}
         projectId={projectId}
+        projectTitle={projectTitle}
         projectDomain={projectDomain}
         onSetupSaved={onSetupSaved}
         hideEditButton={hideEditButton}

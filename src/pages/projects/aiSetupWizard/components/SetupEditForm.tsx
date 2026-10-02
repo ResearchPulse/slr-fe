@@ -2,14 +2,14 @@ import type { EditableResearchQuestion, PicoCForm, ScopeForm } from "../types";
 import { FieldLabel } from "./Common";
 
 interface SetupEditFormProps {
-  topic: string;
-  scopeForm: ScopeForm;
+  topic?: string;
+  scopeForm?: ScopeForm;
   picocForm: PicoCForm;
   editResearchQuestions: EditableResearchQuestion[];
   editNewRQInput: string;
   isSavingSetup: boolean;
-  onTopicChange: (value: string) => void;
-  onScopeChange: (field: keyof ScopeForm, value: string) => void;
+  onTopicChange?: (value: string) => void;
+  onScopeChange?: (field: keyof ScopeForm, value: string) => void;
   onPicocChange: (field: keyof PicoCForm, value: string) => void;
   onEditRQTextChange: (index: number, value: string) => void;
   onDeleteEditRQ: (index: number) => void;
@@ -20,14 +20,10 @@ interface SetupEditFormProps {
 }
 
 export default function SetupEditForm({
-  topic,
-  scopeForm,
   picocForm,
   editResearchQuestions,
   editNewRQInput,
   isSavingSetup,
-  onTopicChange,
-  onScopeChange,
   onPicocChange,
   onEditRQTextChange,
   onDeleteEditRQ,
@@ -42,39 +38,8 @@ export default function SetupEditForm({
         <div>
           <h2 className="text-xl font-semibold text-text-primary">Edit protocol</h2>
           <p className="text-sm text-text-secondary">
-            Update the scope, PICO-C framework, and research questions.
+            Update the PICO-C framework and research questions.
           </p>
-        </div>
-      </div>
-
-      <div className="rounded-[4px] border border-border bg-surface-white p-5">
-        <FieldLabel title="Research Topic" />
-        <textarea
-          rows={3}
-          value={topic}
-          onChange={(e) => onTopicChange(e.target.value)}
-          className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
-        />
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-[4px] border border-border bg-surface-white p-5">
-          <FieldLabel title="Objective" />
-          <textarea
-            rows={3}
-            value={scopeForm.objectives}
-            onChange={(e) => onScopeChange("objectives", e.target.value)}
-            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
-          />
-        </div>
-        <div className="rounded-[4px] border border-border bg-surface-white p-5">
-          <FieldLabel title="Domain" />
-          <textarea
-            rows={3}
-            value={scopeForm.domain}
-            onChange={(e) => onScopeChange("domain", e.target.value)}
-            className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
-          />
         </div>
       </div>
 

@@ -11,6 +11,7 @@ import { useProjectMember } from "../../hooks/useProjectMember";
 export default function AIProjectSetupWizard({
   embedded = false,
   projectId,
+  projectTitle,
   projectDomain,
   onSetupSaved,
   hideEditButton = false,
@@ -119,6 +120,7 @@ export default function AIProjectSetupWizard({
           <div>
             <SetupSummaryView
               topic={state.topic}
+              projectTitle={projectTitle}
               projectDomain={projectDomain}
               scopeForm={state.scopeForm}
               picocForm={state.picocForm}
@@ -135,19 +137,10 @@ export default function AIProjectSetupWizard({
         {state.viewMode === "edit" && isLeader && (
           <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
             <SetupEditForm
-              topic={state.topic}
-              scopeForm={state.scopeForm}
               picocForm={state.picocForm}
               editResearchQuestions={state.editResearchQuestions}
               editNewRQInput={state.editNewRQInput}
               isSavingSetup={state.isSavingSetup}
-              onTopicChange={state.setTopic}
-              onScopeChange={(field, value) =>
-                state.setScopeForm((prev) => ({
-                  ...prev,
-                  [field]: value,
-                }))
-              }
               onPicocChange={(field, value) =>
                 state.setPicocForm((prev) => ({
                   ...prev,
