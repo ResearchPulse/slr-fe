@@ -41,11 +41,15 @@ const BulkAssignmentPanelDataExtraction: React.FC<
 
   const reviewers = useMemo(
     () =>
-      members.filter(
-        (m) =>
+      members.filter((m) => {
+        const role = String(m.roleText ?? m.role).trim().toUpperCase();
+        return (
+          m.role === ProjectRole.Reviewer ||
           m.role === ProjectRole.Lecturer ||
-          m.role === ProjectRole.Owner,
-      ),
+          m.role === ProjectRole.Owner ||
+          ["REVIEWER", "LECTURER", "OWNER", "LEADER", "MEMBER", "3", "2", "1"].includes(role)
+        );
+      }),
     [members],
   );
 

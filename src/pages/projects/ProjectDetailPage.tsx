@@ -163,17 +163,20 @@ export default function ProjectDetailPage() {
       if (isProjectActive) return "completed";
 
       if (stepKey === "project-setup") {
-        return isProjectSetupReady ? "completed" : "current";
+        if (!isProjectSetupReady) return "current";
+        return selectedStep === "project-setup" ? "current" : "completed";
       }
 
       if (stepKey === "business-justification") {
         if (!isProjectSetupReady) return "locked";
-        const hasContent = reviewNeeds.length > 0 || documents.length > 0;
-        return hasContent ? "completed" : "current";
+        if (selectedStep === "business-justification") return "current";
+        if (selectedStep === "activate-project") return "completed";
+        return reviewNeeds.length > 0 || documents.length > 0 ? "completed" : "upcoming";
       }
 
       if (stepKey === "activate-project") {
-        return isProjectSetupReady ? "current" : "locked";
+        if (!isProjectSetupReady) return "locked";
+        return selectedStep === "activate-project" ? "current" : "upcoming";
       }
 
       return "locked";
@@ -199,6 +202,7 @@ export default function ProjectDetailPage() {
   }, [
     isProjectActive,
     isProjectSetupReady,
+    selectedStep,
     reviewNeeds.length,
     documents.length,
   ]);
@@ -223,11 +227,17 @@ export default function ProjectDetailPage() {
     ? "paper-pool"
     : "overview";
 
+  const savedStep = useSelector(
+    (state: RootState) => state.project.paperPoolSteps?.[id || ""],
+  );
+  const defaultLeaderStep = (processes && processes.length > 0) ? 4 : 2;
+  const targetStep = isLeader ? (savedStep && savedStep > 1 ? savedStep : defaultLeaderStep) : 5;
+
   const setActiveMainSection = (tab: "overview" | "paper-pool") => {
     if (tab === "overview") {
       navigate(`/projects/${id}/overview`, { replace: true });
     } else {
-      navigate(`/projects/${id}/workspace/1`, { replace: true });
+      navigate(`/projects/${id}/workspace/${targetStep}`, { replace: true });
     }
   };
 
@@ -375,7 +385,9 @@ export default function ProjectDetailPage() {
     const savedStep = useSelector(
       (state: RootState) => state.project.paperPoolSteps?.[id || ""],
     );
-    return <Navigate to={`workspace/${savedStep || 1}`} replace />;
+    const defaultLeaderStep = (processes && processes.length > 0) ? 4 : 2;
+    const targetStep = isLeader ? (savedStep && savedStep > 1 ? savedStep : defaultLeaderStep) : 5;
+    return <Navigate to={`workspace/${targetStep}`} replace />;
   };
 
   // ── Render workspace based on selected step ──────────────────────────────
@@ -525,8 +537,22 @@ export default function ProjectDetailPage() {
         <StepProgressNav
           steps={workflowSteps}
           onStepClick={handleStepClick}
-          actionLabel={isLeader && isProjectSetupReady ? "Continue to activation" : undefined}
-          onAction={() => setSelectedStep("activate-project")}
+          actionLabel={
+            isLeader && isProjectSetupReady
+              ? selectedStep === "project-setup"
+                ? "Continue to justification"
+                : selectedStep === "business-justification"
+                  ? "Continue to activation"
+                  : undefined
+              : undefined
+          }
+          onAction={() => {
+            if (selectedStep === "project-setup") {
+              setSelectedStep("business-justification");
+            } else if (selectedStep === "business-justification") {
+              setSelectedStep("activate-project");
+            }
+          }}
         />
       )}
 
