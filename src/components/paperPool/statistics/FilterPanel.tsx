@@ -19,9 +19,9 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableSources,
 }) => {
   return (
-    <div className="bg-surface-white p-8 rounded-[4px] border border-border shadow-none flex flex-col md:flex-row md:items-center justify-between gap-6">
+    <div className="bg-surface-white p-8 rounded-2xl border border-border shadow-none flex flex-col md:flex-row md:items-center justify-between gap-6">
       <div className="flex items-center gap-5">
-        <div className="w-14 h-14 bg-slate-900 text-white rounded-[4px] flex items-center justify-center shadow-none shadow-slate-200">
+        <div className="w-14 h-14 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-none shadow-slate-200">
           <FiFilter className="w-7 h-7" />
         </div>
         <div>
@@ -52,7 +52,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 { label: "All Sources", value: "" },
                 ...availableSources.map((s) => ({ label: s, value: s })),
               ]}
-              className="rounded-[4px] border-2 border-slate-50 focus:border-blue-500 transition-all font-bold text-sm"
+              className="rounded-xl border-2 border-slate-50 focus:border-blue-500 transition-all font-bold text-sm"
             />
           </div>
         </div>
@@ -74,7 +74,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                     : undefined,
                 })
               }
-              className="w-24 rounded-[4px] border-2 border-slate-50 focus:border-blue-500 font-bold"
+              className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
             />
             <span className="text-slate-300 font-bold">-</span>
             <Input
@@ -87,7 +87,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   yearTo: e.target.value ? parseInt(e.target.value) : undefined,
                 })
               }
-              className="w-24 rounded-[4px] border-2 border-slate-50 focus:border-blue-500 font-bold"
+              className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
             />
           </div>
         </div>
@@ -95,7 +95,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         <Button
           variant="ghost"
           onClick={onReset}
-          className="rounded-[4px] text-text-secondary hover:text-blue-600 hover:bg-blue-50 h-11 px-4 font-bold uppercase tracking-widest text-[10px]"
+          className="rounded-xl text-text-secondary hover:text-blue-600 hover:bg-blue-50 h-11 px-4 font-bold uppercase tracking-widest text-[10px]"
         >
           <FiRefreshCw className="mr-2" />
           Reset

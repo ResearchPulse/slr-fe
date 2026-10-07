@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   FiEye,
   FiUsers,
@@ -26,6 +26,7 @@ import {
   useProjectMutations,
   useExportProjectsMutation,
 } from "../../hooks/useProjects";
+import { useDebounce } from "../../hooks/useDebounce";
 import type { ProjectStatus } from "../../types/project";
 import toast from "react-hot-toast";
 
@@ -51,6 +52,7 @@ const StatusBadge: React.FC<{ status: ProjectStatus }> = ({ status }) => {
 const SLRProjectManagement: React.FC = () => {
   // State
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearch = useDebounce(searchTerm, 400);
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [statusFilter, setStatusFilter] = useState<ProjectStatus | undefined>();
@@ -75,6 +77,7 @@ const SLRProjectManagement: React.FC = () => {
   } = useProjects({
     pageNumber,
     pageSize,
+    search: debouncedSearch.trim() || undefined,
     status: statusFilter,
   });
 
@@ -91,17 +94,6 @@ const SLRProjectManagement: React.FC = () => {
       toast.error("Export failed. Please try again.");
     }
   };
-
-  // Local filtering for speed as per user request
-  const filteredProjects = useMemo(() => {
-    if (!searchTerm) return projects;
-    const lowSearch = searchTerm.toLowerCase();
-    return projects.filter(
-      (p) =>
-        p.title.toLowerCase().includes(lowSearch) ||
-        (p.domain && p.domain.toLowerCase().includes(lowSearch)),
-    );
-  }, [projects, searchTerm]);
 
   // Derived
   const totalCount = paginatedData?.totalCount || 0;
@@ -181,11 +173,17 @@ const SLRProjectManagement: React.FC = () => {
               placeholder="Search projects..."
               className="h-11 w-full rounded-[9px] border border-[#DCE6EC] bg-white py-2.5 pl-10 pr-10 text-[13px] text-[#29485C] outline-none transition focus:border-[#8DBDD8] focus:ring-4 focus:ring-[#087BC1]/[0.08]"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPageNumber(1);
+              }}
             />
             {searchTerm && (
               <button
-                onClick={() => setSearchTerm("")}
+                onClick={() => {
+                  setSearchTerm("");
+                  setPageNumber(1);
+                }}
                 type="button"
                 aria-label="Clear search"
                 className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-[#91A2AD] transition-colors hover:text-[#087BC1]"
@@ -321,8 +319,8 @@ const SLRProjectManagement: React.FC = () => {
                       </td>
                     </tr>
                   ))
-              ) : filteredProjects.length > 0 ? (
-                filteredProjects.map((project) => (
+              ) : projects.length > 0 ? (
+                projects.map((project) => (
                   <tr
                     key={project.id}
                     className="group transition-colors hover:bg-[#FAFCFD]"

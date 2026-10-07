@@ -88,28 +88,28 @@ export const Modal: React.FC<ModalProps> = ({
       )}
       onClick={handleBackdropClick}
     >
-      {/* Backdrop with frosted glass effect */}
+      {/* Backdrop with clean fade */}
       <div
         className={cn(
-          "fixed inset-0 bg-text-primary/45 backdrop-blur-[2px] transition-opacity duration-300 ease-out",
+          "fixed inset-0 bg-slate-900/40 transition-opacity duration-250 ease-out",
           isEntered ? "opacity-100" : "opacity-0",
         )}
         aria-hidden="true"
       />
 
-      {/* Modal/Drawer Content container for scaling animation */}
+      {/* Modal/Drawer Content container with 60fps GPU acceleration */}
       <div
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-surface-white border border-border shadow-lg overflow-hidden z-10 flex flex-col transition-[opacity,transform] duration-[420ms] ease-[cubic-bezier(0.22,1,0.36,1)]",
+          "relative w-full bg-surface-white border border-border shadow-2xl overflow-hidden z-10 flex flex-col transform-gpu will-change-transform",
           mode === "drawer" 
             ? cn(
-                "h-full max-h-screen rounded-none border-l border-y-0 border-r-0",
-                isEntered ? "translate-x-0 opacity-100" : "translate-x-3 opacity-0",
+                "h-full max-h-screen rounded-none border-l border-y-0 border-r-0 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                isEntered ? "translate-x-0" : "translate-x-full",
               )
             : cn(
-                "rounded-xl max-h-[85vh]",
+                "rounded-xl max-h-[85vh] transition-[opacity,transform] duration-200 ease-out",
                 isEntered
                   ? "translate-y-0 scale-100 opacity-100"
                   : "translate-y-2 scale-[0.985] opacity-0",

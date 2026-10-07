@@ -32,7 +32,7 @@ const FiltersBar: React.FC<FiltersBarProps> = ({
             placeholder="Search title, authors, or origin paper..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="block w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-[4px] text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+            className="block w-full pl-10 pr-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-sm placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
           />
         </div>
 
@@ -40,7 +40,7 @@ const FiltersBar: React.FC<FiltersBarProps> = ({
           <select
             value={status}
             onChange={(e) => onStatusChange(e.target.value)}
-            className="flex-1 md:flex-initial pl-3 pr-8 py-2.5 bg-surface-white border border-border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+            className="flex-1 md:flex-initial pl-3 pr-8 py-2.5 bg-surface-white border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
           >
             <option value="all">All Statuses</option>
             <option value="0">Detected</option>
@@ -52,7 +52,7 @@ const FiltersBar: React.FC<FiltersBarProps> = ({
           <select
             value={year}
             onChange={(e) => onYearChange(e.target.value)}
-            className="flex-1 md:flex-initial pl-3 pr-8 py-2.5 bg-surface-white border border-border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+            className="flex-1 md:flex-initial pl-3 pr-8 py-2.5 bg-surface-white border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
           >
             <option value="all">All Years</option>
             {years.map((y) => (

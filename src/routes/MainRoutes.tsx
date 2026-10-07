@@ -94,7 +94,6 @@ function MainRoutes() {
               <Route path=":id/*" element={<ProjectDetailPage />} />
 
               {/* Canonical Project-Centric Routes (FR-G0-01) */}
-              <Route path=":projectId/workspace" element={<ReviewProcessWorkspace />} />
               <Route path=":projectId/identification" element={<IdentificationPhaseWorkspace />} />
               <Route path=":projectId/screening" element={<ScreeningPhaseRouter />} />
               <Route path=":projectId/screening/dashboard" element={<ManageStudySelectionPage />} />

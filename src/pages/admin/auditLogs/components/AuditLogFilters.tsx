@@ -266,7 +266,10 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
   onEndDateChange,
   onReset,
 }) => {
-  const userOptions = users.map((user) => ({ value: user, label: user }));
+  const userOptions = [
+    { value: "all", label: "All users" },
+    ...users.map((user) => ({ value: user, label: user })),
+  ];
 
   return (
     <section className="rounded-xl border border-border bg-white p-4 sm:p-5">

@@ -91,7 +91,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
       );
       setInvitationToCancel(null);
       refetch();
-    } catch (error: any) {
+    } catch (error: unknown) {
       toastError(getErrorMessage(error, "Failed to cancel invitation."));
     }
   };

@@ -10,6 +10,7 @@ import {
   FiRefreshCw,
   FiX,
 } from "react-icons/fi";
+import { Check } from "lucide-react";
 import Button from "../../ui/Button";
 import EmptyState from "../../ui/EmptyState";
 import Switch from "../../ui/Switch";
@@ -42,6 +43,8 @@ interface DeduplicationTabContentProps {
   isResolving?: boolean;
   /** Refetch duplicate pairs from the API */
   onRefetch?: () => void;
+  onRunDeduplication?: () => void;
+  isRunningDeduplication?: boolean;
   canEdit?: boolean;
 }
 
@@ -55,6 +58,8 @@ export default function DeduplicationTabContent({
   error = null,
   isResolving = false,
   onRefetch,
+  onRunDeduplication,
+  isRunningDeduplication = false,
   canEdit = true,
 }: DeduplicationTabContentProps) {
   const [internalSelectedDuplicate, setInternalSelectedDuplicate] =
@@ -242,7 +247,7 @@ export default function DeduplicationTabContent({
           {onRefetch && (
             <button
               onClick={onRefetch}
-              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-[4px] hover:bg-blue-100 transition-colors"
+              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
             >
               Try Again
             </button>
@@ -253,7 +258,7 @@ export default function DeduplicationTabContent({
       {/* Main content (only when not loading initial and no error) */}
       {!isLoading && !error && (
         <>
-          <div className="rounded-[4px] border border-border bg-surface-white p-5">
+          <div className="rounded-2xl border border-border bg-surface-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-bold text-text-primary">
@@ -286,6 +291,9 @@ export default function DeduplicationTabContent({
               resolvedCount={resolvedCount}
               sessionStartTime={sessionStartTime}
               sessionResolvedCount={sessionResolvedCount}
+              onRunDeduplication={onRunDeduplication}
+              isRunningDeduplication={isRunningDeduplication}
+              canEdit={canEdit}
             />
           )}
 
@@ -301,7 +309,7 @@ export default function DeduplicationTabContent({
               {/* Right Panel: Comparison */}
               {selectedDuplicate ? (
                 <div className="lg:col-span-2">
-                  <div className="bg-surface-white border border-border rounded-[4px] p-6">
+                  <div className="bg-surface-white border border-border rounded-2xl p-6">
                     {/* Header with undo */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -349,7 +357,7 @@ export default function DeduplicationTabContent({
                         {undoStack.length > 0 && (
                           <button
                             onClick={handleUndo}
-                            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-blue-600 transition-colors px-3 py-1.5 rounded-[4px] hover:bg-blue-50"
+                            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-blue-600 transition-colors px-3 py-1.5 rounded-xl hover:bg-blue-50"
                             title="Undo last resolution"
                           >
                             <FiCornerUpLeft className="w-4 h-4" />
@@ -362,7 +370,7 @@ export default function DeduplicationTabContent({
                     {/* Low-similarity warning */}
                     {selectedDuplicate.similarityScore <
                       SIMILARITY_THRESHOLDS.LOW_WARNING && (
-                      <div className="flex items-start gap-2 p-3 mb-4 bg-amber-50 border border-amber-200 rounded-[4px]">
+                      <div className="flex items-start gap-2 p-3 mb-4 bg-amber-50 border border-amber-200 rounded-xl">
                         <FiAlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                         <p className="text-xs text-amber-700">
                           Low similarity score (
@@ -375,7 +383,7 @@ export default function DeduplicationTabContent({
 
                     {/* Confirmation overlay */}
                     {confirmingDecision && (
-                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-[4px]">
+                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-2xl">
                         <div className="flex items-start gap-3">
                           <FiAlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                           <div className="flex-1">
@@ -493,7 +501,7 @@ export default function DeduplicationTabContent({
                 </div>
               ) : (
                 // No pair selected placeholder
-                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-[4px] p-12">
+                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-2xl p-12">
                   <div className="text-center">
                     <FiLayers className="w-12 h-12 text-text-secondary mx-auto mb-3" />
                     <p className="text-text-secondary font-medium">
@@ -510,10 +518,15 @@ export default function DeduplicationTabContent({
             // Empty state: no duplicates at all
             <EmptyState
               icon={
-                <div className="relative">
-                  <FiCheck className="w-16 h-16 text-green-400" />
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-                    <FiCheck className="w-4 h-4 text-white" />
+                <div className="relative flex items-center justify-center my-2">
+                  {/* Ambient soft glow */}
+                  <div className="absolute w-24 h-24 rounded-full bg-emerald-100/70 blur-xl pointer-events-none" />
+
+                  {/* Concentric layered ring */}
+                  <div className="relative p-3.5 bg-emerald-50/90 rounded-full ring-8 ring-emerald-50/50 border border-emerald-100/80 shadow-sm flex items-center justify-center transition-transform hover:scale-105 duration-300">
+                    <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
+                      <Check size={28} strokeWidth={2.75} className="text-white drop-shadow-sm" />
+                    </div>
                   </div>
                 </div>
               }
@@ -523,9 +536,22 @@ export default function DeduplicationTabContent({
                   ? "All imported records appear to be unique. If you've added new batches, run the deduplication algorithm to check for matches."
                   : "All imported records appear to be unique. No duplicate pairs are currently pending resolution."
               }
-              actionLabel={canEdit ? "Run Deduplication" : ""}
+              actionLabel={
+                canEdit
+                  ? isRunningDeduplication
+                    ? "Running Deduplication..."
+                    : "Run Deduplication"
+                  : ""
+              }
+              isLoading={isRunningDeduplication}
               onAction={() => {
-                if (canEdit) onRefetch?.();
+                if (canEdit && !isRunningDeduplication) {
+                  if (onRunDeduplication) {
+                    onRunDeduplication();
+                  } else {
+                    onRefetch?.();
+                  }
+                }
               }}
             />
           )}

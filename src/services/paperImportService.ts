@@ -7,6 +7,7 @@ import type {
   RisFileImportRequest,
   RisImportResponse,
   BibTexFileImportRequest,
+  PdfFileImportRequest,
   FileValidationResult,
   DoiImportRequest,
   CrossrefImportRequest,
@@ -19,7 +20,7 @@ import type {
  * File Upload Configuration
  */
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const ALLOWED_EXTENSIONS = [".ris", ".bib"];
+const ALLOWED_EXTENSIONS = [".ris", ".bib", ".pdf"];
 
 /**
  * Validate import file before upload
@@ -65,6 +66,32 @@ export type ProgressCallback = (progressPercent: number) => void;
  * Implements RIS file import endpoint from PaperAPI.md
  */
 export const paperImportService = {
+  async importPdfFile(
+    request: PdfFileImportRequest,
+    onProgress?: ProgressCallback,
+  ): Promise<RisImportResponse> {
+    const validation = validateImportFile(request.file);
+    if (!validation.valid || !request.file.name.toLowerCase().endsWith(".pdf")) {
+      throw new Error("Invalid file type. Only .pdf files are allowed.");
+    }
+
+    const formData = new FormData();
+    formData.append("file", request.file);
+    formData.append("projectId", request.projectId);
+    if (request.searchSourceId) formData.append("searchSourceId", request.searchSourceId);
+
+    const response = await api.post<RisImportResponse>("/papers/import/pdf", formData, {
+      onUploadProgress: (event) => {
+        if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
+      },
+    });
+    const result = response.data;
+    if (!result.isSuccess) {
+      throw new Error(result.message || "Failed to import PDF file");
+    }
+    return result;
+  },
+
   /**
    * Import RIS file with progress tracking
    * POST /api/papers/import/ris

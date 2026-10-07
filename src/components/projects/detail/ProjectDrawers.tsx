@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import Drawer from "../../ui/Drawer";
 import ReviewNeedForm from "../ReviewNeedForm";
 import DocumentForm from "../DocumentForm";
@@ -7,7 +7,6 @@ import ResearchQuestionForm from "../ResearchQuestionForm";
 import PICOCForm from "../PICOCForm";
 import type { QuestionType } from "../../../types/coreAndGovernance";
 import type { PICOCElementType } from "../PICOCForm";
-import gsap from "gsap";
 
 interface ProjectDrawersProps {
   isNeedModalOpen: boolean;
@@ -64,45 +63,8 @@ const ProjectDrawers: React.FC<ProjectDrawersProps> = ({
   onAddQuestion,
   onAddPICOC,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const anyOpen =
-      isNeedModalOpen ||
-      isDocModalOpen ||
-      isObjModalOpen ||
-      isQuestionModalOpen ||
-      isPICOCModalOpen;
-
-    if (anyOpen) {
-      // Delay slightly to wait for drawer to start opening
-      const timer = setTimeout(() => {
-        // Target by class or just wait for the next render
-        gsap.fromTo(
-          ".drawer-stagger-item",
-          { opacity: 0, y: 20 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.5,
-            stagger: 0.1,
-            ease: "power2.out",
-            delay: 0.3,
-          },
-        );
-      }, 100);
-      return () => clearTimeout(timer);
-    }
-  }, [
-    isNeedModalOpen,
-    isDocModalOpen,
-    isObjModalOpen,
-    isQuestionModalOpen,
-    isPICOCModalOpen,
-  ]);
-
   return (
-    <div ref={containerRef}>
+    <div>
       <Drawer
         isOpen={isNeedModalOpen}
         onClose={onCloseNeed}

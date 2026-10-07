@@ -23,6 +23,12 @@ export interface BibTexFileImportRequest {
   searchSourceId?: string; // UUID format (optional)
 }
 
+export interface PdfFileImportRequest {
+  file: File;
+  projectId: string;
+  searchSourceId?: string;
+}
+
 /**
  * DOI Import Request
  * POST /api/papers/import/doi

@@ -41,8 +41,8 @@ export const SUMMARY_CARDS = [
   },
   {
     key: "duplicatesRemoved" as const,
-    label: "Records removed",
-    description: "Before screening",
+    label: "Removed Before Screening",
+    description: "Duplicates removed",
     colorScheme: "orange",
   },
   {

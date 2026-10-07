@@ -7,6 +7,7 @@ export const getErrorMessage = (error: unknown, defaultMessage: string): string 
       response?: { 
         data?: { 
           message?: string;
+          error?: { message?: string };
           errors?: Array<{ message: string }>;
         } 
       } 
@@ -15,6 +16,10 @@ export const getErrorMessage = (error: unknown, defaultMessage: string): string 
     // 1. Try top-level message
     if (axiosError.response?.data?.message) {
       return axiosError.response.data.message;
+    }
+
+    if (axiosError.response?.data?.error?.message) {
+      return axiosError.response.data.error.message;
     }
     
     // 2. Try first error in errors array

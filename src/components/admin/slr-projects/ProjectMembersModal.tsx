@@ -17,7 +17,8 @@ import { cn } from "../../../utils/cn";
 import { formatDate } from "../../../utils/dateFormat";
 import Tooltip from "../../ui/Tooltip";
 import LoadingSpinner from "../../ui/LoadingSpinner";
-import { toastSuccess, toastError } from "../../../utils/toast";
+import ConfirmModal from "../../ui/ConfirmModal";
+import { toastSuccess, toastError, toastInfo } from "../../../utils/toast";
 
 // Hooks & Services
 import {
@@ -25,6 +26,7 @@ import {
   useProjectInvitations,
   useSendInvitations,
   useUpdateProjectMemberRole,
+  useRemoveProjectMember,
   useProject,
 } from "../../../hooks/useProjects";
 import { useUserSearch, useUsers } from "../../../hooks/useUsers";
@@ -158,11 +160,14 @@ export default function ProjectMembersModal({
   const [previewRole, setPreviewRole] = useState<"Lecturer" | "Reviewer">("Lecturer");
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
   const [pendingLeader, setPendingLeader] = useState<{ userId: string; fullName: string } | null>(null);
+  const [memberToRemove, setMemberToRemove] = useState<{ userId: string; fullName: string } | null>(null);
 
   const { sendInvitations, isSending: isSendingInvitations } =
     useSendInvitations(projectId);
   const { updateMemberRole, isUpdating: isUpdatingMemberRole } =
     useUpdateProjectMemberRole(projectId);
+  const { removeMember, isRemoving: isRemovingMember } =
+    useRemoveProjectMember(projectId);
 
   // 3. Derived State
   const users = useMemo(() => {
@@ -218,18 +223,21 @@ export default function ProjectMembersModal({
   // Update user cache for invitations whenever the list of display users changes
   useEffect(() => {
     if (users.length > 0) {
-      setUserCache((prev) => {
-        const next = { ...prev };
-        let changed = false;
-        users.forEach((user) => {
-          // Update cache if user is missing or status has changed (e.g. from available to added)
-          if (!prev[user.id] || prev[user.id].status !== user.status) {
-            next[user.id] = user;
-            changed = true;
-          }
+      const timer = setTimeout(() => {
+        setUserCache((prev) => {
+          const next = { ...prev };
+          let changed = false;
+          users.forEach((user) => {
+            // Update cache if user is missing or status has changed (e.g. from available to added)
+            if (!prev[user.id] || prev[user.id].status !== user.status) {
+              next[user.id] = user;
+              changed = true;
+            }
+          });
+          return changed ? next : prev;
         });
-        return changed ? next : prev;
-      });
+      }, 0);
+      return () => clearTimeout(timer);
     }
   }, [users]);
 
@@ -375,6 +383,20 @@ export default function ProjectMembersModal({
       toastSuccess("Đã chuyển quyền Trưởng nhóm dự án.");
     } catch (error) {
       toastError(error instanceof Error ? error.message : "Không thể chuyển quyền Trưởng nhóm dự án.");
+    }
+  };
+
+  const handleConfirmRemoveMember = async () => {
+    if (!memberToRemove || !projectId) return;
+    try {
+      await removeMember(memberToRemove.userId);
+      toastSuccess(`Đã xóa ${memberToRemove.fullName} khỏi dự án.`);
+      setMemberToRemove(null);
+      refetchMembers();
+    } catch (error) {
+      toastError(
+        error instanceof Error ? error.message : "Không thể xóa thành viên khỏi dự án.",
+      );
     }
   };
   const totalSelections = Object.keys(assignedRoles).length;
@@ -617,8 +639,18 @@ export default function ProjectMembersModal({
                           </div>
                           {canManageMembers && (
                             <div className="pl-2 border-l border-slate-50 ml-2">
-                              <Tooltip content="Xóa khỏi dự án">
-                                <button className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-[4px] transition-all active:scale-95 group/del">
+                              <Tooltip content={member.role === ProjectRole.Owner ? "Không thể xóa Trưởng nhóm" : "Xóa khỏi dự án"}>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setMemberToRemove({
+                                      userId: member.userId,
+                                      fullName: member.fullName,
+                                    })
+                                  }
+                                  disabled={isRemovingMember || member.role === ProjectRole.Owner}
+                                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-[4px] transition-all active:scale-95 group/del disabled:opacity-30 disabled:cursor-not-allowed"
+                                >
                                   <FiTrash2
                                     size={18}
                                     className="transition-transform group-hover/del:rotate-6"
@@ -690,7 +722,10 @@ export default function ProjectMembersModal({
               {!effectivelyHideLeaderRole && (
                 <ProjectLeaderStatus
                   currentLeader={currentLeader}
-                  onReplaceClick={() => setActiveTab("add")}
+                  onReplaceClick={() => {
+                    setActiveTab("collaboration");
+                    toastInfo("Để đổi Trưởng nhóm, hãy chọn 'Project Leader' trong menu vai trò của thành viên.");
+                  }}
                   getInitials={getInitials}
                 />
               )}
@@ -762,6 +797,18 @@ export default function ProjectMembersModal({
         onConfirm={confirmReplaceLeader}
         onCancel={() => { setShowReplaceConfirm(false); setPendingLeader(null); }}
         selectedUserName={pendingLeader?.fullName}
+      />
+
+      <ConfirmModal
+        isOpen={Boolean(memberToRemove)}
+        onClose={() => setMemberToRemove(null)}
+        onConfirm={handleConfirmRemoveMember}
+        isLoading={isRemovingMember}
+        title="Xóa thành viên khỏi dự án"
+        message={`Bạn có chắc chắn muốn xóa thành viên "${memberToRemove?.fullName}" khỏi dự án này không?`}
+        confirmText="Xóa thành viên"
+        cancelText="Hủy"
+        variant="danger"
       />
     </Modal>
   );

@@ -25,6 +25,8 @@ import AuditLogDetailModal from "./auditLogs/components/AuditLogDetailModal";
 import AuditLogExportDialog from "./auditLogs/components/AuditLogExportDialog";
 
 import { useAdminAuditLogs } from "../../hooks/useAuditLogs";
+import { useUsers } from "../../hooks/useUsers";
+import { auditLogService } from "../../services/auditLogService";
 
 const initialFilters: AuditLogFiltersState = {
   searchTerm: "",
@@ -52,6 +54,7 @@ const AuditLogPage: React.FC = () => {
       pageSize: AUDIT_LOG_PAGE_SIZE,
     };
     if (filters.searchTerm) params.search = filters.searchTerm;
+    if (filters.user && filters.user !== "all") params.search = filters.user;
     if (filters.actionType !== "all") params.actionType = filters.actionType;
     if (filters.status !== "all") params.status = filters.status;
     if (filters.startDate) params.startDate = filters.startDate;
@@ -61,6 +64,7 @@ const AuditLogPage: React.FC = () => {
 
   const { data: auditLogsResponse, isLoading: isLoadingLogs } =
     useAdminAuditLogs(queryParams);
+  const { users: systemUsers } = useUsers({ pageNumber: 1, pageSize: 100 });
 
   const isPageLoading = isLoading || isLoadingLogs;
 
@@ -75,20 +79,21 @@ const AuditLogPage: React.FC = () => {
   );
 
   const users = useMemo(() => {
-    return Array.from(new Set(logs.map((entry) => entry.user))).sort(
-      (left, right) => left.localeCompare(right),
-    );
-  }, [logs]);
+    const fromLogs = logs.map((entry) => entry.user);
+    const fromUsers = (systemUsers || []).map((u) => u.fullName || u.username);
+    return Array.from(new Set([...fromLogs, ...fromUsers]))
+      .filter(Boolean)
+      .sort((left, right) => left.localeCompare(right));
+  }, [logs, systemUsers]);
 
   const filteredLogs = useMemo(() => {
-    // If backend pagination is active, skip local filtering for items from API to avoid double filter
-    if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
     return filterAuditLogs(logs, filters);
-  }, [filters, logs, auditLogsResponse]);
+  }, [filters, logs]);
+
   const sortedLogs = useMemo(() => {
-    if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
-    return sortAuditLogs(filteredLogs, sortField, sortDirection);
-  }, [filteredLogs, sortDirection, sortField, auditLogsResponse]);
+    const items = auditLogsResponse?.data?.items ? [...auditLogsResponse.data.items] : filteredLogs;
+    return sortAuditLogs(items, sortField, sortDirection);
+  }, [auditLogsResponse, filteredLogs, sortDirection, sortField]);
 
   const totalCount = auditLogsResponse?.data?.totalCount ?? sortedLogs.length;
   const totalPages =
@@ -100,11 +105,7 @@ const AuditLogPage: React.FC = () => {
     totalCount === 0 ? 0 : (activePage - 1) * AUDIT_LOG_PAGE_SIZE + 1;
   const pageEnd = Math.min(activePage * AUDIT_LOG_PAGE_SIZE, totalCount);
 
-  const pageLogs = useMemo(() => {
-    if (auditLogsResponse?.data?.items) return auditLogsResponse.data.items;
-    const startIndex = (activePage - 1) * AUDIT_LOG_PAGE_SIZE;
-    return sortedLogs.slice(startIndex, startIndex + AUDIT_LOG_PAGE_SIZE);
-  }, [activePage, sortedLogs, auditLogsResponse]);
+  const pageLogs = sortedLogs;
 
   const handleFilterUpdate = (
     key: keyof AuditLogFiltersState,
@@ -129,12 +130,30 @@ const AuditLogPage: React.FC = () => {
     setCurrentPage(1);
   };
 
-  const handleExport = (request: {
+  const handleExport = async (request: {
     format: AuditLogExportFormat;
     startDate: string;
     endDate: string;
   }) => {
-    const exportLogs = filterAuditLogs(logs, {
+    let itemsToExport = logs;
+    try {
+      const allLogsRes = await auditLogService.getAdminAuditLogs({
+        pageNumber: 1,
+        pageSize: 1000,
+        startDate: request.startDate || undefined,
+        endDate: request.endDate || undefined,
+        actionType: filters.actionType !== "all" ? filters.actionType : undefined,
+        status: filters.status !== "all" ? filters.status : undefined,
+        search: filters.searchTerm || undefined,
+      });
+      if (allLogsRes?.data?.items?.length) {
+        itemsToExport = allLogsRes.data.items;
+      }
+    } catch (err) {
+      console.warn("Failed to fetch full logs for export, falling back to cached logs", err);
+    }
+
+    const exportLogs = filterAuditLogs(itemsToExport, {
       ...filters,
       startDate: request.startDate,
       endDate: request.endDate,

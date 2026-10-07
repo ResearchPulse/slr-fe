@@ -31,9 +31,9 @@ export default function SynthesisThemeCard({
   return (
     <article
       ref={setNodeRef}
-      className={`relative overflow-hidden rounded-[4px] border border-border bg-surface-white p-5 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:shadow-none ${
+      className={`relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/50 ${
         isOver
-          ? "scale-[1.01] ring-2 ring-blue-500 bg-blue-50/30 shadow-none shadow-blue-100"
+          ? "scale-[1.01] ring-2 ring-blue-400/70 bg-blue-50/30 shadow-md shadow-blue-100"
           : ""
       } ${disabled ? "opacity-80" : ""}`}
     >
@@ -111,14 +111,14 @@ export default function SynthesisThemeCard({
 
       <div className="mt-4 space-y-2">
         {theme.evidences.length === 0 ? (
-          <p className="rounded-[4px] border border-dashed border-border bg-bg-primary px-4 py-3 text-sm text-text-secondary">
+          <p className="rounded-lg border border-dashed border-border bg-bg-primary/60 px-4 py-3 text-sm text-text-secondary">
             No linked evidence yet.
           </p>
         ) : (
           theme.evidences.map((evidence) => (
             <div
               key={evidence.id}
-              className="rounded-[4px] border border-border bg-bg-primary px-4 py-3"
+              className="rounded-lg border border-border/70 bg-bg-primary/70 px-4 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>

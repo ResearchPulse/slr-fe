@@ -385,11 +385,20 @@ const MasterSourcePage: React.FC = () => {
               required: "Base URL is required",
               pattern: {
                 value:
-                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([\/\w .-]*)*\/?$/,
+                  /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
                 message: "Enter a valid URL",
               },
             })}
             placeholder="e.g., https://www.scopus.com"
+            className="rounded-lg"
+          />
+
+          <FormField
+            id="logoUrl"
+            label="Logo URL (Optional)"
+            errorMessage={errors.logoUrl?.message}
+            {...register("logoUrl")}
+            placeholder="e.g., https://example.com/logo.png"
             className="rounded-lg"
           />
 

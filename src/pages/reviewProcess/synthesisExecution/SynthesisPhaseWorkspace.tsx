@@ -214,136 +214,140 @@ export default function SynthesisPhaseWorkspace() {
             >
               <ArrowLeft className="h-5 w-5" aria-hidden="true" />
             </button>
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
-              <Layers3 className="h-6 w-6" aria-hidden="true" />
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
+              <Layers3 className="h-5 w-5" aria-hidden="true" />
             </div>
             <div className="min-w-0">
               <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
                 {reviewProcess?.name || reviewProcess?.processName || "Systematic Literature Review"}
               </h1>
-              <div className="mt-1.5 flex flex-wrap items-center gap-2">
+              <div className="mt-1 flex flex-wrap items-center gap-2">
                 <span className="text-xs text-text-secondary">
                   Synthesis / {SECTION_LABELS[activeSection]}
                 </span>
-                <span className="h-1 w-1 rounded-full bg-text-muted" aria-hidden="true" />
                 <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  className={`inline-flex items-center gap-1.5 text-xs font-medium ${
                     workspace.processStatus === "InProgress"
-                      ? "bg-success/10 text-success"
+                      ? "text-text-secondary"
                       : workspace.processStatus === "Completed"
-                        ? "bg-primary-light text-primary"
-                        : "bg-bg-secondary text-text-secondary"
+                        ? "text-text-secondary"
+                        : "text-text-muted"
                   }`}
                 >
+                  <span className={`h-1.5 w-1.5 rounded-full ${workspace.processStatus === "Completed" ? "bg-success" : workspace.processStatus === "InProgress" ? "bg-primary" : "bg-text-muted"}`} aria-hidden="true" />
                   {workspace.processStatus === "InProgress"
                     ? "In progress"
-                    : workspace.processStatus}
+                    : workspace.processStatus === "Completed"
+                      ? "Completed"
+                      : workspace.processStatus === "NotStarted"
+                        ? "Not started"
+                        : (workspace.processStatus ?? "")}
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 pl-12 sm:pl-14 lg:gap-5 lg:pl-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pl-12 sm:pl-14 lg:gap-x-5 lg:pl-0">
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Studies</div>
               <div className="mt-0.5 font-medium text-text-primary">
                 {workspace.workspace?.totalExtractedPapers ?? 0} extracted
               </div>
             </div>
-            <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
+            <div className="hidden h-7 w-px bg-border/70 sm:block" aria-hidden="true" />
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Started</div>
               <div className="mt-0.5 font-medium text-text-primary">
                 {formatDate(workspace.workspace?.process.startedAt ?? "")}
               </div>
             </div>
-            <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
+            <div className="hidden h-7 w-px bg-border/70 sm:block" aria-hidden="true" />
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Last updated</div>
               <div className="mt-0.5 font-medium text-text-primary">
                 {formatDate(reviewProcess?.modifiedAt ?? workspace.workspace?.process.completedAt ?? workspace.workspace?.process.startedAt ?? "")}
               </div>
             </div>
-            <Button
-              variant={
-                workspace.processStatus === "InProgress" &&
-                workspace.allFindingsFinalized &&
-                !isReadOnly
-                  ? "success"
-                  : "outline"
-              }
-              onClick={workspace.completeSynthesis}
-              disabled={
-                workspace.processStatus !== "InProgress" ||
-                !workspace.allFindingsFinalized ||
-                isReadOnly ||
-                workspace.isCompleting
-              }
-              isLoading={workspace.isCompleting}
-              size="sm"
-              className="normal-case tracking-normal"
-            >
-              Complete phase
-            </Button>
+            {Boolean(workspace.processStatus) && (
+              <Button
+                variant={
+                  workspace.processStatus === "InProgress" &&
+                  workspace.allFindingsFinalized &&
+                  !isReadOnly
+                    ? "success"
+                    : "outline"
+                }
+                onClick={workspace.completeSynthesis}
+                disabled={
+                  workspace.processStatus !== "InProgress" ||
+                  !workspace.allFindingsFinalized ||
+                  isReadOnly ||
+                  workspace.isCompleting
+                }
+                isLoading={workspace.isCompleting}
+                size="sm"
+                className="normal-case tracking-normal disabled:border-border disabled:bg-bg-secondary disabled:text-text-muted disabled:opacity-100"
+              >
+                Complete phase
+              </Button>
+            )}
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-6 py-6">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
-          <div
-            className="flex min-w-0 items-center gap-3 rounded-lg border border-border bg-surface-white px-3 py-2"
-            title="When enabled, synthesis views include high-quality studies only."
-          >
-            <div className="flex min-w-0 flex-col">
-              <span className="text-xs font-medium leading-4 text-text-primary">Sensitivity analysis</span>
-              <span className="text-[11px] leading-4 text-text-secondary">Exclude low-quality studies</span>
-            </div>
-            <button
-              type="button"
-              id="sensitivity-toggle"
-              role="switch"
-              aria-label="Exclude low-quality studies"
-              aria-checked={filterHighQualityOnly}
-              onClick={() => setFilterHighQualityOnly((v) => !v)}
-              className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${filterHighQualityOnly ? "bg-primary" : "bg-slate-300"}`}
+      <main className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+        <div className="mb-6 flex flex-col gap-2 border-b border-border/70 md:min-h-14 md:flex-row md:items-stretch md:gap-5">
+          <div className="inline-flex min-h-14 max-w-full shrink-0 items-center gap-3 rounded-xl border border-border/50 bg-surface-white/70 px-3 py-2 sm:px-4">
+            <div
+              className="flex min-w-0 items-center gap-3"
+              title="When enabled, synthesis views include high-quality studies only."
             >
-              <span
-                className={`inline-block h-4 w-4 transform rounded-full bg-surface-white shadow-none transition-transform ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`}
-              />
-            </button>
+              <div className="flex min-w-0 flex-col">
+                <span className="text-xs font-medium leading-4 text-text-primary">Sensitivity analysis</span>
+                <span className="text-[11px] leading-4 text-text-secondary">Exclude low-quality studies</span>
+              </div>
+              <button
+                type="button"
+                id="sensitivity-toggle"
+                role="switch"
+                aria-label="Exclude low-quality studies"
+                aria-checked={filterHighQualityOnly}
+                onClick={() => setFilterHighQualityOnly((v) => !v)}
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${filterHighQualityOnly ? "bg-primary" : "bg-border"}`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-surface-white shadow-none transition-transform ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`}
+                />
+              </button>
+            </div>
           </div>
-          <Button variant="outline" onClick={handleBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Process
-          </Button>
+
+          <nav aria-label="Synthesis sections" className="min-w-0 flex-1 overflow-x-auto md:self-stretch">
+            <div className="flex min-h-14 min-w-max items-center gap-3 md:h-full md:items-stretch sm:gap-5">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeSection === tab.key;
+
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => navigate(`${synthesisBasePath}/${tab.key}`)}
+                    aria-current={isActive ? "page" : undefined}
+                    className={`group relative inline-flex min-h-[44px] items-center justify-center gap-2 px-2 text-sm font-medium transition-colors duration-150 after:absolute after:bottom-[-1px] after:left-1 after:right-1 after:h-0.5 after:rounded-full after:content-[''] after:transition-colors focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 sm:px-3 md:h-full ${
+                      isActive
+                        ? "text-primary after:bg-primary"
+                        : "text-text-secondary after:bg-transparent hover:text-text-primary"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
         </div>
-
-        <nav aria-label="Synthesis sections" className="mb-5 overflow-x-auto border-b border-border">
-          <div className="flex min-w-max gap-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeSection === tab.key;
-
-              return (
-                <button
-                  key={tab.key}
-                  type="button"
-                  onClick={() => navigate(`${synthesisBasePath}/${tab.key}`)}
-                  aria-current={isActive ? "page" : undefined}
-                  className={`relative inline-flex min-h-[48px] items-center justify-center gap-2 border-b-2 px-4 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/35 ${
-                    isActive
-                      ? "border-primary text-primary"
-                      : "border-transparent text-text-secondary hover:bg-bg-primary/70 hover:text-text-primary"
-                  }`}
-                >
-                  <Icon className="h-4 w-4" aria-hidden="true" />
-                  {tab.label}
-                </button>
-              );
-            })}
-          </div>
-        </nav>
 
         <SynthesisWorkspaceErrorBoundary>
           {activeSection === "thematic-analysis" ? (

@@ -210,17 +210,26 @@ export default function PaperPoolTab({
   const workflowStep = Number.parseInt(stepId || "1", 10);
   const dispatch = useDispatch();
 
-  const setWorkflowStep = useCallback(
-    (step: number) => {
-      navigate(`/projects/${projectId}/workspace/${step}`, { replace: true });
-      dispatch(setPaperPoolStep({ projectId, step }));
-    },
-    [navigate, projectId, dispatch],
-  );
-  const setupState = useAIProjectSetupState(projectId);
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
   const canUploadPdf = isLeader || member?.role === 2;
+
+  // Reviewers are restricted from setup steps (1-4) and automatically land on step 5 (Select & Assign)
+  useEffect(() => {
+    if (member && !isLeader && workflowStep !== 5) {
+      navigate(`/projects/${projectId}/workspace/5`, { replace: true });
+    }
+  }, [member, isLeader, workflowStep, navigate, projectId]);
+
+  const setWorkflowStep = useCallback(
+    (step: number) => {
+      if (!isLeader) return;
+      navigate(`/projects/${projectId}/workspace/${step}`, { replace: true });
+      dispatch(setPaperPoolStep({ projectId, step }));
+    },
+    [navigate, projectId, dispatch, isLeader],
+  );
+  const setupState = useAIProjectSetupState(projectId);
 
   const { searchSources: definedSources } = useSearchSources(projectId);
   const hasSearchSources = (definedSources?.length ?? 0) > 0;
@@ -245,7 +254,8 @@ export default function PaperPoolTab({
     (stepId: number) => {
       switch (stepId) {
         case 1:
-          return (setupState.topic?.length ?? 0) > 0;
+          // In an active project review workspace, protocol definition is already completed
+          return true;
         case 2:
           return hasSearchSources;
         case 3:
@@ -262,7 +272,6 @@ export default function PaperPoolTab({
       }
     },
     [
-      setupState.topic,
       hasSearchSources,
       papersPage?.totalCount,
       reviewProcesses,
@@ -272,6 +281,9 @@ export default function PaperPoolTab({
   const initialCheckPerformed = useRef(false);
 
   useEffect(() => {
+    // Wait until background queries finish loading before evaluating step resolution
+    if (isLoadingPapers || setupState.isLoadingSetup) return;
+
     // Only determine initial starting step once on mount when user arrives at step 1
     if (initialCheckPerformed.current) return;
 
@@ -294,6 +306,8 @@ export default function PaperPoolTab({
     workflowStep,
     isStepCompleted,
     setWorkflowStep,
+    isLoadingPapers,
+    setupState.isLoadingSetup,
   ]);
 
   const workflowActions = useMemo(() => {
@@ -301,7 +315,7 @@ export default function PaperPoolTab({
       case 1:
         return [
           {
-            label: "Confirm & Plan Sources",
+            label: "Next: Search Strategy",
             primary: true,
             onClick: () => setWorkflowStep(2),
             icon: FiChevronRight,
@@ -310,7 +324,7 @@ export default function PaperPoolTab({
       case 2:
         return [
           {
-            label: "Confirm & Move to Repository",
+            label: "Next: Paper Repository",
             primary: true,
             onClick: () => {
               if (!hasSearchSources) {
@@ -342,7 +356,7 @@ export default function PaperPoolTab({
           ...((papersPage?.totalCount ?? 0) > 0
             ? [
                 {
-                  label: "Confirm & Setup Processes",
+                  label: "Next: Review Processes",
                   primary: true,
                   onClick: () => setWorkflowStep(4),
                   icon: FiChevronRight,
@@ -655,7 +669,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 1 && (
         <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Research <span className="text-blue-600">Context</span> Summary
@@ -678,7 +692,7 @@ export default function PaperPoolTab({
 
       {workflowStep === 2 && (
         <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-[4px] border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
                 Search <span className="text-blue-600">Strategy</span> Planning
@@ -691,8 +705,8 @@ export default function PaperPoolTab({
           </div>
 
           {!hasSearchSources && (
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-[4px] flex items-center gap-4 text-amber-800">
-              <div className="w-12 h-12 bg-amber-100 rounded-[4px] flex items-center justify-center shrink-0">
+            <div className="p-6 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-4 text-amber-800">
+              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
                 <FiAlertCircle className="w-6 h-6" />
               </div>
               <div>

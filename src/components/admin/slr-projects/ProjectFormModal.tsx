@@ -4,10 +4,10 @@ import type { Project } from "../../../types/project";
 import FormField from "../../ui/FormField";
 import FormTextarea from "../../ui/FormTextarea";
 import LoadingSpinner from "../../ui/LoadingSpinner";
-import Modal from "../../ui/Modal";
+import Drawer from "../../ui/Drawer";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { cn } from "../../../utils/cn";
-import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar } from "react-icons/fi";
+import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle, FiUpload } from "react-icons/fi";
 
 interface ProjectFormModalProps {
   isOpen: boolean;
@@ -30,7 +30,15 @@ export default function ProjectFormModal({
   const { project, isLoading: isInitialLoading } = useProject(projectId);
 
   // Mutations
-  const { createProject, isCreating, updateProject, isUpdating, updateProjectDates } =
+  const {
+    createProject,
+    isCreating,
+    createProjectFromOsfFile,
+    isCreatingFromOsfFile,
+    updateProject,
+    isUpdating,
+    updateProjectDates,
+  } =
     useProjectMutations();
 
   const [formData, setFormData] = useState({
@@ -43,6 +51,8 @@ export default function ProjectFormModal({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [osfFile, setOsfFile] = useState<File | null>(null);
+  const [creationMode, setCreationMode] = useState<"manual" | "osf">("manual");
 
   // Initialize form data when project is loaded
   useEffect(() => {
@@ -67,6 +77,8 @@ export default function ProjectFormModal({
           endDate: "",
         });
         setErrors({});
+        setOsfFile(null);
+        setCreationMode("manual");
       }
     }, 0);
 
@@ -89,10 +101,22 @@ export default function ProjectFormModal({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title.trim())
+    if (creationMode === "manual" && !formData.title.trim()) {
       newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
-    if (!isEditMode && !formData.domain.trim())
+    } else if (creationMode === "manual" && formData.title.trim().length > 200) {
+      newErrors.title = `Tiêu đề nghiên cứu không được vượt quá 200 ký tự (hiện tại: ${formData.title.trim().length}/200).`;
+    }
+    if (creationMode === "manual" && !formData.domain.trim()) {
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
+    }
+    if (formData.startDate && formData.endDate) {
+      if (new Date(formData.startDate).getTime() > new Date(formData.endDate).getTime()) {
+        newErrors.endDate = "Ngày kết thúc phải sau hoặc bằng ngày bắt đầu.";
+      }
+    }
+    if (formData.description && formData.description.length > 2000) {
+      newErrors.description = `Tóm tắt dự án không được vượt quá 2000 ký tự (hiện tại: ${formData.description.length}/2000).`;
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -144,6 +168,30 @@ export default function ProjectFormModal({
           onClose();
         }
       } else {
+        if (creationMode === "osf") {
+          if (!osfFile) {
+            setErrors({ osfFile: "Vui lòng chọn file OSF." });
+            return;
+          }
+          const result = await createProjectFromOsfFile(osfFile);
+          if (result.isSuccess && (formData.startDate || formData.endDate)) {
+            await updateProjectDates({
+              id: result.data.id,
+              data: {
+                id: result.data.id,
+                startDate: formData.startDate || null,
+                endDate: formData.endDate || null,
+              },
+            });
+          }
+          if (result.isSuccess) {
+            toastSuccess("Đã tạo dự án", "Dự án đã được tạo từ file OSF thành công.");
+            onSuccess?.(result.data);
+            onClose();
+          }
+          return;
+        }
+
         // Create new project with basic info first
         const result = await createProject({
           name: formData.title,
@@ -179,21 +227,27 @@ export default function ProjectFormModal({
     } catch (err: unknown) {
       console.error("Project submission error:", err);
       const maybeErr = err as {
-        response?: { data?: { message?: string } };
+        response?: { data?: { message?: string; errors?: any } };
         message?: string;
       };
-      const errorMessage =
+      let errorMessage =
         maybeErr.response?.data?.message ||
         maybeErr.message ||
         "Đã xảy ra lỗi không xác định trong quá trình gửi biểu mẫu.";
-      toastError("Yêu cầu thất bại", errorMessage);
+
+      if (errorMessage.includes("Validation error") || errorMessage.includes("200")) {
+        if (errorMessage.includes("name") || errorMessage.includes("title")) {
+          errorMessage = "Tiêu đề nghiên cứu vượt quá độ dài tối đa 200 ký tự. Vui lòng rút gọn lại.";
+        }
+      }
+      toastError("Lưu thất bại", errorMessage);
     }
   };
 
-  const isSubmitting = isEditMode ? isUpdating : isCreating;
+  const isSubmitting = isEditMode ? isUpdating : isCreating || isCreatingFromOsfFile;
 
   return (
-    <Modal
+    <Drawer
       isOpen={isOpen}
       onClose={onClose}
       title={isViewOnly ? "Chi tiết Dự án" : (isEditMode ? "Cấu hình Dự án" : "Tạo mới dự án SLR")}
@@ -204,8 +258,8 @@ export default function ProjectFormModal({
               ? "Cập nhật các tham số có thể chỉnh sửa của dự án."
               : "Khởi tạo một dự án nghiên cứu mới theo quy trình chuẩn.")
       }
-      size="md"
-      mode="drawer"
+      maxWidth="max-w-2xl"
+      side="right"
       /* Ghìm các nút Hủy / Lưu xuống chân trang của Drawer cố định cực kỳ đẹp mắt */
       footer={!isViewOnly ? (
         <div className="flex items-center justify-end gap-3 w-full">
@@ -328,49 +382,195 @@ export default function ProjectFormModal({
         /* Đặt ID form để kích hoạt nút submit từ footer cố định của Modal bên ngoài */
         <form id="project-form" onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-5">
+            {!isEditMode && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCreationMode("manual");
+                      setOsfFile(null);
+                      setErrors({});
+                    }}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      creationMode === "manual"
+                        ? "bg-white text-blue-700 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700",
+                    )}
+                  >
+                    Nhập thông tin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCreationMode("osf");
+                      setErrors({});
+                    }}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      creationMode === "osf"
+                        ? "bg-white text-blue-700 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700",
+                    )}
+                  >
+                    Upload file OSF
+                  </button>
+                </div>
+              </div>
+            )}
+            {!isEditMode && creationMode === "osf" && (
+              <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600">
+                    <FiUpload size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-800">
+                      Tạo dự án bằng file OSF
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      Chọn file .md, .markdown hoặc .txt đã xuất từ OSF. Hệ thống sẽ tự lấy tiêu đề,
+                      lĩnh vực và mô tả để tạo dự án.
+                    </p>
+                    <label
+                      htmlFor="osf-file"
+                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
+                    >
+                      <FiUpload size={16} />
+                      {osfFile ? "Chọn file khác" : "Chọn file OSF"}
+                    </label>
+                    <input
+                      id="osf-file"
+                      name="osfFile"
+                      type="file"
+                      accept=".md,.markdown,.txt,text/markdown,text/plain"
+                      className="sr-only"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0] || null;
+                        setOsfFile(file);
+                        if (file) {
+                          setErrors({});
+                        }
+                      }}
+                    />
+                    {osfFile && (
+                      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-emerald-700">
+                        <FiFileText size={14} />
+                        <span className="truncate">{osfFile.name}</span>
+                        <button
+                          type="button"
+                          className="ml-1 text-slate-400 hover:text-red-600"
+                          onClick={() => setOsfFile(null)}
+                          aria-label="Xóa file OSF đã chọn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                    {errors.osfFile && (
+                      <p className="mt-2 text-xs font-medium text-red-600">{errors.osfFile}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {(isEditMode || creationMode === "manual") && (
             <div className="grid grid-cols-1 gap-5">
               {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label htmlFor="title" className="text-sm font-semibold text-text-primary">
+                    Tiêu đề nghiên cứu <span className="text-red-500">*</span>
+                  </label>
+                  <span
+                    className={cn(
+                      "text-xs font-mono transition-colors",
+                      formData.title.length > 200
+                        ? "text-red-600 font-bold"
+                        : formData.title.length > 180
+                          ? "text-amber-600 font-semibold"
+                          : "text-slate-400"
+                    )}
+                  >
+                    {formData.title.length}/200 ký tự
+                  </span>
+                </div>
 
                 <FormField
                   id="title"
-                  label="Tiêu đề nghiên cứu"
+                  label=""
                   name="title"
                   value={formData.title}
                   onChange={handleChange}
                   errorMessage={errors.title}
                   placeholder="Ví dụ: Tác động của Generative AI trong Tự động hóa Lập trình"
-                  containerClassName="space-y-1.5"
-                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
-                  required
+                  containerClassName="space-y-0"
+                  className={cn(
+                    "rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none",
+                    formData.title.length > 200 && "border-red-500 focus:border-red-500 focus:ring-red-100"
+                  )}
+                  required={isEditMode || creationMode === "manual"}
                 />
+
+                {/* Alert cảnh báo trực quan khi vượt quá 200 ký tự */}
+                {formData.title.length > 200 && (
+                  <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 animate-in fade-in duration-200">
+                    <FiAlertCircle className="mt-0.5 shrink-0 text-red-500" size={16} />
+                    <div className="leading-relaxed">
+                      <span className="font-bold">Cảnh báo vượt quá 200 chữ: </span>
+                      Tiêu đề nghiên cứu đang dài <strong>{formData.title.length} ký tự</strong> (vượt quá giới hạn cho phép là <strong>200 ký tự</strong>). Vui lòng rút gọn tiêu đề để có thể lưu thành công.
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* LĨNH VỰC NGHIÊN CỨU (Chỉ hiển thị khi TẠO MỚI, ẩn hoàn toàn khi CHỈNH SỬA) */}
-              {!isEditMode ? (
-                <div className="space-y-2">
-
-                  <FormField
-                    id="domain"
-                    label="Lĩnh vực nghiên cứu"
-                    name="domain"
-                    value={formData.domain}
-                    onChange={handleChange}
-                    errorMessage={errors.domain}
-                    placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
-                    containerClassName="space-y-1.5"
-                    className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
-                    required
-                  />
-                </div>
-              ) : (
-                /* Giữ input hidden để không mất dữ liệu của form */
-                <input type="hidden" name="domain" value={formData.domain} />
-              )}
+              {/* LĨNH VỰC NGHIÊN CỨU (Hiển thị và cho phép chỉnh sửa ở cả Edit và Create) */}
+              <div className="space-y-2">
+                <FormField
+                  id="domain"
+                  label="Lĩnh vực nghiên cứu"
+                  name="domain"
+                  value={formData.domain}
+                  onChange={handleChange}
+                  errorMessage={errors.domain}
+                  placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
+                  required={isEditMode || creationMode === "manual"}
+                />
+              </div>
+              {/* DÒNG THỜI GIAN (Ngày bắt đầu & Ngày kết thúc) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  id="startDate"
+                  label="Ngày bắt đầu"
+                  name="startDate"
+                  type="date"
+                  value={formData.startDate}
+                  onChange={handleChange}
+                  errorMessage={errors.startDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
+                />
+                <FormField
+                  id="endDate"
+                  label="Ngày kết thúc"
+                  name="endDate"
+                  type="date"
+                  value={formData.endDate}
+                  onChange={handleChange}
+                  errorMessage={errors.endDate}
+                  containerClassName="space-y-1.5"
+                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
+                />
+              </div>
             </div>
+            )}
           </div>
 
           {/* TÓM TẮT DỰ ÁN / MÔ TẢ (Kéo dài tối đa ra toàn bộ khung Drawer để cân đối với chiều cao màn hình) */}
+          {(isEditMode || creationMode === "manual") && (
           <div className="space-y-2">
 
             <FormTextarea
@@ -385,6 +585,7 @@ export default function ProjectFormModal({
               className="min-h-[200px] resize-y rounded-lg border-border bg-white p-3.5 font-normal not-italic leading-6 text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
             />
           </div>
+          )}
 
           {/* Huy hiệu Workflow tiêu chuẩn (Chỉ hiển thị khi Tạo mới) */}
           {!isEditMode && (
@@ -407,6 +608,6 @@ export default function ProjectFormModal({
           )}
         </form>
       )}
-    </Modal>
+    </Drawer>
   );
 }

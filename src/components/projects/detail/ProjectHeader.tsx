@@ -17,16 +17,17 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
   onEdit,
   onSettings,
 }) => {
-  const displayCode = project.code || project.id.slice(0, 8).toUpperCase();
   const displayTitle =
     project.title ||
     (project as Project & { name?: string }).name ||
     "Systematic Literature Review";
-  const roleLabel = isLeader
-    ? "Project leader"
-    : getProjectRoleLabel(project.role ?? project.roleText) === "Unknown role"
-      ? "Project member"
-      : getProjectRoleLabel(project.role ?? project.roleText);
+
+  const titleSizeClass =
+    displayTitle.length > 130
+      ? "text-2xl sm:text-[26px] font-bold leading-snug"
+      : displayTitle.length > 80
+        ? "text-[26px] sm:text-3xl font-bold leading-snug"
+        : "text-[30px] sm:text-4xl font-semibold leading-tight";
 
   return (
     <div className="mb-5 space-y-3">
@@ -39,19 +40,19 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         Back to projects
       </button>
 
-      <header className="rounded-[14px] border border-border bg-white px-5 py-5 sm:px-7 sm:py-6">
+      <header className="rounded-2xl border border-border bg-white px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
-            <div className="mb-2 flex flex-wrap items-center gap-2 text-sm text-text-secondary">
-              <span className="font-mono text-xs">{displayCode}</span>
-              <span aria-hidden="true">·</span>
-              <span>{roleLabel}</span>
-            </div>
-            <h1 className="max-w-5xl break-words text-[30px] font-semibold leading-tight tracking-tight text-text-primary sm:text-4xl">
+            {project.domain && (
+              <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+                <span>{project.domain}</span>
+              </div>
+            )}
+            <h1 className={`w-full break-words tracking-tight text-text-primary ${titleSizeClass}`}>
               {displayTitle}
             </h1>
             {project.description && (
-              <p className="mt-2 max-w-[72ch] text-sm leading-6 text-text-secondary sm:text-base">
+              <p className="mt-4 sm:mt-5 w-full break-words text-sm leading-relaxed text-text-secondary sm:text-base">
                 {project.description}
               </p>
             )}
@@ -81,7 +82,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               <button
                 type="button"
                 onClick={onEdit}
-                className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
+                className="inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
               >
                 <FiEdit3 size={15} /> Edit project
               </button>
@@ -91,7 +92,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   title="Project settings"
                   aria-label="Project settings"
                   onClick={onSettings}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
                 >
                   <FiSettings size={16} />
                 </button>

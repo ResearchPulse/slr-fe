@@ -79,35 +79,35 @@ export default function PrismaExclusionTable({
 
   return (
     <section aria-label="Exclusion reasons breakdown">
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-3">
         <h3 className="text-base font-semibold text-text-primary">
           Exclusion Breakdown
         </h3>
-        <div className="group relative">
-          <FiInfo className="w-4 h-4 text-text-secondary cursor-help" />
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-none z-10">
+        <div className="group relative" tabIndex={0} aria-label="About exclusion percentages">
+          <FiInfo className="w-4 h-4 text-text-secondary cursor-help" aria-hidden="true" />
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-none z-10">
             Breakdown of records removed at each stage of the PRISMA flow.
             Percentages are relative to total records identified.
           </div>
         </div>
       </div>
 
-      <div className="border border-border rounded-[4px] overflow-hidden">
+      <div className="overflow-x-auto rounded-lg border border-border/60 bg-surface-white">
         <table className="w-full text-sm">
           <thead>
-            <tr className="bg-bg-primary border-b border-border">
-              <th className="px-4 py-3 text-left font-semibold text-text-secondary text-xs uppercase tracking-wider">
+            <tr className="border-b border-border/60 bg-bg-primary/60">
+              <th className="px-2 py-2 text-left font-medium text-text-secondary text-xs">
                 Reason
               </th>
-              <th className="px-4 py-3 text-right font-semibold text-text-secondary text-xs uppercase tracking-wider">
+              <th className="px-2 py-2 text-right font-medium text-text-secondary text-xs">
                 Count
               </th>
-              <th className="px-4 py-3 text-right font-semibold text-text-secondary text-xs uppercase tracking-wider">
+              <th className="px-2 py-2 text-right font-medium text-text-secondary text-xs">
                 % of Total
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-border/70">
             {isLoading ? (
               Array.from({ length: 4 }).map((_, i) => <SkeletonRow key={i} />)
             ) : rows.length === 0 ? (
@@ -123,13 +123,13 @@ export default function PrismaExclusionTable({
               rows.map((row) => (
                 <tr
                   key={row.reason}
-                  className="hover:bg-bg-primary transition-colors"
+                  className="hover:bg-primary-light/40 transition-colors"
                 >
-                  <td className="px-4 py-3 text-text-primary">{row.reason}</td>
-                  <td className="px-4 py-3 text-right font-medium text-text-primary tabular-nums">
+                  <td className="px-2 py-2.5 text-text-primary">{row.reason}</td>
+                  <td className="px-2 py-2.5 text-right font-medium text-text-primary tabular-nums">
                     {row.count.toLocaleString()}
                   </td>
-                  <td className="px-4 py-3 text-right text-text-secondary tabular-nums">
+                  <td className="px-2 py-2.5 text-right text-text-secondary tabular-nums">
                     {row.percentage}%
                   </td>
                 </tr>
@@ -138,14 +138,14 @@ export default function PrismaExclusionTable({
           </tbody>
           {!isLoading && rows.length > 0 && (
             <tfoot>
-              <tr className="bg-bg-primary border-t border-border">
-                <td className="px-4 py-3 font-semibold text-text-primary text-sm">
+              <tr className="border-t border-border/60 bg-bg-primary/45">
+                <td className="px-2 py-2.5 font-semibold text-text-primary text-sm">
                   Total Excluded
                 </td>
-                <td className="px-4 py-3 text-right font-bold text-text-primary tabular-nums">
+                <td className="px-2 py-2.5 text-right font-bold text-text-primary tabular-nums">
                   {totalExcluded.toLocaleString()}
                 </td>
-                <td className="px-4 py-3 text-right text-text-secondary font-medium">
+                <td className="px-2 py-2.5 text-right text-text-secondary font-medium tabular-nums">
                   {(
                     (totalExcluded /
                       (nodes.find((n) => n.stage === "RecordsIdentified")

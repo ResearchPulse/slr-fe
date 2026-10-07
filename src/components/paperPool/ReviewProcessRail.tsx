@@ -60,7 +60,7 @@ export default function ReviewProcessRail({
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-bg-secondary rounded-[4px] transition-colors text-text-secondary hover:text-text-primary"
+            className="p-2 hover:bg-bg-secondary rounded-xl transition-colors text-text-secondary hover:text-text-primary"
           >
             <FiX className="w-5 h-5" />
           </button>
@@ -114,7 +114,7 @@ export default function ReviewProcessRail({
             </div>
 
             <Button
-              className="w-full py-4 rounded-[4px] font-black uppercase tracking-widest text-[10px]"
+              className="w-full py-4 rounded-xl font-black uppercase tracking-widest text-[10px]"
               onClick={onClose}
             >
               Confirm Selection
