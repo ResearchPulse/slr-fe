@@ -1,4 +1,4 @@
-import { FiEye, FiLink } from "react-icons/fi";
+import { FiEye, FiLink, FiTrash2 } from "react-icons/fi";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
@@ -48,8 +48,8 @@ export default function PaperRow({
   isApplyingMetadataSuggestion,
   onRemovePdf,
   isRemovingPdf,
-  // onDeletePaper,
-  // isDeletingPaper,
+  onDeletePaper,
+  isDeletingPaper,
   isLeader = false,
   canUploadPdf = false,
 }: PaperRowProps) {
@@ -145,15 +145,14 @@ export default function PaperRow({
           >
             <FiEye className="h-3.5 w-3.5" />
           </button>
-          {/* {onDeletePaper && (
+          {onDeletePaper && (
             <button
               onClick={() => {
-                const reason = window.prompt(
-                  `Reason for deleting "${paper.title.substring(0, 30)}...":`,
-                  "Other reason",
+                const confirmed = window.confirm(
+                  `Delete "${paper.title.substring(0, 60)}${paper.title.length > 60 ? "..." : ""}"?`,
                 );
-                if (reason !== null) {
-                  onDeletePaper?.(paper.id, reason || "Other reason");
+                if (confirmed) {
+                  onDeletePaper(paper.id, "Deleted from paper repository");
                 }
               }}
               disabled={isDeletingPaper}
@@ -166,7 +165,7 @@ export default function PaperRow({
                 <FiTrash2 className="h-3.5 w-3.5" />
               )}
             </button>
-          )} */}
+          )}
         </div>
       </td>
     </tr>
