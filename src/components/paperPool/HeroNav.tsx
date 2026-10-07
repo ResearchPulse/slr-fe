@@ -51,8 +51,8 @@ export default function HeroNav({
   });
 
   return (
-    <nav className="w-full max-w-4xl mx-auto mb-8">
-      <div className="bg-surface-white/70 backdrop-blur-xl border border-border rounded-2xl shadow-sm px-6 py-4 flex items-center gap-4">
+    <nav className="w-full">
+      <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-white/90 px-4 py-3 shadow-[0_8px_30px_rgba(18,35,49,0.05)] backdrop-blur-xl sm:gap-4 sm:px-6 sm:py-4">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -62,7 +62,7 @@ export default function HeroNav({
               key={item.id}
               onClick={() => onChange(item.id)}
               className={`
-                flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl
+                flex-1 flex items-center justify-center gap-2 rounded-xl px-3 py-3
                 transition-all duration-300 relative group
                 ${
                   isActive
@@ -80,18 +80,10 @@ export default function HeroNav({
                 className={`w-5 h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
               />
 
-              <span className="text-xs font-black uppercase tracking-[0.2em]">
+              <span className="text-sm font-medium normal-case tracking-normal">
                 {item.label}
               </span>
 
-              {/* Bottom Line Indicator */}
-              <div
-                className={`
-                  absolute bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-accent
-                  transition-all duration-300
-                  ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-0"}
-                `}
-              />
             </button>
           );
         })}

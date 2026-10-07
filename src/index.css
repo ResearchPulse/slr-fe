@@ -1,7 +1,7 @@
 /* =====================================================
    SLR Design System
    HyperData-inspired Academic UI
-   Typography: Manrope + Roboto
+   Typography: Manrope
    ===================================================== */
 
 @import "tailwindcss";
@@ -62,11 +62,8 @@
     system-ui,
     sans-serif;
 
-  --font-secondary:
-    "Roboto",
-    ui-sans-serif,
-    system-ui,
-    sans-serif;
+  /* Kept as a compatibility token so legacy components use the same font. */
+  --font-secondary: var(--font-primary);
 
   /* Legacy serif utility mapped to Manrope — no visible serif typography */
   --font-serif:
@@ -205,12 +202,66 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Shared page scale. The landing page keeps its intentionally large hero
+   display type; all application pages use this compact, consistent scale. */
+.standard-content {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.standard-content,
+.standard-content * {
+  font-family: var(--font-primary) !important;
+}
+
+.standard-content h1 {
+  font-size: 32px !important;
+  line-height: 1.2 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em !important;
+}
+
+.standard-content h2 {
+  font-size: 24px !important;
+  line-height: 1.25 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.02em !important;
+}
+
+.standard-content h3 {
+  font-size: 18px !important;
+  line-height: 1.35 !important;
+  font-weight: 700 !important;
+}
+
+.standard-content p,
+.standard-content li,
+.standard-content td,
+.standard-content th,
+.standard-content label,
+.standard-content input,
+.standard-content textarea,
+.standard-content select {
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+.standard-content button,
+.standard-content [role="button"] {
+  font-size: 13px !important;
+  line-height: 1.35 !important;
+}
+
+.standard-content .font-mono {
+  font-family: var(--font-primary) !important;
+}
+
 /* =====================================================
    SECONDARY FONT
    ===================================================== */
 
 .font-roboto {
-  font-family: var(--font-secondary);
+  font-family: var(--font-primary);
 }
 
 /* =====================================================

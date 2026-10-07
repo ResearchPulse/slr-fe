@@ -72,8 +72,8 @@ export default function PoolWorkflowStepper({
   const progressPercent = ((currentStep - 1) / (STEPS.length - 1)) * 80;
 
   return (
-    <section className="mb-8 animate-in fade-in slide-in-from-top-2 duration-500">
-      <div className="relative mx-auto w-full max-w-6xl px-1 sm:px-4">
+    <section className="animate-in fade-in slide-in-from-top-2 duration-500">
+      <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-12">
         <div className="absolute left-[10%] right-[10%] top-6 sm:top-7 h-1 -translate-y-1/2 rounded-full bg-slate-200 z-0" />
         <div
           aria-hidden="true"
@@ -125,12 +125,12 @@ export default function PoolWorkflowStepper({
 
                 <div className="mt-3 px-0.5 sm:px-2">
                   <p
-                    className={`text-[9px] font-semibold uppercase tracking-[0.12em] sm:text-[10px] ${isActive ? "text-accent" : "text-text-muted"}`}
+                    className={`text-xs font-medium ${isActive ? "text-accent" : "text-text-muted"}`}
                   >
                     Step {step.id}
                   </p>
                   <p
-                    className={`mt-0.5 truncate text-[10px] font-semibold sm:text-sm ${isActive ? "text-text-primary" : "text-text-secondary"}`}
+                    className={`mt-1 truncate text-sm font-medium ${isActive ? "text-text-primary" : "text-text-secondary"}`}
                   >
                     {step.title}
                   </p>
@@ -141,9 +141,9 @@ export default function PoolWorkflowStepper({
         </ol>
       </div>
 
-      <div className="mx-auto mt-8 w-full max-w-6xl overflow-hidden rounded-2xl border border-border bg-white shadow-sm sm:mt-10">
+      <div className="mx-auto mt-6 w-full max-w-[1440px] overflow-hidden rounded-2xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
         <div className="flex flex-col md:flex-row">
-          <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-64 md:flex-col md:justify-center md:border-b-0 md:border-r md:p-7 md:text-center">
+          <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
               <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
@@ -151,32 +151,32 @@ export default function PoolWorkflowStepper({
               <h3 className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
                 Step Guide
               </h3>
-              <p className="mt-1 text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+              <p className="mt-1 text-xs font-medium text-text-secondary">
                 Workflow Assistance
               </p>
             </div>
           </div>
 
-          <div className="min-w-0 flex-1 p-5 sm:p-7">
+          <div className="min-w-0 flex-1 p-5 sm:p-6">
             <div className="mb-3 flex flex-wrap items-center gap-2 text-accent">
-              <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider">
+              <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium">
                 Instruction
               </span>
               {!isLeader && currentStep === 5 && (
-                <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-slate-700">
+                <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
                   Read-Only
                 </span>
               )}
               <FiChevronRight className="h-3 w-3" />
-              <span className="text-xs font-semibold text-text-secondary">
+              <span className="text-sm font-medium text-text-secondary">
                 {STEPS[currentStep - 1].title}
               </span>
             </div>
 
-            <h2 className="mb-2 text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+            <h2 className="mb-2 text-2xl font-semibold tracking-tight text-text-primary">
               {getInstructionTitle(currentStep, isLeader)}
             </h2>
-            <p className="max-w-3xl text-sm leading-6 text-text-secondary">
+            <p className="max-w-4xl text-sm leading-6 text-text-secondary">
               {getInstructionDescription(currentStep, isLeader)}
             </p>
 

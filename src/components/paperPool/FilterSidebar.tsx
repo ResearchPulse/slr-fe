@@ -39,7 +39,7 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-fit lg:flex-col lg:py-6">
+      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-full lg:flex-col lg:py-6">
         <button
           type="button"
           onClick={onToggleCollapse}
@@ -60,7 +60,7 @@ export default function FilterSidebar({
   }
 
   return (
-    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-fit lg:max-h-[calc(100vh-2rem)]">
+    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-full">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
@@ -87,9 +87,9 @@ export default function FilterSidebar({
       </div>
 
       {/* Filter Content */}
-      <div className="space-y-6 overflow-y-auto p-4 custom-scrollbar sm:p-5 max-h-[calc(100vh-16rem)]">
+      <div className="space-y-3 p-3 sm:p-4">
         {/* Search Input */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
             Keywords
           </label>
@@ -101,13 +101,13 @@ export default function FilterSidebar({
                 onChange({ ...filters, keyword: e.target.value })
               }
               placeholder="Search concepts..."
-              className="h-11 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>
         </div>
 
         {/* Year Range */}
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
             Publication Year
           </label>
@@ -115,37 +115,59 @@ export default function FilterSidebar({
             <div className="relative group">
               <input
                 type="number"
-                value={filters.yearFrom ?? ""}
-                onChange={(e) =>
+                min={1900}
+                max={2100}
+                step={1}
+                value={filters.yearFrom != null && filters.yearFrom >= 0 ? filters.yearFrom : ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value && !/^\d{0,4}$/.test(value)) return;
                   onChange({
                     ...filters,
-                    yearFrom: e.target.value ? Number(e.target.value) : null,
-                  })
-                }
+                    yearFrom: value ? Number(value) : null,
+                  });
+                }}
+                onBlur={(e) => {
+                  const value = Number(e.target.value);
+                  if (e.target.value && (value < 1900 || value > 2100)) {
+                    onChange({ ...filters, yearFrom: null });
+                  }
+                }}
                 placeholder="From"
-                className="h-11 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="h-10 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
             <div className="relative group">
               <input
                 type="number"
-                value={filters.yearTo ?? ""}
-                onChange={(e) =>
+                min={1900}
+                max={2100}
+                step={1}
+                value={filters.yearTo != null && filters.yearTo >= 0 ? filters.yearTo : ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value && !/^\d{0,4}$/.test(value)) return;
                   onChange({
                     ...filters,
-                    yearTo: e.target.value ? Number(e.target.value) : null,
-                  })
-                }
+                    yearTo: value ? Number(value) : null,
+                  });
+                }}
+                onBlur={(e) => {
+                  const value = Number(e.target.value);
+                  if (e.target.value && (value < 1900 || value > 2100)) {
+                    onChange({ ...filters, yearTo: null });
+                  }
+                }}
                 placeholder="To"
-                className="h-11 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="h-10 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
           </div>
         </div>
 
         {/* Source & Batch */}
-        <div className="space-y-5">
-          <div className="space-y-2">
+        <div className="space-y-3">
+          <div className="space-y-1.5">
             <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Search Source
             </label>
@@ -154,7 +176,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, searchSourceId: e.target.value })
               }
-              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">All Sources</option>
               {availableSources.map((source) => (
@@ -164,7 +186,7 @@ export default function FilterSidebar({
               ))}
             </select>
           </div>
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Import Batch
             </label>
@@ -173,7 +195,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, importBatchId: e.target.value })
               }
-              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">All Batches</option>
               {availableBatches.map((batch) => (
@@ -184,7 +206,7 @@ export default function FilterSidebar({
             </select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               DOI Availability
             </label>
@@ -196,7 +218,7 @@ export default function FilterSidebar({
                   doiState: e.target.value as PaperPoolFilters["doiState"],
                 })
               }
-              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">Any DOI Status</option>
               <option value="has">Has DOI</option>
@@ -204,7 +226,7 @@ export default function FilterSidebar({
             </select>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Fulltext Availability
             </label>
@@ -217,7 +239,7 @@ export default function FilterSidebar({
                     .value as PaperPoolFilters["fullTextState"],
                 })
               }
-              className="h-11 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             >
               <option value="all">Any Fulltext Status</option>
               <option value="has">Has Fulltext PDF</option>
@@ -227,8 +249,8 @@ export default function FilterSidebar({
         </div>
 
         {/* State Filters */}
-        <div className="space-y-2 border-t border-border pt-4">
-          <label className="group flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-slate-50">
+        <div className="space-y-1 border-t border-border pt-3">
+          <label           className="group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.onlyUnused}
@@ -241,7 +263,7 @@ export default function FilterSidebar({
               Only Unused Papers
             </span>
           </label>
-          <label className="group flex cursor-pointer items-center gap-3 rounded-lg p-3 transition-colors hover:bg-slate-50">
+          <label           className="group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.recentlyImported}
@@ -258,7 +280,7 @@ export default function FilterSidebar({
       </div>
 
       {/* Footer Actions */}
-      <div className="space-y-2 border-t border-border bg-slate-50/70 p-4">
+      <div className="space-y-1.5 border-t border-border bg-slate-50/70 p-3">
         <Button
           variant="secondary"
           onClick={onAddToProcess}

@@ -47,8 +47,8 @@ export default function ReviewProcessPanel({
   const hasSelected = selectedPaperIds.length > 0;
 
   return (
-    <section className="mt-10 mb-8 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:p-7 lg:p-8">
-      <div className="flex flex-col gap-6">
+    <section className="mt-4 mb-5 rounded-2xl border border-border bg-surface-white p-4 shadow-sm sm:p-5 lg:p-6">
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
@@ -96,7 +96,7 @@ export default function ReviewProcessPanel({
 
         {processes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-5 py-12 text-center">
-            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
               <FiFolder className="h-6 w-6" aria-hidden="true" />
             </div>
             <h3 className="text-base font-semibold text-text-primary">
@@ -107,7 +107,7 @@ export default function ReviewProcessPanel({
             </p>
             {onCreateProcess && isLeader && (
               <Button
-                className="mt-5 normal-case tracking-normal"
+                className="mt-4 normal-case tracking-normal"
                 onClick={onCreateProcess}
               >
                 <FiPlus className="mr-2 h-4 w-4" aria-hidden="true" />
