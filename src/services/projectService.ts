@@ -78,6 +78,22 @@ class ProjectService {
   };
 
   /**
+   * Create a project from an OSF registration file
+   * POST /api/projects/from-osf-file
+   */
+  createProjectFromOsfFile = async (
+    file: File,
+  ): Promise<ApiResponse<Project>> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post<ApiResponse<Project>>(
+      `${this.endpoint}/from-osf-file`,
+      formData,
+    );
+    return response.data;
+  };
+
+  /**
    * Get project by ID
    * GET /api/projects/{id}
    */

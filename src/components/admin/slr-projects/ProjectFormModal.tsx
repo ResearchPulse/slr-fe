@@ -7,7 +7,7 @@ import LoadingSpinner from "../../ui/LoadingSpinner";
 import Drawer from "../../ui/Drawer";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { cn } from "../../../utils/cn";
-import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle } from "react-icons/fi";
+import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle, FiUpload } from "react-icons/fi";
 
 interface ProjectFormModalProps {
   isOpen: boolean;
@@ -30,7 +30,15 @@ export default function ProjectFormModal({
   const { project, isLoading: isInitialLoading } = useProject(projectId);
 
   // Mutations
-  const { createProject, isCreating, updateProject, isUpdating, updateProjectDates } =
+  const {
+    createProject,
+    isCreating,
+    createProjectFromOsfFile,
+    isCreatingFromOsfFile,
+    updateProject,
+    isUpdating,
+    updateProjectDates,
+  } =
     useProjectMutations();
 
   const [formData, setFormData] = useState({
@@ -43,6 +51,7 @@ export default function ProjectFormModal({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [osfFile, setOsfFile] = useState<File | null>(null);
 
   // Initialize form data when project is loaded
   useEffect(() => {
@@ -67,6 +76,7 @@ export default function ProjectFormModal({
           endDate: "",
         });
         setErrors({});
+        setOsfFile(null);
       }
     }, 0);
 
@@ -89,12 +99,12 @@ export default function ProjectFormModal({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title.trim()) {
+    if (!osfFile && !formData.title.trim()) {
       newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
-    } else if (formData.title.trim().length > 200) {
+    } else if (!osfFile && formData.title.trim().length > 200) {
       newErrors.title = `Tiêu đề nghiên cứu không được vượt quá 200 ký tự (hiện tại: ${formData.title.trim().length}/200).`;
     }
-    if (!formData.domain.trim()) {
+    if (!osfFile && !formData.domain.trim()) {
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
     }
     if (formData.startDate && formData.endDate) {
@@ -156,6 +166,26 @@ export default function ProjectFormModal({
           onClose();
         }
       } else {
+        if (osfFile) {
+          const result = await createProjectFromOsfFile(osfFile);
+          if (result.isSuccess && (formData.startDate || formData.endDate)) {
+            await updateProjectDates({
+              id: result.data.id,
+              data: {
+                id: result.data.id,
+                startDate: formData.startDate || null,
+                endDate: formData.endDate || null,
+              },
+            });
+          }
+          if (result.isSuccess) {
+            toastSuccess("Đã tạo dự án", "Dự án đã được tạo từ file OSF thành công.");
+            onSuccess?.(result.data);
+            onClose();
+          }
+          return;
+        }
+
         // Create new project with basic info first
         const result = await createProject({
           name: formData.title,
@@ -208,7 +238,7 @@ export default function ProjectFormModal({
     }
   };
 
-  const isSubmitting = isEditMode ? isUpdating : isCreating;
+  const isSubmitting = isEditMode ? isUpdating : isCreating || isCreatingFromOsfFile;
 
   return (
     <Drawer
@@ -346,6 +376,59 @@ export default function ProjectFormModal({
         /* Đặt ID form để kích hoạt nút submit từ footer cố định của Modal bên ngoài */
         <form id="project-form" onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-5">
+            {!isEditMode && (
+              <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600">
+                    <FiUpload size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-800">
+                      Tạo dự án bằng file OSF
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      Chọn file .md, .markdown hoặc .txt đã xuất từ OSF. Hệ thống sẽ tự lấy tiêu đề,
+                      lĩnh vực và mô tả để tạo dự án.
+                    </p>
+                    <label
+                      htmlFor="osf-file"
+                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
+                    >
+                      <FiUpload size={16} />
+                      {osfFile ? "Chọn file khác" : "Chọn file OSF"}
+                    </label>
+                    <input
+                      id="osf-file"
+                      name="osfFile"
+                      type="file"
+                      accept=".md,.markdown,.txt,text/markdown,text/plain"
+                      className="sr-only"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0] || null;
+                        setOsfFile(file);
+                        if (file) {
+                          setErrors({});
+                        }
+                      }}
+                    />
+                    {osfFile && (
+                      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-emerald-700">
+                        <FiFileText size={14} />
+                        <span className="truncate">{osfFile.name}</span>
+                        <button
+                          type="button"
+                          className="ml-1 text-slate-400 hover:text-red-600"
+                          onClick={() => setOsfFile(null)}
+                          aria-label="Xóa file OSF đã chọn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-5">
               {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
               <div className="space-y-1.5">
