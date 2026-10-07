@@ -86,7 +86,9 @@ export const paperImportService = {
       },
     });
     const result = response.data;
-    if (!result.isSuccess) throw new Error(result.message || "Failed to import PDF file");
+    if (!result.isSuccess) {
+      throw new Error(result.message || "Failed to import PDF file");
+    }
     return result;
   },
 
