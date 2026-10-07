@@ -300,7 +300,7 @@ export default function PaperRepositoryPage({
       )}
 
       {/* Main Content: Sidebar + Table */}
-      <div className="flex flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:gap-5">
+      <div className="flex flex-col items-stretch gap-4 lg:min-h-[calc(100vh-15rem)] lg:flex-row lg:items-stretch lg:gap-5">
         <FilterSidebar
           filters={filters}
           availableSources={metadata?.searchSources ?? []}
@@ -316,7 +316,7 @@ export default function PaperRepositoryPage({
           isSaving={isCreatingFilter}
         />
 
-        <div className="flex-1 min-w-0 space-y-6">
+        <div className="flex min-w-0 flex-1 flex-col space-y-6 lg:h-full">
           <PaperTable
             papers={papers}
             isLoading={isLoadingPapers}

@@ -260,7 +260,10 @@ export default function ManageFiltersModal({
                       <div className="flex items-center gap-2">
                         <input
                           type="number"
-                          value={draft.filters.yearFrom ?? ""}
+                          min={1900}
+                          max={2100}
+                          step={1}
+                          value={draft.filters.yearFrom != null && draft.filters.yearFrom >= 0 ? draft.filters.yearFrom : ""}
                           onChange={(e) =>
                             setDraft({
                               ...draft,
@@ -278,7 +281,10 @@ export default function ManageFiltersModal({
                         <span className="text-text-secondary font-bold">-</span>
                         <input
                           type="number"
-                          value={draft.filters.yearTo ?? ""}
+                          min={1900}
+                          max={2100}
+                          step={1}
+                          value={draft.filters.yearTo != null && draft.filters.yearTo >= 0 ? draft.filters.yearTo : ""}
                           onChange={(e) =>
                             setDraft({
                               ...draft,

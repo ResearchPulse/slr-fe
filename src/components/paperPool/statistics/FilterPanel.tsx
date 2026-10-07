@@ -65,28 +65,36 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <Input
               type="number"
               placeholder="From"
-              value={filters.yearFrom || ""}
-              onChange={(e) =>
+              min={1900}
+              max={2100}
+              step={1}
+              value={filters.yearFrom != null && filters.yearFrom >= 0 ? filters.yearFrom : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value && !/^\d{0,4}$/.test(value)) return;
                 onFilterChange({
                   ...filters,
-                  yearFrom: e.target.value
-                    ? parseInt(e.target.value)
-                    : undefined,
-                })
-              }
+                  yearFrom: value ? parseInt(value, 10) : undefined,
+                });
+              }}
               className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
             />
             <span className="text-slate-300 font-bold">-</span>
             <Input
               type="number"
               placeholder="To"
-              value={filters.yearTo || ""}
-              onChange={(e) =>
+              min={1900}
+              max={2100}
+              step={1}
+              value={filters.yearTo != null && filters.yearTo >= 0 ? filters.yearTo : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value && !/^\d{0,4}$/.test(value)) return;
                 onFilterChange({
                   ...filters,
-                  yearTo: e.target.value ? parseInt(e.target.value) : undefined,
-                })
-              }
+                  yearTo: value ? parseInt(value, 10) : undefined,
+                });
+              }}
               className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
             />
           </div>

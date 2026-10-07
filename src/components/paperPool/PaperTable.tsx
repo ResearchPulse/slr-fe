@@ -88,7 +88,7 @@ export default function PaperTable({
   }
 
   return (
-    <div className="flex flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
       {/* Table Header / Toolbar */}
       <div className="flex flex-col gap-3 border-b border-border bg-slate-50/70 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-3">
@@ -122,8 +122,11 @@ export default function PaperTable({
 
       {/* Table Content */}
       <div
-        className="overflow-auto custom-scrollbar"
-        style={{ maxHeight: "calc(100vh - 400px)", minHeight: "400px" }}
+        className="flex-1 overflow-auto custom-scrollbar"
+        style={{
+          maxHeight: "calc(100vh - 400px)",
+          minHeight: papers.length === 0 ? "180px" : "0",
+        }}
       >
         <table className="w-full border-collapse">
           <thead className="sticky top-0 z-10 border-b border-border bg-white">
@@ -192,7 +195,7 @@ export default function PaperTable({
               <tr>
                 <td
                   colSpan={isLeader ? 8 : 7}
-                  className="px-5 py-16 sm:py-20"
+                  className="px-5 py-8 sm:py-10"
                 >
                   <div className="flex flex-col items-center justify-center text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-300 ring-1 ring-inset ring-border/70">
