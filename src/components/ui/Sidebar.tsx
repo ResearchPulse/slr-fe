@@ -46,7 +46,6 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
         <span className={cn("truncate text-[13px] font-semibold transition-all duration-200", isCollapsed ? "invisible w-0 opacity-0" : "visible w-auto opacity-100")}>
           {item.label}
         </span>
-        {isActive && !isCollapsed && <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-[#087BC1]" />}
       </>
     );
 

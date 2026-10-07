@@ -21,27 +21,27 @@ const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        "bg-surface-white rounded-2xl border border-border p-6 shadow-none hover:shadow-none transition-all duration-300",
+        "bg-surface-white rounded-2xl border border-border p-4 shadow-sm hover:shadow-sm transition-all duration-300",
         loading && "animate-pulse",
       )}
     >
       <div className="flex items-center gap-4">
         <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center"
+          className="h-10 w-10 rounded-lg flex items-center justify-center"
           style={{ backgroundColor: `${color}15`, color: color }}
         >
-          <Icon className="w-6 h-6" />
+          <Icon className="h-5 w-5" />
         </div>
         <div>
-          <p className="text-text-secondary font-black uppercase tracking-widest text-[10px] mb-1">
+          <p className="text-text-secondary font-semibold uppercase tracking-[0.12em] text-[10px] mb-1">
             {title}
           </p>
           <div className="flex items-baseline gap-1">
-            <span className="text-2xl font-black text-slate-800">
+            <span className="text-xl font-bold text-text-primary">
               {loading ? "..." : value}
             </span>
             {suffix && (
-              <span className="text-sm font-bold text-text-secondary">
+              <span className="text-xs font-semibold text-text-secondary">
                 {suffix}
               </span>
             )}
