@@ -150,7 +150,7 @@ const Header: React.FC = () => {
               {/* Desktop Navigation */}
               <nav className="hidden md:flex items-center gap-1">
                 {navLinks.map((link) => {
-                  const className = `px-3 py-2 text-[11px] font-semibold transition-colors whitespace-nowrap ${location.pathname === "/" ? "normal-case tracking-[0.01em] text-[#536B7A] hover:text-primary" : "uppercase tracking-[0.2em] text-text-primary hover:opacity-60"}`;
+                  const className = "px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#536B7A] transition-colors whitespace-nowrap hover:text-primary";
                   return location.pathname === "/" && link.path.startsWith("/#") ? (
                     <a key={link.name} href={link.path.slice(1)} className={className}>{link.name}</a>
                   ) : (
