@@ -18,21 +18,21 @@ const ChartCard: React.FC<ChartCardProps> = ({
   loading,
   isEmpty,
   children,
-  height = 350,
+  height = 260,
   className,
 }) => {
   return (
     <div
       className={cn(
-        "bg-surface-white rounded-2xl border border-border p-8 shadow-none h-full flex flex-col",
+        "bg-surface-white rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col",
         className,
       )}
     >
-      <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest mb-6 border-b border-slate-50 pb-4">
+      <h3 className="text-xs font-semibold text-text-primary uppercase tracking-[0.12em] mb-4 border-b border-slate-100 pb-3">
         {title}
       </h3>
 
-      <div className="flex-1 w-full" style={{ minHeight: height }}>
+      <div className="flex-1 w-full" style={{ minHeight: isEmpty ? 150 : height }}>
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <LoadingSpinner size="lg" />
