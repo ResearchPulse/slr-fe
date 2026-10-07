@@ -9,7 +9,7 @@ import {
   useEffect,
 } from "react";
 import { createPortal } from "react-dom";
-import { FiArrowDown, FiArrowRight, FiMaximize2, FiDownload, FiX } from "react-icons/fi";
+import { FiMaximize2, FiDownload, FiX } from "react-icons/fi";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
 import toast from "react-hot-toast";
@@ -98,6 +98,20 @@ function StageDivider({ children }: { children: string }) {
       <div className="h-px flex-1 bg-border/60" />
       <span className="rounded-md bg-primary-light/70 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-primary">{children}</span>
       <div className="h-px flex-1 bg-border/60" />
+    </div>
+  );
+}
+
+function FlowConnector({ direction }: { direction: "horizontal" | "vertical" }) {
+  return direction === "horizontal" ? (
+    <div className="relative flex w-full items-center" aria-hidden="true">
+      <div className="h-px w-full bg-[#B7C8D4]" />
+      <div className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rounded-full border-2 border-white bg-[#91A8B8] shadow-sm" />
+    </div>
+  ) : (
+    <div className="relative flex h-full justify-center" aria-hidden="true">
+      <div className="h-full w-px bg-[#A9C5D7]" />
+      <div className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border-2 border-white bg-[#91A8B8] shadow-sm" />
     </div>
   );
 }
@@ -212,7 +226,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
                     />
                   </div>
                   <div className="hidden md:flex md:col-start-2 md:row-start-1 justify-center self-stretch">
-                    {branch && <div className="relative flex items-center w-full"><div className="w-full h-px bg-[#B7C8D4]" /><FiArrowRight className="absolute right-[-2px] w-3.5 h-3.5 text-[#91A8B8]" /></div>}
+                    {branch && <FlowConnector direction="horizontal" />}
                   </div>
                   <div className="md:col-start-3 md:row-start-1">
                     {branch ? (
@@ -228,8 +242,8 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
                 </div>
                 {!isIncludedParent && index < mainNodes.length - 1 && (
                   <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] h-5">
-                    <div className="hidden md:flex md:justify-center"><div className="w-px h-full bg-[#A9C5D7]" /></div>
-                    <div className="flex md:hidden justify-center"><FiArrowDown className="w-4 h-4 text-[#91A8B8]" /></div>
+                    <div className="hidden md:flex md:justify-center"><FlowConnector direction="vertical" /></div>
+                    <div className="flex md:hidden justify-center"><FlowConnector direction="vertical" /></div>
                   </div>
                 )}
                 {isLastIdentification && <StageDivider>Screening &amp; Eligibility</StageDivider>}
@@ -240,8 +254,8 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
         {includedNode && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_32px_minmax(0,1fr)] h-5">
-              <div className="hidden md:flex md:justify-center"><div className="w-px h-full bg-[#A9C5D7]" /></div>
-              <div className="flex md:hidden justify-center"><FiArrowDown className="w-4 h-4 text-[#91A8B8]" /></div>
+              <div className="hidden md:flex md:justify-center"><FlowConnector direction="vertical" /></div>
+              <div className="flex md:hidden justify-center"><FlowConnector direction="vertical" /></div>
             </div>
             <StageDivider>Studies Included</StageDivider>
             <div className="w-full md:w-[calc(50%-16px)] md:ml-[calc(25%-8px)] md:mr-0">

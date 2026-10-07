@@ -73,14 +73,19 @@ export default function FilterPanel({
           </label>
           <input
             type="number"
-            value={filters.yearFrom ?? ""}
-            onChange={(e) =>
+            min={1900}
+            max={2100}
+            step={1}
+            value={filters.yearFrom != null && filters.yearFrom >= 0 ? filters.yearFrom : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value && !/^\d{0,4}$/.test(value)) return;
               onChange({
                 ...filters,
-                yearFrom: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-            className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+                yearFrom: value ? Number(value) : null,
+              });
+            }}
+            className="h-10 w-full rounded-lg border border-border px-3 text-sm"
           />
         </div>
         <div className="space-y-2">
@@ -89,14 +94,19 @@ export default function FilterPanel({
           </label>
           <input
             type="number"
-            value={filters.yearTo ?? ""}
-            onChange={(e) =>
+            min={1900}
+            max={2100}
+            step={1}
+            value={filters.yearTo != null && filters.yearTo >= 0 ? filters.yearTo : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (value && !/^\d{0,4}$/.test(value)) return;
               onChange({
                 ...filters,
-                yearTo: e.target.value ? Number(e.target.value) : null,
-              })
-            }
-            className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+                yearTo: value ? Number(value) : null,
+              });
+            }}
+            className="h-10 w-full rounded-lg border border-border px-3 text-sm"
           />
         </div>
       </div>
