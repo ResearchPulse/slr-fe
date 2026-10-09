@@ -11,6 +11,7 @@ import {
   Eye,
   PanelLeftClose,
   PanelLeftOpen,
+  Bot,
 } from "lucide-react";
 import { cn } from "../../../utils/cn";
 import Input from "../../../components/ui/Input";
@@ -28,8 +29,16 @@ import type {
 import AssignedReviewersModal from "./AssignedReviewersModal";
 import { useParams } from "react-router-dom";
 import { useProjectMember } from "../../../hooks/useProjectMember";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { QUERY_KEYS } from "../../../constants/queryKeys";
+import api from "../../../config/axios";
+
+interface AgentPaperTask {
+  id: string;
+  paperId: string;
+  agentName: string;
+  status: "ASSIGNED" | "COMPLETED";
+}
 
 interface PaperListProps {
   studySelectionProcessId: string;
@@ -179,6 +188,28 @@ export const PaperList: React.FC<PaperListProps> = ({
       hasConflict: conflictMap.get(p.id) || false,
     }));
   }, [data, conflictMap]);
+  const visiblePaperIds = papers.map((paper) => paper.id).join(",");
+  const { data: agentTasks = [] } = useQuery({
+    queryKey: ["project-agent-tasks", projectId, visiblePaperIds],
+    queryFn: async () => {
+      const response = await api.get<{ data: AgentPaperTask[] }>(
+        `/projects/${projectId}/agents/tasks`,
+        { params: { paperIds: visiblePaperIds } },
+      );
+      return response.data.data;
+    },
+    enabled: Boolean(projectId && isLeader && visiblePaperIds),
+    staleTime: 0,
+  });
+  const agentTasksByPaper = useMemo(() => {
+    const grouped = new Map<string, AgentPaperTask[]>();
+    for (const task of agentTasks) {
+      const current = grouped.get(task.paperId) ?? [];
+      current.push(task);
+      grouped.set(task.paperId, current);
+    }
+    return grouped;
+  }, [agentTasks]);
 
   const isAllSelected =
     papers.length > 0 && papers.every((p) => selectedIds.includes(p.id));
@@ -413,6 +444,8 @@ export const PaperList: React.FC<PaperListProps> = ({
             const StatusIcon = status.icon;
             const isPaperActive = selectedPaperId === paper.id;
             const isPaperSelected = selectedIds.includes(paper.id);
+            const paperAgentTasks = agentTasksByPaper.get(paper.id) ?? [];
+            const completedAgentTasks = paperAgentTasks.filter((task) => task.status === "COMPLETED").length;
 
             return (
               <div
@@ -472,7 +505,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <div
                         className={cn(
                           "flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider",
@@ -513,6 +546,15 @@ export const PaperList: React.FC<PaperListProps> = ({
                           </button>
                         )}
                       </div>
+                      {paperAgentTasks.length > 0 && (
+                        <div
+                          title={paperAgentTasks.map((task) => `${task.agentName}: ${task.status.toLowerCase()}`).join("\n")}
+                          className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-violet-700"
+                        >
+                          <Bot className="h-3 w-3" />
+                          AI {completedAgentTasks}/{paperAgentTasks.length} done
+                        </div>
+                      )}
                     </div>
 
                     {paper.hasConflict && (

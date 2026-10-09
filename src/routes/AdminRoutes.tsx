@@ -9,6 +9,7 @@ import MasterSourcePage from "../pages/admin/MasterSourcePage";
 import SystemSettings from "../pages/admin/SystemSettings";
 import TemplateManager from "../pages/admin/TemplateManager";
 import MyProfilePage from "../pages/profile/MyProfilePage";
+import AgentManagement from "../pages/admin/AgentManagement";
 
 function AdminRoutes() {
   return (
@@ -19,6 +20,7 @@ function AdminRoutes() {
           <Route path="audit-logs" element={<AuditLogPage />} />
           <Route path="projects" element={<SLRProjectManagement />} />
           <Route path="users" element={<UserManagement />} />
+          <Route path="agents" element={<AgentManagement />} />
           <Route path="master-sources" element={<MasterSourcePage />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="templates" element={<TemplateManager />} />
