@@ -420,7 +420,7 @@ export default function ProjectMembersModal({
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-3">
             {totalSelections > 0 && activeTab === "add" && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-surface-white rounded-md border border-indigo-100/50">
+              <div className="flex items-center gap-2 px-4 py-2 bg-surface-white rounded-xl border border-indigo-100/50">
                 <div className="flex -space-x-2 overflow-hidden">
                   {waitlistUsers.slice(0, 3).map((u) => (
                     <div
@@ -450,7 +450,7 @@ export default function ProjectMembersModal({
                 onClick={handleSendInvitations}
                 disabled={totalSelections === 0 || isSendingInvitations}
                 className={cn(
-                  "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-md transition-all active:scale-95 uppercase tracking-widest shadow-none min-w-[200px] justify-center cursor-pointer",
+                  "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-xl transition-all active:scale-95 uppercase tracking-widest shadow-none min-w-[200px] justify-center cursor-pointer",
                   totalSelections > 0 && !isSendingInvitations
                     ? "bg-slate-900 text-white hover:bg-accent"
                     : "bg-slate-100 text-slate-300 cursor-not-allowed",
@@ -479,11 +479,11 @@ export default function ProjectMembersModal({
     >
       <div className="space-y-4">
         {/* Unified Tab Switcher */}
-        <div className="flex p-1 bg-slate-100/80 rounded-md w-fit border border-slate-200/50">
+        <div className="flex p-1 bg-slate-100/80 rounded-xl w-fit border border-slate-200/50">
           <button
             onClick={() => setActiveTab("collaboration")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+              "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
               activeTab === "collaboration"
                 ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
                 : "text-slate-400 hover:text-slate-600",
@@ -496,7 +496,7 @@ export default function ProjectMembersModal({
             <button
               onClick={() => setActiveTab("add")}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
                 activeTab === "add"
                   ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
                   : "text-slate-400 hover:text-slate-600",
@@ -510,7 +510,7 @@ export default function ProjectMembersModal({
             <button
               onClick={() => setActiveTab("invites")}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
                 activeTab === "invites"
                   ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
                   : "text-slate-400 hover:text-slate-600",
@@ -540,7 +540,7 @@ export default function ProjectMembersModal({
                     setMemberSearchTerm(e.target.value);
                     setMemberPageNumber(1);
                   }}
-                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-md text-xs font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
                 />
               </div>
 
@@ -552,7 +552,7 @@ export default function ProjectMembersModal({
                   </p>
                 </div>
               ) : membersError ? (
-                <div className="p-6 bg-surface-white border border-red-100 rounded-md text-center space-y-2 shadow-none">
+                <div className="p-6 bg-surface-white border border-red-100 rounded-xl text-center space-y-2 shadow-none">
                   <p className="text-sm font-black text-red-600 uppercase tracking-tight">
                     Đồng bộ thất bại
                   </p>
@@ -567,11 +567,11 @@ export default function ProjectMembersModal({
                       members.map((member) => (
                         <div
                           key={member.userId}
-                          className="group relative flex items-center gap-4 p-4 bg-surface-white border border-slate-100 rounded-md hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300"
+                          className="group relative flex items-center gap-4 p-4 bg-surface-white border border-slate-100 rounded-xl hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300"
                         >
                           <div
                             className={cn(
-                              "w-14 h-14 rounded-md flex items-center justify-center text-lg font-black shrink-0 transition-transform group-hover:scale-105",
+                              "w-14 h-14 rounded-xl flex items-center justify-center text-lg font-black shrink-0 transition-transform group-hover:scale-105",
                               member.role === ProjectRole.Owner
                                 ? "bg-accent text-white shadow-lg shadow-indigo-100"
                                 : "bg-slate-100 text-slate-500 border border-slate-100",
@@ -595,7 +595,7 @@ export default function ProjectMembersModal({
                                       event.target.value as "OWNER" | "LECTURER" | "REVIEWER",
                                     )
                                   }
-                                  className="h-8 min-w-[132px] rounded-lg border border-[#D8E3E9] bg-white px-2.5 text-[11px] font-semibold text-[#334B5A] shadow-sm hover:border-[#9FB4C0] focus:border-primary focus:ring-2 focus:ring-primary/15"
+                                  className="h-8 min-w-[132px] rounded-lg border border-border bg-white px-2.5 text-[11px] font-semibold text-text-secondary shadow-sm hover:border-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15"
                                 >
                                   {!hideLeaderRole && <option value="OWNER">Project Leader</option>}
                                   <option value="LECTURER">Lecturer</option>
@@ -603,7 +603,7 @@ export default function ProjectMembersModal({
                                 </select>
                               ) : <span
                                 className={cn(
-                                  "px-2 py-0.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest border",
+                                  "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
                                   member.role === ProjectRole.Owner
                                     ? "bg-bg-secondary text-accent border-indigo-100"
                                     : "bg-slate-50 text-slate-500 border-slate-100",
@@ -629,7 +629,7 @@ export default function ProjectMembersModal({
                             <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none">
                               Ngày tham gia
                             </p>
-                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-[4px] border border-slate-100/50">
+                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100/50">
                               <FiCalendar
                                 size={12}
                                 className="text-slate-300"
@@ -649,7 +649,7 @@ export default function ProjectMembersModal({
                                     })
                                   }
                                   disabled={isRemovingMember || member.role === ProjectRole.Owner}
-                                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-[4px] transition-all active:scale-95 group/del disabled:opacity-30 disabled:cursor-not-allowed"
+                                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-xl transition-all active:scale-95 group/del disabled:opacity-30 disabled:cursor-not-allowed"
                                 >
                                   <FiTrash2
                                     size={18}
@@ -681,7 +681,7 @@ export default function ProjectMembersModal({
                           setMemberPageNumber((prev) => Math.max(1, prev - 1))
                         }
                         disabled={memberPageNumber === 1}
-                        className="p-2 bg-surface-white border border-slate-200 rounded-[4px] text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        className="p-2 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
                       >
                         <FiChevronLeft size={18} />
                       </button>
@@ -689,7 +689,7 @@ export default function ProjectMembersModal({
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                           Page
                         </span>
-                        <span className="text-xs font-black text-accent bg-bg-secondary px-3 py-1 rounded-[4px] border border-indigo-100">
+                        <span className="text-xs font-black text-accent bg-bg-secondary px-3 py-1 rounded-full border border-indigo-100">
                           {memberPageNumber}
                         </span>
                         <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
@@ -706,7 +706,7 @@ export default function ProjectMembersModal({
                           )
                         }
                         disabled={memberPageNumber === totalMembersPages}
-                        className="p-2 bg-surface-white border border-slate-200 rounded-[4px] text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        className="p-2 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
                       >
                         <FiChevronRight size={18} />
                       </button>

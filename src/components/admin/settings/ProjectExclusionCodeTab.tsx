@@ -186,7 +186,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
             <input
               type="text"
               placeholder="Filter by code or name..."
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -195,7 +195,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
           <button
             onClick={handleToggleOnlyActive}
             className={cn(
-              "flex items-center gap-2 px-3.5 py-2.5 rounded-lg text-sm font-medium transition-colors border",
+              "flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors border",
               onlyActive
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                 : "bg-white text-text-secondary border-border hover:bg-bg-primary",
@@ -216,7 +216,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-semibold rounded-lg hover:bg-primary-hover transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-semibold rounded-xl hover:bg-primary-hover transition-colors"
           >
             <FiPlus size={18} />
             New code
@@ -346,7 +346,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
             {newCodes.map((code, index) => (
               <div
                 key={index}
-                className="flex items-end gap-4 bg-slate-50/50 p-4 rounded-md border border-slate-100 animate-in slide-in-from-top-2 duration-200"
+                className="flex items-end gap-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100 animate-in slide-in-from-top-2 duration-200"
               >
                 <div className="w-24 shrink-0">
                   <FormField
@@ -374,7 +374,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
                 {newCodes.length > 1 && (
                   <button
                     onClick={() => handleRemoveRow(index)}
-                    className="p-3 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-[4px] transition-all"
+                    className="p-3 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
                   >
                     <FiX size={18} />
                   </button>
@@ -386,7 +386,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
           <div className="flex items-center justify-between pt-4">
             <button
               onClick={handleAddRow}
-              className="flex items-center gap-2 text-accent text-sm font-black hover:bg-bg-secondary px-4 py-2 rounded-[4px] transition-all"
+              className="flex items-center gap-2 text-accent text-sm font-black hover:bg-bg-secondary px-4 py-2 rounded-xl transition-all"
             >
               <FiPlus size={18} />
               Add Another Row

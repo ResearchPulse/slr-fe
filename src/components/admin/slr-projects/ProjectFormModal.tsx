@@ -266,7 +266,7 @@ export default function ProjectFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
+            className="rounded-xl px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
           >
             Hủy
           </button>
@@ -275,7 +275,7 @@ export default function ProjectFormModal({
             form="project-form"
             disabled={isSubmitting}
             className={cn(
-              "flex items-center gap-2 rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:pointer-events-none disabled:opacity-50",
+              "flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:pointer-events-none disabled:opacity-50",
               isSubmitting && "animate-pulse",
             )}
           >
@@ -305,7 +305,7 @@ export default function ProjectFormModal({
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               {/* Mã dự án */}
-              <div className="space-y-1 bg-slate-50 p-4 border border-slate-100 rounded-md">
+              <div className="space-y-1 bg-slate-50 p-4 border border-slate-100 rounded-xl">
                 <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
                   <FiInfo size={12} className="text-indigo-400" />
                   Mã dự án (Không thể sửa)
@@ -338,7 +338,7 @@ export default function ProjectFormModal({
               </div>
 
               {/* Dòng thời gian (Ngày bắt đầu & Ngày kết thúc) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 p-4 border border-slate-100/50 rounded-md">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 p-4 border border-slate-100/50 rounded-xl">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
                     <FiCalendar size={12} className="text-indigo-400" />
@@ -393,9 +393,9 @@ export default function ProjectFormModal({
                       setErrors({});
                     }}
                     className={cn(
-                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      "rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
                       creationMode === "manual"
-                        ? "bg-white text-blue-700 shadow-sm"
+                        ? "bg-white text-accent shadow-sm"
                         : "text-slate-500 hover:text-slate-700",
                     )}
                   >
@@ -408,9 +408,9 @@ export default function ProjectFormModal({
                       setErrors({});
                     }}
                     className={cn(
-                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      "rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
                       creationMode === "osf"
-                        ? "bg-white text-blue-700 shadow-sm"
+                        ? "bg-white text-accent shadow-sm"
                         : "text-slate-500 hover:text-slate-700",
                     )}
                   >
@@ -420,9 +420,9 @@ export default function ProjectFormModal({
               </div>
             )}
             {!isEditMode && creationMode === "osf" && (
-              <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/50 p-4">
+              <div className="rounded-xl border border-dashed border-accent bg-primary-light/50 p-4">
                 <div className="flex items-start gap-3">
-                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600">
+                  <div className="rounded-lg bg-primary-light p-2 text-accent">
                     <FiUpload size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -435,7 +435,7 @@ export default function ProjectFormModal({
                     </p>
                     <label
                       htmlFor="osf-file"
-                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
+                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-xl border border-accent bg-white px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-primary-light"
                     >
                       <FiUpload size={16} />
                       {osfFile ? "Chọn file khác" : "Chọn file OSF"}
@@ -589,8 +589,8 @@ export default function ProjectFormModal({
 
           {/* Huy hiệu Workflow tiêu chuẩn (Chỉ hiển thị khi Tạo mới) */}
           {!isEditMode && (
-            <div className="p-5 bg-bg-secondary/50 border border-indigo-100/50 rounded-md flex items-start gap-4 shadow-none shrink-0">
-              <div className="w-10 h-10 rounded-[4px] bg-indigo-100 flex items-center justify-center text-accent shrink-0 border border-indigo-200">
+            <div className="p-5 bg-bg-secondary/50 border border-indigo-100/50 rounded-xl flex items-start gap-4 shadow-none shrink-0">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-accent shrink-0 border border-indigo-200">
                 <FiLayers size={18} />
               </div>
               <div className="space-y-1 mt-0.5">

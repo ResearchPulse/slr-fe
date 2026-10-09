@@ -29,10 +29,10 @@ const AdminNotification: React.FC = () => {
         aria-label={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
         aria-expanded={showNotifications}
         onClick={() => setShowNotifications(!showNotifications)}
-        className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors ${
+        className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
           showNotifications
-            ? "bg-[#EEF6FB] text-[#087BC1]"
-            : "text-[#71838F] hover:bg-[#F1F7FA] hover:text-[#087BC1]"
+            ? "bg-primary-light text-accent"
+            : "text-text-secondary hover:bg-primary-light hover:text-accent"
         }`}
       >
         <FiBell size={19} />

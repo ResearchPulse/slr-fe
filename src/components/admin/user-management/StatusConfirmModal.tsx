@@ -37,7 +37,7 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
     >
       <div className="space-y-6">
         <div
-          className={`p-4 rounded-md flex items-center gap-3 ${isActivating ? "bg-emerald-50 text-emerald-800 border border-emerald-100" : "bg-rose-50 text-rose-800 border border-rose-100"}`}
+          className={`p-4 rounded-xl flex items-center gap-3 ${isActivating ? "bg-emerald-50 text-emerald-800 border border-emerald-100" : "bg-rose-50 text-rose-800 border border-rose-100"}`}
         >
           {isActivating ? (
             <FiCheckCircle size={24} className="text-emerald-500" />
@@ -52,7 +52,7 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
           </div>
         </div>
 
-        <div className="bg-slate-50 p-4 rounded-md border border-slate-100 flex gap-3 text-slate-600">
+        <div className="bg-bg-primary p-4 rounded-xl border border-border flex gap-3 text-text-secondary">
           <FiAlertCircle size={20} className="shrink-0 text-amber-500" />
           <p className="text-xs leading-relaxed font-medium">
             {isActivating
@@ -61,15 +61,14 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-50">
-          <button
-            type="button"
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border">
+          <Button
+            variant="ghost"
             onClick={onClose}
-            className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-[4px] transition-all"
             disabled={isLoading}
           >
             Cancel
-          </button>
+          </Button>
           <Button
             onClick={onConfirm}
             isLoading={isLoading}
