@@ -432,7 +432,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           toast.success("PDF uploaded. Review AI metadata suggestions.");
           return;
         }
-        toast.success("PDF uploaded. No metadata suggestions were found.");
+        toast.success("PDF uploaded. Full-text extraction is running in the background.");
         return;
       }
 
@@ -481,7 +481,8 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
   const retryMetadataExtractionMutation = useMutation({
     mutationFn: async (paperId: string) => {
-      return studySelectionService.retryExtraction(paperId, { provider: "GROBID" });
+      if (!projectId) throw new Error("Cannot retry extraction: missing project.");
+      return studySelectionService.retryExtraction(paperId, { provider: "GROBID", projectId });
     },
     onSuccess: (response) => {
       queryClient.invalidateQueries({

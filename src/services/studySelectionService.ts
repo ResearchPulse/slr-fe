@@ -217,6 +217,7 @@ export const studySelectionService = {
 
   // 14. Upload Full-Text PDF File (Direct-to-Cloud Upload with fallback to proxy upload)
   async uploadPaperFullText(params: UploadPaperFullTextRequest): Promise<UploadFullTextResponse> {
+    let directUploadCompleted = false;
     try {
       // Step 1: Request signed upload credentials from backend
       const sigResponse = await api.post<{
@@ -255,6 +256,7 @@ export const studySelectionService = {
         });
 
         if (cldRes.ok) {
+          directUploadCompleted = true;
           const cldJson = (await cldRes.json()) as {
             public_id: string;
             secure_url: string;
@@ -279,6 +281,7 @@ export const studySelectionService = {
         }
       }
     } catch (directErr) {
+      if (directUploadCompleted) throw directErr;
       console.warn("[DirectUpload] Direct-to-Cloud upload failed, falling back to server proxy upload:", directErr);
     }
 
@@ -320,11 +323,11 @@ export const studySelectionService = {
   // 15. Retry metadata extraction for existing uploaded PDF
   async retryExtraction(
     paperId: string,
-    request?: RetryExtractionRequest,
+    request: RetryExtractionRequest,
   ): Promise<RetryExtractionResponse> {
     const response = await api.post<RetryExtractionResponse>(
       `/paper-fulltext/${paperId}/extract-metadata`,
-      request ?? { provider: "GROBID" },
+      request,
     );
     return response.data;
   },
