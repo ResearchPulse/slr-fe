@@ -50,6 +50,7 @@ export default function PaperRow({
   onRemovePdf,
   isRemovingPdf,
   onDeletePaper,
+  onDeleteClick,
   isDeletingPaper,
   isLeader = false,
   canUploadPdf = false,
