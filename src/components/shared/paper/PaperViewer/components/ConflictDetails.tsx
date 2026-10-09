@@ -9,7 +9,7 @@ interface ConflictDetailsProps {
 
 export const ConflictDetails: React.FC<ConflictDetailsProps> = ({ paper }) => {
   return (
-    <div className="bg-amber-50 rounded-[4px] border border-amber-200 p-6 space-y-4">
+    <div className="bg-amber-50 rounded-xl border border-amber-200 p-6 space-y-4">
       <div className="flex items-center gap-2">
         <FiAlertTriangle className="w-4 h-4 text-amber-600" />
         <h3 className="text-xs font-black text-amber-800 uppercase tracking-widest">
@@ -20,7 +20,7 @@ export const ConflictDetails: React.FC<ConflictDetailsProps> = ({ paper }) => {
         {paper.decisions.map((d) => (
           <div
             key={d.id}
-            className="bg-surface-white rounded-[4px] p-4 border border-amber-100 shadow-none space-y-2"
+            className="bg-surface-white rounded-xl p-4 border border-amber-100 shadow-none space-y-2"
           >
             <div className="flex items-center justify-between">
               <span className="text-xs font-black text-slate-800 uppercase tracking-tight truncate max-w-[120px]">

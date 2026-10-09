@@ -9,7 +9,7 @@ import type {
   CreatePICOCElementInput,
   PICOCElement,
 } from "../types/coreAndGovernance";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 
 /**
  * Hook for managing project review needs
@@ -30,9 +30,9 @@ export const useReviewNeeds = (projectId?: string) => {
       coreAndGovernanceService.createReviewNeed(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.needs(projectId || "") });
-      toast.success("Review need added successfully");
+      toastSuccess("Review need added successfully");
     },
-    onError: (err) => toast.error(err.message || "Failed to add review need"),
+    onError: (err) => toastError(err.message || "Failed to add review need"),
   });
 
   return {
@@ -62,9 +62,9 @@ export const useDocuments = (projectId?: string) => {
       coreAndGovernanceService.createDocument(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.documents(projectId || "") });
-      toast.success("Document added successfully");
+      toastSuccess("Document added successfully");
     },
-    onError: (err) => toast.error(err.message || "Failed to add document"),
+    onError: (err) => toastError(err.message || "Failed to add document"),
   });
 
   return {
@@ -94,9 +94,9 @@ export const useObjectives = (projectId?: string) => {
       coreAndGovernanceService.createObjective(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.projects.objectives(projectId || "") });
-      toast.success("Objective added successfully");
+      toastSuccess("Objective added successfully");
     },
-    onError: (err) => toast.error(err.message || "Failed to add objective"),
+    onError: (err) => toastError(err.message || "Failed to add objective"),
   });
 
   return {
@@ -128,9 +128,9 @@ export const useResearchQuestions = (projectId?: string) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.projects.researchQuestions(projectId || ""),
       });
-      toast.success("Research question added successfully");
+      toastSuccess("Research question added successfully");
     },
-    onError: (err) => toast.error(err.message || "Failed to add research question"),
+    onError: (err) => toastError(err.message || "Failed to add research question"),
   });
 
   return {
@@ -189,9 +189,9 @@ export const usePicoc = (questionIds: string[] = []) => {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.researchQuestions.picoc(variables.research_question_id),
       });
-      toast.success("PICOC element added successfully");
+      toastSuccess("PICOC element added successfully");
     },
-    onError: (err) => toast.error(err.message || "Failed to add PICOC element"),
+    onError: (err) => toastError(err.message || "Failed to add PICOC element"),
   });
 
   return {

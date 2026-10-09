@@ -6,7 +6,8 @@ import type { PaperPoolItem } from "../../paperPool/types";
 import type { ScreeningPaper } from "../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import { usePaperDetails } from "../../../hooks/usePaperDetails";
 import type { PaperDetailsResponse } from "../../../types/paper";
-import { Loader2, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 
 interface PaperViewerModalProps {
   paper: PaperPoolItem | null;
@@ -177,18 +178,18 @@ export default function PaperViewerModal({
         <div className="relative -mx-8 -mb-8 -mt-2 w-[calc(100%+4rem)] overflow-hidden rounded-b-[2rem]">
           {/* Suggestion Alert Bar */}
           {suggestion && (
-            <div className="flex items-center justify-between border-b border-indigo-100 bg-bg-secondary px-6 py-3">
+            <div className="flex items-center justify-between border-b border-accent/20 bg-bg-secondary px-6 py-3">
               <div className="flex items-center gap-2">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-accent shadow-sm">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-light text-accent shadow-sm">
                   <Sparkles className="h-4 w-4" />
                 </div>
-                <p className="text-xs font-black text-indigo-900 uppercase tracking-tight">
+                <p className="text-xs font-black text-text-primary uppercase tracking-tight">
                   AI Metadata Suggestions Available
                 </p>
               </div>
               <button
                 onClick={() => setIsSuggestionModalOpen(true)}
-                className="rounded-[4px] bg-accent px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg shadow-indigo-900/20 transition-all hover:bg-indigo-700 active:scale-95"
+                className="rounded-xl bg-accent px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-primary-hover active:scale-95"
               >
                 View & Apply
               </button>
@@ -199,8 +200,8 @@ export default function PaperViewerModal({
             {isLoading && (
               <div className="absolute inset-0 z-50 flex items-center justify-center bg-surface-white/60 backdrop-blur-md">
                 <div className="flex flex-col items-center gap-4">
-                  <div className="w-16 h-16 rounded-[4px] bg-surface-white shadow-2xl flex items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+                  <div className="w-16 h-16 rounded-xl bg-surface-white shadow-2xl flex items-center justify-center">
+                    <LoadingSpinner size="md" />
                   </div>
                   <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] animate-pulse">
                     Synchronizing Metadata...

@@ -10,7 +10,6 @@ import {
   AlertCircle,
   ChevronLeft,
   ChevronRight,
-  Loader2,
   ArrowLeft,
   X,
   Search,
@@ -25,6 +24,7 @@ import {
 import { motion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import Tooltip from "../../components/ui/Tooltip";
+import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { cn } from "../../utils/cn";
 import {
   useFinalResolutionProgress,
@@ -105,7 +105,7 @@ const StatusIndicator = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1 rounded-[4px] border text-[10px] font-bold uppercase tracking-tight transition-all",
+        "flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[10px] font-bold uppercase tracking-tight transition-all",
         config.bg,
         config.text,
         config.border,
@@ -314,7 +314,7 @@ const StuSePaperStatisticPage: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50">
-        <Loader2 className="w-10 h-10 text-accent animate-spin mb-4" />
+        <LoadingSpinner size="lg" className="mb-4" />
         <p className="text-text-secondary font-medium">Loading statistics...</p>
       </div>
     );
@@ -349,7 +349,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                   `/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}/dashboard`,
                 )
               }
-              className="group flex items-center gap-2.5 px-4 py-2 bg-surface-white border border-border rounded-[4px] text-text-secondary transition-all hover:border-indigo-200 hover:text-accent hover:shadow-none active:scale-95"
+              className="group flex items-center gap-2.5 px-4 py-2 bg-surface-white border border-border rounded-xl text-text-secondary transition-all hover:border-accent/20 hover:text-accent hover:shadow-none active:scale-95"
             >
               <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
               <span className="text-[10px] font-black uppercase tracking-widest">
@@ -360,7 +360,7 @@ const StuSePaperStatisticPage: React.FC = () => {
             <div className="h-10 w-px bg-slate-200" />
 
             <div>
-              <h1 className="text-xl font-black text-slate-800 tracking-tight flex items-center gap-2">
+              <h1 className="text-xl font-black text-text-primary tracking-tight flex items-center gap-2">
                 <BarChart3 className="w-5 h-5 text-accent" />
                 Decision Matrix
               </h1>
@@ -376,7 +376,7 @@ const StuSePaperStatisticPage: React.FC = () => {
         {/* Visual Summary Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Chart Card */}
-          <div className="lg:col-span-2 bg-surface-white rounded-[4px] border border-border p-8 shadow-none flex items-center gap-12 relative overflow-hidden group">
+          <div className="lg:col-span-2 bg-surface-white rounded-xl border border-border p-8 shadow-none flex items-center gap-12 relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-32 h-32 bg-bg-secondary/50 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
 
             <div className="relative w-48 h-48 flex-shrink-0">
@@ -405,7 +405,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                           100
                         ).toFixed(1);
                         return (
-                          <div className="bg-slate-900 text-white px-3 py-2 rounded-[4px] text-[11px] font-bold shadow-none border border-slate-800">
+                          <div className="bg-slate-900 text-white px-3 py-2 rounded-xl text-[11px] font-bold shadow-none border border-slate-800">
                             <div className="flex items-center gap-2 mb-1">
                               <div
                                 className="w-2 h-2 rounded-full"
@@ -430,7 +430,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                 </PieChart>
               </ResponsiveContainer>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-3xl font-black text-slate-800 tracking-tight">
+                <span className="text-3xl font-black text-text-primary tracking-tight">
                   {stats.totalPapers}
                 </span>
                 <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
@@ -441,7 +441,7 @@ const StuSePaperStatisticPage: React.FC = () => {
 
             <div className="flex-1 space-y-6">
               <div>
-                <h3 className="text-xl font-black text-slate-800 tracking-tight mb-1">
+                <h3 className="text-xl font-black text-text-primary tracking-tight mb-1">
                   Screening Distribution
                 </h3>
                 <p className="text-sm text-text-secondary font-medium">
@@ -453,7 +453,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                 {chartData.map((item, idx) => (
                   <div
                     key={idx}
-                    className="flex flex-col p-3 rounded-[4px] bg-bg-secondary border border-border transition-colors hover:bg-surface-white hover:border-border"
+                    className="flex flex-col p-3 rounded-xl bg-bg-secondary border border-border transition-colors hover:bg-surface-white hover:border-border"
                   >
                     <div className="flex items-center gap-2 mb-1">
                       <div
@@ -464,7 +464,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                         {item.name}
                       </span>
                     </div>
-                    <span className="text-xl font-black text-slate-800">
+                    <span className="text-xl font-black text-text-primary">
                       {item.value}
                     </span>
                   </div>
@@ -474,12 +474,12 @@ const StuSePaperStatisticPage: React.FC = () => {
           </div>
 
           {/* Secondary Info Card */}
-          <div className="bg-slate-900 rounded-[4px] p-8 shadow-none relative overflow-hidden flex flex-col justify-between">
+          <div className="bg-slate-900 rounded-xl p-8 shadow-none relative overflow-hidden flex flex-col justify-between">
             <div className="absolute top-0 right-0 w-48 h-48 bg-surface-white/5 rounded-bl-full -mr-24 -mt-24 pointer-events-none" />
 
             <div className="space-y-6 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-[4px] bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
+                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
                   <TrendingUp className="w-6 h-6 text-amber-500" />
                 </div>
                 <div>
@@ -494,7 +494,7 @@ const StuSePaperStatisticPage: React.FC = () => {
 
               {stats.topExclusionReason ? (
                 <div className="space-y-4">
-                  <div className="p-4 rounded-[4px] bg-surface-white/5 border border-white/10">
+                  <div className="p-4 rounded-xl bg-surface-white/5 border border-white/10">
                     <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">
                       Top Reason for Rejection
                     </span>
@@ -502,7 +502,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                       {stats.topExclusionReason.name}
                     </h4>
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="px-2 py-0.5 rounded-md bg-amber-500 text-text-primary text-[10px] font-black uppercase">
+                      <div className="px-2 py-0.5 rounded-xl bg-amber-500 text-text-primary text-[10px] font-black uppercase">
                         CODE: {stats.topExclusionReason.code}
                       </div>
                       <span className="text-xs text-text-secondary font-medium">
@@ -571,7 +571,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search by title, authors, DOI..."
-                  className="block w-full pl-10 pr-4 py-2.5 bg-surface-white border border-border rounded-[4px] text-[13px] font-medium text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all shadow-none"
+                  className="block w-full pl-10 pr-4 py-2.5 bg-surface-white border border-border rounded-xl text-[13px] font-medium text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all shadow-none"
                 />
                 {search && (
                   <button
@@ -586,10 +586,10 @@ const StuSePaperStatisticPage: React.FC = () => {
               <button
                 onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
                 className={cn(
-                  "flex items-center gap-2.5 px-5 py-2.5 rounded-[4px] border transition-all relative overflow-hidden group shadow-none",
+                  "flex items-center gap-2.5 px-5 py-2.5 rounded-xl border transition-all relative overflow-hidden group shadow-none",
                   activeFilterCount > 0 || isFilterPanelOpen
                     ? "bg-slate-900 border-slate-900 text-white"
-                    : "bg-surface-white border-border text-text-secondary hover:border-indigo-200 hover:bg-bg-secondary",
+                    : "bg-surface-white border-border text-text-secondary hover:border-accent/20 hover:bg-bg-secondary",
                 )}
               >
                 <Filter
@@ -616,7 +616,7 @@ const StuSePaperStatisticPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-bg-secondary px-3 py-1.5 rounded-[4px] border border-border">
+            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-bg-secondary px-3 py-1.5 rounded-xl border border-border">
               Showing {papers.length} of {stats.totalPapers} Papers
             </div>
           </div>
@@ -631,7 +631,7 @@ const StuSePaperStatisticPage: React.FC = () => {
             transition={{ duration: 0.3, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="bg-surface-white border border-border rounded-[4px] p-8 shadow-none shadow-slate-100/50 space-y-8 relative">
+            <div className="bg-surface-white border border-border rounded-xl p-8 shadow-none shadow-slate-100/50 space-y-8 relative">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
                 {/* Status Section */}
                 <div className="space-y-4">
@@ -653,7 +653,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                             }
                           }}
                           className={cn(
-                            "flex items-center justify-center px-4 py-3 rounded-[4px] border transition-all text-[11px] font-bold uppercase tracking-wider",
+                            "flex items-center justify-center px-4 py-3 rounded-xl border transition-all text-[11px] font-bold uppercase tracking-wider",
                             pendingFilter === f
                               ? "bg-slate-900 border-slate-900 text-white shadow-none"
                               : "bg-bg-secondary border-border text-text-secondary hover:bg-surface-white hover:border-border",
@@ -677,7 +677,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                   <div className="space-y-3">
                     <Dropdown
                       trigger={
-                        <div className="flex items-center justify-between w-full h-11 px-4 bg-bg-secondary border border-border rounded-[4px] text-[12px] font-bold text-text-primary hover:bg-surface-white hover:border-border transition-all cursor-pointer">
+                        <div className="flex items-center justify-between w-full h-11 px-4 bg-bg-secondary border border-border rounded-xl text-[12px] font-bold text-text-primary hover:bg-surface-white hover:border-border transition-all cursor-pointer">
                           <span className="truncate">
                             {pendingExclusionReasonCode !== undefined
                               ? exclusionReasons.find(
@@ -688,7 +688,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                           <ChevronDown className="w-4 h-4 text-text-secondary" />
                         </div>
                       }
-                      contentClassName="w-[340px] max-h-60 overflow-hidden flex flex-col bg-surface-white border border-border rounded-[4px] shadow-2xl z-[110]"
+                      contentClassName="w-[340px] max-h-60 overflow-hidden flex flex-col bg-surface-white border border-border rounded-xl shadow-2xl z-(--z-index-dropdown)"
                     >
                       <div
                         className="overflow-y-auto custom-scrollbar p-1 max-h-60"
@@ -707,7 +707,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                             setPendingExclusionReasonCode(undefined)
                           }
                           className={cn(
-                            "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-[4px] mb-1",
+                            "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-xl mb-1",
                             pendingExclusionReasonCode === undefined
                               ? "bg-bg-secondary text-text-primary"
                               : "text-text-secondary hover:bg-bg-secondary",
@@ -724,7 +724,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                               setPendingFilter("excluded");
                             }}
                             className={cn(
-                              "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-[4px] text-left mb-0.5",
+                              "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-xl text-left mb-0.5",
                               pendingExclusionReasonCode === reason.code
                                 ? "bg-bg-secondary text-accent"
                                 : "text-text-secondary hover:bg-bg-secondary",
@@ -749,7 +749,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                       Publication Timeline
                     </span>
                   </div>
-                  <div className="bg-bg-secondary rounded-[4px] border border-border p-1">
+                  <div className="bg-bg-secondary rounded-xl border border-border p-1">
                     <YearRangeSlider
                       fromYear={pendingFromYear}
                       toYear={pendingToYear}
@@ -784,7 +784,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                   <div className="w-px h-4 bg-slate-200" />
                   <button
                     onClick={handleApplyFilters}
-                    className="px-8 py-2.5 bg-accent text-white rounded-[4px] font-black text-[11px] uppercase tracking-widest shadow-none shadow-indigo-100 hover:bg-indigo-700 transition-all active:scale-95"
+                    className="px-8 py-2.5 bg-accent text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-none hover:bg-primary-hover transition-all active:scale-95"
                   >
                     Apply Active Filters
                   </button>
@@ -813,17 +813,17 @@ const StuSePaperStatisticPage: React.FC = () => {
               >
                 <div
                   className={cn(
-                    "grid grid-cols-[1fr_240px_140px_100px] items-center px-6 py-4 rounded-[4px] border transition-all duration-300",
+                    "grid grid-cols-[1fr_240px_140px_100px] items-center px-6 py-4 rounded-xl border transition-all duration-300",
                     paper.finalDecision === "INCLUDED"
                       ? "bg-emerald-50/30 border-emerald-100/50 hover:bg-emerald-50/60"
                       : paper.finalDecision === "EXCLUDED"
                         ? "bg-rose-50/30 border-rose-100/50 hover:bg-rose-50/60"
-                        : "bg-surface-white border-border hover:border-indigo-200 hover:shadow-none hover:-translate-y-0.5",
+                        : "bg-surface-white border-border hover:border-accent/20 hover:shadow-none hover:-translate-y-0.5",
                   )}
                 >
                   {/* Paper Info */}
                   <div className="flex flex-col pr-4 min-w-0">
-                    <h4 className="text-sm font-bold text-slate-800 truncate group-hover:text-accent transition-colors">
+                    <h4 className="text-sm font-bold text-text-primary truncate group-hover:text-accent transition-colors">
                       {paper.title}
                     </h4>
                     <span className="text-[11px] text-text-secondary font-medium truncate italic">
@@ -849,7 +849,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                   <div className="flex justify-end">
                     {paper.exclusionReason ? (
                       <Tooltip content={paper.exclusionReason.name}>
-                        <div className="w-8 h-8 rounded-[4px] bg-rose-100 flex items-center justify-center text-[11px] font-black text-rose-600 border border-rose-200 shadow-none transition-transform hover:scale-110">
+                        <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-[11px] font-black text-rose-600 border border-rose-200 shadow-none transition-transform hover:scale-110">
                           {paper.exclusionReason.code}
                         </div>
                       </Tooltip>
@@ -867,7 +867,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                 <button
                   onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
                   disabled={pageNumber === 1}
-                  className="p-2 rounded-[4px] border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
+                  className="p-2 rounded-xl border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
@@ -878,7 +878,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                       key={i}
                       onClick={() => setPageNumber(i + 1)}
                       className={cn(
-                        "w-8 h-8 rounded-[4px] text-xs font-bold transition-all",
+                        "w-8 h-8 rounded-xl text-xs font-bold transition-all",
                         pageNumber === i + 1
                           ? "bg-accent text-white shadow-none"
                           : "text-text-secondary hover:bg-bg-secondary",
@@ -894,7 +894,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                     setPageNumber((prev) => Math.min(totalPages, prev + 1))
                   }
                   disabled={pageNumber === totalPages}
-                  className="p-2 rounded-[4px] border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
+                  className="p-2 rounded-xl border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>

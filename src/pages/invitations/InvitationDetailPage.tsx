@@ -145,7 +145,7 @@ export default function InvitationDetailPage() {
 
         <div className="grid gap-8">
           {/* Main Content Card */}
-          <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-[4px]">
+          <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-xl">
             <div className="bg-slate-900 p-10 sm:p-12 text-white relative overflow-hidden">
               {/* Decorative elements */}
               <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl -mr-32 -mt-32" />
@@ -223,7 +223,7 @@ export default function InvitationDetailPage() {
                 {/* Timeline / Dates */}
                 <div className="space-y-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
                       <FiCalendar size={16} />
                     </div>
                     <div>
@@ -237,7 +237,7 @@ export default function InvitationDetailPage() {
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
+                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
                       <FiClock size={16} />
                     </div>
                     <div>
@@ -252,7 +252,7 @@ export default function InvitationDetailPage() {
 
                   {invitation.respondedAt && (
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
                         <FiCheckCircle size={16} />
                       </div>
                       <div>

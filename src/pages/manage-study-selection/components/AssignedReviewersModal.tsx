@@ -30,11 +30,11 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
           reviewers.map((reviewer) => (
             <div
               key={reviewer.reviewerId}
-              className="flex flex-col gap-2 p-3 rounded-[4px] bg-bg-secondary border border-border group hover:border-indigo-100 hover:bg-surface-white transition-all"
+              className="flex flex-col gap-2 p-3 rounded-xl bg-bg-secondary border border-border group hover:border-accent/20 hover:bg-surface-white transition-all"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-accent font-bold text-xs uppercase">
+                  <div className="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-accent font-bold text-xs uppercase">
                     {reviewer.reviewerName?.charAt(0) || "?"}
                   </div>
                   <div className="flex flex-col">
@@ -51,7 +51,7 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
                   {reviewer.decision ? (
                     <span
                       className={cn(
-                        "px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-[4px] border",
+                        "px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-xl border",
                         reviewer.decision.toLowerCase().includes("include")
                           ? "bg-green-100 text-green-700 border-green-300"
                           : reviewer.decision.toLowerCase().includes("exclude")
@@ -62,7 +62,7 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
                       {reviewer.decision}
                     </span>
                   ) : (
-                    <span className="text-[9px] font-black uppercase tracking-wider text-text-secondary bg-bg-secondary/50 px-2.5 py-1 rounded-[4px] border border-border">
+                    <span className="text-[9px] font-black uppercase tracking-wider text-text-secondary bg-bg-secondary/50 px-2.5 py-1 rounded-xl border border-border">
                       Pending
                     </span>
                   )}
@@ -87,7 +87,7 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
                         <textarea
                           readOnly
                           value={reviewer.exclusionNote}
-                          className="w-full text-xs text-text-secondary bg-surface-white/50 border border-border rounded-[4px] p-2.5 focus:outline-none resize-none min-h-[60px] italic shadow-inner"
+                          className="w-full text-xs text-text-secondary bg-surface-white/50 border border-border rounded-xl p-2.5 focus:outline-none resize-none min-h-[60px] italic shadow-inner"
                         />
                       </div>
                     )}

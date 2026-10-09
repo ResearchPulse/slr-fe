@@ -50,7 +50,7 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
   if (fields.length === 0) return null;
 
   return (
-    <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+    <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
       <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-6">
         Publication Details
       </h2>
@@ -64,7 +64,7 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
               {field.isUpdated && (
                 <div className="group/spark relative flex items-center">
                   <Sparkles className="w-2.5 h-2.5 text-accent" />
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-[4px] opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested applied
                   </div>
                 </div>

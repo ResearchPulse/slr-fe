@@ -40,7 +40,7 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
     >
       <div className="space-y-6">
         {/* Item Topic */}
-        <div className="bg-bg-secondary border border-indigo-100 rounded-[4px] p-4">
+        <div className="bg-bg-secondary border border-accent/20 rounded-xl p-4">
           <p className="text-sm font-medium text-text-secondary">Topic</p>
           <p className="text-lg font-semibold text-text-primary mt-1">
             {data.topic}
@@ -55,7 +55,7 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
             </h3>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-bg-secondary hover:bg-bg-secondary text-text-primary text-sm font-medium transition-colors"
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-secondary hover:bg-bg-secondary text-text-primary text-sm font-medium transition-colors"
               title="Copy sample answer"
             >
               {copied ? (
@@ -72,7 +72,7 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
             </button>
           </div>
 
-          <div className="bg-bg-primary border border-border rounded-[4px] p-4">
+          <div className="bg-bg-primary border border-border rounded-xl p-4">
             <p className="text-sm leading-relaxed text-text-primary whitespace-pre-wrap">
               {data.sampleAnswer}
             </p>
@@ -85,14 +85,14 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
             <h3 className="text-sm font-semibold text-text-primary">
               Why this is a good answer
             </h3>
-            <div className="bg-blue-50 border border-blue-100 rounded-[4px] p-4">
+            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
               <p className="text-sm text-blue-900">{data.explanation}</p>
             </div>
           </div>
         )}
 
         {/* Hint about usage */}
-        <div className="bg-amber-50 border border-amber-100 rounded-[4px] p-3">
+        <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
           <p className="text-xs text-amber-900">
             💡 This is a <strong>sample answer</strong> to guide you. Your own
             answer should reflect your specific study characteristics and be

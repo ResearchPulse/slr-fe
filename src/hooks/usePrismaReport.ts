@@ -6,7 +6,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import prismaReportService from "../services/prismaReportService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 import type {
   PrismaReportResponse,
   PrismaReportListResponse,
@@ -153,17 +153,17 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
       if (axiosErr.response?.status === 404) return;
     }
 
-    toast.error(getErrorMessage(latestQuery.error, "Failed to load latest PRISMA report."));
+    toastError(getErrorMessage(latestQuery.error, "Failed to load latest PRISMA report."));
   }, [latestQuery.error]);
 
   useEffect(() => {
     if (!historyQuery.error) return;
-    toast.error(getErrorMessage(historyQuery.error, "Failed to load report history."));
+    toastError(getErrorMessage(historyQuery.error, "Failed to load report history."));
   }, [historyQuery.error]);
 
   useEffect(() => {
     if (!selectedQuery.error) return;
-    toast.error(getErrorMessage(selectedQuery.error, "Failed to load the selected report."));
+    toastError(getErrorMessage(selectedQuery.error, "Failed to load the selected report."));
   }, [selectedQuery.error]);
 
   // ---------- Mutation: generate report ----------
@@ -185,7 +185,7 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
       setSelectedReportId(null);
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to generate PRISMA report."));
+      toastError(getErrorMessage(error, "Failed to generate PRISMA report."));
     },
   });
 
@@ -207,10 +207,10 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
-      toast.success("PRISMA flow diagram downloaded successfully.");
+      toastSuccess("PRISMA flow diagram downloaded successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to download PRISMA flow diagram."));
+      toastError(getErrorMessage(error, "Failed to download PRISMA flow diagram."));
     },
   });
 

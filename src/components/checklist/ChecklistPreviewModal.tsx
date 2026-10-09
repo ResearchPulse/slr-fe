@@ -64,7 +64,7 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
     >
       <div className="space-y-6 max-h-[70vh] overflow-y-auto pr-2 print:overflow-visible print:max-h-none">
         {/* Report Header */}
-        <div className="rounded-lg border border-border bg-bg-primary/50 p-4 space-y-2">
+        <div className="rounded-xl border border-border bg-bg-primary/50 p-4 space-y-2">
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-base font-bold text-text-primary">
@@ -86,7 +86,7 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
         </div>
 
         {/* Sections & Items Table */}
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full border-collapse text-left text-xs">
             <thead className="bg-slate-800 text-white uppercase text-[11px] tracking-wider font-semibold">
               <tr>

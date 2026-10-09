@@ -748,7 +748,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                   ? "bg-surface-white border-border text-red-700"
                   : autoFillState.status === AutoFillStatus.Completed
                     ? "bg-surface-white border-border text-green-700"
-                    : "bg-bg-secondary border-indigo-200 text-indigo-700",
+                    : "bg-bg-secondary border-accent/20 text-accent",
               )}
             >
               {autoFillState.isActive &&
@@ -846,7 +846,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           )}
 
           {/* Progress Bar */}
-          <div className="shrink-0 bg-linear-to-r from-indigo-50 to-white border-b border-border p-4 sm:p-6">
+          <div className="shrink-0 bg-linear-to-r from-primary-light to-white border-b border-border p-4 sm:p-6">
             <CompletionProgress
               completed={checklist.completedItems}
               total={checklist.totalItems}
@@ -857,7 +857,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
           {/* Error Message */}
           {saveError && (
-            <div className="shrink-0 mx-4 mt-4 p-3 bg-surface-white border border-border text-red-700 rounded-[4px] text-sm">
+            <div className="shrink-0 mx-4 mt-4 p-3 bg-surface-white border border-border text-red-700 rounded-xl text-sm">
               {saveError}
             </div>
           )}
@@ -903,7 +903,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                 {currentSectionItems.length > 0 ? (
                   renderChecklistTree(currentSectionItems)
                 ) : (
-                  <div className="text-center py-12 bg-bg-primary rounded-[4px] border border-border">
+                  <div className="text-center py-12 bg-bg-primary rounded-xl border border-border">
                     <p className="text-text-secondary">
                       No items in this section yet
                     </p>
@@ -964,7 +964,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                 "w-1.5 relative cursor-col-resize select-none self-stretch flex items-center justify-center group z-50",
                 isDragging
                   ? "bg-accent"
-                  : "bg-bg-secondary hover:bg-indigo-400 transition-colors",
+                  : "bg-bg-secondary hover:bg-accent transition-colors",
               )}
               onMouseDown={handleMouseDown}
             >
@@ -973,7 +973,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                 className={cn(
                   "w-0.5 h-6 rounded-full transition-colors",
                   isDragging
-                    ? "bg-indigo-200"
+                    ? "bg-accent/40"
                     : "bg-gray-400 group-hover:bg-surface-white",
                 )}
               />

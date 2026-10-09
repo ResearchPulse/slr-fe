@@ -53,13 +53,13 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
 
   return (
     <div className="min-h-screen bg-surface-white">
-      <div className="bg-linear-to-r from-indigo-50 to-blue-50 border-b border-indigo-100 px-6 py-8">
+      <div className="bg-linear-to-r from-primary-light to-primary-light/40 border-b border-accent/20 px-6 py-8">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => navigate(projectId ? `/projects/${projectId}` : "/projects")}
-              className="p-2 -ml-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-white/60 transition-colors"
+              className="p-2 -ml-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-white/60 transition-colors"
               title="Quay lại dự án"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -166,10 +166,10 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
   return (
     <div
       className={cn(
-        "border rounded-[4px] p-5 hover:shadow-none transition-all cursor-pointer group",
+        "border rounded-xl p-5 hover:shadow-none transition-all cursor-pointer group",
         isComplete
           ? "bg-emerald-50 border-emerald-200 hover:border-emerald-300"
-          : "bg-surface-white border-border hover:border-indigo-300",
+          : "bg-surface-white border-border hover:border-accent",
       )}
       onClick={onOpen}
     >
@@ -205,7 +205,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
               "h-full transition-all",
               isComplete
                 ? "bg-linear-to-r from-emerald-400 to-emerald-600"
-                : "bg-linear-to-r from-indigo-400 to-indigo-600",
+                : "bg-linear-to-r from-accent/80 to-accent",
             )}
             style={{ width: `${Math.min(100, Math.max(0, completionPercentage))}%` }}
           />
@@ -279,7 +279,7 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
             key={template.id}
             onClick={() => handleSelect(template.id)}
             disabled={isLoading}
-            className="w-full text-left p-4 border-2 border-border rounded-[4px] hover:border-indigo-300 hover:bg-bg-secondary transition-all disabled:opacity-50"
+            className="w-full text-left p-4 border-2 border-border rounded-xl hover:border-accent hover:bg-bg-secondary transition-all disabled:opacity-50"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -324,7 +324,7 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
           </button>
         ))}
         {templates.length === 0 && (
-          <div className="p-4 text-sm text-text-secondary bg-bg-primary border border-dashed border-border rounded-[4px]">
+          <div className="p-4 text-sm text-text-secondary bg-bg-primary border border-dashed border-border rounded-xl">
             No templates are available.
           </div>
         )}
