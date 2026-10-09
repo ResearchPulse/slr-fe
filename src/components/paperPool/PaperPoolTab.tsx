@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { FiChevronRight, FiAlertCircle, FiArrowDown } from "react-icons/fi";
 import { useNavigate, useParams, useSearchParams } from "react-router";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../utils/toast";
 
 import type { ReviewProcess } from "../../types/reviewProcess";
 import type { CreateReviewProcessRequest } from "../../types/reviewProcess";
@@ -328,7 +328,7 @@ export default function PaperPoolTab({
             primary: true,
             onClick: () => {
               if (!hasSearchSources) {
-                toast.error(
+                toastError(
                   "Please add at least one search source before continuing",
                 );
                 return;
@@ -411,7 +411,7 @@ export default function PaperPoolTab({
             primary: true,
             onClick: () => {
               setActiveTab("library");
-              toast.success(
+              toastSuccess(
                 "Select papers in the table and use the action bar or process panel",
               );
             },
@@ -531,7 +531,7 @@ export default function PaperPoolTab({
     };
     const created = await createFilterSetting(payload);
     setSelectedSavedFilterId(created.id);
-    toast.success("Saved filter created");
+    toastSuccess("Saved filter created");
     return created;
   };
 
@@ -547,7 +547,7 @@ export default function PaperPoolTab({
     };
     const created = await createFilterSetting(payload);
     setSelectedSavedFilterId(created.id);
-    toast.success("Saved filter created");
+    toastSuccess("Saved filter created");
     setIsManageFiltersOpen(false);
   };
 
@@ -564,11 +564,11 @@ export default function PaperPoolTab({
     setPageNumber(1);
   };
 
+  // ManageFiltersModal already asks for an inline confirmation before calling this.
   const handleDeleteSavedFilter = async (settingId: string) => {
-    if (!window.confirm("Delete this saved filter?")) return;
     await deleteFilterSetting(settingId);
     setSelectedSavedFilterId((prev) => (prev === settingId ? null : prev));
-    toast.success("Saved filter deleted");
+    toastSuccess("Saved filter deleted");
   };
 
   const handleAddSelectedToProcess = async (processId: string) => {
@@ -599,7 +599,7 @@ export default function PaperPoolTab({
         );
       }
     } catch (error) {
-      toast.error(
+      toastError(
         error instanceof Error ? error.message : "Failed to add papers",
       );
     } finally {
@@ -635,7 +635,7 @@ export default function PaperPoolTab({
         );
       }
     } catch (error) {
-      toast.error(
+      toastError(
         error instanceof Error
           ? error.message
           : "Failed to add papers from filter",
@@ -649,7 +649,7 @@ export default function PaperPoolTab({
     try {
       await createReviewProcess({ projectId, data });
       setIsCreateProcessModalOpen(false);
-      toast.success("Review process created successfully");
+      toastSuccess("Review process created successfully");
     } catch {
       // Error handled in hook
     }
@@ -669,10 +669,10 @@ export default function PaperPoolTab({
 
       {workflowStep === 1 && (
         <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
-                Research <span className="text-blue-600">Context</span> Summary
+                Research <span className="text-accent">Context</span> Summary
               </h2>
               <p className="text-text-secondary font-medium">
                 Review your Research Questions and PICO-C definitions.
@@ -692,10 +692,10 @@ export default function PaperPoolTab({
 
       {workflowStep === 2 && (
         <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <div className="bg-surface-white rounded-2xl border border-border p-10 shadow-none shadow-slate-200/50">
+          <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
-                Search <span className="text-blue-600">Strategy</span> Planning
+                Search <span className="text-accent">Strategy</span> Planning
               </h2>
               <p className="text-text-secondary font-medium">
                 Define the academic databases and sources for your search.
@@ -823,6 +823,7 @@ export default function PaperPoolTab({
                 onSubmit={handleCreateProcess}
                 isLoading={isCreatingProcess}
               />
+
             </>
           ) : activeTab === "snowballing" ? (
             <SnowballingCandidatesPage projectId={projectId} />

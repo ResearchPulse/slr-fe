@@ -52,7 +52,7 @@ export default function HeroNav({
 
   return (
     <nav className="w-full">
-      <div className="flex items-center gap-2 rounded-2xl border border-border bg-surface-white/90 px-4 py-3 shadow-[0_8px_30px_rgba(18,35,49,0.05)] backdrop-blur-xl sm:gap-4 sm:px-6 sm:py-4">
+      <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-white/90 px-4 py-3 shadow-[0_8px_30px_rgba(18,35,49,0.05)] backdrop-blur-xl sm:gap-4 sm:px-6 sm:py-4">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;

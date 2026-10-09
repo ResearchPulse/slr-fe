@@ -107,8 +107,8 @@ export default function PoolWorkflowStepper({
                         ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
                         : isDone
                           ? isLeader
-                            ? "border-blue-200 bg-white text-accent hover:bg-blue-50 shadow-sm cursor-pointer"
-                            : "border-blue-200 bg-white text-accent/70 shadow-sm cursor-default"
+                            ? "border-accent/30 bg-white text-accent hover:bg-primary-light shadow-sm cursor-pointer"
+                            : "border-accent/30 bg-white text-accent/70 shadow-sm cursor-default"
                           : isLeader
                             ? "border-border bg-white text-text-secondary shadow-sm hover:border-accent/40 hover:text-accent cursor-pointer"
                             : "border-slate-200 bg-slate-50 text-slate-400 shadow-none cursor-default"
@@ -141,10 +141,10 @@ export default function PoolWorkflowStepper({
         </ol>
       </div>
 
-      <div className="mx-auto mt-6 w-full max-w-[1440px] overflow-hidden rounded-2xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
+      <div className="mx-auto mt-6 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
         <div className="flex flex-col md:flex-row">
           <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
               <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
             <div>
@@ -159,7 +159,7 @@ export default function PoolWorkflowStepper({
 
           <div className="min-w-0 flex-1 p-5 sm:p-6">
             <div className="mb-3 flex flex-wrap items-center gap-2 text-accent">
-              <span className="rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-xs font-medium">
+              <span className="rounded-full border border-accent/20 bg-primary-light px-3 py-1 text-xs font-medium">
                 Instruction
               </span>
               {!isLeader && currentStep === 5 && (

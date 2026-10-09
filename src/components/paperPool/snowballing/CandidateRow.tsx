@@ -60,8 +60,8 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
     <div
       onClick={() => onSelect(candidate)}
       className={cn(
-        "group relative flex flex-col md:flex-row items-start md:items-center p-5 mb-3 bg-surface-white border border-border rounded-2xl transition-all cursor-pointer hover:shadow-none hover:border-blue-200",
-        isSelected && "border-blue-400 ring-1 ring-blue-400 bg-blue-50/10",
+        "group relative flex flex-col md:flex-row items-start md:items-center p-5 mb-3 bg-surface-white border border-border rounded-xl transition-all cursor-pointer hover:shadow-none hover:border-accent/30",
+        isSelected && "border-accent/50 ring-1 ring-accent/50 bg-primary-light/10",
         isSelectedInProjectRepository && "opacity-60 bg-bg-secondary/50",
       )}
     >
@@ -78,15 +78,15 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
             isSelectedInProjectRepository || statusText === "Rejected"
               ? "bg-bg-secondary border-border cursor-not-allowed opacity-50"
               : isBulkSelected
-                ? "bg-blue-600 border-blue-600"
-                : "border-slate-300 hover:border-blue-400 bg-surface-white",
+                ? "bg-primary border-accent"
+                : "border-slate-300 hover:border-accent/50 bg-surface-white",
           )}
         >
           {isBulkSelected && <Check className="w-3.5 h-3.5 text-white" />}
         </div>
 
         <div className="flex-1 min-w-0">
-          <h3 className="text-base font-bold text-blue-700 leading-snug line-clamp-2 mb-1 group-hover:text-blue-800 transition-colors">
+          <h3 className="text-base font-bold text-accent leading-snug line-clamp-2 mb-1 group-hover:text-primary-hover transition-colors">
             {title}
           </h3>
 
@@ -211,13 +211,13 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
             <div className="relative group/actions p-1">
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="p-2 rounded-xl bg-bg-secondary border border-border text-text-secondary hover:text-blue-600 hover:border-blue-200 hover:bg-blue-50 transition-all active:scale-95"
+                className="p-2 rounded-xl bg-bg-secondary border border-border text-text-secondary hover:text-primary-hover hover:border-accent/30 hover:bg-primary-light transition-all active:scale-95"
               >
                 <MoreHorizontal className="w-5 h-5" />
               </button>
 
               {/* Action Dropdown on Hover/Press */}
-              <div className="absolute right-0 top-full mt-2 w-52 bg-surface-white border border-border rounded-2xl shadow-2xl opacity-0 invisible group-hover/actions:opacity-100 group-hover/actions:visible group-focus-within/actions:opacity-100 group-focus-within/actions:visible transition-all duration-300 z-50 overflow-hidden pointer-events-none group-hover/actions:pointer-events-auto">
+              <div className="absolute right-0 top-full mt-2 w-52 bg-surface-white border border-border rounded-xl shadow-2xl opacity-0 invisible group-hover/actions:opacity-100 group-hover/actions:visible group-focus-within/actions:opacity-100 group-focus-within/actions:visible transition-all duration-300 z-(--z-index-dropdown) overflow-hidden pointer-events-none group-hover/actions:pointer-events-auto">
                 <div className="p-2 space-y-1 bg-surface-white">
                   <div className="px-3 py-2 border-b border-slate-50 mb-1">
                     <span className="text-[9px] font-black uppercase tracking-[0.15em] text-text-secondary">
@@ -230,9 +230,9 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
                       onAction?.(candidateId, "select");
                     }}
                     disabled={isProcessing}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-blue-50 text-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-primary-light text-accent transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center">
                       <UserPlus className="w-4 h-4" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest">
@@ -247,7 +247,7 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
                     disabled={isProcessing}
                     className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left hover:bg-rose-50 text-rose-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-rose-100 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center">
                       <XCircle className="w-4 h-4" />
                     </div>
                     <span className="text-xs font-black uppercase tracking-widest">

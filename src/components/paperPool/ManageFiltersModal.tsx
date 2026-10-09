@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import {
-  FiX,
   FiTrash2,
   FiEdit3,
   FiSearch,
@@ -13,6 +11,7 @@ import {
   FiSettings,
 } from "react-icons/fi";
 import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import type { PaperPoolFilterMetadata, PaperPoolFilterSetting } from "./types";
 
@@ -55,38 +54,21 @@ export default function ManageFiltersModal({
     }
   }, [detailFilter]);
 
-  if (!isOpen) return null;
-
   const handleSelectFilter = (id: string) => {
     setActiveFilterId(id);
     onViewDetail(id);
   };
 
-  const modalContent = (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      <div className="relative w-full max-w-5xl bg-surface-white rounded-[4px] shadow-2xl overflow-hidden flex flex-col max-h-[85vh] animate-in zoom-in-95 duration-300">
-        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
-          <div>
-            <h3 className="text-xl font-black text-text-primary uppercase tracking-tight">
-              Manage Filter Collections
-            </h3>
-            <p className="text-sm text-text-secondary mt-0.5">
-              Edit, clone or remove your saved filter configurations
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-bg-secondary rounded-full transition-colors"
-          >
-            <FiX className="w-5 h-5 text-text-secondary" />
-          </button>
-        </div>
-
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Manage Filter Collections"
+      description="Edit, clone or remove your saved filter configurations"
+      size="xl"
+      className="max-w-5xl"
+      bodyClassName="p-0 overflow-hidden flex min-h-0"
+    >
         <div className="flex flex-1 overflow-hidden">
           {/* Left Sidebar: Filter List */}
           <div className="w-80 border-r border-border bg-bg-primary/30 flex flex-col">
@@ -96,7 +78,7 @@ export default function ManageFiltersModal({
                 <input
                   type="text"
                   placeholder="Search collections..."
-                  className="w-full bg-surface-white border border-border rounded-[4px] pl-9 pr-4 py-2 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+                  className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-9 pr-4"
                 />
               </div>
             </div>
@@ -105,15 +87,15 @@ export default function ManageFiltersModal({
                 <button
                   key={filter.id}
                   onClick={() => handleSelectFilter(filter.id)}
-                  className={`w-full flex items-center justify-between p-3 rounded-[4px] transition-all ${
+                  className={`w-full flex items-center justify-between p-3 rounded-xl transition-all ${
                     activeFilterId === filter.id
-                      ? "bg-surface-white border-2 border-blue-500 shadow-sm"
+                      ? "bg-surface-white border-2 border-accent shadow-sm"
                       : "border-2 border-transparent hover:bg-bg-secondary/50"
                   }`}
                 >
                   <div className="text-left overflow-hidden">
                     <div
-                      className={`text-sm font-bold truncate ${activeFilterId === filter.id ? "text-blue-600" : "text-text-primary"}`}
+                      className={`text-sm font-bold truncate ${activeFilterId === filter.id ? "text-accent" : "text-text-primary"}`}
                     >
                       {filter.name}
                     </div>
@@ -122,7 +104,7 @@ export default function ManageFiltersModal({
                     </div>
                   </div>
                   {activeFilterId === filter.id ? (
-                    <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
                   ) : (
                     <FiChevronRight className="w-4 h-4 text-gray-300" />
                   )}
@@ -130,7 +112,7 @@ export default function ManageFiltersModal({
               ))}
               {savedFilters.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-                  <div className="w-12 h-12 bg-bg-secondary rounded-[4px] flex items-center justify-center mb-4 text-gray-300">
+                  <div className="w-12 h-12 bg-bg-secondary rounded-xl flex items-center justify-center mb-4 text-gray-300">
                     <FiFilter className="w-6 h-6" />
                   </div>
                   <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
@@ -179,7 +161,7 @@ export default function ManageFiltersModal({
                         </span>
                         <Button
                           size="sm"
-                          className="bg-red-600 hover:bg-red-700 rounded-[4px]"
+                          variant="danger"
                           onClick={() => onDelete(draft.id)}
                           isLoading={isDeleting}
                         >
@@ -187,8 +169,7 @@ export default function ManageFiltersModal({
                         </Button>
                         <Button
                           size="sm"
-                          variant="outline"
-                          className="rounded-[4px] border-border"
+                          variant="secondary"
                           onClick={() => setIsConfirmingDelete(null)}
                         >
                           Cancel
@@ -198,7 +179,7 @@ export default function ManageFiltersModal({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="text-red-600 border-red-100 hover:bg-surface-white rounded-[4px]"
+                        className="text-red-600 border-red-100 hover:bg-surface-white rounded-xl"
                         onClick={() => setIsConfirmingDelete(draft.id)}
                       >
                         <FiTrash2 className="w-4 h-4 mr-2" />
@@ -214,14 +195,14 @@ export default function ManageFiltersModal({
                       Collection Name
                     </label>
                     <div className="relative group">
-                      <FiEdit3 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+                      <FiEdit3 className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
                       <input
                         type="text"
                         value={draft.name}
                         onChange={(e) =>
                           setDraft({ ...draft, name: e.target.value })
                         }
-                        className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+                        className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
                       />
                     </div>
                   </div>
@@ -230,7 +211,7 @@ export default function ManageFiltersModal({
                       Search Keyword
                     </label>
                     <div className="relative group">
-                      <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-blue-500 transition-colors" />
+                      <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
                       <input
                         type="text"
                         value={draft.searchText || ""}
@@ -238,7 +219,7 @@ export default function ManageFiltersModal({
                           setDraft({ ...draft, searchText: e.target.value })
                         }
                         placeholder="All papers"
-                        className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+                        className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
                       />
                     </div>
                   </div>
@@ -250,7 +231,7 @@ export default function ManageFiltersModal({
                   </h5>
                   <div className="grid grid-cols-2 gap-4">
                     {/* Years */}
-                    <div className="bg-bg-primary rounded-[4px] p-4 border border-border flex items-center justify-between">
+                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <FiCalendar className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
@@ -276,7 +257,7 @@ export default function ManageFiltersModal({
                             })
                           }
                           placeholder="Start"
-                          className="w-16 bg-surface-white border border-border rounded-[4px] px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="rounded-xl border border-border bg-surface-white px-2 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-16"
                         />
                         <span className="text-text-secondary font-bold">-</span>
                         <input
@@ -297,13 +278,13 @@ export default function ManageFiltersModal({
                             })
                           }
                           placeholder="End"
-                          className="w-16 bg-surface-white border border-border rounded-[4px] px-2 py-1 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                          className="rounded-xl border border-border bg-surface-white px-2 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-16"
                         />
                       </div>
                     </div>
 
                     {/* Source */}
-                    <div className="bg-bg-primary rounded-[4px] p-4 border border-border flex items-center justify-between">
+                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <FiDatabase className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
@@ -321,7 +302,7 @@ export default function ManageFiltersModal({
                             },
                           })
                         }
-                        className="bg-transparent text-xs font-bold text-blue-600 focus:outline-none"
+                        className="bg-transparent text-xs font-bold text-accent focus:outline-none"
                       >
                         <option value="all">All Sources</option>
                         {metadata?.searchSources.map((s) => (
@@ -334,7 +315,7 @@ export default function ManageFiltersModal({
 
                     {/* DOI/FullText Toggles */}
                     <div className="col-span-2 grid grid-cols-3 gap-4">
-                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border">
+                      <div className="p-4 bg-bg-primary rounded-xl border border-border">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           DOI Status
                         </div>
@@ -356,7 +337,7 @@ export default function ManageFiltersModal({
                           <option value="missing">Missing DOI</option>
                         </select>
                       </div>
-                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border">
+                      <div className="p-4 bg-bg-primary rounded-xl border border-border">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           Full Text
                         </div>
@@ -378,7 +359,7 @@ export default function ManageFiltersModal({
                           <option value="missing">Missing PDF</option>
                         </select>
                       </div>
-                      <div className="p-4 bg-bg-primary rounded-[4px] border border-border flex items-center justify-between">
+                      <div className="p-4 bg-bg-primary rounded-xl border border-border flex items-center justify-between">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                           Unused Only
                         </div>
@@ -394,7 +375,7 @@ export default function ManageFiltersModal({
                               },
                             })
                           }
-                          className="w-4 h-4 rounded border-border text-blue-600"
+                          className="w-4 h-4 rounded border-border text-accent"
                         />
                       </div>
                     </div>
@@ -403,8 +384,7 @@ export default function ManageFiltersModal({
 
                 <div className="pt-6 border-t border-border flex justify-end gap-3">
                   <Button
-                    variant="outline"
-                    className="rounded-[4px] px-6 py-3 font-bold uppercase tracking-wider text-xs border-border"
+                    variant="secondary"
                     onClick={() => onSaveAsNew(draft)}
                     isLoading={isCreating}
                   >
@@ -416,9 +396,6 @@ export default function ManageFiltersModal({
             ) : null}
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
-
-  return createPortal(modalContent, document.body);
 }

@@ -121,7 +121,7 @@ export default function DuplicateQueuePanel({
           onClick={() => setShowFilters((prev) => !prev)}
           className={`p-1.5 rounded-xl transition-colors ${
             showFilters
-              ? "bg-blue-100 text-blue-600"
+              ? "bg-blue-100 text-accent"
               : "text-text-secondary hover:text-text-secondary hover:bg-bg-secondary"
           }`}
           title="Toggle filters"
@@ -138,7 +138,7 @@ export default function DuplicateQueuePanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by paper title..."
-          className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-300"
+          className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-9 pr-3"
         />
       </div>
 
@@ -153,7 +153,7 @@ export default function DuplicateQueuePanel({
                 onClick={() => handleFilterChange(key)}
                 className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
                   filter === key
-                    ? "bg-blue-100 text-blue-700 border border-blue-200"
+                    ? "bg-blue-100 text-accent border border-accent/30"
                     : "bg-surface-white text-text-secondary border border-border hover:bg-bg-primary"
                 }`}
               >
@@ -167,7 +167,7 @@ export default function DuplicateQueuePanel({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as DuplicateSortType)}
-            className="w-full px-2 py-1.5 text-xs border border-border rounded-xl bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="rounded-xl border border-border bg-surface-white px-2 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
           >
             <option value="similarity-desc">Highest similarity first</option>
             <option value="similarity-asc">Lowest similarity first</option>
@@ -191,7 +191,7 @@ export default function DuplicateQueuePanel({
                 onClick={() => onSelectPair(pair)}
                 className={`w-full text-left p-3.5 rounded-xl border-2 transition-all group ${
                   isSelected
-                    ? "border-blue-500 bg-blue-50 shadow-none"
+                    ? "border-accent bg-primary-light shadow-none"
                     : isResolved
                       ? "border-border bg-bg-primary hover:border-border"
                       : "border-border hover:border-border bg-surface-white"
@@ -244,7 +244,7 @@ export default function DuplicateQueuePanel({
 
                 {/* Source badges */}
                 <div className="flex items-center gap-1.5 text-xs">
-                  <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded">
+                  <span className="px-2 py-0.5 bg-primary-light text-accent rounded">
                     {pair.originalPaper.source}
                   </span>
                   <span className="text-text-secondary">vs</span>
@@ -264,7 +264,7 @@ export default function DuplicateQueuePanel({
                 setFilter("all");
                 setSearchQuery("");
               }}
-              className="text-xs text-blue-600 hover:text-blue-700 mt-1"
+              className="text-xs text-accent hover:text-primary-hover mt-1"
             >
               Clear filters
             </button>

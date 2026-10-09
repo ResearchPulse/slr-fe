@@ -24,7 +24,7 @@ const ChartCard: React.FC<ChartCardProps> = ({
   return (
     <div
       className={cn(
-        "bg-surface-white rounded-2xl border border-border p-6 shadow-sm h-full flex flex-col",
+        "bg-surface-white rounded-xl border border-border p-6 shadow-sm h-full flex flex-col",
         className,
       )}
     >

@@ -1,5 +1,5 @@
 import React from "react";
-import toast from "react-hot-toast";
+import { toastError } from "../../utils/toast";
 import {
   FiSearch,
   FiUpload,
@@ -231,9 +231,9 @@ export default function PaperRepositoryPage({
   return (
     <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header Area */}
-      <div className="flex flex-col gap-5 rounded-2xl border border-border bg-white p-5 shadow-sm sm:p-6 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-5 rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex min-w-0 items-center gap-4 sm:gap-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-accent sm:h-14 sm:w-14">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
             <FiLayers className="h-6 w-6 sm:h-7 sm:w-7" />
           </div>
           <div className="min-w-0">
@@ -256,7 +256,7 @@ export default function PaperRepositoryPage({
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search title, DOI, authors..."
-              className="h-11 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10 sm:w-[260px]"
+              className="h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 sm:w-[260px]"
             />
           </div>
 
@@ -272,7 +272,7 @@ export default function PaperRepositoryPage({
           {isLeader && (
             <Button
               variant="outline"
-              className="w-full rounded-lg border-border px-4 hover:border-accent hover:text-accent sm:w-auto"
+              className="w-full rounded-xl border-border px-4 hover:border-accent hover:text-accent sm:w-auto"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FiUpload className="w-4 h-4 mr-2" />
@@ -284,8 +284,8 @@ export default function PaperRepositoryPage({
 
       {/* Read-Only Banner for Non-Leaders */}
       {!isLeader && (
-        <div className="flex items-center gap-3 rounded-xl border border-blue-200/80 bg-blue-50/60 p-4 text-sm text-blue-900 shadow-sm">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-accent">
+        <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-primary-light/60 p-4 text-sm text-blue-900 shadow-sm">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-accent">
             <FiInfo className="h-5 w-5" />
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
@@ -368,7 +368,7 @@ export default function PaperRepositoryPage({
           onAddSelected={onAddSelectedToProcess}
           onAddFromFilter={(processId) => {
             if (!selectedSavedFilterId) {
-              toast.error("Please select a filter first");
+              toastError("Please select a filter first");
               return;
             }
             onAddFromFilterToProcess(processId, selectedSavedFilterId);

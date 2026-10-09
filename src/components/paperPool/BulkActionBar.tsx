@@ -17,8 +17,8 @@ export default function BulkActionBar({
   if (selectedCount <= 0) return null;
 
   return (
-    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-bottom-8 duration-500">
-      <div className="bg-slate-900 text-white rounded-[4px] shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
+    <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-(--z-index-dropdown) animate-in slide-in-from-bottom-8 duration-500">
+      <div className="bg-slate-900 text-white rounded-xl shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
         <div className="flex flex-col mr-6">
           <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary leading-none">
             Selection
@@ -34,7 +34,7 @@ export default function BulkActionBar({
           <Button
             onClick={onAddToProcess}
             isLoading={isSubmitting}
-            className="bg-blue-600 hover:bg-blue-500 text-white border-none rounded-[4px] font-black uppercase tracking-widest text-[10px] py-3 px-6 shadow-none shadow-blue-500/20"
+            className="bg-primary hover:bg-primary-hover text-white border-none rounded-xl font-black uppercase tracking-widest text-[10px] py-3 px-6 shadow-none"
           >
             <FiPlus className="w-4 h-4 mr-2" />
             Add to Process
@@ -42,7 +42,7 @@ export default function BulkActionBar({
           <button
             onClick={onClear}
             disabled={isSubmitting}
-            className="flex items-center gap-2 px-4 py-3 rounded-[4px] text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-white hover:bg-surface-white/5 transition-all"
+            className="flex items-center gap-2 px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest text-text-secondary hover:text-white hover:bg-surface-white/5 transition-all"
           >
             <FiTrash2 className="w-4 h-4" />
             Clear

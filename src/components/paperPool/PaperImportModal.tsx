@@ -181,7 +181,7 @@ export default function PaperImportModal({
     >
       {!canImportPapers ? (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
-          <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-[4px] flex items-center justify-center mb-4">
+          <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center mb-4">
             <FiAlertCircle className="w-8 h-8" />
           </div>
           <h3 className="text-lg font-bold text-text-primary">
@@ -194,7 +194,7 @@ export default function PaperImportModal({
           <Button
             variant="secondary"
             onClick={onClose}
-            className="mt-8 rounded-[4px] px-8"
+            className="mt-8 rounded-xl px-8"
           >
             Close
           </Button>
@@ -202,7 +202,7 @@ export default function PaperImportModal({
       ) : (
         <div className="flex min-h-0 flex-col gap-4">
           {/* Mode Selector */}
-          <div className="flex p-1 bg-bg-secondary rounded-[4px]">
+          <div className="flex p-1 bg-bg-secondary rounded-xl">
             {[
               { id: "ris", label: "RIS File", icon: FiUpload },
               { id: "bibtex", label: "BibTeX", icon: FiUpload },
@@ -213,9 +213,9 @@ export default function PaperImportModal({
               <button
                 key={item.id}
                 onClick={() => setMode(item.id as ImportMode)}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-[4px] text-sm font-bold transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-sm font-bold transition-all ${
                   mode === item.id
-                    ? "bg-surface-white text-blue-600 shadow-sm"
+                    ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-primary hover:bg-slate-200/50"
                 }`}
               >
@@ -227,14 +227,14 @@ export default function PaperImportModal({
 
           {mode === "pdf" && (
             <form onSubmit={handlePdfSubmit} className="space-y-4 animate-in fade-in duration-300">
-              <div className="bg-rose-50 border border-rose-100 rounded-[4px] p-3 flex gap-3">
+              <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 flex gap-3">
                 <FiInfo className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
                 <p className="text-sm text-rose-700 font-medium">
                   Upload a PDF paper. Metadata is extracted automatically when GROBID is available. Max file size 10MB.
                 </p>
               </div>
               <div
-                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
                   isDraggingPdf ? "border-rose-500 bg-rose-50" : "border-border bg-bg-secondary/50 hover:bg-bg-secondary"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setIsDraggingPdf(true); }}
@@ -263,7 +263,7 @@ export default function PaperImportModal({
                     <h3 className="text-lg font-black text-text-primary uppercase">Drop your PDF file</h3>
                     <p className="text-sm text-text-secondary">
                       Drag and drop or{" "}
-                      <label className="text-blue-600 hover:underline cursor-pointer">
+                      <label className="text-accent hover:underline cursor-pointer">
                         browse your computer
                         <input type="file" accept=".pdf,application/pdf" onChange={(e) => e.target.files?.[0] && setPdfFile(e.target.files[0])} className="hidden" />
                       </label>
@@ -275,14 +275,14 @@ export default function PaperImportModal({
                 <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-2 ml-1">
                   Associate with Search Source (Optional)
                 </label>
-                <select value={pdfSourceId} onChange={(e) => setPdfSourceId(e.target.value)} className="w-full bg-bg-secondary border-2 border-border rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary outline-none">
+                <select value={pdfSourceId} onChange={(e) => setPdfSourceId(e.target.value)} className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary">
                   <option value="">Unspecified source</option>
                   {sourceOptions.map((source) => <option key={source.value} value={source.value}>{source.label}</option>)}
                 </select>
               </div>
               <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                <Button variant="secondary" onClick={handleClose} type="button" className="rounded-[4px] px-8">Cancel</Button>
-                <Button type="submit" disabled={!pdfFile || isImportingPdf} className="rounded-[4px] px-8">
+                <Button variant="secondary" onClick={handleClose} type="button" className="rounded-xl px-8">Cancel</Button>
+                <Button type="submit" disabled={!pdfFile || isImportingPdf} className="rounded-xl px-8">
                   {isImportingPdf ? "Importing..." : "Import PDF"}
                 </Button>
               </div>
@@ -295,18 +295,18 @@ export default function PaperImportModal({
               onSubmit={handleRisSubmit}
               className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
-              <div className="bg-blue-50 border border-blue-100 rounded-[4px] p-4 flex gap-3">
-                <FiInfo className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-blue-700 font-medium leading-relaxed">
+              <div className="bg-primary-light border border-accent/20 rounded-xl p-4 flex gap-3">
+                <FiInfo className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+                <p className="text-sm text-accent font-medium leading-relaxed">
                   Upload a RIS file exported from databases like Scopus, Web of
                   Science, or PubMed. Max file size 10MB.
                 </p>
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
                   isDragging
-                    ? "border-blue-500 bg-blue-50"
+                    ? "border-accent bg-primary-light"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
                 }`}
                 onDragOver={(e) => {
@@ -323,7 +323,7 @@ export default function PaperImportModal({
               >
                 {selectedFile ? (
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-[4px] flex items-center justify-center">
+                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
                       <FiCheckCircle className="w-8 h-8" />
                     </div>
                     <div>
@@ -344,7 +344,7 @@ export default function PaperImportModal({
                   </div>
                 ) : (
                   <>
-                    <div className="w-14 h-14 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
+                    <div className="w-14 h-14 bg-surface-white rounded-xl flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
                       <FiUpload className="w-8 h-8 text-text-secondary" />
                     </div>
                     <h3 className="text-xl font-black text-text-primary mb-2 uppercase tracking-tight">
@@ -352,7 +352,7 @@ export default function PaperImportModal({
                     </h3>
                     <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
-                      <label className="text-blue-600 hover:underline cursor-pointer">
+                      <label className="text-accent hover:underline cursor-pointer">
                         browse your computer
                         <input
                           type="file"
@@ -366,7 +366,7 @@ export default function PaperImportModal({
                       </label>
                     </p>
                     <div className="flex items-center justify-center gap-2">
-                      <span className="px-3 py-1 bg-surface-white border border-border rounded-[4px] text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                      <span className="px-3 py-1 bg-surface-white border border-border rounded-xl text-[10px] font-black text-text-secondary uppercase tracking-widest">
                         .RIS
                       </span>
                     </div>
@@ -381,7 +381,7 @@ export default function PaperImportModal({
                 <select
                   value={selectedSourceId}
                   onChange={(e) => setSelectedSourceId(e.target.value)}
-                  className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                 >
                   <option value="">Unspecified source</option>
                   {sourceOptions.map((source) => (
@@ -397,14 +397,14 @@ export default function PaperImportModal({
                   variant="secondary"
                   onClick={handleClose}
                   type="button"
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={!selectedFile || isImportingRis}
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   {isImportingRis ? "Importing..." : "Import RIS File"}
                 </Button>
@@ -418,7 +418,7 @@ export default function PaperImportModal({
               onSubmit={handleBibSubmit}
               className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
-              <div className="bg-emerald-50 border border-emerald-100 rounded-[4px] p-4 flex gap-3">
+              <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
                 <p className="text-sm text-emerald-700 font-medium leading-relaxed">
                   Upload a BibTeX (.bib) file. This format is widely used with
@@ -428,7 +428,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
                   isDraggingBib
                     ? "border-emerald-500 bg-emerald-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -447,7 +447,7 @@ export default function PaperImportModal({
               >
                 {bibFile ? (
                   <div className="flex flex-col items-center gap-3">
-                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-[4px] flex items-center justify-center">
+                    <div className="w-16 h-16 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
                       <FiCheckCircle className="w-8 h-8" />
                     </div>
                     <div>
@@ -468,7 +468,7 @@ export default function PaperImportModal({
                   </div>
                 ) : (
                   <>
-                    <div className="w-14 h-14 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
+                    <div className="w-14 h-14 bg-surface-white rounded-xl flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
                       <FiUpload className="w-8 h-8 text-text-secondary" />
                     </div>
                     <h3 className="text-xl font-black text-text-primary mb-2 uppercase tracking-tight">
@@ -476,7 +476,7 @@ export default function PaperImportModal({
                     </h3>
                     <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
-                      <label className="text-blue-600 hover:underline cursor-pointer">
+                      <label className="text-accent hover:underline cursor-pointer">
                         browse your computer
                         <input
                           type="file"
@@ -489,7 +489,7 @@ export default function PaperImportModal({
                       </label>
                     </p>
                     <div className="flex items-center justify-center gap-2">
-                      <span className="px-3 py-1 bg-surface-white border border-border rounded-[4px] text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                      <span className="px-3 py-1 bg-surface-white border border-border rounded-xl text-[10px] font-black text-text-secondary uppercase tracking-widest">
                         .BIB
                       </span>
                     </div>
@@ -504,7 +504,7 @@ export default function PaperImportModal({
                 <select
                   value={bibSourceId}
                   onChange={(e) => setBibSourceId(e.target.value)}
-                  className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                 >
                   <option value="">Unspecified source</option>
                   {sourceOptions.map((source) => (
@@ -520,14 +520,14 @@ export default function PaperImportModal({
                   variant="secondary"
                   onClick={handleClose}
                   type="button"
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={!bibFile || isImportingBibTex}
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   {isImportingBibTex ? "Importing..." : "Import BibTeX File"}
                 </Button>
@@ -541,9 +541,9 @@ export default function PaperImportModal({
               onSubmit={handleDoiSubmit}
               className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
-              <div className="bg-bg-secondary border border-indigo-100 rounded-[4px] p-4 flex gap-3">
+              <div className="bg-bg-secondary border border-accent/20 rounded-xl p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-accent shrink-0 mt-0.5" />
-                <p className="text-sm text-indigo-700 font-medium leading-relaxed">
+                <p className="text-sm text-accent font-medium leading-relaxed">
                   Enter a Digital Object Identifier (DOI) to automatically fetch
                   metadata from Crossref and import the paper.
                 </p>
@@ -555,13 +555,13 @@ export default function PaperImportModal({
                     DOI String <span className="text-red-500">*</span>
                   </label>
                   <div className="relative group">
-                    <FiLink className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
+                    <FiLink className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
                     <input
                       type="text"
                       value={doi}
                       onChange={(e) => setDoi(e.target.value)}
                       placeholder="e.g. 10.1145/3313831.3376227"
-                      className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-14 pr-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                      className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-14 pr-5 text-text-primary"
                       required
                     />
                   </div>
@@ -574,7 +574,7 @@ export default function PaperImportModal({
                   <select
                     value={doiSourceId}
                     onChange={(e) => setDoiSourceId(e.target.value)}
-                    className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   >
                     <option value="">Unspecified source</option>
                     {sourceOptions.map((source) => (
@@ -591,14 +591,14 @@ export default function PaperImportModal({
                   variant="secondary"
                   onClick={handleClose}
                   type="button"
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={!doi.trim() || isImportingByDoi}
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   {isImportingByDoi ? "Importing..." : "Import by DOI"}
                 </Button>
@@ -612,7 +612,7 @@ export default function PaperImportModal({
               onSubmit={handleCrossrefSubmit}
               className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
-              <div className="bg-purple-50 border border-purple-100 rounded-[4px] p-4 flex gap-3">
+              <div className="bg-purple-50 border border-purple-100 rounded-xl p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-accent shrink-0 mt-0.5" />
                 <p className="text-sm text-purple-700 font-medium leading-relaxed">
                   Query the Crossref API directly to search for papers. All
@@ -626,7 +626,7 @@ export default function PaperImportModal({
                     General Query
                   </label>
                   <div className="relative group">
-                    <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
+                    <FiSearch className="absolute left-5 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
                     <input
                       type="text"
                       value={crossrefQuery.query}
@@ -637,7 +637,7 @@ export default function PaperImportModal({
                         })
                       }
                       placeholder="e.g. Systematic Review and AI"
-                      className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] pl-14 pr-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                      className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-14 pr-5 text-text-primary"
                     />
                   </div>
                 </div>
@@ -656,7 +656,7 @@ export default function PaperImportModal({
                       })
                     }
                     placeholder="e.g. Kitchenham"
-                    className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   />
                 </div>
 
@@ -674,7 +674,7 @@ export default function PaperImportModal({
                       })
                     }
                     placeholder="e.g. Software Engineering"
-                    className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   />
                 </div>
 
@@ -693,7 +693,7 @@ export default function PaperImportModal({
                     }
                     min="1"
                     max="1000"
-                    className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   />
                 </div>
 
@@ -704,7 +704,7 @@ export default function PaperImportModal({
                   <select
                     value={crossrefSourceId}
                     onChange={(e) => setCrossrefSourceId(e.target.value)}
-                    className="w-full bg-bg-secondary border-2 border-border focus:bg-surface-white focus:border-blue-500 rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   >
                     <option value="">Unspecified source</option>
                     {sourceOptions.map((source) => (
@@ -721,7 +721,7 @@ export default function PaperImportModal({
                   variant="secondary"
                   onClick={handleClose}
                   type="button"
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   Cancel
                 </Button>
@@ -733,7 +733,7 @@ export default function PaperImportModal({
                       !crossrefQuery.queryTitle) ||
                     isImportingFromCrossref
                   }
-                  className="rounded-[4px] px-8"
+                  className="rounded-xl px-8"
                 >
                   {isImportingFromCrossref ? "Importing..." : "Search & Import"}
                 </Button>

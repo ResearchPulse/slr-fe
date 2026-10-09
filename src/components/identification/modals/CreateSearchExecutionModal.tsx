@@ -108,12 +108,12 @@ export default function CreateSearchExecutionModal({
       size="xl"
     >
       {/* Info Banner */}
-      {mode === "create" && <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
+      {mode === "create" && <div className="bg-primary-light border border-accent/30 rounded-xl p-4 mb-6">
         <div className="flex gap-2 text-sm text-blue-800">
           <FiAlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
             <p className="font-medium">Best Practice</p>
-            <p className="text-xs text-blue-700 mt-1">
+            <p className="text-xs text-accent mt-1">
               Create your search strategy first, then import RIS files. This
               maintains a clear audit trail and helps organize your systematic
               review.
@@ -154,7 +154,7 @@ export default function CreateSearchExecutionModal({
             }
             placeholder='e.g., ("machine learning" OR "deep learning") AND "healthcare"'
             rows={4}
-            className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
+            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full font-mono"
             disabled={isSubmitting}
           />
           <p className="text-xs text-text-secondary mt-1">
@@ -175,7 +175,7 @@ export default function CreateSearchExecutionModal({
               onChange={(e) =>
                 setFormData({ ...formData, executedAt: e.target.value })
               }
-              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
               disabled={isSubmitting}
             />
           </div>
@@ -196,7 +196,7 @@ export default function CreateSearchExecutionModal({
             }
             placeholder="Any additional information about this search strategy..."
             rows={3}
-            className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
             disabled={isSubmitting}
           />
         </div>

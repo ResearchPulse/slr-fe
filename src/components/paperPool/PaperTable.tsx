@@ -76,7 +76,7 @@ export default function PaperTable({
 }: PaperTableProps) {
   if (isLoading && papers.length === 0) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center rounded-2xl border border-border bg-white">
+      <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-border bg-white">
         <div className="flex flex-col items-center gap-3">
           <LoadingSpinner size="lg" />
           <p className="text-sm text-text-secondary animate-pulse">
@@ -88,7 +88,7 @@ export default function PaperTable({
   }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm">
       {/* Table Header / Toolbar */}
       <div className="flex flex-col gap-3 border-b border-border bg-slate-50/70 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-3">
@@ -97,7 +97,7 @@ export default function PaperTable({
             <span className="font-normal text-text-secondary">Results</span>
           </span>
           {isFetching && (
-            <div className="flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 px-2.5 py-1 text-[10px] font-medium text-accent">
+            <div className="flex items-center gap-2 rounded-full border border-accent/20 bg-primary-light px-2.5 py-1 text-[10px] font-medium text-accent">
               <div className="h-1.5 w-1.5 rounded-full bg-accent animate-ping" />
               Refreshing
             </div>
@@ -138,7 +138,7 @@ export default function PaperTable({
                       type="checkbox"
                       checked={allPageSelected}
                       onChange={(e) => onToggleAllPage(e.target.checked)}
-                      className="h-4 w-4 cursor-pointer rounded border-border text-accent focus:ring-accent"
+                      className="h-4 w-4 cursor-pointer rounded border-border text-accent focus:ring-accent/20"
                       aria-label="Select all papers in current page"
                     />
                   </div>
@@ -198,7 +198,7 @@ export default function PaperTable({
                   className="px-5 py-8 sm:py-10"
                 >
                   <div className="flex flex-col items-center justify-center text-center">
-                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-50 text-slate-300 ring-1 ring-inset ring-border/70">
+                    <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-slate-50 text-slate-300 ring-1 ring-inset ring-border/70">
                       <svg
                         className="h-8 w-8"
                         fill="none"
@@ -239,7 +239,7 @@ export default function PaperTable({
           <Button
             size="sm"
             variant="outline"
-            className="h-9 rounded-lg px-3 text-xs font-medium"
+            className="h-9 rounded-xl px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1 || isFetching}
           >
@@ -251,7 +251,7 @@ export default function PaperTable({
           <Button
             size="sm"
             variant="outline"
-            className="h-9 rounded-lg px-3 text-xs font-medium"
+            className="h-9 rounded-xl px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages || isFetching}
           >

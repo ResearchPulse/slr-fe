@@ -98,7 +98,7 @@ export default function PaperComparisonCard({
 
   return (
     <div
-      className={`relative border rounded-2xl p-4 transition-all ${cardBorderClass}`}
+      className={`relative border rounded-xl p-4 transition-all ${cardBorderClass}`}
     >
       {/* Resolution outcome badge */}
       {outcome && (
@@ -237,7 +237,7 @@ export default function PaperComparisonCard({
           {abstractIsLong && (
             <button
               onClick={() => setIsAbstractExpanded((prev) => !prev)}
-              className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 mt-1 transition-colors"
+              className="flex items-center gap-1 text-xs text-accent hover:text-primary-hover mt-1 transition-colors"
             >
               {isAbstractExpanded ? (
                 <>

@@ -1,3 +1,4 @@
+import Button from "../../ui/Button";
 import React, { useState } from "react";
 import {
   AlertCircle,
@@ -67,13 +68,13 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
         <p className="text-xs text-text-secondary mt-1 mb-6">
           There was an error connecting to the candidate pool API.
         </p>
-        <button
+        <Button
           onClick={() => refetch()}
-          className="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-2"
+          className="gap-2"
         >
           <RefreshCw className="w-3 h-3" />
           Retry Connection
-        </button>
+        </Button>
       </div>
     );
   }
@@ -83,7 +84,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
       {/* Top Stats Bar */}
       <div className="p-8 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-accent rounded-2xl p-8 text-white shadow-none shadow-indigo-200">
+          <div className="bg-accent rounded-xl p-8 text-white shadow-none">
             <div className="flex items-center gap-3 mb-4">
               <div className="p-2 bg-surface-white/20 rounded-xl backdrop-blur-md">
                 <Layers className="w-5 h-5" />
@@ -100,7 +101,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
             </div>
           </div>
 
-          <div className="bg-surface-white border border-border rounded-2xl p-8 shadow-none flex flex-col justify-center">
+          <div className="bg-surface-white border border-border rounded-xl p-8 shadow-none flex flex-col justify-center">
             <div className="flex items-center gap-3 mb-4 text-text-secondary">
               <BarChart3 className="w-5 h-5" />
               <span className="text-xs font-black uppercase tracking-widest">
@@ -117,7 +118,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
             </div>
           </div>
 
-          <div className="bg-bg-secondary border border-border rounded-2xl p-8 flex flex-col justify-center">
+          <div className="bg-bg-secondary border border-border rounded-xl p-8 flex flex-col justify-center">
             <div className="flex items-center gap-2 text-accent mb-2">
               <Info className="w-4 h-4" />
               <span className="text-xs font-black uppercase tracking-widest">
@@ -133,7 +134,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
         </div>
 
         {/* Paper List Table */}
-        <div className="bg-surface-white border border-border rounded-2xl overflow-hidden shadow-none">
+        <div className="bg-surface-white border border-border rounded-xl overflow-hidden shadow-none">
           <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-bg-secondary/50">
             <div className="flex items-center gap-4">
               <div>

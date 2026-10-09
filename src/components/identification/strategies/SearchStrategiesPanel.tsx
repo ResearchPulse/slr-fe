@@ -85,7 +85,7 @@ export default function SearchStrategiesPanel({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
       </div>
     );
   }
@@ -104,7 +104,7 @@ export default function SearchStrategiesPanel({
         </div>
         <Button
           onClick={onCreateStrategy}
-          className="bg-linear-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-none flex items-center gap-2"
+          className="gap-2"
           size="lg"
           disabled={!canEdit}
         >
@@ -129,7 +129,7 @@ export default function SearchStrategiesPanel({
             return (
               <div
                 key={strategy.id}
-                className="bg-surface-white border border-border rounded-[4px] shadow-none overflow-hidden"
+                className="bg-surface-white border border-border rounded-xl shadow-none overflow-hidden"
               >
                 {/* SearchExecution Header (Always Visible) */}
                 <div className="p-4 hover:bg-bg-primary transition-colors">
@@ -153,7 +153,7 @@ export default function SearchStrategiesPanel({
                           ID: {strategy.id}
                         </span>
                         <div className="flex items-center gap-3 mb-1">
-                          <FiDatabase className="w-5 h-5 text-blue-600" />
+                          <FiDatabase className="w-5 h-5 text-accent" />
                           <h3 className="font-semibold text-text-primary">
                             {strategy.searchSource}
                           </h3>
@@ -245,18 +245,18 @@ export default function SearchStrategiesPanel({
                           {strategyBatches.map((batch) => (
                             <div
                               key={batch.id}
-                              className="bg-surface-white border border-border rounded-[4px] p-3 hover:border-blue-300 transition-colors"
+                              className="bg-surface-white border border-border rounded-xl p-3 hover:border-accent/50 transition-colors"
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3 flex-1">
-                                  <FiFile className="w-4 h-4 text-blue-600" />
+                                  <FiFile className="w-4 h-4 text-accent" />
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2">
                                       <span className="font-medium text-text-primary text-sm">
                                         {batch.fileName}
                                       </span>
                                       {batch.fileType && (
-                                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded">
+                                        <span className="px-2 py-0.5 bg-blue-100 text-accent text-xs rounded">
                                           {batch.fileType.toUpperCase()}
                                         </span>
                                       )}
@@ -344,7 +344,7 @@ function EmptyStrategiesState({
   canEdit: boolean;
 }) {
   return (
-    <div className="bg-surface-white border-2 border-dashed border-border rounded-[4px] p-12">
+    <div className="bg-surface-white border-2 border-dashed border-border rounded-xl p-12">
       <div className="text-center max-w-lg mx-auto">
         <FiDatabase className="w-16 h-16 text-text-secondary mx-auto mb-4" />
         <h3 className="text-xl font-semibold text-text-primary mb-2">
@@ -358,7 +358,6 @@ function EmptyStrategiesState({
         <Button
           onClick={onCreateStrategy}
           size="lg"
-          className="bg-linear-to-r from-blue-600 to-blue-700"
           disabled={!canEdit}
         >
           <FiPlus className="w-5 h-5 mr-2" />
@@ -367,7 +366,7 @@ function EmptyStrategiesState({
 
         <p className="text-sm text-text-secondary mt-4">
           Or use{" "}
-          <a href="#quick-import" className="text-blue-600 hover:underline">
+          <a href="#quick-import" className="text-accent hover:underline">
             Quick Import
           </a>{" "}
           below to import papers without a predefined strategy
