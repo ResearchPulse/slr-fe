@@ -15,7 +15,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 interface PdfJsViewerProps {
   fileUrl: string;
   coordinateStr?: string | null;
-  onPageLoad?: (pageIndex: number, viewport: any) => void;
+  onPageLoad?: (pageIndex: number, viewport: pdfjsLib.PageViewport) => void;
   scale?: number;
 }
 
@@ -27,24 +27,28 @@ export interface PdfJsViewerRef {
 const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
   ({ fileUrl, coordinateStr, scale = 1.5 }, ref) => {
     const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
+    const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState(0);
     const [pageInfoMap, setPageInfoMap] = useState<
-      Record<number, { viewport: any; offset: { x: number; y: number } }>
+      Record<number, { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }>
     >({});
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const highlightRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const activePdf = loadedUrl === fileUrl ? pdf : null;
 
     // 1. Load PDF Document
     useEffect(() => {
       let isMounted = true;
+      const loadingTask = pdfjsLib.getDocument(fileUrl);
       const loadPdf = async () => {
         try {
-          const loadingTask = pdfjsLib.getDocument(fileUrl);
           const pdfDoc = await loadingTask.promise;
           if (isMounted) {
+            setPageInfoMap({});
             setPdf(pdfDoc);
             setNumPages(pdfDoc.numPages);
+            setLoadedUrl(fileUrl);
           }
         } catch (error) {
           console.error("Error loading PDF:", error);
@@ -54,24 +58,25 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       loadPdf();
       return () => {
         isMounted = false;
+        void loadingTask.destroy();
       };
     }, [fileUrl]);
 
     // 2. Transform Highlights
     const highlights = usePdfHighlights(coordinateStr, pageInfoMap);
 
-    // 3. Render Pages
+    // 3. Read page geometry, then render only pages close to the viewport.
     useEffect(() => {
-      if (!pdf) return;
-
-      const renderPages = async () => {
+      if (!activePdf) return;
+      let cancelled = false;
+      const loadPageGeometry = async () => {
         const info: Record<
           number,
-          { viewport: any; offset: { x: number; y: number } }
+          { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }
         > = {};
 
-        for (let i = 1; i <= numPages; i++) {
-          const page = await pdf.getPage(i);
+        for (let i = 1; i <= numPages && !cancelled; i++) {
+          const page = await activePdf.getPage(i);
           const viewport = page.getViewport({ scale });
 
           const cropBox = page.view;
@@ -80,29 +85,55 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
             y: cropBox[1],
           };
           info[i - 1] = { viewport, offset };
-
-          const canvas = document.getElementById(
-            `pdf-canvas-${i}`,
-          ) as HTMLCanvasElement;
-          if (canvas) {
-            const context = canvas.getContext("2d");
-            if (context) {
-              canvas.height = viewport.height;
-              canvas.width = viewport.width;
-
-              const renderContext = {
-                canvasContext: context,
-                viewport: viewport,
-              };
-              await page.render(renderContext).promise;
-            }
-          }
         }
-        setPageInfoMap(info);
+        if (!cancelled) setPageInfoMap(info);
       };
+      void loadPageGeometry();
+      return () => { cancelled = true; };
+    }, [activePdf, numPages, scale]);
 
-      renderPages();
-    }, [pdf, numPages, scale]);
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!activePdf || !container || Object.keys(pageInfoMap).length !== numPages) return;
+      const rendered = new Set<number>();
+      const tasks = new Map<number, pdfjsLib.RenderTask>();
+      let cancelled = false;
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const pageNumber = Number((entry.target as HTMLElement).dataset.pageNumber);
+          if (rendered.has(pageNumber)) continue;
+          rendered.add(pageNumber);
+          observer.unobserve(entry.target);
+          void (async () => {
+            try {
+              const page = await activePdf.getPage(pageNumber);
+              if (cancelled) return;
+              const canvas = entry.target.querySelector('canvas');
+              const viewport = pageInfoMap[pageNumber - 1]?.viewport;
+              const context = canvas?.getContext('2d');
+              if (!canvas || !viewport || !context) return;
+              canvas.width = viewport.width;
+              canvas.height = viewport.height;
+              const task = page.render({ canvasContext: context, viewport });
+              tasks.set(pageNumber, task);
+              await task.promise;
+              tasks.delete(pageNumber);
+            } catch (error) {
+              if (!cancelled) console.error('Error rendering PDF page:', error);
+            }
+          })();
+        }
+      }, { root: container, rootMargin: '800px 0px' });
+      Object.values(pageRefs.current).forEach((element) => {
+        if (element) observer.observe(element);
+      });
+      return () => {
+        cancelled = true;
+        observer.disconnect();
+        tasks.forEach((task) => task.cancel());
+      };
+    }, [activePdf, numPages, pageInfoMap]);
 
     // 4. Auto-scroll to first highlight when it changes
     useEffect(() => {
@@ -144,7 +175,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       },
     }));
 
-    if (!pdf) {
+    if (!activePdf || Object.keys(pageInfoMap).length !== numPages) {
       return (
         <div className="flex items-center justify-center h-full bg-bg-secondary text-text-secondary font-medium">
           Loading document...
@@ -170,6 +201,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               ref={(el) => {
                 pageRefs.current[pageIndex] = el;
               }}
+              data-page-number={pageNum}
               className="relative mx-auto shadow-2xl bg-surface-white transition-all duration-300"
               style={{
                 width: viewport?.width || "auto",
