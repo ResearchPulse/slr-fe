@@ -29,6 +29,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
     const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState(0);
+    const [error, setError] = useState<string | null>(null);
     const [pageInfoMap, setPageInfoMap] = useState<
       Record<number, { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }>
     >({});
@@ -40,6 +41,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     // 1. Load PDF Document
     useEffect(() => {
       let isMounted = true;
+      setError(null);
       const loadingTask = pdfjsLib.getDocument(fileUrl);
       const loadPdf = async () => {
         try {
@@ -50,8 +52,11 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
             setNumPages(pdfDoc.numPages);
             setLoadedUrl(fileUrl);
           }
-        } catch (error) {
-          console.error("Error loading PDF:", error);
+        } catch (err: any) {
+          if (isMounted) {
+            console.error("Error loading PDF:", err);
+            setError(err?.message || "Failed to load PDF document");
+          }
         }
       };
 
@@ -174,6 +179,32 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         }
       },
     }));
+
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-bg-secondary text-text-secondary gap-3">
+          <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center shadow-sm">
+            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <div className="font-semibold text-text-primary text-sm">Unable to display PDF preview</div>
+          <p className="text-xs text-text-secondary max-w-md">
+            {error.includes("401") || error.includes("Missing PDF")
+              ? "Access to the PDF was denied (Cloudinary security restriction or invalid URL)."
+              : error}
+          </p>
+          <a
+            href={fileUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-[4px] transition-colors"
+          >
+            Open or Download File
+          </a>
+        </div>
+      );
+    }
 
     if (!activePdf || Object.keys(pageInfoMap).length !== numPages) {
       return (
