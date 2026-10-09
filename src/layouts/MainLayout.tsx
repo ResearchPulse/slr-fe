@@ -46,8 +46,8 @@ export default function MainLayout() {
       <main
         className={
           isScreeningWorkspace
-            ? "min-h-0 flex-1 overflow-hidden overscroll-none"
-            : "flex-grow"
+            ? "app-content min-h-0 flex-1 overflow-hidden overscroll-none"
+            : `app-content flex-grow ${pathname === "/" ? "home-content" : "standard-content"}`
         }
       >
         <AdminAccessGuard />

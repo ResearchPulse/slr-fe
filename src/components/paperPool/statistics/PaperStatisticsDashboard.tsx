@@ -92,7 +92,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-2 rounded-2xl">
+    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-1 rounded-2xl">
       {/* Filters Area */}
       <FilterPanel
         filters={filters}
@@ -102,7 +102,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
       />
 
       {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <StatCard
           title="Total Papers"
           value={overview?.totalPapers ?? 0}
@@ -146,7 +146,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Trend */}
         <div className="lg:col-span-8">
           <ChartCard
@@ -307,17 +307,17 @@ const QualityIssue: React.FC<{
   count: number;
   color: string;
 }> = ({ label, count, color }) => (
-  <div className="flex items-center justify-between p-5 bg-bg-secondary/50 rounded-xl border border-border hover:bg-bg-secondary transition-colors">
-    <div className="flex items-center gap-4">
+  <div className="flex items-center justify-between p-3.5 bg-bg-secondary/50 rounded-lg border border-border hover:bg-bg-secondary transition-colors">
+  <div className="flex items-center gap-3">
       <div
         className="w-2.5 h-2.5 rounded-full shadow-none"
         style={{ backgroundColor: color }}
       />
-      <span className="font-bold text-text-secondary uppercase tracking-[0.1em] text-[10px]">
+      <span className="font-semibold text-text-secondary uppercase tracking-[0.1em] text-[10px]">
         {label}
       </span>
     </div>
-    <span className="text-xl font-black text-slate-800">{count}</span>
+    <span className="text-lg font-bold text-text-primary">{count}</span>
   </div>
 );
 

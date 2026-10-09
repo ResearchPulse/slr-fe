@@ -6,6 +6,7 @@ import { getErrorMessage } from "../utils/errorUtils";
 import type {
   RisFileImportRequest,
   BibTexFileImportRequest,
+  PdfFileImportRequest,
   DoiImportRequest,
   CrossrefImportRequest,
 } from "../types/paper";
@@ -40,6 +41,7 @@ export function usePaperImport(projectId?: string) {
         queryClient.invalidateQueries({
           queryKey: ["paper-pool", projectId],
         });
+
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.paperPool.metadata(projectId),
         });
@@ -49,6 +51,18 @@ export function usePaperImport(projectId?: string) {
     onError: (error) => {
       toast.error(getErrorMessage(error, "Failed to import BibTeX file"));
     },
+  });
+
+  const pdfImportMutation = useMutation({
+    mutationFn: (request: PdfFileImportRequest) => paperImportService.importPdfFile(request),
+    onSuccess: (response) => {
+      if (projectId) {
+        queryClient.invalidateQueries({ queryKey: ["paper-pool", projectId] });
+        queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paperPool.metadata(projectId) });
+      }
+      toast.success(response.message || "PDF imported successfully");
+    },
+    onError: (error) => toast.error(getErrorMessage(error, "Failed to import PDF file")),
   });
 
   // ---- Mutation: Import by DOI ----
@@ -97,6 +111,8 @@ export function usePaperImport(projectId?: string) {
     // BibTeX
     importBibTex: importBibTexMutation.mutateAsync,
     isImportingBibTex: importBibTexMutation.isPending,
+    importPdf: pdfImportMutation.mutateAsync,
+    isImportingPdf: pdfImportMutation.isPending,
 
     // DOI
     importByDoi: importByDoiMutation.mutateAsync,

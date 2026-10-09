@@ -7,7 +7,7 @@ import LoadingSpinner from "../../ui/LoadingSpinner";
 import Drawer from "../../ui/Drawer";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { cn } from "../../../utils/cn";
-import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle } from "react-icons/fi";
+import { FiPlus, FiSave, FiInfo, FiLayers, FiFileText, FiCalendar, FiAlertCircle, FiUpload } from "react-icons/fi";
 
 interface ProjectFormModalProps {
   isOpen: boolean;
@@ -30,7 +30,15 @@ export default function ProjectFormModal({
   const { project, isLoading: isInitialLoading } = useProject(projectId);
 
   // Mutations
-  const { createProject, isCreating, updateProject, isUpdating, updateProjectDates } =
+  const {
+    createProject,
+    isCreating,
+    createProjectFromOsfFile,
+    isCreatingFromOsfFile,
+    updateProject,
+    isUpdating,
+    updateProjectDates,
+  } =
     useProjectMutations();
 
   const [formData, setFormData] = useState({
@@ -43,6 +51,8 @@ export default function ProjectFormModal({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [osfFile, setOsfFile] = useState<File | null>(null);
+  const [creationMode, setCreationMode] = useState<"manual" | "osf">("manual");
 
   // Initialize form data when project is loaded
   useEffect(() => {
@@ -67,6 +77,8 @@ export default function ProjectFormModal({
           endDate: "",
         });
         setErrors({});
+        setOsfFile(null);
+        setCreationMode("manual");
       }
     }, 0);
 
@@ -89,12 +101,12 @@ export default function ProjectFormModal({
 
   const validate = (): boolean => {
     const newErrors: Record<string, string> = {};
-    if (!formData.title.trim()) {
+    if (creationMode === "manual" && !formData.title.trim()) {
       newErrors.title = "Vui lòng nhập tiêu đề cho dự án nghiên cứu.";
-    } else if (formData.title.trim().length > 200) {
+    } else if (creationMode === "manual" && formData.title.trim().length > 200) {
       newErrors.title = `Tiêu đề nghiên cứu không được vượt quá 200 ký tự (hiện tại: ${formData.title.trim().length}/200).`;
     }
-    if (!formData.domain.trim()) {
+    if (creationMode === "manual" && !formData.domain.trim()) {
       newErrors.domain = "Vui lòng nhập lĩnh vực nghiên cứu.";
     }
     if (formData.startDate && formData.endDate) {
@@ -156,6 +168,30 @@ export default function ProjectFormModal({
           onClose();
         }
       } else {
+        if (creationMode === "osf") {
+          if (!osfFile) {
+            setErrors({ osfFile: "Vui lòng chọn file OSF." });
+            return;
+          }
+          const result = await createProjectFromOsfFile(osfFile);
+          if (result.isSuccess && (formData.startDate || formData.endDate)) {
+            await updateProjectDates({
+              id: result.data.id,
+              data: {
+                id: result.data.id,
+                startDate: formData.startDate || null,
+                endDate: formData.endDate || null,
+              },
+            });
+          }
+          if (result.isSuccess) {
+            toastSuccess("Đã tạo dự án", "Dự án đã được tạo từ file OSF thành công.");
+            onSuccess?.(result.data);
+            onClose();
+          }
+          return;
+        }
+
         // Create new project with basic info first
         const result = await createProject({
           name: formData.title,
@@ -208,7 +244,7 @@ export default function ProjectFormModal({
     }
   };
 
-  const isSubmitting = isEditMode ? isUpdating : isCreating;
+  const isSubmitting = isEditMode ? isUpdating : isCreating || isCreatingFromOsfFile;
 
   return (
     <Drawer
@@ -346,6 +382,100 @@ export default function ProjectFormModal({
         /* Đặt ID form để kích hoạt nút submit từ footer cố định của Modal bên ngoài */
         <form id="project-form" onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-5">
+            {!isEditMode && (
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCreationMode("manual");
+                      setOsfFile(null);
+                      setErrors({});
+                    }}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      creationMode === "manual"
+                        ? "bg-white text-blue-700 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700",
+                    )}
+                  >
+                    Nhập thông tin
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCreationMode("osf");
+                      setErrors({});
+                    }}
+                    className={cn(
+                      "rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+                      creationMode === "osf"
+                        ? "bg-white text-blue-700 shadow-sm"
+                        : "text-slate-500 hover:text-slate-700",
+                    )}
+                  >
+                    Upload file OSF
+                  </button>
+                </div>
+              </div>
+            )}
+            {!isEditMode && creationMode === "osf" && (
+              <div className="rounded-xl border border-dashed border-blue-200 bg-blue-50/50 p-4">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-blue-100 p-2 text-blue-600">
+                    <FiUpload size={18} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-semibold text-slate-800">
+                      Tạo dự án bằng file OSF
+                    </p>
+                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                      Chọn file .md, .markdown hoặc .txt đã xuất từ OSF. Hệ thống sẽ tự lấy tiêu đề,
+                      lĩnh vực và mô tả để tạo dự án.
+                    </p>
+                    <label
+                      htmlFor="osf-file"
+                      className="mt-3 inline-flex cursor-pointer items-center gap-2 rounded-lg border border-blue-200 bg-white px-3 py-2 text-sm font-medium text-blue-700 transition-colors hover:bg-blue-50"
+                    >
+                      <FiUpload size={16} />
+                      {osfFile ? "Chọn file khác" : "Chọn file OSF"}
+                    </label>
+                    <input
+                      id="osf-file"
+                      name="osfFile"
+                      type="file"
+                      accept=".md,.markdown,.txt,text/markdown,text/plain"
+                      className="sr-only"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0] || null;
+                        setOsfFile(file);
+                        if (file) {
+                          setErrors({});
+                        }
+                      }}
+                    />
+                    {osfFile && (
+                      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-emerald-700">
+                        <FiFileText size={14} />
+                        <span className="truncate">{osfFile.name}</span>
+                        <button
+                          type="button"
+                          className="ml-1 text-slate-400 hover:text-red-600"
+                          onClick={() => setOsfFile(null)}
+                          aria-label="Xóa file OSF đã chọn"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    )}
+                    {errors.osfFile && (
+                      <p className="mt-2 text-xs font-medium text-red-600">{errors.osfFile}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            {(isEditMode || creationMode === "manual") && (
             <div className="grid grid-cols-1 gap-5">
               {/* TIÊU ĐỀ NGHIÊN CỨU (Luôn hiển thị ở cả Edit và Create) */}
               <div className="space-y-1.5">
@@ -380,7 +510,7 @@ export default function ProjectFormModal({
                     "rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none",
                     formData.title.length > 200 && "border-red-500 focus:border-red-500 focus:ring-red-100"
                   )}
-                  required
+                  required={isEditMode || creationMode === "manual"}
                 />
 
                 {/* Alert cảnh báo trực quan khi vượt quá 200 ký tự */}
@@ -407,7 +537,7 @@ export default function ProjectFormModal({
                   placeholder="Ví dụ: Khoa học máy tính, Y sinh, Giáo dục..."
                   containerClassName="space-y-1.5"
                   className="rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
-                  required
+                  required={isEditMode || creationMode === "manual"}
                 />
               </div>
               {/* DÒNG THỜI GIAN (Ngày bắt đầu & Ngày kết thúc) */}
@@ -436,9 +566,11 @@ export default function ProjectFormModal({
                 />
               </div>
             </div>
+            )}
           </div>
 
           {/* TÓM TẮT DỰ ÁN / MÔ TẢ (Kéo dài tối đa ra toàn bộ khung Drawer để cân đối với chiều cao màn hình) */}
+          {(isEditMode || creationMode === "manual") && (
           <div className="space-y-2">
 
             <FormTextarea
@@ -453,6 +585,7 @@ export default function ProjectFormModal({
               className="min-h-[200px] resize-y rounded-lg border-border bg-white p-3.5 font-normal not-italic leading-6 text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none"
             />
           </div>
+          )}
 
           {/* Huy hiệu Workflow tiêu chuẩn (Chỉ hiển thị khi Tạo mới) */}
           {!isEditMode && (

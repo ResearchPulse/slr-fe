@@ -61,9 +61,9 @@ export default function DeduplicationPage({
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="px-4 py-2 bg-surface-white border border-red-100 rounded-full flex items-center gap-2">
-            <FiAlertTriangle className="text-red-500" />
-            <span className="text-sm font-bold text-red-700">
+          <div className="flex h-11 items-center gap-2 rounded-xl border border-red-200 bg-red-50/30 px-4">
+            <FiAlertTriangle className="h-4 w-4 text-red-500" />
+            <span className="text-xs font-bold uppercase tracking-wide text-red-700">
               {pendingDuplicates.length} Pending Conflicts
             </span>
           </div>

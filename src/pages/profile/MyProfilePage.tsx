@@ -46,7 +46,7 @@ function CopyField({ label, value, displayValue }: { label: string; value: strin
     <div className="min-w-0 rounded-xl bg-[#F7F9FA] px-4 py-3.5">
       <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">{label}</p>
       <div className="mt-1.5 flex min-w-0 items-center justify-between gap-2">
-        <p className={`min-w-0 truncate text-[13px] font-semibold text-[#173247] ${label === "User ID" ? "font-mono text-[11px] tracking-[0.14em]" : ""}`} title={displayValue || value}>{displayValue ?? value}</p>
+        <p className="min-w-0 truncate text-[13px] font-semibold text-[#173247]" title={displayValue || value}>{displayValue ?? value}</p>
         <button
           type="button"
           onClick={copyValue}
@@ -295,7 +295,7 @@ const MyProfilePage: React.FC = () => {
             ) : <InformationField label="Username" value={displayUsername} />}
 
             <CopyField label="Email address" value={user.email || "Not provided"} />
-            <CopyField label="User ID" value={userId} displayValue={userId ? "••••••••••••" : "Unavailable"} />
+            <CopyField label="User ID" value={userId} />
           </div>
           {isEditingProfile && <p className="mt-3 text-[10px] text-[#84949E]">Email address cannot be changed here.</p>}
         </section>

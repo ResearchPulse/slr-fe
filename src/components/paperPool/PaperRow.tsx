@@ -1,4 +1,4 @@
-import { FiEye, FiLink } from "react-icons/fi";
+import { FiEye, FiLink, FiTrash2 } from "react-icons/fi";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
@@ -49,8 +49,8 @@ export default function PaperRow({
   isApplyingMetadataSuggestion,
   onRemovePdf,
   isRemovingPdf,
-  // onDeletePaper,
-  // isDeletingPaper,
+  onDeletePaper,
+  isDeletingPaper,
   isLeader = false,
   canUploadPdf = false,
 }: PaperRowProps) {

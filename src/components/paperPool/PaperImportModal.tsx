@@ -20,7 +20,7 @@ interface PaperImportModalProps {
   sourceOptions?: { label: string; value: string }[];
 }
 
-type ImportMode = "ris" | "bibtex" | "doi" | "crossref";
+type ImportMode = "ris" | "bibtex" | "pdf" | "doi" | "crossref";
 
 export default function PaperImportModal({
   projectId,
@@ -37,6 +37,8 @@ export default function PaperImportModal({
     isImportingRis,
     importBibTex,
     isImportingBibTex,
+    importPdf,
+    isImportingPdf,
     importByDoi,
     isImportingByDoi,
     importFromCrossref,
@@ -52,6 +54,9 @@ export default function PaperImportModal({
   const [bibFile, setBibFile] = useState<File | null>(null);
   const [bibSourceId, setBibSourceId] = useState<string>("");
   const [isDraggingBib, setIsDraggingBib] = useState(false);
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [pdfSourceId, setPdfSourceId] = useState<string>("");
+  const [isDraggingPdf, setIsDraggingPdf] = useState(false);
 
   // DOI State
   const [doi, setDoi] = useState("");
@@ -69,6 +74,7 @@ export default function PaperImportModal({
   const isImporting =
     isImportingRis ||
     isImportingBibTex ||
+    isImportingPdf ||
     isImportingByDoi ||
     isImportingFromCrossref;
 
@@ -76,6 +82,18 @@ export default function PaperImportModal({
     if (isImporting) return;
     onClose();
     // Reset state if needed or keep it
+  };
+
+  const handlePdfSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pdfFile) return;
+    try {
+      await importPdf({ file: pdfFile, projectId, searchSourceId: pdfSourceId || undefined });
+      setPdfFile(null);
+      onClose();
+    } catch {
+      // Error handled by hook toast
+    }
   };
 
   const handleRisSubmit = async (e: React.FormEvent) => {
@@ -158,6 +176,8 @@ export default function PaperImportModal({
       onClose={handleClose}
       title="Import Papers to Repository"
       size="xl"
+      className="max-h-[calc(100vh-1rem)]"
+      bodyClassName="md:overflow-hidden"
     >
       {!canImportPapers ? (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
@@ -180,12 +200,13 @@ export default function PaperImportModal({
           </Button>
         </div>
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex min-h-0 flex-col gap-4">
           {/* Mode Selector */}
           <div className="flex p-1 bg-bg-secondary rounded-[4px]">
             {[
               { id: "ris", label: "RIS File", icon: FiUpload },
               { id: "bibtex", label: "BibTeX", icon: FiUpload },
+              { id: "pdf", label: "PDF File", icon: FiUpload },
               { id: "doi", label: "DOI Lookup", icon: FiLink },
               { id: "crossref", label: "API Search", icon: FiSearch },
             ].map((item) => (
@@ -204,11 +225,75 @@ export default function PaperImportModal({
             ))}
           </div>
 
+          {mode === "pdf" && (
+            <form onSubmit={handlePdfSubmit} className="space-y-4 animate-in fade-in duration-300">
+              <div className="bg-rose-50 border border-rose-100 rounded-[4px] p-3 flex gap-3">
+                <FiInfo className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                <p className="text-sm text-rose-700 font-medium">
+                  Upload a PDF paper. Metadata is extracted automatically when GROBID is available. Max file size 10MB.
+                </p>
+              </div>
+              <div
+                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
+                  isDraggingPdf ? "border-rose-500 bg-rose-50" : "border-border bg-bg-secondary/50 hover:bg-bg-secondary"
+                }`}
+                onDragOver={(e) => { e.preventDefault(); setIsDraggingPdf(true); }}
+                onDragLeave={() => setIsDraggingPdf(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setIsDraggingPdf(false);
+                  const file = e.dataTransfer.files[0];
+                  if (file) setPdfFile(file);
+                }}
+              >
+                {pdfFile ? (
+                  <div className="flex items-center justify-center gap-3">
+                    <FiCheckCircle className="w-8 h-8 text-green-600" />
+                    <div className="text-left">
+                      <p className="font-bold text-text-primary">{pdfFile.name}</p>
+                      <p className="text-xs text-text-secondary">{(pdfFile.size / 1024).toFixed(2)} KB</p>
+                    </div>
+                    <button type="button" onClick={() => setPdfFile(null)} className="text-red-500 text-xs font-black uppercase">
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <FiUpload className="w-9 h-9 text-text-secondary mx-auto mb-2" />
+                    <h3 className="text-lg font-black text-text-primary uppercase">Drop your PDF file</h3>
+                    <p className="text-sm text-text-secondary">
+                      Drag and drop or{" "}
+                      <label className="text-blue-600 hover:underline cursor-pointer">
+                        browse your computer
+                        <input type="file" accept=".pdf,application/pdf" onChange={(e) => e.target.files?.[0] && setPdfFile(e.target.files[0])} className="hidden" />
+                      </label>
+                    </p>
+                  </>
+                )}
+              </div>
+              <div>
+                <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-2 ml-1">
+                  Associate with Search Source (Optional)
+                </label>
+                <select value={pdfSourceId} onChange={(e) => setPdfSourceId(e.target.value)} className="w-full bg-bg-secondary border-2 border-border rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary outline-none">
+                  <option value="">Unspecified source</option>
+                  {sourceOptions.map((source) => <option key={source.value} value={source.value}>{source.label}</option>)}
+                </select>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-border">
+                <Button variant="secondary" onClick={handleClose} type="button" className="rounded-[4px] px-8">Cancel</Button>
+                <Button type="submit" disabled={!pdfFile || isImportingPdf} className="rounded-[4px] px-8">
+                  {isImportingPdf ? "Importing..." : "Import PDF"}
+                </Button>
+              </div>
+            </form>
+          )}
+
           {/* RIS Import Content */}
           {mode === "ris" && (
             <form
               onSubmit={handleRisSubmit}
-              className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300"
+              className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
               <div className="bg-blue-50 border border-blue-100 rounded-[4px] p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
@@ -219,7 +304,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[4px] p-10 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
                   isDragging
                     ? "border-blue-500 bg-blue-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -259,13 +344,13 @@ export default function PaperImportModal({
                   </div>
                 ) : (
                   <>
-                    <div className="w-20 h-20 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-6">
-                      <FiUpload className="w-10 h-10 text-text-secondary" />
+                    <div className="w-14 h-14 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
+                      <FiUpload className="w-8 h-8 text-text-secondary" />
                     </div>
                     <h3 className="text-xl font-black text-text-primary mb-2 uppercase tracking-tight">
                       Drop your RIS file
                     </h3>
-                    <p className="text-text-secondary font-medium mb-6">
+                    <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
                       <label className="text-blue-600 hover:underline cursor-pointer">
                         browse your computer
@@ -307,7 +392,7 @@ export default function PaperImportModal({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-border">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border">
                 <Button
                   variant="secondary"
                   onClick={handleClose}
@@ -331,7 +416,7 @@ export default function PaperImportModal({
           {mode === "bibtex" && (
             <form
               onSubmit={handleBibSubmit}
-              className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300"
+              className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
               <div className="bg-emerald-50 border border-emerald-100 rounded-[4px] p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
@@ -343,7 +428,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-[4px] p-10 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all text-center ${
                   isDraggingBib
                     ? "border-emerald-500 bg-emerald-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -383,13 +468,13 @@ export default function PaperImportModal({
                   </div>
                 ) : (
                   <>
-                    <div className="w-20 h-20 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-6">
-                      <FiUpload className="w-10 h-10 text-text-secondary" />
+                    <div className="w-14 h-14 bg-surface-white rounded-[4px] flex items-center justify-center shadow-xl shadow-slate-200/50 mx-auto mb-3">
+                      <FiUpload className="w-8 h-8 text-text-secondary" />
                     </div>
                     <h3 className="text-xl font-black text-text-primary mb-2 uppercase tracking-tight">
                       Drop your BibTeX file
                     </h3>
-                    <p className="text-text-secondary font-medium mb-6">
+                    <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
                       <label className="text-blue-600 hover:underline cursor-pointer">
                         browse your computer
@@ -430,7 +515,7 @@ export default function PaperImportModal({
                 </select>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-border">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border">
                 <Button
                   variant="secondary"
                   onClick={handleClose}
@@ -454,7 +539,7 @@ export default function PaperImportModal({
           {mode === "doi" && (
             <form
               onSubmit={handleDoiSubmit}
-              className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300"
+              className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
               <div className="bg-bg-secondary border border-indigo-100 rounded-[4px] p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-accent shrink-0 mt-0.5" />
@@ -525,7 +610,7 @@ export default function PaperImportModal({
           {mode === "crossref" && (
             <form
               onSubmit={handleCrossrefSubmit}
-              className="space-y-6 animate-in fade-in slide-in-from-top-2 duration-300"
+              className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300"
             >
               <div className="bg-purple-50 border border-purple-100 rounded-[4px] p-4 flex gap-3">
                 <FiInfo className="w-5 h-5 text-accent shrink-0 mt-0.5" />
@@ -631,7 +716,7 @@ export default function PaperImportModal({
                 </div>
               </div>
 
-              <div className="flex justify-end gap-3 pt-6 border-t border-border">
+              <div className="flex justify-end gap-3 pt-4 border-t border-border">
                 <Button
                   variant="secondary"
                   onClick={handleClose}

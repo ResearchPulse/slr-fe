@@ -1,9 +1,9 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { ReactNode } from "react";
 import {
-  FiArrowDownRight,
+  FiArrowDown,
   FiArrowRight,
   FiArrowUpRight,
   FiBarChart2,
@@ -293,8 +293,23 @@ export default function HomePage() {
               <div className="grid grid-cols-2 gap-3">
                 {metrics.map((metric) => <div key={metric.label} className="rounded-xl border border-[#E8EEF1] bg-[#FCFDFD] p-4"><p className="text-[23px] font-bold tracking-[-0.05em] text-[#173247]">{metric.value}</p><p className="mt-1 text-[10px] leading-4 text-[#768893]">{metric.label}</p></div>)}
               </div>
-              <div className="flex flex-col items-center gap-2" aria-label="PRISMA study selection funnel">
-                {[{ label: "Records identified", value: "1,248", width: "w-full", tone: "bg-[#DCEFFA] text-[#236F9D]" }, { label: "After duplicates", value: "1,034", width: "w-[84%]", tone: "bg-[#CDE6F4] text-[#236F9D]" }, { label: "Full text assessed", value: "146", width: "w-[67%]", tone: "bg-[#DDEFE5] text-[#397C58]" }, { label: "Studies included", value: "64", width: "w-[49%]", tone: "bg-[#CBE6D5] text-[#31744F]" }].map((stage, i) => <div key={stage.label} className={`${stage.width} ${stage.tone} flex items-center justify-between rounded-lg px-3 py-2.5 transition hover:scale-[1.02]`}><span className="text-[9px] font-semibold">{stage.label}</span><span className="text-[11px] font-extrabold">{stage.value}</span>{i < 3 && <FiArrowDownRight className="absolute translate-y-7 text-[#95A8B3]" />}</div>)}
+              <div className="flex flex-col items-center" aria-label="PRISMA study selection funnel">
+                {[
+                  { label: "Records identified", value: "1,248", width: "w-full", tone: "bg-[#DCEFFA] text-[#236F9D]" },
+                  { label: "After duplicates", value: "1,034", width: "w-[84%]", tone: "bg-[#CDE6F4] text-[#236F9D]" },
+                  { label: "Full text assessed", value: "146", width: "w-[67%]", tone: "bg-[#DDEFE5] text-[#397C58]" },
+                  { label: "Studies included", value: "64", width: "w-[49%]", tone: "bg-[#CBE6D5] text-[#31744F]" },
+                ].map((stage, i) => (
+                  <Fragment key={stage.label}>
+                    <div
+                      className={`${stage.width} ${stage.tone} flex items-center justify-between rounded-lg px-3 py-2.5 transition hover:scale-[1.02]`}
+                    >
+                      <span className="text-[9px] font-semibold">{stage.label}</span>
+                      <span className="text-[11px] font-extrabold">{stage.value}</span>
+                    </div>
+                    {i < 3 && <FiArrowDown className="my-1 text-[16px] text-[#173247]" />}
+                  </Fragment>
+                ))}
               </div>
             </div>
             <div className="mt-5 flex items-center gap-2 border-t border-[#EDF1F3] pt-4 text-[9px] text-[#82929C]"><FiCheckCircle className="text-[#37835D]" /> Counts stay linked to decisions made across the review</div>

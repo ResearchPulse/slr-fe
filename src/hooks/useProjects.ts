@@ -116,6 +116,11 @@ export const useProjectMutations = () => {
     onSuccess: () => invalidateProjects(),
   });
 
+  const createFromOsfFileMutation = useMutation({
+    mutationFn: projectService.createProjectFromOsfFile,
+    onSuccess: () => invalidateProjects(),
+  });
+
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: string; data: UpdateProjectRequest }) =>
       projectService.updateProject(id, data),
@@ -153,6 +158,11 @@ export const useProjectMutations = () => {
     createProject: createMutation.mutateAsync,
     isCreating: createMutation.isPending,
     createError: createMutation.error ? getErrorMessage(createMutation.error, "Failed to create project") : null,
+    createProjectFromOsfFile: createFromOsfFileMutation.mutateAsync,
+    isCreatingFromOsfFile: createFromOsfFileMutation.isPending,
+    createFromOsfFileError: createFromOsfFileMutation.error
+      ? getErrorMessage(createFromOsfFileMutation.error, "Failed to create project from OSF file")
+      : null,
 
     // Update
     updateProject: updateMutation.mutateAsync,

@@ -28,6 +28,65 @@ const COLORS = [
   "#f43f5e",
 ];
 
+function wrapLabel(value: string, maxLength = 22) {
+  const words = value.trim().split(/\s+/);
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length <= maxLength) {
+      current = next;
+    } else if (current) {
+      lines.push(current);
+      current = word;
+    } else {
+      lines.push(word.slice(0, maxLength));
+      current = "";
+    }
+  }
+
+  if (current) lines.push(current);
+  if (lines.length <= 2) return lines;
+
+  return [lines[0], `${lines.slice(1).join(" ").slice(0, maxLength - 1)}…`];
+}
+
+function CategoryTick({
+  x,
+  y,
+  payload,
+}: {
+  x?: number;
+  y?: number;
+  payload?: { value?: string };
+}) {
+  const lines = wrapLabel(String(payload?.value ?? ""));
+  const textX = x ?? 0;
+  const textY = y ?? 0;
+
+  return (
+    <text
+      x={textX}
+      y={textY}
+      textAnchor="end"
+      fill="#64748b"
+      fontSize={11}
+      fontWeight={500}
+    >
+      {lines.map((line, index) => (
+        <tspan
+          key={`${line}-${index}`}
+          x={textX}
+          dy={lines.length === 1 ? 4 : index === 0 ? -5 : 12}
+        >
+          {line}
+        </tspan>
+      ))}
+    </text>
+  );
+}
+
 const BarChartComponent: React.FC<BarChartComponentProps> = ({
   data,
   xKey,
@@ -54,8 +113,8 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
             <YAxis
               dataKey={yKey}
               type="category"
-              width={150}
-              tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
+              width={190}
+              tick={<CategoryTick />}
               axisLine={false}
               tickLine={false}
             />
@@ -83,7 +142,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
           dataKey={xKey}
           fill={color}
           radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]}
-          barSize={24}
+          barSize={18}
         >
           {data.map((_, index) => (
             <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

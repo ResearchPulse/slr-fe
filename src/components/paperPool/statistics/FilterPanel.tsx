@@ -19,22 +19,22 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableSources,
 }) => {
   return (
-    <div className="bg-surface-white p-8 rounded-2xl border border-border shadow-none flex flex-col md:flex-row md:items-center justify-between gap-6">
-      <div className="flex items-center gap-5">
-        <div className="w-14 h-14 bg-slate-900 text-white rounded-xl flex items-center justify-center shadow-none shadow-slate-200">
-          <FiFilter className="w-7 h-7" />
+    <div className="bg-surface-white p-5 rounded-2xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+      <div className="flex items-center gap-4">
+        <div className="h-11 w-11 bg-slate-900 text-white rounded-xl flex items-center justify-center">
+          <FiFilter className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-xl font-black text-text-primary uppercase tracking-tight">
+          <h2 className="text-lg font-bold text-text-primary uppercase tracking-tight">
             Dashboard <span className="text-blue-600">Filters</span>
           </h2>
-          <p className="text-[10px] font-bold text-text-secondary uppercase tracking-[0.2em] mt-0.5">
+          <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-[0.12em] mt-0.5">
             Refine data across all visualizations
           </p>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-6">
+      <div className="flex flex-wrap items-end gap-4">
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
             Source
@@ -52,7 +52,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 { label: "All Sources", value: "" },
                 ...availableSources.map((s) => ({ label: s, value: s })),
               ]}
-              className="rounded-xl border-2 border-slate-50 focus:border-blue-500 transition-all font-bold text-sm"
+              className="rounded-lg border border-border focus:border-blue-500 transition-all text-sm"
             />
           </div>
         </div>
@@ -65,29 +65,37 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <Input
               type="number"
               placeholder="From"
-              value={filters.yearFrom || ""}
-              onChange={(e) =>
+              min={1900}
+              max={2100}
+              step={1}
+              value={filters.yearFrom != null && filters.yearFrom >= 0 ? filters.yearFrom : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value && !/^\d{0,4}$/.test(value)) return;
                 onFilterChange({
                   ...filters,
-                  yearFrom: e.target.value
-                    ? parseInt(e.target.value)
-                    : undefined,
-                })
-              }
-              className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
+                  yearFrom: value ? parseInt(value, 10) : undefined,
+                });
+              }}
+              className="w-24 rounded-lg border border-border focus:border-blue-500 text-sm"
             />
             <span className="text-slate-300 font-bold">-</span>
             <Input
               type="number"
               placeholder="To"
-              value={filters.yearTo || ""}
-              onChange={(e) =>
+              min={1900}
+              max={2100}
+              step={1}
+              value={filters.yearTo != null && filters.yearTo >= 0 ? filters.yearTo : ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value && !/^\d{0,4}$/.test(value)) return;
                 onFilterChange({
                   ...filters,
-                  yearTo: e.target.value ? parseInt(e.target.value) : undefined,
-                })
-              }
-              className="w-24 rounded-xl border-2 border-slate-50 focus:border-blue-500 font-bold"
+                  yearTo: value ? parseInt(value, 10) : undefined,
+                });
+              }}
+              className="w-24 rounded-lg border border-border focus:border-blue-500 text-sm"
             />
           </div>
         </div>
@@ -95,7 +103,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         <Button
           variant="ghost"
           onClick={onReset}
-          className="rounded-xl text-text-secondary hover:text-blue-600 hover:bg-blue-50 h-11 px-4 font-bold uppercase tracking-widest text-[10px]"
+          className="rounded-lg text-text-secondary hover:text-blue-600 hover:bg-blue-50 h-10 px-3 font-semibold uppercase tracking-[0.1em] text-[10px]"
         >
           <FiRefreshCw className="mr-2" />
           Reset

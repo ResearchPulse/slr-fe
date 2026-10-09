@@ -664,32 +664,42 @@ export default function SearchStrategyForm({
             <div className="bg-bg-primary rounded-[4px] p-6 grid grid-cols-2 gap-4 border border-border">
               <input
                 type="number"
-                value={strategy.filters.yearFrom || ""}
-                onChange={(e) =>
+                min={1900}
+                max={2100}
+                step={1}
+                value={strategy.filters.yearFrom != null && strategy.filters.yearFrom >= 0 ? strategy.filters.yearFrom : ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value && !/^\d{0,4}$/.test(value)) return;
                   setStrategy({
                     ...strategy,
                     filters: {
                       ...strategy.filters,
-                      yearFrom: parseInt(e.target.value) || undefined,
+                      yearFrom: value ? parseInt(value, 10) : undefined,
                     },
-                  })
-                }
+                  });
+                }}
                 disabled={!isLeader}
                 placeholder="Year From"
                 className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
               />
               <input
                 type="number"
-                value={strategy.filters.yearTo || ""}
-                onChange={(e) =>
+                min={1900}
+                max={2100}
+                step={1}
+                value={strategy.filters.yearTo != null && strategy.filters.yearTo >= 0 ? strategy.filters.yearTo : ""}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value && !/^\d{0,4}$/.test(value)) return;
                   setStrategy({
                     ...strategy,
                     filters: {
                       ...strategy.filters,
-                      yearTo: parseInt(e.target.value) || undefined,
+                      yearTo: value ? parseInt(value, 10) : undefined,
                     },
-                  })
-                }
+                  });
+                }}
                 disabled={!isLeader}
                 placeholder="Year To"
                 className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
