@@ -273,10 +273,22 @@ export function usePaperActions(
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.paperPool.metadata(finalProjectId),
         });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.reviewProcesses.byProject(finalProjectId),
+        });
       }
 
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study-selection"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["identification-processes"],
       });
 
       toast.success("Paper deleted successfully.");
