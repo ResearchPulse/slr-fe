@@ -32,6 +32,7 @@ interface PaperRowProps {
 
   // Delete Action
   onDeletePaper?: (paperId: string, reason: string) => void;
+  onDeleteClick?: (paper: PaperPoolItem) => void;
   isDeletingPaper?: boolean;
   isLeader?: boolean;
   canUploadPdf?: boolean;
@@ -145,19 +146,18 @@ export default function PaperRow({
           >
             <FiEye className="h-3.5 w-3.5" />
           </button>
-          {/* {onDeletePaper && (
+          {onDeletePaper && (
             <button
+              type="button"
               onClick={() => {
-                const reason = window.prompt(
-                  `Reason for deleting "${paper.title.substring(0, 30)}...":`,
-                  "Other reason",
-                );
-                if (reason !== null) {
-                  onDeletePaper?.(paper.id, reason || "Other reason");
+                if (onDeleteClick) {
+                  onDeleteClick(paper);
+                } else {
+                  onDeletePaper(paper.id, "Deleted from paper repository");
                 }
               }}
               disabled={isDeletingPaper}
-              className="inline-flex items-center gap-1.5 rounded-[4px] border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Delete paper"
             >
               {isDeletingPaper ? (
@@ -166,7 +166,7 @@ export default function PaperRow({
                 <FiTrash2 className="h-3.5 w-3.5" />
               )}
             </button>
-          )} */}
+          )}
         </div>
       </td>
     </tr>
