@@ -33,9 +33,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       secondary:
         "bg-transparent border border-border text-text-primary hover:border-text-muted hover:bg-bg-secondary focus:ring-border",
       danger:
-        "bg-error text-white border border-transparent hover:bg-red-700 focus:ring-error/20",
+        "bg-error text-white border border-transparent hover:bg-error/90 focus:ring-error/20",
       success:
-        "bg-success text-white border border-transparent hover:bg-green-700 focus:ring-success/20",
+        "bg-success text-white border border-transparent hover:bg-success/90 focus:ring-success/20",
       outline:
         "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus:ring-text-primary/25",
       ghost:

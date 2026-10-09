@@ -14,11 +14,11 @@ export default function Checkbox({
       <input
         type="checkbox"
         {...props}
-        className={`h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed ${
+        className={`h-4 w-4 rounded border-border text-accent focus:ring-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-accent disabled:opacity-60 disabled:cursor-not-allowed ${
           className ?? ""
         }`}
       />
-      {label ? <span className="text-sm text-slate-700">{label}</span> : null}
+      {label ? <span className="text-sm text-text-secondary">{label}</span> : null}
     </label>
   );
 }

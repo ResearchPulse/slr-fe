@@ -64,9 +64,9 @@ export default class ErrorBoundary extends Component<
 
       return (
         <div className="flex min-h-[500px] w-full items-center justify-center p-6">
-          <div className="w-full max-w-xl rounded-xl border border-red-200 bg-surface-white p-8 shadow-sm">
+          <div className="w-full max-w-xl rounded-xl border border-error/20 bg-surface-white p-8 shadow-sm">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-error/10 text-error">
                 <FiAlertTriangle className="h-6 w-6" />
               </div>
               <div>
@@ -79,7 +79,7 @@ export default class ErrorBoundary extends Component<
               </div>
             </div>
 
-            <div className="mt-5 rounded-lg bg-red-50/80 p-3 text-sm text-red-800 font-mono break-words border border-red-100">
+            <div className="mt-5 rounded-xl bg-error/5 p-3 text-sm text-error font-mono break-words border border-error/20">
               {errorMessage}
             </div>
 
@@ -87,7 +87,7 @@ export default class ErrorBoundary extends Component<
               <button
                 type="button"
                 onClick={this.handleReload}
-                className="inline-flex items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent/90"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
               >
                 <FiRefreshCw className="h-4 w-4" />
                 Thử lại
@@ -95,7 +95,7 @@ export default class ErrorBoundary extends Component<
               <button
                 type="button"
                 onClick={this.handleGoProjects}
-                className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary"
               >
                 <FiHome className="h-4 w-4" />
                 Về danh sách dự án
@@ -117,7 +117,7 @@ export default class ErrorBoundary extends Component<
             </div>
 
             {this.state.showDetails && (
-              <div className="mt-4 max-h-60 overflow-auto rounded-lg bg-gray-900 p-4 text-xs font-mono text-gray-200">
+              <div className="mt-4 max-h-60 overflow-auto rounded-xl bg-gray-900 p-4 text-xs font-mono text-gray-200">
                 <div className="font-bold text-red-400 mb-1">Stack trace:</div>
                 <pre className="whitespace-pre-wrap">{errorStack}</pre>
                 {componentStack && (

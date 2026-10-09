@@ -51,7 +51,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-text-main focus:outline-none focus:text-text-main transition-colors duration-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary focus:outline-none focus:text-text-primary transition-colors duration-200"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (

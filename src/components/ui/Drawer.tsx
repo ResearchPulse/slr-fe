@@ -105,7 +105,7 @@ const Drawer: React.FC<DrawerProps> = ({
     <div
       ref={containerRef}
       className={cn(
-        "fixed inset-0 z-[var(--z-index-drawer)] overflow-hidden",
+        "fixed inset-0 z-(--z-index-drawer) overflow-hidden",
         className,
       )}
       style={{ visibility: "hidden" }}
@@ -127,7 +127,8 @@ const Drawer: React.FC<DrawerProps> = ({
         <div
           ref={drawerRef}
           className={cn(
-            "pointer-events-auto w-screen bg-surface-white border-l border-border shadow-2xl transform-gpu will-change-transform flex flex-col h-full",
+            "pointer-events-auto w-screen bg-surface-white border-border shadow-2xl transform-gpu will-change-transform flex flex-col h-full",
+            side === "left" ? "border-r rounded-r-xl" : "border-l rounded-l-xl",
             maxWidth,
           )}
         >
@@ -145,7 +146,7 @@ const Drawer: React.FC<DrawerProps> = ({
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-lg transition-colors shrink-0"
+              className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors shrink-0"
               aria-label="Close"
             >
               <FiX size={18} />

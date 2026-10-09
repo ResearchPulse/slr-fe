@@ -49,10 +49,12 @@ export const Modal: React.FC<ModalProps> = ({
       if (closeOnEsc && e.key === "Escape") onClose();
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      document.body.style.overflow = "hidden";
-    }
+    // Closed modals must not touch body scroll, or a re-render of an always-mounted
+    // closed modal would unlock scrolling while another modal is open.
+    if (!isOpen) return;
+
+    document.addEventListener("keydown", handleEscape);
+    document.body.style.overflow = "hidden";
 
     return () => {
       document.removeEventListener("keydown", handleEscape);
@@ -132,7 +134,7 @@ export const Modal: React.FC<ModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-colors"
+            className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors"
           >
             <FiX size={18} />
             <span className="sr-only">Close</span>

@@ -49,7 +49,7 @@ export const ExportDialog: React.FC<ExportDialogProps> = ({
     >
       <div className="space-y-4">
         <div className="relative group">
-          <pre className="bg-gray-900 text-gray-100 p-6 rounded-lg text-xs overflow-auto max-h-[500px] font-mono leading-relaxed CustomScrollbar">
+          <pre className="bg-gray-900 text-gray-100 p-6 rounded-xl text-xs overflow-auto max-h-[500px] font-mono leading-relaxed CustomScrollbar">
             {jsonString}
           </pre>
           <div className="absolute top-4 right-4 flex gap-2">

@@ -161,7 +161,7 @@ export const CustomToast: React.FC<CustomToastProps> = ({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
-        "max-w-sm w-full pointer-events-auto flex flex-col rounded-[4px] border shadow-none overflow-hidden",
+        "max-w-sm w-full pointer-events-auto flex flex-col rounded-xl border shadow-none overflow-hidden",
         style.bg,
         style.border,
       )}
