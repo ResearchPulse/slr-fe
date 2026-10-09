@@ -26,7 +26,6 @@ export default function UpdateNotesModal({
     if (isOpen && process) {
       setNotes(process.notes || "");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   const handleSubmit = async (e: React.FormEvent) => {
