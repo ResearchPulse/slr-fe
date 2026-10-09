@@ -31,27 +31,27 @@ export function ReviewerProgressPanel({
               >
                 {progress.reviewerName || "Unknown Reviewer"}
               </span>
-              <span className="whitespace-nowrap rounded-md border border-blue-100 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+              <span className="whitespace-nowrap rounded-xl border border-accent/30 bg-primary-light px-2.5 py-1 text-xs font-semibold text-accent">
                 {progress.completionPercentage.toFixed(0)}%
               </span>
             </div>
 
             <div className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary">
               <div
-                className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                className="h-full bg-primary rounded-full transition-all duration-500"
                 style={{ width: `${progress.completionPercentage}%` }}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-1.5 p-2 bg-emerald-50 text-emerald-700 rounded-[4px]">
+              <div className="flex items-center gap-1.5 p-2 bg-emerald-50 text-emerald-700 rounded-xl">
                 <CheckCircle2 size={14} className="text-emerald-500" />
                 <span className="font-medium">
                   {progress.completedPapers} done
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 p-2 bg-blue-50 text-blue-700 rounded-[4px]">
-                <Clock size={14} className="text-blue-500" />
+              <div className="flex items-center gap-1.5 p-2 bg-primary-light text-accent rounded-xl">
+                <Clock size={14} className="text-accent" />
                 <span className="font-medium">
                   {progress.inProgressPapers + progress.notStartedPapers} max
                 </span>

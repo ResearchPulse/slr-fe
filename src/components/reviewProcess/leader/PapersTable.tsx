@@ -13,9 +13,10 @@ import type {
 } from "../../../types/studySelection";
 import PaperPdfActions from "./PaperPdfActions";
 import { useReviewerDecisions } from "../../../hooks/useStudySelection";
-import { Loader2, Check, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useReviewerSubmission } from "../../../hooks/useStudySelectionChecklistSubmission";
 import { PreviewDocument } from "../../ui/document-editor/PreviewDocument";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 interface PaperRowProps {
   paper: PaperResponse;
@@ -118,7 +119,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                   ? "PDF is required for assignment in Full-Text phase"
                   : "Select paper"
           }
-          className={`w-4 h-4 text-blue-600 border-border rounded focus:ring-blue-500 ${
+          className={`w-4 h-4 text-accent border-border rounded focus:ring-accent ${
             paper.assignmentStatusText === "Assigned" ||
               (paper.decidedStatus && paper.decidedStatus !== "None") ||
               (selectionMode === "assignment" && pdfRequired && !paper.pdfUrl)
@@ -128,7 +129,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
         />
       </td>
       <td className="px-6 py-4">
-        <div className="text-sm font-medium text-text-primary group-hover:text-blue-600 transition-colors line-clamp-2 max-w-md">
+        <div className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors line-clamp-2 max-w-md">
           {paper.title}
         </div>
       </td>
@@ -137,7 +138,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
           {paper.authors}
         </div>
       </td>
-      <td className="px-6 py-4 whitespace-nowrap text-xs text-blue-500 hover:underline cursor-pointer">
+      <td className="px-6 py-4 whitespace-nowrap text-xs text-accent hover:underline cursor-pointer">
         {paper.doi}
       </td>
       <td className="px-6 py-4 whitespace-nowrap text-sm text-text-secondary">
@@ -148,7 +149,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
         <span
           className={`px-2 py-1 text-xs font-semibold rounded-full border ${
             paper.assignmentStatusText === "Assigned"
-              ? "bg-blue-50 text-blue-700 border-blue-100"
+              ? "bg-primary-light text-accent border-primary/20"
               : "bg-bg-primary text-text-secondary border-border"
           }`}
         >
@@ -192,7 +193,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
 
           <button
             onClick={() => setIsDetailDrawerOpen(true)}
-            className="p-1.5 text-text-secondary hover:text-blue-600 hover:bg-blue-50 rounded-[4px] transition-colors border border-transparent hover:border-blue-100"
+            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -205,13 +206,13 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                   e.stopPropagation();
                   setIsModalOpen(true);
                 }}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-[4px] bg-bg-secondary text-text-secondary border border-border hover:bg-slate-200 hover:text-accent transition-all shadow-none active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+                className="px-3 py-1.5 text-[11px] font-bold rounded-xl bg-bg-secondary text-text-secondary border border-border hover:bg-slate-200 hover:text-accent transition-all shadow-none active:scale-95 flex items-center gap-2 group whitespace-nowrap"
               >
                 <div className="flex -space-x-2 mr-1">
                   {reviewers.slice(0, 2).map((reviewer, i) => (
                     <div
                       key={i}
-                      className="w-4 h-4 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[8px] text-text-secondary font-bold group-hover:bg-indigo-400 group-hover:text-white transition-colors"
+                      className="w-4 h-4 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[8px] text-text-secondary font-bold group-hover:bg-primary-hover group-hover:text-white transition-colors"
                     >
                       {reviewer.name?.charAt(0) || "?"}
                     </div>
@@ -236,17 +237,17 @@ export const PaperRow: React.FC<PaperRowProps> = ({
           <div className="grid grid-cols-1 gap-3">
             {isLoadingReviewers ? (
               <div className="flex items-center justify-center p-8">
-                <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+                <LoadingSpinner size="md" />
               </div>
             ) : reviewerDecisions && reviewerDecisions.length > 0 ? (
               reviewerDecisions.map((rd, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col gap-2 p-3 rounded-[4px] bg-bg-secondary border border-border group hover:border-indigo-100 hover:bg-surface-white transition-all"
+                  className="flex flex-col gap-2 p-3 rounded-xl bg-bg-secondary border border-border group hover:border-primary/30 hover:bg-surface-white transition-all"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-accent font-bold text-xs">
+                      <div className="w-8 h-8 rounded-full bg-primary-light flex items-center justify-center text-accent font-bold text-xs">
                         {rd.reviewerName?.charAt(0) || "?"}
                       </div>
                       <span className="text-sm font-semibold text-text-primary">
@@ -257,7 +258,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                     <div className="flex items-center gap-2">
                       {rd.decision ? (
                         <span
-                          className={`px-2 py-1 text-[10px] font-bold rounded-[4px] border ${
+                          className={`px-2 py-1 text-[10px] font-bold rounded-xl border ${
                             rd.decision.decisionText?.toLowerCase() ===
                             "include"
                               ? "bg-surface-white text-green-700 border-green-100"
@@ -270,7 +271,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                           {rd.decision.decisionText}
                         </span>
                       ) : (
-                        <span className="text-[10px] font-medium text-text-secondary italic bg-bg-secondary/50 px-2 py-1 rounded-[4px]">
+                        <span className="text-[10px] font-medium text-text-secondary italic bg-bg-secondary/50 px-2 py-1 rounded-xl">
                           Pending
                         </span>
                       )}
@@ -278,7 +279,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="!px-3 !py-1 !text-[10px] !rounded-[4px] border border-border hover:border-indigo-200 hover:bg-bg-secondary transition-colors h-7"
+                        className="!px-3 !py-1 !text-[10px] !rounded-xl border border-border hover:border-primary/30 hover:bg-bg-secondary transition-colors h-7"
                         onClick={(e) => {
                           e.stopPropagation();
                           if (studySelectionProcessId) {
@@ -306,7 +307,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                           </div>
                         )}
                         {rd.decision.reason && (
-                          <div className="text-[11px] text-text-secondary italic line-clamp-2 leading-relaxed bg-bg-secondary/30 p-1.5 rounded-[4px] border border-border/50">
+                          <div className="text-[11px] text-text-secondary italic line-clamp-2 leading-relaxed bg-bg-secondary/30 p-1.5 rounded-xl border border-border/50">
                             "{rd.decision.reason}"
                           </div>
                         )}
@@ -335,13 +336,13 @@ export const PaperRow: React.FC<PaperRowProps> = ({
         >
           {isLoadingSubmission ? (
             <div className="flex flex-col items-center justify-center p-20 gap-4">
-              <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+              <LoadingSpinner size="lg" />
               <p className="text-text-secondary animate-pulse font-medium">
                 Loading submission data...
               </p>
             </div>
           ) : submission ? (
-            <div className="bg-bg-secondary/50 p-6 rounded-[4px] border border-border max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div className="bg-bg-secondary/50 p-6 rounded-xl border border-border max-h-[70vh] overflow-y-auto custom-scrollbar">
               <PreviewDocument
                 template={submission as any}
                 renderItem={(item) => (
@@ -360,11 +361,11 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                 renderSectionTitle={(section) => (
                   <div className="flex items-center">
                     {section.isChecked ? (
-                      <div className="w-6 h-6 rounded-[4px] bg-indigo-100 border border-indigo-200 flex items-center justify-center text-accent shadow-none">
+                      <div className="w-6 h-6 rounded-lg bg-primary-light border border-primary/20 flex items-center justify-center text-accent shadow-none">
                         <Check className="w-4 h-4 stroke-[3]" />
                       </div>
                     ) : (
-                      <div className="w-6 h-6 rounded-[4px] bg-bg-secondary border border-border flex items-center justify-center text-text-secondary shadow-none">
+                      <div className="w-6 h-6 rounded-lg bg-bg-secondary border border-border flex items-center justify-center text-text-secondary shadow-none">
                         <X className="w-4 h-4 stroke-[3]" />
                       </div>
                     )}
@@ -373,7 +374,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
               />
             </div>
           ) : (
-            <div className="text-center py-20 text-text-secondary bg-bg-secondary rounded-[4px] border border-dashed border-border">
+            <div className="text-center py-20 text-text-secondary bg-bg-secondary rounded-xl border border-dashed border-border">
               <p className="italic">
                 No submission data available for this reviewer.
               </p>
@@ -482,7 +483,7 @@ const PapersTable: React.FC<PapersTableProps> = ({
                 type="checkbox"
                 checked={allSelected}
                 onChange={(e) => onSelectAll(e.target.checked)}
-                className="w-4 h-4 text-blue-600 border-border rounded focus:ring-blue-500 cursor-pointer"
+                className="w-4 h-4 text-accent border-border rounded focus:ring-accent cursor-pointer"
               />
             </th>
             <th

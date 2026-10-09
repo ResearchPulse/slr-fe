@@ -134,7 +134,7 @@ export default function SynthesisPhaseWorkspace() {
   if (workspace.error || !workspace.workspace) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-10">
-        <div className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white p-6 shadow-none">
+        <div className="mx-auto max-w-4xl rounded-xl border border-border bg-surface-white p-6 shadow-none">
           <h2 className="text-lg font-semibold text-red-900">
             Synthesis Workspace Error
           </h2>
@@ -160,9 +160,9 @@ export default function SynthesisPhaseWorkspace() {
   if (workspace.processStatus === "NotStarted") {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-10">
-        <div className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white p-8 shadow-none">
+        <div className="mx-auto max-w-4xl rounded-xl border border-border bg-surface-white p-8 shadow-none">
           <div className="flex items-center gap-3">
-            <div className="rounded-[4px] bg-blue-50 p-3 text-blue-600">
+            <div className="rounded-xl bg-primary-light p-3 text-accent">
               <Layers3 className="h-6 w-6" />
             </div>
             <div>
@@ -175,7 +175,7 @@ export default function SynthesisPhaseWorkspace() {
             </div>
           </div>
 
-          <div className="mt-6 rounded-[4px] border border-border bg-bg-primary p-6">
+          <div className="mt-6 rounded-xl border border-border bg-bg-primary p-6">
             <p className="text-sm leading-6 text-text-secondary">
               The synthesis phase is not started yet. Once activated, the
               workspace will unlock thematic analysis and research question

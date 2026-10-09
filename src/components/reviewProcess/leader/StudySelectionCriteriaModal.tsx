@@ -13,7 +13,7 @@ import {
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import { ClipboardList, ChevronDown, ChevronUp } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../../utils/toast";
 import type {
   CriteriaGroup,
   CriterionItem,
@@ -72,10 +72,10 @@ const StudySelectionCriteriaModal: React.FC<
         }));
 
         setCriteriaGroups((prev) => [...prev, ...newGroups]);
-        toast.success("AI Criteria suggested successfully!");
+        toastSuccess("AI Criteria suggested successfully!");
       },
       onError: (error) => {
-        toast.error(
+        toastError(
           error.message || "Failed to generate AI criteria. Please try again.",
         );
       },
@@ -186,7 +186,7 @@ const StudySelectionCriteriaModal: React.FC<
   // Save Criteria
   const handleApplyAndContinue = () => {
     if (criteriaGroups.length === 0) {
-      toast.error("Please add at least one criteria group.");
+      toastError("Please add at least one criteria group.");
       return;
     }
 
@@ -206,11 +206,11 @@ const StudySelectionCriteriaModal: React.FC<
 
     saveCriteria(requestData, {
       onSuccess: () => {
-        toast.success("Study selection criteria saved successfully!");
+        toastSuccess("Study selection criteria saved successfully!");
         onClose();
       },
       onError: (error) => {
-        toast.error(
+        toastError(
           error.message || "Failed to save criteria. Please try again.",
         );
       },
@@ -231,7 +231,7 @@ const StudySelectionCriteriaModal: React.FC<
           <Button
             variant="primary"
             onClick={handleApplyAndContinue}
-            className="px-8 shadow-lg shadow-indigo-100"
+            className="px-8 shadow-lg shadow-primary/10"
             disabled={criteriaGroups.length === 0 || isSaving}
           >
             {isSaving ? <LoadingSpinner size="sm" className="mr-2" /> : null}
@@ -242,9 +242,9 @@ const StudySelectionCriteriaModal: React.FC<
     >
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-indigo-50 to-white rounded-[4px] border border-indigo-100 shadow-sm shrink-0">
+        <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-primary-light to-white rounded-xl border border-primary/20 shadow-sm shrink-0">
           <div className="flex gap-4">
-            <div className="p-3 bg-surface-white rounded-[4px] shadow-sm border border-indigo-50 shrink-0">
+            <div className="p-3 bg-surface-white rounded-xl shadow-sm border border-primary/20 shrink-0">
               <ClipboardList className="w-6 h-6 text-accent" />
             </div>
             <div>

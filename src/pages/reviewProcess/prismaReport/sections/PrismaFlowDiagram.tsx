@@ -12,9 +12,10 @@ import { createPortal } from "react-dom";
 import { FiMaximize2, FiDownload, FiX } from "react-icons/fi";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
-import toast from "react-hot-toast";
+import { toastError, toastLoading, toastSuccess } from "../../../../utils/toast";
 import type { PrismaNodeResponse, PrismaBreakdownResponse } from "../../../../types/prismaReport";
 import { PRISMA_STAGE_LABELS } from "../../../../types/prismaReport";
+import Button from "../../../../components/ui/Button";
 
 interface PrismaFlowDiagramProps {
   nodes: PrismaNodeResponse[];
@@ -148,10 +149,10 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
     const handleExportImage = useCallback(async () => {
       const target = isModalOpen ? modalDiagramRef.current || mainDiagramRef.current : mainDiagramRef.current;
       if (!target) {
-        toast.error("Diagram element not ready for export.");
+        toastError("Diagram element not ready for export.");
         return;
       }
-      const toastId = toast.loading("Generating high-resolution PNG...");
+      const toastId = toastLoading("Generating high-resolution PNG...");
       try {
         let dataUrl: string;
         try {
@@ -166,10 +167,10 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
           dataUrl = await toPng(target, { backgroundColor: "#ffffff", pixelRatio: 1.5 });
         }
         saveAs(dataUrl, `PRISMA_Flow_Diagram_${new Date().toISOString().split("T")[0]}.png`);
-        toast.success("PRISMA flow diagram exported as PNG!", { id: toastId });
+        toastSuccess("PRISMA flow diagram exported as PNG!", undefined, { id: toastId });
       } catch (error) {
         console.error("Failed to export PRISMA diagram:", error);
-        toast.error("Failed to export PRISMA diagram as PNG.", { id: toastId });
+        toastError("Failed to export PRISMA diagram as PNG.", undefined, { id: toastId });
       }
     }, [isModalOpen]);
 
@@ -277,7 +278,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
         <div className="flex flex-wrap justify-end items-center gap-2 mb-3">
           <button
             onClick={handleExportImage}
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-[4px] text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             title="Download diagram as high-quality PNG"
           >
             <FiDownload className="w-4 h-4" />Export PNG
@@ -285,7 +286,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
           {!initialIsExpanded && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-[4px] text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               aria-label="View full diagram"
             >
               <FiMaximize2 className="w-4 h-4" />View Full Diagram
@@ -295,15 +296,15 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
         {renderDiagram()}
         {isModalOpen && createPortal(
           <div
-            className="fixed inset-0 z-[5000] bg-gray-900/50 flex items-center justify-center p-3 sm:p-6"
+            className="fixed inset-0 z-(--z-index-modal) bg-slate-900/40 flex items-center justify-center p-3 sm:p-6"
             onClick={(event) => { if (event.target === event.currentTarget) setIsModalOpen(false); }}
           >
             <div className="bg-surface-white w-full h-full max-w-[1500px] rounded-xl relative flex flex-col overflow-hidden border border-border/70 shadow-xl">
               <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border/70 bg-bg-primary/50 shrink-0">
                 <h3 className="text-base font-semibold text-text-primary">PRISMA 2020 Flow Diagram</h3>
                 <div className="flex items-center gap-2">
-                  <button onClick={handleExportImage} className="inline-flex items-center gap-2 px-3 py-1.5 bg-accent text-white rounded-[4px] text-sm font-medium hover:bg-primary-hover"><FiDownload className="w-4 h-4" />Export PNG</button>
-                  <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-[4px] hover:bg-bg-secondary text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/30" aria-label="Close full diagram"><FiX className="w-5 h-5" /></button>
+                  <Button onClick={handleExportImage} size="sm" className="gap-2"><FiDownload className="w-4 h-4" />Export PNG</Button>
+                  <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl hover:bg-bg-secondary text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/30" aria-label="Close full diagram"><FiX className="w-5 h-5" /></button>
                 </div>
               </div>
               <div className="flex-1 overflow-auto bg-bg-primary/50">{renderDiagram(true)}</div>

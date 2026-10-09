@@ -94,9 +94,9 @@ export default function AssignReviewersModal({
       size="lg"
     >
       <div className="space-y-6">
-        <div className="rounded-[4px] border border-border bg-gradient-to-r from-slate-50 to-white p-4 shadow-sm">
+        <div className="rounded-xl border border-border bg-bg-primary p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-[4px] bg-blue-100 text-blue-700 shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent shadow-sm">
               <Users2 className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -111,7 +111,7 @@ export default function AssignReviewersModal({
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-[4px] border border-border bg-surface-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-surface-white p-4 shadow-sm">
             <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 1
             </label>
@@ -129,7 +129,7 @@ export default function AssignReviewersModal({
             />
           </div>
 
-          <div className="rounded-[4px] border border-border bg-surface-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-surface-white p-4 shadow-sm">
             <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 2
             </label>
@@ -148,14 +148,14 @@ export default function AssignReviewersModal({
           </div>
         </div>
 
-        <div className="rounded-[4px] border border-dashed border-border bg-bg-secondary p-4">
+        <div className="rounded-xl border border-dashed border-border bg-bg-secondary p-4">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
             Assignment Preview
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             {rev1 ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-indigo-700 ring-1 ring-indigo-100">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[11px] font-bold text-indigo-700">
+              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-accent ring-1 ring-accent/30">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-light text-[11px] font-bold text-accent">
                   {getInitials(
                     reviewerOptions.find((option) => option.value === rev1)
                       ?.label ?? "",

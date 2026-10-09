@@ -129,7 +129,7 @@ export default function MultiSelectDropdown({
       {/* Summary Display / Trigger */}
       <div
         ref={triggerRef}
-        className="flex items-center gap-1 rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-text-primary"
+        className="flex items-center gap-1 rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-text-primary"
       >
         <ChevronDown className="h-3 w-3 flex-shrink-0 text-text-secondary" />
         <span className="min-w-0 flex-1 truncate text-text-secondary">
@@ -142,7 +142,7 @@ export default function MultiSelectDropdown({
         createPortal(
           <div
             ref={containerRef}
-            className="fixed z-50 mt-1 rounded-md border border-border bg-surface-white shadow-lg"
+            className="fixed z-(--z-index-dropdown) mt-1 rounded-xl border border-border bg-surface-white shadow-lg"
             style={{
               top: `${dropdownPosition.top}px`,
               left: `${dropdownPosition.left}px`,
@@ -208,7 +208,7 @@ export default function MultiSelectDropdown({
                 type="button"
                 onClick={handleConfirm}
                 disabled={disabled}
-                className="flex-1 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex-1 rounded bg-primary px-2 py-1 text-xs font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Apply
               </button>

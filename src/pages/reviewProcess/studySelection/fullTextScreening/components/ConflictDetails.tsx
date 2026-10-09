@@ -9,7 +9,7 @@ interface ConflictDetailsProps {
 export default function ConflictDetails({ paper }: ConflictDetailsProps) {
   return (
     <div className="px-4 py-4 border-b border-border">
-      <div className="bg-amber-50 rounded-[4px] p-4 border border-amber-200">
+      <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
         <div className="flex items-center gap-2 mb-4">
           <FiAlertTriangle className="w-4 h-4 text-amber-600" />
           <h3 className="text-sm font-semibold text-amber-800">
@@ -22,7 +22,7 @@ export default function ConflictDetails({ paper }: ConflictDetailsProps) {
           {paper.decisions.map((d) => (
             <div
               key={d.id}
-              className="bg-surface-white rounded-[4px] p-3 border border-amber-100"
+              className="bg-surface-white rounded-xl p-3 border border-amber-100"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium text-text-primary">

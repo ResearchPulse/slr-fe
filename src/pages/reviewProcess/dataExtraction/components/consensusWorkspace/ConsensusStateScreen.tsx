@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import Button from "../../../../../components/ui/Button";
 import Card from "../../../../../components/ui/Card";
+import LoadingSpinner from "../../../../../components/ui/LoadingSpinner";
 
 interface ConsensusStateScreenProps {
   onBack: () => void;
@@ -26,9 +27,9 @@ export default function ConsensusStateScreen({
 
       <main className="flex flex-1 items-center justify-center px-6">
         {isLoading ? (
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
+          <LoadingSpinner size="lg" />
         ) : (
-          <Card className="max-w-md rounded-[4px] border border-amber-200 bg-amber-50 p-6">
+          <Card className="max-w-md rounded-xl border border-amber-200 bg-amber-50 p-6">
             <p className="text-sm text-amber-700">
               {message ?? "No consensus data available for this study."}
             </p>

@@ -10,8 +10,8 @@ import {
   AssignmentFilterStatus,
   ResolutionFilterStatus,
 } from "../../../types/studySelection";
-import { Loader2 } from "lucide-react";
 import type { PaperResponse } from "../../../types/paper";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 interface TitleAbstractAssignmentTableProps {
   studySelectionProcessId: string;
@@ -162,7 +162,7 @@ const TitleAbstractAssignmentTable: React.FC<
       <div className="flex-1 overflow-auto bg-bg-primary/30 relative">
         {isLoading ? (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            <LoadingSpinner size="md" />
           </div>
         ) : papers.length === 0 ? (
           <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center text-text-secondary">
@@ -213,7 +213,7 @@ const TitleAbstractAssignmentTable: React.FC<
         </div>
         <div className="flex items-center gap-2">
           <button
-            className="px-3 py-1 border border-border rounded hover:bg-bg-primary disabled:opacity-50"
+            className="px-3 py-1 border border-border rounded-xl hover:bg-bg-primary disabled:opacity-50"
             disabled={pageNumber === 1 || isLoading}
             onClick={() => handlePageChange(pageNumber - 1)}
           >
@@ -228,7 +228,7 @@ const TitleAbstractAssignmentTable: React.FC<
                   onClick={() => handlePageChange(page)}
                   className={`px-3 py-1 border rounded ${
                     pageNumber === page
-                      ? "bg-blue-50 text-blue-600 border-blue-100"
+                      ? "bg-primary-light text-accent border-primary/20"
                       : "hover:bg-bg-primary"
                   }`}
                 >
@@ -238,7 +238,7 @@ const TitleAbstractAssignmentTable: React.FC<
             })}
           </div>
           <button
-            className="px-3 py-1 border border-border rounded hover:bg-bg-primary disabled:opacity-50"
+            className="px-3 py-1 border border-border rounded-xl hover:bg-bg-primary disabled:opacity-50"
             disabled={
               pageNumber === totalPages || isLoading || totalPages === 0
             }

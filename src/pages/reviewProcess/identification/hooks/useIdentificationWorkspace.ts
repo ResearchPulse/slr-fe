@@ -28,7 +28,7 @@ import { DEFAULT_PRISMA_STATS, LIBRARY_PAGE_SIZE } from "../constants";
 import { identificationProcessService } from "../../../../services/identificationProcessService";
 import { deduplicationService } from "../../../../services/deduplicationService";
 import { useProjectMember } from "../../../../hooks/useProjectMember";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../../../utils/toast";
 
 export const useIdentificationWorkspace = () => {
   const queryClient = useQueryClient();
@@ -80,6 +80,10 @@ export const useIdentificationWorkspace = () => {
 
   // Drag state (for import tab)
   const [isDragging, setIsDragging] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<{
+    kind: "strategy" | "importBatch";
+    id: string;
+  } | null>(null);
 
   // Modal state
   const [isCreateStrategyModalOpen, setIsCreateStrategyModalOpen] = useState(false);
@@ -206,7 +210,7 @@ export const useIdentificationWorkspace = () => {
   const handleCreateStrategy = useCallback(
     async (data: CreateSearchExecutionRequest) => {
       if (!identificationPhaseId) {
-        toast.error("Identification phase ID is required");
+        toastError("Identification phase ID is required");
         return;
       }
 
@@ -235,7 +239,7 @@ export const useIdentificationWorkspace = () => {
   const handleEditStrategy = useCallback((strategyId: string) => {
     const strategy = searchExecutions.find((item) => item.id === strategyId);
     if (!strategy) {
-      toast.error("Search strategy could not be found");
+      toastError("Search strategy could not be found");
       return;
     }
     setEditingStrategy(strategy);
@@ -284,15 +288,20 @@ export const useIdentificationWorkspace = () => {
       const batchCount = strategy?.importBatchCount || 0;
 
       if (batchCount > 0) {
-        toast.error(
+        toastError(
           `Cannot delete: ${batchCount} import batch${batchCount > 1 ? "es" : ""} exist. Delete them first.`,
         );
         return;
       }
 
-      if (!window.confirm("Are you sure you want to delete this search strategy?")) {
-        return;
-      }
+      setPendingDelete({ kind: "strategy", id: strategyId });
+    },
+    [identificationPhaseId, searchExecutions],
+  );
+
+  const performDeleteStrategy = useCallback(
+    async (strategyId: string) => {
+      if (!identificationPhaseId) return;
 
       try {
         const response = await deleteSearchExecution({
@@ -306,7 +315,7 @@ export const useIdentificationWorkspace = () => {
         console.error("Failed to delete search strategy:", error);
       }
     },
-    [identificationPhaseId, searchExecutions, deleteSearchExecution],
+    [identificationPhaseId, deleteSearchExecution],
   );
 
   const handleViewImportPapers = useCallback((importBatchId: string) => {
@@ -319,13 +328,14 @@ export const useIdentificationWorkspace = () => {
     async (importBatchId: string) => {
       if (!identificationPhaseId) return;
 
-      if (
-        !window.confirm(
-          "Are you sure you want to delete this import batch? This may remove all associated papers.",
-        )
-      ) {
-        return;
-      }
+      setPendingDelete({ kind: "importBatch", id: importBatchId });
+    },
+    [identificationPhaseId],
+  );
+
+  const performDeleteImportBatch = useCallback(
+    async (importBatchId: string) => {
+      if (!identificationPhaseId) return;
 
       try {
         const response = await deleteImportBatch({
@@ -342,6 +352,21 @@ export const useIdentificationWorkspace = () => {
     },
     [identificationPhaseId, deleteImportBatch],
   );
+
+  const handleCancelPendingDelete = useCallback(() => {
+    setPendingDelete(null);
+  }, []);
+
+  const handleConfirmPendingDelete = useCallback(async () => {
+    if (!pendingDelete) return;
+    const { kind, id } = pendingDelete;
+    setPendingDelete(null);
+    if (kind === "strategy") {
+      await performDeleteStrategy(id);
+    } else {
+      await performDeleteImportBatch(id);
+    }
+  }, [pendingDelete, performDeleteStrategy, performDeleteImportBatch]);
 
   const handleBack = useCallback(() => {
     navigate(`/projects/${projectId}/processes/${processId}`);
@@ -364,13 +389,13 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.start(identificationPhaseId);
       if (response.isSuccess) {
-        toast.success("Identification phase started!");
+        toastSuccess("Identification phase started!");
         refetchIdentificationProcess();
         handleRefreshData();
       }
     } catch (error) {
       console.error("Failed to start phase:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to start phase");
+      toastError(error instanceof Error ? error.message : "Failed to start phase");
     }
   }, [identificationPhaseId, refetchIdentificationProcess, handleRefreshData]);
 
@@ -379,13 +404,13 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.reopen(identificationPhaseId);
       if (response.isSuccess) {
-        toast.success("Identification phase reopened!");
+        toastSuccess("Identification phase reopened!");
         refetchIdentificationProcess();
         handleRefreshData();
       }
     } catch (error) {
       console.error("Failed to reopen phase:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to reopen phase");
+      toastError(error instanceof Error ? error.message : "Failed to reopen phase");
     }
   }, [identificationPhaseId, refetchIdentificationProcess, handleRefreshData]);
 
@@ -422,7 +447,7 @@ export const useIdentificationWorkspace = () => {
         );
 
         if (response.isSuccess) {
-          toast.success("Paper marked as duplicate successfully!");
+          toastSuccess("Paper marked as duplicate successfully!");
           handleCloseManualDedupe();
 
           // Invalidate queries to refresh data
@@ -440,7 +465,7 @@ export const useIdentificationWorkspace = () => {
         }
       } catch (error) {
         console.error("Failed to mark as duplicate:", error);
-        toast.error(error instanceof Error ? error.message : "Failed to mark as duplicate");
+        toastError(error instanceof Error ? error.message : "Failed to mark as duplicate");
       }
     },
     [identificationPhaseId, manualDedupeSourcePaper, queryClient, handleCloseManualDedupe],
@@ -453,7 +478,7 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.complete(identificationPhaseId);
       if (response.isSuccess) {
-        toast.success("Identification phase completed successfully!");
+        toastSuccess("Identification phase completed successfully!");
         setIsCompleteModalOpen(false);
         // Invalidate queries to refresh status
         refetchIdentificationProcess();
@@ -461,7 +486,7 @@ export const useIdentificationWorkspace = () => {
       }
     } catch (error) {
       console.error("Failed to complete identification phase:", error);
-      toast.error(error instanceof Error ? error.message : "Failed to complete phase");
+      toastError(error instanceof Error ? error.message : "Failed to complete phase");
     } finally {
       setIsCompleting(false);
     }
@@ -601,6 +626,9 @@ export const useIdentificationWorkspace = () => {
     handleDeleteStrategy,
     handleViewImportPapers,
     handleDeleteImportBatch,
+    pendingDelete,
+    handleCancelPendingDelete,
+    handleConfirmPendingDelete,
     handleBack,
     handleRefreshData,
     handleNavigateToProject,

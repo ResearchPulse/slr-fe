@@ -1,4 +1,6 @@
+import { useState } from "react";
 import QAPaperDetails from "./QAPaperDetails";
+import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import type { WorkspaceQAPaper } from "../QualityAssessmentWorkspace";
 import { Worker, Viewer } from "@react-pdf-viewer/core";
 import { PDF_WORKER_URL } from "../../../../config/pdfWorker";
@@ -29,6 +31,9 @@ export default function AssessmentPaperViewer({
   onRemoveHighlight,
   isLeader,
 }: AssessmentPaperViewerProps) {
+  const [highlightToRemove, setHighlightToRemove] = useState<number | null>(
+    null,
+  );
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
 
   const renderHighlights = (props: RenderHighlightsProps) => (
@@ -55,13 +60,7 @@ export default function AssessmentPaperViewer({
               }}
               onClick={() => {
                 if (!isLeader) {
-                  if (
-                    window.confirm(
-                      "Are you sure you want to remove this highlight?",
-                    )
-                  ) {
-                    onRemoveHighlight?.(groupIndex);
-                  }
+                  setHighlightToRemove(groupIndex);
                 }
               }}
               title={
@@ -134,6 +133,18 @@ export default function AssessmentPaperViewer({
 
   return (
     <div className="flex h-full min-w-0 flex-1 flex-col overflow-y-auto bg-bg-primary/50">
+      <ConfirmModal
+        isOpen={highlightToRemove !== null}
+        onClose={() => setHighlightToRemove(null)}
+        onConfirm={() => {
+          if (highlightToRemove !== null) {
+            onRemoveHighlight?.(highlightToRemove);
+          }
+          setHighlightToRemove(null);
+        }}
+        title="Remove Highlight"
+        message="Are you sure you want to remove this highlight?"
+      />
       {paper ? (
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 p-4 sm:p-6 xl:p-8">
           <div className="rounded-2xl border border-border bg-surface-white p-5 shadow-[0_1px_3px_rgba(18,35,49,0.04)] sm:p-7">

@@ -80,7 +80,7 @@ export default function StudySelectionProcessHeader({
           <div className="flex items-center gap-3">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
+              className="p-1.5 rounded-xl text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
               title="Back to Review Process"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -89,7 +89,7 @@ export default function StudySelectionProcessHeader({
             <div className="flex items-center gap-2">
               <div
                 className={cn(
-                  "w-8 h-8 rounded-[4px] flex items-center justify-center",
+                  "w-8 h-8 rounded-xl flex items-center justify-center",
                   phaseIconBgClass,
                 )}
               >

@@ -50,7 +50,7 @@ export default function TitleAbstractScreeningWorkspace() {
         <p className="text-red-600 text-sm">{ws.error}</p>
         <button
           onClick={ws.handleBack}
-          className="text-sm text-blue-600 hover:underline"
+          className="text-sm text-accent hover:underline"
         >
           Back to Review Process
         </button>

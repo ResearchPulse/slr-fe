@@ -331,7 +331,7 @@ export default function LeaderQAPanel({
                       <div className="flex flex-wrap gap-2">
                         {/* Yes Group */}
                         {groupedDecisions.yes.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2 py-1.5 rounded-md">
+                          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2 py-1.5 rounded-xl">
                             <FiCheckCircle className="text-emerald-500 w-3.5 h-3.5" />
                             <span className="text-xs font-medium text-emerald-700 mr-1">
                               Yes
@@ -360,7 +360,7 @@ export default function LeaderQAPanel({
 
                         {/* No Group */}
                         {groupedDecisions.no.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100 px-2 py-1.5 rounded-md">
+                          <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100 px-2 py-1.5 rounded-xl">
                             <FiXCircle className="text-rose-500 w-3.5 h-3.5" />
                             <span className="text-xs font-medium text-rose-700 mr-1">
                               No
@@ -389,7 +389,7 @@ export default function LeaderQAPanel({
 
                         {/* Unclear Group */}
                         {groupedDecisions.unclear.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-100 px-2 py-1.5 rounded-md">
+                          <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-100 px-2 py-1.5 rounded-xl">
                             <FiHelpCircle className="text-amber-500 w-3.5 h-3.5" />
                             <span className="text-xs font-medium text-amber-700 mr-1">
                               Unclear
@@ -552,7 +552,7 @@ export default function LeaderQAPanel({
                               handleComment(crit.criterionId, e.target.value)
                             }
                             placeholder="Add your reasoning..."
-                            className="w-full resize-none rounded-lg border border-border bg-surface-white px-3 py-2 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
+                            className="w-full resize-none rounded-xl border border-border bg-surface-white px-3 py-2 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10"
                             rows={2}
                             onClick={(e) => e.stopPropagation()}
                             disabled={!canEdit}
@@ -579,14 +579,14 @@ export default function LeaderQAPanel({
             <div className="flex gap-2">
               <button
                 onClick={() => setFinalDecision(1)}
-                className={`p-2 rounded-md text-xs font-medium border text-center transition ${finalDecision === 1 ? "bg-surface-white border-green-500 text-green-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
+                className={`p-2 rounded-xl text-xs font-medium border text-center transition ${finalDecision === 1 ? "bg-surface-white border-green-500 text-green-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
                 disabled={!canEdit}
               >
                 High Quality
               </button>
               <button
                 onClick={() => setFinalDecision(0)}
-                className={`p-2 rounded-md text-xs font-medium border text-center transition ${finalDecision === 0 ? "bg-surface-white border-red-500 text-red-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
+                className={`p-2 rounded-xl text-xs font-medium border text-center transition ${finalDecision === 0 ? "bg-surface-white border-red-500 text-red-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
                 disabled={!canEdit}
               >
                 Low Quality
@@ -603,7 +603,7 @@ export default function LeaderQAPanel({
               onChange={(e) => setResolutionNotes(e.target.value)}
               rows={3}
               placeholder="Add reasoning for this resolution..."
-              className="w-full px-3 py-1.5 text-xs border border-border rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full px-3 py-1.5 text-xs border border-border rounded-xl focus:outline-none focus:ring-1 focus:ring-accent/30"
               disabled={!canEdit}
             />
           </div>

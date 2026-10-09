@@ -50,7 +50,7 @@ const AssignPapersPage: React.FC = () => {
             {selectionMode === "quick" && (
               <p className="text-xs text-text-secondary animate-in fade-in slide-in-from-left-2 duration-300">
                 * Note:{" "}
-                <span className="font-semibold text-blue-600">
+                <span className="font-semibold text-accent">
                   Quick Decision
                 </span>{" "}
                 is available for any paper that does not yet have a final
@@ -60,7 +60,7 @@ const AssignPapersPage: React.FC = () => {
             {selectionMode === "assignment" && (
               <p className="text-xs text-text-secondary animate-in fade-in slide-in-from-left-2 duration-300">
                 * Note: You can only{" "}
-                <span className="font-semibold text-blue-600">
+                <span className="font-semibold text-accent">
                   Assign Reviewer
                 </span>{" "}
                 to papers that do not have a final decision.
@@ -69,12 +69,12 @@ const AssignPapersPage: React.FC = () => {
           </div>
 
           {/* Mode Switcher */}
-          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-[4px] border border-border shadow-none self-start">
+          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-xl border border-border shadow-none self-start">
             <button
               onClick={() => handleModeChange("assignment")}
-              className={`px-6 py-2.5 rounded-[4px] text-sm font-bold transition-all ${
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 selectionMode === "assignment"
-                  ? "bg-blue-600 text-white shadow-none shadow-blue-200"
+                  ? "bg-primary text-white shadow-none shadow-primary/10"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-primary"
               }`}
             >
@@ -82,9 +82,9 @@ const AssignPapersPage: React.FC = () => {
             </button>
             <button
               onClick={() => handleModeChange("quick")}
-              className={`px-6 py-2.5 rounded-[4px] text-sm font-bold transition-all ${
+              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
                 selectionMode === "quick"
-                  ? "bg-blue-600 text-white shadow-none shadow-blue-200"
+                  ? "bg-primary text-white shadow-none shadow-primary/10"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-primary"
               }`}
             >
@@ -92,7 +92,7 @@ const AssignPapersPage: React.FC = () => {
             </button>
           </div>
 
-          <div className="bg-surface-white rounded-[4px] shadow-none border border-border overflow-hidden flex flex-col flex-1 min-h-[500px]">
+          <div className="bg-surface-white rounded-xl shadow-none border border-border overflow-hidden flex flex-col flex-1 min-h-[500px]">
             {/* Tab Navigation */}
             <div className="bg-surface-white border-b border-border">
               <div className="flex px-4 sm:px-6">
@@ -100,13 +100,13 @@ const AssignPapersPage: React.FC = () => {
                   onClick={() => handleTabChange("title-abstract")}
                   className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
                     activeTab === "title-abstract"
-                      ? "border-blue-600 text-blue-600"
+                      ? "border-accent text-accent"
                       : "border-transparent text-text-secondary hover:text-text-secondary"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <FileText
-                      className={`w-4 h-4 ${activeTab === "title-abstract" ? "text-blue-600" : "text-text-secondary"}`}
+                      className={`w-4 h-4 ${activeTab === "title-abstract" ? "text-accent" : "text-text-secondary"}`}
                     />
                     TITLE/ABSTRACT SCREENING
                   </div>
@@ -115,13 +115,13 @@ const AssignPapersPage: React.FC = () => {
                   onClick={() => handleTabChange("full-text")}
                   className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
                     activeTab === "full-text"
-                      ? "border-blue-600 text-blue-600"
+                      ? "border-accent text-accent"
                       : "border-transparent text-text-secondary hover:text-text-secondary"
                   }`}
                 >
                   <div className="flex items-center gap-2">
                     <Layout
-                      className={`w-4 h-4 ${activeTab === "full-text" ? "text-blue-600" : "text-text-secondary"}`}
+                      className={`w-4 h-4 ${activeTab === "full-text" ? "text-accent" : "text-text-secondary"}`}
                     />
                     FULL-TEXT SCREENING
                   </div>

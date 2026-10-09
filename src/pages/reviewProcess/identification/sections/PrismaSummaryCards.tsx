@@ -4,11 +4,11 @@ import {
   FiDatabase,
   FiFilter,
   FiCheck,
-  FiRefreshCw,
   FiSearch,
 } from "react-icons/fi";
 import type { TabType } from "../types";
 import type { PrismaStatistics } from "../../../../types/identification";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface PrismaSummaryCardsProps {
   prismaStats: PrismaStatistics;
@@ -26,12 +26,12 @@ export default function PrismaSummaryCards({
       {/* Records Imported */}
       <button
         onClick={() => onTabChange("imports")}
-        className="bg-linear-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-[4px] p-6 text-left hover:shadow-none transition-shadow-none"
+        className="bg-linear-to-br from-primary-light to-primary-light border border-primary/20 rounded-xl p-6 text-left hover:shadow-none transition-shadow-none"
       >
         <div className="flex items-center justify-between mb-3">
           <FiDatabase className="w-6 h-6 text-accent" />
           {statsLoading && (
-            <FiRefreshCw className="w-4 h-4 text-indigo-400 animate-spin" />
+            <LoadingSpinner size="sm" />
           )}
         </div>
         <div className="text-3xl font-bold text-text-primary mb-1">
@@ -50,7 +50,7 @@ export default function PrismaSummaryCards({
       {/* Pending Selections */}
       <button
         onClick={() => onTabChange("library")}
-        className="bg-linear-to-br from-yellow-50 to-yellow-100 border border-border rounded-[4px] p-6 text-left hover:shadow-none transition-shadow-none"
+        className="bg-linear-to-br from-yellow-50 to-yellow-100 border border-border rounded-xl p-6 text-left hover:shadow-none transition-shadow-none"
       >
         <div className="flex items-center justify-between mb-3">
           <FiSearch className="w-6 h-6 text-yellow-600" />
@@ -70,7 +70,7 @@ export default function PrismaSummaryCards({
       {/* After Deduplication - Key Success Metric */}
       <button
         onClick={() => onTabChange("dataset")}
-        className="bg-linear-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-[4px] p-6 text-left hover:shadow-none transition-shadow-none shadow-none"
+        className="bg-linear-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-6 text-left hover:shadow-none transition-shadow-none shadow-none"
       >
         <div className="flex items-center justify-between mb-3">
           <FiFilter className="w-6 h-6 text-green-600" />

@@ -84,7 +84,7 @@ export default function PaperQueue({
             placeholder="Search by title, author, year..."
             value={filters.search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none transition-colors"
           />
         </div>
 
@@ -97,7 +97,7 @@ export default function PaperQueue({
                 setShowSortDropdown(!showSortDropdown);
                 setShowFilterDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
             >
               <span className="text-text-secondary truncate">
                 {currentSort?.label ?? "Sort"}
@@ -126,7 +126,7 @@ export default function PaperQueue({
                 setShowFilterDropdown(!showFilterDropdown);
                 setShowSortDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
             >
               <span className="text-text-secondary truncate">
                 {STATUS_FILTER_OPTIONS.find((f) => f.value === filters.status)
@@ -169,7 +169,7 @@ export default function PaperQueue({
                   onSearchChange("");
                   onStatusFilterChange("all");
                 }}
-                className="mt-4 text-xs text-blue-600 hover:text-blue-700 font-bold uppercase tracking-wider"
+                className="mt-4 text-xs text-accent hover:text-accent font-bold uppercase tracking-wider"
               >
                 Clear all filters
               </button>
@@ -216,7 +216,7 @@ export default function PaperQueue({
           <select
             value={pagination.pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            className="text-[10px] bg-bg-primary border border-border rounded px-1.5 py-1 text-text-secondary focus:outline-none focus:ring-1 focus:ring-blue-200 transition-all font-medium cursor-pointer"
+            className="text-[10px] bg-bg-primary border border-border rounded px-1.5 py-1 text-text-secondary focus:outline-none focus:ring-1 focus:ring-accent/30 transition-all font-medium cursor-pointer"
           >
             {[10, 20, 50, 100].map((size) => (
               <option key={size} value={size}>
@@ -252,9 +252,9 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
           if (e.key === "Enter") onClick();
         }}
         className={cn(
-          "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-blue-500 select-none overflow-hidden",
+          "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-accent select-none overflow-hidden",
           isSelected
-            ? "bg-blue-50/70 border-l-2 border-l-blue-600"
+            ? "bg-primary-light/70 border-l-2 border-l-accent"
             : "hover:bg-bg-primary border-l-2 border-l-transparent",
         )}
       >
@@ -389,7 +389,7 @@ function DropdownMenu<T>({
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 right-0 mt-1 bg-surface-white border border-border rounded-[4px] shadow-none z-30 py-1"
+      className="absolute top-full left-0 right-0 mt-1 bg-surface-white border border-border rounded-xl shadow-none z-30 py-1"
     >
       {items.map((item, i) => (
         <button

@@ -15,6 +15,7 @@ import IdentificationFilterBar from "./IdentificationFilterBar";
 import type { PaperResponse } from "../../../../types/paper";
 import type { TabType } from "../types";
 import { Ban } from "lucide-react";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface PapersLibraryTabContentProps {
   readyPapers: PaperResponse[];
@@ -125,7 +126,7 @@ export default function PapersLibraryTabContent({
       {/* Loading State */}
       {readyPapersLoading && readyPapers.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-16">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-4" />
+          <LoadingSpinner size="lg" className="mb-4" />
           <p className="text-text-secondary">Loading papers...</p>
         </div>
       ) : readyPapersError ? (
@@ -142,8 +143,8 @@ export default function PapersLibraryTabContent({
         <div className="overflow-x-auto">
           {/* Loading overlay for subsequent fetches */}
           {readyPapersLoading && (
-            <div className="flex items-center gap-2 mb-3 text-sm text-blue-600">
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
+            <div className="flex items-center gap-2 mb-3 text-sm text-accent">
+              <LoadingSpinner size="sm" />
               Updating...
             </div>
           )}
@@ -200,7 +201,7 @@ export default function PapersLibraryTabContent({
                           href={`https://doi.org/${paper.doi}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-700 mt-1 flex items-center gap-1"
+                          className="text-xs text-accent hover:text-primary-hover mt-1 flex items-center gap-1"
                         >
                           DOI: {paper.doi}
                         </a>
@@ -215,7 +216,7 @@ export default function PapersLibraryTabContent({
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      <FiDatabase className="w-4 h-4 text-blue-600" />
+                      <FiDatabase className="w-4 h-4 text-accent" />
                       <span className="text-sm text-text-primary">
                         {paper.source || "Unknown"}
                       </span>

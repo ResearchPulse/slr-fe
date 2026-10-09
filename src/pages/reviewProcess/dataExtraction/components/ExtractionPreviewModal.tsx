@@ -148,25 +148,25 @@ export default function ExtractionPreviewModal({
     >
       <div className="space-y-4">
         {isFetching && preview ? (
-          <div className="rounded-[4px] border border-blue-200 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-700">
+          <div className="rounded-xl border border-accent/30 bg-primary-light px-4 py-3 text-sm font-medium text-accent">
             Refreshing preview data...
           </div>
         ) : null}
 
         {isLoading && !preview ? (
-          <div className="rounded-[4px] border border-border bg-bg-secondary px-6 py-16 text-center text-sm text-text-secondary">
+          <div className="rounded-xl border border-border bg-bg-secondary px-6 py-16 text-center text-sm text-text-secondary">
             Loading preview data...
           </div>
         ) : hasPreviewData ? (
           <>
-            <div className="mb-4 rounded-[4px] bg-blue-50 px-3 py-2 text-xs text-blue-700">
+            <div className="mb-4 rounded-xl bg-primary-light px-3 py-2 text-xs text-accent">
               <strong>Note:</strong> If a study contains Matrix Grid data with
               multiple items, it will be displayed across multiple rows. The
               general study information is duplicated for each matrix item to
               maintain a flat export format.
             </div>
 
-            <div className="overflow-hidden rounded-[4px] border border-border bg-surface-white">
+            <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
               <div className="max-h-[62vh] overflow-y-auto overflow-x-auto">
                 <table className="w-max min-w-[960px] border-collapse text-left">
                   <TableHeader className="sticky top-0 bg-bg-secondary/95 backdrop-blur">
@@ -240,7 +240,7 @@ export default function ExtractionPreviewModal({
             </div>
           </>
         ) : (
-          <div className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary px-6 py-16 text-center">
+          <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary px-6 py-16 text-center">
             <p className="text-base font-semibold text-text-primary">
               No preview data available
             </p>

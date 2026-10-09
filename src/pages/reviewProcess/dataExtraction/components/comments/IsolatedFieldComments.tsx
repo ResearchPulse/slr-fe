@@ -94,7 +94,7 @@ export default function IsolatedFieldComments({
         className="flex-1 space-y-3 overflow-y-auto pr-1"
       >
         {orderedComments.length === 0 ? (
-          <div className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+          <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
             No messages in this thread yet.
           </div>
         ) : (
@@ -112,8 +112,8 @@ export default function IsolatedFieldComments({
                 <div
                   className={
                     isCurrentUser
-                      ? "max-w-[82%] rounded-[4px] border border-blue-100 bg-blue-50 p-3"
-                      : "max-w-[82%] rounded-[4px] border border-border bg-bg-secondary p-3"
+                      ? "max-w-[82%] rounded-xl border border-accent/30 bg-primary-light p-3"
+                      : "max-w-[82%] rounded-xl border border-border bg-bg-secondary p-3"
                   }
                 >
                   <div className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export default function IsolatedFieldComments({
             placeholder="Type your message..."
             disabled={isLoading}
             rows={3}
-            className="w-full resize-none rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-bg-secondary"
+            className="w-full resize-none rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent disabled:cursor-not-allowed disabled:bg-bg-secondary"
           />
           <Button
             onClick={() => {
@@ -157,7 +157,7 @@ export default function IsolatedFieldComments({
             }}
             isLoading={isLoading}
             disabled={!canSend}
-            className="h-10 shrink-0 !rounded-[4px] !px-3"
+            className="h-10 shrink-0 !rounded-xl !px-3"
           >
             <Send className="h-4 w-4" />
           </Button>

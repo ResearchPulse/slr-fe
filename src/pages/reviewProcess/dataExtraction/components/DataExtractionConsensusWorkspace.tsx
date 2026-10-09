@@ -842,8 +842,8 @@ export default function DataExtractionConsensusWorkspace({
           <div
             className={
               compact
-                ? "max-h-32 space-y-2 overflow-y-auto rounded-[4px] border border-border bg-surface-white p-2"
-                : "max-h-40 space-y-2 overflow-y-auto rounded-[4px] border border-border bg-surface-white p-3"
+                ? "max-h-32 space-y-2 overflow-y-auto rounded-xl border border-border bg-surface-white p-2"
+                : "max-h-40 space-y-2 overflow-y-auto rounded-xl border border-border bg-surface-white p-3"
             }
           >
             {(field.options ?? []).map((option) => {
@@ -869,7 +869,7 @@ export default function DataExtractionConsensusWorkspace({
                       )
                     }
                     disabled={controlDisabled || optionId.length === 0}
-                    className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    className="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent"
                   />
                   <span>{option.value}</span>
                 </label>
@@ -1217,16 +1217,16 @@ export default function DataExtractionConsensusWorkspace({
           )}
 
           {isReadOnly && (
-            <div className="mb-4 rounded-[4px] border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+            <div className="mb-4 rounded-xl border border-accent/30 bg-primary-light px-4 py-3 text-sm text-accent">
               <p className="font-medium">💙 Read-Only Mode</p>
-              <p className="mt-1 text-blue-700">
+              <p className="mt-1 text-accent">
                 This paper's extraction is completed. You are viewing the
                 consensus in read-only mode.
               </p>
             </div>
           )}
 
-          <Card className="rounded-[4px] border border-border bg-surface-white p-0 shadow-none">
+          <Card className="rounded-xl border border-border bg-surface-white p-0 shadow-none">
             <div className="flex items-center justify-between border-b border-border px-6 py-4">
               <div>
                 <h2 className="text-lg font-semibold text-text-primary">
@@ -1329,7 +1329,7 @@ export default function DataExtractionConsensusWorkspace({
                           </td>
 
                           <td className="px-4 py-4 align-top">
-                            <div className="flex items-start gap-2 rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
+                            <div className="flex items-start gap-2 rounded-xl border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
                               <div className="min-w-0 flex-1">
                                 {getAnswerDisplayValue(rev1Answer)}
                               </div>
@@ -1341,7 +1341,7 @@ export default function DataExtractionConsensusWorkspace({
                                       rev1Answer?.evidenceCoordinates ?? "",
                                     )
                                   }
-                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                   aria-label="View evidence"
                                   title="View evidence"
                                 >
@@ -1360,13 +1360,13 @@ export default function DataExtractionConsensusWorkspace({
                                     null,
                                   )
                                 }
-                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                 aria-label="Open reviewer 1 thread"
                                 title="Open reviewer 1 thread"
                               >
                                 <MessageSquare className="h-3.5 w-3.5" />
                                 {(rev1Answer?.comments?.length ?? 0) > 0 ? (
-                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
+                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
                                     {rev1Answer?.comments?.length}
                                   </span>
                                 ) : null}
@@ -1375,7 +1375,7 @@ export default function DataExtractionConsensusWorkspace({
                           </td>
 
                           <td className="px-4 py-4 align-top">
-                            <div className="flex items-start gap-2 rounded-[4px] border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
+                            <div className="flex items-start gap-2 rounded-xl border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
                               <div className="min-w-0 flex-1">
                                 {getAnswerDisplayValue(rev2Answer)}
                               </div>
@@ -1387,7 +1387,7 @@ export default function DataExtractionConsensusWorkspace({
                                       rev2Answer?.evidenceCoordinates ?? "",
                                     )
                                   }
-                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                   aria-label="View evidence"
                                   title="View evidence"
                                 >
@@ -1406,13 +1406,13 @@ export default function DataExtractionConsensusWorkspace({
                                     null,
                                   )
                                 }
-                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                 aria-label="Open reviewer 2 thread"
                                 title="Open reviewer 2 thread"
                               >
                                 <MessageSquare className="h-3.5 w-3.5" />
                                 {(rev2Answer?.comments?.length ?? 0) > 0 ? (
-                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
+                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
                                     {rev2Answer?.comments?.length}
                                   </span>
                                 ) : null}
@@ -1438,7 +1438,7 @@ export default function DataExtractionConsensusWorkspace({
                                       finalValue?.evidenceCoordinates ?? "",
                                     )
                                   }
-                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                   aria-label="View final evidence"
                                   title="View final evidence"
                                 >
@@ -1541,7 +1541,7 @@ export default function DataExtractionConsensusWorkspace({
                   matrixRowIndexes.map((rowIndex) => (
                     <div
                       key={`${activeSection.sectionId}-matrix-row-${rowIndex}`}
-                      className="rounded-[4px] border border-border bg-bg-secondary/60 p-3"
+                      className="rounded-xl border border-border bg-bg-secondary/60 p-3"
                     >
                       <h3 className="mb-3 text-sm font-semibold text-slate-800">
                         Item #{rowIndex + 1}
@@ -1621,7 +1621,7 @@ export default function DataExtractionConsensusWorkspace({
                                       }
                                     >
                                       <div className="space-y-2">
-                                        <div className="rounded-[4px] border border-border bg-bg-secondary px-2 py-1">
+                                        <div className="rounded-xl border border-border bg-bg-secondary px-2 py-1">
                                           <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                                             {reviewer1Name}
                                           </p>
@@ -1642,7 +1642,7 @@ export default function DataExtractionConsensusWorkspace({
                                                       "",
                                                   )
                                                 }
-                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                                 aria-label="View evidence"
                                                 title="View evidence"
                                               >
@@ -1662,14 +1662,14 @@ export default function DataExtractionConsensusWorkspace({
                                                   column.name,
                                                 )
                                               }
-                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                               aria-label="Open reviewer 1 thread"
                                               title="Open reviewer 1 thread"
                                             >
                                               <MessageSquare className="h-3 w-3" />
                                               {(rev1Answer?.comments?.length ??
                                                 0) > 0 ? (
-                                                <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
+                                                <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
                                                   {rev1Answer?.comments?.length}
                                                 </span>
                                               ) : null}
@@ -1677,7 +1677,7 @@ export default function DataExtractionConsensusWorkspace({
                                           </div>
                                         </div>
 
-                                        <div className="rounded-[4px] border border-border bg-bg-secondary px-2 py-1">
+                                        <div className="rounded-xl border border-border bg-bg-secondary px-2 py-1">
                                           <p className="text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                                             {reviewer2Name}
                                           </p>
@@ -1698,7 +1698,7 @@ export default function DataExtractionConsensusWorkspace({
                                                       "",
                                                   )
                                                 }
-                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                                className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                                 aria-label="View evidence"
                                                 title="View evidence"
                                               >
@@ -1718,14 +1718,14 @@ export default function DataExtractionConsensusWorkspace({
                                                   column.name,
                                                 )
                                               }
-                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                               aria-label="Open reviewer 2 thread"
                                               title="Open reviewer 2 thread"
                                             >
                                               <MessageSquare className="h-3 w-3" />
                                               {(rev2Answer?.comments?.length ??
                                                 0) > 0 ? (
-                                                <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-blue-600 px-1 text-[9px] font-bold text-white">
+                                                <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
                                                   {rev2Answer?.comments?.length}
                                                 </span>
                                               ) : null}
@@ -1753,7 +1753,7 @@ export default function DataExtractionConsensusWorkspace({
                                                   "",
                                               )
                                             }
-                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
                                             aria-label="View final evidence"
                                             title="View final evidence"
                                           >
@@ -1776,17 +1776,17 @@ export default function DataExtractionConsensusWorkspace({
                                         </div>
 
                                         {unresolved ? (
-                                          <div className="inline-flex items-center gap-1 rounded-md bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-800">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-800">
                                             <AlertTriangle className="h-3.5 w-3.5" />
                                             Conflict detected
                                           </div>
                                         ) : rowConflictResolved ? (
-                                          <div className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-2 py-1 text-[11px] font-medium text-emerald-800">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-emerald-100 px-2 py-1 text-[11px] font-medium text-emerald-800">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                             Conflict resolved
                                           </div>
                                         ) : (
-                                          <div className="inline-flex items-center gap-1 rounded-md bg-bg-secondary px-2 py-1 text-[11px] font-medium text-text-primary">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-bg-secondary px-2 py-1 text-[11px] font-medium text-text-primary">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                             {hasReviewerData
                                               ? "Answers match"
@@ -1858,7 +1858,7 @@ export default function DataExtractionConsensusWorkspace({
             )}
           </Card>
 
-          <div className="sticky bottom-0 mt-4 flex items-center justify-between rounded-[4px] border border-border bg-surface-white/95 px-4 py-3 backdrop-blur">
+          <div className="sticky bottom-0 mt-4 flex items-center justify-between rounded-xl border border-border bg-surface-white/95 px-4 py-3 backdrop-blur">
             <p
               className={
                 hasUnresolvedConflicts && !isReadOnly
@@ -1890,8 +1890,8 @@ export default function DataExtractionConsensusWorkspace({
       </main>
 
       {isConfirmModalOpen ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 p-4">
-          <div className="w-full max-w-lg rounded-[4px] border border-border bg-surface-white p-6 shadow-2xl">
+        <div className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 p-4">
+          <div className="w-full max-w-lg rounded-xl border border-border bg-surface-white p-6 shadow-2xl">
             <h3 className="text-lg font-semibold text-text-primary">
               Confirm Save With Unresolved Conflicts
             </h3>

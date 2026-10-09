@@ -33,7 +33,7 @@ export default function SynthesisThemeCard({
       ref={setNodeRef}
       className={`relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/50 ${
         isOver
-          ? "scale-[1.01] ring-2 ring-blue-400/70 bg-blue-50/30 shadow-md shadow-blue-100"
+          ? "scale-[1.01] ring-2 ring-accent/70 bg-primary-light/30 shadow-md shadow-primary/10"
           : ""
       } ${disabled ? "opacity-80" : ""}`}
     >
@@ -46,7 +46,7 @@ export default function SynthesisThemeCard({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1 space-y-2">
           <div className="flex items-center gap-2">
-            <Layers3 className="h-4 w-4 text-blue-600" />
+            <Layers3 className="h-4 w-4 text-accent" />
             <h4 className="text-sm font-semibold text-text-primary">
               {theme.name}
             </h4>
@@ -64,7 +64,7 @@ export default function SynthesisThemeCard({
 
         <div className="flex shrink-0 flex-col items-end gap-2 text-right">
           {isOver ? (
-            <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-700">
+            <span className="rounded-full border border-primary/20 bg-primary-light px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
               Drop to link
             </span>
           ) : null}
@@ -78,7 +78,7 @@ export default function SynthesisThemeCard({
                   type="button"
                   onClick={() => onEditTheme(theme)}
                   disabled={disabled}
-                  className="inline-flex items-center justify-center rounded-full border border-blue-200 bg-blue-50 p-1.5 text-blue-600 transition hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary-light p-1.5 text-accent transition hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Edit theme"
                   title="Edit theme"
                 >
@@ -102,7 +102,7 @@ export default function SynthesisThemeCard({
           <span className="rounded-full bg-bg-secondary px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-text-secondary">
             {theme.colorCode ?? "No color"}
           </span>
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-700">
+          <span className="inline-flex items-center gap-1 rounded-full bg-primary-light px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-accent">
             <Tags className="h-3.5 w-3.5" />
             {theme.evidences.length} evidences
           </span>
@@ -111,14 +111,14 @@ export default function SynthesisThemeCard({
 
       <div className="mt-4 space-y-2">
         {theme.evidences.length === 0 ? (
-          <p className="rounded-lg border border-dashed border-border bg-bg-primary/60 px-4 py-3 text-sm text-text-secondary">
+          <p className="rounded-xl border border-dashed border-border bg-bg-primary/60 px-4 py-3 text-sm text-text-secondary">
             No linked evidence yet.
           </p>
         ) : (
           theme.evidences.map((evidence) => (
             <div
               key={evidence.id}
-              className="rounded-lg border border-border/70 bg-bg-primary/70 px-4 py-3"
+              className="rounded-xl border border-border/70 bg-bg-primary/70 px-4 py-3"
             >
               <div className="flex items-start justify-between gap-3">
                 <div>

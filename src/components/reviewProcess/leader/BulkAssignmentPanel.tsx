@@ -168,16 +168,16 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-50 opacity-0 translate-y-[100px]"
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-[4px] shadow-2xl p-6 text-white overflow-visible relative">
+      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 text-white overflow-visible relative">
         {/* Background Accent */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative">
           {/* Section 1: Bulk Action Stats */}
           <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="bg-blue-600 p-3 rounded-[4px] shadow-inner ring-4 ring-blue-600/20">
+            <div className="bg-primary p-3 rounded-xl shadow-inner ring-4 ring-accent/20">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
@@ -210,7 +210,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
               {/* Selector Button with Dropdown */}
               <Dropdown
                 trigger={
-                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-[4px] border bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500 hover:bg-slate-750 transition-all text-sm font-semibold whitespace-nowrap active:scale-95">
+                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500 hover:bg-slate-750 transition-all text-sm font-semibold whitespace-nowrap active:scale-95">
                     <UserPlus className="w-4 h-4" />
                     Select Reviewers
                     <ChevronDown className="w-3.5 h-3.5 ml-1 text-text-secondary" />
@@ -220,7 +220,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                 position="top"
                 contentClassName="bg-transparent shadow-none ring-0 w-auto p-0"
               >
-                <div className="w-72 bg-slate-800 rounded-[4px] overflow-hidden shadow-2xl">
+                <div className="w-72 bg-slate-800 rounded-xl overflow-hidden shadow-2xl">
                   <div className="p-3 border-b border-slate-700 bg-slate-850">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
@@ -230,7 +230,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                         placeholder="Search reviewers..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-[4px] text-xs focus:outline-none focus:ring-2 focus:ring-blue-500 text-white transition-all"
+                        className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all"
                       />
                     </div>
                   </div>
@@ -247,7 +247,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                       reviewers.map((member) => (
                         <label
                           key={member.userId}
-                          className="flex items-center gap-3 p-2.5 rounded-[4px] hover:bg-slate-700/50 cursor-pointer transition-colors group"
+                          className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors group"
                         >
                           <input
                             type="checkbox"
@@ -256,10 +256,10 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                               e.stopPropagation();
                               toggleReviewer(member);
                             }}
-                            className="w-4 h-4 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-900"
+                            className="w-4 h-4 rounded border-slate-600 text-accent focus:ring-accent bg-slate-900"
                           />
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 group-hover:bg-blue-600 transition-colors">
+                            <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 group-hover:bg-primary-hover transition-colors">
                               {member.fullName.charAt(0)}
                             </div>
                             <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">
@@ -298,7 +298,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   {visibleChips.map(([id, name]) => (
                     <div
                       key={id}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-[4px] bg-slate-800 border border-slate-700 text-xs text-slate-300 whitespace-nowrap animate-in zoom-in-95 duration-200"
+                      className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 whitespace-nowrap animate-in zoom-in-95 duration-200"
                     >
                       <Users className="w-3 h-3 text-blue-400" />
                       {name}
@@ -312,10 +312,10 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   ))}
 
                   {remainingCount > 0 && (
-                    <div className="px-2 py-1 rounded-[4px] bg-slate-800 border border-slate-700 border-dashed text-[10px] font-bold text-blue-400 whitespace-nowrap cursor-help relative group">
+                    <div className="px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 border-dashed text-[10px] font-bold text-primary-light whitespace-nowrap cursor-help relative group">
                       +{remainingCount} more
                       {/* Tooltip on hover */}
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-slate-950 border border-slate-800 rounded-[4px] shadow-2xl p-3 z-[70] animate-in fade-in zoom-in-95">
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl p-3 z-(--z-index-popover) animate-in fade-in zoom-in-95">
                         <div className="text-[10px] text-text-secondary uppercase font-black tracking-widest mb-2 border-b border-slate-800 pb-1">
                           Also Assigned To
                         </div>
@@ -325,7 +325,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                               key={id}
                               className="flex items-center gap-2 text-xs text-slate-300"
                             >
-                              <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                              <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                               {name}
                             </div>
                           ))}
@@ -344,7 +344,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
             <Button
               onClick={() => !isDisabled && handleAssign()}
               disabled={selectedReviewers.size !== 2 || isPending || isDisabled}
-              className="bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 disabled:text-text-secondary disabled:border-slate-700 text-white font-bold py-3 px-8 rounded-[4px] shadow-none shadow-blue-900/40 border-none transition-all active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+              className="bg-primary hover:bg-primary-hover disabled:bg-slate-800 disabled:text-text-secondary disabled:border-slate-700 text-white font-bold py-3 px-8 rounded-xl shadow-none shadow-primary/10 border-none transition-all active:scale-95 flex items-center gap-2 group whitespace-nowrap"
             >
               {isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />

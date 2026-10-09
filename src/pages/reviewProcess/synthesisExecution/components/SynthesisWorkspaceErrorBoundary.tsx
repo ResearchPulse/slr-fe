@@ -32,7 +32,7 @@ export default class SynthesisWorkspaceErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="rounded-[4px] border border-border bg-surface-white p-6 text-center shadow-none">
+        <div className="rounded-xl border border-border bg-surface-white p-6 text-center shadow-none">
           <h2 className="text-lg font-semibold text-red-900">
             Synthesis workspace failed to render
           </h2>
@@ -43,7 +43,7 @@ export default class SynthesisWorkspaceErrorBoundary extends React.Component<
           <button
             type="button"
             onClick={this.handleRetry}
-            className="mt-6 inline-flex items-center justify-center rounded-[4px] bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            className="mt-6 inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700"
           >
             Retry
           </button>

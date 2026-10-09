@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Button from "../../../components/ui/Button";
 import Card from "../../../components/ui/Card";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import DataExtractionConsensusWorkspace from "./components/DataExtractionConsensusWorkspace.tsx";
 import DataExtractionDashboard from "./components/DataExtractionDashboard.tsx";
 import DataExtractionReviewerWorkspace from "./components/DataExtractionReviewerWorkspace.tsx";
@@ -22,7 +23,7 @@ export default function DataExtractionPhaseWorkspace() {
   if (ws.isLoading) {
     return (
       <div className="min-h-screen bg-bg-secondary flex items-center justify-center">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
+        <LoadingSpinner size="lg" />
       </div>
     );
   }
@@ -30,7 +31,7 @@ export default function DataExtractionPhaseWorkspace() {
   if (ws.error) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-10">
-        <Card className="mx-auto max-w-4xl rounded-[4px] border border-border bg-surface-white shadow-none shadow-red-100/50">
+        <Card className="mx-auto max-w-4xl rounded-xl border border-border bg-surface-white shadow-none shadow-red-100/50">
           <h2 className="text-lg font-semibold text-red-900">
             Data Extraction Error
           </h2>

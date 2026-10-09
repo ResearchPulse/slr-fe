@@ -10,7 +10,7 @@ import {
   FiUpload,
   FiX,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { toastError } from "../../../../utils/toast";
 import Modal from "../../../../components/ui/Modal";
 import Tooltip from "../../../../components/ui/Tooltip";
 import { cn } from "../../../../utils/cn";
@@ -51,12 +51,12 @@ export default function UploadFullTextPdfModal({
     const isPdfType = file.type === "application/pdf";
     const hasPdfExtension = file.name.toLowerCase().endsWith(".pdf");
     if (!isPdfType && !hasPdfExtension) {
-      toast.error("Only PDF files are allowed.");
+      toastError("Only PDF files are allowed.");
       return;
     }
 
     if (file.size > MAX_PDF_SIZE_BYTES) {
-      toast.error("File size exceeds 20 MB.");
+      toastError("File size exceeds 20 MB.");
       return;
     }
 
@@ -110,7 +110,7 @@ export default function UploadFullTextPdfModal({
             </span>
           </div>
 
-          <div className="rounded-[4px] border border-border bg-bg-secondary/80 p-5">
+          <div className="rounded-xl border border-border bg-bg-secondary/80 p-5">
             <input
               ref={fileInputRef}
               type="file"
@@ -122,7 +122,7 @@ export default function UploadFullTextPdfModal({
             {selectedFile ? (
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-3 min-w-0">
-                  <div className="rounded-[4px] bg-surface-white p-3 text-accent shadow-sm">
+                  <div className="rounded-xl bg-surface-white p-3 text-accent shadow-sm">
                     <FiFileText className="h-5 w-5" />
                   </div>
                   <div className="min-w-0">
@@ -140,7 +140,7 @@ export default function UploadFullTextPdfModal({
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploading}
-                    className="rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Replace File
                   </button>
@@ -148,7 +148,7 @@ export default function UploadFullTextPdfModal({
                     type="button"
                     onClick={() => setSelectedFile(null)}
                     disabled={isUploading}
-                    className="rounded-[4px] border border-border bg-surface-white p-2.5 text-text-secondary transition-colors hover:border-border hover:bg-surface-white hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl border border-border bg-surface-white p-2.5 text-text-secondary transition-colors hover:border-border hover:bg-surface-white hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
                     aria-label="Remove selected PDF"
                   >
                     <FiX className="h-4 w-4" />
@@ -160,9 +160,9 @@ export default function UploadFullTextPdfModal({
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className="flex w-full flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 bg-surface-white px-6 py-10 text-center transition-colors hover:border-indigo-300 hover:bg-bg-secondary/40 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex w-full flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 bg-surface-white px-6 py-10 text-center transition-colors hover:border-accent hover:bg-bg-secondary/40 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                <div className="mb-4 rounded-[4px] bg-bg-secondary p-4 text-accent">
+                <div className="mb-4 rounded-xl bg-bg-secondary p-4 text-accent">
                   <FiUpload className="h-6 w-6" />
                 </div>
                 <p className="text-base font-semibold text-text-primary">
@@ -205,7 +205,7 @@ export default function UploadFullTextPdfModal({
                 </Tooltip>
               </div>
             </div>
-            <span className="rounded-full bg-bg-secondary px-3 py-1 text-xs font-medium text-indigo-700">
+            <span className="rounded-full bg-bg-secondary px-3 py-1 text-xs font-medium text-accent">
               Enabled
             </span>
             <span className="ml-auto rounded-full bg-bg-secondary p-2 text-text-secondary md:hidden">
@@ -219,7 +219,7 @@ export default function UploadFullTextPdfModal({
 
           <div
             className={cn(
-              "overflow-hidden rounded-[4px] border border-indigo-100 bg-linear-to-br from-indigo-50 via-white to-sky-50 transition-all",
+              "overflow-hidden rounded-xl border border-accent/30 bg-linear-to-br from-primary-light via-white to-primary-light transition-all",
               isMetadataSectionExpanded
                 ? "max-h-[420px] p-5"
                 : "max-h-0 p-0 border-transparent",
@@ -227,7 +227,7 @@ export default function UploadFullTextPdfModal({
           >
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="rounded-[4px] bg-surface-white p-3 text-accent shadow-sm">
+                <div className="rounded-xl bg-surface-white p-3 text-accent shadow-sm">
                   <FiCpu className="h-5 w-5" />
                 </div>
                 <div>
@@ -242,13 +242,13 @@ export default function UploadFullTextPdfModal({
               </div>
 
               {incompleteMetadata && (
-                <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
                   This paper has incomplete metadata. AI extraction may improve
                   it.
                 </div>
               )}
 
-              <div className="flex items-start gap-3 rounded-[4px] border border-indigo-100 bg-surface-white px-4 py-4 shadow-sm transition-colors">
+              <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-surface-white px-4 py-4 shadow-sm transition-colors">
                 <div className="mt-1 flex h-4 w-4 items-center justify-center rounded bg-accent text-white">
                   <FiCheckSquare className="h-3 w-3" />
                 </div>
@@ -271,7 +271,7 @@ export default function UploadFullTextPdfModal({
           </div>
         </section>
 
-        <section className="space-y-3 rounded-[4px] border border-border bg-bg-secondary p-5">
+        <section className="space-y-3 rounded-xl border border-border bg-bg-secondary p-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-text-secondary">
               Section 3
@@ -282,7 +282,7 @@ export default function UploadFullTextPdfModal({
           </div>
 
           <div
-            className="rounded-[4px] bg-surface-white p-4"
+            className="rounded-xl bg-surface-white p-4"
             aria-live="polite"
             aria-busy={isUploading}
           >
@@ -307,7 +307,7 @@ export default function UploadFullTextPdfModal({
               type="button"
               onClick={onClose}
               disabled={isUploading}
-              className="rounded-[4px] border border-border bg-surface-white px-5 py-3 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-border bg-surface-white px-5 py-3 text-sm font-medium text-text-primary transition-colors hover:border-slate-300 hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cancel
             </button>
@@ -315,7 +315,7 @@ export default function UploadFullTextPdfModal({
               type="button"
               onClick={handleSubmit}
               disabled={!selectedFile || isUploading}
-              className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-indigo-700 disabled:cursor-not-allowed disabled:bg-slate-300"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:bg-slate-300"
             >
               {isUploading ? (
                 <FiLoader className="h-4 w-4 animate-spin" />
@@ -347,8 +347,8 @@ function LoadingRow({
             subdued && "bg-slate-400",
           )}
         />
-        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-indigo-400 [animation-delay:120ms]" />
-        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-sky-400 [animation-delay:240ms]" />
+        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent [animation-delay:120ms]" />
+        <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-accent [animation-delay:240ms]" />
       </span>
       <span className="text-sm font-medium text-text-primary">{label}</span>
     </div>

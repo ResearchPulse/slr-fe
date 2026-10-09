@@ -54,7 +54,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
 
   if (error && templates.length === 0) {
     return (
-      <div className="p-8 text-center bg-surface-white rounded-[4px] border border-red-100">
+      <div className="p-8 text-center bg-surface-white rounded-xl border border-red-100">
         <p className="text-red-500 font-medium">{error}</p>
       </div>
     );
@@ -64,7 +64,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
       {templates.length > 0 ? (
         <div className="space-y-8">
-          <div className="bg-surface-white rounded-[3rem] border border-border/80 p-10 shadow-none shadow-slate-200/20 relative overflow-hidden transition-all duration-500 min-h-[700px]">
+          <div className="bg-surface-white rounded-xl border border-border/80 p-10 shadow-none shadow-slate-200/20 relative overflow-hidden transition-all duration-500 min-h-[700px]">
             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/30 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="relative z-10">
@@ -73,13 +73,13 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto bg-surface-white rounded-[3rem] border border-border/80 p-20 shadow-none shadow-indigo-100/10 relative overflow-hidden text-center flex flex-col items-center">
+        <div className="max-w-4xl mx-auto bg-surface-white rounded-xl border border-border/80 p-20 shadow-none shadow-primary/10 relative overflow-hidden text-center flex flex-col items-center">
           {/* Subtle Decorative Background Element */}
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/50 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="w-24 h-24 rounded-[4px] bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-indigo-200 hover:text-indigo-400">
+          <div className="w-24 h-24 rounded-xl bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-primary/30 hover:text-accent">
             <RiFileList3Line size={48} />
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-surface-white border-4 border-slate-50 flex items-center justify-center text-text-secondary group-hover:border-indigo-50 group-hover:text-accent shadow-none transition-all">
+            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-surface-white border-4 border-slate-50 flex items-center justify-center text-text-secondary group-hover:border-primary/30 group-hover:text-accent shadow-none transition-all">
               <RiAddLine size={18} />
             </div>
           </div>
@@ -95,7 +95,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            className="rounded-[4px] px-12 py-7 h-auto text-xl font-black shadow-2xl shadow-indigo-300 transition-all hover:-translate-y-1 active:translate-y-0"
+            className="rounded-xl px-12 py-7 h-auto text-xl font-black shadow-2xl shadow-primary/10 transition-all hover:-translate-y-1 active:translate-y-0"
           >
             <RiAddLine className="mr-2" size={28} />
             Create Master Template

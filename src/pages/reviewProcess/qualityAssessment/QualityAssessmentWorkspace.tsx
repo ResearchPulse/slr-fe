@@ -377,7 +377,7 @@ export default function QualityAssessmentWorkspace() {
           canEdit && (
             <button
               onClick={() => setIsAutoResolveOpen(true)}
-              className="flex h-12 items-center gap-2 rounded-lg border border-indigo-200 bg-indigo-50 px-3 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100"
+              className="flex h-12 items-center gap-2 rounded-xl border border-accent/30 bg-primary-light px-3 text-xs font-medium text-accent transition-colors hover:bg-primary-light"
             >
               Auto-Resolve
             </button>
@@ -415,13 +415,13 @@ export default function QualityAssessmentWorkspace() {
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><CheckCircle2 size={19} /></div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-blue-200 bg-surface-white p-4 shadow-sm sm:p-5">
+            <div className="flex items-center justify-between rounded-xl border border-accent/30 bg-surface-white p-4 shadow-sm sm:p-5">
               <div>
                 <p className="text-sm text-text-secondary">In progress</p>
                 <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.inProgress}</p>
                 <p className="mt-2 text-xs text-text-secondary">Reviewer work underway</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600"><Clock3 size={19} /></div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-light text-accent"><Clock3 size={19} /></div>
             </div>
             <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-surface-white p-4 shadow-sm sm:p-5">
               <div>

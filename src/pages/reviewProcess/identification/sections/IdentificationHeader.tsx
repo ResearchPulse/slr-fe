@@ -54,14 +54,14 @@ export default function IdentificationHeader({
         <div className="flex items-start justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <FiDatabase className="w-7 h-7 text-blue-600" />
+              <FiDatabase className="w-7 h-7 text-accent" />
               <h1 className="text-2xl font-bold text-text-primary">
                 Identification Phase
               </h1>
               <span
                 className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold ${
                   phaseStatus === "in-progress"
-                    ? "bg-blue-100 text-blue-700"
+                    ? "bg-primary-light text-accent"
                     : phaseStatus === "completed"
                       ? "bg-green-100 text-green-700"
                       : "bg-bg-secondary text-text-primary"
@@ -69,7 +69,7 @@ export default function IdentificationHeader({
               >
                 {phaseStatus === "in-progress" && (
                   <>
-                    <div className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
+                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                     In Progress
                   </>
                 )}

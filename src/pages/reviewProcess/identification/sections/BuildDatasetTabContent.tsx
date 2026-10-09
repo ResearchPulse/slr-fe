@@ -64,7 +64,7 @@ export default function BuildDatasetTabContent({
   return (
     <div>
       {/* Summary bar */}
-      <div className="flex items-center gap-6 mb-6 p-4 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-[4px] border border-border">
+      <div className="flex items-center gap-6 mb-6 p-4 bg-gradient-to-r from-emerald-50 to-primary-light rounded-xl border border-border">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500" />
           <span className="text-sm text-text-primary">
@@ -76,9 +76,9 @@ export default function BuildDatasetTabContent({
         </div>
         <div className="w-px h-5 bg-gray-300" />
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-blue-500" />
+          <div className="w-3 h-3 rounded-full bg-primary" />
           <span className="text-sm text-text-primary">
-            <span className="font-semibold text-blue-700">
+            <span className="font-semibold text-accent">
               {dataset.snapshotTotalCount.toLocaleString()}
             </span>{" "}
             in dataset
@@ -99,7 +99,7 @@ export default function BuildDatasetTabContent({
       {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Left: Ready Papers */}
-        <div className="border border-border rounded-[4px] p-4 bg-surface-white min-h-[500px] flex flex-col">
+        <div className="border border-border rounded-xl p-4 bg-surface-white min-h-[500px] flex flex-col">
           <ReadyPapersTable
             papers={dataset.readyPapers}
             totalCount={dataset.readyTotalCount}
@@ -138,7 +138,7 @@ export default function BuildDatasetTabContent({
         </div>
 
         {/* Right: Snapshot Dataset */}
-        <div className="border border-border rounded-[4px] p-4 bg-surface-white min-h-[500px] flex flex-col">
+        <div className="border border-border rounded-xl p-4 bg-surface-white min-h-[500px] flex flex-col">
           <SnapshotTable
             papers={dataset.snapshotPapers}
             totalCount={dataset.snapshotTotalCount}

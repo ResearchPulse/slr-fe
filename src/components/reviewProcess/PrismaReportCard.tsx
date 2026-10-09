@@ -18,7 +18,7 @@ export default function PrismaReportCard({
   };
 
   return (
-    <section className="mb-6 flex flex-col gap-4 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
+    <section className="mb-6 flex flex-col gap-4 rounded-xl border border-border bg-surface-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:p-6">
       <div className="flex min-w-0 items-center gap-4">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-light text-primary">
           <FiBarChart2 className="h-6 w-6" aria-hidden="true" />

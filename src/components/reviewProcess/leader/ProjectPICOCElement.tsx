@@ -75,7 +75,7 @@ const ProjectPICOCElement: React.FC<ProjectPICOCElementProps> = ({
             </React.Fragment>
           ))
         ) : (
-          <div className="col-span-full py-6 text-center bg-bg-secondary rounded-[4px] border border-dashed border-border text-text-secondary text-sm italic">
+          <div className="col-span-full py-6 text-center bg-bg-secondary rounded-xl border border-dashed border-border text-text-secondary text-sm italic">
             No PICOC elements defined.
           </div>
         )}
@@ -100,7 +100,7 @@ const PicocElementCard = ({
 }) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
   const colorMap: Record<string, string> = {
-    blue: "bg-blue-50 text-blue-700 border-blue-100",
+    blue: "bg-primary-light text-accent border-primary/20",
     amber: "bg-amber-50 text-amber-700 border-amber-100",
     emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
     rose: "bg-rose-50 text-rose-700 border-rose-100",
@@ -113,7 +113,7 @@ const PicocElementCard = ({
   return (
     <div
       className={clsx(
-        "p-3 rounded-[4px] border shadow-none transition-all hover:shadow-none h-fit",
+        "p-3 rounded-xl border shadow-none transition-all hover:shadow-none h-fit",
         colorMap[color],
       )}
     >

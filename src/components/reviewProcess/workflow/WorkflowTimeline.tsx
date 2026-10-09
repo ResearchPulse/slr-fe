@@ -60,10 +60,10 @@ export default function WorkflowTimeline({
   const hasPapers = (paperStats?.total ?? 0) > 0;
 
   return (
-    <section className="relative mb-8 rounded-2xl border border-border bg-surface-white p-5 shadow-sm sm:p-7 lg:p-8">
+    <section className="relative mb-8 rounded-xl border border-border bg-surface-white p-5 shadow-sm sm:p-7 lg:p-8">
       {disabled && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-surface-white/75 p-4 backdrop-blur-[2px]">
-          <div className="flex max-w-sm flex-col items-center gap-3 rounded-2xl border border-border bg-surface-white px-6 py-5 text-center shadow-lg">
+        <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-surface-white/75 p-4 backdrop-blur-[2px]">
+          <div className="flex max-w-sm flex-col items-center gap-3 rounded-xl border border-border bg-surface-white px-6 py-5 text-center shadow-lg">
             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-warning/10 text-warning">
               <FiLock className="h-5 w-5" aria-hidden="true" />
             </div>

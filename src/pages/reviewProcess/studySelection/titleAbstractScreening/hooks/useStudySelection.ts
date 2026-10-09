@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { useProjectMember } from "../../../../../hooks/useProjectMember";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError, toastInfo } from "../../../../../utils/toast";
 import type { RootState } from "../../../../../redux/store";
 import { studySelectionService } from "../../../../../services/studySelectionService";
 import { QUERY_KEYS } from "../../../../../constants/queryKeys";
@@ -293,7 +293,7 @@ export function useStudySelection(
       });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to submit screening decision"));
+      toastError(getErrorMessage(error, "Failed to submit screening decision"));
     },
   });
 
@@ -310,7 +310,7 @@ export function useStudySelection(
             if (nextPending) {
               setSelectedPaperId(nextPending.id);
             }
-            toast.success("Paper included");
+            toastSuccess("Paper included");
           },
         },
       );
@@ -334,7 +334,7 @@ export function useStudySelection(
             if (nextPending) {
               setSelectedPaperId(nextPending.id);
             }
-            toast.success("Paper excluded");
+            toastSuccess("Paper excluded");
           },
         },
       );
@@ -417,17 +417,17 @@ export function useStudySelection(
 
       if (variables.options?.extractWithGrobid) {
         if (response.data.extractionSuggestion) {
-          toast.success("PDF uploaded. Review AI metadata suggestions.");
+          toastSuccess("PDF uploaded. Review AI metadata suggestions.");
           return;
         }
-        toast.success("PDF uploaded. No metadata suggestions were found.");
+        toastSuccess("PDF uploaded. No metadata suggestions were found.");
         return;
       }
 
-      toast.success("PDF uploaded successfully.");
+      toastSuccess("PDF uploaded successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to upload PDF"));
+      toastError(getErrorMessage(error, "Failed to upload PDF"));
     },
   });
 
@@ -453,10 +453,10 @@ export function useStudySelection(
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.all,
       });
-      toast.success("Selected metadata applied successfully.");
+      toastSuccess("Selected metadata applied successfully.");
     },
     onError: () => {
-      toast.error("Failed to apply metadata. Please try again.");
+      toastError("Failed to apply metadata. Please try again.");
     },
   });
 
@@ -478,19 +478,19 @@ export function useStudySelection(
 
       const extraction = response.data.extraction;
       if (extraction?.status === "failed") {
-        toast.error(extraction.message ?? "Metadata extraction failed.");
+        toastError(extraction.message ?? "Metadata extraction failed.");
         return;
       }
 
       if (extraction?.status === "partial") {
-        toast("Metadata extraction partially completed.");
+        toastInfo("Metadata extraction partially completed.");
         return;
       }
 
-      toast.success("Metadata extraction completed successfully.");
+      toastSuccess("Metadata extraction completed successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to retry metadata extraction"));
+      toastError(getErrorMessage(error, "Failed to retry metadata extraction"));
     },
   });
 
@@ -563,11 +563,11 @@ export function useStudySelection(
         queryKey: QUERY_KEYS.studySelection.aiAnalysis(screeningProcessId!, paperId, phase),
       });
       if (data.message) {
-        toast.success(data.message);
+        toastSuccess(data.message);
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to run AI analysis"));
+      toastError(getErrorMessage(error, "Failed to run AI analysis"));
     },
   });
 
@@ -604,10 +604,10 @@ export function useStudySelection(
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewProcesses.all,
       });
-      toast.success("Conflict resolved");
+      toastSuccess("Conflict resolved");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to resolve conflict"));
+      toastError(getErrorMessage(error, "Failed to resolve conflict"));
     },
   });
 

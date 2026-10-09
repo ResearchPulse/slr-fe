@@ -35,7 +35,7 @@ const getStatusConfig = (statusText: string) => {
       };
     case "InProgress":
       return {
-        color: "text-blue-600 bg-blue-100",
+        color: "text-accent bg-primary-light",
         icon: FiAlertCircle,
         label: "In Progress",
       };
@@ -94,13 +94,13 @@ export default function ReviewProcessCard({
   const createdAt = process.createdAt;
 
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-6 hover:shadow-none transition-shadow-none">
+    <div className="bg-surface-white border border-border rounded-xl p-6 hover:shadow-none transition-shadow-none">
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
             <h3
-              className="text-lg font-semibold text-text-primary hover:text-blue-600 cursor-pointer transition-colors"
+              className="text-lg font-semibold text-text-primary hover:text-accent cursor-pointer transition-colors"
               onClick={() => onOpen?.(id)}
             >
               {name}
@@ -156,20 +156,20 @@ export default function ReviewProcessCard({
                 <span className="text-xs font-medium text-text-secondary">
                   Progress
                 </span>
-                <span className="text-xs font-bold text-blue-600">
+                <span className="text-xs font-bold text-accent">
                   {process.progressPercent}%
                 </span>
               </div>
               <div className="w-full bg-bg-secondary rounded-full h-1.5 overflow-hidden">
                 <div
-                  className="bg-blue-600 h-1.5 rounded-full transition-all duration-500"
+                  className="bg-primary h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${process.progressPercent}%` }}
                 />
               </div>
             </div>
           )}
 
-          <div className="flex items-center gap-4 py-2 px-3 bg-bg-primary rounded-[4px]">
+          <div className="flex items-center gap-4 py-2 px-3 bg-bg-primary rounded-xl">
             <div className="flex-1 text-center border-r border-border">
               <span className="block text-[10px] uppercase tracking-wider text-text-secondary font-bold mb-0.5">
                 Total

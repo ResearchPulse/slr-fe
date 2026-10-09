@@ -78,8 +78,8 @@ export default function FullTextScreeningWorkspace() {
       {/* 3-Column Layout */}
       {ws.papers.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center p-12 text-center bg-surface-white border-t border-border">
-          <div className="w-20 h-20 rounded-full bg-blue-50 flex items-center justify-center mb-6 shadow-inner">
-            <FiFileText className="w-10 h-10 text-blue-400 opacity-60" />
+          <div className="w-20 h-20 rounded-full bg-primary-light flex items-center justify-center mb-6 shadow-inner">
+            <FiFileText className="w-10 h-10 text-accent opacity-60" />
           </div>
           <h3 className="text-xl font-bold text-text-primary mb-2">
             No papers available yet
@@ -91,7 +91,7 @@ export default function FullTextScreeningWorkspace() {
           </p>
           <button
             onClick={navigateToTitleAbstract}
-            className="mt-8 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-[4px] shadow-none hover:bg-blue-700 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            className="mt-8 px-6 py-2.5 bg-primary text-white font-bold rounded-xl shadow-none hover:bg-primary-hover transition-all hover:scale-[1.02] active:scale-[0.98]"
           >
             Go to Title / Abstract Screening
           </button>

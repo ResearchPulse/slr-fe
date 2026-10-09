@@ -723,8 +723,8 @@ export default function ExtractionGridWorkspace() {
   if (gridQuery.isLoading && !gridQuery.data) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[4px] border border-border bg-surface-white py-24 shadow-none">
-          <RefreshCw className="h-5 w-5 animate-spin text-blue-600" />
+        <div className="mx-auto flex max-w-7xl items-center justify-center rounded-xl border border-border bg-surface-white py-24 shadow-none">
+          <RefreshCw className="h-5 w-5 animate-spin text-accent" />
           <span className="ml-3 text-sm text-text-secondary">
             Loading editable grid...
           </span>
@@ -734,9 +734,9 @@ export default function ExtractionGridWorkspace() {
   }
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,_#f8fafc_0%,_#eef2ff_100%)] px-6 py-8">
+    <div className="min-h-screen bg-bg-primary px-6 py-8">
       <div className="mx-auto max-w-[96rem] space-y-4">
-        <div className="relative z-50 rounded-[4px] border border-white/70 bg-surface-white/85 px-5 py-4 shadow-none shadow-slate-200/40 backdrop-blur">
+        <div className="relative z-50 rounded-xl border border-white/70 bg-surface-white/85 px-5 py-4 shadow-none shadow-slate-200/40 backdrop-blur">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-2xl font-bold text-text-primary">
@@ -765,7 +765,7 @@ export default function ExtractionGridWorkspace() {
                 Refresh Grid
               </Button>
 
-              <div className="flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-3 py-2">
+              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-white px-3 py-2">
                 <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
                   Row Height
                 </span>
@@ -775,20 +775,20 @@ export default function ExtractionGridWorkspace() {
                   max={MAX_GRID_ROW_HEIGHT}
                   value={rowHeight}
                   onChange={(event) => setRowHeight(Number(event.target.value))}
-                  className="h-1.5 w-28 accent-blue-600"
+                  className="h-1.5 w-28 accent-primary"
                   aria-label="Grid row height"
                 />
                 <button
                   type="button"
                   onClick={() => setRowHeight(72)}
-                  className="rounded-md border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                  className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
                 >
                   Comfort
                 </button>
                 <button
                   type="button"
                   onClick={() => setRowHeight(DEFAULT_GRID_ROW_HEIGHT)}
-                  className="rounded-md border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                  className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
                 >
                   Reset
                 </button>
@@ -815,7 +815,7 @@ export default function ExtractionGridWorkspace() {
                   ? createPortal(
                       <div
                         ref={exportMenuPanelRef}
-                        className="fixed z-[9999] rounded-[4px] border border-border bg-surface-white p-1.5 shadow-2xl"
+                        className="fixed z-(--z-index-dropdown) rounded-xl border border-border bg-surface-white p-1.5 shadow-2xl"
                         style={{
                           top: `${exportMenuPosition.top}px`,
                           left: `${exportMenuPosition.left}px`,
@@ -826,7 +826,7 @@ export default function ExtractionGridWorkspace() {
                           type="button"
                           onClick={handleDownloadExcel}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
                           <span className="truncate">Excel (.xlsx)</span>
@@ -835,9 +835,9 @@ export default function ExtractionGridWorkspace() {
                           type="button"
                           onClick={handleDownloadCsv}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          <FileText className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                          <FileText className="h-4 w-4 flex-shrink-0 text-accent" />
                           <span className="truncate">CSV (.csv)</span>
                         </button>
                       </div>,
@@ -850,13 +850,13 @@ export default function ExtractionGridWorkspace() {
         </div>
 
         {gridQuery.error ? (
-          <div className="rounded-[4px] border border-border bg-surface-white px-5 py-4 text-sm text-red-700">
+          <div className="rounded-xl border border-border bg-surface-white px-5 py-4 text-sm text-red-700">
             {getErrorMessage(gridQuery.error, "Unable to load editable grid.")}
           </div>
         ) : null}
 
         <div
-          className="rounded-[4px] border border-border bg-surface-white shadow-none"
+          className="rounded-xl border border-border bg-surface-white shadow-none"
           style={{ height: "calc(100vh - 200px)" }}
         >
           {hasData ? (

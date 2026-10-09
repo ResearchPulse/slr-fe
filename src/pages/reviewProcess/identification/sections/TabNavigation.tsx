@@ -21,7 +21,7 @@ export default function TabNavigation({
   const tabClass = (tab: TabType) =>
     `flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
       activeTab === tab
-        ? "border-blue-600 text-blue-600 bg-surface-white"
+        ? "border-accent text-accent bg-surface-white"
         : "border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
     }`;
 
@@ -35,7 +35,7 @@ export default function TabNavigation({
         >
           <FiSearch className="w-4 h-4" />
           Search Strategies
-          <span className="ml-1 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-semibold">
+          <span className="ml-1 px-2 py-0.5 bg-primary-light text-accent rounded-full text-xs font-semibold">
             {searchExecutionCount}
           </span>
         </button>

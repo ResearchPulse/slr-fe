@@ -31,7 +31,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
         {/* Header Section: Title & Year */}
         <header className="space-y-2">
           <div className="group">
-            <h2 className="text-base font-bold leading-snug text-text-primary line-clamp-3 hover:text-blue-600 transition-colors cursor-pointer group-hover:underline decoration-blue-400 underline-offset-4 decoration-2">
+            <h2 className="text-base font-bold leading-snug text-text-primary line-clamp-3 hover:text-accent transition-colors cursor-pointer group-hover:underline decoration-accent underline-offset-4 decoration-2">
               {paper.title}
               {paper.year && (
                 <span className="ml-2 text-text-secondary font-medium no-underline inline-block">
@@ -41,7 +41,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
             </h2>
           </div>
 
-          <div className="flex items-center gap-1.5 text-blue-500/80">
+          <div className="flex items-center gap-1.5 text-accent/80">
             <FiExternalLink className="w-3.5 h-3.5" />
             <span className="text-[10px] font-bold uppercase tracking-widest">
               Open Source
@@ -59,7 +59,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
               {authorList.map((author, idx) => (
                 <span
                   key={idx}
-                  className="px-2 py-1 bg-blue-50/50 text-blue-700 rounded-md text-[11px] font-medium border border-blue-100/50"
+                  className="px-2 py-1 bg-primary-light/50 text-accent rounded-xl text-[11px] font-medium border border-accent/30"
                 >
                   {author}
                 </span>
@@ -78,7 +78,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
               href={`https://doi.org/${paper.doi}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline truncate block"
+              className="text-xs text-accent hover:underline truncate block"
             >
               {paper.doi}
             </a>
@@ -105,9 +105,9 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
           LITMAPS STYLE VISUALIZER
         </span>
         <div className="flex gap-1">
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400/30" />
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400/50" />
-          <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+          <div className="w-1.5 h-1.5 rounded-full bg-accent/30" />
+          <div className="w-1.5 h-1.5 rounded-full bg-accent/50" />
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
         </div>
       </div>
     </div>

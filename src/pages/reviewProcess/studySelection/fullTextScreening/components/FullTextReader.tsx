@@ -201,9 +201,9 @@ export default function FullTextReader({
           <button
             onClick={() => setShowSearch(!showSearch)}
             className={cn(
-              "p-1.5 rounded-[4px] transition-colors",
+              "p-1.5 rounded-xl transition-colors",
               showSearch
-                ? "bg-blue-100 text-blue-700"
+                ? "bg-primary-light text-accent"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
             )}
             title="Search within paper"
@@ -215,9 +215,9 @@ export default function FullTextReader({
           <button
             onClick={() => setShowSectionNav(!showSectionNav)}
             className={cn(
-              "p-1.5 rounded-[4px] transition-colors",
+              "p-1.5 rounded-xl transition-colors",
               showSectionNav
-                ? "bg-indigo-100 text-indigo-700"
+                ? "bg-primary-light text-accent"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
             )}
             title="Toggle section navigation"
@@ -231,7 +231,7 @@ export default function FullTextReader({
           <button
             onClick={handleZoomOut}
             disabled={zoomLevel <= 50}
-            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
             title="Zoom out"
           >
             <FiZoomOut className="w-4 h-4" />
@@ -242,7 +242,7 @@ export default function FullTextReader({
           <button
             onClick={handleZoomIn}
             disabled={zoomLevel >= 200}
-            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
+            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
             title="Zoom in"
           >
             <FiZoomIn className="w-4 h-4" />
@@ -253,7 +253,7 @@ export default function FullTextReader({
           {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
             title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? (
@@ -269,7 +269,7 @@ export default function FullTextReader({
               href={paper.pdfUrl || paper.url || ""}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+              className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
               title="Open in new tab"
             >
               <FiExternalLink className="w-4 h-4" />
@@ -289,7 +289,7 @@ export default function FullTextReader({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
-              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none transition-colors"
             />
           </div>
         </div>
@@ -317,13 +317,13 @@ export default function FullTextReader({
             {/* AI Highlights */}
             {aiHighlights.length > 0 && (
               <div className="border-t border-border py-3">
-                <p className="px-4 text-[10px] font-semibold text-blue-500 uppercase tracking-wider mb-2">
+                <p className="px-4 text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">
                   AI Highlights
                 </p>
                 {aiHighlights.map((hl, i) => (
                   <button
                     key={i}
-                    className="w-full text-left px-4 py-2 text-xs text-blue-600 hover:bg-blue-50 transition-colors"
+                    className="w-full text-left px-4 py-2 text-xs text-accent hover:bg-primary-light transition-colors"
                     title={hl.text}
                   >
                     <span className="font-medium">{hl.section}</span>
@@ -354,7 +354,7 @@ export default function FullTextReader({
                   <button
                     onClick={() => onRetryExtraction(paper.id)}
                     disabled={isRetryingExtraction}
-                    className="mt-3 inline-flex items-center gap-2 rounded-[4px] border border-amber-300 bg-surface-white px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-amber-300 bg-surface-white px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <FiRefreshCw
                       className={cn(
@@ -369,7 +369,7 @@ export default function FullTextReader({
             )}
 
           {paper.extractionResult && (
-            <div className="border-b border-indigo-100 bg-bg-secondary/80 p-4">
+            <div className="border-b border-accent/30 bg-bg-secondary/80 p-4">
               <div className="mb-3 flex items-center gap-2">
                 <FiCpu className="h-4 w-4 text-accent" />
                 <div>
@@ -382,7 +382,7 @@ export default function FullTextReader({
                 </div>
               </div>
               <div className="grid gap-3 md:grid-cols-2">
-                <div className="rounded-[4px] bg-surface-white px-4 py-3">
+                <div className="rounded-xl bg-surface-white px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                     Metadata Sources
                   </p>
@@ -397,7 +397,7 @@ export default function FullTextReader({
                     />
                   </div>
                 </div>
-                <div className="rounded-[4px] bg-surface-white px-4 py-3">
+                <div className="rounded-xl bg-surface-white px-4 py-3">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                     Updated Fields
                   </p>
@@ -406,7 +406,7 @@ export default function FullTextReader({
                       paper.extractionResult.updatedFields.map((field) => (
                         <span
                           key={field}
-                          className="rounded-full bg-indigo-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-indigo-700"
+                          className="rounded-full bg-primary-light px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-accent"
                         >
                           {field}
                         </span>
@@ -420,7 +420,7 @@ export default function FullTextReader({
                 </div>
               </div>
 
-              <div className="mt-3 rounded-[4px] bg-surface-white px-4 py-3">
+              <div className="mt-3 rounded-xl bg-surface-white px-4 py-3">
                 <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                   Metadata Source Transparency
                 </p>
@@ -477,7 +477,7 @@ export default function FullTextReader({
                   )}
                 </div>
                 {updatedFields.size > 0 && (
-                  <p className="mt-3 text-xs font-medium text-indigo-700">
+                  <p className="mt-3 text-xs font-medium text-accent">
                     Updated via AI extraction:{" "}
                     {Array.from(updatedFields).join(", ")}
                   </p>
@@ -540,7 +540,7 @@ function PdfViewer({ url, zoomLevel }: { url: string; zoomLevel: number }) {
   return (
     <div className="h-full w-full flex items-center justify-center p-4">
       <div
-        className="bg-surface-white shadow-none rounded-[4px] overflow-hidden w-full h-full"
+        className="bg-surface-white shadow-none rounded-xl overflow-hidden w-full h-full"
         style={{
           transform: `scale(${zoomLevel / 100})`,
           transformOrigin: "top center",
@@ -572,7 +572,7 @@ function FullTextMissing({
 }) {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center px-8">
-      <div className="w-16 h-16 rounded-[4px] bg-amber-50 flex items-center justify-center mb-4">
+      <div className="w-16 h-16 rounded-xl bg-amber-50 flex items-center justify-center mb-4">
         <FiAlertTriangle className="w-8 h-8 text-amber-500" />
       </div>
       <h3 className="text-lg font-semibold text-text-primary mb-2">
@@ -584,7 +584,7 @@ function FullTextMissing({
       </p>
 
       {/* Paper info */}
-      <div className="bg-surface-white rounded-[4px] p-4 border border-border max-w-md w-full mb-6">
+      <div className="bg-surface-white rounded-xl p-4 border border-border max-w-md w-full mb-6">
         <h4 className="text-sm font-medium text-text-primary mb-1 line-clamp-2">
           {paper.title}
         </h4>
@@ -596,7 +596,7 @@ function FullTextMissing({
             href={`https://doi.org/${encodeURIComponent(paper.doi)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-blue-600 hover:underline mt-2"
+            className="inline-flex items-center gap-1 text-xs text-accent hover:underline mt-2"
           >
             DOI: {paper.doi}
             <FiExternalLink className="w-3 h-3" />
@@ -606,7 +606,7 @@ function FullTextMissing({
 
       {/* Upload action */}
       {onUpload && (
-        <div className="max-w-md w-full bg-surface-white rounded-[4px] p-4 border border-border space-y-3">
+        <div className="max-w-md w-full bg-surface-white rounded-xl p-4 border border-border space-y-3">
           <p className="text-xs font-semibold text-text-secondary uppercase tracking-wider">
             Upload full text PDF
           </p>
@@ -617,7 +617,7 @@ function FullTextMissing({
           <button
             onClick={onUpload}
             disabled={isUploading}
-            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white font-medium text-sm rounded-[4px] hover:bg-indigo-700 active:bg-indigo-800 transition-colors shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white font-medium text-sm rounded-xl hover:bg-primary-hover active:bg-primary-hover transition-colors shadow-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <FiFileText className="w-4 h-4" />
             {isUploading ? "Uploading PDF..." : "Open Upload Modal"}
@@ -634,7 +634,7 @@ function FullTextMissing({
               Abstract (preview)
             </p>
           </div>
-          <div className="text-sm text-text-secondary leading-relaxed bg-surface-white rounded-[4px] p-5 border border-border text-left">
+          <div className="text-sm text-text-secondary leading-relaxed bg-surface-white rounded-xl p-5 border border-border text-left">
             {paper.abstract}
           </div>
         </div>
@@ -655,7 +655,7 @@ function SourceBadge({
       className={cn(
         "rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider",
         tone === "ai"
-          ? "bg-indigo-100 text-indigo-700"
+          ? "bg-primary-light text-accent"
           : "bg-bg-secondary text-text-secondary",
       )}
     >
@@ -672,7 +672,7 @@ function ExtractedFieldCard({
   value: string;
 }) {
   return (
-    <div className="rounded-[4px] bg-surface-white px-4 py-3">
+    <div className="rounded-xl bg-surface-white px-4 py-3">
       <p className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
         {label}
       </p>
