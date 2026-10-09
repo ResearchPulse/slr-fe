@@ -115,7 +115,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
       </div>
 
       <aside className="xl:sticky xl:top-[92px] xl:self-start">
-        <section className="rounded-[14px] border border-border bg-white p-5 sm:p-6">
+        <section className="rounded-xl border border-border bg-surface-white p-5 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-lg font-semibold text-text-primary">
               Project summary
@@ -249,7 +249,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
           <button
             type="button"
             onClick={props.onOpenWorkspace}
-            className="mt-5 inline-flex w-full items-center justify-between rounded-lg bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            className="mt-5 inline-flex w-full items-center justify-between rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             Open review workspace <FiArrowUpRight size={16} />
           </button>

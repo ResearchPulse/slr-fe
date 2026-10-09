@@ -54,7 +54,7 @@ function PicoCCard({
   }, [expanded, value]);
 
   return (
-    <article className="rounded-[14px] border border-border bg-white p-3.5">
+    <article className="rounded-[14px] border border-border bg-surface-white p-3.5">
       <div className="mb-2 flex items-center gap-2.5">
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sm font-semibold text-accent">
           {letter}
@@ -107,7 +107,7 @@ export default function SetupSummaryView({
     <button
       type="button"
       onClick={onEdit}
-      className="rounded-lg border border-border bg-white px-3.5 py-1.5 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary shadow-xs"
+      className="rounded-xl border border-border bg-surface-white px-3.5 py-1.5 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary shadow-xs"
     >
       Edit Protocol
     </button>
@@ -137,7 +137,7 @@ export default function SetupSummaryView({
       )}
 
       {!hideResearchQuestions && (
-        <section className="mt-7 rounded-[14px] border border-border bg-white p-5 sm:p-6">
+        <section className="mt-7 rounded-[14px] border border-border bg-surface-white p-5 sm:p-6">
           <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
             <h3 className="text-lg font-semibold text-text-primary">
               Research questions

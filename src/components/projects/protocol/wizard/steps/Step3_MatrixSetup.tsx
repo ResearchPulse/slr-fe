@@ -106,7 +106,7 @@ export default function Step3_MatrixSetup({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-bg-secondary rounded-[4px] transition"
+          className="p-2 hover:bg-bg-secondary rounded-xl transition"
         >
           <FiArrowLeft className="w-5 h-5" />
         </button>
@@ -127,20 +127,20 @@ export default function Step3_MatrixSetup({
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 text-sm text-blue-900">
+      <div className="bg-primary-light border border-accent/30 rounded-xl p-4 text-sm text-text-primary">
         <strong>Matrix Setup:</strong> Define the rows (metrics/details to
         extract) and columns (approaches/timepoints) for your evaluation matrix.
       </div>
 
       {/* Map to Research Question (Optional) */}
       {researchQuestions.length > 0 && (
-        <div className="bg-surface-white rounded-[4px] border border-border p-4">
+        <div className="bg-surface-white rounded-xl border border-border p-4">
           <Label htmlFor="matrix_rq">Target Research Question (Optional)</Label>
           <select
             id="matrix_rq"
             value={selectedRQ || ""}
             onChange={(e) => setSelectedRQ(e.target.value || null)}
-            className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-border rounded-xl focus:ring-2 focus:ring-accent"
           >
             <option value="">--- Not mapped to any RQ ---</option>
             {researchQuestions.map((rq) => (
@@ -160,7 +160,7 @@ export default function Step3_MatrixSetup({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Rows Section */}
-        <div className="bg-surface-white rounded-[4px] border border-border p-6">
+        <div className="bg-surface-white rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <FiColumns className="w-5 h-5 text-accent" />
             <h3 className="text-lg font-semibold text-text-primary">
@@ -172,7 +172,7 @@ export default function Step3_MatrixSetup({
             {rows.map((row, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 p-3 bg-bg-primary border border-border rounded-[4px]"
+                className="flex items-center gap-2 p-3 bg-bg-primary border border-border rounded-xl"
               >
                 <span className="text-sm font-medium text-text-secondary w-6">
                   {idx + 1}.
@@ -202,7 +202,7 @@ export default function Step3_MatrixSetup({
               />
               <button
                 onClick={handleAddRow}
-                className="px-4 py-2 bg-accent text-white rounded-[4px] hover:bg-indigo-700 transition font-medium"
+                className="px-4 py-2 bg-accent text-white rounded-xl hover:bg-indigo-700 transition font-medium"
               >
                 <FiPlus className="w-4 h-4" />
               </button>
@@ -211,7 +211,7 @@ export default function Step3_MatrixSetup({
         </div>
 
         {/* Columns Section */}
-        <div className="bg-surface-white rounded-[4px] border border-border p-6">
+        <div className="bg-surface-white rounded-xl border border-border p-6">
           <div className="flex items-center gap-2 mb-4">
             <FiColumns className="w-5 h-5 text-purple-600" />
             <h3 className="text-lg font-semibold text-text-primary">
@@ -223,7 +223,7 @@ export default function Step3_MatrixSetup({
             {columns.map((col, idx) => (
               <div
                 key={idx}
-                className="flex items-center gap-2 p-3 bg-bg-primary border border-border rounded-[4px]"
+                className="flex items-center gap-2 p-3 bg-bg-primary border border-border rounded-xl"
               >
                 <span className="text-sm font-medium text-text-secondary w-6">
                   {idx + 1}.
@@ -253,7 +253,7 @@ export default function Step3_MatrixSetup({
               />
               <button
                 onClick={handleAddColumn}
-                className="px-4 py-2 bg-purple-600 text-white rounded-[4px] hover:bg-purple-700 transition font-medium"
+                className="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition font-medium"
               >
                 <FiPlus className="w-4 h-4" />
               </button>
@@ -264,7 +264,7 @@ export default function Step3_MatrixSetup({
 
       {/* Preview Table */}
       {rows.length > 0 && columns.length > 0 && (
-        <div className="bg-surface-white rounded-[4px] border border-border p-6">
+        <div className="bg-surface-white rounded-xl border border-border p-6">
           <h3 className="text-lg font-semibold text-text-primary mb-4">
             Preview
           </h3>
@@ -309,13 +309,13 @@ export default function Step3_MatrixSetup({
       <div className="flex gap-3 justify-between">
         <button
           onClick={onBack}
-          className="px-6 py-3 bg-bg-secondary text-text-primary rounded-[4px] hover:bg-bg-secondary font-medium transition"
+          className="px-6 py-3 bg-bg-secondary text-text-primary rounded-xl hover:bg-bg-secondary font-medium transition"
         >
           Back
         </button>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-[4px] hover:bg-green-700 font-medium transition"
+          className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium transition"
         >
           <FiCheck className="w-4 h-4" />
           Save & Continue

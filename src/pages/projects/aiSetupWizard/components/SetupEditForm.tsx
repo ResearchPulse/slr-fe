@@ -56,7 +56,7 @@ export default function SetupEditForm({
           <div
             key={key}
             className={[
-              "rounded-[4px] border border-border bg-surface-white p-5",
+              "rounded-xl border border-border bg-surface-white p-5",
               key === "context" ? "sm:col-span-2" : "",
             ].join(" ")}
           >
@@ -65,19 +65,19 @@ export default function SetupEditForm({
               rows={3}
               value={picocForm[key]}
               onChange={(e) => onPicocChange(key, e.target.value)}
-              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
           </div>
         ))}
       </div>
 
-      <div className="rounded-[4px] border border-border bg-bg-secondary p-5">
+      <div className="rounded-xl border border-border bg-bg-secondary p-5">
         <FieldLabel title="Research Questions" />
         <div className="max-h-[600px] overflow-y-auto pr-1 space-y-3">
           {editResearchQuestions.map((rq, index) => (
             <div
               key={`${rq.id ?? "new"}-${index}`}
-              className="rounded-[4px] border border-border bg-surface-white p-3"
+              className="rounded-xl border border-border bg-surface-white p-3"
             >
               <div className="mb-2 flex items-center justify-between gap-2">
                 <span className="text-xs font-semibold text-text-secondary">
@@ -95,24 +95,24 @@ export default function SetupEditForm({
                 rows={3}
                 value={rq.questionText}
                 onChange={(e) => onEditRQTextChange(index, e.target.value)}
-                className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               />
             </div>
           ))}
 
-          <div className="rounded-[4px] border border-dashed border-slate-300 bg-surface-white p-3">
+          <div className="rounded-xl border border-dashed border-border bg-surface-white p-3">
             <textarea
               rows={2}
               value={editNewRQInput}
               onChange={(e) => onEditNewRQInputChange(e.target.value)}
               placeholder="Type a new research question"
-              className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
             />
             <div className="mt-2 flex justify-end">
               <button
                 type="button"
                 onClick={onAddEditRQ}
-                className="rounded-[4px] border border-slate-300 bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
               >
                 Add Research Question
               </button>
@@ -125,7 +125,7 @@ export default function SetupEditForm({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-[4px] border border-slate-300 px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+          className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
         >
           Cancel
         </button>
@@ -133,7 +133,7 @@ export default function SetupEditForm({
           type="button"
           onClick={onSave}
           disabled={isSavingSetup}
-          className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSavingSetup ? "Saving..." : "Save Changes"}
         </button>

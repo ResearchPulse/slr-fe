@@ -52,7 +52,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
             helperText="Select which component of the PICOC framework you are defining."
             options={elementTypeOptions}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -65,7 +65,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
             placeholder="e.g., Adults aged 18-65 with a clinical diagnosis of Type 2 Diabetes..."
             rows={5}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
       </div>
@@ -74,7 +74,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
         <Button
           type="submit"
           isLoading={isLoading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-none rounded-[4px] h-12"
+          className="flex-1 h-12"
         >
           Add Element
         </Button>
@@ -82,7 +82,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
           type="button"
           variant="secondary"
           onClick={onCancel}
-          className="px-6 border border-border bg-surface-white hover:bg-bg-primary text-text-primary shadow-none rounded-[4px] h-12"
+          className="px-6 h-12"
         >
           Cancel
         </Button>

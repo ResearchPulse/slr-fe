@@ -42,7 +42,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             helperText="The institution or body funding or commissioning the systematic review (e.g., NIH, WHO, Ministry of Health)."
             placeholder="e.g., World Health Organization"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -56,7 +56,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             placeholder="e.g., This document outlines the requirements for a review of childhood obesity interventions in Southeast Asia..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -71,7 +71,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             helperText="The financial resources allocated specifically for this review's synthesis and administrative costs."
             placeholder="e.g., 25000.00"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -84,7 +84,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             type="url"
             helperText="Direct link to the full text of the commissioning document or contract for reference."
             placeholder="https://example.com/docs/commissioning-brief.pdf"
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
       </div>
@@ -94,7 +94,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
         <Button
           type="submit"
           isLoading={isLoading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-none rounded-[4px] h-12"
+          className="flex-1 h-12"
         >
           Add Document
         </Button>
@@ -102,7 +102,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
           type="button"
           variant="secondary"
           onClick={onCancel}
-          className="px-6 border border-border bg-surface-white hover:bg-bg-primary text-text-primary shadow-none rounded-[4px] h-12"
+          className="px-6 h-12"
         >
           Cancel
         </Button>

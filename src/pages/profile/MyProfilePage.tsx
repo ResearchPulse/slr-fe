@@ -13,7 +13,8 @@ import {
   FiEdit2,
   FiBriefcase,
 } from "react-icons/fi";
-import { toast } from "react-hot-toast";
+import { toastError, toastSuccess } from "../../utils/toast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import Button from "../../components/ui/Button";
 import FormField from "../../components/ui/FormField";
 import Input from "../../components/ui/Input";
@@ -38,22 +39,22 @@ function CopyField({ label, value, displayValue }: { label: string; value: strin
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1800);
     } catch {
-      toast.error(`Could not copy ${label.toLowerCase()}.`);
+      toastError(`Could not copy ${label.toLowerCase()}.`);
     }
   };
 
   return (
-    <div className="min-w-0 rounded-xl bg-[#F7F9FA] px-4 py-3.5">
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">{label}</p>
+    <div className="min-w-0 rounded-xl bg-bg-primary px-4 py-3.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">{label}</p>
       <div className="mt-1.5 flex min-w-0 items-center justify-between gap-2">
-        <p className="min-w-0 truncate text-[13px] font-semibold text-[#173247]" title={displayValue || value}>{displayValue ?? value}</p>
+        <p className="min-w-0 truncate text-[13px] font-semibold text-text-primary" title={displayValue || value}>{displayValue ?? value}</p>
         <button
           type="button"
           onClick={copyValue}
           title={copied ? "Copied" : "Copy"}
           aria-label={`${copied ? "Copied" : "Copy"} ${label}`}
           disabled={!hasValue}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[#718591] transition hover:bg-white hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-text-secondary transition hover:bg-surface-white hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
         >
           {copied ? <FiCheck className="h-3.5 w-3.5 text-[#2E8B60]" /> : <FiCopy className="h-3.5 w-3.5" />}
         </button>
@@ -64,9 +65,9 @@ function CopyField({ label, value, displayValue }: { label: string; value: strin
 
 function InformationField({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-xl bg-[#F7F9FA] px-4 py-3.5">
-      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">{label}</p>
-      <p className="mt-1.5 truncate text-[13px] font-semibold text-[#173247]" title={value}>{value}</p>
+    <div className="min-w-0 rounded-xl bg-bg-primary px-4 py-3.5">
+      <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">{label}</p>
+      <p className="mt-1.5 truncate text-[13px] font-semibold text-text-primary" title={value}>{value}</p>
     </div>
   );
 }
@@ -123,7 +124,7 @@ const MyProfilePage: React.FC = () => {
     const fullName = profileDraft.fullName.trim();
     const username = profileDraft.username.trim();
     if (!fullName || !username) {
-      toast.error("Full name and username are required.");
+      toastError("Full name and username are required.");
       return;
     }
     if (fullName === user.fullName && username === user.username) {
@@ -133,10 +134,10 @@ const MyProfilePage: React.FC = () => {
 
     try {
       await updateUser({ id: user.id, fullName, email: user.email, username });
-      toast.success("Profile updated successfully.");
+      toastSuccess("Profile updated successfully.");
       setIsEditingProfile(false);
     } catch {
-      toast.error("Could not update your profile.");
+      toastError("Could not update your profile.");
     }
   };
 
@@ -166,7 +167,7 @@ const MyProfilePage: React.FC = () => {
       const response = await changePassword({ oldPassword: currentPassword, newPassword });
       const successMessage = response.message || "Password successfully updated.";
       setStatus({ type: "success", message: successMessage });
-      toast.success(successMessage);
+      toastSuccess(successMessage);
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -177,7 +178,7 @@ const MyProfilePage: React.FC = () => {
     } catch (err: any) {
       const errorMessage = err?.response?.data?.message || err?.message || "Could not update password.";
       setStatus({ type: "error", message: errorMessage });
-      toast.error(errorMessage);
+      toastError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -185,10 +186,10 @@ const MyProfilePage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-[65vh] items-center justify-center bg-[#F6F9FB]">
+      <div className="flex min-h-[65vh] items-center justify-center bg-bg-primary">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#087BC1] border-t-transparent" />
-          <p className="text-[11px] font-semibold text-[#71838F]">Loading profile…</p>
+          <LoadingSpinner size="md" />
+          <p className="text-[11px] font-semibold text-text-secondary">Loading profile…</p>
         </div>
       </div>
     );
@@ -196,11 +197,11 @@ const MyProfilePage: React.FC = () => {
 
   if (isError || !user) {
     return (
-      <div className="flex min-h-[65vh] items-center justify-center bg-[#F6F9FB] px-4">
-        <div className="w-full max-w-md rounded-2xl border border-[#DCE6EC] bg-white p-8 text-center shadow-[0_12px_35px_rgba(19,43,60,0.06)]">
-          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-[#EEF6FB] text-primary"><FiInfo className="h-5 w-5" /></div>
-          <h2 className="text-xl font-bold text-[#173247]">Could not load your profile</h2>
-          <p className="mt-2 text-sm leading-6 text-[#71838F]">{error || "Please try again in a moment."}</p>
+      <div className="flex min-h-[65vh] items-center justify-center bg-bg-primary px-4">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-surface-white p-8 text-center shadow-[0_12px_35px_rgba(19,43,60,0.06)]">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary"><FiInfo className="h-5 w-5" /></div>
+          <h2 className="text-xl font-bold text-text-primary">Could not load your profile</h2>
+          <p className="mt-2 text-sm leading-6 text-text-secondary">{error || "Please try again in a moment."}</p>
           <Button className="mx-auto mt-6" onClick={() => void refetch()} isLoading={isFetching}>
             Try again
           </Button>
@@ -217,52 +218,52 @@ const MyProfilePage: React.FC = () => {
   const activeProjects = projects.filter((project) => project.statusText === "Active").length;
   const roleBadgeStyle = user.role?.toLowerCase() === "admin"
     ? "bg-[#EEF3FA] text-[#405F91]"
-    : "bg-[#EAF4FA] text-[#236E99]";
+    : "bg-primary-light text-accent";
 
   return (
-    <div className="min-h-[calc(100vh-72px)] bg-[#F6F9FB] px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
+    <div className="min-h-[calc(100vh-72px)] bg-bg-primary px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
       <main className="mx-auto max-w-[1160px] space-y-8">
         <header className="profile-scroll-reveal scroll-reveal mb-1">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Account settings</p>
-          <h1 className="text-[32px] font-bold tracking-[-0.045em] text-[#102B3D] sm:text-[38px]">Profile</h1>
-          <p className="mt-2 text-[14px] text-[#6C7C88]">Manage your personal information and account settings.</p>
+          <h1 className="text-[32px] font-bold tracking-[-0.045em] text-text-primary sm:text-[38px]">Profile</h1>
+          <p className="mt-2 text-[14px] text-text-secondary">Manage your personal information and account settings.</p>
         </header>
 
-        <section aria-labelledby="profile-overview-title" className="profile-scroll-reveal scroll-reveal overflow-hidden rounded-[20px] border border-[#DCE6EC] bg-white shadow-[0_10px_32px_rgba(19,43,60,0.045)]">
+        <section aria-labelledby="profile-overview-title" className="profile-scroll-reveal scroll-reveal overflow-hidden rounded-[20px] border border-border bg-surface-white shadow-[0_10px_32px_rgba(19,43,60,0.045)]">
           <div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:p-8">
             <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-[#087BC1] text-[30px] font-bold tracking-[-0.05em] text-white">
+              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-accent text-[30px] font-bold tracking-[-0.05em] text-white">
                 {getInitials(displayName)}
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <h2 id="profile-overview-title" className="text-[25px] font-bold leading-tight tracking-[-0.04em] text-[#173247] sm:text-[29px]">{displayName}</h2>
+                  <h2 id="profile-overview-title" className="text-[25px] font-bold leading-tight tracking-[-0.04em] text-text-primary sm:text-[29px]">{displayName}</h2>
                   <span className={cn("rounded-full px-2.5 py-1 text-[9px] font-bold", roleBadgeStyle)}>{roleLabel}</span>
                 </div>
-                <p className="mt-1 text-[12px] font-medium text-[#81919B]">@{displayUsername}</p>
-                <p className="mt-2 flex min-w-0 items-center gap-1.5 text-[12px] text-[#607582]"><FiMail className="h-3.5 w-3.5 shrink-0 text-[#8A9AA4]" /><span className="truncate">{user.email}</span></p>
+                <p className="mt-1 text-[12px] font-medium text-text-muted">@{displayUsername}</p>
+                <p className="mt-2 flex min-w-0 items-center gap-1.5 text-[12px] text-text-secondary"><FiMail className="h-3.5 w-3.5 shrink-0 text-text-muted" /><span className="truncate">{user.email}</span></p>
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
-              <div className="rounded-xl bg-[#F7F9FA] px-3.5 py-3">
-                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Role</p>
-                <p className="mt-1.5 truncate text-[12px] font-bold text-[#173247]">{roleLabel}</p>
+              <div className="rounded-xl bg-bg-primary px-3.5 py-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-text-muted">Role</p>
+                <p className="mt-1.5 truncate text-[12px] font-bold text-text-primary">{roleLabel}</p>
               </div>
-              <div className="rounded-xl bg-[#F7F9FA] px-3.5 py-3">
-                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Projects</p>
-                <p className="mt-1.5 text-[12px] font-bold text-[#173247]">{projectsData?.totalCount ?? projects.length} total <span className="font-medium text-[#84949E]">· {activeProjects} active</span></p>
+              <div className="rounded-xl bg-bg-primary px-3.5 py-3">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-text-muted">Projects</p>
+                <p className="mt-1.5 text-[12px] font-bold text-text-primary">{projectsData?.totalCount ?? projects.length} total <span className="font-medium text-text-muted">· {activeProjects} active</span></p>
               </div>
-              <div className="col-span-2 rounded-xl bg-[#F7F9FA] px-3.5 py-3 sm:col-span-1">
-                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-[#8797A1]">Account status</p>
+              <div className="col-span-2 rounded-xl bg-bg-primary px-3.5 py-3 sm:col-span-1">
+                <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-text-muted">Account status</p>
                 <p className={`mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${isAccountActive ? "bg-[#2E9B68]" : "bg-[#C66B5E]"}`} />{isAccountActive ? "Active" : "Inactive"}
                 </p>
               </div>
             </div>
           </div>
-          <div className="flex flex-col gap-2 border-t border-[#EDF1F3] bg-[#FCFDFD] px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
-            <p className="text-[11px] text-[#85949D]">Keep your account details up to date.</p>
+          <div className="flex flex-col gap-2 border-t border-border bg-bg-primary px-5 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-7">
+            <p className="text-[11px] text-text-muted">Keep your account details up to date.</p>
             {isEditingProfile ? (
               <div className="flex w-full gap-2 sm:w-auto">
                 <Button size="sm" variant="outline" onClick={handleCancelProfileEdit} disabled={isProfileSaving} className="flex-1 sm:flex-none">Cancel</Button>
@@ -274,54 +275,54 @@ const MyProfilePage: React.FC = () => {
           </div>
         </section>
 
-        <section aria-labelledby="personal-info-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-[#DCE6EC] bg-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+        <section aria-labelledby="personal-info-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-border bg-surface-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
           <div className="mb-5">
-            <h2 id="personal-info-title" className="text-[20px] font-bold tracking-[-0.03em] text-[#173247]">Personal information</h2>
-            <p className="mt-1 text-[12px] text-[#7A8B96]">Manage your identity and contact details.</p>
+            <h2 id="personal-info-title" className="text-[20px] font-bold tracking-[-0.03em] text-text-primary">Personal information</h2>
+            <p className="mt-1 text-[12px] text-text-muted">Manage your identity and contact details.</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
             {isEditingProfile ? (
-              <label className="rounded-xl bg-[#F7F9FA] px-4 py-3.5">
-                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">Full name</span>
-                <Input value={profileDraft.fullName} onChange={(event) => setProfileDraft((draft) => ({ ...draft, fullName: event.target.value }))} autoFocus className="mt-2 h-9 rounded-lg border-[#DCE6EC] bg-white text-[13px]" />
+              <label className="rounded-xl bg-bg-primary px-4 py-3.5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">Full name</span>
+                <Input value={profileDraft.fullName} onChange={(event) => setProfileDraft((draft) => ({ ...draft, fullName: event.target.value }))} autoFocus className="mt-2 h-9 rounded-xl border-border bg-surface-white text-[13px]" />
               </label>
             ) : <InformationField label="Full name" value={displayName} />}
 
             {isEditingProfile ? (
-              <label className="rounded-xl bg-[#F7F9FA] px-4 py-3.5">
-                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#83939D]">Username</span>
-                <Input value={profileDraft.username} onChange={(event) => setProfileDraft((draft) => ({ ...draft, username: event.target.value }))} className="mt-2 h-9 rounded-lg border-[#DCE6EC] bg-white text-[13px]" />
+              <label className="rounded-xl bg-bg-primary px-4 py-3.5">
+                <span className="text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">Username</span>
+                <Input value={profileDraft.username} onChange={(event) => setProfileDraft((draft) => ({ ...draft, username: event.target.value }))} className="mt-2 h-9 rounded-xl border-border bg-surface-white text-[13px]" />
               </label>
             ) : <InformationField label="Username" value={displayUsername} />}
 
             <CopyField label="Email address" value={user.email || "Not provided"} />
             <CopyField label="User ID" value={userId} />
           </div>
-          {isEditingProfile && <p className="mt-3 text-[10px] text-[#84949E]">Email address cannot be changed here.</p>}
+          {isEditingProfile && <p className="mt-3 text-[10px] text-text-muted">Email address cannot be changed here.</p>}
         </section>
 
-        <section aria-labelledby="security-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-[#DCE6EC] bg-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+        <section aria-labelledby="security-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-border bg-surface-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
           <div className="mb-5">
-            <h2 id="security-title" className="text-[20px] font-bold tracking-[-0.03em] text-[#173247]">Security & account</h2>
-            <p className="mt-1 text-[12px] text-[#7A8B96]">Manage how you access and protect your account.</p>
+            <h2 id="security-title" className="text-[20px] font-bold tracking-[-0.03em] text-text-primary">Security & account</h2>
+            <p className="mt-1 text-[12px] text-text-muted">Manage how you access and protect your account.</p>
           </div>
 
-          <div className="flex flex-col gap-4 rounded-2xl bg-[#F7F9FA] p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+          <div className="flex flex-col gap-4 rounded-2xl bg-bg-primary p-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
             <div className="flex items-start gap-3.5">
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#397FA8]"><FiLock className="h-[17px] w-[17px]" /></span>
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-surface-white text-accent"><FiLock className="h-[17px] w-[17px]" /></span>
               <div>
-                <p className="text-[13px] font-bold text-[#173247]">Password</p>
-                <p className="mt-1 text-[11px] leading-5 text-[#7A8B96]">Use a strong password to keep your account secure.</p>
+                <p className="text-[13px] font-bold text-text-primary">Password</p>
+                <p className="mt-1 text-[11px] leading-5 text-text-muted">Use a strong password to keep your account secure.</p>
               </div>
             </div>
             {!isResettingPassword && <Button size="sm" variant="secondary" onClick={() => setIsResettingPassword(true)} className="w-full sm:w-auto"><FiKey className="mr-2 h-3.5 w-3.5" />Change password</Button>}
           </div>
 
           {isResettingPassword && (
-            <form onSubmit={handleResetPassword} className="mt-4 rounded-2xl border border-[#E5ECEF] bg-white p-4 sm:p-5">
+            <form onSubmit={handleResetPassword} className="mt-4 rounded-2xl border border-border bg-surface-white p-4 sm:p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
-                <div><p className="text-[13px] font-bold text-[#173247]">Update password</p><p className="mt-1 text-[11px] text-[#7A8B96]">Choose a new password you do not use elsewhere.</p></div>
-                <button type="button" onClick={resetPasswordForm} aria-label="Cancel password change" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[#80909A] transition hover:bg-[#F1F5F7] hover:text-[#173247]"><FiX /></button>
+                <div><p className="text-[13px] font-bold text-text-primary">Update password</p><p className="mt-1 text-[11px] text-text-muted">Choose a new password you do not use elsewhere.</p></div>
+                <button type="button" onClick={resetPasswordForm} aria-label="Cancel password change" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted transition hover:bg-bg-secondary hover:text-text-primary"><FiX /></button>
               </div>
 
               {status && <div className={cn("mb-4 flex items-center gap-2 rounded-lg px-3 py-2.5 text-[12px]", status.type === "success" ? "bg-[#EFF8F2] text-[#327B55]" : "bg-[#FBF2F1] text-[#A04F4B]")}>{status.type === "success" ? <FiCheckCircle className="shrink-0" /> : <FiInfo className="shrink-0" />}{status.message}</div>}
@@ -341,13 +342,13 @@ const MyProfilePage: React.FC = () => {
           )}
 
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div className="flex items-center gap-3 rounded-xl border border-[#E8EEF1] px-4 py-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF5FA] text-[#547F9A]"><FiShield className="h-4 w-4" /></span>
-              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#8797A1]">Account status</p><p className={`mt-1 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>{isAccountActive ? "Active" : "Inactive"}</p></div>
+            <div className="flex items-center gap-3 rounded-xl border border-border px-4 py-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-accent"><FiShield className="h-4 w-4" /></span>
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-text-muted">Account status</p><p className={`mt-1 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>{isAccountActive ? "Active" : "Inactive"}</p></div>
             </div>
-            <div className="flex items-center gap-3 rounded-xl border border-[#E8EEF1] px-4 py-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#EEF5FA] text-[#547F9A]"><FiBriefcase className="h-4 w-4" /></span>
-              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-[#8797A1]">Account role</p><p className="mt-1 text-[12px] font-bold text-[#173247]">{roleLabel}</p></div>
+            <div className="flex items-center gap-3 rounded-xl border border-border px-4 py-3">
+              <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-accent"><FiBriefcase className="h-4 w-4" /></span>
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-text-muted">Account role</p><p className="mt-1 text-[12px] font-bold text-text-primary">{roleLabel}</p></div>
             </div>
           </div>
         </section>

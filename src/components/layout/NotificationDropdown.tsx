@@ -11,6 +11,7 @@ import {
   useNotifications,
   useNotificationMutations,
 } from "../../hooks/useNotifications";
+import { LoadingSpinner } from "../ui/LoadingSpinner";
 import { formatRelativeTime } from "../../utils/dateFormat";
 import {
   NotificationType,
@@ -42,13 +43,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       case NotificationType.System:
         return <FiAlertTriangle className="text-amber-500 w-5 h-5" />;
       case NotificationType.Project:
-        return <FiInfo className="text-blue-500 w-5 h-5" />;
+        return <FiInfo className="text-accent w-5 h-5" />;
       case NotificationType.Review:
         return <FiCheckCircle className="text-indigo-500 w-5 h-5" />;
       case NotificationType.Comment:
-        return <FiInfo className="text-slate-500 w-5 h-5" />;
+        return <FiInfo className="text-text-secondary w-5 h-5" />;
       default:
-        return <FiBell className="text-gray-400 w-5 h-5" />;
+        return <FiBell className="text-text-muted w-5 h-5" />;
     }
   };
 
@@ -82,7 +83,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   };
 
   return (
-    <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-surface-white rounded-md shadow-2xl border border-border ring-1 ring-black/5 z-50 overflow-hidden transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-surface-white rounded-xl shadow-2xl border border-border ring-1 ring-black/5 z-(--z-index-dropdown) overflow-hidden transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header */}
       <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary">
         <h3 className="font-medium text-text-primary uppercase tracking-[0.1em] text-[13px] flex items-center gap-2">
@@ -104,7 +105,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
       <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
         {isLoading ? (
           <div className="p-12 text-center">
-            <FiLoader className="w-8 h-8 animate-spin text-accent mx-auto mb-4" />
+            <LoadingSpinner size="md" className="mb-4" />
             <p className="text-text-secondary text-sm">
               Loading notifications...
             </p>
@@ -148,7 +149,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
           </div>
         ) : (
           <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-bg-secondary rounded-[4px] flex items-center justify-center mx-auto mb-4 border border-border">
+            <div className="w-16 h-16 bg-bg-secondary rounded-xl flex items-center justify-center mx-auto mb-4 border border-border">
               <FiBell className="w-8 h-8 text-text-secondary" />
             </div>
             <p className="text-text-primary text-[13px] font-medium tracking-[0.1em] uppercase">

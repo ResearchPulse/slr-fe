@@ -41,7 +41,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             placeholder="e.g., Lack of consensus on the effectiveness of remote patient monitoring for chronic heart failure..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -55,7 +55,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             placeholder="e.g., Existing reviews are outdated (pre-2020) and do not account for recent large-scale clinical trials..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
 
@@ -68,7 +68,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             helperText="Name of the stakeholder or researcher who identified this review need."
             placeholder="e.g., Clinical Guidelines Committee"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-[4px]"
+            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
           />
         </div>
       </div>
@@ -78,7 +78,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
         <Button
           type="submit"
           isLoading={isLoading}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 text-white shadow-none rounded-[4px] h-12"
+          className="flex-1 h-12"
         >
           Add Review Need
         </Button>
@@ -86,7 +86,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
           type="button"
           variant="secondary"
           onClick={onCancel}
-          className="px-6 border border-border bg-surface-white hover:bg-bg-primary text-text-primary shadow-none rounded-[4px] h-12"
+          className="px-6 h-12"
         >
           Cancel
         </Button>
