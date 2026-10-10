@@ -236,59 +236,59 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
+      className="fixed bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl px-3 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 text-white overflow-visible relative">
+      <div className="bg-surface-white border border-border rounded-xl shadow-2xl p-3 text-text-primary overflow-visible relative">
         {/* Background Accent */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-3 relative">
           {/* Section 1: Bulk Action Stats */}
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="bg-primary p-3 rounded-xl shadow-inner ring-4 ring-accent/20">
-              <CheckCircle2 className="w-6 h-6" />
+          <div className="flex items-center gap-3 flex-shrink-0">
+            <div className="w-10 h-10 flex items-center justify-center bg-primary rounded-xl shadow-inner ring-4 ring-accent/20">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-0.5">
+              <div className="text-[9px] text-accent font-bold uppercase tracking-widest mb-0.5">
                 Bulk Action
               </div>
-              <div className="text-xl font-black flex items-center gap-2 tabular-nums">
+              <div className="text-base font-black flex items-center gap-1.5 tabular-nums">
                 <span>{selectedCount}</span>
-                <span className="text-text-secondary text-xs font-medium uppercase">
+                <span className="text-text-secondary text-[11px] font-medium uppercase">
                   Papers
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="h-12 w-px bg-slate-700 hidden lg:block"></div>
+          <div className="h-12 w-px bg-border hidden lg:block"></div>
 
           {/* Section 2: Human or AI assignment */}
           <div className="flex-1 w-full min-w-0">
-            <div className="mb-3 inline-flex rounded border border-slate-700 bg-slate-800 p-1">
-              <button type="button" onClick={() => setAssignmentTarget("reviewers")} className={`rounded px-3 py-1.5 text-xs font-semibold ${assignmentTarget === "reviewers" ? "bg-blue-600 text-white" : "text-slate-300 hover:text-white"}`}>
+            <div className="mb-1.5 inline-flex rounded-lg border border-border bg-bg-secondary p-0.5">
+              <button type="button" onClick={() => setAssignmentTarget("reviewers")} className={`rounded-md px-2.5 py-1 text-xs font-semibold ${assignmentTarget === "reviewers" ? "bg-primary text-white" : "text-text-secondary hover:text-text-primary"}`}>
                 Human reviewers
               </button>
-              <button type="button" onClick={() => setAssignmentTarget("agents")} className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-xs font-semibold ${assignmentTarget === "agents" ? "bg-blue-600 text-white" : "text-slate-300 hover:text-white"}`}>
+              <button type="button" onClick={() => setAssignmentTarget("agents")} className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold ${assignmentTarget === "agents" ? "bg-primary text-white" : "text-text-secondary hover:text-text-primary"}`}>
                 <Bot className="h-3.5 w-3.5" /> AI agents
               </button>
             </div>
             {assignmentTarget === "reviewers" ? <>
-            <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-2 block flex items-center justify-between">
-              <span>Assign to Reviewers</span>
+            <label className="text-[9px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 block flex items-center justify-between">
+              <span>Assign reviewers</span>
               <span
-                className={`text-[9px] px-1.5 py-0.5 rounded ${selectedReviewers.size === 2 ? "text-blue-400 bg-blue-500/10" : "text-amber-500 bg-amber-500/10"}`}
+                className={`text-[9px] px-1.5 py-0.5 rounded ${selectedReviewers.size === 2 ? "text-accent bg-primary-light" : "text-amber-600 bg-amber-500/10"}`}
               >
-                Require 2 Reviewers
+                2 reviewers required
               </span>
             </label>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {/* Selector Button with Dropdown */}
               <Dropdown
                 trigger={
-                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500 hover:bg-slate-750 transition-all text-sm font-semibold whitespace-nowrap active:scale-95">
-                    <UserPlus className="w-4 h-4" />
+                  <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border bg-bg-secondary border-border text-text-primary hover:border-primary hover:bg-primary-light transition-all text-xs font-semibold whitespace-nowrap active:scale-95">
+                    <UserPlus className="w-3.5 h-3.5" />
                     Select Reviewers
                     <ChevronDown className="w-3.5 h-3.5 ml-1 text-text-secondary" />
                   </button>
@@ -297,8 +297,8 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                 position="top"
                 contentClassName="bg-transparent shadow-none ring-0 w-auto p-0"
               >
-                <div className="w-72 bg-slate-800 rounded-xl overflow-hidden shadow-2xl">
-                  <div className="p-3 border-b border-slate-700 bg-slate-850">
+                <div className="w-72 bg-surface-white border border-border rounded-xl overflow-hidden shadow-2xl">
+                  <div className="p-3 border-b border-border bg-bg-secondary">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                       <input
@@ -307,7 +307,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                         placeholder="Search reviewers..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all"
+                        className="w-full pl-9 pr-4 py-2 bg-surface-white border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent text-text-primary transition-all"
                       />
                     </div>
                   </div>
@@ -324,7 +324,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                       reviewers.map((member) => (
                         <label
                           key={member.userId}
-                          className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors group"
+                          className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-bg-secondary cursor-pointer transition-colors group"
                         >
                           <input
                             type="checkbox"
@@ -333,13 +333,13 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                               e.stopPropagation();
                               toggleReviewer(member);
                             }}
-                            className="w-4 h-4 rounded border-slate-600 text-accent focus:ring-accent bg-slate-900"
+                            className="w-4 h-4 rounded border-border text-accent focus:ring-accent bg-surface-white"
                           />
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 group-hover:bg-primary-hover transition-colors">
+                            <div className="w-6 h-6 rounded-full bg-primary-light flex items-center justify-center text-[10px] font-bold text-accent group-hover:bg-primary transition-colors">
                               {member.fullName.charAt(0)}
                             </div>
-                            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">
+                            <span className="text-xs font-medium text-text-primary group-hover:text-accent transition-colors">
                               {member.fullName}
                             </span>
                           </div>
@@ -352,7 +352,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                     )}
                   </div>
 
-                  <div className="p-3 border-t border-slate-700 bg-slate-850 flex items-center justify-between">
+                  <div className="p-3 border-t border-border bg-bg-secondary flex items-center justify-between">
                     <span className="text-[10px] text-text-secondary font-bold uppercase tabular-nums">
                       {selectedReviewers.size} Selected
                     </span>
@@ -361,7 +361,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                         e.stopPropagation();
                         setSelectedReviewers(new Map());
                       }}
-                      className="text-[10px] text-blue-400 font-bold hover:text-blue-300 transition-colors uppercase"
+                      className="text-[10px] text-accent font-bold hover:text-primary-hover transition-colors uppercase"
                     >
                       Clear All
                     </button>
@@ -375,13 +375,13 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   {visibleChips.map(([id, name]) => (
                     <div
                       key={id}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 whitespace-nowrap animate-in zoom-in-95 duration-200"
+                      className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-bg-secondary border border-border text-xs text-text-primary whitespace-nowrap animate-in zoom-in-95 duration-200"
                     >
-                      <Users className="w-3 h-3 text-blue-400" />
+                      <Users className="w-3 h-3 text-accent" />
                       {name}
                       <button
                         onClick={() => removeReviewer(id)}
-                        className="p-0.5 hover:bg-slate-700 rounded transition-colors"
+                        className="p-0.5 hover:bg-border rounded transition-colors"
                       >
                         <X className="w-3 h-3 text-text-secondary hover:text-red-400" />
                       </button>
@@ -389,18 +389,18 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   ))}
 
                   {remainingCount > 0 && (
-                    <div className="px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 border-dashed text-[10px] font-bold text-primary-light whitespace-nowrap cursor-help relative group">
+                    <div                     className="px-2 py-1 rounded-xl bg-bg-secondary border border-border border-dashed text-[10px] font-bold text-accent whitespace-nowrap cursor-help relative group">
                       +{remainingCount} more
                       {/* Tooltip on hover */}
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl p-3 z-(--z-index-popover) animate-in fade-in zoom-in-95">
-                        <div className="text-[10px] text-text-secondary uppercase font-black tracking-widest mb-2 border-b border-slate-800 pb-1">
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-surface-white border border-border rounded-xl shadow-2xl p-3 z-(--z-index-popover) animate-in fade-in zoom-in-95">
+                        <div className="text-[10px] text-text-secondary uppercase font-black tracking-widest mb-2 border-b border-border pb-1">
                           Also Assigned To
                         </div>
                         <div className="flex flex-col gap-1.5">
                           {selectedEntries.slice(2).map(([id, name]) => (
                             <div
                               key={id}
-                              className="flex items-center gap-2 text-xs text-slate-300"
+                              className="flex items-center gap-2 text-xs text-text-primary"
                             >
                               <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                               {name}
@@ -415,37 +415,37 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
               </div>
             </div>
             </> : <>
-              <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-2 block">
-                Assign selected papers to AI agents
+              <label className="text-[9px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 block">
+                Assign to AI agents
               </label>
               <Dropdown
-                trigger={<button type="button" className="flex items-center gap-2 rounded-[4px] border border-slate-700 bg-slate-800 px-4 py-2.5 text-sm font-semibold text-slate-200 hover:border-slate-500">
-                  <Bot className="h-4 w-4" />
+                trigger={<button type="button" className="flex items-center gap-1.5 rounded-lg border border-border bg-bg-secondary px-2.5 py-1.5 text-xs font-semibold text-text-primary hover:border-primary">
+                  <Bot className="h-3.5 w-3.5" />
                   {selectedAgents.size ? `${selectedAgents.size} agent(s) selected` : "Select AI agents"}
                   <ChevronDown className="ml-1 h-3.5 w-3.5 text-text-secondary" />
                 </button>}
                 position="top"
                 contentClassName="w-80 bg-transparent p-0 shadow-none ring-0"
               >
-                <div className="w-80 overflow-hidden rounded bg-slate-800 shadow-2xl">
+                <div className="w-80 overflow-hidden rounded border border-border bg-surface-white shadow-2xl">
                   <div className="max-h-56 overflow-y-auto p-2">
-                    {isLoadingAgents ? <div className="p-4 text-center text-xs text-slate-300">Loading project agents…</div>
+                    {isLoadingAgents ? <div className="p-4 text-center text-xs text-text-secondary">Loading project agents…</div>
                       : connectedAgents.length ? connectedAgents.map(({ agent }) => (
-                        <label key={agent.id} className="flex cursor-pointer items-center gap-3 rounded p-2.5 text-sm text-slate-200 hover:bg-slate-700/60">
+                        <label key={agent.id} className="flex cursor-pointer items-center gap-3 rounded p-2.5 text-sm text-text-primary hover:bg-bg-secondary">
                           <input type="checkbox" checked={selectedAgents.has(agent.id)} onChange={() => setSelectedAgents((current) => {
                             const next = new Map(current);
                             if (next.has(agent.id)) next.delete(agent.id); else next.set(agent.id, agent.name);
                             return next;
-                          })} className="h-4 w-4 rounded border-slate-600 bg-slate-900 text-blue-600" />
-                          <Bot className="h-4 w-4 text-blue-400" />
+                          })} className="h-4 w-4 rounded border-border bg-surface-white text-primary" />
+                          <Bot className="h-4 w-4 text-accent" />
                           {agent.name}
                         </label>
-                      )) : <div className="p-4 text-center text-xs text-slate-300">No active agents connected to this project.</div>}
+                        )) : <div className="p-4 text-center text-xs text-text-secondary">No active agents connected to this project.</div>}
                   </div>
-                  {!connectedAgents.length && !isLoadingAgents && <button type="button" onClick={() => navigate(`/projects/${projectId}/settings`)} className="w-full border-t border-slate-700 p-3 text-left text-xs font-semibold text-blue-300 hover:bg-slate-700/60">
+                  {!connectedAgents.length && !isLoadingAgents && <button type="button" onClick={() => navigate(`/projects/${projectId}/settings`)} className="w-full border-t border-border p-3 text-left text-xs font-semibold text-accent hover:bg-bg-secondary">
                     Connect an agent in Project Settings → AI Agents
                   </button>}
-                  {selectedAgents.size > 0 && <button type="button" onClick={() => setSelectedAgents(new Map())} className="w-full border-t border-slate-700 p-3 text-left text-xs font-semibold text-blue-300 hover:bg-slate-700/60">Clear selection</button>}
+                  {selectedAgents.size > 0 && <button type="button" onClick={() => setSelectedAgents(new Map())} className="w-full border-t border-border p-3 text-left text-xs font-semibold text-accent hover:bg-bg-secondary">Clear selection</button>}
                 </div>
               </Dropdown>
             </>}
@@ -456,7 +456,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
             <Button
               onClick={() => !isDisabled && (assignmentTarget === "reviewers" ? handleAssign() : void handleAssignAgents())}
               disabled={(assignmentTarget === "reviewers" ? selectedReviewers.size !== 2 || isPending : selectedAgents.size === 0 || isAssigningAgents) || isDisabled}
-              className="bg-primary hover:bg-primary-hover disabled:bg-slate-800 disabled:text-text-secondary disabled:border-slate-700 text-white font-bold py-3 px-8 rounded-xl shadow-none shadow-primary/10 border-none transition-all active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+              className="bg-primary hover:bg-primary-hover disabled:bg-bg-secondary disabled:text-text-secondary disabled:border-border text-white font-bold py-2 px-4 rounded-lg shadow-none shadow-primary/10 border-none transition-all active:scale-95 flex items-center gap-1.5 group whitespace-nowrap text-xs"
             >
               {(isPending || isAssigningAgents) ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
