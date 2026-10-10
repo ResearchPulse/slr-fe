@@ -50,11 +50,11 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
   if (fields.length === 0) return null;
 
   return (
-    <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
-      <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-6">
+    <div className="bg-surface-white rounded-xl border border-border p-5 shadow-none">
+      <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-4">
         Publication Details
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4">
         {fields.map((field) => (
           <div key={field.label} className="space-y-1">
             <div className="flex items-center gap-2">
