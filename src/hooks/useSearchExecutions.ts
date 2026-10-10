@@ -13,7 +13,7 @@ import type {
   SearchExecutionResponse,
   PrismaStatisticsResponse,
 } from "../types/searchExecution";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 
 /**
  * Fetch all search executions for an identification process
@@ -109,11 +109,11 @@ export const useSearchExecutionMutations = () => {
     mutationFn: ({ processId, data }: { processId: string; data: CreateSearchExecutionRequest }) =>
       searchExecutionService.createSearchExecution(processId, data),
     onSuccess: (_, variables) => {
-      toast.success("Search execution created successfully");
+      toastSuccess("Search execution created successfully");
       invalidate(variables.processId);
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to create search execution"));
+      toastError(getErrorMessage(error, "Failed to create search execution"));
     },
   });
 
@@ -121,14 +121,14 @@ export const useSearchExecutionMutations = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateSearchExecutionRequest }) =>
       searchExecutionService.updateSearchExecution(id, data),
     onSuccess: () => {
-      toast.success("Search execution updated successfully");
+      toastSuccess("Search execution updated successfully");
       // We don't always know the processId from the mutation args,
       // so invalidate broadly
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.searchExecutions.all });
       queryClient.invalidateQueries({ queryKey: ["identification-processes"] });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update search execution"));
+      toastError(getErrorMessage(error, "Failed to update search execution"));
     },
   });
 
@@ -136,11 +136,11 @@ export const useSearchExecutionMutations = () => {
     mutationFn: ({ id }: { id: string; processId?: string }) =>
       searchExecutionService.deleteSearchExecution(id),
     onSuccess: (_, variables) => {
-      toast.success("Search execution deleted successfully");
+      toastSuccess("Search execution deleted successfully");
       invalidate(variables.processId);
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to delete search execution"));
+      toastError(getErrorMessage(error, "Failed to delete search execution"));
     },
   });
 

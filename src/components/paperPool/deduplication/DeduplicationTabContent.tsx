@@ -226,7 +226,7 @@ export default function DeduplicationTabContent({
       {/* Loading state */}
       {isLoading && duplicatePairs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16">
-          <FiRefreshCw className="w-8 h-8 text-blue-500 animate-spin mb-3" />
+          <FiRefreshCw className="w-8 h-8 text-accent animate-spin mb-3" />
           <p className="text-text-secondary font-medium">
             Loading duplicate pairs...
           </p>
@@ -247,7 +247,7 @@ export default function DeduplicationTabContent({
           {onRefetch && (
             <button
               onClick={onRefetch}
-              className="mt-4 px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"
+              className="mt-4 px-4 py-2 text-sm font-medium text-accent bg-primary-light rounded-xl hover:bg-accent/10 transition-colors"
             >
               Try Again
             </button>
@@ -258,7 +258,7 @@ export default function DeduplicationTabContent({
       {/* Main content (only when not loading initial and no error) */}
       {!isLoading && !error && (
         <>
-          <div className="rounded-2xl border border-border bg-surface-white p-5">
+          <div className="rounded-xl border border-border bg-surface-white p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-bold text-text-primary">
@@ -309,7 +309,7 @@ export default function DeduplicationTabContent({
               {/* Right Panel: Comparison */}
               {selectedDuplicate ? (
                 <div className="lg:col-span-2">
-                  <div className="bg-surface-white border border-border rounded-2xl p-6">
+                  <div className="bg-surface-white border border-border rounded-xl p-6">
                     {/* Header with undo */}
                     <div className="flex items-center justify-between mb-4">
                       <div>
@@ -357,7 +357,7 @@ export default function DeduplicationTabContent({
                         {undoStack.length > 0 && (
                           <button
                             onClick={handleUndo}
-                            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-blue-600 transition-colors px-3 py-1.5 rounded-xl hover:bg-blue-50"
+                            className="flex items-center gap-1.5 text-sm text-text-secondary hover:text-primary-hover transition-colors px-3 py-1.5 rounded-xl hover:bg-primary-light"
                             title="Undo last resolution"
                           >
                             <FiCornerUpLeft className="w-4 h-4" />
@@ -383,7 +383,7 @@ export default function DeduplicationTabContent({
 
                     {/* Confirmation overlay */}
                     {confirmingDecision && (
-                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-2xl">
+                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-xl">
                         <div className="flex items-start gap-3">
                           <FiAlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
                           <div className="flex-1">
@@ -423,7 +423,7 @@ export default function DeduplicationTabContent({
                     <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
                       <PaperComparisonCard
                         label="PAPER A"
-                        labelColor="text-blue-600"
+                        labelColor="text-accent"
                         paper={selectedDuplicate.originalPaper}
                         otherPaper={selectedDuplicate.duplicatePaper}
                         isResolved={selectedDuplicate.status === "resolved"}
@@ -501,7 +501,7 @@ export default function DeduplicationTabContent({
                 </div>
               ) : (
                 // No pair selected placeholder
-                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-2xl p-12">
+                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-xl p-12">
                   <div className="text-center">
                     <FiLayers className="w-12 h-12 text-text-secondary mx-auto mb-3" />
                     <p className="text-text-secondary font-medium">

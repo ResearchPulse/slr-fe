@@ -28,19 +28,22 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
 }) => {
   const variantStyles = {
     danger: {
-      iconBg: "bg-rose-50",
-      iconColor: "text-rose-600",
-      confirmBtn: "bg-rose-600 hover:bg-rose-700 shadow-rose-100",
+      iconBg: "bg-error/10",
+      iconColor: "text-error",
+      confirmVariant: "danger" as const,
+      confirmClassName: "",
     },
     warning: {
-      iconBg: "bg-amber-50",
-      iconColor: "text-amber-600",
-      confirmBtn: "bg-amber-600 hover:bg-amber-700 shadow-amber-100",
+      iconBg: "bg-warning/10",
+      iconColor: "text-warning",
+      confirmVariant: "primary" as const,
+      confirmClassName: "bg-warning hover:bg-warning/90 focus:ring-warning/20",
     },
     info: {
-      iconBg: "bg-bg-secondary",
+      iconBg: "bg-primary-light",
       iconColor: "text-accent",
-      confirmBtn: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-100",
+      confirmVariant: "primary" as const,
+      confirmClassName: "",
     },
   };
 
@@ -56,7 +59,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </div>
 
         <div className="space-y-2">
-          <p className="text-slate-600 font-medium leading-relaxed">
+          <p className="text-text-secondary font-medium leading-relaxed">
             {message}
           </p>
         </div>
@@ -65,15 +68,16 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <Button
             variant="outline"
             onClick={onClose}
-            className="flex-1 rounded-2xl font-bold py-3"
+            className="flex-1"
             disabled={isLoading}
           >
             {cancelText}
           </Button>
           <Button
+            variant={style.confirmVariant}
             onClick={onConfirm}
             isLoading={isLoading}
-            className={`flex-1 rounded-2xl font-bold py-3 text-white shadow-lg border-none! ${style.confirmBtn}`}
+            className={`flex-1 ${style.confirmClassName}`}
           >
             {confirmText}
           </Button>

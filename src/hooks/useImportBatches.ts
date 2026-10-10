@@ -12,7 +12,7 @@ import type {
   ImportBatch,
 } from "../types/identification";
 import type { PaperResponse } from "../types/paper";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 
 /**
  * Fetch all import batches for an identification process
@@ -144,11 +144,11 @@ export const useImportBatchMutations = () => {
       processId?: string;
     }) => importBatchService.createImportBatch(searchExecutionId, data),
     onSuccess: (_, variables) => {
-      toast.success("Import batch created successfully");
+      toastSuccess("Import batch created successfully");
       invalidate(variables.processId, variables.searchExecutionId);
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to create import batch"));
+      toastError(getErrorMessage(error, "Failed to create import batch"));
     },
   });
 
@@ -156,7 +156,7 @@ export const useImportBatchMutations = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateImportBatchRequest }) =>
       importBatchService.updateImportBatch(id, data),
     onSuccess: (_, variables) => {
-      toast.success("Import batch updated successfully");
+      toastSuccess("Import batch updated successfully");
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.importBatches.detail(variables.id),
       });
@@ -164,7 +164,7 @@ export const useImportBatchMutations = () => {
       queryClient.invalidateQueries({ queryKey: ["identification-processes"] });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update import batch"));
+      toastError(getErrorMessage(error, "Failed to update import batch"));
     },
   });
 
@@ -172,11 +172,11 @@ export const useImportBatchMutations = () => {
     mutationFn: ({ id }: { id: string; processId?: string; searchExecutionId?: string }) =>
       importBatchService.deleteImportBatch(id),
     onSuccess: (_, variables) => {
-      toast.success("Import batch deleted successfully");
+      toastSuccess("Import batch deleted successfully");
       invalidate(variables.processId, variables.searchExecutionId);
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to delete import batch"));
+      toastError(getErrorMessage(error, "Failed to delete import batch"));
     },
   });
 

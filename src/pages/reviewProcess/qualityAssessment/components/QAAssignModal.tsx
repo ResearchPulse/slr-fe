@@ -69,8 +69,8 @@ export function QAAssignModal({
       closeOnOutsideClick={true}
     >
       <div className="space-y-6">
-        <div className="flex justify-between items-center bg-bg-secondary/80 rounded-[4px] w-full border border-border/50 p-1">
-          <button className="flex items-center gap-2 px-6 py-2.5 rounded-[4px] text-[11px] font-black uppercase tracking-wider transition-all duration-300 bg-surface-white text-accent shadow-sm shadow-slate-200 border border-border">
+        <div className="flex justify-between items-center bg-bg-secondary/80 rounded-xl w-full border border-border/50 p-1">
+          <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 bg-surface-white text-accent shadow-sm shadow-slate-200 border border-border">
             <FiUsers size={14} />
             Members List
           </button>
@@ -90,7 +90,7 @@ export function QAAssignModal({
         </div>
 
         {hasResolution && (
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-[4px] animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
             <p className="text-xs font-bold text-amber-700 tracking-wider text-center">
               This paper has already been resolved. You cannot change reviewer
               assignments.
@@ -110,7 +110,7 @@ export function QAAssignModal({
               placeholder="Search active team members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 bg-bg-secondary border border-border rounded-[4px] text-xs font-bold text-text-primary outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+              className="w-full pl-11 pr-4 py-3.5 bg-bg-secondary border border-border rounded-xl text-xs font-bold text-text-primary outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/30 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
             />
           </div>
 
@@ -141,12 +141,12 @@ export function QAAssignModal({
                       }
                     }}
                     className={cn(
-                      "group relative flex items-center gap-4 p-4 border rounded-[4px] transition-all duration-300",
+                      "group relative flex items-center gap-4 p-4 border rounded-xl transition-all duration-300",
                       isDisabled
                         ? "opacity-50 cursor-not-allowed bg-bg-secondary border-border"
-                        : "cursor-pointer hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-50/50",
+                        : "cursor-pointer hover:border-accent/30 hover:shadow-xl hover:shadow-primary/10",
                       isSelected && !isAlreadyAssigned
-                        ? "bg-bg-secondary/50 border-indigo-200 shadow-sm shadow-indigo-100/50"
+                        ? "bg-bg-secondary/50 border-accent/30 shadow-sm shadow-primary/10"
                         : !isDisabled
                           ? "bg-surface-white border-border"
                           : "",
@@ -154,9 +154,9 @@ export function QAAssignModal({
                   >
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-[4px] flex items-center justify-center text-sm font-black shrink-0 transition-transform",
+                        "w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black shrink-0 transition-transform",
                         isSelected || isAlreadyAssigned
-                          ? "bg-accent text-white shadow-lg shadow-indigo-100"
+                          ? "bg-accent text-white shadow-lg shadow-primary/10"
                           : "bg-bg-secondary text-text-secondary group-hover:scale-105",
                       )}
                     >
@@ -169,7 +169,7 @@ export function QAAssignModal({
                           {displayName}
                         </h4>
                         {isAlreadyAssigned && (
-                          <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest bg-bg-secondary text-accent border border-indigo-100">
+                          <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest bg-bg-secondary text-accent border border-accent/30">
                             Assigned
                           </span>
                         )}
@@ -185,7 +185,7 @@ export function QAAssignModal({
                         checked={isSelected || isAlreadyAssigned}
                         disabled={isDisabled}
                         readOnly
-                        className="w-5 h-5 rounded-[4px] border-2 border-slate-300 text-accent focus:ring-indigo-500/30 transition-all checked:border-indigo-600 cursor-pointer pointer-events-none"
+                        className="w-5 h-5 rounded-[4px] border-2 border-slate-300 text-accent focus:ring-accent/30 transition-all checked:border-accent cursor-pointer pointer-events-none"
                       />
                     </div>
                   </div>
@@ -206,7 +206,7 @@ export function QAAssignModal({
         <div className="flex items-center justify-between pt-6 border-t border-slate-50">
           <div className="flex items-center gap-3">
             {selectedUserIds.length > 0 && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-bg-secondary rounded-[4px] border border-indigo-100/50">
+              <div className="flex items-center gap-2 px-4 py-2 bg-bg-secondary rounded-xl border border-accent/30">
                 <p className="text-[10px] font-black text-accent uppercase tracking-wider">
                   {selectedUserIds.length} Selected
                 </p>
@@ -227,9 +227,9 @@ export function QAAssignModal({
                 selectedUserIds.length === 0 || isAssigning || hasResolution
               }
               className={cn(
-                "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-[4px] transition-all active:scale-95 uppercase tracking-widest shadow-lg min-w-[180px] justify-center",
+                "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-xl transition-all active:scale-95 uppercase tracking-widest shadow-lg min-w-[180px] justify-center",
                 selectedUserIds.length > 0 && !isAssigning
-                  ? "bg-slate-900 text-white hover:bg-accent hover:shadow-indigo-100"
+                  ? "bg-slate-900 text-white hover:bg-accent hover:shadow-primary/10"
                   : "bg-bg-secondary text-slate-300 cursor-not-allowed shadow-none",
               )}
             >

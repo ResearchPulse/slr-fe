@@ -140,7 +140,7 @@ export default function SelectionChecklist({
   if (error || !data?.data) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-surface-white border-l border-border">
-        <div className="w-16 h-16 bg-bg-secondary text-slate-300 rounded-[4px] flex items-center justify-center mb-4 border border-dashed border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-slate-300 rounded-xl flex items-center justify-center mb-4 border border-dashed border-border">
           <FiClipboard className="w-8 h-8" />
         </div>
         <h3 className="text-sm font-bold text-slate-800 mb-2">
@@ -219,7 +219,7 @@ export default function SelectionChecklist({
       }}
       disabled={!submission.isFromTemplate}
       className={cn(
-        "w-7 h-7 rounded-[4px] border-2 flex items-center justify-center transition-all shrink-0 shadow-none",
+        "w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 shadow-none",
         submission.isFromTemplate
           ? "cursor-pointer hover:scale-110 active:scale-95"
           : "cursor-default opacity-80",
@@ -240,7 +240,7 @@ export default function SelectionChecklist({
     <div className="flex flex-col h-full bg-bg-secondary border-l border-border overflow-hidden">
       {/* Sidebar Placeholder / Header */}
       <div className="flex-1 flex flex-col items-center justify-center p-6 text-center gap-4">
-        <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-[4px] flex items-center justify-center shadow-none">
+        <div className="w-16 h-16 bg-primary-light text-accent rounded-xl flex items-center justify-center shadow-none">
           <FiClipboard className="w-8 h-8" />
         </div>
         <div className="space-y-1">
@@ -253,7 +253,7 @@ export default function SelectionChecklist({
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-surface-white border border-border text-text-primary text-sm font-semibold rounded-[4px] hover:bg-bg-secondary hover:border-slate-300 active:scale-95 transition-all shadow-none"
+          className="flex items-center gap-2 px-5 py-2.5 bg-surface-white border border-border text-text-primary text-sm font-semibold rounded-xl hover:bg-bg-secondary hover:border-slate-300 active:scale-95 transition-all shadow-none"
         >
           <FiMaximize2 className="w-4 h-4" />
           Expand Checklist
@@ -269,7 +269,7 @@ export default function SelectionChecklist({
         size="xl"
       >
         <div className="flex flex-col gap-6">
-          <div className="bg-bg-secondary/50 rounded-[4px] border border-border p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-bg-secondary/50 rounded-xl border border-border p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
             <PreviewDocument
               draft={mappedDraft as any}
               renderSectionTitle={(section) =>
@@ -296,7 +296,7 @@ export default function SelectionChecklist({
                 <button
                   onClick={() => setIsConfirmModalOpen(true)}
                   disabled={submitMutation.isPending}
-                  className="flex items-center gap-2 px-8 py-3 bg-slate-900 text-white font-bold text-sm rounded-[4px] hover:bg-slate-800 disabled:bg-slate-400 active:scale-[0.98] transition-all shadow-none shadow-slate-200"
+                  className="flex items-center gap-2 px-8 py-3 bg-slate-900 text-white font-bold text-sm rounded-xl hover:bg-slate-800 disabled:bg-slate-400 active:scale-[0.98] transition-all shadow-none shadow-slate-200"
                 >
                   <FiExternalLink className="w-4 h-4" />
                   {submitMutation.isPending

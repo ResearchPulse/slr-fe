@@ -215,7 +215,7 @@ const AuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-accent px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
           >
             <FiDownload className="w-4 h-4" />
             Export
@@ -224,7 +224,7 @@ const AuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary hover:text-accent"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary hover:text-accent"
           >
             <FiRefreshCw className="w-4 h-4" />
             Reset filters

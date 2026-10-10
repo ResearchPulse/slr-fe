@@ -40,16 +40,16 @@ export default function ConfirmationModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/45 px-4 py-6 backdrop-blur-sm"
+      className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 px-4 py-6"
       onClick={handleBackdropClick}
     >
       <div
-        className="w-full max-w-lg overflow-hidden rounded-[4px] border border-border bg-surface-white shadow-2xl"
+        className="w-full max-w-lg overflow-hidden rounded-xl border border-border bg-surface-white shadow-2xl"
         onClick={handleDialogClick}
       >
         <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
           <div className="flex items-start gap-3">
-            <div className="rounded-[4px] bg-amber-50 p-3 text-amber-600 shadow-sm">
+            <div className="rounded-xl bg-amber-50 p-3 text-amber-600 shadow-sm">
               <AlertTriangle className="h-6 w-6" />
             </div>
             <div>
@@ -69,14 +69,14 @@ export default function ConfirmationModal({
             type="button"
             onClick={onClose}
             disabled={isConfirming}
-            className="rounded-full p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-50"
             aria-label="Close confirmation"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-border px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-border bg-bg-secondary px-6 py-4">
           <Button variant="outline" onClick={onClose} disabled={isConfirming}>
             Cancel
           </Button>

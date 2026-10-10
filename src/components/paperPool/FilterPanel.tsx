@@ -23,11 +23,11 @@ export default function FilterPanel({
 }: FilterPanelProps) {
   if (isCollapsed) {
     return (
-      <aside className="bg-surface-white border border-border rounded-[4px] p-2 sticky top-4 h-fit">
+      <aside className="bg-surface-white border border-border rounded-xl p-2 sticky top-4 h-fit">
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="w-full flex items-center justify-center gap-1 rounded-[4px] px-2 py-3 text-xs font-semibold text-text-secondary hover:bg-bg-secondary"
+          className="w-full flex items-center justify-center gap-1 rounded-xl px-2 py-3 text-xs font-semibold text-text-secondary hover:bg-bg-secondary"
           aria-label="Expand filters"
         >
           <FiChevronRight className="h-4 w-4" />
@@ -38,7 +38,7 @@ export default function FilterPanel({
   }
 
   return (
-    <aside className="bg-surface-white border border-border rounded-[4px] p-4 space-y-4 sticky top-4">
+    <aside className="bg-surface-white border border-border rounded-xl p-4 space-y-4 sticky top-4">
       <div className="flex items-start justify-between gap-2">
         <div>
           <h3 className="text-sm font-semibold text-text-primary">Filters</h3>
@@ -49,7 +49,7 @@ export default function FilterPanel({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="inline-flex items-center justify-center rounded-[4px] p-1.5 text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+          className="inline-flex items-center justify-center rounded-xl p-1.5 text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
           aria-label="Collapse filters"
         >
           <FiChevronLeft className="h-4 w-4" />
@@ -62,7 +62,7 @@ export default function FilterPanel({
           value={filters.keyword}
           onChange={(e) => onChange({ ...filters, keyword: e.target.value })}
           placeholder="e.g. machine learning"
-          className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
         />
       </div>
 
@@ -85,7 +85,7 @@ export default function FilterPanel({
                 yearFrom: value ? Number(value) : null,
               });
             }}
-            className="h-10 w-full rounded-lg border border-border px-3 text-sm"
+            className="h-10 w-full rounded-xl border border-border px-3 text-sm"
           />
         </div>
         <div className="space-y-2">
@@ -106,7 +106,7 @@ export default function FilterPanel({
                 yearTo: value ? Number(value) : null,
               });
             }}
-            className="h-10 w-full rounded-lg border border-border px-3 text-sm"
+            className="h-10 w-full rounded-xl border border-border px-3 text-sm"
           />
         </div>
       </div>
@@ -120,7 +120,7 @@ export default function FilterPanel({
           onChange={(e) =>
             onChange({ ...filters, searchSourceId: e.target.value })
           }
-          className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
         >
           <option value="all">All</option>
           {availableSources.map((source) => (
@@ -140,7 +140,7 @@ export default function FilterPanel({
           onChange={(e) =>
             onChange({ ...filters, importBatchId: e.target.value })
           }
-          className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
         >
           <option value="all">All</option>
           {availableBatches.map((batch) => (
@@ -163,7 +163,7 @@ export default function FilterPanel({
               doiState: e.target.value as PaperPoolFilters["doiState"],
             })
           }
-          className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
         >
           <option value="all">All</option>
           <option value="has">Has DOI</option>
@@ -184,7 +184,7 @@ export default function FilterPanel({
                 .value as PaperPoolFilters["fullTextState"],
             })
           }
-          className="w-full rounded-[4px] border border-border px-3 py-2 text-sm"
+          className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
         >
           <option value="all">All</option>
           <option value="has">Has PDF</option>

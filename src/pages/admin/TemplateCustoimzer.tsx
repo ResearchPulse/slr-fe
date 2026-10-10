@@ -614,7 +614,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                 setChecklistType(Number(event.target.value) as ChecklistType)
               }
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[4px] bg-surface-white text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-surface-white text-sm"
             >
               <option value={ChecklistTypeValue.FULL}>Full</option>
               <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
@@ -628,7 +628,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
       </div>
 
       {/* Items Section */}
-      <div className="bg-bg-primary rounded-[4px] p-6 mb-8">
+      <div className="bg-bg-primary rounded-xl p-6 mb-8">
         <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
           <h2 className="text-xl font-semibold text-text-primary">
             Checklist Items ({items.length})
@@ -720,7 +720,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                 {group.nodes.length > 0 ? (
                   renderTreeNodes(group.nodes)
                 ) : (
-                  <div className="text-sm text-text-secondary border border-dashed border-gray-300 rounded-[4px] p-4">
+                  <div className="text-sm text-text-secondary border border-dashed border-gray-300 rounded-xl p-4">
                     No items in this section yet. Use Add Item to create
                     top-level items.
                   </div>
@@ -816,7 +816,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
   return (
     <div
       className={cn(
-        "border rounded-[4px] p-4 transition-colors",
+        "border rounded-xl p-4 transition-colors",
         depthClass,
         isGroupingItem
           ? "bg-amber-50 border-amber-200"
@@ -1113,7 +1113,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
     >
       <div className="space-y-4">
         {mode === "sub-item" && parentItem && (
-          <div className="rounded-[4px] border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
+          <div className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
             Adding as sub-item under: {parentItem.itemNumber} -{" "}
             {parentItem.topic}
           </div>
@@ -1124,7 +1124,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
             Item Kind
           </label>
           {mode === "sub-item" ? (
-            <div className="rounded-[4px] border border-border bg-bg-primary px-3 py-2 text-sm text-gray-700">
+            <div className="rounded-xl border border-border bg-bg-primary px-3 py-2 text-sm text-gray-700">
               Normal Item only
             </div>
           ) : (
@@ -1133,7 +1133,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("normal")}
                 className={cn(
-                  "px-3 py-2 rounded-[4px] border text-sm font-medium transition-colors",
+                  "px-3 py-2 rounded-xl border text-sm font-medium transition-colors",
                   effectiveKind === "normal"
                     ? "border-emerald-300 bg-emerald-50 text-emerald-700"
                     : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
@@ -1145,7 +1145,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("grouping")}
                 className={cn(
-                  "px-3 py-2 rounded-[4px] border text-sm font-medium transition-colors",
+                  "px-3 py-2 rounded-xl border text-sm font-medium transition-colors",
                   effectiveKind === "grouping"
                     ? "border-amber-300 bg-amber-50 text-amber-800"
                     : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
@@ -1202,7 +1202,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 setSelectedSection(e.target.value as ChecklistSection)
               }
               disabled={mode === "sub-item"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-[4px] bg-surface-white text-sm"
+              className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-surface-white text-sm"
             >
               {Array.from(
                 new Set([

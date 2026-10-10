@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../../../utils/toast";
 import { qualityAssessmentService } from "../../../../services/qualityAssessmentService";
 import { QUERY_KEYS } from "../../../../constants/queryKeys";
 import { getErrorMessage } from "../../../../utils/errorUtils";
@@ -58,23 +58,23 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
   const assignMutation = useMutation({
     mutationFn: (data: QualityAssessmentAssignmentRequest) => qualityAssessmentService.assignReviewers(data),
     onSuccess: () => {
-      toast.success("Members assigned successfully");
+      toastSuccess("Members assigned successfully");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.papers(id ?? "") });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to assign members"));
+      toastError(getErrorMessage(error, "Failed to assign members"));
     }
   });
 
   const autoResolveMutation = useMutation({
     mutationFn: (data: AutoResolveQualityAssessmentRequest) => qualityAssessmentService.autoResolve(data),
     onSuccess: () => {
-      toast.success("Auto-resolution completed successfully");
+      toastSuccess("Auto-resolution completed successfully");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.papers(id ?? "") });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to auto-resolve papers"));
+      toastError(getErrorMessage(error, "Failed to auto-resolve papers"));
     }
   });
 
@@ -83,10 +83,10 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       qualityAssessmentService.submitDecisions(vars),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
-      toast.success("Decisions saved successfully");
+      toastSuccess("Decisions saved successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to save decisions"));
+      toastError(getErrorMessage(error, "Failed to save decisions"));
     }
   });
 
@@ -95,10 +95,10 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       qualityAssessmentService.updateDecisions(vars),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
-      toast.success("Decisions updated successfully");
+      toastSuccess("Decisions updated successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update decisions"));
+      toastError(getErrorMessage(error, "Failed to update decisions"));
     }
   });
 
@@ -108,10 +108,10 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.papers(id ?? "") });
-      toast.success("Resolution submitted successfully");
+      toastSuccess("Resolution submitted successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to submit resolution"));
+      toastError(getErrorMessage(error, "Failed to submit resolution"));
     }
   });
 
@@ -121,34 +121,34 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.papers(id ?? "") });
-      toast.success("Resolution updated successfully");
+      toastSuccess("Resolution updated successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update resolution"));
+      toastError(getErrorMessage(error, "Failed to update resolution"));
     }
   });
 
   const aiDecisionMutation = useMutation({
     mutationFn: (data: AiDecisionRequest) => qualityAssessmentService.getAiDecision(data),
     onSuccess: (res: ApiResponse<AutomateQualityAssessmentResponse>) => {
-      toast.success("AI analysis completed successfully");
+      toastSuccess("AI analysis completed successfully");
       return res.data;
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to get AI decision"));
+      toastError(getErrorMessage(error, "Failed to get AI decision"));
     }
   });
 
   const startProcessMutation = useMutation({
     mutationFn: () => qualityAssessmentService.start(id!),
-    onSuccess: () => toast.success("Quality Assessment started"),
-    onError: (error) => toast.error(getErrorMessage(error, "Failed to start Quality Assessment")),
+    onSuccess: () => toastSuccess("Quality Assessment started"),
+    onError: (error) => toastError(getErrorMessage(error, "Failed to start Quality Assessment")),
   });
 
   const completeProcessMutation = useMutation({
     mutationFn: () => qualityAssessmentService.complete(id!),
-    onSuccess: () => toast.success("Quality Assessment completed"),
-    onError: (error) => toast.error(getErrorMessage(error, "Failed to complete Quality Assessment")),
+    onSuccess: () => toastSuccess("Quality Assessment completed"),
+    onError: (error) => toastError(getErrorMessage(error, "Failed to complete Quality Assessment")),
   });
 
   const upsertStrategyMutation = useMutation({
@@ -157,7 +157,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.strategies(id ?? "") });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to save Quality Assessment strategy"));
+      toastError(getErrorMessage(error, "Failed to save Quality Assessment strategy"));
     }
   });
 
@@ -167,7 +167,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.strategies(id ?? "") });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to save Quality Assessment checklist"));
+      toastError(getErrorMessage(error, "Failed to save Quality Assessment checklist"));
     }
   });
 
@@ -175,11 +175,11 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
   const bulkCriteriaMutation = useMutation({
     mutationFn: (data: QualityAssessmentCriterion[]) => qualityAssessmentService.bulkCriteria(data),
     onSuccess: () => {
-      toast.success("Quality Assessment Strategies saved successfully");
+      toastSuccess("Quality Assessment Strategies saved successfully");
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.strategies(id ?? "") });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to save Quality Assessment strategies"));
+      toastError(getErrorMessage(error, "Failed to save Quality Assessment strategies"));
     }
   });
 
@@ -195,9 +195,9 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-      toast.success("Excel exported successfully");
+      toastSuccess("Excel exported successfully");
     } catch (error) {
-       toast.error(getErrorMessage(error, "Failed to export Excel"));
+       toastError(getErrorMessage(error, "Failed to export Excel"));
     }
   };
 

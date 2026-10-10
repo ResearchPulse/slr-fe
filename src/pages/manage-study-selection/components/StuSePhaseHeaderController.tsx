@@ -59,19 +59,19 @@ export const StuSePhaseHeaderController: React.FC<
   };
 
   return (
-    <div className="z-10 grid shrink-0 grid-cols-1 items-center gap-2 border-b border-[#dce6ed] bg-white px-3 py-1.5 shadow-sm xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] xl:px-4">
+    <div className="z-10 grid shrink-0 grid-cols-1 items-center gap-2 border-b border-border bg-white px-3 py-1.5 shadow-sm xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] xl:px-4">
       <div className="flex items-center gap-4">
         <button
           onClick={handleBack}
-          className="rounded-lg border border-[#dce6ed] p-2 text-slate-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+          className="rounded-xl border border-border p-2 text-slate-500 transition-colors hover:border-accent/20 hover:bg-primary-light hover:text-accent"
           title="Back to Process Workspace"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-2">
-            <div className="rounded-xl bg-blue-50 p-2.5">
-            <LayoutList className="h-5 w-5 text-blue-700" />
+            <div className="rounded-xl bg-primary-light p-2.5">
+            <LayoutList className="h-5 w-5 text-accent" />
           </div>
           <div>
             <h1 className="mb-1 text-base font-bold leading-none text-slate-900">
@@ -94,9 +94,9 @@ export const StuSePhaseHeaderController: React.FC<
               <button
                 onClick={() => onPhaseChange(phase.id)}
                 className={cn(
-                  "group relative flex items-center gap-2.5 rounded-lg px-3 py-2 transition-all duration-200 sm:px-4",
+                  "group relative flex items-center gap-2.5 rounded-xl px-3 py-2 transition-all duration-200 sm:px-4",
                   isActive
-                    ? "bg-white text-blue-700 shadow-sm ring-1 ring-slate-200"
+                    ? "bg-white text-accent shadow-sm ring-1 ring-slate-200"
                     : "text-slate-500 hover:bg-white/70 hover:text-slate-900",
                 )}
               >
@@ -104,8 +104,8 @@ export const StuSePhaseHeaderController: React.FC<
                   className={cn(
                     "w-4 h-4 transition-transform duration-200",
                     isActive
-                    ? "text-blue-700"
-                      : "text-slate-400 group-hover:text-blue-600",
+                    ? "text-accent"
+                      : "text-slate-400 group-hover:text-accent",
                   )}
                 />
                 <div className="text-left">
@@ -114,7 +114,7 @@ export const StuSePhaseHeaderController: React.FC<
                   </div>
                 </div>
                 {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-blue-600" />
+                  <div className="absolute -bottom-1 left-1/2 h-1 w-5 -translate-x-1/2 rounded-full bg-primary" />
                 )}
               </button>
               {index < PHASES.length - 1 && (
@@ -131,9 +131,9 @@ export const StuSePhaseHeaderController: React.FC<
         <div className="mr-1 hidden h-8 w-px bg-slate-200 xl:block" />
         <button
           onClick={() => setIsDataSetOpen(true)}
-          className="group relative flex items-center gap-2.5 overflow-hidden rounded-lg bg-emerald-600 px-3.5 py-2.5 text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800 sm:px-4"
+          className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl bg-emerald-600 px-3.5 py-2.5 text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800 sm:px-4"
         >
-          <div className="rounded-md bg-white/15 p-1.5 transition-colors group-hover:bg-white/25">
+          <div className="rounded-xl bg-white/15 p-1.5 transition-colors group-hover:bg-white/25">
             <Database className="h-4 w-4 text-white" />
           </div>
           <div className="text-left">

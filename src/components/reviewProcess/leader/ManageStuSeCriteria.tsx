@@ -64,7 +64,6 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
             size="sm"
             onClick={onAiSuggest}
             disabled={isGenerating}
-            className="bg-accent hover:bg-indigo-700 shadow-none shadow-indigo-100"
           >
             {isGenerating ? (
               <LoadingSpinner size="sm" className="mr-2" />
@@ -81,8 +80,8 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
       </div>
 
       {criteriaGroups.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-border rounded-[4px] bg-bg-secondary/50">
-          <div className="w-16 h-16 bg-surface-white rounded-[4px] shadow-none border border-border flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-border rounded-xl bg-bg-secondary/50">
+          <div className="w-16 h-16 bg-surface-white rounded-xl shadow-none border border-border flex items-center justify-center mb-4">
             <ClipboardList className="w-8 h-8 text-slate-300" />
           </div>
           <h4 className="text-text-primary font-bold">
@@ -150,8 +149,8 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
   return (
     <div
       className={clsx(
-        "group bg-surface-white rounded-[4px] border transition-all duration-300 overflow-hidden shadow-none hover:shadow-none",
-        group.isAiGenerated ? "border-indigo-100" : "border-border",
+        "group bg-surface-white rounded-xl border transition-all duration-300 overflow-hidden shadow-none hover:shadow-none",
+        group.isAiGenerated ? "border-primary/20" : "border-border",
       )}
     >
       {/* Group Header */}
@@ -159,14 +158,14 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
         className={clsx(
           "px-6 py-4 flex items-center justify-between border-b",
           group.isAiGenerated
-            ? "bg-bg-secondary/50 border-indigo-100"
+            ? "bg-bg-secondary/50 border-primary/20"
             : "bg-bg-secondary/50 border-border",
         )}
       >
         <div className="flex items-center gap-3">
           <div
             className={clsx(
-              "w-8 h-8 rounded-[4px] flex items-center justify-center font-bold text-xs shadow-none",
+              "w-8 h-8 rounded-lg flex items-center justify-center font-bold text-xs shadow-none",
               group.isAiGenerated
                 ? "bg-accent text-white"
                 : "bg-surface-white text-text-secondary border border-border",
@@ -178,7 +177,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
             <h4 className="text-text-primary font-bold flex items-center gap-2">
               Criteria Group {index + 1}
               {group.isAiGenerated && (
-                <span className="flex items-center gap-1 px-2 py-0.5 bg-indigo-100 text-indigo-700 text-[10px] font-bold rounded-full uppercase tracking-wider">
+                <span className="flex items-center gap-1 px-2 py-0.5 bg-primary-light text-accent text-[10px] font-bold rounded-full uppercase tracking-wider">
                   <Sparkles className="w-3 h-3" />
                   AI Suggested
                 </span>
@@ -188,7 +187,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
         </div>
         <button
           onClick={onDelete}
-          className="p-2 text-text-secondary hover:text-rose-600 hover:bg-rose-50 rounded-[4px] transition-colors"
+          className="p-2 text-text-secondary hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
           title="Delete Group"
         >
           <Trash2 className="w-4 h-4" />
@@ -206,7 +205,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
             value={group.description}
             onChange={(e) => onUpdateDescription(e.target.value)}
             placeholder="Describe the theme or focus of this criteria group..."
-            className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-[4px] text-text-primary text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all outline-none min-h-[80px]"
+            className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary text-sm focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none min-h-[80px]"
           />
         </div>
 
@@ -221,7 +220,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
               </h5>
               <button
                 onClick={() => onAddCriterion("inclusion")}
-                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 px-2 py-1 hover:bg-emerald-50 rounded-md transition-colors"
+                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 px-2 py-1 hover:bg-emerald-50 rounded-xl transition-colors"
               >
                 <Plus className="w-3 h-3" />
                 Add Criterion
@@ -257,7 +256,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
               </h5>
               <button
                 onClick={() => onAddCriterion("exclusion")}
-                className="text-[10px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 px-2 py-1 hover:bg-rose-50 rounded-md transition-colors"
+                className="text-[10px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 px-2 py-1 hover:bg-rose-50 rounded-xl transition-colors"
               >
                 <Plus className="w-3 h-3" />
                 Add Criterion
@@ -301,7 +300,7 @@ const CriterionItemRow = ({
   onUpdate: (text: string) => void;
 }) => {
   return (
-    <div className="group/item relative bg-bg-secondary hover:bg-surface-white border border-transparent hover:border-border rounded-[4px] p-3 transition-all">
+    <div className="group/item relative bg-bg-secondary hover:bg-surface-white border border-transparent hover:border-border rounded-xl p-3 transition-all">
       <div className="flex gap-3">
         <textarea
           value={criterion.text}
@@ -336,7 +335,7 @@ const SourceBadge = ({ source }: { source: CriterionSource }) => {
       className={clsx(
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-none",
         isPicoc
-          ? "bg-blue-50 text-blue-700 border-blue-100"
+          ? "bg-primary-light text-accent border-primary/20"
           : "bg-bg-secondary text-indigo-700 border-indigo-100",
       )}
     >

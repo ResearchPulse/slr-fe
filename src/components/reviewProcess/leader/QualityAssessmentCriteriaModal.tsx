@@ -3,7 +3,7 @@ import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
 import { Plus, Trash2, Info, ShieldCheck, ChevronRight } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import toast from "react-hot-toast";
+import { toastError } from "../../../utils/toast";
 import { useQualityAssessment } from "../../../pages/reviewProcess/qualityAssessment/hooks/useQualityAssessment";
 
 interface QualityAssessmentCriteriaModalProps {
@@ -69,7 +69,7 @@ const QualityAssessmentCriteriaModal: React.FC<
 
   const handleApplyCriteria = async () => {
     if (criteria.some((c) => !c.text.trim())) {
-      toast.error("Please fill in all criteria or remove empty ones.");
+      toastError("Please fill in all criteria or remove empty ones.");
       return;
     }
 
@@ -112,7 +112,7 @@ const QualityAssessmentCriteriaModal: React.FC<
       onClose();
     } catch (error) {
       console.error("Failed to save QA configuration:", error);
-      toast.error(
+      toastError(
         "Failed to save Quality Assessment configuration. Please try again.",
       );
     } finally {
@@ -129,9 +129,9 @@ const QualityAssessmentCriteriaModal: React.FC<
     >
       <div className="flex flex-col gap-6 py-2 h-[75vh]">
         {/* Header Section */}
-        <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-blue-50 to-white rounded-[4px] border border-blue-100 shadow-sm shrink-0">
-          <div className="p-3 bg-surface-white rounded-[4px] shadow-sm border border-blue-50 shrink-0">
-            <ShieldCheck className="w-6 h-6 text-blue-600" />
+        <div className="flex items-start gap-4 p-5 bg-gradient-to-br from-primary-light to-white rounded-xl border border-primary/20 shadow-sm shrink-0">
+          <div className="p-3 bg-surface-white rounded-xl shadow-sm border border-primary/20 shrink-0">
+            <ShieldCheck className="w-6 h-6 text-accent" />
           </div>
           <div>
             <h3 className="text-xl font-bold text-text-primary">
@@ -146,7 +146,7 @@ const QualityAssessmentCriteriaModal: React.FC<
         </div>
 
         {/* Info Card */}
-        <div className="px-5 py-3 bg-amber-50 border border-amber-100 rounded-[4px] flex items-center gap-3 shrink-0">
+        <div className="px-5 py-3 bg-amber-50 border border-amber-100 rounded-xl flex items-center gap-3 shrink-0">
           <Info className="w-4 h-4 text-amber-600" />
           <p className="text-xs text-amber-800 font-medium">
             Reviewers will rate each criterion for every paper. You can add,
@@ -159,10 +159,10 @@ const QualityAssessmentCriteriaModal: React.FC<
           {criteria.map((criterion, index) => (
             <div
               key={criterion.id}
-              className="group flex items-start gap-3 p-4 bg-surface-white border border-border rounded-[4px] transition-all hover:border-blue-200 hover:shadow-md hover:shadow-blue-50/50 animate-in fade-in slide-in-from-bottom-2 duration-300"
+              className="group flex items-start gap-3 p-4 bg-surface-white border border-border rounded-xl transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 animate-in fade-in slide-in-from-bottom-2 duration-300"
               style={{ animationDelay: `${index * 50}ms` }}
             >
-              <div className="mt-2.5 flex items-center justify-center w-6 h-6 rounded-[4px] bg-bg-secondary text-[10px] font-black text-text-secondary border border-border group-hover:bg-blue-50 group-hover:text-blue-600 group-hover:border-blue-100 transition-colors">
+              <div className="mt-2.5 flex items-center justify-center w-6 h-6 rounded-lg bg-bg-secondary text-[10px] font-black text-text-secondary border border-border group-hover:bg-primary-light group-hover:text-accent group-hover:border-primary/30 transition-colors">
                 {index + 1}
               </div>
 
@@ -179,7 +179,7 @@ const QualityAssessmentCriteriaModal: React.FC<
 
               <button
                 onClick={() => handleRemoveCriterion(criterion.id)}
-                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-[4px] transition-all opacity-0 group-hover:opacity-100"
+                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
                 title="Remove Criterion"
               >
                 <Trash2 className="w-4 h-4" />
@@ -189,7 +189,7 @@ const QualityAssessmentCriteriaModal: React.FC<
 
           <button
             onClick={handleAddCriterion}
-            className="w-full py-4 border-2 border-dashed border-border rounded-[4px] flex items-center justify-center gap-2 text-text-secondary hover:border-blue-200 hover:text-blue-600 hover:bg-blue-50/30 transition-all group"
+            className="w-full py-4 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 text-text-secondary hover:border-primary/30 hover:text-accent hover:bg-primary-light/30 transition-all group"
           >
             <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
             <span className="text-xs font-black uppercase tracking-widest">
@@ -203,14 +203,14 @@ const QualityAssessmentCriteriaModal: React.FC<
           <Button
             variant="secondary"
             onClick={onClose}
-            className="px-6 rounded-[4px]"
+            className="px-6 rounded-xl"
           >
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={handleApplyCriteria}
-            className="px-8 rounded-[4px] shadow-lg shadow-blue-500/20 bg-blue-600 hover:bg-blue-700 border-none"
+            className="px-8 rounded-xl shadow-lg shadow-primary/10 bg-primary hover:bg-primary-hover border-none"
             disabled={criteria.length === 0 || isSaving}
             isLoading={isSaving}
           >

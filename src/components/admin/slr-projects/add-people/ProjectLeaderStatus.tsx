@@ -14,7 +14,7 @@ export default function ProjectLeaderStatus({
   getInitials,
 }: ProjectLeaderStatusProps) {
   return (
-    <div className="bg-surface-white border border-slate-100 rounded-md py-3 px-4 shadow-none">
+    <div className="bg-surface-white border border-slate-100 rounded-xl py-3 px-4 shadow-none">
       {currentLeader ? (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Left: Title & Leader Info in a single line */}
@@ -27,7 +27,7 @@ export default function ProjectLeaderStatus({
             </div>
             
             <div className="flex items-center gap-3 bg-slate-50 px-2.5 py-1.5 rounded-md border border-slate-100 flex-1 sm:flex-initial min-w-0">
-              <div className="w-8 h-8 rounded-[4px] bg-accent text-white flex items-center justify-center text-[10px] font-black shrink-0">
+              <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-[10px] font-black shrink-0">
                 {getInitials(currentLeader.user.fullName)}
               </div>
               <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:gap-3">
@@ -37,7 +37,7 @@ export default function ProjectLeaderStatus({
                   </p>
                   <span
                     className={cn(
-                      "px-1.5 py-0.5 rounded-[4px] text-center text-[7px] font-black uppercase tracking-widest whitespace-nowrap shrink-0",
+                      "px-1.5 py-0.5 rounded-full text-center text-[7px] font-black uppercase tracking-widest whitespace-nowrap shrink-0",
                       currentLeader.type === "Accepted"
                         ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                         : "bg-amber-50 text-amber-600 border border-amber-100",
@@ -59,7 +59,7 @@ export default function ProjectLeaderStatus({
           {/* Right: Replace Button */}
           <button
             onClick={onReplaceClick}
-            className="text-[10px] font-black text-accent hover:text-indigo-800 transition-colors uppercase tracking-widest px-3 py-2 bg-bg-secondary hover:bg-slate-100 rounded-[4px] active:scale-95 shrink-0 text-center sm:text-right"
+            className="text-[10px] font-black text-accent hover:text-indigo-800 transition-colors uppercase tracking-widest px-3 py-2 bg-bg-secondary hover:bg-slate-100 rounded-xl active:scale-95 shrink-0 text-center sm:text-right"
           >
             Replace
           </button>
@@ -75,7 +75,7 @@ export default function ProjectLeaderStatus({
           </div>
 
           {/* Right: Inline Alert Message */}
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200/60 px-3 py-1.5 rounded-md text-amber-800 shrink-0">
+          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200/60 px-3 py-1.5 rounded-xl text-amber-800 shrink-0">
             <FiAlertTriangle size={14} className="text-amber-600 shrink-0" />
             <span className="text-[10px] font-black uppercase tracking-wider leading-none">
               Requires leader for oversight

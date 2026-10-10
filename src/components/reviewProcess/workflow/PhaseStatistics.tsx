@@ -27,7 +27,7 @@ export default function PhaseStatistics({
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="rounded-lg border border-border bg-bg-primary px-2.5 py-2"
+          className="rounded-xl border border-border bg-bg-primary px-2.5 py-2"
         >
           <p className="text-[10px] text-text-secondary leading-tight mb-0.5">
             {stat.label}

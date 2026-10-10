@@ -79,14 +79,14 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <SectionGuard section="admin">
-      <div className="relative flex h-screen overflow-hidden bg-[#F6F9FB]">
+      <div className="relative flex h-screen overflow-hidden bg-bg-primary">
         {/* Mobile Sidebar (Drawer) */}
         <Drawer
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
           side="left"
           maxWidth="max-w-[280px]"
-          title={<SystemSignature primaryClassName="text-[#102B3D]" accentClassName="text-[#087BC1]" className="mb-0 text-xl" />}
+          title={<SystemSignature primaryClassName="text-text-primary" accentClassName="text-accent" className="mb-0 text-xl" />}
         >
           <div className="flex flex-col h-full -mx-6 -my-8">
             <nav className="flex-1 space-y-1 px-4 py-5">
@@ -100,7 +100,7 @@ const AdminDashboard: React.FC = () => {
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-[#617582] transition-colors hover:bg-[#F1F7FA] hover:text-[#173247]"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary"
                   >
                     <Icon className="h-[18px] w-[18px] opacity-70" />
                     {item.label}
@@ -108,7 +108,7 @@ const AdminDashboard: React.FC = () => {
                 );
               })}
             </nav>
-            <div className="space-y-1 border-t border-[#E9EEF1] p-4">
+            <div className="space-y-1 border-t border-border p-4">
               {footerItems.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -119,7 +119,7 @@ const AdminDashboard: React.FC = () => {
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold text-[#71838F] transition-colors hover:bg-white hover:text-[#173247]"
+                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
                   >
                     <Icon className="h-[18px] w-[18px] opacity-70" />
                     {item.label}

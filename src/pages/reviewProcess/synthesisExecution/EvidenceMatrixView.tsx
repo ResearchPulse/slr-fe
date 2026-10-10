@@ -42,7 +42,7 @@ export default function EvidenceMatrixView({
 
   if (themes.length === 0) {
     return (
-      <div className="rounded-[4px] border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
+      <div className="rounded-xl border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
         No themes available for evidence matrix rendering.
       </div>
     );
@@ -50,7 +50,7 @@ export default function EvidenceMatrixView({
 
   if (paperTitles.length === 0) {
     return (
-      <div className="rounded-[4px] border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
+      <div className="rounded-xl border border-dashed border-border bg-surface-white p-6 text-sm text-text-secondary">
         No evidence papers available to build the matrix.
       </div>
     );
@@ -70,12 +70,12 @@ export default function EvidenceMatrixView({
         <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-text-secondary">
           {paperTitles.length} papers
         </span>
-        <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+        <span className="rounded-full border border-primary/20 bg-primary-light px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
           {totalEvidenceLinks} links
         </span>
       </div>
 
-      <div className="overflow-x-auto overflow-y-auto max-h-[75vh] rounded-[4px] border border-border bg-surface-white shadow-none">
+      <div className="overflow-x-auto overflow-y-auto max-h-[75vh] rounded-xl border border-border bg-surface-white shadow-none">
         <table className="min-w-max border-separate border-spacing-0 text-sm">
           <thead>
             <tr>

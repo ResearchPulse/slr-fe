@@ -13,7 +13,7 @@ export default function AlertsCard({ alerts }: AlertsCardProps) {
   }
 
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-6 shadow-none">
+    <div className="bg-surface-white border border-border rounded-xl p-6 shadow-none">
       <h3 className="font-cormorant text-xl font-normal text-text-primary mb-4 flex items-center gap-2">
         <FiAlertTriangle className="w-5 h-5 text-warning" />
         Alerts

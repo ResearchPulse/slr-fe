@@ -12,6 +12,7 @@ import type { PaperResponse } from "../../../../types/paper";
 import PaperComparisonCard from "../../../../components/paperPool/deduplication/PaperComparisonCard";
 import { useDebounce } from "../../../../hooks/useDebounce";
 import Switch from "../../../../components/ui/Switch";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface ManualDeduplicationModalProps {
   isOpen: boolean;
@@ -118,7 +119,7 @@ export default function ManualDeduplicationModal({
         variant="secondary"
         onClick={() => setStep("search")}
         disabled={isConfirming}
-        className="px-8 rounded-[4px] font-bold"
+        className="px-8 rounded-xl font-bold"
       >
         Back to Search
       </Button>
@@ -126,7 +127,7 @@ export default function ManualDeduplicationModal({
         variant="danger"
         onClick={handleConfirm}
         isLoading={isConfirming}
-        className="px-10 rounded-[4px] font-black shadow-xl shadow-red-500/20"
+        className="px-10 rounded-xl font-black shadow-xl shadow-red-500/20"
       >
         Confirm Duplicate
       </Button>
@@ -151,9 +152,9 @@ export default function ManualDeduplicationModal({
         {step === "search" ? (
           <div className="space-y-6">
             {/* Source Paper Preview */}
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-[4px]">
+            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-amber-100 rounded-[4px]">
+                <div className="p-2 bg-amber-100 rounded-xl">
                   <FiAlertTriangle className="w-5 h-5 text-amber-600" />
                 </div>
                 <div>
@@ -175,7 +176,7 @@ export default function ManualDeduplicationModal({
                 placeholder="Search original paper by title or DOI..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-bg-secondary border border-border rounded-[4px] focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 outline-none transition-all text-lg font-medium"
+                className="w-full pl-12 pr-4 py-4 bg-bg-secondary border border-border rounded-xl focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all text-lg font-medium"
                 autoFocus
               />
             </div>
@@ -184,7 +185,7 @@ export default function ManualDeduplicationModal({
             <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
               {searchLoading ? (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <div className="w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
+                  <LoadingSpinner size="md" className="mb-4" />
                   <p className="text-text-secondary font-medium">
                     Searching project papers...
                   </p>
@@ -195,7 +196,7 @@ export default function ManualDeduplicationModal({
                   .map((paper) => (
                     <div
                       key={paper.id}
-                      className="group flex items-center justify-between p-4 bg-surface-white border border-border rounded-[4px] hover:border-indigo-200 hover:shadow-lg hover:shadow-indigo-500/5 transition-all"
+                      className="group flex items-center justify-between p-4 bg-surface-white border border-border rounded-xl hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 transition-all"
                     >
                       <div className="flex-1 min-w-0 pr-4">
                         <h5 className="font-bold text-text-primary truncate group-hover:text-accent transition-colors">
@@ -209,7 +210,7 @@ export default function ManualDeduplicationModal({
                             {paper.authors || "Unknown Authors"}
                           </span>
                           {paper.doi && (
-                            <span className="text-xs font-mono text-accent bg-bg-secondary px-2 py-0.5 rounded-[4px]">
+                            <span className="text-xs font-mono text-accent bg-bg-secondary px-2 py-0.5 rounded-xl">
                               {paper.doi}
                             </span>
                           )}
@@ -219,14 +220,14 @@ export default function ManualDeduplicationModal({
                         variant="secondary"
                         size="sm"
                         onClick={() => handleSelectOriginal(paper)}
-                        className="rounded-[4px] font-bold"
+                        className="rounded-xl font-bold"
                       >
                         Select <FiArrowRight className="ml-2" />
                       </Button>
                     </div>
                   ))
               ) : searchInput ? (
-                <div className="text-center py-12 bg-bg-secondary rounded-[4px] border border-dashed border-border">
+                <div className="text-center py-12 bg-bg-secondary rounded-xl border border-dashed border-border">
                   <FiInfo className="w-8 h-8 text-slate-300 mx-auto mb-2" />
                   <p className="text-text-secondary font-medium">
                     No results found for "{searchInput}"
@@ -249,14 +250,14 @@ export default function ManualDeduplicationModal({
                   <button
                     onClick={previousPage}
                     disabled={!hasPreviousPage || searchLoading}
-                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-[4px] transition-all"
+                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-xl transition-all"
                   >
                     <FiArrowRight className="rotate-180" />
                   </button>
                   <button
                     onClick={nextPage}
                     disabled={!hasNextPage || searchLoading}
-                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-[4px] transition-all"
+                    className="p-2 text-text-secondary hover:text-accent hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent rounded-xl transition-all"
                   >
                     <FiArrowRight />
                   </button>
@@ -267,7 +268,7 @@ export default function ManualDeduplicationModal({
         ) : (
           <div className="flex flex-col grow gap-6 overflow-hidden min-h-0">
             {/* Warning Banner & Toggle */}
-            <div className="flex items-center justify-between gap-3 p-3 bg-surface-white border border-red-100 rounded-[4px] shrink-0">
+            <div className="flex items-center justify-between gap-3 p-3 bg-surface-white border border-red-100 rounded-xl shrink-0">
               <div className="flex items-center gap-3">
                 <FiAlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
                 <p className="text-xs font-medium text-red-700">
@@ -381,7 +382,7 @@ export default function ManualDeduplicationModal({
                 placeholder="E.g., Same study, different title translation or corrected authors list."
                 value={reason}
                 onChange={(e) => setReason(e.target.value)}
-                className="w-full p-4 bg-bg-secondary border border-border rounded-[1.25rem] focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
+                className="w-full p-4 bg-bg-secondary border border-border rounded-xl focus:ring-4 focus:ring-red-500/10 focus:border-red-500 outline-none transition-all text-sm font-medium resize-none min-h-[80px]"
               />
             </div>
           </div>

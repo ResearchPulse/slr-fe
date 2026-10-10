@@ -61,7 +61,7 @@ export default function ReviewerPdfPanel({
             top: `${selectionRegion.top + selectionRegion.height + 1}%`,
             zIndex: 10,
           }}
-          className="inline-flex items-center gap-1 rounded-md bg-surface-white/95 p-1 shadow-none"
+          className="inline-flex items-center gap-1 rounded-xl bg-surface-white/95 p-1 shadow-none"
         >
           <button
             type="button"
@@ -75,7 +75,7 @@ export default function ReviewerPdfPanel({
               onUseEvidenceSelection(nextCoordinates);
               cancel();
             }}
-            className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 shadow-none transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl border border-accent/30 bg-primary-light px-2 py-1 text-xs font-semibold text-accent shadow-none transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
             title={
               canUseEvidenceSelection
                 ? "Use selection as evidence for the selected field"
@@ -98,7 +98,7 @@ export default function ReviewerPdfPanel({
               onRemoveEvidence();
               cancel();
             }}
-            className="rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-semibold text-red-700 shadow-none transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl border border-border bg-surface-white px-2 py-1 text-xs font-semibold text-red-700 shadow-none transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
             title={
               canRemoveEvidence
                 ? "Remove linked evidence from selected field"
@@ -178,7 +178,7 @@ export default function ReviewerPdfPanel({
           </p>
 
           {canUseEvidenceSelection ? (
-            <span className="shrink-0 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+            <span className="shrink-0 rounded-xl border border-accent/30 bg-primary-light px-2 py-1 text-xs font-semibold text-accent">
               Selection enabled
             </span>
           ) : null}
@@ -194,7 +194,7 @@ export default function ReviewerPdfPanel({
           ) : (
             <div className="flex h-full items-center justify-center p-8 text-center">
               <div className="max-w-sm">
-                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-primary">
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
                   <FileText className="h-6 w-6" />
                 </span>
                 <h3 className="mt-4 text-sm font-semibold text-text-primary">

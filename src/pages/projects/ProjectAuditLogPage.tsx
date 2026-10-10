@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { cn } from "../../utils/cn";
 import { toastSuccess } from "../../utils/toast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
 import type {
   AuditLogEntry,
   AuditLogExportFormat,
@@ -73,13 +74,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <article
       className={cn(
-        "rounded-[4px] border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
+        "rounded-xl border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
         classes.container,
       )}
     >
       <div
         className={cn(
-          "w-11 h-11 rounded-[4px] flex items-center justify-center text-white mb-4",
+          "w-11 h-11 rounded-xl flex items-center justify-center text-white mb-4",
           classes.icon,
         )}
       >
@@ -279,7 +280,7 @@ const ProjectAuditLogPage: React.FC = () => {
     return (
       <div className="flex h-screen items-center justify-center bg-bg-secondary">
         <div className="flex flex-col items-center gap-4">
-          <FiRefreshCw className="h-8 w-8 animate-spin text-text-secondary" />
+          <LoadingSpinner size="md" />
           <p className="text-sm font-medium text-text-secondary">
             Loading audit history...
           </p>
@@ -308,7 +309,7 @@ const ProjectAuditLogPage: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="rounded-[4px] border border-border bg-surface-white px-4 py-3 shadow-none">
+          <div className="rounded-xl border border-border bg-surface-white px-4 py-3 shadow-none">
             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">
               Current range
             </div>
@@ -320,7 +321,7 @@ const ProjectAuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-3 rounded-[4px] bg-accent text-white text-sm font-black hover:bg-indigo-700 hover:shadow-none hover:shadow-indigo-200 transition-all active:scale-95"
+            className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-accent text-white text-sm font-black hover:bg-indigo-700 hover:shadow-none hover:shadow-indigo-200 transition-all active:scale-95"
           >
             <FiDownload className="w-4 h-4" />
             Export Logs
@@ -329,7 +330,7 @@ const ProjectAuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={handleResetFilters}
-            className="inline-flex items-center gap-2 px-4 py-3 rounded-[4px] bg-surface-white border border-border text-text-secondary text-sm font-bold hover:bg-bg-secondary hover:text-accent transition-all"
+            className="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-surface-white border border-border text-text-secondary text-sm font-bold hover:bg-bg-secondary hover:text-accent transition-all"
           >
             <FiRefreshCw className="w-4 h-4" />
             Clear Filters
@@ -388,7 +389,7 @@ const ProjectAuditLogPage: React.FC = () => {
       />
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-4xl border border-slate-100 bg-surface-white p-5 shadow-none lg:col-span-2">
+        <div className="rounded-xl border border-border bg-surface-white p-5 shadow-none lg:col-span-2">
           <div className="flex items-center justify-between gap-4 mb-4">
             <div>
               <h4 className="text-base font-black text-text-primary">
@@ -408,7 +409,7 @@ const ProjectAuditLogPage: React.FC = () => {
               {exportHistory.map((entry) => (
                 <div
                   key={entry.id}
-                  className="flex flex-col gap-3 rounded-[4px] border border-slate-100 bg-bg-secondary/60 p-4 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-3 rounded-xl border border-border bg-bg-secondary/60 p-4 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div>
                     <div className="flex items-center gap-2">
@@ -430,9 +431,9 @@ const ProjectAuditLogPage: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="rounded-[4px] border border-dashed border-border bg-bg-secondary/50 px-5 py-10 text-center">
-              <FiClock className="w-10 h-10 mx-auto text-slate-300 mb-3" />
-              <h5 className="text-sm font-black text-slate-800">
+            <div className="rounded-xl border border-dashed border-border bg-bg-secondary/50 px-5 py-10 text-center">
+              <FiClock className="w-10 h-10 mx-auto text-text-muted mb-3" />
+              <h5 className="text-sm font-black text-text-primary">
                 No export history yet
               </h5>
               <p className="text-sm text-text-secondary mt-1">
@@ -442,7 +443,7 @@ const ProjectAuditLogPage: React.FC = () => {
           )}
         </div>
 
-        <div className="rounded-4xl border border-slate-100 bg-linear-to-br from-slate-950 to-slate-900 text-white p-5 shadow-none shadow-slate-900/20">
+        <div className="rounded-xl border border-slate-100 bg-linear-to-br from-slate-950 to-slate-900 text-white p-5 shadow-none shadow-slate-900/20">
           <div className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-text-secondary">
             <FiAlertTriangle className="w-3.5 h-3.5 text-amber-400" />
             High-risk activity
@@ -455,15 +456,15 @@ const ProjectAuditLogPage: React.FC = () => {
             spot destructive operations or compliance-sensitive downloads.
           </p>
           <div className="mt-5 space-y-3 text-sm">
-            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl bg-surface-white/5 px-4 py-3">
               <FiDownload className="w-4 h-4 text-cyan-300" />
               Export actions in the filtered set: {exportCount}
             </div>
-            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl bg-surface-white/5 px-4 py-3">
               <FiCheckCircle className="w-4 h-4 text-emerald-400" />
               Success entries remain available for export and review.
             </div>
-            <div className="flex items-center gap-3 rounded-[4px] bg-surface-white/5 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-xl bg-surface-white/5 px-4 py-3">
               <FiXCircle className="w-4 h-4 text-rose-400" />
               Failed entries are easy to isolate with the status filter.
             </div>

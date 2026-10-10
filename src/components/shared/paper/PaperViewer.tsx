@@ -10,10 +10,10 @@ import {
   FiGitBranch,
   FiList,
   FiExternalLink,
-  FiLoader,
   FiUploadCloud,
 } from "react-icons/fi";
 import { cn } from "../../../utils/cn";
+import LoadingSpinner from "../../ui/LoadingSpinner";
 import { useProjectMember } from "../../../hooks/useProjectMember";
 
 import { usePaperViewerState } from "./PaperViewer/hooks/usePaperViewerState";
@@ -163,7 +163,7 @@ export default function PaperViewer({
   // const hasPendingAssignedReviewer = !!paper.assignedReviewers?.some((r) => !r.decision);
 
   return (
-    <div className="flex h-full flex-col bg-[#f7f9fb]">
+    <div className="flex h-full flex-col bg-bg-primary">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className={cn("space-y-5 px-4 py-5 transition-all duration-300 lg:px-6 lg:py-6")}>
@@ -183,7 +183,7 @@ export default function PaperViewer({
               onClick={() =>
                 navigate(`/projects/${activeProjectId}/papers/${paper.id}`)
               }
-              className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-bg-secondary/80 backdrop-blur-md border border-border rounded-[4px] text-text-secondary text-[10px] font-black uppercase tracking-widest hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-all shadow-none opacity-0 group-hover/hero:opacity-100 transform translate-y-2 group-hover/hero:translate-y-0"
+              className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-bg-secondary/80 backdrop-blur-md border border-border rounded-xl text-text-secondary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white hover:border-accent transition-all shadow-none opacity-0 group-hover/hero:opacity-100 transform translate-y-2 group-hover/hero:translate-y-0"
             >
               Full Details
               <FiExternalLink className="w-3.5 h-3.5" />
@@ -196,7 +196,7 @@ export default function PaperViewer({
           </div>
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-[#dce6ed] bg-white p-1 shadow-sm">
+          <div className="flex items-center gap-1 overflow-x-auto rounded-xl border border-border bg-white p-1 shadow-sm">
             <TabButton
               active={activeTab === "abstract"}
               onClick={() => setActiveTab("abstract")}
@@ -255,7 +255,7 @@ export default function PaperViewer({
 
                 {paper.extraction?.status === "failed" &&
                   paper.extraction.requested && (
-                    <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-6 py-4 shadow-none">
+                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 shadow-none">
                       <div className="flex items-start gap-3">
                         <FiAlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
                         <div>
@@ -270,7 +270,7 @@ export default function PaperViewer({
                             <button
                               onClick={() => finalOnRetryExtraction(paper.id)}
                               disabled={finalIsRetryingExtraction}
-                              className="mt-3 inline-flex items-center gap-2 rounded-[4px] bg-surface-white border border-amber-200 px-4 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-all active:scale-95 disabled:opacity-50"
+                              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-surface-white border border-amber-200 px-4 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-all active:scale-95 disabled:opacity-50"
                             >
                               <FiRefreshCw
                                 className={cn(
@@ -291,7 +291,7 @@ export default function PaperViewer({
             )}
 
             {activeTab === "references" && (
-              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+              <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
                 <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Cited References
                 </h2>
@@ -304,7 +304,7 @@ export default function PaperViewer({
             )}
 
             {activeTab === "citations" && (
-              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+              <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
                 <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Citing Papers
                 </h2>
@@ -329,7 +329,7 @@ export default function PaperViewer({
             )}
 
             {activeTab === "fulltext" && (
-              <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
+              <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
                 <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary/50">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
                     {paper.pdfUrl ? "PDF Viewer" : "Full-Text Access"}
@@ -339,7 +339,7 @@ export default function PaperViewer({
                       href={paper.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                      className="text-accent hover:text-accent text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
                     >
                       Open in New Tab
                       <FiExternalLink className="w-3 h-3" />
@@ -363,8 +363,8 @@ export default function PaperViewer({
                     <div
                       onMouseDown={handleMouseDown}
                       className={cn(
-                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-blue-400 cursor-col-resize transition-all duration-200 z-10 relative group",
-                        isResizing && "bg-blue-500 w-1.5",
+                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-accent cursor-col-resize transition-all duration-200 z-10 relative group",
+                        isResizing && "bg-accent w-1.5",
                       )}
                     >
                       <div className="absolute inset-y-0 -left-1 -right-1 cursor-col-resize" />
@@ -385,7 +385,7 @@ export default function PaperViewer({
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
-                    <div className="w-20 h-20 bg-surface-white rounded-[4px] shadow-none flex items-center justify-center mb-6 text-slate-300 border border-border">
+                    <div className="w-20 h-20 bg-surface-white rounded-xl shadow-none flex items-center justify-center mb-6 text-slate-300 border border-border">
                       <FiFileText className="w-10 h-10" />
                     </div>
                     <h3 className="text-lg font-bold text-text-primary mb-2">
@@ -398,7 +398,7 @@ export default function PaperViewer({
                     {isLeader && !isDisabled && (
                       <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-[4px] text-sm font-bold shadow-none shadow-blue-200 transition-all active:scale-95"
+                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl text-sm font-bold shadow-none transition-all active:scale-95"
                       >
                         <FiUploadCloud className="w-4 h-4" />
                         Upload Full-Text PDF
@@ -420,7 +420,7 @@ export default function PaperViewer({
       </div>
 
       {!hideActions && isLeaderView && (
-        <div className="border-t border-[#dce6ed] bg-white px-4 py-3 lg:px-6">
+        <div className="border-t border-border bg-white px-4 py-3 lg:px-6">
           <div className="mx-auto flex max-w-5xl flex-col gap-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
@@ -470,13 +470,13 @@ export default function PaperViewer({
 
       {/* Decision Action Bar */}
       {!hideActions && (
-        <div className="border-t border-[#dce6ed] bg-white/95 px-4 py-3 backdrop-blur-md lg:px-6">
+        <div className="border-t border-border bg-white/95 px-4 py-3 backdrop-blur-md lg:px-6">
           <div className="mx-auto max-w-5xl">
             {(!isLeaderView && canReview) ||
             (isLeaderView && (onInclude || onExclude)) ? (
               <div className="flex flex-col gap-4">
                 {exclusionReasons.length === 0 && !isLoadingReasons && (
-                  <div className="flex items-center gap-2.5 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
                     <FiAlertTriangle className="w-4 h-4" />
                     {isLeaderView
                       ? "Add exclusion codes in Review Context → Criteria to enable Exclude."
@@ -484,15 +484,15 @@ export default function PaperViewer({
                   </div>
                 )}
                 {hasPendingAssignedReviewer && isLeaderView && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-indigo-100 rounded-[4px] text-indigo-700 text-xs font-bold animate-in fade-in slide-in-from-bottom-2">
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-accent/20 rounded-xl text-accent text-xs font-bold animate-in fade-in slide-in-from-bottom-2">
                     <FiAlertTriangle className="w-4 h-4" />
                     Wait for assigned reviewers finished reviews to make
                     decision
                   </div>
                 )}
                 {isLoadingReviewers && isLeaderView && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-border rounded-[4px] text-text-secondary text-xs font-bold animate-pulse">
-                    <FiLoader className="w-4 h-4 animate-spin" />
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-text-secondary text-xs font-bold animate-pulse">
+                    <LoadingSpinner size="sm" />
                     Checking assignments...
                   </div>
                 )}
@@ -504,7 +504,7 @@ export default function PaperViewer({
                       }
                       disabled={isDisabled}
                       className={cn(
-                        "flex-1 inline-flex items-center justify-center gap-2 h-12 bg-amber-600 text-white font-black uppercase tracking-wider text-xs rounded-[4px] hover:bg-amber-700 active:scale-[0.98] transition-all shadow-none shadow-amber-900/10 animate-in zoom-in-95 duration-200",
+                        "flex-1 inline-flex items-center justify-center gap-2 h-12 bg-amber-600 text-white font-black uppercase tracking-wider text-xs rounded-xl hover:bg-amber-700 active:scale-[0.98] transition-all shadow-none shadow-amber-900/10 animate-in zoom-in-95 duration-200",
                         isDisabled && "opacity-50 cursor-not-allowed",
                       )}
                     >

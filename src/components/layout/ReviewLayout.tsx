@@ -52,7 +52,7 @@ const ReviewLayout: React.FC<ReviewLayoutProps> = ({
           {notesPanel && (
             <button
               onClick={() => setNotesOpen(true)}
-              className="xl:hidden fixed bottom-6 right-6 z-40 bg-accent text-bg-primary p-3 rounded-[4px] shadow-none border border-border hover:bg-text-primary transition-transform active:scale-90"
+              className="xl:hidden fixed bottom-6 right-6 z-40 bg-accent text-bg-primary p-3 rounded-xl shadow-none border border-border hover:bg-text-primary transition-transform active:scale-90"
               aria-label="Toggle notes"
             >
               <svg

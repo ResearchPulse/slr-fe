@@ -43,7 +43,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-[4px] p-6 mb-6">
+    <div className="bg-gradient-to-br from-primary-light to-primary-light border border-primary/20 rounded-xl p-6 mb-6">
       {/* Current Phase Info */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-text-secondary mb-2">
@@ -51,7 +51,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
         </h3>
         {currentPhase ? (
           <div className="flex items-center gap-2">
-            <FiAlertCircle className="w-5 h-5 text-blue-600" />
+            <FiAlertCircle className="w-5 h-5 text-accent" />
             <span className="text-lg font-semibold text-text-primary">
               {getProcessName(currentPhase)}
             </span>
@@ -94,7 +94,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
           </div>
           <div className="w-full bg-bg-secondary rounded-full h-3 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500"
+              className="bg-gradient-to-r from-primary to-primary h-3 rounded-full transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -114,7 +114,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
-            <FiAlertCircle className="w-4 h-4 text-blue-600" />
+            <FiAlertCircle className="w-4 h-4 text-accent" />
             <span className="text-2xl font-bold text-text-primary">
               {inProgress}
             </span>

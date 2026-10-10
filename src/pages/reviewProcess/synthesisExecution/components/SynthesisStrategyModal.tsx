@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CheckSquare, Layers3, Sparkles, Target } from "lucide-react";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../../../utils/toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Modal from "../../../../components/ui/Modal";
 import Button from "../../../../components/ui/Button";
@@ -96,7 +96,7 @@ function ResearchQuestionList({
 }) {
   if (researchQuestions.length === 0) {
     return (
-      <div className="rounded-[4px] border border-dashed border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-800">
+      <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-800">
         No research questions were found for this project yet. Create at least
         one question before defining a synthesis strategy.
       </div>
@@ -113,17 +113,17 @@ function ResearchQuestionList({
             key={question.selectionId}
             type="button"
             onClick={() => onToggle(question.selectionId)}
-            className={`flex h-full flex-col items-start gap-3 rounded-[4px] border p-4 text-left transition-all ${
+            className={`flex h-full flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all ${
               isSelected
-                ? "border-blue-300 bg-blue-50 shadow-sm shadow-blue-100"
-                : "border-border bg-surface-white hover:border-blue-200 hover:bg-blue-50/40"
+                ? "border-primary/20 bg-primary-light shadow-sm shadow-primary/10"
+                : "border-border bg-surface-white hover:border-primary/30 hover:bg-primary-light/40"
             }`}
           >
             <div className="flex items-center gap-3">
               <span
-                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[4px] text-xs font-semibold ${
+                className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-semibold ${
                   isSelected
-                    ? "bg-blue-600 text-white"
+                    ? "bg-primary text-white"
                     : "bg-bg-secondary text-text-secondary"
                 }`}
               >
@@ -248,17 +248,17 @@ export default function SynthesisStrategyModal({
     event.preventDefault();
 
     if (!formState.synthesisType) {
-      toast.error("Please select a synthesis type.");
+      toastError("Please select a synthesis type.");
       return;
     }
 
     if (!formState.description.trim()) {
-      toast.error("Please enter a synthesis description.");
+      toastError("Please enter a synthesis description.");
       return;
     }
 
     if (formState.targetResearchQuestionSelectionIds.length === 0) {
-      toast.error("Please select at least one research question.");
+      toastError("Please select at least one research question.");
       return;
     }
 
@@ -272,7 +272,7 @@ export default function SynthesisStrategyModal({
       .filter(hasValue);
 
     if (targetResearchQuestionIds.length === 0) {
-      toast.error(
+      toastError(
         "Selected research questions are invalid. Please refresh and select again.",
       );
       return;
@@ -294,14 +294,14 @@ export default function SynthesisStrategyModal({
 
       if (startAfterSave && onStartSynthesis) {
         await onStartSynthesis();
-        toast.success("Synthesis strategy saved and synthesis started.");
+        toastSuccess("Synthesis strategy saved and synthesis started.");
       } else {
-        toast.success("Synthesis strategy saved successfully.");
+        toastSuccess("Synthesis strategy saved successfully.");
       }
       setFormState(buildInitialFormState(null));
       onClose();
     } catch (error) {
-      toast.error(getErrorMessage(error, "Failed to save synthesis strategy"));
+      toastError(getErrorMessage(error, "Failed to save synthesis strategy"));
     } finally {
       setIsSubmitting(false);
     }
@@ -338,13 +338,13 @@ export default function SynthesisStrategyModal({
       }
     >
       <form id="synthesis-strategy-form" onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-[4px] border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5 shadow-sm">
+        <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary-light to-white p-5 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="rounded-[4px] bg-surface-white p-3 text-blue-600 shadow-sm ring-1 ring-blue-100">
+            <div className="rounded-xl bg-surface-white p-3 text-accent shadow-sm ring-1 ring-primary/20">
               <BookOpen className="h-6 w-6" />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-400">
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">
                 Planning step
               </p>
               <h3 className="mt-1 text-xl font-semibold text-text-primary">
@@ -359,21 +359,21 @@ export default function SynthesisStrategyModal({
           </div>
 
           {activeStrategy ? (
-            <div className="mt-4 rounded-[4px] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
               An existing strategy was found and will be updated when you save.
             </div>
           ) : null}
         </div>
 
         {isLoading ? (
-          <div className="flex min-h-[240px] items-center justify-center rounded-[4px] border border-border bg-bg-primary">
+          <div className="flex min-h-[240px] items-center justify-center rounded-xl border border-border bg-bg-primary">
             <LoadingSpinner size="lg" />
           </div>
         ) : (
           <div className="space-y-6">
-            <section className="space-y-3 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
-                <Layers3 className="h-5 w-5 text-blue-600" />
+                <Layers3 className="h-5 w-5 text-accent" />
                 <h4 className="text-base font-semibold text-text-primary">
                   Synthesis Type
                 </h4>
@@ -392,10 +392,10 @@ export default function SynthesisStrategyModal({
                           synthesisType: option.value,
                         }))
                       }
-                      className={`rounded-[4px] border p-4 text-left transition-all ${
+                      className={`rounded-xl border p-4 text-left transition-all ${
                         isSelected
-                          ? "border-blue-300 bg-blue-50 shadow-sm shadow-blue-100"
-                          : "border-border bg-bg-primary hover:border-blue-200 hover:bg-blue-50/50"
+                          ? "border-primary/20 bg-primary-light shadow-sm shadow-primary/10"
+                          : "border-border bg-bg-primary hover:border-primary/30 hover:bg-primary-light/50"
                       }`}
                     >
                       <p className="text-sm font-semibold text-text-primary">
@@ -410,10 +410,10 @@ export default function SynthesisStrategyModal({
               </div>
             </section>
 
-            <section className="space-y-3 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-600" />
+                  <Target className="h-5 w-5 text-accent" />
                   <h4 className="text-base font-semibold text-text-primary">
                     Target Research Questions
                   </h4>
@@ -429,9 +429,9 @@ export default function SynthesisStrategyModal({
               />
             </section>
 
-            <section className="space-y-4 rounded-[4px] border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-4 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
               <div className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-blue-600" />
+                <Sparkles className="h-5 w-5 text-accent" />
                 <h4 className="text-base font-semibold text-text-primary">
                   Strategy Details
                 </h4>
@@ -452,7 +452,7 @@ export default function SynthesisStrategyModal({
                     }
                     rows={4}
                     maxLength={2000}
-                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
                     placeholder="Summarize the synthesis objective and the scope of the planned analysis."
                   />
                 </label>
@@ -470,7 +470,7 @@ export default function SynthesisStrategyModal({
                       }))
                     }
                     rows={4}
-                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
                     placeholder="Describe how extracted data should be grouped across studies."
                   />
                 </label>
@@ -488,7 +488,7 @@ export default function SynthesisStrategyModal({
                       }))
                     }
                     rows={4}
-                    className="w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    className="w-full rounded-xl border border-border bg-surface-white px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
                     placeholder="Describe how robustness checks or alternative groupings should be handled."
                   />
                 </label>

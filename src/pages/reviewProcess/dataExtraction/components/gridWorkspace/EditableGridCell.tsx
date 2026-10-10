@@ -200,7 +200,7 @@ export default function EditableGridCell({
                 event as unknown as KeyboardEvent<HTMLTextAreaElement>,
               );
             }}
-            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
 
@@ -212,7 +212,7 @@ export default function EditableGridCell({
             value={normalizeBooleanValue(draftValue)}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             <option value="true">True</option>
@@ -228,7 +228,7 @@ export default function EditableGridCell({
             value={draftValue}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             {columnMeta.options.map((option) => (
@@ -269,7 +269,7 @@ export default function EditableGridCell({
               void handleKeyDown(event);
             }}
             rows={textEditorRows}
-            className="w-full resize-none rounded-md border border-blue-300 bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-blue-200 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="w-full resize-none rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
     }
@@ -284,7 +284,7 @@ export default function EditableGridCell({
       {isEditing ? (
         <div
           ref={editorContainerRef}
-          className="flex items-center gap-1 rounded-md border border-border bg-bg-secondary p-1"
+          className="flex items-center gap-1 rounded-xl border border-border bg-bg-secondary p-1"
         >
           {normalizedFieldType !== "multiselect" && (
             <label className="inline-flex shrink-0 items-center gap-1 text-[11px] font-semibold text-text-secondary">
@@ -337,7 +337,7 @@ export default function EditableGridCell({
 
           <span className="flex items-center gap-1">
             {isSaving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-blue-600" />
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
             ) : null}
 
             {canViewHistory ? (

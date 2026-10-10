@@ -172,8 +172,8 @@ export default function MetadataSuggestionModal({
     >
       <div className="space-y-6">
         {/* Info Banner */}
-        <div className="flex items-start gap-3 rounded-[4px] border border-blue-100 bg-blue-50/50 p-4 text-sm text-blue-800">
-          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+        <div className="flex items-start gap-3 rounded-xl border border-accent/30 bg-primary-light/50 p-4 text-sm text-accent">
+          <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
           <p className="leading-relaxed">
             Suggested values are extracted via GROBID AI. Fields marked with
             <span className="mx-1 font-bold text-accent italic">
@@ -185,8 +185,8 @@ export default function MetadataSuggestionModal({
         </div>
 
         {rows.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-[4px] border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-[4px] bg-surface-white shadow-sm">
+          <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-white shadow-sm">
               <FiMinusSquare className="h-6 w-6 text-slate-300" />
             </div>
             <p className="text-sm font-medium text-text-secondary">
@@ -206,7 +206,7 @@ export default function MetadataSuggestionModal({
                   type="button"
                   onClick={handleSelectAll}
                   disabled={allSelected || isApplying}
-                  className="text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:text-indigo-800 disabled:text-slate-300"
+                  className="text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:text-accent disabled:text-slate-300"
                 >
                   Select All
                 </button>
@@ -227,7 +227,7 @@ export default function MetadataSuggestionModal({
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-[4px] border border-border bg-surface-white shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
               <table className="min-w-full divide-y divide-slate-100">
                 <thead className="bg-bg-secondary/80">
                   <tr>
@@ -309,11 +309,11 @@ export default function MetadataSuggestionModal({
                               disabled={!isSelectable || isApplying}
                               onClick={() => handleToggle(row.apiFieldName)}
                               className={cn(
-                                "flex items-center gap-2 rounded-[4px] px-3 py-1.5 transition-all",
+                                "flex items-center gap-2 rounded-xl px-3 py-1.5 transition-all",
                                 !isSelectable
                                   ? "cursor-not-allowed opacity-20"
                                   : isChecked
-                                    ? "bg-bg-secondary text-indigo-700 ring-1 ring-indigo-200 shadow-sm"
+                                    ? "bg-bg-secondary text-accent ring-1 ring-accent/30 shadow-sm"
                                     : "text-text-secondary hover:bg-bg-secondary hover:text-text-secondary",
                               )}
                             >
@@ -343,7 +343,7 @@ export default function MetadataSuggestionModal({
             type="button"
             onClick={onClose}
             disabled={isApplying}
-            className="rounded-[4px] border border-border bg-surface-white px-6 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-text-secondary transition-all hover:bg-bg-secondary hover:text-slate-800 disabled:opacity-50"
+            className="rounded-xl border border-border bg-surface-white px-6 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-text-secondary transition-all hover:bg-bg-secondary hover:text-slate-800 disabled:opacity-50"
           >
             Discard
           </button>
@@ -353,7 +353,7 @@ export default function MetadataSuggestionModal({
             disabled={
               selectedFields.length === 0 || isApplying || rows.length === 0
             }
-            className="inline-flex items-center justify-center gap-2 rounded-[4px] bg-slate-900 px-8 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-accent hover:shadow-indigo-600/30 active:scale-95 disabled:scale-100 disabled:bg-slate-200 disabled:text-text-secondary disabled:shadow-none"
+            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-accent hover:shadow-primary/30 active:scale-95 disabled:scale-100 disabled:bg-slate-200 disabled:text-text-secondary disabled:shadow-none"
           >
             {isApplying ? (
               <>

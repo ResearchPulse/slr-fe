@@ -72,8 +72,8 @@ export default function SynthesisThemeModal({
   const submitLabel = mode === "edit" ? "Save Changes" : "Create Theme";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4 py-6 backdrop-blur-sm">
-      <div className="w-full max-w-lg rounded-[4px] border border-border bg-surface-white shadow-2xl">
+    <div className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 px-4 py-6">
+      <div className="w-full max-w-lg rounded-xl border border-border bg-surface-white shadow-2xl">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
             <h3 className="text-lg font-semibold text-text-primary">
@@ -84,7 +84,7 @@ export default function SynthesisThemeModal({
           <button
             type="button"
             onClick={handleClose}
-            className="rounded-full p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary"
+            className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary"
           >
             <X className="h-5 w-5" />
           </button>
@@ -108,7 +108,7 @@ export default function SynthesisThemeModal({
                   name: event.target.value,
                 }))
               }
-              className="w-full rounded-[4px] border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
               placeholder="e.g. Collaboration barriers"
               maxLength={255}
               required
@@ -131,7 +131,7 @@ export default function SynthesisThemeModal({
                   description: event.target.value,
                 }))
               }
-              className="min-h-28 w-full rounded-[4px] border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="min-h-28 w-full rounded-xl border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
               placeholder="Summarize the idea captured by this theme"
               rows={4}
             />
@@ -159,7 +159,7 @@ export default function SynthesisThemeModal({
                         colorCode: color,
                       }))
                     }
-                    className={`h-8 w-8 rounded-full ring-offset-2 transition focus:outline-none focus:ring-2 focus:ring-blue-300 ${
+                    className={`h-8 w-8 rounded-full ring-offset-2 transition focus:outline-none focus:ring-2 focus:ring-accent ${
                       isSelected
                         ? "ring-2 ring-gray-900"
                         : "ring-1 ring-gray-200"

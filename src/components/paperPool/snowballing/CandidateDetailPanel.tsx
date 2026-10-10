@@ -1,3 +1,4 @@
+import Button from "../../ui/Button";
 import React from "react";
 import {
   X,
@@ -74,8 +75,8 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
       {!isModal && (
         <div className="px-6 py-5 border-b border-border flex items-center justify-between bg-bg-secondary/50">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-blue-50 flex items-center justify-center">
-              <FileText className="w-4 h-4 text-blue-600" />
+            <div className="w-8 h-8 rounded-xl bg-primary-light flex items-center justify-center">
+              <FileText className="w-4 h-4 text-accent" />
             </div>
             <h3 className="font-black text-text-primary uppercase tracking-widest text-[11px]">
               Candidate Details
@@ -97,7 +98,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
               Paper Title
             </label>
-            <h2 className="text-lg font-bold text-blue-700 mt-2 leading-tight">
+            <h2 className="text-lg font-bold text-accent mt-2 leading-tight">
               {title}
             </h2>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -209,7 +210,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
                         "w-4 h-4",
                         matchConfidenceScore > 0.6
                           ? "text-accent"
-                          : "text-blue-500",
+                          : "text-accent",
                       )}
                     />
                     <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
@@ -245,11 +246,11 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
               Extracted From (Origin)
             </label>
-            <div className="mt-4 p-5 bg-blue-50/50 border border-blue-100 rounded-xl">
+            <div className="mt-4 p-5 bg-primary-light/50 border border-accent/20 rounded-xl">
               <h4 className="text-sm font-bold text-text-primary leading-tight">
                 {originPaperTitle}
               </h4>
-              <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-white border border-blue-100 text-[10px] font-bold text-blue-600 uppercase">
+              <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-white border border-accent/20 text-[10px] font-bold text-accent uppercase">
                 <FileText className="w-3 h-3" />
                 Origin Paper
               </div>
@@ -291,15 +292,16 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
           </button>
         ) : (
           <>
-            <button
+            <Button
               onClick={() => onAction(candidateId, "select")}
               disabled={isProcessing}
-              className="w-full px-6 py-4 bg-blue-600 text-white font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-blue-700 transition shadow-none shadow-blue-200 flex justify-center items-center gap-2 disabled:opacity-70 disabled:shadow-none"
+              size="lg"
+              className="w-full gap-2"
             >
               {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
               {!isProcessing && <Plus className="w-4 h-4" />}
               Add to repository
-            </button>
+            </Button>
             <button
               onClick={() => onAction(candidateId, "reject")}
               disabled={isProcessing}

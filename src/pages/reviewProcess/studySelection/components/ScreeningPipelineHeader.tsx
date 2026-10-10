@@ -28,11 +28,11 @@ function PhaseCard({
     <button
       onClick={onClick}
       className={cn(
-        "flex flex-col gap-1 p-2.5 rounded-[4px] border transition-all duration-200 text-center min-w-[200px]",
+        "flex flex-col gap-1 p-2.5 rounded-xl border transition-all duration-200 text-center min-w-[200px]",
         isActive
           ? isBlue
-            ? "border-blue-200 bg-blue-50/50 ring-1 ring-blue-100 shadow-none"
-            : "border-indigo-200 bg-bg-secondary/50 ring-1 ring-indigo-100 shadow-none"
+            ? "border-accent/30 bg-primary-light/50 ring-1 ring-accent/30 shadow-none"
+            : "border-accent/30 bg-bg-secondary/50 ring-1 ring-accent/30 shadow-none"
           : "border-border bg-surface-white hover:border-border hover:bg-bg-primary",
       )}
     >
@@ -42,8 +42,8 @@ function PhaseCard({
             "text-xs font-bold uppercase tracking-wider",
             isActive
               ? isBlue
-                ? "text-blue-700"
-                : "text-indigo-700"
+                ? "text-accent"
+                : "text-accent"
               : "text-text-secondary",
           )}
         >
@@ -53,7 +53,7 @@ function PhaseCard({
           <FiActivity
             className={cn(
               "w-3.5 h-3.5 animate-pulse",
-              isBlue ? "text-blue-500" : "text-accent",
+              isBlue ? "text-accent" : "text-accent",
             )}
           />
         ) : stats.completionPercentage === 100 ? (

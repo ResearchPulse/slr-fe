@@ -202,7 +202,7 @@ export default function ReviewerQAPanel({
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 pb-24">
         {/* AI Advertisement Banner */}
         <div className="flex items-start gap-3 rounded-xl border border-primary/15 bg-primary-light/70 p-4">
-          <div className="mt-0.5 rounded-lg bg-surface-white p-2 text-primary shadow-sm">
+          <div className="mt-0.5 rounded-xl bg-surface-white p-2 text-primary shadow-sm">
             <FiZap className="h-4 w-4" />
           </div>
           <div className="flex-1">
@@ -216,7 +216,7 @@ export default function ReviewerQAPanel({
             <button
               onClick={handleAiAnalyze}
               disabled={isAiLoading || hasResolution}
-              className="rounded-lg border border-primary/20 bg-surface-white px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50"
+              className="rounded-xl border border-primary/20 bg-surface-white px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isAiLoading ? "Analyzing..." : "Analyze with AI Helper"}
             </button>
@@ -251,21 +251,21 @@ export default function ReviewerQAPanel({
                   <button
                     onClick={() => handleSelect(crit.criterionId, 0)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isYes ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isYes ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiCheck /> Yes
                   </button>
                   <button
                     onClick={() => handleSelect(crit.criterionId, 1)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isNo ? "bg-rose-50 border-rose-500 text-rose-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isNo ? "bg-rose-50 border-rose-500 text-rose-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiX /> No
                   </button>
                   <button
                     onClick={() => handleSelect(crit.criterionId, 2)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-md transition ${isUnclear ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isUnclear ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiHelpCircle /> Unclear
                   </button>
@@ -282,7 +282,7 @@ export default function ReviewerQAPanel({
                         handleCommentChange(crit.criterionId, e.target.value)
                       }
                       disabled={hasResolution}
-                      className={`w-full rounded-lg border border-border py-2 pl-8 pr-3 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${hasResolution ? "cursor-not-allowed bg-bg-primary opacity-50" : ""}`}
+                      className={`w-full rounded-xl border border-border py-2 pl-8 pr-3 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${hasResolution ? "cursor-not-allowed bg-bg-primary opacity-50" : ""}`}
                     />
                   </div>
                 </div>

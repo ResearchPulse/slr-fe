@@ -119,14 +119,14 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           <Button
             variant="ghost"
             onClick={onClose}
-            className="rounded-2xl px-8 hover:bg-slate-50"
+            className="px-8 hover:bg-bg-secondary"
           >
             Cancel
           </Button>
           <Button
             onClick={handleImport}
             disabled={!jsonInput.trim()}
-            className="rounded-2xl px-12 gap-2 shadow-lg shadow-indigo-100"
+            className="px-12 gap-2"
           >
             <FileCode className="w-5 h-5" /> Import Now
           </Button>
@@ -150,7 +150,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           </button>
 
           {showTutorial && (
-            <div className="p-5 bg-bg-secondary/50 rounded-2xl border border-indigo-100/50 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="p-5 bg-bg-secondary/50 rounded-xl border border-indigo-100/50 animate-in fade-in slide-in-from-top-2 duration-300">
               <h4 className="text-sm font-black text-indigo-900 mb-3 flex items-center gap-2">
                 <Code2 className="text-indigo-500" size={16} />
                 Required Data Structure
@@ -246,13 +246,13 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
 
         {/* Validation Error */}
         {validationError && (
-          <div className="flex items-start gap-3 p-4 bg-surface-white rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2">
-            <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+          <div className="flex items-start gap-3 p-4 bg-surface-white rounded-xl border border-error/20 animate-in fade-in slide-in-from-top-2">
+            <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <p className="text-sm font-bold text-red-900 tracking-tight">
+              <p className="text-sm font-bold text-error tracking-tight">
                 Validation Failed
               </p>
-              <p className="text-xs font-medium text-red-600 leading-relaxed">
+              <p className="text-xs font-medium text-error/80 leading-relaxed">
                 {validationError}
               </p>
             </div>

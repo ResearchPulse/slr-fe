@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { FiArrowDown, FiArrowUp, FiCheckSquare, FiEye } from "react-icons/fi";
 import type { Project } from "../../types/project";
 import { cn } from "../../utils/cn";
+import Button from "../ui/Button";
 import {
   Table,
   TableHeader,
@@ -93,7 +94,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
               <TableRow
                 key={project.id}
                 onClick={() => onView(project.id)}
-                className="group bg-white transition-colors hover:bg-bg-primary/60"
+                className="group bg-surface-white transition-colors hover:bg-bg-primary/60"
               >
                 <TableCell className="px-5 py-4">
                   <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
@@ -128,7 +129,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       <button
                         type="button"
                         onClick={(event) => handleChecklist(event, project.id)}
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-accent"
+                        className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-accent"
                         title="Open checklists"
                         aria-label={`Open checklists for ${project.title}`}
                       >
@@ -138,7 +139,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                     <button
                       type="button"
                       onClick={(event) => { event.stopPropagation(); onView(project.id); }}
-                      className="inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
+                      className="inline-flex h-8 items-center gap-1 rounded-xl px-2 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
                     >
                       <FiEye size={15} /> View
                     </button>
@@ -159,7 +160,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
       <div className="divide-y divide-border lg:hidden">
         {sortedProjects.map((project) => (
-          <article key={project.id} className="space-y-4 bg-white p-4 sm:p-5">
+          <article key={project.id} className="space-y-4 bg-surface-white p-4 sm:p-5">
             <button type="button" onClick={() => onView(project.id)} className="block w-full text-left">
               <div className="text-sm font-semibold text-text-primary">{project.title}</div>
               <div className="mt-1 text-xs text-text-secondary">
@@ -176,13 +177,13 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             </div>
             <div className="flex gap-2">
               {onChecklistClick && (
-                <button type="button" onClick={(event) => handleChecklist(event, project.id)} className="inline-flex h-9 items-center gap-2 rounded-lg border border-border px-3 text-xs font-medium text-text-primary hover:bg-bg-primary">
+                <Button type="button" variant="secondary" size="sm" onClick={(event) => handleChecklist(event, project.id)} className="gap-2">
                   <FiCheckSquare size={15} /> Checklists
-                </button>
+                </Button>
               )}
-              <button type="button" onClick={() => onView(project.id)} className="inline-flex h-9 items-center gap-2 rounded-lg bg-accent px-3 text-xs font-medium text-white hover:bg-primary-hover">
+              <Button type="button" variant="primary" size="sm" onClick={() => onView(project.id)} className="gap-2">
                 <FiEye size={15} /> View project
-              </button>
+              </Button>
             </div>
           </article>
         ))}

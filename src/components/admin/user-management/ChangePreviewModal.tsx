@@ -33,7 +33,7 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
       size="md"
     >
       <div className="space-y-6">
-        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-md flex items-center gap-3">
+        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center gap-3">
           <FiCheckCircle className="text-emerald-500 shrink-0" size={20} />
           <p className="text-xs font-bold text-emerald-800">
             Admin authorization confirmed. Records updated.
@@ -45,7 +45,7 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
             changes.map((change, i) => (
               <div
                 key={i}
-                className="group p-4 bg-slate-50 rounded-md border border-slate-100/50 hover:bg-surface-white hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50/50 transition-all duration-300"
+                className="group p-4 bg-slate-50 rounded-xl border border-slate-100/50 hover:bg-surface-white hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50/50 transition-all duration-300"
               >
                 <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
                   {change.label}
@@ -55,7 +55,7 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
                     {change.old}
                   </span>
                   <FiArrowRight className="text-indigo-400 shrink-0" />
-                  <span className="text-sm font-black text-slate-900 bg-surface-white px-3 py-1 rounded-[4px] border border-indigo-50 shadow-sm truncate">
+                  <span className="text-sm font-black text-slate-900 bg-surface-white px-3 py-1 rounded-full border border-indigo-50 shadow-sm truncate">
                     {change.new}
                   </span>
                 </div>
@@ -73,7 +73,7 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
         <div className="flex justify-end pt-4">
           <button
             onClick={onClose}
-            className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-md hover:bg-accent shadow-xl shadow-slate-200 transition-all active:scale-95"
+            className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-accent shadow-xl shadow-slate-200 transition-all active:scale-95"
           >
             Acknowledge Changes
           </button>

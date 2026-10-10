@@ -84,12 +84,12 @@ export default function CrossrefWorksExplorer({
     <div className="mt-12 space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 text-accent border border-blue-200 rounded-full text-[10px] font-black uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-light text-accent border border-accent/30 rounded-full text-[10px] font-black uppercase tracking-widest">
             <FiBookOpen className="w-3 h-3" />
             Crossref Explorer
           </div>
           <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">
-            Query Academic <span className="text-blue-600">Works</span>
+            Query Academic <span className="text-accent">Works</span>
           </h2>
           <p className="text-sm text-text-secondary font-medium max-w-xl">
             Directly search the Crossref database for papers. Explore metadata
@@ -99,7 +99,7 @@ export default function CrossrefWorksExplorer({
 
         <form
           onSubmit={handleSearch}
-          className="flex flex-wrap items-center gap-3 bg-surface-white p-2 rounded-[4px] border border-border shadow-none"
+          className="flex flex-wrap items-center gap-3 bg-surface-white p-2 rounded-xl border border-border shadow-none"
         >
           <div className="relative group min-w-[240px]">
             <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
@@ -110,13 +110,13 @@ export default function CrossrefWorksExplorer({
               onChange={(e) =>
                 setLocalParams({ ...localParams, query: e.target.value })
               }
-              className="w-full bg-bg-primary border-none focus:bg-surface-white rounded-[4px] pl-11 pr-4 py-2.5 text-sm font-bold text-text-primary transition-all outline-none"
+              className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
             />
           </div>
           <Button
             type="submit"
             isLoading={isLoading}
-            className="rounded-[4px] px-6 bg-accent hover:bg-primary-hover text-white shadow-sm"
+            className="rounded-xl px-6 bg-accent hover:bg-primary-hover text-white shadow-sm"
           >
             Search
           </Button>
@@ -147,9 +147,9 @@ export default function CrossrefWorksExplorer({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="absolute inset-0 z-10 bg-surface-white/40 backdrop-blur-[2px] rounded-[4px] flex items-center justify-center pointer-events-none"
+                className="absolute inset-0 z-10 bg-surface-white/40 backdrop-blur-[2px] rounded-xl flex items-center justify-center pointer-events-none"
               >
-                <div className="flex items-center gap-3 px-6 py-3 bg-surface-white rounded-[4px] shadow-none border border-blue-100 mb-20">
+                <div className="flex items-center gap-3 px-6 py-3 bg-surface-white rounded-xl shadow-none border border-accent/20 mb-20">
                   <FiRefreshCw className="w-5 h-5 text-accent animate-spin" />
                   <span className="text-xs font-black text-text-primary uppercase tracking-widest">
                     Refreshing Results...
@@ -165,7 +165,7 @@ export default function CrossrefWorksExplorer({
                 {[1, 2, 3, 4, 5].map((i) => (
                   <div
                     key={i}
-                    className="p-6 bg-surface-white rounded-[4px] border border-border animate-pulse flex flex-col md:flex-row gap-6 items-start md:items-center"
+                    className="p-6 bg-surface-white rounded-xl border border-border animate-pulse flex flex-col md:flex-row gap-6 items-start md:items-center"
                   >
                     <div className="flex-1 space-y-3">
                       <div className="flex gap-2">
@@ -178,7 +178,7 @@ export default function CrossrefWorksExplorer({
                         <div className="h-4 w-24 bg-bg-primary rounded-md" />
                       </div>
                     </div>
-                    <div className="h-10 w-24 bg-bg-primary rounded-[4px] self-end md:self-center" />
+                    <div className="h-10 w-24 bg-bg-primary rounded-xl self-end md:self-center" />
                   </div>
                 ))}
               </div>
@@ -186,9 +186,9 @@ export default function CrossrefWorksExplorer({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-surface-white border-2 border-dashed border-border rounded-[4px] p-20 text-center"
+                className="bg-surface-white border-2 border-dashed border-border rounded-xl p-20 text-center"
               >
-                <div className="w-20 h-20 bg-blue-50 rounded-[4px] flex items-center justify-center mx-auto mb-6 border border-blue-100">
+                <div className="w-20 h-20 bg-primary-light rounded-xl flex items-center justify-center mx-auto mb-6 border border-accent/20">
                   <FiSearch className="w-10 h-10 text-accent/40" />
                 </div>
                 <h4 className="text-xl font-black text-text-primary mb-2 uppercase tracking-tight">
@@ -207,11 +207,11 @@ export default function CrossrefWorksExplorer({
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group bg-surface-white rounded-[4px] p-6 border border-border hover:border-accent/40 hover:shadow-sm transition-all flex flex-col md:flex-row gap-6 items-start md:items-center"
+                    className="group bg-surface-white rounded-xl p-6 border border-border hover:border-accent/40 hover:shadow-sm transition-all flex flex-col md:flex-row gap-6 items-start md:items-center"
                   >
                     <div className="flex-1 space-y-3">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2 py-0.5 bg-bg-secondary text-text-secondary rounded-md text-[10px] font-black uppercase tracking-widest">
+                        <span className="px-2 py-0.5 bg-bg-secondary text-text-secondary rounded-xl text-[10px] font-black uppercase tracking-widest">
                           {work.type || "journal-article"}
                         </span>
                         <span className="text-[10px] font-bold text-text-secondary font-mono">
@@ -224,7 +224,7 @@ export default function CrossrefWorksExplorer({
                             {work.DOI}
                           </a>
                         </span>
-                        <span className="text-[10px] font-bold bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md">
+                        <span className="text-[10px] font-bold bg-blue-100 text-accent px-2 py-0.5 rounded-xl">
                           Score: {work.score}
                         </span>
                       </div>
@@ -244,7 +244,7 @@ export default function CrossrefWorksExplorer({
                           <FiCalendar className="w-3.5 h-3.5 text-accent/70" />
                           {work.published?.["date-parts"]?.[0]?.[0] || "N/A"}
                         </div>
-                        <div className="flex items-center gap-1.5 text-[10px] text-accent font-black uppercase tracking-widest bg-blue-50 border border-blue-100 px-2.5 py-0.5 rounded-full">
+                        <div className="flex items-center gap-1.5 text-[10px] text-accent font-black uppercase tracking-widest bg-primary-light border border-accent/20 px-2.5 py-0.5 rounded-full">
                           {work["is-referenced-by-count"] || 0} Citations
                         </div>
                       </div>
@@ -254,7 +254,7 @@ export default function CrossrefWorksExplorer({
                       <button
                         onClick={() => handleViewDetail(work.DOI)}
                         disabled={isFetchingDetail}
-                        className="p-3 bg-bg-secondary text-text-secondary hover:bg-slate-900 hover:text-white rounded-[4px] transition-all"
+                        className="p-3 bg-bg-secondary text-text-secondary hover:bg-primary hover:text-white rounded-xl transition-all"
                         title="View Metadata Detail"
                       >
                         <FiEye />
@@ -265,7 +265,7 @@ export default function CrossrefWorksExplorer({
                           isLoading={isImportingByDoi}
                           disabled={work.isImported}
                           className={cn(
-                            "rounded-[4px] px-5 flex items-center gap-2 text-xs font-black uppercase tracking-widest h-11",
+                            "rounded-xl px-5 flex items-center gap-2 text-xs font-black uppercase tracking-widest h-11",
                             work.isImported
                               ? "bg-bg-secondary text-text-secondary cursor-not-allowed border-border shadow-none"
                               : "",
@@ -294,7 +294,7 @@ export default function CrossrefWorksExplorer({
           {/* Pagination */}
           {searchResults && searchResults.items.length > 0 && (
             <div className="flex flex-col gap-4 mt-6">
-              <div className="flex items-center justify-between px-6 py-4 bg-surface-white rounded-[4px] border border-border shadow-none">
+              <div className="flex items-center justify-between px-6 py-4 bg-surface-white rounded-xl border border-border shadow-none">
                 <div className="flex flex-col">
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
@@ -330,24 +330,24 @@ export default function CrossrefWorksExplorer({
                     <button
                       onClick={handlePrevPage}
                       disabled={!canGoBack || isFetching}
-                      className="p-2.5 bg-bg-secondary text-text-primary hover:bg-slate-900 hover:text-white disabled:opacity-30 rounded-[4px] transition-all"
+                      className="p-2.5 bg-bg-secondary text-text-primary hover:bg-primary hover:text-white disabled:opacity-30 rounded-xl transition-all"
                       title="Previous Page"
                     >
                       <FiChevronLeft className="w-5 h-5" />
                     </button>
-                    <button
+                    <Button
                       onClick={handleNextPage}
                       disabled={!canGoNext || isFetching}
-                      className="flex items-center gap-2 px-6 py-2.5 bg-accent text-white hover:bg-primary-hover disabled:opacity-30 rounded-[4px] transition-all font-bold text-xs uppercase tracking-widest shadow-sm"
+                      className="gap-2"
                     >
                       Next
                       <FiChevronRight className="w-5 h-5" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
-              <div className="px-6 py-2 bg-blue-50/50 rounded-[4px] border border-blue-100/50 text-center">
+              <div className="px-6 py-2 bg-primary-light/50 rounded-xl border border-accent/20 text-center">
                 <p className="text-[10px] font-medium text-text-secondary italic">
                   Note: Using cursors for consistent results across deep data
                   sets. Offset paging is limited to 10k results.
@@ -369,7 +369,7 @@ export default function CrossrefWorksExplorer({
           <div className="space-y-6">
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <span className="px-3 py-1 bg-blue-50 text-accent border border-blue-200 rounded-[4px] text-[10px] font-black uppercase tracking-widest">
+                <span className="px-3 py-1 bg-primary-light text-accent border border-accent/30 rounded-xl text-[10px] font-black uppercase tracking-widest">
                   {selectedWork.type}
                 </span>
                 <span className="text-xs font-mono text-text-secondary">
@@ -379,7 +379,7 @@ export default function CrossrefWorksExplorer({
               <h3 className="text-2xl font-black text-text-primary leading-tight">
                 {selectedWork.title?.[0]}
               </h3>
-              <div className="p-4 bg-bg-secondary rounded-[4px] border border-border">
+              <div className="p-4 bg-bg-secondary rounded-xl border border-border">
                 <p className="text-xs font-black text-text-secondary uppercase tracking-widest mb-2">
                   Authors
                 </p>
@@ -387,7 +387,7 @@ export default function CrossrefWorksExplorer({
                   {selectedWork.author?.map((a, i) => (
                     <div
                       key={i}
-                      className="px-3 py-1.5 bg-surface-white border border-border rounded-[4px] text-xs font-bold text-text-primary shadow-none flex items-center gap-2"
+                      className="px-3 py-1.5 bg-surface-white border border-border rounded-xl text-xs font-bold text-text-primary shadow-none flex items-center gap-2"
                     >
                       <FiUser className="text-accent" />
                       {a.given} {a.family}
@@ -401,7 +401,7 @@ export default function CrossrefWorksExplorer({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-4 bg-surface-white border border-border rounded-[4px] shadow-none">
+              <div className="p-4 bg-surface-white border border-border rounded-xl shadow-none">
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                   Publisher
                 </p>
@@ -409,7 +409,7 @@ export default function CrossrefWorksExplorer({
                   {selectedWork.publisher || "N/A"}
                 </p>
               </div>
-              <div className="p-4 bg-surface-white border border-border rounded-[4px] shadow-none">
+              <div className="p-4 bg-surface-white border border-border rounded-xl shadow-none">
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                   Published Date
                 </p>
@@ -418,7 +418,7 @@ export default function CrossrefWorksExplorer({
                     "N/A"}
                 </p>
               </div>
-              <div className="p-4 bg-surface-white border border-border rounded-[4px] shadow-none">
+              <div className="p-4 bg-surface-white border border-border rounded-xl shadow-none">
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                   Citations
                 </p>
@@ -426,7 +426,7 @@ export default function CrossrefWorksExplorer({
                   {selectedWork["is-referenced-by-count"] || 0} citations
                 </p>
               </div>
-              <div className="p-4 bg-surface-white border border-border rounded-[4px] shadow-none">
+              <div className="p-4 bg-surface-white border border-border rounded-xl shadow-none">
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                   Funding
                 </p>
@@ -441,7 +441,7 @@ export default function CrossrefWorksExplorer({
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
                   Abstract
                 </p>
-                <div className="p-6 bg-blue-50/30 rounded-[4px] border border-blue-100/50">
+                <div className="p-6 bg-primary-light/30 rounded-xl border border-accent/20">
                   <div
                     className="text-sm text-text-primary leading-relaxed font-medium"
                     dangerouslySetInnerHTML={{ __html: selectedWork.abstract }}

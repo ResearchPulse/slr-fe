@@ -26,7 +26,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          "p-2 rounded-[4px] transition-all active:scale-90",
+          "p-2 rounded-xl transition-all active:scale-90",
           variant === "destructive"
             ? "text-rose-500 hover:bg-rose-50"
             : "text-slate-400 hover:text-accent hover:bg-bg-secondary",

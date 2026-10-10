@@ -39,11 +39,11 @@ export default function FilterSidebar({
 }: FilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="flex w-full items-center gap-3 rounded-2xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-full lg:flex-col lg:py-6">
+      <aside className="flex w-full items-center gap-3 rounded-xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-full lg:flex-col lg:py-6">
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="rounded-lg border border-border bg-white p-2.5 text-text-secondary transition-colors hover:bg-slate-50 hover:text-accent lg:mb-8"
+          className="rounded-xl border border-border bg-white p-2.5 text-text-secondary transition-colors hover:bg-slate-50 hover:text-accent lg:mb-8"
           title="Expand Filters"
           aria-label="Expand filters"
         >
@@ -60,11 +60,11 @@ export default function FilterSidebar({
   }
 
   return (
-    <aside className="flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-full">
+    <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-full">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-accent">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent">
             <FiFilter className="h-5 w-5" />
           </div>
           <div>
@@ -79,7 +79,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-slate-50 hover:text-text-primary"
+          className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-slate-50 hover:text-text-primary"
           aria-label="Collapse filters"
         >
           <FiChevronLeft className="h-5 w-5" />
@@ -101,7 +101,7 @@ export default function FilterSidebar({
                 onChange({ ...filters, keyword: e.target.value })
               }
               placeholder="Search concepts..."
-              className="h-10 w-full rounded-lg border border-border bg-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
         </div>
@@ -134,7 +134,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="From"
-                className="h-10 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
             <div className="relative group">
@@ -159,7 +159,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="To"
-                className="h-10 w-full rounded-lg border border-border bg-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
               />
             </div>
           </div>
@@ -176,7 +176,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, searchSourceId: e.target.value })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="all">All Sources</option>
               {availableSources.map((source) => (
@@ -195,7 +195,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, importBatchId: e.target.value })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="all">All Batches</option>
               {availableBatches.map((batch) => (
@@ -218,7 +218,7 @@ export default function FilterSidebar({
                   doiState: e.target.value as PaperPoolFilters["doiState"],
                 })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="all">Any DOI Status</option>
               <option value="has">Has DOI</option>
@@ -239,7 +239,7 @@ export default function FilterSidebar({
                     .value as PaperPoolFilters["fullTextState"],
                 })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             >
               <option value="all">Any Fulltext Status</option>
               <option value="has">Has Fulltext PDF</option>
@@ -250,27 +250,27 @@ export default function FilterSidebar({
 
         {/* State Filters */}
         <div className="space-y-1 border-t border-border pt-3">
-          <label           className="group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50">
+          <label           className="group flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.onlyUnused}
               onChange={(e) =>
                 onChange({ ...filters, onlyUnused: e.target.checked })
               }
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
+              className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
             />
             <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
               Only Unused Papers
             </span>
           </label>
-          <label           className="group flex cursor-pointer items-center gap-3 rounded-lg p-2 transition-colors hover:bg-slate-50">
+          <label           className="group flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50">
             <input
               type="checkbox"
               checked={filters.recentlyImported}
               onChange={(e) =>
                 onChange({ ...filters, recentlyImported: e.target.checked })
               }
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent"
+              className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
             />
             <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
               Recently Imported
@@ -284,7 +284,7 @@ export default function FilterSidebar({
         <Button
           variant="secondary"
           onClick={onAddToProcess}
-          className="w-full rounded-lg text-xs font-semibold"
+          className="w-full rounded-xl text-xs font-semibold"
         >
           <FiLayers className="w-4 h-4 mr-2" />
           Add to Review Process
@@ -292,14 +292,14 @@ export default function FilterSidebar({
         <Button
           onClick={onSaveCurrent}
           isLoading={isSaving}
-          className="w-full rounded-lg text-xs font-semibold"
+          className="w-full rounded-xl text-xs font-semibold"
         >
           <FiSave className="w-4 h-4 mr-2" />
           Save As Collection
         </Button>
         <button
           onClick={onReset}
-          className="flex w-full items-center justify-center gap-2 rounded-lg py-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
+          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
         >
           <FiRotateCcw className="w-3.5 h-3.5" />
           Reset All Filters

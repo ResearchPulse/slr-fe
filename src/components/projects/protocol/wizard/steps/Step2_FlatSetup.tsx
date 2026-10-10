@@ -14,6 +14,7 @@ import { getErrorMessage } from "../../../../../utils/errorUtils";
 import { toastWarning } from "../../../../../utils/toast";
 import { toastError, toastSuccess } from "../../../../../utils/toast";
 import { generateId } from "../../../../../utils/uuid";
+import Button from "../../../../ui/Button";
 import Input from "../../../../ui/Input";
 import Label from "../../../../ui/Label";
 import Textarea from "../../../../ui/Textarea";
@@ -281,7 +282,7 @@ export default function Step2_FlatSetup({
       <div className="flex items-center gap-3 mb-6">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-bg-secondary rounded-[4px] transition"
+          className="p-2 hover:bg-bg-secondary rounded-xl transition"
         >
           <FiArrowLeft className="w-5 h-5" />
         </button>
@@ -317,14 +318,14 @@ export default function Step2_FlatSetup({
         </div>
       </div>
 
-      <div className="bg-surface-white rounded-[4px] border border-border p-6">
+      <div className="bg-surface-white rounded-xl border border-border p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-text-primary">Fields</h3>
           <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={handleSuggestFields}
               disabled={isSuggestingFields}
-              className="flex items-center gap-2 px-3 py-2 rounded-[4px] text-sm font-medium text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 transition shadow-none disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 transition shadow-none disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSuggestingFields ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -337,7 +338,7 @@ export default function Step2_FlatSetup({
             {!showCustomForm && (
               <button
                 onClick={() => setShowCustomForm(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-[4px] hover:bg-blue-700 transition text-sm font-medium"
+                className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transition text-sm font-medium"
               >
                 <FiPlus className="w-4 h-4" />
                 Add Field
@@ -378,7 +379,7 @@ export default function Step2_FlatSetup({
                         | 5,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-border rounded-xl focus:ring-2 focus:ring-accent"
                 >
                   {FIELD_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>
@@ -399,7 +400,7 @@ export default function Step2_FlatSetup({
                         required: e.target.checked,
                       }))
                     }
-                    className="w-4 h-4 text-blue-600 rounded"
+                    className="w-4 h-4 text-accent rounded"
                   />
                   <span className="text-sm text-text-primary">Required</span>
                 </label>
@@ -437,7 +438,7 @@ export default function Step2_FlatSetup({
                         options: [...prev.options, newOption],
                       }));
                     }}
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-accent hover:text-primary-hover font-medium"
                   >
                     + Add Option
                   </button>
@@ -476,18 +477,20 @@ export default function Step2_FlatSetup({
             )}
 
             <div className="flex gap-2 border-t border-border pt-4">
-              <button
+              <Button
+                variant="primary"
                 onClick={handleAddCustomField}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-[4px] hover:bg-blue-700 font-medium transition"
+                className="flex-1"
               >
                 Add Field
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="secondary"
                 onClick={() => setShowCustomForm(false)}
-                className="flex-1 px-4 py-2 bg-bg-secondary text-text-primary rounded-[4px] hover:bg-bg-secondary font-medium transition"
+                className="flex-1"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -497,7 +500,7 @@ export default function Step2_FlatSetup({
             {customFields.map((field) => (
               <div
                 key={field.id}
-                className="flex items-center justify-between p-3 bg-bg-primary rounded-[4px] border border-border"
+                className="flex items-center justify-between p-3 bg-bg-primary rounded-xl border border-border"
               >
                 <div className="flex-1">
                   <p className="font-medium text-text-primary">{field.name}</p>
@@ -514,7 +517,7 @@ export default function Step2_FlatSetup({
                 </div>
                 <button
                   onClick={() => handleRemoveCustomField(field.id)}
-                  className="p-2 text-red-600 hover:bg-surface-white rounded-[4px] transition"
+                  className="p-2 text-red-600 hover:bg-surface-white rounded-xl transition"
                 >
                   <FiTrash2 className="w-4 h-4" />
                 </button>
@@ -527,13 +530,13 @@ export default function Step2_FlatSetup({
       <div className="flex gap-3 justify-between">
         <button
           onClick={onBack}
-          className="px-6 py-3 bg-bg-secondary text-text-primary rounded-[4px] hover:bg-bg-secondary font-medium transition"
+          className="px-6 py-3 bg-bg-secondary text-text-primary rounded-xl hover:bg-bg-secondary font-medium transition"
         >
           Back
         </button>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-[4px] hover:bg-green-700 font-medium transition"
+          className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium transition"
         >
           <FiCheck className="w-4 h-4" />
           Save & Continue

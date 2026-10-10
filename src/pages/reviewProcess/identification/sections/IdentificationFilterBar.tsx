@@ -23,9 +23,9 @@ const toneClasses: Record<
   { ring: string; border: string; button: string }
 > = {
   blue: {
-    ring: "focus:ring-blue-500",
-    border: "focus:border-blue-500",
-    button: "bg-blue-600 hover:bg-blue-700",
+    ring: "focus:ring-accent",
+    border: "focus:border-accent",
+    button: "bg-primary hover:bg-primary-hover",
   },
   emerald: {
     ring: "focus:ring-emerald-500",
@@ -65,13 +65,13 @@ export default function IdentificationFilterBar({
               onSearch(searchInput);
             }
           }}
-          className={`w-full pl-10 pr-4 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+          className={`w-full pl-10 pr-4 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
         />
       </div>
 
       <button
         onClick={() => onSearch(searchInput)}
-        className={`px-3 py-2 text-sm text-white rounded-[4px] transition-colors ${styles.button}`}
+        className={`px-3 py-2 text-sm text-white rounded-xl transition-colors ${styles.button}`}
       >
         Search
       </button>
@@ -92,7 +92,7 @@ export default function IdentificationFilterBar({
             onYearFilter(parsedValue);
           }
         }}
-        className={`w-24 px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+        className={`w-24 px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
       />
 
       <select
@@ -102,7 +102,7 @@ export default function IdentificationFilterBar({
           onSearchSourceInputChange(nextValue);
           onSearchSourceFilter(nextValue || undefined);
         }}
-        className={`min-w-[190px] max-w-[280px] px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+        className={`min-w-[190px] max-w-[280px] px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
       >
         <option value="">All sources</option>
       </select>
@@ -110,7 +110,7 @@ export default function IdentificationFilterBar({
       {hasFilters && (
         <button
           onClick={onClearFilters}
-          className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-colors"
+          className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors"
         >
           Clear filters
         </button>

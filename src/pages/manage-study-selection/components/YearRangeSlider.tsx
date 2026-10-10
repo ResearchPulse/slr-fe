@@ -79,7 +79,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         </div>
         <button
           onClick={onClear}
-          className="p-1 rounded-md hover:bg-bg-secondary text-text-secondary hover:text-rose-500 transition-colors"
+          className="p-1 rounded-xl hover:bg-bg-secondary text-text-secondary hover:text-rose-500 transition-colors"
         >
           <X className="w-3.5 h-3.5" />
         </button>

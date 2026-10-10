@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toastError, toastInfo, toastSuccess } from "../utils/toast";
 import { studySelectionService } from "../services/studySelectionService";
 import { paperService } from "../services/paperService";
 import { QUERY_KEYS } from "../constants/queryKeys";
@@ -68,17 +68,18 @@ export function usePaperActions(
       });
 
       if (variables.options?.extractWithGrobid) {
-        toast.success(
+        toastSuccess(
           "PDF uploaded successfully. AI metadata extraction is running in the background.",
+          undefined,
           { duration: 5000 },
         );
         return;
       }
 
-      toast.success("PDF uploaded successfully.");
+      toastSuccess("PDF uploaded successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to upload PDF"));
+      toastError(getErrorMessage(error, "Failed to upload PDF"));
     },
   });
 
@@ -121,10 +122,10 @@ export function usePaperActions(
         queryKey: QUERY_KEYS.papers.all,
       });
 
-      toast.success("Selected metadata applied successfully.");
+      toastSuccess("Selected metadata applied successfully.");
     },
     onError: () => {
-      toast.error("Failed to apply metadata. Please try again.");
+      toastError("Failed to apply metadata. Please try again.");
     },
   });
 
@@ -164,19 +165,19 @@ export function usePaperActions(
 
       const extraction = response.data.extraction;
       if (extraction?.status === "failed") {
-        toast.error(extraction.message ?? "Metadata extraction failed.");
+        toastError(extraction.message ?? "Metadata extraction failed.");
         return;
       }
 
       if (extraction?.status === "partial") {
-        toast("Metadata extraction partially completed.");
+        toastInfo("Metadata extraction partially completed.");
         return;
       }
 
-      toast.success("Metadata extraction completed successfully.");
+      toastSuccess("Metadata extraction completed successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to retry metadata extraction"));
+      toastError(getErrorMessage(error, "Failed to retry metadata extraction"));
     },
   });
 
@@ -207,10 +208,10 @@ export function usePaperActions(
       queryClient.invalidateQueries({
         queryKey: ["study-selection", finalProcessId, "statistics"],
       });
-      toast.success("Conflict resolved");
+      toastSuccess("Conflict resolved");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to resolve conflict"));
+      toastError(getErrorMessage(error, "Failed to resolve conflict"));
     },
   });
 
@@ -246,10 +247,10 @@ export function usePaperActions(
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.detail(paperId),
       });
-      toast.success("PDF removed successfully");
+      toastSuccess("PDF removed successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to remove PDF"));
+      toastError(getErrorMessage(error, "Failed to remove PDF"));
     },
   });
 
@@ -292,10 +293,10 @@ export function usePaperActions(
         queryKey: ["identification-processes"],
       });
 
-      toast.success("Paper deleted successfully.");
+      toastSuccess("Paper deleted successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to delete paper"));
+      toastError(getErrorMessage(error, "Failed to delete paper"));
     },
   });
 

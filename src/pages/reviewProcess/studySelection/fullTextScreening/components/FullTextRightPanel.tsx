@@ -121,9 +121,9 @@ export default function FullTextRightPanel({
 
             {/* Resolution Details */}
             {paper.resolution && (
-              <div className="px-4 py-4 border-b border-border bg-blue-50/30">
-                <div className="bg-blue-50 rounded-[4px] p-4 border border-blue-100">
-                  <h3 className="text-xs font-semibold text-blue-700 uppercase tracking-wider mb-3">
+              <div className="px-4 py-4 border-b border-border bg-primary-light/30">
+                <div className="bg-primary-light rounded-xl p-4 border border-accent/30">
+                  <h3 className="text-xs font-semibold text-accent uppercase tracking-wider mb-3">
                     Resolution
                   </h3>
                   <div className="space-y-2 text-sm">

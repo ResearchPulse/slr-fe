@@ -107,8 +107,8 @@ export default function AssessmentQueue({
             barColor = "bg-green-500";
           } else if (percentage > 0) {
             StatusIcon = FiClock;
-            iconColor = "text-blue-500";
-            barColor = "bg-blue-500";
+            iconColor = "text-accent";
+            barColor = "bg-primary";
           }
 
           return (

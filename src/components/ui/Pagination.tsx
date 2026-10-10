@@ -53,7 +53,7 @@ const Pagination: React.FC<PaginationProps> = ({
             key={page}
             onClick={() => onPageChange(page)}
             disabled={disabled}
-            className={`min-w-[34px] h-8 rounded-lg text-[11px] font-medium uppercase tracking-[0.05em] transition-colors ${
+            className={`min-w-[34px] h-8 rounded-xl text-[11px] font-medium uppercase tracking-[0.05em] transition-colors ${
               currentPage === page
                 ? "bg-text-primary text-bg-primary shadow-sm"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"

@@ -85,7 +85,7 @@ export default function PrismaSummaryHeader({
               return (
                 <div
                   key={card.key}
-                  className="relative min-h-[112px] rounded-lg bg-bg-primary/65 p-4 sm:px-5 sm:py-4"
+                  className="relative min-h-[112px] rounded-xl bg-bg-primary/65 p-4 sm:px-5 sm:py-4"
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <span className={`flex h-8 w-8 items-center justify-center rounded-lg bg-surface-white ${colors.icon}`}>

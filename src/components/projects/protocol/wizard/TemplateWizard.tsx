@@ -187,7 +187,7 @@ export default function TemplateWizard({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-bg-primary">
       {/* Progress Indicator */}
       <div className="sticky top-0 bg-surface-white border-b border-border shadow-none z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -199,11 +199,11 @@ export default function TemplateWizard({
                   onClick={() => goToStep(step as WizardStep)}
                   disabled={step > 1 && state.sections.length === 0}
                   className={`
-                    px-4 py-2 rounded-[4px] font-medium text-sm transition-all
+                    px-4 py-2 rounded-xl font-medium text-sm transition-all
                     disabled:opacity-50 disabled:cursor-not-allowed
                     ${
                       state.currentStep === step
-                        ? "bg-blue-600 text-white shadow-none"
+                        ? "bg-primary text-white shadow-none"
                         : "bg-bg-secondary text-text-primary hover:bg-bg-secondary"
                     }
                   `}

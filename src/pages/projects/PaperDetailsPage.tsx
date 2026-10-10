@@ -11,10 +11,11 @@ import {
   FiShare2,
   FiGitBranch,
   FiExternalLink,
-  FiLoader,
   FiUploadCloud,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../utils/toast";
+import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
+import Button from "../../components/ui/Button";
 import type { ScreeningPaper } from "../reviewProcess/studySelection/titleAbstractScreening/types";
 import { usePaperDetails } from "../../hooks/usePaperDetails";
 import {
@@ -136,11 +137,11 @@ export default function PaperDetailsPage() {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.detail(paperId!),
       });
-      toast.success("PDF uploaded successfully.");
+      toastSuccess("PDF uploaded successfully.");
       setIsUploadModalOpen(false);
     },
     onError: (error) => {
-      toast.error(
+      toastError(
         error instanceof Error
           ? error.message
           : "Failed to upload PDF. Please try again.",
@@ -198,7 +199,7 @@ export default function PaperDetailsPage() {
   if (isPaperLoading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50">
-        <FiLoader className="w-10 h-10 text-blue-600 animate-spin mb-4" />
+        <LoadingSpinner size="lg" className="mb-4" />
         <p className="text-text-secondary font-medium">
           Loading paper details...
         </p>
@@ -209,7 +210,7 @@ export default function PaperDetailsPage() {
   if (paperError || !paper) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50 px-6 text-center">
-        <div className="w-20 h-20 bg-surface-white rounded-[4px] flex items-center justify-center text-red-500 mb-6 border border-red-100">
+        <div className="w-20 h-20 bg-surface-white rounded-xl flex items-center justify-center text-red-500 mb-6 border border-red-100">
           <FiFileText className="w-10 h-10" />
         </div>
         <h1 className="text-2xl font-black text-text-primary mb-2">
@@ -221,7 +222,7 @@ export default function PaperDetailsPage() {
         </p>
         <button
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-surface-white border border-border text-text-primary rounded-[4px] font-bold hover:bg-bg-secondary transition-all active:scale-95"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-surface-white border border-border text-text-primary rounded-xl font-bold hover:bg-bg-secondary transition-all active:scale-95"
         >
           <FiArrowLeft className="w-4 h-4" />
           Go Back
@@ -238,7 +239,7 @@ export default function PaperDetailsPage() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => navigate(-1)}
-              className="p-2.5 hover:bg-bg-secondary rounded-[4px] text-text-secondary transition-colors"
+              className="p-2.5 hover:bg-bg-secondary rounded-xl text-text-secondary transition-colors"
               title="Back"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -259,7 +260,7 @@ export default function PaperDetailsPage() {
                 href={paper.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-surface-white border border-border text-text-primary text-xs font-bold rounded-[4px] hover:bg-bg-secondary transition-all"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-surface-white border border-border text-text-primary text-xs font-bold rounded-xl hover:bg-bg-secondary transition-all"
               >
                 Source Link
                 <FiExternalLink className="w-3.5 h-3.5" />
@@ -292,7 +293,7 @@ export default function PaperDetailsPage() {
           )}
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-[4px] border border-border shadow-none">
+          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-xl border border-border shadow-none">
             <TabButton
               active={activeTab === "abstract"}
               onClick={() => setActiveTab("abstract")}
@@ -352,7 +353,7 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "references" && (
-              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+              <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
                 <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Cited References
                 </h2>
@@ -365,7 +366,7 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "citations" && (
-              <div className="bg-surface-white rounded-[4px] border border-border p-6 shadow-none">
+              <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
                 <h2 className="text-sm font-black text-text-primary uppercase tracking-tight mb-4">
                   Citing Papers
                 </h2>
@@ -390,8 +391,8 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "fulltext" && (
-              <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
-                <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-bg-secondary/50">
+              <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
+                <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary/50">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
                     {paper.pdfUrl ? "PDF Viewer" : "Full-Text Access"}
                   </h2>
@@ -400,7 +401,7 @@ export default function PaperDetailsPage() {
                       href={paper.pdfUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 hover:text-blue-700 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
+                      className="text-accent hover:text-primary-hover text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
                     >
                       Open in New Tab
                       <FiExternalLink className="w-3 h-3" />
@@ -424,8 +425,8 @@ export default function PaperDetailsPage() {
                     <div
                       onMouseDown={handleMouseDown}
                       className={cn(
-                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-blue-400 cursor-col-resize transition-all duration-200 z-10 relative group",
-                        isResizing && "bg-blue-500 w-1.5",
+                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-accent/60 cursor-col-resize transition-all duration-200 z-10 relative group",
+                        isResizing && "bg-accent w-1.5",
                       )}
                     >
                       <div className="absolute inset-y-0 -left-1 -right-1 cursor-col-resize" />
@@ -457,7 +458,7 @@ export default function PaperDetailsPage() {
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
-                    <div className="w-20 h-20 bg-surface-white rounded-[4px] shadow-none flex items-center justify-center mb-6 text-slate-300 border border-slate-100">
+                    <div className="w-20 h-20 bg-surface-white rounded-xl shadow-none flex items-center justify-center mb-6 text-text-muted border border-border">
                       <FiFileText className="w-10 h-10" />
                     </div>
                     <h3 className="text-lg font-bold text-text-primary mb-2">
@@ -467,13 +468,14 @@ export default function PaperDetailsPage() {
                       PDF is not available for this paper.
                     </p>
                     {isLeader && (
-                      <button
+                      <Button
+                        variant="primary"
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-[4px] text-sm font-bold shadow-none shadow-blue-200 transition-all active:scale-95"
+                        className="gap-2"
                       >
                         <FiUploadCloud className="w-4 h-4" />
                         Upload Full-Text PDF
-                      </button>
+                      </Button>
                     )}
                   </div>
                 )}

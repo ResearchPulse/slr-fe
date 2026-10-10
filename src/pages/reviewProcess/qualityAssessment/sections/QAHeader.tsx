@@ -31,7 +31,7 @@ export function QAHeader({
     normalizedStatus === "inprogress"
       ? "bg-emerald-50 text-emerald-700"
       : normalizedStatus === "completed"
-        ? "bg-blue-50 text-blue-700"
+        ? "bg-primary-light text-accent"
         : "bg-bg-primary text-text-secondary";
 
   return (
@@ -40,13 +40,13 @@ export function QAHeader({
         <div className="flex min-w-0 items-center gap-3 lg:flex-1">
           <button
             onClick={onBack}
-            className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+            className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20"
             title="Back"
             aria-label="Back"
           >
             <ArrowLeft size={20} />
           </button>
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light text-accent">
             <FileCheck2 size={20} />
           </div>
           <div className="min-w-0">
@@ -67,7 +67,7 @@ export function QAHeader({
         </div>
 
         <div className="flex flex-wrap items-center gap-3 pl-1 sm:pl-14 lg:pl-0">
-          <div className="flex items-center gap-3 rounded-lg border border-border bg-bg-primary px-3 py-2 sm:gap-4">
+          <div className="flex items-center gap-3 rounded-xl border border-border bg-bg-primary px-3 py-2 sm:gap-4">
             <div>
               <div className="text-[10px] font-medium text-text-secondary">Studies</div>
               <div className="mt-0.5 text-sm font-semibold text-text-primary">{stats.total}</div>
@@ -80,7 +80,7 @@ export function QAHeader({
               </div>
               <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
                 <div
-                  className="h-full rounded-full bg-blue-600 transition-all duration-500"
+                  className="h-full rounded-full bg-primary transition-all duration-500"
                   style={{ width: `${completedPercent}%` }}
                 />
               </div>
@@ -91,7 +91,7 @@ export function QAHeader({
             <Button
               variant="outline"
               onClick={onExport}
-              className="h-12 min-h-12 flex items-center gap-2 rounded-lg border-border bg-surface-white text-sm font-medium text-text-primary shadow-none transition-colors hover:bg-bg-primary hover:text-text-primary"
+              className="h-12 min-h-12 flex items-center gap-2 rounded-xl border-border bg-surface-white text-sm font-medium text-text-primary shadow-none transition-colors hover:bg-bg-primary hover:text-text-primary"
             >
               <Download size={16} className="text-text-secondary" />
               Export Excel

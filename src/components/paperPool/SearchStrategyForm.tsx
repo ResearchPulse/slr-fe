@@ -17,7 +17,8 @@ import {
   FiSearch,
 } from "react-icons/fi";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
+import Button from "../ui/Button";
+import { toastSuccess, toastError } from "../../utils/toast";
 import type { SearchSourceDto } from "../../types/searchSource";
 import type { SearchStrategyDto } from "./types/search-strategy";
 import {
@@ -141,7 +142,7 @@ export default function SearchStrategyForm({
   // Action: Analyze PICOC to Breakdown Keywords
   const handleAnalyzePicoc = async () => {
     if (picocs.length === 0) {
-      toast.error("No PICOC framework defined for this project.");
+      toastError("No PICOC framework defined for this project.");
       return;
     }
 
@@ -174,13 +175,13 @@ export default function SearchStrategyForm({
         }
 
         setHasAnalyzed(true);
-        toast.success("PICOC analyzed. Keywords extracted successfully.");
+        toastSuccess("PICOC analyzed. Keywords extracted successfully.");
       } else {
-        toast.error(result.message || "Failed to analyze PICOC.");
+        toastError(result.message || "Failed to analyze PICOC.");
       }
     } catch (error) {
       console.error("Analysis error:", error);
-      toast.error("An error occurred during PICOC analysis.");
+      toastError("An error occurred during PICOC analysis.");
     } finally {
       setIsAnalyzing(false);
     }
@@ -225,7 +226,7 @@ export default function SearchStrategyForm({
 
   const handleSave = () => {
     if (!strategy.query.trim()) {
-      toast.error("Search query is required");
+      toastError("Search query is required");
       return;
     }
 
@@ -246,7 +247,7 @@ export default function SearchStrategyForm({
     const value = newKeywordInputs[type].trim();
     if (!value) return;
     if (keywords[type].includes(value)) {
-      toast.error("Keyword already exists");
+      toastError("Keyword already exists");
       return;
     }
     setKeywords((prev) => ({ ...prev, [type]: [...prev[type], value] }));
@@ -270,13 +271,13 @@ export default function SearchStrategyForm({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-(--z-index-drawer) flex justify-end">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/40"
       />
 
       <motion.div
@@ -289,7 +290,7 @@ export default function SearchStrategyForm({
         {/* Header */}
         <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
           <div className="flex-1">
-            <div className="flex items-center gap-2 text-blue-600 mb-1">
+            <div className="flex items-center gap-2 text-accent mb-1">
               <FiDatabase className="w-4 h-4" />
               <span className="text-xs font-black uppercase tracking-widest">
                 Search Strategy Builder
@@ -301,23 +302,23 @@ export default function SearchStrategyForm({
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex bg-bg-secondary p-1 rounded-[4px]">
+            <div className="flex bg-bg-secondary p-1 rounded-xl">
               <button
                 onClick={() => setMode("guided")}
-                className={`px-4 py-1.5 rounded-[4px] text-xs font-bold transition-all ${mode === "guided" ? "bg-surface-white text-blue-600 shadow-none" : "text-text-secondary hover:text-text-primary"}`}
+                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${mode === "guided" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Guided
               </button>
               <button
                 onClick={() => setMode("manual")}
-                className={`px-4 py-1.5 rounded-[4px] text-xs font-bold transition-all ${mode === "manual" ? "bg-surface-white text-blue-600 shadow-none" : "text-text-secondary hover:text-text-primary"}`}
+                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${mode === "manual" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Manual
               </button>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-bg-secondary rounded-[4px] transition-colors text-text-secondary hover:text-text-primary"
+              className="p-2 hover:bg-bg-secondary rounded-xl transition-colors text-text-secondary hover:text-text-primary"
             >
               <FiX className="w-6 h-6" />
             </button>
@@ -332,7 +333,7 @@ export default function SearchStrategyForm({
               <section className="space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-text-primary font-bold">
-                    <FiBookOpen className="text-blue-600" />
+                    <FiBookOpen className="text-accent" />
                     <h4>1. Project PICOC Framework</h4>
                   </div>
                   {(picocLoading || rqLoading) && (
@@ -342,7 +343,7 @@ export default function SearchStrategyForm({
                   )}
                 </div>
 
-                <div className="bg-blue-50/50 rounded-[4px] p-6 border border-blue-100/50">
+                <div className="bg-primary-light/50 rounded-xl p-6 border border-accent/20">
                   {picocs.length > 0 ? (
                     <div className="grid grid-cols-2 gap-x-8 gap-y-4">
                       {[
@@ -377,14 +378,15 @@ export default function SearchStrategyForm({
               <section className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-text-primary font-bold">
-                    <FiZap className="text-blue-600" />
+                    <FiZap className="text-accent" />
                     <h4>2. Keyword Breakdown</h4>
                   </div>
 
-                  <button
+                  <Button
                     onClick={handleAnalyzePicoc}
                     disabled={isAnalyzing || picocs.length === 0 || !isLeader}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-[4px] text-xs font-bold transition-all shadow-none shadow-blue-500/20"
+                    size="sm"
+                    className="gap-2"
                   >
                     {isAnalyzing ? (
                       <FiRefreshCw className="animate-spin w-3 h-3" />
@@ -396,7 +398,7 @@ export default function SearchStrategyForm({
                         ? "Re-generate with AI"
                         : "AI Analyzed"
                       : "AI Assist: Extract Keywords"}
-                  </button>
+                  </Button>
                 </div>
 
                 <div className="space-y-6">
@@ -411,17 +413,17 @@ export default function SearchStrategyForm({
                   ).map((type) => (
                     <div
                       key={type}
-                      className="bg-surface-white rounded-[4px] p-5 border border-border hover:border-blue-200 transition-all shadow-none"
+                      className="bg-surface-white rounded-xl p-5 border border-border hover:border-accent/30 transition-all shadow-none"
                     >
                       <label className="text-[10px] font-black uppercase text-text-secondary mb-3 flex items-center gap-2">
-                        <FiArrowRight className="text-blue-500" />
+                        <FiArrowRight className="text-accent" />
                         {type} Terms
                       </label>
                       <div className="flex flex-wrap gap-2">
                         {keywords[type].map((word, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-bold rounded-[4px] border border-blue-100"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-light text-accent text-xs font-bold rounded-xl border border-accent/20"
                           >
                             {word}
                             {isLeader && (
@@ -449,11 +451,11 @@ export default function SearchStrategyForm({
                                 e.key === "Enter" && addKeyword(type)
                               }
                               placeholder="Add synonym..."
-                              className="flex-1 px-3 py-1.5 bg-bg-primary border-none rounded-[4px] text-xs outline-none focus:ring-1 focus:ring-blue-500"
+                              className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none flex-1"
                             />
                             <button
                               onClick={() => addKeyword(type)}
-                              className="p-1.5 bg-bg-secondary rounded-[4px] hover:bg-bg-secondary"
+                              className="p-1.5 bg-bg-secondary rounded-xl hover:bg-bg-secondary"
                             >
                               <FiPlus className="w-3 h-3" />
                             </button>
@@ -468,20 +470,20 @@ export default function SearchStrategyForm({
               {/* Step 3: Logic & Query */}
               <section className="space-y-4">
                 <div className="flex items-center gap-2 text-text-primary font-bold">
-                  <FiLayers className="text-blue-600" />
+                  <FiLayers className="text-accent" />
                   <h4>
                     3. Preview logic{" "}
                     <a
                       href={source.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-600 underline hover:text-blue-700 cursor-pointer"
+                      className="text-accent underline hover:text-primary-hover cursor-pointer"
                     >
                       {source.name}
                     </a>
                   </h4>
                 </div>
-                <div className="p-6 bg-gray-900 rounded-[4px] text-blue-100 space-y-4 font-mono text-xs">
+                <div className="p-6 bg-gray-900 rounded-xl text-blue-100 space-y-4 font-mono text-xs">
                   {Object.entries(keywords)
                     .filter(([, terms]) => terms.length > 0)
                     .map(([key, terms], idx, arr) => {
@@ -490,7 +492,7 @@ export default function SearchStrategyForm({
                         <div key={key} className="group">
                           <div className="flex items-center justify-between gap-4">
                             <div className="flex gap-2 min-w-0 flex-1">
-                              <span className="text-blue-500 shrink-0">
+                              <span className="text-accent shrink-0">
                                 {key.toUpperCase()}:
                               </span>
                               <span className="break-all">{queryPart}</span>
@@ -498,7 +500,7 @@ export default function SearchStrategyForm({
                             <button
                               onClick={() => {
                                 navigator.clipboard.writeText(queryPart);
-                                toast.success(`Copied ${key} query!`);
+                                toastSuccess(`Copied ${key} query!`);
                               }}
                               className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-surface-white/10 rounded transition-all text-blue-400 shrink-0"
                             >
@@ -519,7 +521,7 @@ export default function SearchStrategyForm({
               {/* Step 4: Final Search Query */}
               <section className="space-y-4">
                 <div className="flex items-center gap-2 text-text-primary font-bold">
-                  <FiSearch className="text-blue-600" />
+                  <FiSearch className="text-accent" />
                   <h4>4. Final Search Query</h4>
                 </div>
                 <div className="relative group">
@@ -533,15 +535,15 @@ export default function SearchStrategyForm({
                     }
                     disabled={!isLeader}
                     placeholder="The generated query will appear here..."
-                    className="w-full h-32 px-5 py-4 bg-bg-primary border border-border rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner font-mono text-sm leading-relaxed disabled:opacity-75"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-32 text-text-primary resize-none font-mono leading-relaxed disabled:opacity-75"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
                       onClick={() => {
                         navigator.clipboard.writeText(strategy.query);
-                        toast.success("Copied query!");
+                        toastSuccess("Copied query!");
                       }}
-                      className="p-2 bg-surface-white shadow-none border border-border rounded-[4px] text-text-secondary hover:text-blue-600 transition-all opacity-0 group-hover:opacity-100"
+                      className="p-2 bg-surface-white shadow-none border border-border rounded-xl text-text-secondary hover:text-primary-hover transition-all opacity-0 group-hover:opacity-100"
                       title="Copy to clipboard"
                     >
                       <FiCopy className="w-3.5 h-3.5" />
@@ -557,7 +559,7 @@ export default function SearchStrategyForm({
           ) : (
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-text-primary font-bold">
-                <FiEdit3 className="text-blue-600" />
+                <FiEdit3 className="text-accent" />
                 <h4>Manual Query Input</h4>
               </div>
               <textarea
@@ -567,7 +569,7 @@ export default function SearchStrategyForm({
                 }
                 disabled={!isLeader}
                 placeholder="Enter full search query..."
-                className="w-full h-64 px-5 py-4 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
+                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-64 text-text-primary resize-none disabled:opacity-75"
               />
             </section>
           )}
@@ -578,17 +580,17 @@ export default function SearchStrategyForm({
           <div className="grid grid-cols-2 gap-8">
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-text-primary font-bold">
-                <FiLayers className="text-blue-600" />
+                <FiLayers className="text-accent" />
                 <h4>Fields</h4>
               </div>
               <div className="space-y-2">
                 {FIELD_OPTIONS.map((option) => (
                   <label
                     key={option.id}
-                    className="flex items-center gap-3 p-3 rounded-[4px] cursor-pointer hover:bg-bg-primary transition-colors"
+                    className="flex items-center gap-3 p-3 rounded-xl cursor-pointer hover:bg-bg-primary transition-colors"
                   >
                     <div
-                      className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center ${strategy.fields.includes(option.id) ? "bg-blue-600 border-blue-600 text-white" : "border-border"}`}
+                      className={`w-5 h-5 rounded-[4px] border-2 flex items-center justify-center ${strategy.fields.includes(option.id) ? "bg-primary border-accent text-white" : "border-border"}`}
                       onClick={() => isLeader && toggleField(option.id)}
                     >
                       {strategy.fields.includes(option.id) && (
@@ -611,7 +613,7 @@ export default function SearchStrategyForm({
 
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-text-primary font-bold">
-                <FiCalendar className="text-blue-600" />
+                <FiCalendar className="text-accent" />
                 <h4>Metadata</h4>
               </div>
               <div className="space-y-4">
@@ -622,7 +624,7 @@ export default function SearchStrategyForm({
                     setStrategy({ ...strategy, dateSearched: e.target.value })
                   }
                   disabled={!isLeader}
-                  className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
+                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary disabled:opacity-75"
                 />
                 <input
                   type="text"
@@ -632,7 +634,7 @@ export default function SearchStrategyForm({
                   }
                   disabled={!isLeader}
                   placeholder="Version (e.g. v1)"
-                  className="w-full px-4 py-3 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none disabled:opacity-75"
+                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary disabled:opacity-75"
                 />
               </div>
             </section>
@@ -641,7 +643,7 @@ export default function SearchStrategyForm({
           {/* Notes */}
           <section className="space-y-4">
             <div className="flex items-center gap-2 text-text-primary font-bold">
-              <FiEdit3 className="text-blue-600" />
+              <FiEdit3 className="text-accent" />
               <h4>Notes</h4>
             </div>
             <textarea
@@ -651,17 +653,17 @@ export default function SearchStrategyForm({
               }
               disabled={!isLeader}
               placeholder="Add any additional notes about this search strategy..."
-              className="w-full h-32 px-5 py-4 bg-bg-primary border-none rounded-[4px] text-text-primary focus:ring-2 focus:ring-blue-500 outline-none resize-none shadow-inner disabled:opacity-75"
+              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-32 text-text-primary resize-none disabled:opacity-75"
             />
           </section>
 
           {/* Filters */}
           <section className="space-y-4">
             <div className="flex items-center gap-2 text-text-primary font-bold">
-              <FiFilter className="text-blue-600" />
+              <FiFilter className="text-accent" />
               <h4>Filters</h4>
             </div>
-            <div className="bg-bg-primary rounded-[4px] p-6 grid grid-cols-2 gap-4 border border-border">
+            <div className="bg-bg-primary rounded-xl p-6 grid grid-cols-2 gap-4 border border-border">
               <input
                 type="number"
                 min={1900}
@@ -681,7 +683,7 @@ export default function SearchStrategyForm({
                 }}
                 disabled={!isLeader}
                 placeholder="Year From"
-                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
+                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
               />
               <input
                 type="number"
@@ -702,7 +704,7 @@ export default function SearchStrategyForm({
                 }}
                 disabled={!isLeader}
                 placeholder="Year To"
-                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
+                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
               />
               <select
                 value={strategy.filters.language}
@@ -713,7 +715,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
+                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
               >
                 <option value="">Any Language</option>
                 {LANGUAGE_OPTIONS.map((lang) => (
@@ -731,7 +733,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="px-4 py-3 bg-surface-white border-none rounded-[4px] focus:ring-2 focus:ring-blue-500 outline-none shadow-none disabled:opacity-75"
+                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
               >
                 <option value="">Any Study Type</option>
                 {STUDY_TYPE_OPTIONS.map((type) => (
@@ -746,20 +748,14 @@ export default function SearchStrategyForm({
 
         {/* Footer */}
         <div className="px-8 py-6 border-t border-border bg-surface-white sticky bottom-0 flex gap-4">
-          <button
-            onClick={onClose}
-            className="flex-1 py-4 bg-bg-primary hover:bg-bg-secondary text-text-secondary rounded-[4px] font-bold transition-all"
-          >
+          <Button variant="secondary" onClick={onClose} className="flex-1">
             {isLeader ? "Cancel" : "Close"}
-          </button>
+          </Button>
           {isLeader && (
-            <button
-              onClick={handleSave}
-              className="flex-[2] py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-[4px] font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
-            >
+            <Button onClick={handleSave} className="flex-[2] gap-2">
               <FiCheck />
               Save Strategy
-            </button>
+            </Button>
           )}
         </div>
       </motion.div>

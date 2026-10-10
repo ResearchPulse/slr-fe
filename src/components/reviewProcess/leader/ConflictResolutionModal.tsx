@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../../utils/toast";
 
 import Modal from "../../ui/Modal";
 import ReviewerDecisionsSection from "./ReviewerDecisionsSection";
@@ -17,7 +17,8 @@ import {
 } from "../../../types/studySelection";
 import { useReviewerSubmission } from "../../../hooks/useStudySelectionChecklistSubmission";
 import { PreviewDocument } from "../../ui/document-editor/PreviewDocument";
-import { Check, X, Loader2 } from "lucide-react";
+import { Check, X } from "lucide-react";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 // --- Types ---
 export interface ReviewerDecision {
@@ -169,7 +170,7 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
 
   const handleResolve = async () => {
     if (!processId || !paperId || !resolution || !currentUser) {
-      toast.error("Missing required information for resolution");
+      toastError("Missing required information for resolution");
       return;
     }
 
@@ -189,10 +190,10 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
         },
       });
 
-      toast.success(`Conflict resolved as ${resolution}`);
+      toastSuccess(`Conflict resolved as ${resolution}`);
       onClose();
     } catch (error: any) {
-      toast.error(error.message || "Failed to resolve conflict");
+      toastError(error.message || "Failed to resolve conflict");
     }
   };
 
@@ -213,7 +214,7 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-12">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+              <LoadingSpinner size="lg" />
               <p className="text-sm font-bold text-text-secondary uppercase tracking-widest leading-none">
                 Fetching details...
               </p>
@@ -290,13 +291,13 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
       >
         {isLoadingSubmission ? (
           <div className="flex flex-col items-center justify-center p-20 gap-4">
-            <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+            <LoadingSpinner size="lg" />
             <p className="text-text-secondary animate-pulse font-medium">
               Loading submission data...
             </p>
           </div>
         ) : submission ? (
-          <div className="bg-bg-secondary/50 p-6 rounded-[4px] border border-border max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div className="bg-bg-secondary/50 p-6 rounded-xl border border-border max-h-[70vh] overflow-y-auto custom-scrollbar">
             <PreviewDocument
               template={submission as any}
               renderItem={(item) => (
@@ -315,11 +316,11 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
               renderSectionTitle={(section) => (
                 <div className="flex items-center">
                   {section.isChecked ? (
-                    <div className="w-6 h-6 rounded-[4px] bg-indigo-100 border border-indigo-200 flex items-center justify-center text-accent shadow-sm">
+                    <div className="w-6 h-6 rounded-lg bg-primary-light border border-primary/20 flex items-center justify-center text-accent shadow-sm">
                       <Check className="w-4 h-4 stroke-[3]" />
                     </div>
                   ) : (
-                    <div className="w-6 h-6 rounded-[4px] bg-bg-secondary border border-border flex items-center justify-center text-text-secondary shadow-sm">
+                    <div className="w-6 h-6 rounded-lg bg-bg-secondary border border-border flex items-center justify-center text-text-secondary shadow-sm">
                       <X className="w-4 h-4 stroke-[3]" />
                     </div>
                   )}
@@ -328,7 +329,7 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
             />
           </div>
         ) : (
-          <div className="text-center py-20 text-text-secondary bg-bg-secondary rounded-[4px] border border-dashed border-border">
+          <div className="text-center py-20 text-text-secondary bg-bg-secondary rounded-xl border border-dashed border-border">
             <p className="italic">
               No submission data available for this reviewer.
             </p>

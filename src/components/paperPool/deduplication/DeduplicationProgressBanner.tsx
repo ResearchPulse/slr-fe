@@ -51,7 +51,7 @@ export default function DeduplicationProgressBanner({
   }, [duplicatePairs, sessionResolvedCount, total, sessionStartTime]);
 
   return (
-    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 mb-6 shadow-none">
+    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-accent/30 rounded-xl p-6 mb-6 shadow-none">
       <div className="flex items-center ">
         {/* Metrics row */}
         <div className="flex items-center  gap-8">
@@ -113,7 +113,7 @@ export default function DeduplicationProgressBanner({
 
       {/* Contextual tips */}
       {pendingCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-blue-200 flex items-center justify-between">
+        <div className="mt-4 pt-4 border-t border-accent/30 flex items-center justify-between">
           <p className="text-sm text-text-primary">
             <span className="font-semibold">💡 Tip:</span> Use keyboard
             shortcuts{" "}

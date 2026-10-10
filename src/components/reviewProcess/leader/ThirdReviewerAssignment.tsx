@@ -7,6 +7,7 @@ import { useProjectMembers } from "../../../hooks/useProjects";
 import { ProjectRole } from "../../../types/project";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { useAssignPapers } from "../../../hooks/useProjectPapers";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 interface ThirdReviewerAssignmentProps {
   paperId: string;
@@ -110,7 +111,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
       <div className="flex items-center justify-between mb-6">
         <div>
           <h3 className="text-sm font-black uppercase tracking-tight text-text-primary flex items-center gap-2">
-            <UserPlus className="w-4 h-4 text-blue-600" />
+            <UserPlus className="w-4 h-4 text-accent" />
             Assign Reviewers
           </h3>
           <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mt-1">
@@ -119,7 +120,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
         </div>
         <button
           onClick={onCancel}
-          className="p-2 hover:bg-bg-secondary rounded-[4px] transition-colors text-text-secondary hover:text-text-secondary"
+          className="p-2 hover:bg-bg-secondary rounded-xl transition-colors text-text-secondary hover:text-text-secondary"
         >
           <X className="w-4 h-4" />
         </button>
@@ -127,9 +128,9 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
 
       <div className="space-y-6 flex-1 overflow-y-auto no-scrollbar pb-6">
         {/* Warning/Info Box */}
-        <div className="bg-blue-50/50 border border-blue-100/50 rounded-[4px] p-4 flex gap-3">
-          <Info className="w-5 h-5 text-blue-500 shrink-0 mt-0.5" />
-          <p className="text-[11px] font-medium leading-relaxed text-blue-700/80">
+        <div className="bg-primary-light/50 border border-primary/20 rounded-xl p-4 flex gap-3">
+          <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" />
+          <p className="text-[11px] font-medium leading-relaxed text-accent">
             Selected reviewers will provide independent decisions to break the
             deadlock for this paper.
           </p>
@@ -142,14 +143,14 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
           </label>
           <Dropdown
             trigger={
-              <button className="w-full flex items-center justify-between gap-3 px-4 py-4 rounded-[4px] bg-bg-secondary border border-transparent hover:border-border transition-all group active:scale-[0.98]">
+              <button className="w-full flex items-center justify-between gap-3 px-4 py-4 rounded-xl bg-bg-secondary border border-transparent hover:border-border transition-all group active:scale-[0.98]">
                 <div className="flex items-center gap-3 overflow-hidden">
                   {selectedReviewers.length > 0 ? (
                     <div className="flex -space-x-2">
                       {selectedReviewers.slice(0, 3).map((r) => (
                         <div
                           key={r.id}
-                          className="w-8 h-8 rounded-full bg-blue-600 border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-none ring-0"
+                          className="w-8 h-8 rounded-full bg-primary border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-none ring-0"
                         >
                           {r.name.charAt(0)}
                         </div>
@@ -174,7 +175,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                         : "Choose reviewers..."}
                     </div>
                     {selectedReviewers.length > 0 && (
-                      <div className="text-[9px] text-blue-600 font-bold uppercase tracking-widest">
+                      <div className="text-[9px] text-accent font-bold uppercase tracking-widest">
                         {selectedReviewers.length} reviewer(s) selected
                       </div>
                     )}
@@ -184,7 +185,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
               </button>
             }
             className="w-full"
-            contentClassName="bg-surface-white shadow-2xl ring-0 w-full mt-2 rounded-[4px] border border-border overflow-hidden"
+            contentClassName="bg-surface-white shadow-2xl ring-0 w-full mt-2 rounded-xl border border-border overflow-hidden"
           >
             <div className="w-full">
               <div className="p-3 border-b border-slate-50 bg-bg-secondary/50">
@@ -196,7 +197,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                     placeholder="Search by name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-surface-white border border-border rounded-[4px] text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-text-primary transition-all placeholder:text-slate-300"
+                    className="w-full pl-9 pr-4 py-2 bg-surface-white border border-border rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 text-text-primary transition-all placeholder:text-slate-300"
                   />
                 </div>
               </div>
@@ -204,7 +205,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
               <div className="max-h-52 overflow-y-auto p-1 custom-scrollbar">
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+                    <LoadingSpinner size="sm" />
                   </div>
                 ) : availableReviewers.length > 0 ? (
                   availableReviewers.map((member) => {
@@ -215,22 +216,22 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                       <button
                         key={member.userId}
                         onClick={() => toggleReviewer(member)}
-                        className={`w-full flex items-center gap-3 p-2.5 rounded-[4px] transition-all group text-left ${
-                          isSelected ? "bg-blue-50" : "hover:bg-bg-secondary"
+                        className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all group text-left ${
+                          isSelected ? "bg-primary-light" : "hover:bg-bg-secondary"
                         }`}
                       >
                         <div
-                          className={`w-7 h-7 rounded-[4px] flex items-center justify-center text-[10px] font-bold transition-all ${
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold transition-all ${
                             isSelected
-                              ? "bg-blue-600 text-white"
-                              : "bg-bg-secondary text-text-secondary group-hover:bg-blue-600 group-hover:text-white"
+                              ? "bg-primary text-white"
+                              : "bg-bg-secondary text-text-secondary group-hover:bg-primary-hover group-hover:text-white"
                           }`}
                         >
                           {member.fullName.charAt(0)}
                         </div>
                         <div className="flex-1">
                           <div
-                            className={`text-xs font-bold ${isSelected ? "text-blue-700" : "text-text-primary group-hover:text-text-primary"}`}
+                            className={`text-xs font-bold ${isSelected ? "text-accent" : "text-text-primary group-hover:text-text-primary"}`}
                           >
                             {member.fullName}
                           </div>
@@ -239,7 +240,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                           </div>
                         </div>
                         {isSelected && (
-                          <div className="bg-blue-600 rounded-full p-0.5">
+                          <div className="bg-primary rounded-full p-0.5">
                             <X className="w-2.5 h-2.5 text-white" />
                           </div>
                         )}
@@ -261,7 +262,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
         <Button
           onClick={handleAssign}
           disabled={selectedReviewers.length === 0 || isAssigning}
-          className="w-full py-4 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.25em] rounded-[4px] hover:bg-slate-800 transition-all shadow-none shadow-slate-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 group"
+          className="w-full py-4 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.25em] rounded-xl hover:bg-slate-800 transition-all shadow-none shadow-slate-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 group"
         >
           {isAssigning ? (
             <Loader2 className="w-4 h-4 animate-spin" />

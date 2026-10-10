@@ -15,7 +15,7 @@ const SectionLoading: React.FC<SectionLoadingProps> = ({
   const isAdmin = type === "admin";
 
   return (
-    <div className="fixed inset-0 bg-bg-primary z-[var(--z-index-section-loading)] flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
+    <div className="fixed inset-0 bg-bg-primary z-(--z-index-section-loading) flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
       <div className="relative">
         <LoadingSpinner size="lg" className="text-accent opacity-80" />
       </div>

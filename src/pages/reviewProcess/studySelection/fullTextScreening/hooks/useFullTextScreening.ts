@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { useProjectMember } from "../../../../../hooks/useProjectMember";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError, toastInfo } from "../../../../../utils/toast";
 import type { RootState } from "../../../../../redux/store";
 import { studySelectionService } from "../../../../../services/studySelectionService";
 import { QUERY_KEYS } from "../../../../../constants/queryKeys";
@@ -247,10 +247,10 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           PaperPhase.FullText,
         ),
       });
-      toast.success(response.message || "AI analysis task created");
+      toastSuccess(response.message || "AI analysis task created");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to run AI analysis"));
+      toastError(getErrorMessage(error, "Failed to run AI analysis"));
     },
   });
 
@@ -332,7 +332,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to submit screening decision"));
+      toastError(getErrorMessage(error, "Failed to submit screening decision"));
     },
   });
 
@@ -345,7 +345,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
             const idx = papers.findIndex((p) => p.id === paperId);
             const nextPending = papers.slice(idx + 1).find((p) => p.screeningStatus === "pending");
             if (nextPending) setSelectedPaperId(nextPending.id);
-            toast.success("Paper included");
+            toastSuccess("Paper included");
           },
         },
       );
@@ -362,7 +362,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
             const idx = papers.findIndex((p) => p.id === paperId);
             const nextPending = papers.slice(idx + 1).find((p) => p.screeningStatus === "pending");
             if (nextPending) setSelectedPaperId(nextPending.id);
-            toast.success("Paper excluded");
+            toastSuccess("Paper excluded");
           },
         },
       );
@@ -429,17 +429,17 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
       if (variables.options?.extractWithGrobid) {
         if (response.data.extractionSuggestion) {
-          toast.success("PDF uploaded. Review AI metadata suggestions.");
+          toastSuccess("PDF uploaded. Review AI metadata suggestions.");
           return;
         }
-        toast.success("PDF uploaded. Full-text extraction is running in the background.");
+        toastSuccess("PDF uploaded. Full-text extraction is running in the background.");
         return;
       }
 
-      toast.success("PDF uploaded successfully.");
+      toastSuccess("PDF uploaded successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to upload PDF"));
+      toastError(getErrorMessage(error, "Failed to upload PDF"));
     },
   });
 
@@ -465,10 +465,10 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.all,
       });
-      toast.success("Selected metadata applied successfully.");
+      toastSuccess("Selected metadata applied successfully.");
     },
     onError: () => {
-      toast.error("Failed to apply metadata. Please try again.");
+      toastError("Failed to apply metadata. Please try again.");
     },
   });
 
@@ -491,19 +491,19 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
       const extraction = response.data.extraction;
       if (extraction?.status === "failed") {
-        toast.error(extraction.message ?? "Metadata extraction failed.");
+        toastError(extraction.message ?? "Metadata extraction failed.");
         return;
       }
 
       if (extraction?.status === "partial") {
-        toast("Metadata extraction partially completed.");
+        toastInfo("Metadata extraction partially completed.");
         return;
       }
 
-      toast.success("Metadata extraction completed successfully.");
+      toastSuccess("Metadata extraction completed successfully.");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to retry metadata extraction"));
+      toastError(getErrorMessage(error, "Failed to retry metadata extraction"));
     },
   });
 
@@ -540,10 +540,10 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewProcesses.all,
       });
-      toast.success("Conflict resolved");
+      toastSuccess("Conflict resolved");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to resolve conflict"));
+      toastError(getErrorMessage(error, "Failed to resolve conflict"));
     },
   });
 

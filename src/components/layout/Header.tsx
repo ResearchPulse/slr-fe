@@ -118,7 +118,7 @@ const Header: React.FC = () => {
   return (
     <>
       <header
-        className="sticky top-0 z-[100] h-16 border-b border-border bg-surface-white transition-[box-shadow] duration-150"
+        className="sticky top-0 z-(--z-index-header) h-16 border-b border-border bg-surface-white transition-[box-shadow] duration-150"
         onClickCapture={handleHeaderInteraction}
         onKeyDownCapture={handleHeaderInteraction}
       >
@@ -150,7 +150,7 @@ const Header: React.FC = () => {
               {/* Desktop Navigation */}
               <nav className="hidden md:flex items-center gap-1">
                 {navLinks.map((link) => {
-                  const className = "px-3 py-2 text-sm font-medium normal-case tracking-normal text-[#536B7A] transition-colors whitespace-nowrap hover:text-primary";
+                  const className = "px-3 py-2 text-sm font-medium normal-case tracking-normal text-text-secondary transition-colors whitespace-nowrap hover:text-primary";
                   return location.pathname === "/" && link.path.startsWith("/#") ? (
                     <a key={link.name} href={link.path.slice(1)} className={className}>{link.name}</a>
                   ) : (
@@ -169,16 +169,16 @@ const Header: React.FC = () => {
                     <button
                       onClick={() => setShowNotifications(!showNotifications)}
                       aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
-                      className={`relative flex h-9 w-9 items-center justify-center rounded-lg transition-colors duration-200 ${
+                      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-200 ${
                         showNotifications
-                          ? "bg-[#EFF7FB] text-primary"
-                          : "text-[#657B89] hover:bg-[#F3F7F9] hover:text-primary"
+                          ? "bg-primary-light text-primary"
+                          : "text-text-secondary hover:bg-bg-secondary hover:text-primary"
                       }`}
                     >
                       <FiBell className="h-[18px] w-[18px]" />
                       {/* Badge */}
                       {unreadCount > 0 && (
-                        <span className="absolute right-1 top-1 flex h-2.5 min-w-2.5 items-center justify-center rounded-full border-2 border-white bg-[#087BC1]">
+                        <span className="absolute right-1 top-1 flex h-2.5 min-w-2.5 items-center justify-center rounded-full border-2 border-white bg-accent">
                           {unreadCount > 9 ? (
                             <span className="px-0.5 text-[6px] font-bold text-white">9+</span>
                           ) : null}
@@ -194,7 +194,7 @@ const Header: React.FC = () => {
                   {user?.role === "Admin" && (
                     <button
                       onClick={handleSwitchAdmin}
-                      className="flex items-center gap-2 rounded-xl bg-[#102B3D] px-3 py-2 text-white transition-colors duration-200 hover:bg-[#1B4057] sm:px-4"
+                      className="flex items-center gap-2 rounded-xl bg-text-primary px-3 py-2 text-white transition-colors duration-200 hover:bg-[#1B4057] sm:px-4"
                     >
                       <FiShield className="w-4 h-4" />
                       <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-[0.15em]">
@@ -204,60 +204,60 @@ const Header: React.FC = () => {
                   )}
 
                   {/* Desktop Separator */}
-                  <div className="mx-0.5 hidden h-7 w-px bg-[#DCE6EC] sm:block"></div>
+                  <div className="mx-0.5 hidden h-7 w-px bg-border sm:block"></div>
 
                   {/* User Profile Dropdown */}
                   <div className="relative" ref={userDropdownRef}>
                     <button
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
                       aria-expanded={showUserDropdown}
-                      className={`group flex items-center gap-2.5 rounded-lg py-1 pl-2 pr-1 transition-colors ${
+                      className={`group flex items-center gap-2.5 rounded-xl py-1 pl-2 pr-1 transition-colors ${
                         showUserDropdown
-                          ? "bg-[#F1F6F8]"
-                          : "hover:bg-[#F3F7F9]"
+                          ? "bg-bg-secondary"
+                          : "hover:bg-bg-secondary"
                       }`}
                     >
                       <div className="hidden lg:block text-right">
-                        <p className="text-[12px] font-bold leading-tight text-[#173247]">
+                        <p className="text-[12px] font-bold leading-tight text-text-primary">
                           {user?.name || "User"}
                         </p>
-                        <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-[#8797A1]">
+                        <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-text-muted">
                           {user?.role || "User"}
                         </p>
                       </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-[7px] bg-[#087BC1] text-sm font-bold text-white">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-[7px] bg-accent text-sm font-bold text-white">
                         {user?.name ? getUserInitials(user.name) : "U"}
                       </div>
                     </button>
 
                     {/* Profile Dropdown Menu */}
                     {showUserDropdown && (
-                      <div className="absolute right-0 z-50 mt-3 w-[248px] rounded-xl border border-[#DCE6EC] bg-white p-1.5 shadow-[0_16px_42px_rgba(19,43,60,0.14)]">
+                      <div className="absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_16px_42px_rgba(19,43,60,0.14)]">
                         <div className="flex items-center gap-3 px-3 py-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#087BC1] text-sm font-bold text-white">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">
                             {user?.name ? getUserInitials(user.name) : "U"}
                           </div>
                           <div className="min-w-0">
-                            <p className="truncate text-[12px] font-bold text-[#173247]">
+                            <p className="truncate text-[12px] font-bold text-text-primary">
                               {user?.name || "User"}
                             </p>
-                            <p className="mt-0.5 truncate text-[9px] font-semibold uppercase tracking-[0.13em] text-[#8797A1]">
+                            <p className="mt-0.5 truncate text-[9px] font-semibold uppercase tracking-[0.13em] text-text-muted">
                               {user?.role || "User"}
                             </p>
                           </div>
                         </div>
 
-                        <div className="mx-2 h-px bg-[#E8EEF1]" />
+                        <div className="mx-2 h-px bg-bg-secondary" />
 
                         <Link
                           to="/profile"
                           onClick={() => setShowUserDropdown(false)}
-                          className="mt-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-[#435B69] transition-colors hover:bg-[#F1F7FA] hover:text-[#173247]"
+                          className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary"
                         >
-                          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#EAF4F9] text-[#397FA8]"><FiUser className="h-4 w-4" /></span>
+                          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light text-accent"><FiUser className="h-4 w-4" /></span>
                           <span>
                             <span className="block text-[11px] font-bold">Profile</span>
-                            <span className="mt-0.5 block text-[9px] text-[#8797A1]">View your account</span>
+                            <span className="mt-0.5 block text-[9px] text-text-muted">View your account</span>
                           </span>
                         </Link>
 
@@ -266,7 +266,7 @@ const Header: React.FC = () => {
                             setShowUserDropdown(false);
                             handleLogout();
                           }}
-                          className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-[#9B5552] transition-colors hover:bg-[#FBF3F2] hover:text-[#823E3C]"
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[#9B5552] transition-colors hover:bg-[#FBF3F2] hover:text-[#823E3C]"
                         >
                           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FBF0EF] text-[#A65A56]"><FiLogOut className="h-4 w-4" /></span>
                           <span>
@@ -355,7 +355,7 @@ const Header: React.FC = () => {
                   setIsMenuOpen(false);
                   handleSwitchAdmin();
                 }}
-                className="w-full flex items-center gap-4 p-3 bg-text-primary text-bg-primary rounded-[4px] transition-colors active:scale-[0.98]"
+                className="w-full flex items-center gap-4 p-3 bg-text-primary text-bg-primary rounded-xl transition-colors active:scale-[0.98]"
               >
                 <FiShield className="w-4 h-4" />
                 <span className="text-[12px] font-medium uppercase tracking-[0.15em]">
@@ -369,8 +369,8 @@ const Header: React.FC = () => {
           </p>
           {isAuthenticated ? (
             <>
-              <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-[4px]">
-                <div className="h-10 w-10 bg-accent text-bg-primary rounded-[4px] flex items-center justify-center font-medium text-base">
+              <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-xl">
+                <div className="h-10 w-10 bg-accent text-bg-primary rounded-xl flex items-center justify-center font-medium text-base">
                   {user?.name ? getUserInitials(user.name) : "U"}
                 </div>
                 <div>

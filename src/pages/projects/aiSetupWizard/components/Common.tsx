@@ -22,7 +22,7 @@ export function StepBadge({
             ? "bg-accent border-accent text-white"
             : isActive
               ? "bg-bg-secondary border-accent text-accent"
-              : "bg-surface-white border-slate-300 text-text-secondary",
+              : "bg-surface-white border-border text-text-secondary",
         ].join(" ")}
       >
         {complete ? "✓" : step}

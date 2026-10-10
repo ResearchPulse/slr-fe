@@ -17,6 +17,7 @@ import PapersLibraryTabContent from "./sections/PapersLibraryTabContent";
 import BuildDatasetTabContent from "./sections/BuildDatasetTabContent";
 import ImportBatchPapersDrawer from "./sections/ImportBatchPapersDrawer";
 import ManualDeduplicationModal from "./sections/ManualDeduplicationModal";
+import ConfirmModal from "../../../components/ui/ConfirmModal";
 
 export default function IdentificationPhaseWorkspace() {
   const ws = useIdentificationWorkspace();
@@ -45,7 +46,7 @@ export default function IdentificationPhaseWorkspace() {
         />
 
         {/* Tab Container */}
-        <div className="bg-surface-white border border-border rounded-[4px] shadow-none overflow-hidden">
+        <div className="bg-surface-white border border-border rounded-xl shadow-none overflow-hidden">
           <TabNavigation
             activeTab={ws.activeTab}
             onTabChange={ws.setActiveTab}
@@ -184,6 +185,24 @@ export default function IdentificationPhaseWorkspace() {
         sourcePaper={ws.manualDedupeSourcePaper}
         identificationProcessId={ws.identificationPhaseId || ""}
         onConfirm={ws.handleConfirmManualDedupe}
+      />
+
+      <ConfirmModal
+        isOpen={!!ws.pendingDelete}
+        onClose={ws.handleCancelPendingDelete}
+        onConfirm={() => void ws.handleConfirmPendingDelete()}
+        title={
+          ws.pendingDelete?.kind === "importBatch"
+            ? "Delete import batch"
+            : "Delete search strategy"
+        }
+        message={
+          ws.pendingDelete?.kind === "importBatch"
+            ? "Are you sure you want to delete this import batch? This may remove all associated papers."
+            : "Are you sure you want to delete this search strategy?"
+        }
+        confirmText="Delete"
+        variant="danger"
       />
 
       {/* Drawers */}

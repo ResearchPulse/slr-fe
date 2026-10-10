@@ -212,7 +212,7 @@ export default function ManageStudySelectionPage() {
   );
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-[#f2f6f9]">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-bg-secondary">
       <StuSePhaseHeaderController
         currentPhase={currentPhase}
         onPhaseChange={(phase) => {
@@ -227,7 +227,7 @@ export default function ManageStudySelectionPage() {
         className="relative flex min-h-0 flex-1 gap-2 overflow-hidden p-2 select-none"
       >
         {/* Main Content: Paper Viewer - Occupies full space */}
-        <div className="order-2 z-0 min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm">
+        <div className="order-2 z-0 min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
           <PaperViewer
             paper={
               selectedPaper
@@ -255,8 +255,8 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isLeftCollapsed ? "48px" : `${leftWidth}px` }}
           className={cn(
-            "order-1 relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm",
-            isAssignmentMode && "ring-1 ring-blue-200",
+            "order-1 relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm",
+            isAssignmentMode && "ring-1 ring-accent/20",
             !isResizing && "transition-all duration-300",
           )}
         >
@@ -266,14 +266,14 @@ export default function ManageStudySelectionPage() {
               onMouseDown={startResizingLeft}
               className="absolute -right-1 top-0 bottom-0 w-2 cursor-col-resize z-30 group"
             >
-              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-blue-400 group-active:bg-blue-600 transition-colors" />
+              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-accent group-active:bg-primary-hover transition-colors" />
             </div>
           )}
           {!isLeftCollapsed && (
             <div
               className={cn(
-                "border-b border-[#e4ebf0] p-4 transition-colors duration-300",
-                isAssignmentMode ? "bg-blue-50/50" : "bg-white",
+                "border-b border-border p-4 transition-colors duration-300",
+                isAssignmentMode ? "bg-primary-light/50" : "bg-white",
               )}
             >
               <Button
@@ -284,10 +284,10 @@ export default function ManageStudySelectionPage() {
                 }}
                 disabled={isCompleted}
                 className={cn(
-                  "w-full gap-2 rounded-lg transition-all duration-200",
+                  "w-full gap-2 rounded-xl transition-all duration-200",
                   isAssignmentMode
                     ? "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
-                    : "bg-blue-700 text-white hover:bg-blue-800",
+                    : "bg-primary text-white hover:bg-primary-hover",
                   isCompleted && "opacity-50 cursor-not-allowed",
                 )}
                 size="sm"
@@ -306,11 +306,11 @@ export default function ManageStudySelectionPage() {
               </Button>
               {isAssignmentMode && (
                 <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
-                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-blue-700">
+                  <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Assignment Mode Active
                   </div>
-                  <div className="flex gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2.5">
+                  <div className="flex gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
                     <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
                     <p className="text-[10px] text-text-secondary leading-relaxed font-medium">
                       Select papers to assign reviewers.{" "}
@@ -343,7 +343,7 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isRightCollapsed ? "48px" : `${rightWidth}px` }}
           className={cn(
-            "order-3 relative h-full min-h-0 shrink-0 overflow-hidden rounded-xl border border-[#dce6ed] bg-white shadow-sm",
+            "order-3 relative h-full min-h-0 shrink-0 overflow-hidden rounded-xl border border-border bg-white shadow-sm",
             isRightCollapsed && "w-12",
             !isResizing && "transition-all duration-300",
           )}
@@ -354,7 +354,7 @@ export default function ManageStudySelectionPage() {
               onMouseDown={startResizingRight}
               className="absolute -left-1 top-0 bottom-0 w-2 cursor-col-resize z-30 group"
             >
-              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-blue-400 group-active:bg-blue-600 transition-colors" />
+              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-accent group-active:bg-primary-hover transition-colors" />
             </div>
           )}
           <SelectionActionPanel

@@ -910,7 +910,7 @@ export default function DataExtractionDashboard({
                           ? createPortal(
                               <div
                                 ref={exportMenuPanelRef}
-                                className="fixed z-[1000] rounded-lg border border-border bg-surface-white p-1.5 shadow-lg"
+                                className="fixed z-(--z-index-dropdown) rounded-xl border border-border bg-surface-white p-1.5 shadow-lg"
                                 style={{
                                   top: `${exportMenuPosition.top}px`,
                                   left: `${exportMenuPosition.left}px`,
@@ -921,7 +921,7 @@ export default function DataExtractionDashboard({
                                   type="button"
                                   onClick={handleDownloadExcel}
                                   disabled={isExporting}
-                                  className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
                                   <span className="truncate">
@@ -932,9 +932,9 @@ export default function DataExtractionDashboard({
                                   type="button"
                                   onClick={handleDownloadCsv}
                                   disabled={isExporting}
-                                  className="flex w-full items-center gap-2 rounded-[4px] px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                                  className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                  <FileText className="h-4 w-4 flex-shrink-0 text-blue-600" />
+                                  <FileText className="h-4 w-4 flex-shrink-0 text-accent" />
                                   <span className="truncate">CSV (.csv)</span>
                                 </button>
                               </div>,
@@ -1093,7 +1093,7 @@ export default function DataExtractionDashboard({
                                       {task.title}
                                     </p>
                                     {canExtractTask && (
-                                      <span className="inline-flex items-center rounded-full bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 ring-1 ring-inset ring-blue-700/20 shrink-0">
+                                      <span className="inline-flex items-center rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-accent ring-1 ring-inset ring-accent/20 shrink-0">
                                         Assigned to you
                                       </span>
                                     )}
@@ -1144,7 +1144,7 @@ export default function DataExtractionDashboard({
                                             }
                                             className={`inline-flex max-w-[220px] items-center gap-2 truncate rounded-full border px-2 py-1 text-xs font-medium ${
                                               isCurrentUser
-                                                ? "bg-blue-50 text-blue-700 border-blue-200 font-semibold"
+                                                ? "bg-primary-light text-accent border-accent/30 font-semibold"
                                                 : isCompleted
                                                 ? "bg-surface-white text-green-700 border border-border"
                                                 : "bg-bg-secondary text-text-secondary border border-border opacity-60"
@@ -1153,10 +1153,10 @@ export default function DataExtractionDashboard({
                                             <span
                                               className={`flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${
                                                 isCurrentUser
-                                                  ? "bg-blue-600 text-white"
+                                                  ? "bg-primary text-white"
                                                   : isCompleted
                                                   ? "bg-green-100 text-green-700"
-                                                  : "bg-indigo-100 text-indigo-700"
+                                                  : "bg-primary-light text-accent"
                                               }`}
                                             >
                                               {getInitials(rawName)}
@@ -1197,7 +1197,7 @@ export default function DataExtractionDashboard({
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="!rounded-lg !px-2"
+                                    className="!rounded-xl !px-2"
                                     onClick={() =>
                                       handleOpenPaperDetails(task.paperId)
                                     }
@@ -1219,7 +1219,7 @@ export default function DataExtractionDashboard({
                                         }
                                         disabled={isProcessCompleted}
                                         title="Directly Extract Data (Bypass Reviewers)"
-                                        className="!rounded-lg"
+                                        className="!rounded-xl"
                                       >
                                         <Zap className="mr-1 h-4 w-4" />
                                         Direct
@@ -1232,7 +1232,7 @@ export default function DataExtractionDashboard({
                                           handleOpenWorkspace(task.paperId)
                                         }
                                         disabled={isProcessCompleted}
-                                        className="!rounded-lg"
+                                        className="!rounded-xl"
                                       >
                                         Extract
                                       </Button>
@@ -1307,7 +1307,7 @@ export default function DataExtractionDashboard({
                                           )
                                         }
                                         disabled={isProcessCompleted}
-                                        className="!rounded-lg bg-amber-500 text-white shadow-sm hover:bg-amber-600"
+                                        className="!rounded-xl bg-amber-500 text-white shadow-sm hover:bg-amber-600"
                                       >
                                         Resolve
                                       </Button>
@@ -1468,7 +1468,7 @@ export default function DataExtractionDashboard({
         size="md"
       >
         <div className="space-y-4">
-          <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             This action locks extraction submissions for this phase.
           </div>
 
@@ -1506,7 +1506,7 @@ export default function DataExtractionDashboard({
         size="md"
       >
         <div className="space-y-4">
-          <div className="rounded-[4px] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
             Warning: Reopening an extraction will delete any previously saved
             consensus decisions for this study.
           </div>

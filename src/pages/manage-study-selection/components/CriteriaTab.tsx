@@ -116,7 +116,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
               criteria.map((group) => (
                 <div
                   key={group.criteriaId}
-                  className="bg-surface-white border border-border rounded-[4px] overflow-hidden shadow-none hover:shadow-none transition-shadow-none"
+                  className="bg-surface-white border border-border rounded-xl overflow-hidden shadow-none hover:shadow-none transition-shadow-none"
                 >
                   <div className="p-3 bg-bg-secondary border-b border-border">
                     <div className="flex items-center gap-2 mb-1">
@@ -181,7 +181,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
                 </div>
               ))
             ) : (
-              <div className="py-8 text-center bg-bg-secondary rounded-[4px] border border-dashed border-border text-text-secondary text-xs italic">
+              <div className="py-8 text-center bg-bg-secondary rounded-xl border border-dashed border-border text-text-secondary text-xs italic">
                 No selection criteria defined.
               </div>
             )}

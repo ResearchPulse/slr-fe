@@ -83,7 +83,7 @@ export function AssignMembersTabContent({
 
         <div className="flex w-full gap-2 sm:w-auto sm:gap-3">
           <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-accent transition-colors" />
             <input
               type="text"
               value={searchQuery}
@@ -91,10 +91,10 @@ export function AssignMembersTabContent({
                 if (onSearchChange) onSearchChange(e.target.value);
               }}
               placeholder="Search papers by title..."
-              className="w-full rounded-lg border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-text-secondary/80 focus:border-blue-500 focus:bg-surface-white focus:outline-none focus:ring-2 focus:ring-blue-500/15 sm:w-72"
+              className="w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-text-secondary/80 focus:border-accent focus:bg-surface-white focus:outline-none focus:ring-2 focus:ring-accent/15 sm:w-72"
             />
           </div>
-          <Button variant="outline" className="flex shrink-0 gap-2 rounded-lg border-border">
+          <Button variant="outline" className="flex shrink-0 gap-2 rounded-xl border-border">
             <Filter size={16} />
             Filter
           </Button>
@@ -108,7 +108,7 @@ export function AssignMembersTabContent({
               <TableHead className="w-12 text-center">
                 <input
                   type="checkbox"
-                  className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-600 transition-colors"
+                  className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
                 />
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
@@ -131,7 +131,7 @@ export function AssignMembersTabContent({
             {papers.map((paper) => (
               <TableRow
                 key={paper.paperId}
-                className="group cursor-pointer transition-colors hover:bg-blue-50/40"
+                className="group cursor-pointer transition-colors hover:bg-primary-light/40"
                 onClick={() => onPaperClick(paper.paperId)}
               >
                 <TableCell
@@ -140,16 +140,16 @@ export function AssignMembersTabContent({
                 >
                   <input
                     type="checkbox"
-                    className="rounded-md border-slate-300 text-blue-600 focus:ring-blue-600 transition-colors"
+                    className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
                   />
                 </TableCell>
                 <TableCell>
                   <div className="flex items-start gap-3">
-                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-blue-600">
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-accent/30 bg-primary-light text-accent">
                       <FileText size={16} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-text-primary group-hover:text-blue-700 transition-colors line-clamp-2">
+                      <span className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors line-clamp-2">
                         {paper.title}
                       </span>
                       <span className="text-xs text-text-secondary mt-1 line-clamp-1">
@@ -165,7 +165,7 @@ export function AssignMembersTabContent({
                         {getPaperReviewers(paper).length === 0 ? (
                           <span
                             onClick={(e) => onAssignClick(e, paper.paperId)}
-                            className="text-xs text-text-secondary italic cursor-pointer hover:text-blue-600 transition-colors"
+                            className="text-xs text-text-secondary italic cursor-pointer hover:text-accent transition-colors"
                           >
                             Unassigned
                           </span>
@@ -176,8 +176,8 @@ export function AssignMembersTabContent({
                               className="relative group/member shrink-0 cursor-pointer"
                               onClick={(e) => onAssignClick(e, paper.paperId)}
                             >
-                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 ring-2 ring-white hover:bg-blue-200 transition-colors">
-                                <span className="text-xs font-bold text-blue-700">
+                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-light ring-2 ring-white hover:bg-accent/30 transition-colors">
+                                <span className="text-xs font-bold text-accent">
                                   {(member.fullname || member.username)
                                     .substring(0, 2)
                                     .toUpperCase()}
@@ -192,7 +192,7 @@ export function AssignMembersTabContent({
                       </div>
                       {getPaperReviewers(paper).length < 2 && (
                         <button
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 bg-surface-white text-text-secondary hover:text-blue-600 hover:border-blue-600 hover:bg-blue-50 ring-2 ring-white shrink-0 transition-all relative group/btn"
+                          className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 bg-surface-white text-text-secondary hover:text-accent hover:border-accent hover:bg-primary-light ring-2 ring-white shrink-0 transition-all relative group/btn"
                           onClick={(e) => onAssignClick(e, paper.paperId)}
                         >
                           <User size={14} />
@@ -248,9 +248,9 @@ export function AssignMembersTabContent({
                         label: "Completed",
                       },
                       "in-progress": {
-                        bg: "bg-blue-50 border-blue-200",
-                        text: "text-blue-700",
-                        icon: <Clock size={12} className="text-blue-500" />,
+                        bg: "bg-primary-light border-accent/30",
+                        text: "text-accent",
+                        icon: <Clock size={12} className="text-accent" />,
                         label: "In Progress",
                       },
                       pending: {
@@ -277,7 +277,7 @@ export function AssignMembersTabContent({
                   })()}
                 </TableCell>
                 <TableCell className="text-right">
-                  <button className="text-text-secondary hover:text-text-primary p-2 rounded-[4px] hover:bg-bg-secondary transition-colors">
+                  <button className="text-text-secondary hover:text-text-primary p-2 rounded-xl hover:bg-bg-secondary transition-colors">
                     <MoreHorizontal size={18} />
                   </button>
                 </TableCell>

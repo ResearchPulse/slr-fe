@@ -10,7 +10,7 @@ import {
 import type { PaperWithCandidateDto } from "../../../types/paper";
 import { FileText, Loader2 } from "lucide-react";
 import { FiAlertCircle } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../../utils/toast";
 import { useProjectMember } from "../../../hooks/useProjectMember";
 
 interface SnowballingCandidatesPageProps {
@@ -63,11 +63,11 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
         await rejectMutation.mutateAsync({ candidateIds: [id] });
       }
       setSelectedCandidate(null);
-      toast.success(
+      toastSuccess(
         `Candidate successfully ${action === "select" ? "promoted" : "rejected"}.`,
       );
     } catch (err: any) {
-      toast.error(err.message || "Failed to update candidate.");
+      toastError(err.message || "Failed to update candidate.");
     }
   };
 
@@ -75,7 +75,7 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
 
   if (!isLeader) {
     return (
-      <div className="flex flex-col items-center justify-center h-full p-20 bg-surface-white rounded-2xl shadow-none border border-border">
+      <div className="flex flex-col items-center justify-center h-full p-20 bg-surface-white rounded-xl shadow-none border border-border">
         <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
           <FiAlertCircle className="h-8 w-8" />
         </div>
@@ -91,13 +91,13 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
   }
 
   return (
-    <div className="flex flex-col h-full overflow-hidden bg-surface-white rounded-2xl shadow-none border border-border relative">
+    <div className="flex flex-col h-full overflow-hidden bg-surface-white rounded-xl shadow-none border border-border relative">
       {/* Dynamic Header based on view */}
       <div className="bg-surface-white border-b border-slate-50 p-8 shadow-none relative z-20">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 max-w-7xl mx-auto w-full">
           <div>
             <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center border border-indigo-700 shadow-none shadow-indigo-100">
+              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center border border-accent shadow-none">
                 <FileText className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-xl font-black text-text-primary tracking-tight">

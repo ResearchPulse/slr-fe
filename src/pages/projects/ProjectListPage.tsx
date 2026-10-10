@@ -132,20 +132,20 @@ export default function ProjectListPage() {
                 type="button"
                 onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
                 aria-pressed={roleFilter === value}
-                className={`inline-flex min-h-9 items-center gap-2 rounded-lg border px-3 text-sm transition-colors ${
+                className={`inline-flex min-h-9 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
                   roleFilter === value
                     ? "border-accent bg-bg-secondary font-medium text-accent"
-                    : "border-border bg-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
+                    : "border-border bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                 }`}
               >
                 {label}
-                <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
+                <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-surface-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
+        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
           <div className="relative w-full sm:max-w-sm">
             <FiSearch
               className="absolute left-3 top-1/2 -translate-y-1/2 text-placeholder"
@@ -153,7 +153,7 @@ export default function ProjectListPage() {
             />
             <Input
               placeholder="Search projects..."
-              className="h-10 rounded-lg border-border bg-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
+              className="h-10 rounded-xl border-border bg-surface-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
@@ -161,14 +161,14 @@ export default function ProjectListPage() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-1 rounded-lg bg-bg-primary p-1">
+          <div className="flex flex-wrap items-center gap-1 rounded-xl bg-bg-primary p-1">
             {([undefined, "Draft", "Active", "Completed"] as (ProjectStatus | undefined)[]).map((status) => (
               <button
                 key={status ?? "All"}
                 type="button"
                 aria-pressed={statusFilter === status}
                 onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
-                className={`min-h-8 rounded-md px-3 text-xs font-medium transition-colors ${statusFilter === status ? "bg-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+                className={`min-h-8 rounded-md px-3 text-xs font-medium transition-colors ${statusFilter === status ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
               >
                 {status ?? "All"}
               </button>
@@ -183,7 +183,7 @@ export default function ProjectListPage() {
         )}
 
         {/* Projects Table or Skeleton */}
-        <div className="overflow-hidden rounded-xl border border-border bg-white">
+        <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
           ) : hasNoResults ? (

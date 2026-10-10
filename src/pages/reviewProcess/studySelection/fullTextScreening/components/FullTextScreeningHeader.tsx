@@ -27,13 +27,13 @@ export default function FullTextScreeningHeader({
           <div className="flex items-center gap-4">
             <button
               onClick={onBack}
-              className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
+              className="p-1.5 rounded-xl text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
               title="Back to Review Process"
             >
               <FiArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-[4px] bg-bg-secondary flex items-center justify-center shadow-none border border-indigo-100/50">
+              <div className="w-9 h-9 rounded-xl bg-bg-secondary flex items-center justify-center shadow-none border border-accent/30">
                 <FiFileText className="w-4.5 h-4.5 text-accent" />
               </div>
               <div className="flex flex-col">
@@ -60,19 +60,19 @@ export default function FullTextScreeningHeader({
 
           {/* Right: Shortcuts */}
           <div className="flex items-center gap-3 text-xs text-text-secondary font-medium whitespace-nowrap">
-            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-[4px] border border-border">
+            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-xl border border-border">
               <kbd className="px-1.5 py-0.5 bg-surface-white rounded border border-border shadow-none">
                 1
               </kbd>
               <span className="text-[10px]">Include</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-[4px] border border-border">
+            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-xl border border-border">
               <kbd className="px-1.5 py-0.5 bg-surface-white rounded border border-border shadow-none">
                 2
               </kbd>
               <span className="text-[10px]">Exclude</span>
             </div>
-            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-[4px] border border-border">
+            <div className="flex items-center gap-1.5 bg-bg-primary px-2 py-1 rounded-xl border border-border">
               <kbd className="px-1.5 py-0.5 bg-surface-white rounded border border-border shadow-none">
                 ↑↓
               </kbd>

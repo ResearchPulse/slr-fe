@@ -36,14 +36,14 @@ export default function ConsensusSidebar({
               onClick={() => onSectionChange(section.sectionId)}
               className={
                 isActive
-                  ? "w-full rounded-[4px] border border-blue-500 bg-blue-50 px-4 py-3 text-left"
-                  : "w-full rounded-[4px] border border-border bg-surface-white px-4 py-3 text-left hover:border-slate-300"
+                  ? "w-full rounded-xl border border-accent bg-primary-light px-4 py-3 text-left"
+                  : "w-full rounded-xl border border-border bg-surface-white px-4 py-3 text-left hover:border-slate-300"
               }
             >
               <p
                 className={
                   isActive
-                    ? "text-sm font-semibold text-blue-700"
+                    ? "text-sm font-semibold text-accent"
                     : "text-sm font-semibold text-text-primary"
                 }
               >
@@ -58,7 +58,7 @@ export default function ConsensusSidebar({
         })}
       </div>
 
-      <div className="mt-6 rounded-[4px] border border-amber-200 bg-amber-50 px-3 py-2">
+      <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
         <p className="text-xs font-medium uppercase tracking-wide text-amber-700">
           Remaining Conflicts
         </p>

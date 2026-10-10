@@ -34,7 +34,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
     return (
       <div className="max-w-2xl mx-auto py-12 text-center">
         <div className="w-16 h-16 mx-auto mb-6 bg-text-primary flex items-center justify-center">
-          <FiCheck className="w-8 h-8 text-bg-primary" strokeWidth={2.5} />
+          <FiCheck className="w-8 h-8 text-surface-white" strokeWidth={2.5} />
         </div>
         <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary mb-3">
           All steps complete
@@ -98,7 +98,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
               {item.completed ? (
                 <div className="w-7 h-7 bg-text-primary flex items-center justify-center flex-shrink-0">
                   <FiCheck
-                    className="w-3.5 h-3.5 text-bg-primary"
+                    className="w-3.5 h-3.5 text-surface-white"
                     strokeWidth={3}
                   />
                 </div>

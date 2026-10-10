@@ -135,7 +135,7 @@ export default function AIProjectSetupWizard({
         )}
 
         {state.viewMode === "edit" && isLeader && (
-          <div className="rounded-[4px] border border-border bg-surface-white p-6 shadow-none sm:p-8">
+          <div className="rounded-xl border border-border bg-surface-white p-6 shadow-none sm:p-8">
             <SetupEditForm
               picocForm={state.picocForm}
               editResearchQuestions={state.editResearchQuestions}

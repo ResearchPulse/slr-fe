@@ -38,7 +38,7 @@ export default function Step1_Overview({
         </p>
       </div>
 
-      <div className="bg-bg-secondary border border-border rounded-[4px] p-4">
+      <div className="bg-bg-secondary border border-border rounded-xl p-4">
         <div className="flex items-center gap-2 text-text-primary font-semibold mb-2">
           <FiLock className="w-4 h-4" />
           Locked Section Structure
@@ -63,7 +63,7 @@ export default function Step1_Overview({
       </div>
 
       {guidedGenerationError && (
-        <div className="bg-surface-white border border-border rounded-[4px] p-4 text-sm text-red-700">
+        <div className="bg-surface-white border border-border rounded-xl p-4 text-sm text-red-700">
           {guidedGenerationError}
         </div>
       )}
@@ -75,10 +75,10 @@ export default function Step1_Overview({
           return (
             <div
               key={section.id}
-              className={`relative rounded-[4px] border-2 p-6 transition-all ${
+              className={`relative rounded-xl border-2 p-6 transition-all ${
                 isCompleted
                   ? "border-emerald-200 bg-emerald-50"
-                  : "border-border bg-surface-white hover:border-blue-300 hover:shadow-none"
+                  : "border-border bg-surface-white hover:border-accent hover:shadow-none"
               }`}
             >
               {isCompleted && (
@@ -89,7 +89,7 @@ export default function Step1_Overview({
 
               <div className="flex items-start gap-3 mb-3">
                 <div
-                  className={`p-2.5 rounded-[4px] ${
+                  className={`p-2.5 rounded-xl ${
                     section.isPicoc
                       ? "bg-sky-100 text-sky-700"
                       : "bg-indigo-100 text-indigo-700"
@@ -133,10 +133,10 @@ export default function Step1_Overview({
               <button
                 onClick={() => onSetupSection(section.id)}
                 disabled={isViewOnly}
-                className={`w-full py-2 px-4 rounded-[4px] font-medium flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
+                className={`w-full py-2 px-4 rounded-xl font-medium flex items-center justify-center gap-2 transition-all disabled:cursor-not-allowed disabled:opacity-60 ${
                   isCompleted
                     ? "bg-bg-secondary text-text-primary hover:bg-bg-secondary"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
+                    : "bg-primary text-white hover:bg-primary-hover"
                 }`}
               >
                 {isCompleted ? "Edit Fields" : "Add Fields"}
@@ -147,8 +147,8 @@ export default function Step1_Overview({
         })}
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 text-center">
-        <p className="text-sm text-blue-900">
+      <div className="bg-primary-light border border-accent/30 rounded-xl p-4 text-center">
+        <p className="text-sm text-text-primary">
           Completed:{" "}
           <strong>
             {completedSections.length} of {sections.length}

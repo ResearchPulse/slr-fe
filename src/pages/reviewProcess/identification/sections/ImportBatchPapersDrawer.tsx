@@ -9,6 +9,7 @@ import {
 import Drawer from "../../../../components/ui/Drawer";
 import Button from "../../../../components/ui/Button";
 import type { PaperResponse } from "../../../../types/paper";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface ImportBatchPapersDrawerProps {
   isOpen: boolean;
@@ -33,10 +34,10 @@ export default function ImportBatchPapersDrawer({
       onClose={onClose}
       title={
         <div className="flex items-center gap-2">
-          <FiFileText className="w-5 h-5 text-blue-600" />
+          <FiFileText className="w-5 h-5 text-accent" />
           <span>Import Batch Papers</span>
           {!papersLoading && (
-            <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+            <span className="ml-2 px-2 py-0.5 bg-primary-light text-accent rounded-full text-xs font-medium">
               {papers.length} papers
             </span>
           )}
@@ -47,7 +48,7 @@ export default function ImportBatchPapersDrawer({
     >
       {papersLoading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+          <LoadingSpinner size="md" />
           <span className="ml-3 text-text-secondary">Loading papers...</span>
         </div>
       ) : papersError ? (
@@ -71,7 +72,7 @@ export default function ImportBatchPapersDrawer({
           {papers.map((paper) => (
             <div
               key={paper.id}
-              className="py-4 px-2 hover:bg-bg-primary transition-colors rounded-[4px]"
+              className="py-4 px-2 hover:bg-bg-primary transition-colors rounded-xl"
             >
               <h4 className="font-medium text-text-primary text-sm line-clamp-2 mb-1">
                 {paper.title}
@@ -89,7 +90,7 @@ export default function ImportBatchPapersDrawer({
                     href={`https://doi.org/${paper.doi}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700"
+                    className="text-accent hover:text-primary-hover"
                   >
                     DOI: {paper.doi}
                   </a>

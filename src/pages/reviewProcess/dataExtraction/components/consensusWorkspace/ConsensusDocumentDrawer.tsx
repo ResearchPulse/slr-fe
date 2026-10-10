@@ -121,7 +121,7 @@ export default function ConsensusDocumentDrawer({
       }
     >
       <div className="flex h-full flex-col gap-3">
-        <div className="min-h-0 flex-1 overflow-hidden rounded-[4px] border border-border bg-surface-white">
+        <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border bg-surface-white">
           {effectiveDocumentUrl ? (
             <Worker workerUrl={PDF_WORKER_URL}>
               <Viewer

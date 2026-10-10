@@ -342,13 +342,13 @@ export default function ProjectDetailPage() {
   if (!project) {
     return (
       <div className="container mx-auto px-4 py-8">
-        <div className="bg-surface-white rounded-[4px] border border-border p-8 text-center">
+        <div className="bg-surface-white rounded-xl border border-border p-8 text-center">
           <p className="text-text-secondary mb-6 text-sm">
             Project not found (ID: {id || "none"})
           </p>
           <button
             onClick={() => navigate("/projects")}
-            className="px-6 py-2 bg-accent text-bg-primary rounded-[4px] hover:bg-primary-hover transition-colors text-[12px] uppercase tracking-[0.1em]"
+            className="px-6 py-2 bg-accent text-bg-primary rounded-xl hover:bg-primary-hover transition-colors text-[12px] uppercase tracking-[0.1em]"
           >
             Back to Project List
           </button>

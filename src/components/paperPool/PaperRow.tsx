@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { FiEye, FiLink, FiTrash2 } from "react-icons/fi";
+import ConfirmModal from "../ui/ConfirmModal";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
@@ -55,6 +57,9 @@ export default function PaperRow({
   isLeader = false,
   canUploadPdf = false,
 }: PaperRowProps) {
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const deleteMessage = `Delete "${paper.title.substring(0, 60)}${paper.title.length > 60 ? "..." : ""}"?`;
+
   return (
     <tr
       className={`group border-b border-border transition-all duration-200 ${
@@ -68,7 +73,7 @@ export default function PaperRow({
               type="checkbox"
               checked={isSelected}
               onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
-              className="w-4 h-4 rounded border-border text-accent focus:ring-accent transition-all cursor-pointer"
+              className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20 transition-all cursor-pointer"
               aria-label={`Select paper ${paper.id}`}
             />
           </div>
@@ -154,11 +159,11 @@ export default function PaperRow({
                 if (onDeleteClick) {
                   onDeleteClick(paper);
                 } else {
-                  onDeletePaper(paper.id, "Deleted from paper repository");
+                  setIsConfirmDeleteOpen(true);
                 }
               }}
               disabled={isDeletingPaper}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-sm transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Delete paper"
             >
               {isDeletingPaper ? (
@@ -167,6 +172,19 @@ export default function PaperRow({
                 <FiTrash2 className="h-3.5 w-3.5" />
               )}
             </button>
+          )}
+          {onDeletePaper && (
+            <ConfirmModal
+              isOpen={isConfirmDeleteOpen}
+              onClose={() => setIsConfirmDeleteOpen(false)}
+              onConfirm={() => {
+                setIsConfirmDeleteOpen(false);
+                onDeletePaper(paper.id, "Deleted from paper repository");
+              }}
+              title="Delete paper"
+              message={deleteMessage}
+              confirmText="Delete"
+            />
           )}
         </div>
       </td>

@@ -47,7 +47,7 @@ export default function StrategiesTabContent({
     <div className="space-y-8">
       {/* Error State */}
       {listError && (
-        <div className="bg-surface-white border border-border rounded-[4px] p-4 flex items-start gap-3">
+        <div className="bg-surface-white border border-border rounded-xl p-4 flex items-start gap-3">
           <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
           <div className="flex-1">
             <h3 className="text-sm font-semibold text-red-900 mb-1">

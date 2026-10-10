@@ -7,7 +7,7 @@ import {
   FiCalendar,
   FiUser,
 } from "react-icons/fi";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../../../utils/toast";
 
 import PaperAbstractSection from "../../../../components/papers/PaperAbstractSection";
 import PaperMetadataGrid from "../../../../components/papers/PaperMetadataGrid";
@@ -65,8 +65,8 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
   const handleCopyDoi = useCallback(() => {
     if (paper.doi) {
       navigator.clipboard.writeText(paper.doi).then(
-        () => toast.success("DOI copied to clipboard"),
-        () => toast.error("Failed to copy DOI"),
+        () => toastSuccess("DOI copied to clipboard"),
+        () => toastError("Failed to copy DOI"),
       );
     }
   }, [paper.doi]);
@@ -112,7 +112,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
         {paper.doi && (
           <button
             onClick={handleCopyDoi}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-primary"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-primary"
             title={`Copy DOI: ${paper.doi}`}
           >
             <FiCopy className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
             href={`https://doi.org/${paper.doi}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open DOI
@@ -135,7 +135,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
             href={paper.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open URL

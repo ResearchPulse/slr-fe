@@ -59,7 +59,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
       >
         <div className="flex items-center gap-3">
           <div
-            className={`p-2 rounded-[4px] transition-all duration-500 ${isExpanded ? "bg-blue-600 text-white rotate-0" : "bg-blue-50 text-blue-600 -rotate-12"}`}
+            className={`p-2 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary text-white rotate-0" : "bg-primary-light text-accent -rotate-12"}`}
           >
             <Gavel className="w-4 h-4" />
           </div>
@@ -87,7 +87,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
               {resolution}
             </div>
           )}
-          <div className="p-2 rounded-[4px] bg-bg-secondary text-text-secondary group-hover:bg-slate-200 group-hover:text-text-secondary transition-all">
+          <div className="p-2 rounded-xl bg-bg-secondary text-text-secondary group-hover:bg-slate-200 group-hover:text-text-secondary transition-all">
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -104,7 +104,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
           <button
             onClick={() => isFinishReview && setResolution("Include")}
             disabled={!isFinishReview}
-            className={`flex-1 flex flex-col items-center py-4 rounded-[4px] border-2 transition-all duration-300 ${
+            className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-all duration-300 ${
               resolution === "Include"
                 ? "bg-emerald-50 border-emerald-500 scale-[1.02] shadow-none shadow-emerald-100"
                 : "bg-surface-white border-border hover:border-border"
@@ -130,7 +130,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
           <button
             onClick={() => isFinishReview && setResolution("Exclude")}
             disabled={!isFinishReview}
-            className={`flex-1 flex flex-col items-center py-4 rounded-[4px] border-2 transition-all duration-300 ${
+            className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-all duration-300 ${
               resolution === "Exclude"
                 ? "bg-rose-50 border-rose-500 scale-[1.02] shadow-none shadow-rose-100"
                 : "bg-surface-white border-border hover:border-border"
@@ -170,7 +170,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
                     label: r.name,
                   }))}
                   placeholder="Select a reason..."
-                  className="!py-3.5 !text-xs !font-bold !bg-bg-secondary border-none !rounded-[4px] transition-all hover:!bg-bg-secondary focus:!ring-4 focus:!ring-blue-500/5"
+                  className="!py-3.5 !text-xs !font-bold !bg-bg-secondary border-none !rounded-xl transition-all hover:!bg-bg-secondary focus:!ring-4 focus:!ring-accent/5"
                 />
 
                 {/* Show More / Reset Reasons Button */}
@@ -185,7 +185,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
                         setReasonPageSize(5);
                       }
                     }}
-                    className="mt-2 text-[10px] font-black uppercase text-blue-600 hover:text-blue-700 transition-colors flex items-center gap-1.5 px-1 py-0.5"
+                    className="mt-2 text-[10px] font-black uppercase text-accent hover:text-primary-hover transition-colors flex items-center gap-1.5 px-1 py-0.5"
                   >
                     {hasMoreReasons ? (
                       <>
@@ -206,18 +206,18 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
         )}
 
         <div className="relative group">
-          <StickyNote className="absolute left-4 top-4 w-4 h-4 text-slate-300 group-focus-within:text-blue-500 transition-colors" />
+          <StickyNote className="absolute left-4 top-4 w-4 h-4 text-slate-300 group-focus-within:text-accent transition-colors" />
           <textarea
             placeholder="Resolution notes (optional)..."
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}
-            className="w-full bg-bg-secondary border-transparent border-2 rounded-[4px] text-[11px] font-medium pl-12 pr-4 py-4 min-h-[90px] focus:ring-4 focus:ring-blue-500/5 focus:bg-surface-white focus:border-blue-100 transition-all outline-none resize-none"
+            className="w-full bg-bg-secondary border-transparent border-2 rounded-xl text-[11px] font-medium pl-12 pr-4 py-4 min-h-[90px] focus:ring-4 focus:ring-accent/5 focus:bg-surface-white focus:border-primary/30 transition-all outline-none resize-none"
           />
         </div>
 
         <div className="space-y-3 pt-2">
           {!isFinishReview && (
-            <div className="flex items-center gap-2 px-4 py-3 bg-amber-50/50 rounded-[4px] border border-amber-100/50 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <div className="flex items-center gap-2 px-4 py-3 bg-amber-50/50 rounded-xl border border-amber-100/50 animate-in fade-in slide-in-from-bottom-2 duration-500">
               <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               <p className="text-[9px] font-bold text-amber-600 uppercase tracking-wider leading-none">
                 Decision locked until all reviewers finish their task assignment
@@ -231,16 +231,16 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
               (resolution === "Exclude" && !exclusionReason) ||
               !isFinishReview
             }
-            className="w-full py-4 bg-blue-600 text-white font-black text-[11px] uppercase tracking-[0.25em] rounded-[4px] hover:bg-blue-700 transition-all shadow-none shadow-blue-100 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
+            className="w-full py-4 bg-primary text-white font-black text-[11px] uppercase tracking-[0.25em] rounded-xl hover:bg-primary-hover transition-all shadow-none shadow-primary/10 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
           >
             {isFinishReview ? "Resolve Conflict" : "Review in Progress"}
           </Button>
 
           <button
             onClick={onAssignThirdReviewer}
-            className="w-full py-3.5 rounded-[4px] border-2 border-dashed border-border hover:border-blue-200 hover:bg-blue-50/30 transition-all group flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-xl border-2 border-dashed border-border hover:border-primary/30 hover:bg-primary-light/30 transition-all group flex items-center justify-center gap-2"
           >
-            <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary group-hover:text-blue-600 transition-colors">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary group-hover:text-accent transition-colors">
               Assign more Reviewers
             </span>
           </button>

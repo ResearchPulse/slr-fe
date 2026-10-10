@@ -41,10 +41,10 @@ export default function CrossrefFilterSidebar({
 }: CrossrefFilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-[4px] sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none transition-all duration-300">
+      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-xl sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none transition-all duration-300">
         <button
           onClick={onToggleCollapse}
-          className="p-3 bg-blue-50 text-accent border border-blue-200 rounded-[4px] hover:bg-blue-100 transition-colors mb-8"
+          className="p-3 bg-primary-light text-accent border border-accent/30 rounded-xl hover:bg-accent/10 transition-colors mb-8"
           title="Expand Explorer Filters"
         >
           <FiChevronRight className="w-5 h-5" />
@@ -61,11 +61,11 @@ export default function CrossrefFilterSidebar({
   }
 
   return (
-    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-[4px] sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none overflow-hidden transition-all duration-300">
+    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-xl sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none overflow-hidden transition-all duration-300">
       {/* Header */}
-      <div className="px-6 py-6 border-b border-border flex items-center justify-between bg-blue-50/30">
+      <div className="px-6 py-6 border-b border-border flex items-center justify-between bg-primary-light/30">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-50 border border-blue-200 rounded-[4px] flex items-center justify-center text-accent">
+          <div className="w-10 h-10 bg-primary-light border border-accent/30 rounded-xl flex items-center justify-center text-accent">
             <FiFilter className="w-5 h-5" />
           </div>
           <div>
@@ -79,7 +79,7 @@ export default function CrossrefFilterSidebar({
         </div>
         <button
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-blue-50 rounded-[4px] text-text-secondary hover:text-accent transition-colors"
+          className="p-2 hover:bg-primary-light rounded-xl text-text-secondary hover:text-accent transition-colors"
         >
           <FiChevronLeft className="w-5 h-5" />
         </button>
@@ -101,7 +101,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryAuthor: e.target.value })
               }
-              className="w-full bg-bg-primary border-none focus:bg-surface-white focus:ring-2 focus:ring-accent/20 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+              className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
             />
           </div>
         </div>
@@ -120,7 +120,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryTitle: e.target.value })
               }
-              className="w-full bg-bg-primary border-none focus:bg-surface-white focus:ring-2 focus:ring-accent/20 rounded-[4px] pl-11 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none"
+              className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
             />
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function CrossrefFilterSidebar({
             onChange={(e) =>
               setLocalParams({ ...localParams, rows: parseInt(e.target.value) })
             }
-            className="w-full bg-bg-primary border-none focus:bg-surface-white focus:ring-2 focus:ring-accent/20 rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none shadow-inner"
+            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary cursor-pointer appearance-none"
           >
             <option value={10}>10 Results per page</option>
             <option value={20}>20 Results per page</option>
@@ -157,7 +157,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, sort: e.target.value })
               }
-              className="w-full bg-bg-primary border-none focus:bg-surface-white focus:ring-2 focus:ring-accent/20 rounded-[4px] px-4 py-3 text-sm font-bold text-text-primary transition-all outline-none cursor-pointer appearance-none"
+              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary cursor-pointer appearance-none"
             >
               <option value="relevance">Relevance</option>
               <option value="is-referenced-by-count">Citation Count</option>
@@ -176,14 +176,14 @@ export default function CrossrefFilterSidebar({
               )}
               Sort Order
             </label>
-            <div className="flex bg-bg-primary p-1 rounded-[4px]">
+            <div className="flex bg-bg-primary p-1 rounded-xl">
               <button
                 type="button"
                 onClick={() =>
                   setLocalParams({ ...localParams, order: "desc" })
                 }
                 className={cn(
-                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-[4px] transition-all",
+                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
                   localParams.order === "desc" || !localParams.order
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -195,7 +195,7 @@ export default function CrossrefFilterSidebar({
                 type="button"
                 onClick={() => setLocalParams({ ...localParams, order: "asc" })}
                 className={cn(
-                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-[4px] transition-all",
+                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
                   localParams.order === "asc"
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -216,7 +216,7 @@ export default function CrossrefFilterSidebar({
           <select
             value={selectedSourceId}
             onChange={(e) => setSelectedSourceId(e.target.value)}
-            className="w-full bg-slate-900 text-white border-none rounded-[4px] px-4 py-4 text-xs font-bold focus:ring-2 focus:ring-accent transition-all outline-none shadow-none shadow-slate-200"
+            className="w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none"
           >
             <option value="">Select source to import to...</option>
             {availableSources.map((s) => (
@@ -236,7 +236,7 @@ export default function CrossrefFilterSidebar({
         <Button
           onClick={onSearch}
           isLoading={isLoading}
-          className="w-full py-4 bg-accent hover:bg-primary-hover text-white rounded-[4px] font-black uppercase tracking-widest text-[10px] shadow-sm flex items-center justify-center gap-2"
+          className="w-full py-4 bg-accent hover:bg-primary-hover text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-sm flex items-center justify-center gap-2"
         >
           <FiRefreshCw className={isLoading ? "animate-spin" : ""} />
           Apply Explorer Filters

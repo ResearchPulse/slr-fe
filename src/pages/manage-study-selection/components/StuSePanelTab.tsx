@@ -24,7 +24,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "Define the eligibility criteria and checklist structure for reviewers.",
       icon: FileText,
-      iconTone: "bg-indigo-50 text-indigo-600",
+      iconTone: "bg-primary-light text-accent",
       onClick: () => setIsChecklistOpen(true),
     },
     {
@@ -47,7 +47,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "View detailed statistics and metrics for the screening process.",
       icon: BarChart2,
-      iconTone: "bg-blue-50 text-blue-600",
+      iconTone: "bg-primary-light text-accent",
       onClick: () => {
         if (!isDisabled)
           navigate(
@@ -68,15 +68,15 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
               onClick={() => !isDisabled && action.onClick()}
               disabled={isDisabled}
               className={cn(
-                "group flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-surface-white p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-200",
+                "group flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-surface-white p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20",
                 !isDisabled
-                  ? "hover:border-blue-300 hover:bg-blue-50/40"
+                  ? "hover:border-accent hover:bg-primary-light/40"
                   : "opacity-60 cursor-not-allowed",
               )}
             >
               <div
                 className={cn(
-                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors",
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors",
                   action.iconTone,
                 )}
               >
@@ -84,7 +84,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
               </div>
 
               <div className="min-w-0 flex-1">
-                <h4 className="text-sm font-semibold leading-5 text-slate-800 transition-colors group-hover:text-blue-700">
+                <h4 className="text-sm font-semibold leading-5 text-slate-800 transition-colors group-hover:text-accent">
                   {action.title}
                 </h4>
                 <p className="mt-1 text-[11px] leading-4 text-text-secondary">
@@ -92,7 +92,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
                 </p>
               </div>
 
-              <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-accent" />
             </button>
           ))}
         </div>

@@ -84,7 +84,7 @@ const Tabs: React.FC<TabsProps> = ({
               {item.badge !== undefined && (
                 <span
                   className={cn(
-                    "px-1.5 py-0.5 rounded-[2px] text-[9px] font-medium min-w-[1.25rem] flex items-center justify-center",
+                    "px-1.5 py-0.5 rounded-full text-[9px] font-medium min-w-[1.25rem] flex items-center justify-center",
                     isActive
                       ? "bg-accent/10 text-accent"
                       : "bg-bg-secondary text-text-secondary",
