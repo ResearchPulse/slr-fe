@@ -43,7 +43,7 @@ export default function ProjectSettingsPage() {
     return (
       <div className="min-h-screen bg-bg-primary">
         <div className="container mx-auto max-w-3xl px-4 py-16">
-          <div className="border border-border bg-surface-white p-8">
+          <div className="rounded-xl border border-border bg-surface-white p-8">
             <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mb-3">Project settings</p>
             <h1 className="font-cormorant text-3xl text-text-primary mb-3">Leader access required</h1>
             <p className="text-sm leading-relaxed text-text-secondary mb-6">
@@ -89,7 +89,7 @@ export default function ProjectSettingsPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar Navigation */}
           <aside className="w-full lg:w-56 shrink-0">
-            <nav className="flex lg:flex-col gap-0 border border-border">
+            <nav className="flex lg:flex-col gap-0 overflow-hidden rounded-xl border border-border">
               <button
                 onClick={() => setActiveTab("general")}
                 className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
@@ -134,7 +134,7 @@ export default function ProjectSettingsPage() {
             {activeTab === "general" ? (
               <div className="space-y-6">
                 {/* General Settings Card */}
-                <div className="border border-border bg-surface-white">
+                <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
                   <div className="px-6 py-4 border-b border-border bg-bg-primary">
                     <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
                       Project Status Actions
@@ -177,7 +177,7 @@ export default function ProjectSettingsPage() {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="border border-border bg-surface-white">
+                <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
                   <div className="px-6 py-4 border-b border-border bg-bg-primary">
                     <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">
                       Team Members
@@ -185,7 +185,7 @@ export default function ProjectSettingsPage() {
                   </div>
                   <div className="p-6 space-y-6">
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 border border-border flex items-center justify-center text-text-secondary shrink-0">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-border text-text-secondary">
                         <FiUsers size={14} />
                       </div>
                       <div>
@@ -198,7 +198,7 @@ export default function ProjectSettingsPage() {
                       </div>
                     </div>
 
-                    <div className="bg-bg-primary border border-border p-5">
+                    <div className="rounded-xl border border-border bg-bg-primary p-5">
                       <p className="text-text-secondary text-sm leading-relaxed mb-5">
                         Add researchers, screeners, and reviewers to your
                         project. Define their permission levels to ensure data

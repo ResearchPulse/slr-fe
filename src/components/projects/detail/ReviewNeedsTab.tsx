@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { FiArrowUpRight } from "react-icons/fi";
 import Button from "../../ui/Button";
 import type { ReviewNeed } from "../../../types/coreAndGovernance";
 
@@ -59,7 +60,7 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
           })}
         </ul>
       ) : (
-        <div className="border-t border-border py-7">
+        <div className="rounded-xl border border-border bg-surface-white p-5">
           <p className="text-sm font-medium text-text-primary">
             No review needs recorded
           </p>
@@ -67,8 +68,13 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
             Describe the research gap this review will address and why a synthesis is needed.
           </p>
           {isLeader && (
-            <Button size="sm" onClick={onAdd} className="mt-4">
+            <Button
+              size="sm"
+              onClick={onAdd}
+              className="mt-5 w-full justify-between px-4 normal-case tracking-normal"
+            >
               Add review need
+              <FiArrowUpRight size={16} aria-hidden="true" />
             </Button>
           )}
         </div>
