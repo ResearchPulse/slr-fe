@@ -20,6 +20,9 @@ import UploadFullTextPdfModal from "../../components/UploadFullTextPdfModal";
 import MetadataSuggestionModal from "../../components/MetadataSuggestionModal";
 import type { UploadPdfOptions } from "../../uploadTypes";
 import type { PaperWithDecisionsResponse } from "../../../../../types/studySelection";
+import { Worker, Viewer } from "@react-pdf-viewer/core";
+import { PDF_WORKER_URL } from "../../../../../config/pdfWorker";
+import "@react-pdf-viewer/core/lib/styles/index.css";
 
 interface FullTextReaderProps {
   paper: FullTextPaper | null;
@@ -538,20 +541,19 @@ export default function FullTextReader({
 
 function PdfViewer({ url, zoomLevel }: { url: string; zoomLevel: number }) {
   return (
-    <div className="h-full w-full flex items-center justify-center p-4">
+    <div className="h-full w-full overflow-auto p-4">
       <div
-        className="bg-surface-white shadow-none rounded-xl overflow-hidden w-full h-full"
+        className="h-full min-h-0 w-full overflow-hidden rounded-xl bg-surface-white shadow-sm"
         style={{
           transform: `scale(${zoomLevel / 100})`,
           transformOrigin: "top center",
         }}
       >
-        <iframe
-          src={`${url}#toolbar=0&navpanes=0`}
-          title="PDF Viewer"
-          className="w-full h-full border-0"
-          sandbox="allow-same-origin allow-scripts allow-popups"
-        />
+        <Worker workerUrl={PDF_WORKER_URL}>
+          <div className="h-full w-full">
+            <Viewer fileUrl={url} />
+          </div>
+        </Worker>
       </div>
     </div>
   );
