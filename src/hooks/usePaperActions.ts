@@ -138,7 +138,8 @@ export function usePaperActions(
   // ---- Mutation: Retry Metadata Extraction ----
   const retryMetadataExtractionMutation = useMutation({
     mutationFn: async (paperId: string) => {
-      return studySelectionService.retryExtraction(paperId, { provider: "GROBID" });
+      if (!finalProjectId) throw new Error("Cannot retry extraction: missing project.");
+      return studySelectionService.retryExtraction(paperId, { provider: "GROBID", projectId: finalProjectId });
     },
     onSuccess: (response, paperId) => {
       if (finalProcessId) {
