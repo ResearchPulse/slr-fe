@@ -139,7 +139,8 @@ export function usePaperActions(
   // ---- Mutation: Retry Metadata Extraction ----
   const retryMetadataExtractionMutation = useMutation({
     mutationFn: async (paperId: string) => {
-      return studySelectionService.retryExtraction(paperId, { provider: "GROBID" });
+      if (!finalProjectId) throw new Error("Cannot retry extraction: missing project.");
+      return studySelectionService.retryExtraction(paperId, { provider: "GROBID", projectId: finalProjectId });
     },
     onSuccess: (response, paperId) => {
       if (finalProcessId) {
@@ -274,10 +275,22 @@ export function usePaperActions(
         queryClient.invalidateQueries({
           queryKey: QUERY_KEYS.paperPool.metadata(finalProjectId),
         });
+        queryClient.invalidateQueries({
+          queryKey: QUERY_KEYS.reviewProcesses.byProject(finalProjectId),
+        });
       }
 
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.papers.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.reviewProcesses.all,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["study-selection"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["identification-processes"],
       });
 
       toastSuccess("Paper deleted successfully.");

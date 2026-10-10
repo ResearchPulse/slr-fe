@@ -215,8 +215,77 @@ export const studySelectionService = {
   },
 
 
-  // 14. Upload Full-Text PDF File (single endpoint upload + paper update)
+  // 14. Upload Full-Text PDF File (Direct-to-Cloud Upload with fallback to proxy upload)
   async uploadPaperFullText(params: UploadPaperFullTextRequest): Promise<UploadFullTextResponse> {
+    let directUploadCompleted = false;
+    try {
+      // Step 1: Request signed upload credentials from backend
+      const sigResponse = await api.post<{
+        isSuccess?: boolean;
+        success?: boolean;
+        data: {
+          uploadUrl: string;
+          apiKey: string;
+          timestamp: number;
+          signature: string;
+          folder: string;
+          publicId: string;
+          baseName: string;
+          fileName: string;
+        };
+      }>("/paper-fulltext/upload-signature", {
+        projectId: params.projectId,
+        paperId: params.paperId,
+        fileName: params.file.name,
+      });
+
+      const sigData = sigResponse.data?.data;
+      if (sigData?.uploadUrl && sigData?.signature && sigData?.apiKey) {
+        // Step 2: Upload file directly to Cloudinary via native fetch (zero server bandwidth)
+        const cldFormData = new FormData();
+        cldFormData.append("file", params.file);
+        cldFormData.append("api_key", sigData.apiKey);
+        cldFormData.append("timestamp", String(sigData.timestamp));
+        cldFormData.append("signature", sigData.signature);
+        cldFormData.append("folder", sigData.folder);
+        cldFormData.append("public_id", sigData.publicId);
+
+        const cldRes = await fetch(sigData.uploadUrl, {
+          method: "POST",
+          body: cldFormData,
+        });
+
+        if (cldRes.ok) {
+          directUploadCompleted = true;
+          const cldJson = (await cldRes.json()) as {
+            public_id: string;
+            secure_url: string;
+            bytes?: number;
+          };
+
+          // Step 3: Finalize upload on backend
+          const finResponse = await api.post<UploadFullTextResponse>("/paper-fulltext/finalize-upload", {
+            projectId: params.projectId,
+            paperId: params.paperId,
+            publicId: cldJson.public_id,
+            secureUrl: cldJson.secure_url,
+            fileName: params.file.name,
+            baseName: sigData.baseName,
+            bytes: cldJson.bytes ?? params.file.size,
+            extractWithGrobid: params.extractWithGrobid,
+          });
+
+          return finResponse.data;
+        } else {
+          console.warn("[DirectUpload] Cloudinary returned error status:", cldRes.status);
+        }
+      }
+    } catch (directErr) {
+      if (directUploadCompleted) throw directErr;
+      console.warn("[DirectUpload] Direct-to-Cloud upload failed, falling back to server proxy upload:", directErr);
+    }
+
+    // Step 4: Fallback to proxy upload endpoint
     const formData = new FormData();
     formData.append("File", params.file);
     formData.append("ProjectId", params.projectId);
@@ -254,11 +323,11 @@ export const studySelectionService = {
   // 15. Retry metadata extraction for existing uploaded PDF
   async retryExtraction(
     paperId: string,
-    request?: RetryExtractionRequest,
+    request: RetryExtractionRequest,
   ): Promise<RetryExtractionResponse> {
     const response = await api.post<RetryExtractionResponse>(
       `/paper-fulltext/${paperId}/extract-metadata`,
-      request ?? { provider: "GROBID" },
+      request,
     );
     return response.data;
   },

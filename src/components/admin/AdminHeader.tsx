@@ -19,6 +19,7 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       "/admin/audit-logs": "Audit Logs",
       "/admin/projects": "SLR Projects",
       "/admin/users": "Users Management",
+      "/admin/agents": "AI Agents",
       "/admin/templates": "Checklist Templates",
       "/admin/master-sources": "Search Sources",
       "/admin/analytics": "Analytics",

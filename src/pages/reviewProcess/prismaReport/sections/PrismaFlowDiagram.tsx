@@ -35,7 +35,7 @@ const MAIN_STAGES = [
   "ReportsAssessed",
 ] as const;
 
-const SIDE_STAGES = [
+const _SIDE_STAGES = [
   "DuplicateRecordsRemoved",
   "RecordsExcluded",
   "ReportsNotRetrieved",
@@ -185,7 +185,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
     );
     const sideFor = (node: PrismaNodeResponse) => {
       if (node.sideBox) return node.sideBox;
-      const stageByParent: Record<string, (typeof SIDE_STAGES)[number]> = {
+      const stageByParent: Record<string, (typeof _SIDE_STAGES)[number]> = {
         RecordsIdentified: "DuplicateRecordsRemoved",
         RecordsScreened: "RecordsExcluded",
         ReportsSoughtForRetrieval: "ReportsNotRetrieved",

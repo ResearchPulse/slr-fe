@@ -34,6 +34,7 @@ interface PaperRowProps {
 
   // Delete Action
   onDeletePaper?: (paperId: string, reason: string) => void;
+  onDeleteClick?: (paper: PaperPoolItem) => void;
   isDeletingPaper?: boolean;
   isLeader?: boolean;
   canUploadPdf?: boolean;
@@ -51,6 +52,7 @@ export default function PaperRow({
   onRemovePdf,
   isRemovingPdf,
   onDeletePaper,
+  onDeleteClick,
   isDeletingPaper,
   isLeader = false,
   canUploadPdf = false,
@@ -152,7 +154,14 @@ export default function PaperRow({
           </button>
           {onDeletePaper && (
             <button
-              onClick={() => setIsConfirmDeleteOpen(true)}
+              type="button"
+              onClick={() => {
+                if (onDeleteClick) {
+                  onDeleteClick(paper);
+                } else {
+                  setIsConfirmDeleteOpen(true);
+                }
+              }}
               disabled={isDeletingPaper}
               className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Delete paper"

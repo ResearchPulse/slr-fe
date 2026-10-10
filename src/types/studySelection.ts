@@ -183,6 +183,7 @@ export interface BulkAddToDatasetRequest {
 
 export interface RetryExtractionRequest {
   provider: string;
+  projectId: string;
 }
 
 export interface ApplyMetadataRequest {

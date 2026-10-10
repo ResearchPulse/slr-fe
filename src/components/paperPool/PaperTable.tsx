@@ -1,4 +1,6 @@
+import { useState } from "react";
 import LoadingSpinner from "../ui/LoadingSpinner";
+import DeletePaperModal from "./DeletePaperModal";
 import Button from "../ui/Button";
 import Select from "../ui/Select";
 import PaperRow from "./PaperRow";
@@ -74,6 +76,7 @@ export default function PaperTable({
   isLeader = false,
   canUploadPdf = false,
 }: PaperTableProps) {
+  const [paperPendingDelete, setPaperPendingDelete] = useState<PaperPoolItem | null>(null);
   if (isLoading && papers.length === 0) {
     return (
       <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-border bg-white">
@@ -186,6 +189,7 @@ export default function PaperTable({
                 onRemovePdf={onRemovePdf}
                 isRemovingPdf={isRemovingPdf}
                 onDeletePaper={onDeletePaper}
+                onDeleteClick={setPaperPendingDelete}
                 isDeletingPaper={isDeletingPaper === paper.id}
                 isLeader={isLeader}
                 canUploadPdf={canUploadPdf}
@@ -259,6 +263,17 @@ export default function PaperTable({
           </Button>
         </div>
       </div>
+
+      <DeletePaperModal
+        isOpen={Boolean(paperPendingDelete)}
+        paper={paperPendingDelete}
+        onClose={() => setPaperPendingDelete(null)}
+        onConfirm={(paperId, reason) => {
+          onDeletePaper?.(paperId, reason);
+          setPaperPendingDelete(null);
+        }}
+        isLoading={Boolean(isDeletingPaper && paperPendingDelete && isDeletingPaper === paperPendingDelete.id)}
+      />
     </div>
   );
 }
