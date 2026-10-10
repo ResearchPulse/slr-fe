@@ -166,7 +166,7 @@ export default function PaperViewer({
     <div className="flex h-full flex-col bg-bg-primary">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className={cn("space-y-5 px-4 py-5 transition-all duration-300 lg:px-6 lg:py-6")}>
+        <div className={cn("space-y-2 px-4 py-3 transition-all duration-300 lg:px-6 lg:py-4")}>
           {openGraph && citationGraph && (
             <CitationGraphModal
               isOpen={openGraph}
@@ -232,7 +232,7 @@ export default function PaperViewer({
           </div>
 
           {/* 2. Tab Content */}
-          <div className="space-y-6 animate-in fade-in duration-300">
+          <div className="space-y-2 animate-in fade-in duration-300">
             {activeTab === "abstract" && (
               <>
                 <ContentSection
@@ -240,7 +240,7 @@ export default function PaperViewer({
                   isFieldUpdated={isFieldUpdated}
                 />
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   <PublicationInfoCard
                     paper={paper}
                     isFieldUpdated={isFieldUpdated}

@@ -141,7 +141,7 @@ export default function PoolWorkflowStepper({
         </ol>
       </div>
 
-      <div className="mx-auto mt-6 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
+      <div className="mx-auto mt-3 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
         <div className="flex flex-col md:flex-row">
           <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
