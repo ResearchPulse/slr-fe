@@ -6,7 +6,6 @@ import {
   FileText,
   Minus,
   Search,
-  Loader2,
 } from "lucide-react";
 import Modal from "../../../components/ui/Modal";
 import {
@@ -20,6 +19,7 @@ import {
 import { cn } from "../../../utils/cn";
 import { useReviewerAssignmentTable } from "../../../hooks/useStudySelection";
 import type { ReviewerProgress } from "./types";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 interface ReviewerAssignmentModalProps {
   isOpen: boolean;
@@ -31,7 +31,7 @@ interface ReviewerAssignmentModalProps {
 const PhaseBadge: React.FC<{ status: string }> = ({ status }) => {
   if (status === "Not Assigned" || !status) {
     return (
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-[4px] bg-bg-secondary border border-border text-text-secondary">
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-secondary border border-border text-text-secondary">
         <Minus size={12} strokeWidth={3} />
         <span className="text-[10px] font-black uppercase tracking-widest leading-none">
           Not Assigned
@@ -63,7 +63,7 @@ const PhaseBadge: React.FC<{ status: string }> = ({ status }) => {
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-start gap-1 px-3 py-2 rounded-[4px] border shadow-sm mix-blend-multiply",
+        "inline-flex flex-col items-start gap-1 px-3 py-2 rounded-xl border shadow-sm mix-blend-multiply",
         bgColor,
         borderColor,
       )}
@@ -142,7 +142,7 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
       onClose={onClose}
       title={
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-[4px] bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-black shadow-xl shadow-indigo-100">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-violet-700 flex items-center justify-center text-white text-xl font-black shadow-xl shadow-primary/10">
             {reviewer.reviewerName.charAt(0)}
           </div>
           <div>
@@ -164,7 +164,7 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
       size="xl"
     >
       <div className="space-y-6 pt-4">
-        <div className="relative overflow-hidden rounded-md border border-border shadow-none bg-surface-white min-h-[400px]">
+        <div className="relative overflow-hidden rounded-xl border border-border shadow-none bg-surface-white min-h-[400px]">
           <Table>
             <TableHeader className="bg-bg-secondary/50">
               <TableRow className="hover:bg-transparent border-b border-border">
@@ -187,10 +187,7 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
                 <TableRow>
                   <TableCell colSpan={4} className="py-24 text-center">
                     <div className="flex flex-col items-center justify-center text-text-secondary">
-                      <Loader2
-                        size={48}
-                        className="animate-spin mb-4 text-accent opacity-50"
-                      />
+                      <LoadingSpinner size="lg" className="mb-4" />
                       <p className="text-lg font-black tracking-tight italic">
                         Loading assignments...
                       </p>

@@ -47,7 +47,7 @@ export default function ReviewProcessPanel({
   const hasSelected = selectedPaperIds.length > 0;
 
   return (
-    <section className="mt-4 mb-5 rounded-2xl border border-border bg-surface-white p-4 shadow-sm sm:p-5 lg:p-6">
+    <section className="mt-4 mb-5 rounded-xl border border-border bg-surface-white p-4 shadow-sm sm:p-5 lg:p-6">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex min-w-0 items-start gap-3 sm:items-center sm:gap-4">
@@ -84,7 +84,7 @@ export default function ReviewProcessPanel({
 
         {hasSelected && isLeader && (
           <div className="flex items-center gap-3 rounded-xl border border-primary/15 bg-primary-light px-4 py-3 text-sm text-text-primary">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-surface-white text-primary">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface-white text-primary">
               <FiLayers className="h-4 w-4" aria-hidden="true" />
             </div>
             <p>
@@ -96,7 +96,7 @@ export default function ReviewProcessPanel({
 
         {processes.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border bg-bg-primary/60 px-5 py-12 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light text-primary">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
               <FiFolder className="h-6 w-6" aria-hidden="true" />
             </div>
             <h3 className="text-base font-semibold text-text-primary">

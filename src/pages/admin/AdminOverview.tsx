@@ -20,7 +20,7 @@ import type { Project } from "../../types/project";
 
 const actionDotClasses: Record<AuditLogEntry["actionType"], string> = {
   create: "bg-emerald-500",
-  update: "bg-blue-500",
+  update: "bg-accent",
   delete: "bg-rose-500",
   export: "bg-slate-500",
   access: "bg-violet-500",
@@ -133,15 +133,15 @@ const AdminOverview: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-[1600px] space-y-7 pb-2">
-      <section className="flex flex-col justify-between gap-5 border-b border-[#E3EAEE] pb-6 sm:flex-row sm:items-end">
+      <section className="flex flex-col justify-between gap-5 border-b border-border pb-6 sm:flex-row sm:items-end">
         <div>
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-[#087BC1]">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-accent">
             Admin overview
           </p>
-          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-[#173247] sm:text-[34px]">
+          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[34px]">
             Welcome back, {displayName}
           </h1>
-          <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-[#71838F]">
+          <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-text-secondary">
             A clear view of SLRS accounts, literature review projects, and recent system activity.
           </p>
         </div>
@@ -149,7 +149,7 @@ const AdminOverview: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="inline-flex h-10 items-center gap-2 rounded-lg bg-[#087BC1] px-4 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(8,123,193,0.16)] transition-colors hover:bg-[#066CA9]"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(8,123,193,0.16)] transition-colors hover:bg-primary-hover"
           >
             <FiFolder size={15} />
             Manage projects
@@ -157,9 +157,9 @@ const AdminOverview: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/admin/audit-logs")}
-            className="inline-flex h-10 items-center gap-2 rounded-lg border border-[#DCE6EC] bg-white px-4 text-[12px] font-semibold text-[#29485C] transition-colors hover:border-[#B9CEDB] hover:bg-[#F8FBFD]"
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-white px-4 text-[12px] font-semibold text-text-secondary transition-colors hover:border-text-muted hover:bg-bg-primary"
           >
-            <FiActivity size={15} className="text-[#087BC1]" />
+            <FiActivity size={15} className="text-accent" />
             View audit logs
           </button>
         </div>
@@ -173,19 +173,19 @@ const AdminOverview: React.FC = () => {
               type="button"
               key={stat.label}
               onClick={() => navigate(stat.path)}
-              className="group rounded-xl border border-[#E0E8ED] bg-white p-5 text-left shadow-[0_2px_8px_rgba(23,50,71,0.025)] transition duration-200 hover:-translate-y-0.5 hover:border-[#C8DCE8] hover:shadow-[0_8px_22px_rgba(23,50,71,0.06)]"
+              className="group rounded-xl border border-border bg-white p-5 text-left shadow-[0_2px_8px_rgba(23,50,71,0.025)] transition duration-200 hover:-translate-y-0.5 hover:border-text-muted hover:shadow-[0_8px_22px_rgba(23,50,71,0.06)]"
             >
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#768995]">{stat.label}</p>
-                  <p className="mt-1.5 text-[12px] text-[#98A6AE]">{stat.detail}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-text-secondary">{stat.label}</p>
+                  <p className="mt-1.5 text-[12px] text-text-muted">{stat.detail}</p>
                 </div>
-                <span className={`flex h-10 w-10 items-center justify-center rounded-[11px] ${stat.iconClass}`}>
+                <span className={`flex h-10 w-10 items-center justify-center rounded-xl ${stat.iconClass}`}>
                   <Icon size={18} />
                 </span>
               </div>
-              <p className="mt-5 text-[31px] font-semibold leading-none tracking-[-0.04em] text-[#173247]">
-                {stat.loading ? <span className="inline-block h-8 w-12 animate-pulse rounded bg-[#EDF2F5] align-middle" /> : stat.value.toLocaleString()}
+              <p className="mt-5 text-[31px] font-semibold leading-none tracking-[-0.04em] text-text-primary">
+                {stat.loading ? <span className="inline-block h-8 w-12 animate-pulse rounded bg-bg-secondary align-middle" /> : stat.value.toLocaleString()}
               </p>
             </button>
           );
@@ -193,16 +193,16 @@ const AdminOverview: React.FC = () => {
       </section>
 
       <section className="grid grid-cols-1 items-start gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(330px,1fr)]">
-        <div className="overflow-hidden rounded-xl border border-[#E0E8ED] bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
-          <div className="flex items-center justify-between gap-4 border-b border-[#E8EEF2] px-5 py-4 sm:px-6">
+        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
+          <div className="flex items-center justify-between gap-4 border-b border-border px-5 py-4 sm:px-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#EEF6FB] text-[#087BC1]"><FiFolder size={17} /></span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-light text-accent"><FiFolder size={17} /></span>
               <div>
-                <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-[#173247]">Recent SLR projects</h2>
-                <p className="mt-0.5 text-[12px] text-[#82929C]">Latest projects registered in SLRS</p>
+                <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-text-primary">Recent SLR projects</h2>
+                <p className="mt-0.5 text-[12px] text-text-muted">Latest projects registered in SLRS</p>
               </div>
             </div>
-            <button type="button" onClick={() => navigate("/admin/projects")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-[#087BC1] hover:text-[#066CA9]">
+            <button type="button" onClick={() => navigate("/admin/projects")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-accent hover:text-primary-hover">
               View all <FiArrowRight size={14} />
             </button>
           </div>
@@ -210,15 +210,15 @@ const AdminOverview: React.FC = () => {
           <div className="px-5 sm:px-6">
             {isProjectsLoading ? (
               <div className="space-y-3 py-5" aria-label="Loading projects">
-                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[62px] animate-pulse rounded-lg bg-[#F4F7F9]" />)}
+                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[62px] animate-pulse rounded-lg bg-bg-primary" />)}
               </div>
             ) : recentProjects.length ? (
-              <div className="divide-y divide-[#E9EEF1]">
+              <div className="divide-y divide-border">
                 {recentProjects.map((project) => (
-                  <button key={project.id} type="button" onClick={() => navigate("/admin/projects")} className="group flex w-full items-center justify-between gap-3 py-4 text-left transition-colors hover:bg-[#FAFCFD]">
+                  <button key={project.id} type="button" onClick={() => navigate("/admin/projects")} className="group flex w-full items-center justify-between gap-3 py-4 text-left transition-colors hover:bg-bg-primary">
                     <span className="min-w-0">
-                      <span className="block truncate text-[13px] font-semibold text-[#29485C] transition-colors group-hover:text-[#087BC1]">{project.title}</span>
-                      <span className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-[#82929C]">
+                      <span className="block truncate text-[13px] font-semibold text-text-secondary transition-colors group-hover:text-accent">{project.title}</span>
+                      <span className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-text-muted">
                         <span className="truncate">{project.domain || "Unspecified domain"}</span>
                         <span aria-hidden="true" className="shrink-0">·</span>
                         <span className="shrink-0">{formatDate(project.modifiedAt || project.createdAt)}</span>
@@ -232,29 +232,29 @@ const AdminOverview: React.FC = () => {
               </div>
             ) : (
               <div className="flex min-h-[220px] flex-col items-center justify-center py-10 text-center">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F1F6F9] text-[#82929C]"><FiFolder size={19} /></span>
-                <p className="mt-3 text-[13px] font-semibold text-[#29485C]">No projects yet</p>
-                <p className="mt-1 text-[12px] text-[#82929C]">Projects will appear here when they are registered.</p>
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-bg-primary text-text-muted"><FiFolder size={19} /></span>
+                <p className="mt-3 text-[13px] font-semibold text-text-secondary">No projects yet</p>
+                <p className="mt-1 text-[12px] text-text-muted">Projects will appear here when they are registered.</p>
               </div>
             )}
           </div>
           {!isProjectsLoading && recentProjects.length > 0 && (
-            <div className="border-t border-[#E9EEF1] px-5 py-3 text-[11px] text-[#82929C] sm:px-6">
+            <div className="border-t border-border px-5 py-3 text-[11px] text-text-muted sm:px-6">
               Showing {recentProjects.length} of {totalProjects.toLocaleString()} projects
             </div>
           )}
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-[#E0E8ED] bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
-          <div className="flex items-center justify-between gap-3 border-b border-[#E8EEF2] px-5 py-4 sm:px-6">
+        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
+          <div className="flex items-center justify-between gap-3 border-b border-border px-5 py-4 sm:px-6">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#EEF6FB] text-[#087BC1]"><FiActivity size={17} /></span>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-light text-accent"><FiActivity size={17} /></span>
               <div>
-                <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-[#173247]">Recent activity</h2>
-                <p className="mt-0.5 text-[12px] text-[#82929C]">Latest recorded audit events</p>
+                <h2 className="text-[15px] font-semibold tracking-[-0.02em] text-text-primary">Recent activity</h2>
+                <p className="mt-0.5 text-[12px] text-text-muted">Latest recorded audit events</p>
               </div>
             </div>
-            <button type="button" onClick={() => navigate("/admin/audit-logs")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-[#087BC1] hover:text-[#066CA9]">
+            <button type="button" onClick={() => navigate("/admin/audit-logs")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-accent hover:text-primary-hover">
               All logs <FiArrowRight size={14} />
             </button>
           </div>
@@ -262,18 +262,18 @@ const AdminOverview: React.FC = () => {
           <div className="px-5 sm:px-6">
             {isAuditLoading ? (
               <div className="space-y-4 py-5" aria-label="Loading activity">
-                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[58px] animate-pulse rounded-lg bg-[#F4F7F9]" />)}
+                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[58px] animate-pulse rounded-lg bg-bg-primary" />)}
               </div>
             ) : recentLogs.length ? (
-              <div className="divide-y divide-[#E9EEF1]">
+              <div className="divide-y divide-border">
                 {recentLogs.map((log) => (
-                  <button key={log.id} type="button" onClick={() => navigate("/admin/audit-logs")} className="flex w-full gap-3.5 py-4 text-left transition-colors hover:bg-[#FAFCFD]">
+                  <button key={log.id} type="button" onClick={() => navigate("/admin/audit-logs")} className="flex w-full gap-3.5 py-4 text-left transition-colors hover:bg-bg-primary">
                     <span className="relative flex w-3 shrink-0 justify-center pt-1.5">
                       <span className={`relative z-10 h-2 w-2 rounded-full ring-4 ring-white ${actionDotClasses[log.actionType]}`} />
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="block line-clamp-2 text-[12px] font-semibold leading-[1.55] text-[#29485C]">{log.action}</span>
-                      <span className="mt-1.5 flex items-center justify-between gap-2 text-[10px] text-[#8A9AA3]">
+                      <span className="block line-clamp-2 text-[12px] font-semibold leading-[1.55] text-text-secondary">{log.action}</span>
+                      <span className="mt-1.5 flex items-center justify-between gap-2 text-[10px] text-text-muted">
                         <span className="truncate">{log.user || "Unknown user"}</span>
                         <time className="shrink-0" dateTime={log.timestamp}>{formatActivityTime(log.timestamp)}</time>
                       </span>
@@ -283,9 +283,9 @@ const AdminOverview: React.FC = () => {
               </div>
             ) : (
               <div className="flex min-h-[220px] flex-col items-center justify-center py-10 text-center">
-                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#F1F6F9] text-[#82929C]"><FiFileText size={19} /></span>
-                <p className="mt-3 text-[13px] font-semibold text-[#29485C]">No activity recorded</p>
-                <p className="mt-1 text-[12px] text-[#82929C]">New audit events will show up here.</p>
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-bg-primary text-text-muted"><FiFileText size={19} /></span>
+                <p className="mt-3 text-[13px] font-semibold text-text-secondary">No activity recorded</p>
+                <p className="mt-1 text-[12px] text-text-muted">New audit events will show up here.</p>
               </div>
             )}
           </div>

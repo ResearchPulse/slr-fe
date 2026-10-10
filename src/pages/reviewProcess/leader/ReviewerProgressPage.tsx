@@ -25,6 +25,7 @@ import ReviewerAssignmentModal from "./ReviewerAssignmentModal";
 import { useUserProgressOverview } from "../../../hooks/useUsers";
 import Pagination from "../../../components/ui/Pagination";
 import type { UserProgress } from "../../../types/user";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 
 // --- Sub-components ---
 
@@ -173,7 +174,7 @@ const ReviewerProgressPage: React.FC = () => {
           />
           <Input
             placeholder="Search reviewer..."
-            className="pl-10 w-full bg-surface-white border-border focus:ring-4 focus:ring-indigo-100 transition-all rounded-[4px]"
+            className="pl-10 w-full bg-surface-white border-border focus:ring-4 focus:ring-primary/20 transition-all rounded-xl"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -196,7 +197,7 @@ const ReviewerProgressPage: React.FC = () => {
         <Button
           variant="ghost"
           size="sm"
-          className="h-9 w-9 p-0 rounded-[4px] hover:bg-surface-white hover:text-accent transition-all shadow-none border border-border/60 bg-surface-white/50 backdrop-blur-sm flex items-center justify-center group"
+          className="h-9 w-9 p-0 rounded-xl hover:bg-surface-white hover:text-accent transition-all shadow-none border border-border/60 bg-surface-white/50 backdrop-blur-sm flex items-center justify-center group"
           onClick={() => refetch()}
           disabled={isLoading || isFetching}
         >
@@ -210,7 +211,7 @@ const ReviewerProgressPage: React.FC = () => {
       </div>
 
       {/* Main Table */}
-      <Card className="bg-surface-white rounded-md border border-border shadow-none overflow-hidden">
+      <Card className="bg-surface-white rounded-xl border border-border shadow-none overflow-hidden">
         <Table>
           <TableHeader className="bg-bg-secondary/30">
             <TableRow className="hover:bg-transparent cursor-default">
@@ -277,7 +278,7 @@ const ReviewerProgressPage: React.FC = () => {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-32">
                   <div className="flex flex-col items-center justify-center">
-                    <div className="h-12 w-12 animate-spin rounded-full border-4 border-indigo-500 border-t-transparent mb-4"></div>
+                    <LoadingSpinner size="lg" className="mb-4" />
                     <p className="text-text-secondary font-medium">
                       Loading reviewer data...
                     </p>
@@ -292,7 +293,7 @@ const ReviewerProgressPage: React.FC = () => {
                 >
                   <TableCell className="px-8">
                     <div className="flex items-center gap-4">
-                      <div className="w-10 h-10 rounded-[4px] bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white font-black text-sm shadow-none shadow-indigo-200 group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary flex items-center justify-center text-white font-black text-sm shadow-none shadow-primary/10 group-hover:scale-110 transition-transform">
                         {reviewer.fullName.charAt(0)}
                       </div>
                       <div>
@@ -310,7 +311,7 @@ const ReviewerProgressPage: React.FC = () => {
                     {reviewer.workload} papers
                   </TableCell>
                   <TableCell className="text-center">
-                    <span className="inline-flex items-center justify-center min-w-[2.5rem] h-10 px-3 rounded-[4px] bg-emerald-50 text-emerald-600 font-black text-sm border border-emerald-100 italic shadow-none">
+                    <span className="inline-flex items-center justify-center min-w-[2.5rem] h-10 px-3 rounded-xl bg-emerald-50 text-emerald-600 font-black text-sm border border-emerald-100 italic shadow-none">
                       {reviewer.completed}
                     </span>
                   </TableCell>
@@ -325,7 +326,7 @@ const ReviewerProgressPage: React.FC = () => {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="h-10 px-4 rounded-[4px] text-xs font-black uppercase tracking-widest border-2 border-border hover:border-indigo-600 hover:text-accent active:scale-95 transition-all"
+                      className="h-10 px-4 rounded-xl text-xs font-black uppercase tracking-widest border-2 border-border hover:border-accent hover:text-accent active:scale-95 transition-all"
                       onClick={() => openAssignmentModal(reviewer)}
                     >
                       View Assignment
@@ -353,7 +354,7 @@ const ReviewerProgressPage: React.FC = () => {
                         setSearchTerm("");
                         setPageNumber(1);
                       }}
-                      className="mt-6 text-accent hover:text-indigo-700 text-sm font-black uppercase tracking-widest"
+                      className="mt-6 text-accent hover:text-primary-hover text-sm font-black uppercase tracking-widest"
                     >
                       Reset Dashboard
                     </button>

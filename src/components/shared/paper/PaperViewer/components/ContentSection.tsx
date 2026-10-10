@@ -13,7 +13,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
   isFieldUpdated,
 }) => {
   return (
-    <div className="bg-surface-white rounded-[4px] border border-border overflow-hidden shadow-none">
+    <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none">
       <div className="p-6 md:p-8 space-y-8">
         {/* Abstract */}
         <div className="space-y-4">
@@ -24,18 +24,18 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
             {isFieldUpdated("Abstract") && (
               <div className="group/spark relative flex items-center">
                 <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-[4px] opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                   Suggested fields applied
                 </div>
               </div>
             )}
           </div>
           {paper.abstract ? (
-            <div className="text-[16px] text-slate-800 leading-[1.8] font-medium selection:bg-blue-100">
+            <div className="text-[16px] text-slate-800 leading-[1.8] font-medium selection:bg-primary-light">
               {paper.abstract}
             </div>
           ) : (
-            <div className="py-8 text-center text-text-secondary italic font-medium border-2 border-dashed border-border rounded-[4px]">
+            <div className="py-8 text-center text-text-secondary italic font-medium border-2 border-dashed border-border rounded-xl">
               Abstract unavailable for this record.
             </div>
           )}
@@ -51,7 +51,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               {isFieldUpdated("Keywords") && (
                 <div className="group/spark relative flex items-center">
                   <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-[4px] opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested fields applied
                   </div>
                 </div>
@@ -61,7 +61,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               {paper.keywords.split(/[;,]/).map((kw, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary text-text-primary text-xs font-bold rounded-[4px] border border-border transition-colors hover:bg-surface-white hover:border-blue-400 hover:text-blue-600 cursor-default"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-bg-secondary text-text-primary text-xs font-bold rounded-xl border border-border transition-colors hover:bg-surface-white hover:border-accent hover:text-accent cursor-default"
                 >
                   <FiTag className="w-3 h-3 text-text-secondary" />
                   {kw.trim()}
@@ -81,13 +81,13 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               {isFieldUpdated("ConferenceName") && (
                 <div className="group/spark relative flex items-center">
                   <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-[4px] opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-50 pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested fields applied
                   </div>
                 </div>
               )}
             </div>
-            <div className="bg-bg-secondary/50 rounded-[4px] p-6 border border-border space-y-4">
+            <div className="bg-bg-secondary/50 rounded-xl p-6 border border-border space-y-4">
               <div>
                 <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block mb-1">
                   Conference Name

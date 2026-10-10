@@ -116,7 +116,7 @@ export default function SubgroupAnalysisMatrix({
 
   if (categoricalGroups.length === 0) {
     return (
-      <div className="rounded-[4px] border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
+      <div className="rounded-xl border border-dashed border-border bg-bg-primary px-6 py-10 text-center">
         <p className="text-sm font-medium text-text-secondary">
           No categorical fields available.
         </p>
@@ -140,7 +140,7 @@ export default function SubgroupAnalysisMatrix({
           id="subgroup-field-select"
           value={selectedGroupId}
           onChange={(e) => setSelectedGroupId(e.target.value)}
-          className="block w-full rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary shadow-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+          className="block w-full rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary shadow-none focus:border-accent focus:ring-1 focus:ring-accent"
         >
           {categoricalGroups.map((group) => (
             <option key={group.fieldId} value={group.fieldId}>
@@ -160,7 +160,7 @@ export default function SubgroupAnalysisMatrix({
             .
           </p>
 
-          <div className="overflow-x-auto rounded-[4px] border border-border bg-surface-white shadow-none">
+          <div className="overflow-x-auto rounded-xl border border-border bg-surface-white shadow-none">
             <table className="w-full text-sm">
               <thead>
                 <tr className="sticky top-0 z-20 border-b border-border bg-bg-secondary">

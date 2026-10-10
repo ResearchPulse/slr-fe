@@ -22,7 +22,7 @@ import type {
 } from "../types/deduplication";
 import { DuplicateResolutionDecision as DecisionEnum } from "../types/deduplication";
 
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 
 // ============================================
 // Adapter: API types → UI types
@@ -185,7 +185,7 @@ export const useDuplicatePairs = ({
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to resolve duplicate"));
+      toastError(getErrorMessage(error, "Failed to resolve duplicate"));
     },
   });
 
@@ -201,11 +201,11 @@ export const useDuplicatePairs = ({
       const totalScreenable = data?.totalScreenable ?? 0;
 
       if (count > 0) {
-        toast.success(`Deduplication completed: found ${count} duplicate paper(s).`);
+        toastSuccess(`Deduplication completed: found ${count} duplicate paper(s).`);
       } else if (totalScreenable === 0 && count === 0) {
-        toast.error("No papers found in repository. Please import papers first.");
+        toastError("No papers found in repository. Please import papers first.");
       } else {
-        toast.success("Deduplication completed: no duplicates detected.");
+        toastSuccess("Deduplication completed: no duplicates detected.");
       }
 
       if (projectId) {
@@ -223,7 +223,7 @@ export const useDuplicatePairs = ({
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to run deduplication"));
+      toastError(getErrorMessage(error, "Failed to run deduplication"));
     },
   });
 

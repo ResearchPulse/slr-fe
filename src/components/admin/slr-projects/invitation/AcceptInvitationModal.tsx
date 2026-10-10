@@ -36,7 +36,7 @@ export default function AcceptInvitationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Join Project">
       <div className="p-6">
-        <div className="w-16 h-16 bg-bg-secondary text-success rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-success rounded-xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
           <FiCheckCircle size={32} />
         </div>
         <p className="text-center text-text-secondary font-medium mb-8">

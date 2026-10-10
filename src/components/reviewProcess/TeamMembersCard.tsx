@@ -8,7 +8,7 @@ interface TeamMembersCardProps {
 }
 
 const AVATAR_COLOR_CLASSES = {
-  blue: "bg-blue-100 text-blue-700",
+  blue: "bg-primary-light text-accent",
   purple: "bg-purple-100 text-purple-700",
   green: "bg-green-100 text-green-700",
   orange: "bg-orange-100 text-orange-700",
@@ -26,9 +26,9 @@ export default function TeamMembersCard({ teamMembers }: TeamMembersCardProps) {
   };
 
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-5">
+    <div className="bg-surface-white border border-border rounded-xl p-5">
       <h3 className="font-semibold text-text-primary mb-4 flex items-center gap-2">
-        <FiUsers className="w-5 h-5 text-blue-600" />
+        <FiUsers className="w-5 h-5 text-accent" />
         Review Team
       </h3>
       <div className="space-y-3 max-h-64 overflow-y-auto pr-2">

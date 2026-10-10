@@ -1,9 +1,9 @@
 import { useState, useCallback, useId } from "react";
 import Input from "../ui/Input";
+import LoadingSpinner from "../ui/LoadingSpinner";
 import {
   FiHelpCircle,
   FiCheck,
-  FiLoader,
   FiSave,
   FiFileText,
 } from "react-icons/fi";
@@ -65,7 +65,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
     ? "bg-bg-secondary border-slate-300 border-dashed"
     : isCompleted
       ? "bg-emerald-50 border-emerald-300"
-      : "bg-surface-white border-border hover:border-indigo-300";
+      : "bg-surface-white border-border hover:border-accent";
 
   const handleSaveClick = useCallback(() => {
     if (!isEditableLeaf) return;
@@ -95,7 +95,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
   return (
     <div
       className={cn(
-        "rounded-[4px] border transition-all",
+        "rounded-xl border transition-all",
         isSubItem ? "ml-4 p-4" : "p-6",
         rowContainerClass,
       )}
@@ -161,7 +161,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
           <button
             onClick={() => onShowSample(template)}
             title="Show sample answer"
-            className="p-2 rounded-[4px] hover:bg-bg-secondary text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+            className="p-2 rounded-xl hover:bg-bg-secondary text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
           >
             <FiHelpCircle className="w-5 h-5" />
           </button>
@@ -169,14 +169,14 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
             <button
               onClick={() => onNavigateToPdf(response.pdfCoordinates!)}
               title="View in PDF"
-              className="p-2 rounded-[4px] hover:bg-bg-secondary text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+              className="p-2 rounded-xl hover:bg-bg-secondary text-text-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
             >
               <FiFileText className="w-5 h-5" />
             </button>
           )}
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="px-3 py-1.5 text-sm font-medium rounded-[4px] bg-bg-secondary hover:bg-bg-secondary text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+            className="px-3 py-1.5 text-sm font-medium rounded-xl bg-bg-secondary hover:bg-bg-secondary text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
             aria-expanded={isExpanded}
           >
             {isExpanded ? "Hide" : "Show"}
@@ -185,13 +185,13 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
             <button
               onClick={handleSaveClick}
               disabled={!hasUnsavedChanges || isLoading}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-[4px] bg-accent text-white hover:bg-indigo-700 disabled:bg-indigo-200 disabled:text-indigo-50 disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-xl bg-accent text-white hover:bg-primary-hover disabled:bg-accent/40 disabled:text-white disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
             >
               <FiSave className="w-4 h-4" />
               Save
             </button>
           ) : (
-            <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-[4px] bg-slate-200 text-text-primary">
+            <span className="inline-flex items-center px-3 py-1.5 text-xs font-semibold rounded-xl bg-slate-200 text-text-primary">
               Read-only
             </span>
           )}
@@ -202,7 +202,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
         <>
           <div
             className={cn(
-              "mt-4 mb-4 p-3 border rounded-[4px]",
+              "mt-4 mb-4 p-3 border rounded-xl",
               isEditableLeaf
                 ? "bg-bg-primary border-border"
                 : "bg-bg-secondary border-slate-300",
@@ -214,7 +214,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
           </div>
 
           {!isEditableLeaf && (
-            <div className="mt-4 p-3 rounded-[4px] border border-border bg-bg-secondary">
+            <div className="mt-4 p-3 rounded-xl border border-border bg-bg-secondary">
               <p className="text-sm text-text-primary font-medium">
                 Read-only item
               </p>
@@ -266,7 +266,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
                     onClick={() => handleReportStatusChange(true)}
                     disabled={isLoading}
                     className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-[4px] border transition-colors",
+                      "px-3 py-1.5 text-sm font-medium rounded-xl border transition-colors",
                       response?.isReported === true
                         ? "bg-emerald-100 border-emerald-300 text-emerald-800"
                         : "bg-surface-white border-border text-text-primary hover:border-emerald-300",
@@ -279,7 +279,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
                     onClick={() => handleReportStatusChange(false)}
                     disabled={isLoading}
                     className={cn(
-                      "px-3 py-1.5 text-sm font-medium rounded-[4px] border transition-colors",
+                      "px-3 py-1.5 text-sm font-medium rounded-xl border transition-colors",
                       response?.isReported === false
                         ? "bg-amber-100 border-amber-300 text-amber-800"
                         : "bg-surface-white border-border text-text-primary hover:border-amber-300",
@@ -300,10 +300,10 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
       {/* Loading Indicator */}
       {isLoading && (
         <div
-          className="mt-3 inline-flex items-center gap-2 text-xs text-indigo-700 font-medium"
+          className="mt-3 inline-flex items-center gap-2 text-xs text-accent font-medium"
           aria-live="polite"
         >
-          <FiLoader className="w-3.5 h-3.5 animate-spin" />
+          <LoadingSpinner size="sm" />
           Saving...
         </div>
       )}

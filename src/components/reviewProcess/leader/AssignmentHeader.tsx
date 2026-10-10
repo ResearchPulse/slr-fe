@@ -32,7 +32,7 @@ const AssignmentHeader: React.FC<AssignmentHeaderProps> = ({
                 Assign Papers to Reviewers
               </h1>
               {currentPhaseText && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-light text-accent border border-primary/20">
                   {currentPhaseText}
                 </span>
               )}

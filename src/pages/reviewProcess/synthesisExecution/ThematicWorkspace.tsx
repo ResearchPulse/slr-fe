@@ -323,7 +323,7 @@ export default function ThematicWorkspace({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-border/80 bg-surface-white p-6 shadow-sm shadow-slate-200/30">
+      <div className="rounded-xl border border-border/80 bg-surface-white p-6 shadow-sm shadow-slate-200/30">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
@@ -344,7 +344,7 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("cards")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "cards"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -356,7 +356,7 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("matrix")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "matrix"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -368,7 +368,7 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("subgroup")}
-                className={`inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
                   viewMode === "subgroup"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -382,7 +382,7 @@ export default function ThematicWorkspace({
               variant="ghost"
               size="sm"
               onClick={onViewStrategyGuidelines}
-              className="rounded-lg text-text-secondary hover:bg-bg-primary hover:text-text-primary"
+              className="rounded-xl text-text-secondary hover:bg-bg-primary hover:text-text-primary"
             >
               <BookOpen className="mr-2 h-4 w-4" />
               View Strategy Guidelines
@@ -405,7 +405,7 @@ export default function ThematicWorkspace({
       </div>
 
       {viewMode === "matrix" ? (
-        <section className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -452,7 +452,7 @@ export default function ThematicWorkspace({
           )}
         </section>
       ) : viewMode === "subgroup" ? (
-        <section className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -494,7 +494,7 @@ export default function ThematicWorkspace({
           onDragCancel={handleDragCancel}
         >
           <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-            <section className="min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -521,7 +521,7 @@ export default function ThematicWorkspace({
               />
             </section>
 
-            <section className="min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -577,11 +577,11 @@ export default function ThematicWorkspace({
 
           <DragOverlay>
             {activeDragEvidence ? (
-              <div className="pointer-events-none w-[340px] overflow-hidden rounded-2xl border border-blue-200 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
-                <div className="h-1.5 bg-gradient-to-r from-blue-500 via-sky-500 to-cyan-400" />
+              <div className="pointer-events-none w-[340px] overflow-hidden rounded-xl border border-primary/20 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
+                <div className="h-1.5 bg-gradient-to-r from-primary via-sky-500 to-cyan-400" />
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-3">
-                    <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-700">
+                    <span className="rounded-full bg-primary-light px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">
                       Evidence
                     </span>
                     <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-text-secondary">

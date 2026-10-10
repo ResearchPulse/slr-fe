@@ -32,7 +32,7 @@ interface AuditLogFiltersProps {
 }
 
 const fieldClassName =
-  "w-full rounded-lg border border-border bg-white px-3.5 py-2.5 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent focus:ring-2 focus:ring-accent/10";
+  "w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent focus:ring-2 focus:ring-accent/10";
 
 const parseDate = (value: string): Date | null => {
   if (!value) return null;
@@ -165,7 +165,7 @@ export const DatePickerField: React.FC<{
           role="dialog"
           aria-label={`${label} calendar`}
           style={calendarPosition}
-          className="fixed z-[6000] w-[296px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-white p-4 shadow-[0_12px_32px_rgba(18,35,49,0.14)]"
+          className="fixed z-(--z-index-popover) w-[296px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-white p-4 shadow-[0_12px_32px_rgba(18,35,49,0.14)]"
         >
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-semibold text-text-primary">

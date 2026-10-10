@@ -1,3 +1,4 @@
+import Button from "../ui/Button";
 import { useState, useEffect } from "react";
 import { useSearchSources } from "../../hooks/useSearchSources";
 import { useProjectMember } from "../../hooks/useProjectMember";
@@ -13,7 +14,7 @@ import {
   FiCheckCircle,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../utils/toast";
 import type { SearchSourceDto } from "../../types/searchSource";
 import SearchStrategyForm from "./SearchStrategyForm";
 import type { SearchStrategyDto } from "./types/search-strategy";
@@ -54,7 +55,7 @@ export default function SearchSourcePage({
 
   const handleAddSource = async () => {
     if (!selectedMasterId) {
-      toast.error("Please select a master source to add");
+      toastError("Please select a master source to add");
       return;
     }
 
@@ -65,7 +66,7 @@ export default function SearchSourcePage({
 
     // Check if already added
     if (sources.some((s) => s.masterSourceId === selectedMasterId)) {
-      toast.error(`${master.name} is already added to this project`);
+      toastError(`${master.name} is already added to this project`);
       return;
     }
 
@@ -80,7 +81,7 @@ export default function SearchSourcePage({
     try {
       const response = await upsertSource(newSource);
       if (response.isSuccess) {
-        toast.success(`${master.name} added to project`);
+        toastSuccess(`${master.name} added to project`);
         setSelectedMasterId("");
       }
     } catch (error) {
@@ -100,7 +101,7 @@ export default function SearchSourcePage({
     const source = sources[configuringSourceIndex];
 
     if (!source.sourceId) {
-      toast.error("Source ID missing. Please refresh the page.");
+      toastError("Source ID missing. Please refresh the page.");
       return;
     }
 
@@ -131,7 +132,7 @@ export default function SearchSourcePage({
   if (isLoading && sources.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin" />
         <p className="text-text-secondary font-medium">
           Loading search sources...
         </p>
@@ -157,9 +158,9 @@ export default function SearchSourcePage({
         {/* Add Source Section */}
         {canEditSources && (
           <div className="md:col-span-1">
-            <div className="bg-surface-white rounded-2xl p-6 shadow-none border border-border sticky top-24">
+            <div className="bg-surface-white rounded-xl p-6 shadow-none border border-border sticky top-24">
               <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
-                <FiPlus className="text-blue-600" />
+                <FiPlus className="text-accent" />
                 Add Source
               </h3>
               <p className="text-sm text-text-secondary mb-6">
@@ -175,7 +176,7 @@ export default function SearchSourcePage({
                   <select
                     value={selectedMasterId}
                     onChange={(e) => setSelectedMasterId(e.target.value)}
-                    className="w-full px-4 py-3 bg-bg-primary border-none rounded-xl text-text-primary focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
                   >
                     <option value="">Select a source...</option>
                     {availableMasterSources.map((m) => (
@@ -186,19 +187,19 @@ export default function SearchSourcePage({
                   </select>
                 </div>
 
-                <button
+                <Button
                   onClick={handleAddSource}
                   disabled={!selectedMasterId}
-                  className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-bg-secondary disabled:text-text-secondary text-white rounded-xl font-bold transition-all shadow-none shadow-blue-500/20 flex items-center justify-center gap-2"
+                  className="w-full gap-2"
                 >
                   <FiPlus />
                   Add to Project
-                </button>
+                </Button>
               </div>
 
-              <div className="mt-8 p-4 bg-blue-50 rounded-xl border border-blue-100">
+              <div className="mt-8 p-4 bg-primary-light rounded-xl border border-accent/20">
                 <div className="flex gap-3">
-                  <FiInfo className="text-blue-600 shrink-0 mt-1" />
+                  <FiInfo className="text-accent shrink-0 mt-1" />
                   <p className="text-xs text-blue-800 leading-relaxed">
                     Adding a source here allows you to associate imported papers
                     with their original database.
@@ -217,9 +218,9 @@ export default function SearchSourcePage({
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-              <FiSearch className="text-blue-600" />
+              <FiSearch className="text-accent" />
               Search Strategies
-              <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">
+              <span className="bg-blue-100 text-accent text-xs px-2 py-1 rounded-full">
                 {sources.length}
               </span>
             </h3>
@@ -246,7 +247,7 @@ export default function SearchSourcePage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-surface-white border-2 border-dashed border-border rounded-2xl p-12 text-center"
+                className="bg-surface-white border-2 border-dashed border-border rounded-xl p-12 text-center"
               >
                 <div className="w-16 h-16 bg-bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
                   <FiAlertCircle className="w-8 h-8 text-gray-300" />
@@ -275,10 +276,10 @@ export default function SearchSourcePage({
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, scale: 0.95 }}
-                      className="group bg-surface-white rounded-2xl p-4 border border-border hover:border-blue-200 hover:shadow-none transition-all flex items-center justify-between"
+                      className="group bg-surface-white rounded-xl p-4 border border-border hover:border-accent/30 hover:shadow-none transition-all flex items-center justify-between"
                     >
                       <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 font-bold group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                        <div className="w-12 h-12 bg-primary-light rounded-xl flex items-center justify-center text-accent font-bold group-hover:bg-primary group-hover:text-white transition-colors shrink-0">
                           {source.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -312,7 +313,7 @@ export default function SearchSourcePage({
                           onClick={() => setConfiguringSourceIndex(index)}
                           className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${
                             hasStrategy
-                              ? "bg-blue-50 text-blue-600 hover:bg-blue-100"
+                              ? "bg-primary-light text-accent hover:bg-accent/10"
                               : "bg-bg-primary text-text-secondary hover:bg-bg-secondary"
                           }`}
                         >

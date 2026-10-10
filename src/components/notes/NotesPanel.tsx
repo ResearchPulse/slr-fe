@@ -26,13 +26,13 @@ const NotesTabs: React.FC<{
           className={cn(
             "px-4 py-3 text-sm font-medium transition-colors relative",
             activeTab === tab
-              ? "text-brand-600"
+              ? "text-accent"
               : "text-text-muted hover:text-text-main",
           )}
         >
           {tab}
           {activeTab === tab && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-brand-600 rounded-full" />
+            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full" />
           )}
         </button>
       ))}
@@ -44,8 +44,8 @@ const NotesTabs: React.FC<{
 const CommentEditor: React.FC = () => {
   return (
     <div className="p-4 border-t border-border-default bg-surface-card sticky bottom-0">
-      <div className="border border-brand-200 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-brand-100 transition-all">
-        <div className="flex items-center gap-1 p-2 border-b border-brand-50 bg-brand-50/30">
+      <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/20 transition-all">
+        <div className="flex items-center gap-1 p-2 border-b border-border bg-bg-primary">
           <button className="p-1 hover:bg-white rounded text-xs font-bold w-6 h-6 flex items-center justify-center">
             B
           </button>
@@ -55,7 +55,7 @@ const CommentEditor: React.FC = () => {
           <button className="p-1 hover:bg-white rounded text-xs underline w-6 h-6 flex items-center justify-center">
             U
           </button>
-          <div className="w-px h-4 bg-brand-100 mx-1" />
+          <div className="w-px h-4 bg-border mx-1" />
           <button className="p-1 hover:bg-white rounded text-text-muted">
             <HiOutlineAtSymbol className="w-4 h-4" />
           </button>
@@ -67,8 +67,8 @@ const CommentEditor: React.FC = () => {
           placeholder="Write a comment..."
           className="w-full p-4 text-sm bg-transparent border-none focus:ring-0 resize-none h-24"
         />
-        <div className="flex justify-end p-2 border-t border-brand-50">
-          <button className="px-4 py-1.5 bg-brand-50 text-brand-400 rounded-full text-xs font-semibold cursor-not-allowed">
+        <div className="flex justify-end p-2 border-t border-border">
+          <button className="px-4 py-1.5 bg-bg-secondary text-text-muted rounded-full text-xs font-semibold cursor-not-allowed">
             Comment
           </button>
         </div>

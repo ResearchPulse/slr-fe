@@ -97,13 +97,13 @@ export default function FieldComments({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-border bg-surface-white px-2 text-text-secondary transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+        className="relative inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-border bg-surface-white px-2 text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
         aria-label={`Open comments for ${title}`}
         title="Comments"
       >
         <MessageSquare className="h-4 w-4" />
         {commentCount > 0 ? (
-          <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-blue-600 px-1 text-[10px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
             {commentCount > 99 ? "99+" : commentCount}
           </span>
         ) : null}
@@ -122,7 +122,7 @@ export default function FieldComments({
             className="flex-1 space-y-3 overflow-y-auto pr-1"
           >
             {orderedComments.length === 0 ? (
-              <div className="rounded-[4px] border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+              <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
                 No comments yet. Start the thread for this field.
               </div>
             ) : (
@@ -135,8 +135,8 @@ export default function FieldComments({
                     key={comment.id}
                     className={
                       isCurrentUser
-                        ? "ml-10 rounded-[4px] border border-blue-100 bg-blue-50 p-3"
-                        : "mr-10 rounded-[4px] border border-border bg-surface-white p-3"
+                        ? "ml-10 rounded-xl border border-accent/30 bg-primary-light p-3"
+                        : "mr-10 rounded-xl border border-border bg-surface-white p-3"
                     }
                   >
                     <div className="flex items-center gap-2">
@@ -174,7 +174,7 @@ export default function FieldComments({
                 placeholder="Type your message..."
                 disabled={disabled || isSending}
                 rows={3}
-                className="w-full resize-none rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-blue-500 disabled:cursor-not-allowed disabled:bg-bg-secondary"
+                className="w-full resize-none rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent disabled:cursor-not-allowed disabled:bg-bg-secondary"
               />
               <Button
                 onClick={() => {
@@ -182,7 +182,7 @@ export default function FieldComments({
                 }}
                 isLoading={isSending}
                 disabled={!canSend}
-                className="h-10 shrink-0 !rounded-[4px] !px-3"
+                className="h-10 shrink-0 !rounded-xl !px-3"
               >
                 <Send className="h-4 w-4" />
               </Button>

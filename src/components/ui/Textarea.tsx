@@ -12,17 +12,17 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
         ref={ref}
         className={cn(
           // Base styles
-          "w-full px-3 py-2.5 rounded-[4px] bg-surface-white border",
+          "w-full px-3 py-2.5 rounded-xl bg-surface-white border",
           "text-text-primary placeholder:text-text-muted",
           "text-sm transition-colors duration-200",
-          "focus:bg-surface-white focus:outline-none focus:ring-1",
+          "focus:bg-surface-white focus:outline-none focus:ring-2",
           "min-h-[100px] resize-y",
 
           // Default state (no error)
-          !error && "border-border focus:ring-accent focus:border-accent",
+          !error && "border-border focus:border-accent focus:ring-accent/20",
 
           // Error state
-          error && "border-red-500 focus:ring-red-500/40 focus:border-red-500",
+          error && "border-error focus:border-error focus:ring-error/20",
 
           className,
         )}

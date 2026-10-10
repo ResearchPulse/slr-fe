@@ -72,7 +72,7 @@ export default function ChecklistPdfPanel({
         </div>
         <button
           onClick={onClose}
-          className="p-1.5 rounded-[4px] text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+          className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
           title="Close PDF panel"
         >
           <FiX className="w-4 h-4" />
@@ -80,8 +80,8 @@ export default function ChecklistPdfPanel({
       </div>
 
       {activeCoordinate && (
-        <div className="shrink-0 border-b border-indigo-100 bg-bg-secondary/80 px-4 py-1.5">
-          <p className="text-xs text-indigo-700 font-medium">
+        <div className="shrink-0 border-b border-accent/20 bg-bg-secondary/80 px-4 py-1.5">
+          <p className="text-xs text-accent font-medium">
             Page {activeCoordinate.pageIndex + 1}
           </p>
         </div>

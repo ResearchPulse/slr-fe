@@ -31,7 +31,7 @@ export default function RoleAssignmentPanel({
 }: RoleAssignmentPanelProps) {
   if (!selectedUser) {
     return (
-      <div className="h-full flex items-center justify-center border border-dashed border-slate-100 rounded-md p-10 text-center">
+      <div className="h-full flex items-center justify-center border border-dashed border-slate-100 rounded-xl p-10 text-center">
         <p className="text-xs font-bold text-slate-400">Select a person to assign a project role.</p>
       </div>
     );
@@ -43,10 +43,10 @@ export default function RoleAssignmentPanel({
   ];
 
   return (
-    <div className="bg-surface-white border border-slate-100 rounded-md p-5 space-y-5">
+    <div className="bg-surface-white border border-slate-100 rounded-xl p-5 space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-md bg-accent text-white flex items-center justify-center text-xs font-black shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center text-xs font-black shrink-0">
             {getInitials(selectedUser.fullName)}
           </div>
           <div className="min-w-0">
@@ -66,7 +66,7 @@ export default function RoleAssignmentPanel({
             key={role}
             onClick={() => onRoleChange(role)}
             className={cn(
-              "w-full flex items-center justify-between p-3 rounded-md border text-left",
+              "w-full flex items-center justify-between p-3 rounded-xl border text-left",
               previewRole === role ? "bg-indigo-50 border-indigo-200" : "bg-white border-slate-100",
             )}
           >

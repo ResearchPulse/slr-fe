@@ -11,6 +11,7 @@ import {
   FiChevronLeft,
   FiChevronRight,
 } from "react-icons/fi";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface IdentificationCompleteModalProps {
   isOpen: boolean;
@@ -50,7 +51,7 @@ const IdentificationCompleteModal: React.FC<
     >
       <div className="space-y-6">
         {/* Warning Section */}
-        <div className="bg-amber-50 border border-amber-100 rounded-[4px] p-4 flex gap-3 text-amber-800">
+        <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-3 text-amber-800">
           <FiAlertCircle size={24} className="shrink-0 text-amber-500" />
           <div className="space-y-1">
             <p className="text-sm font-black">Ready to proceed?</p>
@@ -68,13 +69,13 @@ const IdentificationCompleteModal: React.FC<
         </div>
 
         {/* Papers Summary Header */}
-        <div className="bg-bg-secondary border border-border rounded-[4px] p-6 space-y-4">
+        <div className="bg-bg-secondary border border-border rounded-xl p-6 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 text-text-primary">
-              <FiCheckCircle className="text-blue-600" />
+              <FiCheckCircle className="text-accent" />
               <span className="font-black text-lg">Snapshot Dataset</span>
             </div>
-            <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">
+            <span className="bg-primary text-white px-3 py-1 rounded-full text-sm font-bold shadow-sm">
               {snapshotTotalCount} Papers
             </span>
           </div>
@@ -87,14 +88,14 @@ const IdentificationCompleteModal: React.FC<
               placeholder="Search in snapshot..."
               value={snapshotSearch}
               onChange={(e) => setSnapshotSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-white border border-border rounded-[4px] text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all font-medium"
+              className="w-full pl-10 pr-4 py-2 bg-surface-white border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium"
             />
           </div>
 
           <div className="space-y-3 min-h-[200px] max-h-[300px] overflow-y-auto pr-2 custom-scrollbar relative">
             {snapshotLoading ? (
               <div className="flex flex-col items-center justify-center py-12 text-text-secondary">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
+                <LoadingSpinner size="md" className="mb-4" />
                 <p className="text-xs font-medium italic">
                   Loading snapshot papers...
                 </p>
@@ -103,7 +104,7 @@ const IdentificationCompleteModal: React.FC<
               snapshotPapers.map((paper, index) => (
                 <div
                   key={paper.id || index}
-                  className="bg-surface-white border border-border p-3 rounded-[4px] shadow-sm hover:border-blue-200 transition-colors"
+                  className="bg-surface-white border border-border p-3 rounded-xl shadow-sm hover:border-primary/30 transition-colors"
                 >
                   <p className="text-sm font-bold text-slate-800 line-clamp-1">
                     {paper.title}
@@ -163,7 +164,7 @@ const IdentificationCompleteModal: React.FC<
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-[4px] transition-all"
+            className="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-all"
             disabled={isCompleting}
           >
             Cancel
@@ -172,7 +173,7 @@ const IdentificationCompleteModal: React.FC<
             onClick={onConfirm}
             isLoading={isCompleting}
             variant="primary"
-            className="min-w-[160px] bg-accent hover:bg-indigo-700 shadow-lg shadow-indigo-100 transition-transform active:scale-95"
+            className="min-w-[160px] bg-accent hover:bg-primary-hover shadow-lg shadow-primary/10 transition-transform active:scale-95"
           >
             Complete Phase
           </Button>

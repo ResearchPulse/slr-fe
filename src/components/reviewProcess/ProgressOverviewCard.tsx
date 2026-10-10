@@ -10,7 +10,7 @@ export default function ProgressOverviewCard({
   progressStats,
 }: ProgressOverviewCardProps) {
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-5">
+    <div className="bg-surface-white border border-border rounded-xl p-5">
       <h3 className="font-semibold text-text-primary mb-4">Overall Progress</h3>
       <div className="mb-3">
         <div className="flex justify-between text-sm mb-2">
@@ -21,7 +21,7 @@ export default function ProgressOverviewCard({
         </div>
         <div className="w-full bg-bg-secondary rounded-full h-2 overflow-hidden">
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
+            className="bg-primary h-2 rounded-full transition-all duration-500"
             style={{ width: `${progressStats.completionPercentage}%` }}
           />
         </div>

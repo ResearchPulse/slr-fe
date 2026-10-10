@@ -7,6 +7,7 @@ import Button from "../../../../components/ui/Button";
 import IdentificationFilterBar from "./IdentificationFilterBar";
 import type { PaperResponse } from "../../../../types/paper";
 import EmptyState from "../../../../components/ui/EmptyState";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface SnapshotTableProps {
   papers: PaperResponse[];
@@ -70,18 +71,18 @@ export default function SnapshotTable({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-blue-500" />
+          <div className="w-2 h-2 rounded-full bg-primary" />
           <h3 className="text-sm font-semibold text-text-primary">
             Snapshot Dataset
           </h3>
-          <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+          <span className="px-2 py-0.5 bg-primary-light text-accent rounded-full text-xs font-medium">
             {totalCount.toLocaleString()}
           </span>
         </div>
         <button
           onClick={onRefetch}
           disabled={fetching}
-          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-md transition-colors"
+          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-xl transition-colors"
           title="Refresh"
         >
           <FiRefreshCw
@@ -136,8 +137,8 @@ export default function SnapshotTable({
         ) : papers.length > 0 ? (
           <>
             {fetching && (
-              <div className="flex items-center gap-1.5 mb-2 text-xs text-blue-600">
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-blue-600" />
+              <div className="flex items-center gap-1.5 mb-2 text-xs text-accent">
+                <LoadingSpinner size="sm" />
                 Updating...
               </div>
             )}
@@ -181,7 +182,7 @@ export default function SnapshotTable({
                           href={`https://doi.org/${paper.doi}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="text-xs text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[120px] block"
+                          className="text-xs text-accent hover:text-primary-hover hover:underline truncate max-w-[120px] block"
                         >
                           {paper.doi}
                         </a>
@@ -222,7 +223,7 @@ export default function SnapshotTable({
               <button
                 disabled={!hasPrev || fetching}
                 onClick={onPreviousPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
@@ -232,7 +233,7 @@ export default function SnapshotTable({
               <button
                 disabled={!hasNext || fetching}
                 onClick={onNextPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>
@@ -241,7 +242,7 @@ export default function SnapshotTable({
 
           {/* Total count summary */}
           <div className="flex items-center justify-end mt-2">
-            <span className="text-sm text-blue-700 font-medium">
+            <span className="text-sm text-accent font-medium">
               Total: {totalCount.toLocaleString()} paper
               {totalCount !== 1 ? "s" : ""} in dataset
             </span>

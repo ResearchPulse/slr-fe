@@ -23,6 +23,8 @@ import {
 } from "../../../../hooks/useStudySelection";
 import { useDebounce } from "../../../../hooks/useDebounce";
 import { toastSuccess, toastError } from "../../../../utils/toast";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
+import Button from "../../../ui/Button";
 
 const ProcessExclusionCodeTab: React.FC = () => {
   const { screeningProcessId: studySelectionProcessId } = useParams<{
@@ -98,14 +100,14 @@ const ProcessExclusionCodeTab: React.FC = () => {
   return (
     <div className="space-y-6 p-6">
       {/* 🛠️ Action Bar 🛠️ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-[4px] border border-border shadow-none">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-xl border border-border shadow-none">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
           <div className="relative flex-1 max-w-md">
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               placeholder="Filter by code or name..."
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border-none rounded-[4px] text-sm font-medium focus:ring-2 focus:ring-indigo-500/20 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-accent/20 transition-all"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -127,7 +129,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
           <button
             onClick={() => setOnlyActive(!onlyActive)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-[4px] text-[10px] font-black uppercase transition-all border",
+              "flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all border",
               onlyActive
                 ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-none"
                 : "bg-surface-white text-text-secondary border-border hover:text-text-secondary hover:bg-bg-secondary",
@@ -146,18 +148,15 @@ const ProcessExclusionCodeTab: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-accent text-white text-sm font-black rounded-[4px] hover:bg-indigo-700 transition-all shadow-none shadow-indigo-100"
-          >
+          <Button onClick={() => setIsModalOpen(true)} className="gap-2">
             <FiPlus size={18} />
             New Code
-          </button>
+          </Button>
         </div>
       </div>
 
       {/* 📊 Table 📊 */}
-      <div className="bg-surface-white rounded-[4px] border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[400px] flex flex-col">
+      <div className="bg-surface-white rounded-xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[400px] flex flex-col">
         <div className="flex-1">
           <Table>
             <TableHeader className="bg-bg-secondary/50">
@@ -184,7 +183,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={5} className="py-20 text-center">
                     <div className="flex flex-col items-center gap-3">
-                      <div className="w-10 h-10 border-4 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>
+                      <LoadingSpinner size="lg" />
                       <span className="text-sm font-black text-text-secondary uppercase tracking-widest">
                         Loading reasons...
                       </span>
@@ -198,7 +197,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                     className="group hover:bg-bg-secondary/50 transition-colors"
                   >
                     <TableCell className="px-8 py-6">
-                      <span className="inline-flex px-3 py-1 bg-bg-secondary text-indigo-700 text-xs font-black rounded-[4px] border border-indigo-100 uppercase tracking-tighter">
+                      <span className="inline-flex px-3 py-1 bg-bg-secondary text-accent text-xs font-black rounded-xl border border-primary/20 uppercase tracking-tighter">
                         {item.code}
                       </span>
                     </TableCell>
@@ -212,7 +211,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                         className={cn(
                           "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border whitespace-nowrap",
                           item.source === 0 // 0: Library
-                            ? "bg-blue-50 text-blue-600 border-blue-100"
+                            ? "bg-primary-light text-accent border-primary/20"
                             : "bg-purple-50 text-purple-600 border-purple-100",
                         )}
                       >
@@ -244,7 +243,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={5} className="py-20 text-center">
                     <div className="space-y-3">
-                      <div className="w-16 h-16 bg-bg-secondary rounded-[4px] flex items-center justify-center text-slate-300 mx-auto">
+                      <div className="w-16 h-16 bg-bg-secondary rounded-xl flex items-center justify-center text-slate-300 mx-auto">
                         <FiInfo size={32} />
                       </div>
                       <div className="space-y-1">

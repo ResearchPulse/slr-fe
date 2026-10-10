@@ -7,6 +7,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import { cn } from "../../../../utils/cn";
+import LoadingSpinner from "../../../ui/LoadingSpinner";
 import {
   useProjectInvitations,
   useCancelInvitation,
@@ -30,35 +31,35 @@ const getStatusBadge = (status: number) => {
   switch (status) {
     case InvitationStatus.Pending:
       return (
-        <span className="px-2.5 py-1 rounded-[4px] bg-amber-50 text-amber-600 border border-amber-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
           <FiClock size={10} />
           Pending
         </span>
       );
     case InvitationStatus.Accepted:
       return (
-        <span className="px-2.5 py-1 rounded-[4px] bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
           <FiCheckCircle size={10} />
           Accepted
         </span>
       );
     case InvitationStatus.Rejected:
       return (
-        <span className="px-2.5 py-1 rounded-[4px] bg-rose-50 text-rose-600 border border-rose-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
           <FiXCircle size={10} />
           Rejected
         </span>
       );
     case InvitationStatus.Cancelled:
       return (
-        <span className="px-2.5 py-1 rounded-[4px] bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="px-2.5 py-1 rounded-full bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
           <FiTrash2 size={10} />
           Cancelled
         </span>
       );
     default:
       return (
-        <span className="px-2.5 py-1 rounded-[4px] bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest">
+        <span className="px-2.5 py-1 rounded-full bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest">
           Expired
         </span>
       );
@@ -99,7 +100,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
-        <div className="w-8 h-8 border-4 border-indigo-600/20 border-t-indigo-600 rounded-full animate-spin" />
+        <LoadingSpinner size="md" />
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
           Loading invitations...
         </p>
@@ -109,8 +110,8 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
 
   if (!invitations || invitations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-8 text-center bg-slate-50/50 rounded-[4px] border-2 border-dashed border-slate-100">
-        <div className="w-16 h-16 bg-surface-white rounded-md flex items-center justify-center text-slate-300 mb-4 shadow-none">
+      <div className="flex flex-col items-center justify-center py-20 px-8 text-center bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-100">
+        <div className="w-16 h-16 bg-surface-white rounded-xl flex items-center justify-center text-slate-300 mb-4 shadow-none">
           <FiBell size={24} />
         </div>
         <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">
@@ -135,11 +136,11 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
         {invitations.map((inv: ProjectInvitation) => (
           <div
             key={inv.id}
-            className="group bg-surface-white border border-slate-100 rounded-md p-4 transition-all duration-300 hover:shadow-none hover:shadow-slate-100/50 hover:border-indigo-100"
+            className="group bg-surface-white border border-slate-100 rounded-xl p-4 transition-all duration-300 hover:shadow-none hover:shadow-slate-100/50 hover:border-indigo-100"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-[4px] bg-slate-900 text-white flex items-center justify-center text-xs font-black">
+                <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-black">
                   {inv.invitedUserFullName[0].toUpperCase()}
                 </div>
                 <div className="space-y-0.5">
@@ -149,7 +150,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
                     </p>
                     <span
                       className={cn(
-                        "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-[4px]",
+                        "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
                         inv.role === ProjectRole.Owner
                           ? "bg-bg-secondary text-accent"
                           : "bg-slate-100 text-slate-500",

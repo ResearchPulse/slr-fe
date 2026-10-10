@@ -134,7 +134,7 @@ export default function Step4_Preview({
         </p>
       </div>
 
-      <div className="bg-surface-white rounded-[4px] border border-border p-6">
+      <div className="bg-surface-white rounded-xl border border-border p-6">
         <h3 className="text-lg font-semibold text-text-primary mb-4">
           Template Information
         </h3>
@@ -173,7 +173,7 @@ export default function Step4_Preview({
       </div>
 
       {publishError && (
-        <div className="bg-surface-white border border-border rounded-[4px] p-4">
+        <div className="bg-surface-white border border-border rounded-xl p-4">
           <p className="text-sm text-red-700 whitespace-pre-wrap">
             {publishError}
           </p>
@@ -194,9 +194,9 @@ export default function Step4_Preview({
           return (
             <div
               key={section.id}
-              className="bg-surface-white rounded-[4px] border border-border overflow-hidden"
+              className="bg-surface-white rounded-xl border border-border overflow-hidden"
             >
-              <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-6 py-4 border-b border-border">
+              <div className="bg-bg-secondary px-6 py-4 border-b border-border">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-lg font-semibold text-text-primary">
                     {section.name}
@@ -243,7 +243,7 @@ export default function Step4_Preview({
                           </p>
                         )}
 
-                        <div className="bg-bg-primary p-3 rounded-[4px] border border-border">
+                        <div className="bg-bg-primary p-3 rounded-xl border border-border">
                           {item.data_type === "Text" && (
                             <input
                               type="text"
@@ -352,7 +352,7 @@ export default function Step4_Preview({
         })}
       </div>
 
-      <div className="bg-bg-primary rounded-[4px] p-4 border border-border">
+      <div className="bg-bg-primary rounded-xl p-4 border border-border">
         <h4 className="font-semibold text-text-primary mb-2">Summary</h4>
         <ul className="space-y-1 text-sm text-text-primary">
           <li>
@@ -374,7 +374,7 @@ export default function Step4_Preview({
         <button
           onClick={onBack}
           disabled={isPublishing}
-          className="flex items-center gap-2 px-6 py-3 bg-bg-secondary text-text-primary rounded-[4px] hover:bg-bg-secondary font-medium transition disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-bg-secondary text-text-primary rounded-xl hover:bg-bg-secondary font-medium transition disabled:opacity-50"
         >
           <FiArrowLeft className="w-4 h-4" />
           Back to Overview
@@ -382,9 +382,9 @@ export default function Step4_Preview({
         <button
           onClick={handlePublish}
           disabled={isPublishing || !templateName.trim()}
-          className={`flex items-center gap-2 px-6 py-3 rounded-[4px] font-medium transition ${
+          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition ${
             isPublishing || !templateName.trim()
-              ? "bg-gray-300 text-text-secondary cursor-not-allowed"
+              ? "bg-border text-text-secondary cursor-not-allowed"
               : "bg-green-600 text-white hover:bg-green-700"
           }`}
         >

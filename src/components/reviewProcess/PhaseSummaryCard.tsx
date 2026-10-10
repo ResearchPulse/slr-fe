@@ -38,8 +38,8 @@ export default function PhaseSummaryCard({
         );
       case "current":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full">
-            <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-light text-accent text-xs font-medium rounded-full">
+            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
             Active
           </span>
         );
@@ -73,7 +73,7 @@ export default function PhaseSummaryCard({
       case "completed":
         return "border-border bg-surface-white/30";
       case "current":
-        return "border-blue-300 bg-blue-50/30 shadow-none";
+        return "border-primary/20 bg-primary-light/30 shadow-none";
       case "locked":
         return "border-border bg-bg-primary opacity-60";
       default:
@@ -83,12 +83,12 @@ export default function PhaseSummaryCard({
 
   return (
     <div
-      className={`border-2 rounded-[4px] p-5 transition-all duration-200 hover:shadow-none ${getBorderClass()}`}
+      className={`border-2 rounded-xl p-5 transition-all duration-200 hover:shadow-none ${getBorderClass()}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
-          <div className="text-2xl text-blue-600">{phaseIcon}</div>
+          <div className="text-2xl text-accent">{phaseIcon}</div>
           <div>
             <h3 className="font-semibold text-text-primary text-base">
               {phaseName}
@@ -108,7 +108,7 @@ export default function PhaseSummaryCard({
         {stats.map((stat, index) => (
           <div
             key={index}
-            className="bg-surface-white rounded-md p-3 border border-border"
+            className="bg-surface-white rounded-xl p-3 border border-border"
           >
             <p className="text-xs text-text-secondary mb-1">{stat.label}</p>
             <p

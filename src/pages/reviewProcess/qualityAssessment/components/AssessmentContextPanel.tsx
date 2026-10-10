@@ -29,13 +29,13 @@ export default function AssessmentContextPanel({
                   {idx + 1}. {crit}
                 </p>
                 <div className="flex gap-2">
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-md hover:bg-emerald-50 hover:text-emerald-700 transition">
+                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
                     Yes
                   </button>
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-md hover:bg-rose-50 hover:text-rose-700 transition">
+                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-rose-50 hover:text-rose-700 transition">
                     No
                   </button>
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-md hover:bg-bg-secondary transition">
+                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-bg-secondary transition">
                     Partial
                   </button>
                 </div>
@@ -47,7 +47,7 @@ export default function AssessmentContextPanel({
             <p className="mb-4">
               AI evaluating paper against established criteria.
             </p>
-            <div className="p-3 bg-blue-50 text-blue-800 rounded-[4px]">
+            <div className="p-3 bg-primary-light text-accent rounded-xl">
               🤖 Suggestion: Based on section 3.2, the data collection methods
               seem well documented. (Confidence: 85%)
             </div>
@@ -56,7 +56,7 @@ export default function AssessmentContextPanel({
       </div>
 
       <div className="p-4 border-t border-border bg-bg-primary space-y-2">
-        <button className="w-full py-2 bg-purple-600 text-white text-sm font-medium rounded-[4px] hover:bg-purple-700 transition shadow-none">
+        <button className="w-full py-2 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700 transition shadow-none">
           Complete Assessment
         </button>
       </div>

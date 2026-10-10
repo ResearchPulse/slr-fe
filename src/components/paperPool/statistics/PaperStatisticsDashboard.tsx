@@ -92,7 +92,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-1 rounded-2xl">
+    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-1 rounded-xl">
       {/* Filters Area */}
       <FilterPanel
         filters={filters}
@@ -307,7 +307,7 @@ const QualityIssue: React.FC<{
   count: number;
   color: string;
 }> = ({ label, count, color }) => (
-  <div className="flex items-center justify-between p-3.5 bg-bg-secondary/50 rounded-lg border border-border hover:bg-bg-secondary transition-colors">
+  <div className="flex items-center justify-between p-3.5 bg-bg-secondary/50 rounded-xl border border-border hover:bg-bg-secondary transition-colors">
   <div className="flex items-center gap-3">
       <div
         className="w-2.5 h-2.5 rounded-full shadow-none"

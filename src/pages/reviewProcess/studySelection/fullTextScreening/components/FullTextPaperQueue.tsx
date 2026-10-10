@@ -96,7 +96,7 @@ export default function FullTextPaperQueue({
             placeholder="Search title, author, keyword..."
             value={filters.search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-blue-300 focus:ring-1 focus:ring-blue-200 outline-none transition-colors"
+            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none transition-colors"
           />
         </div>
 
@@ -108,7 +108,7 @@ export default function FullTextPaperQueue({
                 setShowSortDropdown(!showSortDropdown);
                 setShowFilterDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
             >
               <span className="text-text-secondary truncate">
                 {currentSort?.label ?? "Sort"}
@@ -136,7 +136,7 @@ export default function FullTextPaperQueue({
                 setShowFilterDropdown(!showFilterDropdown);
                 setShowSortDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-[4px] hover:bg-bg-primary transition-colors"
+              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
             >
               <span className="text-text-secondary truncate">
                 {STATUS_FILTER_OPTIONS.find((f) => f.value === filters.status)
@@ -165,9 +165,9 @@ export default function FullTextPaperQueue({
           <button
             onClick={() => onHasFullTextFilterChange(!filters.hasFullText)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-md border transition-colors",
+              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
               filters.hasFullText
-                ? "bg-bg-secondary text-indigo-700 border-indigo-200"
+                ? "bg-bg-secondary text-accent border-accent/30"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
             )}
           >
@@ -176,7 +176,7 @@ export default function FullTextPaperQueue({
           <button
             onClick={() => onHasConflictFilterChange(!filters.hasConflict)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-md border transition-colors",
+              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
               filters.hasConflict
                 ? "bg-amber-50 text-amber-700 border-amber-200"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
@@ -187,7 +187,7 @@ export default function FullTextPaperQueue({
           <button
             onClick={() => onDecidedByMeFilterChange(!filters.decidedByMe)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-md border transition-colors",
+              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
               filters.decidedByMe
                 ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
@@ -277,9 +277,9 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
           if (e.key === "Enter") onClick();
         }}
         className={cn(
-          "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-indigo-500 select-none overflow-hidden",
+          "w-full text-left px-4 py-3 border-b border-border cursor-pointer transition-colors outline-none focus:outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-accent/30 select-none overflow-hidden",
           isSelected
-            ? "bg-bg-secondary border-l-2 border-l-indigo-500"
+            ? "bg-bg-secondary border-l-2 border-l-accent"
             : "hover:bg-bg-primary border-l-2 border-l-transparent",
         )}
       >
@@ -405,7 +405,7 @@ function DropdownMenu<T>({
   return (
     <div
       ref={ref}
-      className="absolute top-full left-0 right-0 mt-1 bg-surface-white border border-border rounded-[4px] shadow-none z-30 py-1"
+      className="absolute top-full left-0 right-0 mt-1 bg-surface-white border border-border rounded-xl shadow-none z-30 py-1"
     >
       {items.map((item, i) => (
         <button

@@ -345,12 +345,12 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       />
 
       {/* Primary Mode Switcher */}
-      <div className="absolute top-4 left-4 flex items-center p-1 bg-surface-white/90 backdrop-blur-md rounded-[4px] border border-border shadow-none z-20">
+      <div className="absolute top-4 left-4 flex items-center p-1 bg-surface-white/90 backdrop-blur-md rounded-xl border border-border shadow-none z-20">
         <button
           onClick={() => setLayoutMode("timeline")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-[4px] text-[11px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
             layoutMode === "timeline"
-              ? "bg-blue-600 text-white shadow-none"
+              ? "bg-primary text-white shadow-none"
               : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
@@ -359,9 +359,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         </button>
         <button
           onClick={() => setLayoutMode("radial")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-[4px] text-[11px] font-bold transition-all ${
+          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
             layoutMode === "radial"
-              ? "bg-blue-600 text-white shadow-none"
+              ? "bg-primary text-white shadow-none"
               : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
@@ -377,7 +377,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
           <button
             onClick={() => triggerLayout("radial", true)}
             title="Regenerate Radial Layout"
-            className="p-2 text-text-secondary hover:text-blue-500 hover:bg-blue-50 rounded-[4px] transition-all"
+            className="p-2 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-all"
           >
             <RefreshCw className="h-4 w-4" />
           </button>
@@ -386,9 +386,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
 
       {/* Help Legend - Autohide */}
       <div className="absolute bottom-6 left-6 pointer-events-none transition-all duration-500 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
-        <div className="px-4 py-2 bg-slate-900/90 text-white backdrop-blur rounded-[4px] shadow-2xl flex items-center gap-3 border border-white/10">
+        <div className="px-4 py-2 bg-slate-900/90 text-white backdrop-blur rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
           <div
-            className={`w-2 h-2 rounded-full animate-pulse ${layoutMode === "timeline" ? "bg-blue-400" : "bg-purple-400"}`}
+            className={`w-2 h-2 rounded-full animate-pulse ${layoutMode === "timeline" ? "bg-accent" : "bg-purple-400"}`}
           />
           <span className="text-[11px] font-medium tracking-wide">
             {layoutMode === "timeline"

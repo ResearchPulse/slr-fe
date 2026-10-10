@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { toastError } from "../utils/toast";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import paperPoolService from "../services/paperPoolService";
 import { getErrorMessage } from "../utils/errorUtils";
@@ -73,7 +73,7 @@ export const usePaperPoolFilterSettings = (projectId: string | undefined) => {
         : Promise.reject(new Error("No project ID")),
     onSuccess: () => invalidateSavedFilters(),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to create saved filter"));
+      toastError(getErrorMessage(error, "Failed to create saved filter"));
     },
   });
 
@@ -84,7 +84,7 @@ export const usePaperPoolFilterSettings = (projectId: string | undefined) => {
         : Promise.reject(new Error("No project ID")),
     onSuccess: () => invalidateSavedFilters(),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update saved filter"));
+      toastError(getErrorMessage(error, "Failed to update saved filter"));
     },
   });
 
@@ -95,7 +95,7 @@ export const usePaperPoolFilterSettings = (projectId: string | undefined) => {
         : Promise.reject(new Error("No project ID")),
     onSuccess: () => invalidateSavedFilters(),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to delete saved filter"));
+      toastError(getErrorMessage(error, "Failed to delete saved filter"));
     },
   });
 

@@ -80,7 +80,7 @@ export default function PhaseProgressStepper({
       case "completed":
         return `${baseClasses} text-green-700`;
       case "current":
-        return `${baseClasses} text-blue-700`;
+        return `${baseClasses} text-accent`;
       case "locked":
         return `${baseClasses} text-text-secondary`;
       default:
@@ -98,11 +98,11 @@ export default function PhaseProgressStepper({
       case "completed":
         return `${baseClasses} bg-green-100 border-green-600 text-green-700${clickable ? " hover:shadow-none cursor-pointer" : ""}`;
       case "current":
-        return `${baseClasses} bg-blue-600 border-blue-600 text-white shadow-none scale-110${clickable ? " cursor-pointer" : ""}`;
+        return `${baseClasses} bg-primary border-accent text-white shadow-none scale-110${clickable ? " cursor-pointer" : ""}`;
       case "locked":
         return `${baseClasses} bg-bg-secondary border-border text-text-secondary cursor-not-allowed`;
       default:
-        return `${baseClasses} bg-surface-white border-gray-400 text-text-secondary hover:border-blue-500 hover:shadow-none cursor-pointer`;
+        return `${baseClasses} bg-surface-white border-gray-400 text-text-secondary hover:border-accent hover:shadow-none cursor-pointer`;
     }
   };
 
@@ -115,7 +115,7 @@ export default function PhaseProgressStepper({
       return "bg-green-600";
     }
     if (isCurrent) {
-      return "bg-blue-400";
+      return "bg-primary";
     }
     return "bg-gray-300";
   };
@@ -139,7 +139,7 @@ export default function PhaseProgressStepper({
   };
 
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-8 mb-6 shadow-none">
+    <div className="bg-surface-white border border-border rounded-xl p-8 mb-6 shadow-none">
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         {PHASES.map((phase, index) => (
           <div key={phase.id} className="flex items-center flex-1">
@@ -172,12 +172,12 @@ export default function PhaseProgressStepper({
                   </p>
                 )}
                 {isCurrentPhase(phase.id) && (
-                  <span className="inline-block mt-1 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full font-medium">
+                  <span className="inline-block mt-1 px-2 py-0.5 bg-primary-light text-accent text-xs rounded-full font-medium">
                     Active
                   </span>
                 )}
                 {showOpenAction && !isPhaseLocked(phase.id) && (
-                  <span className="inline-flex items-center gap-0.5 mt-1.5 text-[10px] text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="inline-flex items-center gap-0.5 mt-1.5 text-[10px] text-accent opacity-0 group-hover:opacity-100 transition-opacity">
                     <FiExternalLink className="w-2.5 h-2.5" />
                     Open
                   </span>
@@ -199,9 +199,9 @@ export default function PhaseProgressStepper({
 
       {/* Current Phase Description */}
       <div className="mt-8 text-center max-w-2xl mx-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 rounded-[4px]">
-          <div className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-          <p className="text-sm text-blue-900">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-light border border-primary/20 rounded-xl">
+          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+          <p className="text-sm text-accent">
             <span className="font-semibold">Current Phase:</span>{" "}
             {PHASES.find((p) => p.id === currentPhase)?.name || "Not started"}
           </p>

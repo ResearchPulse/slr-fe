@@ -24,7 +24,7 @@ interface StepItem {
 function getStepClasses(state: StepItem["state"]): string {
   switch (state) {
     case "active":
-      return "bg-blue-50 border-blue-200 text-blue-700";
+      return "bg-primary-light border-accent/30 text-accent";
     case "completed":
       return "bg-emerald-50 border-emerald-200 text-emerald-700";
     case "locked":
@@ -37,7 +37,7 @@ function getStepClasses(state: StepItem["state"]): string {
 function getDotClasses(state: StepItem["state"]): string {
   switch (state) {
     case "active":
-      return "bg-blue-600 text-white border-blue-600";
+      return "bg-primary text-white border-accent";
     case "completed":
       return "bg-emerald-600 text-white border-emerald-600";
     case "locked":
@@ -51,7 +51,7 @@ function StepCard({ id, title, count, state, onClick, disabled }: StepItem) {
   const content = (
     <div
       className={cn(
-        "flex items-center gap-2.5 rounded-[4px] border px-3 py-2 min-w-[200px] transition-colors",
+        "flex items-center gap-2.5 rounded-xl border px-3 py-2 min-w-[200px] transition-colors",
         getStepClasses(state),
       )}
     >

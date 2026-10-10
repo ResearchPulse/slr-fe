@@ -21,13 +21,13 @@ const StatCard: React.FC<StatCardProps> = ({
   return (
     <div
       className={cn(
-        "bg-surface-white rounded-2xl border border-border p-4 shadow-sm hover:shadow-sm transition-all duration-300",
+        "bg-surface-white rounded-xl border border-border p-4 shadow-sm hover:shadow-sm transition-all duration-300",
         loading && "animate-pulse",
       )}
     >
       <div className="flex items-center gap-4">
         <div
-          className="h-10 w-10 rounded-lg flex items-center justify-center"
+          className="h-10 w-10 rounded-xl flex items-center justify-center"
           style={{ backgroundColor: `${color}15`, color: color }}
         >
           <Icon className="h-5 w-5" />

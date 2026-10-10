@@ -81,7 +81,7 @@ export const PaperCard: React.FC<PaperCardProps> = ({
   return (
     <div
       className={cn(
-        "group relative bg-surface-white rounded-[4px] border border-border shadow-none",
+        "group relative bg-surface-white rounded-xl border border-border shadow-none",
         "hover:shadow-none hover:shadow-slate-200/50 hover:border-border",
         "hover:-translate-y-0.5 transition-all duration-300 ease-out",
         "cursor-pointer",
@@ -91,7 +91,7 @@ export const PaperCard: React.FC<PaperCardProps> = ({
     >
       <div className="p-5">
         {/* Title */}
-        <h3 className="text-base font-semibold text-text-primary leading-snug line-clamp-2 mb-2 group-hover:text-blue-700 transition-colors">
+        <h3 className="text-base font-semibold text-text-primary leading-snug line-clamp-2 mb-2 group-hover:text-accent transition-colors">
           {paper.title}
         </h3>
 
@@ -137,7 +137,7 @@ export const PaperCard: React.FC<PaperCardProps> = ({
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[140px] flex items-center gap-1"
+              className="text-xs text-accent hover:text-primary-hover hover:underline truncate max-w-[140px] flex items-center gap-1"
             >
               <FiExternalLink className="w-3 h-3 shrink-0" />
               {paper.doi}
@@ -148,7 +148,7 @@ export const PaperCard: React.FC<PaperCardProps> = ({
               target="_blank"
               rel="noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="text-xs text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[140px] flex items-center gap-1"
+              className="text-xs text-accent hover:text-primary-hover hover:underline truncate max-w-[140px] flex items-center gap-1"
             >
               <FiExternalLink className="w-3 h-3 shrink-0" />
               View Source

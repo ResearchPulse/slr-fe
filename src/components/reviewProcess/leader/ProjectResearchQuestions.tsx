@@ -38,7 +38,7 @@ const ProjectResearchQuestions: React.FC<ProjectResearchQuestionsProps> = ({
             />
           ))
         ) : (
-          <div className="col-span-full py-6 text-center bg-bg-secondary rounded-[4px] border border-dashed border-border text-text-secondary text-sm italic">
+          <div className="col-span-full py-6 text-center bg-bg-secondary rounded-xl border border-dashed border-border text-text-secondary text-sm italic">
             No research questions defined.
           </div>
         )}
@@ -60,10 +60,10 @@ const ResearchQuestionCard = ({
   const isLongText = text.length > 100;
 
   return (
-    <div className="flex flex-col gap-2 p-4 bg-surface-white border border-border rounded-[4px] hover:border-indigo-200 transition-all shadow-none group h-fit">
+    <div className="flex flex-col gap-2 p-4 bg-surface-white border border-border rounded-xl hover:border-primary/30 transition-all shadow-none group h-fit">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex-shrink-0 w-8 h-8 rounded-[4px] bg-bg-secondary flex items-center justify-center text-text-secondary font-bold text-[10px] group-hover:bg-bg-secondary group-hover:text-accent transition-colors">
+          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-bg-secondary flex items-center justify-center text-text-secondary font-bold text-[10px] group-hover:bg-bg-secondary group-hover:text-accent transition-colors">
             RQ{index + 1}
           </div>
           <span className="text-[10px] font-bold text-text-secondary uppercase tracking-widest">

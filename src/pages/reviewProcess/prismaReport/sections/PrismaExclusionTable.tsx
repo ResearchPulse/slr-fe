@@ -92,7 +92,7 @@ export default function PrismaExclusionTable({
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-border/60 bg-surface-white">
+      <div className="overflow-x-auto rounded-xl border border-border/60 bg-surface-white">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-border/60 bg-bg-primary/60">

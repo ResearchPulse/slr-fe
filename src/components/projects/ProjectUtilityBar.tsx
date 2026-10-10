@@ -19,7 +19,7 @@ const ProjectUtilityBar: React.FC<ProjectUtilityBarProps> = ({
         />
         <Input
           placeholder="Search projects..."
-          className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-[4px] text-sm"
+          className="pl-9 h-9 bg-surface-white border-border focus:border-accent focus:ring-1 focus:ring-accent rounded-xl text-sm"
           onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>

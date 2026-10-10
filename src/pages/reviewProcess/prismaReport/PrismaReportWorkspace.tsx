@@ -4,7 +4,7 @@
 import { useParams, useNavigate } from "react-router";
 import { useSelector } from "react-redux";
 import { useRef, useCallback, useState, useEffect } from "react";
-import toast from "react-hot-toast";
+import { toastInfo, toastSuccess } from "../../../utils/toast";
 import type { RootState } from "../../../redux/store";
 import { usePrismaReport } from "../../../hooks/usePrismaReport";
 import { FiClipboard, FiAlertCircle, FiArrowLeft } from "react-icons/fi";
@@ -18,6 +18,7 @@ import PrismaFlowDiagram, {
 import PrismaExclusionTable from "./sections/PrismaExclusionTable";
 import PrismaReportHistory from "./sections/PrismaReportHistory";
 import PrismaExportActions from "./sections/PrismaExportActions";
+import Button from "../../../components/ui/Button";
 
 export default function PrismaReportWorkspace() {
   const { projectId, processId } = useParams<{
@@ -94,11 +95,9 @@ export default function PrismaReportWorkspace() {
     
     if (result) {
       if (result.id === latestReport?.id) {
-        toast("PRISMA diagram is already up-to-date with current review data.", {
-          icon: "ℹ️",
-        });
+        toastInfo("PRISMA diagram is already up-to-date with current review data.");
       } else {
-        toast.success(`Generated PRISMA Report v${result.version}`);
+        toastSuccess(`Generated PRISMA Report v${result.version}`);
       }
     }
   };
@@ -185,7 +184,7 @@ export default function PrismaReportWorkspace() {
             </div>
             <button
               onClick={clearSelection}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-md transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors"
             >
               <FiArrowLeft className="w-3.5 h-3.5" />
               Back to latest
@@ -196,7 +195,7 @@ export default function PrismaReportWorkspace() {
         {/* Empty state — no report yet */}
         {!isLoading && !hasReport && !latestError && (
           <div className="text-center py-16 px-4">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-light flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-xl bg-primary-light flex items-center justify-center">
               <FiClipboard className="w-8 h-8 text-accent" />
             </div>
             <h2 className="text-xl font-semibold text-text-primary mb-2">
@@ -207,13 +206,14 @@ export default function PrismaReportWorkspace() {
               current state of your systematic review pipeline. The report is a
               snapshot calculated from your review data.
             </p>
-            <button
+            <Button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-accent text-white font-medium rounded-xl hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 transition-colors"
+              size="lg"
+              className="inline-flex gap-2"
             >
               {isGenerating ? "Generating…" : "Generate PRISMA Report"}
-            </button>
+            </Button>
           </div>
         )}
 

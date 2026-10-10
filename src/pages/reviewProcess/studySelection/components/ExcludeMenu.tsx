@@ -202,7 +202,7 @@ export default function ExcludeMenu({
               }}
               transition={{ duration: 0.15, ease: "easeOut" }}
               style={menuStyle}
-              className="bg-surface-white border border-border rounded-[4px] shadow-2xl p-4 flex flex-col pointer-events-auto"
+              className="bg-surface-white border border-border rounded-xl shadow-2xl p-4 flex flex-col pointer-events-auto"
             >
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-bold text-text-primary">
@@ -233,11 +233,11 @@ export default function ExcludeMenu({
                           label: r.name,
                         }))}
                         placeholder="Select a reason..."
-                        className="!py-2.5 !text-xs !rounded-[4px] !bg-bg-primary focus:!bg-surface-white focus:!border-red-300 focus:!ring-4 focus:!ring-red-50/50 transition-all"
+                        className="!py-2.5 !text-xs !rounded-xl !bg-bg-primary focus:!bg-surface-white focus:!border-red-300 focus:!ring-4 focus:!ring-red-50/50 transition-all"
                         autoFocus
                       />
                     ) : (
-                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-[4px] text-[11px] text-amber-700 italic flex items-center gap-2">
+                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-700 italic flex items-center gap-2">
                         <FiAlertTriangle className="w-3.5 h-3.5 shrink-0" />
                         Wait for leader import exclusion reason code
                       </div>
@@ -255,7 +255,7 @@ export default function ExcludeMenu({
                             onResetReasons();
                           }
                         }}
-                        className="text-[10px] font-bold uppercase text-accent hover:text-indigo-700 transition-colors flex items-center gap-1.5 px-1 py-0.5"
+                        className="text-[10px] font-bold uppercase text-accent hover:text-accent transition-colors flex items-center gap-1.5 px-1 py-0.5"
                       >
                         {hasMoreReasons ? (
                           <>
@@ -283,7 +283,7 @@ export default function ExcludeMenu({
                     onChange={(e) => setExclusionJustification(e.target.value)}
                     placeholder="Briefly explain the exclusion..."
                     rows={3}
-                    className="w-full px-4 py-3 text-xs border border-border rounded-[4px] bg-bg-primary focus:bg-surface-white focus:border-red-300 focus:ring-4 focus:ring-red-50/50 outline-none transition-all resize-none shadow-inner"
+                    className="w-full px-4 py-3 text-xs border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-red-300 focus:ring-4 focus:ring-red-50/50 outline-none transition-all resize-none shadow-inner"
                   />
                 </div>
               </div>
@@ -296,13 +296,13 @@ export default function ExcludeMenu({
                     !exclusionJustification.trim() ||
                     isSubmitting
                   }
-                  className="flex-1 px-4 py-2.5 text-xs font-bold bg-red-600 text-white rounded-[4px] hover:bg-red-700 active:bg-red-800 transition-all shadow-none disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="flex-1 px-4 py-2.5 text-xs font-bold bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-all shadow-none disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Submitting..." : "Confirm Exclusion"}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-text-secondary hover:text-text-primary hover:bg-bg-primary rounded-[4px] transition-all"
+                  className="px-4 py-2.5 text-xs font-bold text-text-secondary hover:text-text-primary hover:bg-bg-primary rounded-xl transition-all"
                 >
                   Cancel
                 </button>

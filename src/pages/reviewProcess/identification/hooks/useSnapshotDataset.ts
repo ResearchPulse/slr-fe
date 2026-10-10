@@ -9,7 +9,7 @@ import { QUERY_KEYS } from "../../../../constants/queryKeys";
 import { getErrorMessage } from "../../../../utils/errorUtils";
 import { DATASET_PAGE_SIZE } from "../constants";
 import type { PaperResponse } from "../../../../types/paper";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../../../../utils/toast";
 
 interface UseSnapshotDatasetOptions {
   identificationProcessId: string | undefined;
@@ -89,7 +89,7 @@ export const useSnapshotDataset = ({
     mutationFn: (paperIds: string[]) =>
       identificationProcessService.addPapersToSnapshot(identificationProcessId!, { paperIds }),
     onSuccess: () => {
-      toast.success("Papers added to screening dataset");
+      toastSuccess("Papers added to screening dataset");
       // Invalidate both queries so they refetch
       if (identificationProcessId) {
         queryClient.invalidateQueries({
@@ -108,7 +108,7 @@ export const useSnapshotDataset = ({
     },
     onError: (error) => {
       const message = getErrorMessage(error, "Failed to add papers");
-      toast.error(message);
+      toastError(message);
     },
   });
 

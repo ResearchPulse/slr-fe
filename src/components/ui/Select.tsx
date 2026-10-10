@@ -153,11 +153,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           onKeyDown={handleKeyDown}
           className={cn(
             "flex h-11 w-full items-center justify-between gap-3 rounded-xl border bg-surface-white px-3.5 text-left font-sans text-sm text-text-primary",
-            "transition-colors duration-150 focus:outline-none focus:ring-4 focus:ring-primary-light focus:border-accent",
+            "transition-colors duration-150 focus:outline-none focus:ring-2",
             "hover:border-text-secondary disabled:cursor-not-allowed disabled:opacity-60",
             error
-              ? "border-red-500 focus:border-red-500 focus:ring-red-500/20"
-              : "border-border",
+              ? "border-error focus:border-error focus:ring-error/20"
+              : "border-border focus:border-accent focus:ring-accent/20",
             className,
           )}
         >
@@ -179,7 +179,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               role="listbox"
               aria-label={props["aria-label"]}
-              className="fixed z-[1000] max-h-60 overflow-auto rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]"
+              className="fixed z-(--z-index-dropdown) max-h-60 overflow-auto rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]"
               style={menuStyle}
             >
               {options.map((option, index) => {
@@ -193,7 +193,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => selectOption(option)}
                     className={cn(
-                      "flex h-9 w-full items-center rounded-lg px-2 text-left font-sans text-sm text-text-primary transition-colors",
+                      "flex h-9 w-full items-center rounded-xl px-2 text-left font-sans text-sm text-text-primary transition-colors",
                       "hover:bg-primary-light hover:text-accent",
                       (isSelected || activeIndex === index) && "bg-primary-light text-accent",
                       isSelected && "font-semibold",

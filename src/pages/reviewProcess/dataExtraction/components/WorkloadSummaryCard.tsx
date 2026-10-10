@@ -59,12 +59,12 @@ export default function WorkloadSummaryCard({
               <div className="h-4 w-44 rounded-full bg-slate-200" />
               <div className="h-3 w-80 max-w-full rounded-full bg-bg-secondary" />
             </div>
-            <div className="h-10 w-24 rounded-[4px] bg-bg-secondary" />
+            <div className="h-10 w-24 rounded-xl bg-bg-secondary" />
           </div>
           <div className="h-3 rounded-full bg-bg-secondary" />
           <div className="space-y-3">
-            <div className="h-12 rounded-[4px] bg-bg-secondary" />
-            <div className="h-12 rounded-[4px] bg-bg-secondary" />
+            <div className="h-12 rounded-xl bg-bg-secondary" />
+            <div className="h-12 rounded-xl bg-bg-secondary" />
           </div>
         </div>
       </Card>
@@ -76,7 +76,7 @@ export default function WorkloadSummaryCard({
       <Card className="rounded-xl border-border bg-white shadow-none">
         <div className="flex flex-col gap-4 p-6 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-600">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-accent">
               {isLeader ? "Team Progress" : "Your Progress"}
             </p>
             <h2 className="mt-2 text-xl font-semibold text-text-primary">
@@ -84,7 +84,7 @@ export default function WorkloadSummaryCard({
             </h2>
             <p className="mt-2 text-sm text-text-secondary">{description}</p>
           </div>
-          <div className="rounded-[4px] bg-bg-secondary px-4 py-2 text-sm font-medium text-text-secondary">
+          <div className="rounded-xl bg-bg-secondary px-4 py-2 text-sm font-medium text-text-secondary">
             No workload data available yet
           </div>
         </div>
@@ -97,7 +97,7 @@ export default function WorkloadSummaryCard({
       <div className="space-y-4 p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700">
+            <div className="inline-flex items-center gap-2 rounded-full bg-primary-light px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-accent">
               {isLeader ? (
                 <Users className="h-3.5 w-3.5" />
               ) : (
@@ -171,7 +171,7 @@ export default function WorkloadSummaryCard({
                             {workload.reviewerName}
                           </h3>
                           {currentUserId === workload.reviewerId ? (
-                            <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-semibold text-blue-700">
+                            <span className="rounded-full bg-primary-light px-2 py-0.5 text-[11px] font-semibold text-accent">
                               You
                             </span>
                           ) : null}
@@ -218,7 +218,7 @@ export default function WorkloadSummaryCard({
           <div className="grid gap-3 md:grid-cols-[1.2fr_0.8fr]">
             <div className="border-y border-border py-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
-                <TrendingUp className="h-4 w-4 text-blue-600" />
+                <TrendingUp className="h-4 w-4 text-accent" />
                 Your completion rate
               </div>
               <div className="mt-3 flex items-end justify-between gap-4">

@@ -66,7 +66,7 @@ export default function ReviewProcessWorkspace() {
   if (error || !process) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-surface-white border border-border rounded-[4px] p-6">
+        <div className="bg-surface-white border border-border rounded-xl p-6">
           <h2 className="text-lg font-semibold text-red-800 mb-2">
             Error Loading Process
           </h2>

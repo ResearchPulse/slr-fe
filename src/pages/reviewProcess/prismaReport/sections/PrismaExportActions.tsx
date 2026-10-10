@@ -1,6 +1,6 @@
 // PRISMA Export Actions — Export PNG, PDF, and copy data buttons (stubbed logic)
 
-import toast from "react-hot-toast";
+import { toastSuccess } from "../../../../utils/toast";
 import {
   FiImage,
   FiFileText,
@@ -10,6 +10,7 @@ import {
 } from "react-icons/fi";
 import type { PrismaNodeResponse } from "../../../../types/prismaReport";
 import { PRISMA_STAGE_LABELS } from "../../../../types/prismaReport";
+import Button from "../../../../components/ui/Button";
 
 interface PrismaExportActionsProps {
   /** Whether a report exists to export */
@@ -110,16 +111,16 @@ export default function PrismaExportActions({
     }
 
     navigator.clipboard.writeText(text);
-    toast.success("Numbers copied to clipboard");
+    toastSuccess("Numbers copied to clipboard");
   };
 
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Generate / Regenerate button */}
-      <button
+      <Button
         onClick={onGenerate}
         disabled={isGenerating || cooldown > 0}
-        className="inline-flex items-center gap-2 px-4 py-2 bg-accent text-white text-sm font-medium rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="inline-flex gap-2"
       >
         <FiRefreshCw
           className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`}
@@ -131,10 +132,10 @@ export default function PrismaExportActions({
             : hasReport
               ? "Regenerate Diagram"
               : "Generate Diagram"}
-      </button>
+      </Button>
 
       {/* Export buttons — only enabled when a report exists */}
-      <div className="inline-flex items-center border border-border/70 rounded-lg overflow-hidden shadow-sm">
+      <div className="inline-flex items-center border border-border/70 rounded-xl overflow-hidden shadow-sm">
         <button
           onClick={handleExportPNG}
           disabled={!hasReport}

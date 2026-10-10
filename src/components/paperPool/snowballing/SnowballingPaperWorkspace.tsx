@@ -1,3 +1,4 @@
+import Button from "../../ui/Button";
 import React, { useState, useMemo } from "react";
 import { createPortal } from "react-dom";
 
@@ -27,7 +28,7 @@ import CandidateDetailPanel from "./CandidateDetailPanel";
 import Modal from "../../ui/Modal";
 import { cn } from "../../../utils/cn";
 import { Check, X, UserPlus, XCircle } from "lucide-react";
-import toast from "react-hot-toast";
+import { toastSuccess, toastError } from "../../../utils/toast";
 
 interface SnowballingPaperWorkspaceProps {
   projectId: string;
@@ -121,11 +122,11 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
 
       setBulkSelectedIds(new Set());
       refetch(); // Refresh the list to reflect new statuses
-      toast.success(
+      toastSuccess(
         `Successfully updated ${selectedIdsArray.length} candidates.`,
       );
     } catch (err: any) {
-      toast.error(err.message || "Failed to update candidates.");
+      toastError(err.message || "Failed to update candidates.");
     }
   };
 
@@ -179,13 +180,13 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
         <p className="text-sm text-text-secondary mt-2 mb-8">
           We couldn't retrieve the references for this origin paper.
         </p>
-        <button
+        <Button
           onClick={() => refetch()}
-          className="px-8 py-3 bg-slate-900 text-white rounded-xl text-xs font-black uppercase tracking-widest flex items-center gap-3"
+          className="gap-2"
         >
           <RefreshCw className="w-4 h-4" />
           Retry Connection
-        </button>
+        </Button>
       </div>
     );
   }
@@ -269,7 +270,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                 Metadata Summary
               </label>
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <div className="bg-bg-secondary p-6 rounded-2xl border border-border">
+                <div className="bg-bg-secondary p-6 rounded-xl border border-border">
                   <span className="text-[9px] font-black uppercase tracking-tighter text-text-secondary">
                     Total Extracted
                   </span>
@@ -277,7 +278,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                     {paper.candidateCount}
                   </p>
                 </div>
-                <div className="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100">
+                <div className="bg-emerald-50/50 p-6 rounded-xl border border-emerald-100">
                   <span className="text-[9px] font-black uppercase tracking-tighter text-emerald-500">
                     Suggested
                   </span>
@@ -333,10 +334,10 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                       className={cn(
                         "shrink-0 w-5 h-5 rounded border-2 transition-all flex items-center justify-center cursor-pointer",
                         isAllPageSelected
-                          ? "bg-blue-600 border-blue-600"
+                          ? "bg-primary border-accent"
                           : isSomePageSelected
-                            ? "bg-blue-600 border-blue-600"
-                            : "border-slate-300 hover:border-blue-400 bg-surface-white",
+                            ? "bg-primary border-accent"
+                            : "border-slate-300 hover:border-accent/50 bg-surface-white",
                       )}
                     >
                       {isAllPageSelected && (
@@ -420,8 +421,8 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
           {/* Bulk Actions Toolbar - Sticky via Portal */}
           {bulkSelectedIds.size > 0 &&
             createPortal(
-              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] animate-in slide-in-from-bottom-8 duration-300">
-                <div className="bg-slate-900 text-white rounded-2xl shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
+              <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-(--z-index-dropdown) animate-in slide-in-from-bottom-8 duration-300">
+                <div className="bg-slate-900 text-white rounded-xl shadow-2xl flex items-center gap-2 p-2 pl-6 border border-white/10 backdrop-blur-md">
                   <div className="flex flex-col mr-4">
                     <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary leading-none">
                       Selected
@@ -437,7 +438,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                     <button
                       onClick={() => handleBulkAction("select")}
                       disabled={isMutationPending}
-                      className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl transition-all active:scale-95 disabled:opacity-50"
+                      className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover rounded-xl transition-all active:scale-95 disabled:opacity-50"
                     >
                       <UserPlus className="w-4 h-4" />
                       <span className="text-xs font-black uppercase tracking-widest">

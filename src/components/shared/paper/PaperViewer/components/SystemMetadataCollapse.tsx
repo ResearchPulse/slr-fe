@@ -12,13 +12,13 @@ export const SystemMetadataCollapse: React.FC<SystemMetadataCollapseProps> = ({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="bg-bg-secondary/50 rounded-[4px] border border-border overflow-hidden shadow-none transition-all">
+    <div className="bg-bg-secondary/50 rounded-xl border border-border overflow-hidden shadow-none transition-all">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-6 hover:bg-slate-200/50 transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-[4px] bg-surface-white border border-border flex items-center justify-center text-text-secondary">
+          <div className="w-8 h-8 rounded-xl bg-surface-white border border-border flex items-center justify-center text-text-secondary">
             <FiDatabase className="w-4 h-4" />
           </div>
           <span className="text-[11px] font-black text-text-secondary uppercase tracking-[0.15em]">
@@ -51,7 +51,7 @@ export const SystemMetadataCollapse: React.FC<SystemMetadataCollapseProps> = ({
                 {paper.source || "Manual Entry"}
               </p>
             </div>
-            <div className="col-span-full py-4 px-4 bg-surface-white/50 rounded-[4px] border border-border border-dashed">
+            <div className="col-span-full py-4 px-4 bg-surface-white/50 rounded-xl border border-border border-dashed">
               <p className="text-[10px] text-text-secondary font-medium text-center italic">
                 System tracking data is primarily used for synchronization and
                 conflict resolution.

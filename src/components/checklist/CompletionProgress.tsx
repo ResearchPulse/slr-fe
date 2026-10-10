@@ -65,7 +65,7 @@ const CompletionProgress: React.FC<CompletionProgressProps> = ({
             "h-full transition-all duration-500 ease-out",
             isComplete
               ? "bg-gradient-to-r from-emerald-400 to-emerald-600"
-              : "bg-gradient-to-r from-indigo-400 to-indigo-600",
+              : "bg-gradient-to-r from-accent/80 to-accent",
           )}
           style={{ width: `${percentage}%` }}
         />

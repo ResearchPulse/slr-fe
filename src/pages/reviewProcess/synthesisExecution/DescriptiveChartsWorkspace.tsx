@@ -156,12 +156,12 @@ export default function DescriptiveChartsWorkspace({
   return (
     <div className="space-y-5">
       {filterHighQualityOnly ? (
-        <div className="rounded-xl border border-blue-100 bg-blue-50/60 px-4 py-3 text-sm text-blue-800">
+        <div className="rounded-xl border border-primary/20 bg-primary-light/60 px-4 py-3 text-sm text-accent">
           Showing results for High Quality studies only (Sensitivity Analysis
           active).
         </div>
       ) : null}
-      <section className="rounded-2xl border border-border/80 bg-surface-white px-6 py-5 shadow-sm shadow-slate-200/30">
+      <section className="rounded-xl border border-border/80 bg-surface-white px-6 py-5 shadow-sm shadow-slate-200/30">
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
@@ -193,7 +193,7 @@ export default function DescriptiveChartsWorkspace({
       </section>
 
       <section className="grid items-start gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30">
+        <aside className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30">
           <div className="space-y-5">
             <div>
               <div className="mb-3 flex items-center justify-between">
@@ -233,7 +233,7 @@ export default function DescriptiveChartsWorkspace({
                 <button
                   type="button"
                   onClick={() => setChartView("bar")}
-                  className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                     chartView === "bar"
                       ? "bg-surface-white text-primary shadow-sm"
                       : "text-text-secondary hover:text-text-primary"
@@ -245,7 +245,7 @@ export default function DescriptiveChartsWorkspace({
                 <button
                   type="button"
                   onClick={() => setChartView("pie")}
-                  className={`inline-flex items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
                     chartView === "pie"
                       ? "bg-surface-white text-primary shadow-sm"
                       : "text-text-secondary hover:text-text-primary"
@@ -293,7 +293,7 @@ export default function DescriptiveChartsWorkspace({
           </div>
         </aside>
 
-        <section className="min-w-0 rounded-2xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-semibold text-text-primary">

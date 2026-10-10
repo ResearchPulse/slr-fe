@@ -43,7 +43,7 @@ export default function ReviewProcessCard({
 }: ReviewProcessCardProps) {
   return (
     <div
-      className={`group relative rounded-2xl border border-border p-4 transition-all duration-200 ${
+      className={`group relative rounded-xl border border-border p-4 transition-all duration-200 ${
         isSelected
           ? "border-accent bg-bg-secondary shadow-sm"
           : "border-border bg-surface-white hover:border-accent hover:shadow-sm"
@@ -73,7 +73,7 @@ export default function ReviewProcessCard({
           </div>
         </div>
         <div className="flex flex-col items-end gap-1">
-          <span className="px-2 py-0.5 bg-surface-white text-text-primary rounded-md text-[8px] font-bold uppercase tracking-widest border border-border shadow-sm">
+          <span className="px-2 py-0.5 bg-surface-white text-text-primary rounded-xl text-[8px] font-bold uppercase tracking-widest border border-border shadow-sm">
             Independent
           </span>
           {onNavigate && (

@@ -15,7 +15,7 @@ export const ResolutionDetails: React.FC<ResolutionDetailsProps> = ({
   return (
     <div
       className={cn(
-        "rounded-[4px] border p-6 space-y-4",
+        "rounded-xl border p-6 space-y-4",
         isIncluded
           ? "bg-emerald-50 border-emerald-100"
           : "bg-rose-50 border-rose-100",

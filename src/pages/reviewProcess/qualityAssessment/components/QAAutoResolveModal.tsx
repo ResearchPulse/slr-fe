@@ -92,7 +92,7 @@ export function QAAutoResolveModal({
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                className="text-accent focus:ring-indigo-500 w-4 h-4"
+                className="text-accent focus:ring-accent/30 w-4 h-4"
                 checked={resolutionType === "percentage"}
                 onChange={() => handleTypeChange("percentage")}
               />
@@ -101,7 +101,7 @@ export function QAAutoResolveModal({
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
-                className="text-accent focus:ring-indigo-500 w-4 h-4"
+                className="text-accent focus:ring-accent/30 w-4 h-4"
                 checked={resolutionType === "score"}
                 onChange={() => handleTypeChange("score")}
               />
@@ -135,12 +135,12 @@ export function QAAutoResolveModal({
               }
               setValue(val);
             }}
-            className="w-full rounded-md border border-border px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none"
+            className="w-full rounded-xl border border-border px-3 py-2 text-sm focus:border-accent focus:ring-accent/30 outline-none"
             required
             autoFocus
           />
           <div className="mt-4 space-y-3">
-            <div className="p-3 bg-blue-50 border border-blue-100 rounded-md text-xs text-blue-800">
+            <div className="p-3 bg-primary-light border border-accent/30 rounded-xl text-xs text-accent">
               <span className="block font-medium mb-1">Scoring Rules:</span>
               <ul className="list-disc pl-4 space-y-0.5">
                 <li>
@@ -153,13 +153,13 @@ export function QAAutoResolveModal({
                   <strong>No</strong> = 0 points
                 </li>
               </ul>
-              <p className="mt-2 text-blue-700">
+              <p className="mt-2 text-accent">
                 Total maximum score across all criteria is{" "}
                 <strong>{totalCriteria}</strong>.
               </p>
             </div>
 
-            <div className="p-3 bg-bg-secondary border border-indigo-100 rounded-md text-xs text-indigo-900">
+            <div className="p-3 bg-bg-secondary border border-accent/30 rounded-xl text-xs text-accent">
               {getHelperText()}
             </div>
           </div>
@@ -170,14 +170,14 @@ export function QAAutoResolveModal({
           type="button"
           onClick={onClose}
           disabled={isSubmitting}
-          className="px-4 py-2 text-sm font-medium text-text-primary bg-surface-white border border-border rounded-[4px] hover:bg-bg-primary disabled:opacity-50"
+          className="px-4 py-2 text-sm font-medium text-text-primary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-accent border border-transparent rounded-[4px] hover:bg-indigo-700 disabled:opacity-50 transition-colors"
+          className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-accent border border-transparent rounded-xl hover:bg-primary-hover disabled:opacity-50 transition-colors"
         >
           {isSubmitting ? (
             <>

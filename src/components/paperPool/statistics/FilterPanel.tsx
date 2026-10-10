@@ -19,14 +19,14 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableSources,
 }) => {
   return (
-    <div className="bg-surface-white p-5 rounded-2xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
+    <div className="bg-surface-white p-5 rounded-xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
       <div className="flex items-center gap-4">
         <div className="h-11 w-11 bg-slate-900 text-white rounded-xl flex items-center justify-center">
           <FiFilter className="h-5 w-5" />
         </div>
         <div>
           <h2 className="text-lg font-bold text-text-primary uppercase tracking-tight">
-            Dashboard <span className="text-blue-600">Filters</span>
+            Dashboard <span className="text-accent">Filters</span>
           </h2>
           <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-[0.12em] mt-0.5">
             Refine data across all visualizations
@@ -52,7 +52,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 { label: "All Sources", value: "" },
                 ...availableSources.map((s) => ({ label: s, value: s })),
               ]}
-              className="rounded-lg border border-border focus:border-blue-500 transition-all text-sm"
+              className="rounded-xl border border-border focus:border-accent transition-all text-sm"
             />
           </div>
         </div>
@@ -77,7 +77,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   yearFrom: value ? parseInt(value, 10) : undefined,
                 });
               }}
-              className="w-24 rounded-lg border border-border focus:border-blue-500 text-sm"
+              className="w-24 rounded-xl border border-border focus:border-accent text-sm"
             />
             <span className="text-slate-300 font-bold">-</span>
             <Input
@@ -95,7 +95,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   yearTo: value ? parseInt(value, 10) : undefined,
                 });
               }}
-              className="w-24 rounded-lg border border-border focus:border-blue-500 text-sm"
+              className="w-24 rounded-xl border border-border focus:border-accent text-sm"
             />
           </div>
         </div>
@@ -103,7 +103,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
         <Button
           variant="ghost"
           onClick={onReset}
-          className="rounded-lg text-text-secondary hover:text-blue-600 hover:bg-blue-50 h-10 px-3 font-semibold uppercase tracking-[0.1em] text-[10px]"
+          className="rounded-xl text-text-secondary hover:text-primary-hover hover:bg-primary-light h-10 px-3 font-semibold uppercase tracking-[0.1em] text-[10px]"
         >
           <FiRefreshCw className="mr-2" />
           Reset

@@ -133,12 +133,12 @@ export default function ImportRISModal({
     >
       {/* Mode-specific Info Banner */}
       {mode === "from-strategy" && preselectedStrategy && (
-        <div className="bg-blue-50 border border-blue-200 rounded-[4px] p-4 mb-6">
+        <div className="bg-primary-light border border-accent/30 rounded-xl p-4 mb-6">
           <div className="flex gap-2 text-sm">
-            <FiLock className="w-4 h-4 text-blue-700 mt-0.5 shrink-0" />
+            <FiLock className="w-4 h-4 text-accent mt-0.5 shrink-0" />
             <div className="text-blue-800">
               <p className="font-medium">Importing to strategy:</p>
-              <p className="text-xs text-blue-700 mt-1">
+              <p className="text-xs text-accent mt-1">
                 {preselectedStrategy.searchSource} -{" "}
                 {new Date(preselectedStrategy.executedAt).toLocaleDateString()}
               </p>
@@ -155,9 +155,9 @@ export default function ImportRISModal({
             RIS File <span className="text-red-500">*</span>
           </label>
           <div
-            className={`relative border-2 border-dashed rounded-[4px] p-6 transition-all ${
+            className={`relative border-2 border-dashed rounded-xl p-6 transition-all ${
               isDragging
-                ? "border-blue-500 bg-blue-50"
+                ? "border-accent bg-primary-light"
                 : "border-border hover:border-gray-400 bg-surface-white"
             }`}
             onDragOver={(e) => {
@@ -195,7 +195,7 @@ export default function ImportRISModal({
 
                 {/* Parsed Record Count */}
                 {/* {parsedRecordCount !== null && (
-                  <div className="bg-surface-white border border-border rounded-[4px] p-3">
+                  <div className="bg-surface-white border border-border rounded-xl p-3">
                     <div className="flex items-center gap-2 text-sm text-green-800">
                       <FiCheck className="w-4 h-4" />
                       <p className="font-medium">
@@ -210,7 +210,7 @@ export default function ImportRISModal({
                 <FiUpload className="w-10 h-10 text-text-secondary mx-auto mb-2" />
                 <p className="text-sm text-text-primary mb-1">
                   Drag and drop your RIS file here, or{" "}
-                  <label className="text-blue-600 hover:text-blue-700 cursor-pointer underline">
+                  <label className="text-accent hover:text-primary-hover cursor-pointer underline">
                     browse
                     <input
                       type="file"
@@ -239,7 +239,7 @@ export default function ImportRISModal({
             <select
               value={selectedSource}
               onChange={(e) => setSelectedSource(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
               disabled={isUploading}
             >
               <option value="">{sourcePlaceholder}</option>
@@ -264,7 +264,7 @@ export default function ImportRISModal({
             <select
               value={selectedStrategyId}
               onChange={(e) => setSelectedStrategyId(e.target.value)}
-              className="w-full px-3 py-2 border border-border rounded-[4px] focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
               disabled={isUploading || availableStrategies.length === 0}
             >
               <option value="">Don't link to a strategy</option>

@@ -10,7 +10,7 @@ const EXTRACTION_STATUS_LABELS: Record<ExtractionPaperStatus, string> = {
 
 const EXTRACTION_STATUS_STYLES: Record<ExtractionPaperStatus, string> = {
   todo: "bg-slate-400",
-  "in-progress": "bg-blue-600",
+  "in-progress": "bg-primary",
   "awaiting-consensus": "bg-amber-600",
   completed: "bg-green-600",
 };

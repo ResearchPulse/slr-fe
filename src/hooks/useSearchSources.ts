@@ -4,7 +4,7 @@ import { masterSourceService } from "../services/masterSourceService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import type { SearchSourceDto } from "../types/searchSource";
 import type { SearchStrategyDto } from "../components/paperPool/types/search-strategy";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 import { getErrorMessage } from "../utils/errorUtils";
 
 const EMPTY_SEARCH_SOURCES: SearchSourceDto[] = [];
@@ -36,13 +36,13 @@ export const useSearchSources = (projectId: string) => {
         queryClient.setQueryData(QUERY_KEYS.searchSources.byProject(projectId), response.data);
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paperPool.metadata(projectId) });
         queryClient.invalidateQueries({ queryKey: ["paper-pool", projectId, "papers"] });
-        toast.success("Search sources updated successfully");
+        toastSuccess("Search sources updated successfully");
       } else {
-        toast.error(response.message || "Failed to update search sources");
+        toastError(response.message || "Failed to update search sources");
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "An error occurred"));
+      toastError(getErrorMessage(error, "An error occurred"));
     },
   });
 
@@ -54,11 +54,11 @@ export const useSearchSources = (projectId: string) => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paperPool.metadata(projectId) });
         queryClient.invalidateQueries({ queryKey: ["paper-pool", projectId, "papers"] });
       } else {
-        toast.error(response.message || "Failed to update search source");
+        toastError(response.message || "Failed to update search source");
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "An error occurred"));
+      toastError(getErrorMessage(error, "An error occurred"));
     },
   });
 
@@ -70,13 +70,13 @@ export const useSearchSources = (projectId: string) => {
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.searchSources.byProject(projectId) });
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paperPool.metadata(projectId) });
         queryClient.invalidateQueries({ queryKey: ["paper-pool", projectId, "papers"] });
-        toast.success("Search strategies synchronized successfully");
+        toastSuccess("Search strategies synchronized successfully");
       } else {
-        toast.error(response.message || "Failed to synchronize strategies");
+        toastError(response.message || "Failed to synchronize strategies");
       }
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "An error occurred"));
+      toastError(getErrorMessage(error, "An error occurred"));
     },
   });
 

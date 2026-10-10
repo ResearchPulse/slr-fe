@@ -11,6 +11,7 @@ import Button from "../../../../components/ui/Button";
 import PaperCard from "./PaperCard";
 import PaperDetailsView from "../../../../components/papers/PaperDetailsView";
 import type { PaperResponse } from "../../../../types/paper";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface SnapshotDatasetViewProps {
   papers: PaperResponse[];
@@ -85,7 +86,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <div className="w-10 h-10 rounded-[4px] bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-none shadow-blue-500/20">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-none shadow-primary/10">
               <FiDatabase className="w-5 h-5 text-white" />
             </div>
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
@@ -98,19 +99,19 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
               Papers included in the review, ready for next step.
             </p>
           </div>
-          <div className="ml-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-full border border-blue-100">
-            <span className="text-sm font-bold text-blue-700">
+          <div className="ml-2 px-3 py-1.5 bg-gradient-to-r from-primary-light to-primary-light rounded-full border border-primary/20">
+            <span className="text-sm font-bold text-accent">
               {totalCount.toLocaleString()}
             </span>
-            <span className="text-xs text-blue-500 ml-1">papers</span>
+            <span className="text-xs text-accent ml-1">papers</span>
           </div>
         </div>
         <button
           onClick={onRefetch}
           disabled={fetching}
           className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-[4px] text-sm font-medium transition-all",
-            "text-text-secondary hover:text-blue-600 hover:bg-blue-50",
+            "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all",
+            "text-text-secondary hover:text-accent hover:bg-primary-light",
             fetching && "opacity-60 cursor-not-allowed",
           )}
           title="Refresh dataset"
@@ -126,7 +127,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
           {/* Search Input */}
           <div className="relative flex-1 group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <FiSearch className="w-4 h-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
+              <FiSearch className="w-4 h-4 text-text-secondary group-focus-within:text-accent transition-colors" />
             </div>
             <input
               type="text"
@@ -137,9 +138,9 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                 if (e.key === "Enter") onSearch(searchInput);
               }}
               className={cn(
-                "w-full pl-11 pr-4 py-3 bg-surface-white border border-border rounded-[4px] text-sm text-text-primary",
+                "w-full pl-11 pr-4 py-3 bg-surface-white border border-border rounded-xl text-sm text-text-primary",
                 "placeholder:text-text-secondary",
-                "focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400",
+                "focus:ring-2 focus:ring-accent/30 focus:border-accent",
                 "hover:border-border",
                 "transition-all duration-200 shadow-none",
               )}
@@ -161,16 +162,16 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
           <button
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
-              "flex items-center gap-2 px-4 py-3 rounded-[4px] text-sm font-medium transition-all",
+              "flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all",
               showFilters || yearInput
-                ? "bg-blue-100 text-blue-700 border border-blue-200"
+                ? "bg-primary-light text-accent border border-primary/20"
                 : "bg-surface-white text-text-secondary border border-border hover:bg-bg-primary",
             )}
           >
             <FiFilter className="w-4 h-4" />
             <span>Filters</span>
             {hasFilters && (
-              <span className="w-5 h-5 rounded-full bg-blue-500 text-white text-xs flex items-center justify-center">
+              <span className="w-5 h-5 rounded-full bg-primary text-white text-xs flex items-center justify-center">
                 {[searchInput, yearInput].filter(Boolean).length}
               </span>
             )}
@@ -184,7 +185,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             showFilters ? "max-h-40 opacity-100 mt-3" : "max-h-0 opacity-0",
           )}
         >
-          <div className="flex items-center gap-3 p-4 bg-bg-primary/80 rounded-[4px] border border-border">
+          <div className="flex items-center gap-3 p-4 bg-bg-primary/80 rounded-xl border border-border">
             <div className="flex items-center gap-2">
               <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
                 Publication Year
@@ -203,8 +204,8 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                   }
                 }}
                 className={cn(
-                  "w-32 px-3 py-2 bg-surface-white border border-border rounded-[4px] text-sm text-text-primary",
-                  "placeholder:text-text-secondary focus:ring-2 focus:ring-blue-500/30 focus:border-blue-400",
+                  "w-32 px-3 py-2 bg-surface-white border border-border rounded-xl text-sm text-text-primary",
+                  "placeholder:text-text-secondary focus:ring-2 focus:ring-accent/30 focus:border-accent",
                   "transition-all shadow-none",
                 )}
               />
@@ -212,7 +213,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             {hasFilters && (
               <button
                 onClick={onClearFilters}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-white rounded-[4px] transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-white rounded-xl transition-all"
               >
                 <FiX className="w-3 h-3" />
                 Clear all
@@ -227,11 +228,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         <div className="flex items-center gap-2 mb-4 flex-wrap">
           <span className="text-xs text-text-secondary">Active filters:</span>
           {searchInput && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-medium border border-blue-100">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-primary-light text-accent rounded-full text-xs font-medium border border-primary/20">
               Search: "{searchInput}"
               <button
                 onClick={() => onSearchInputChange("")}
-                className="ml-1 hover:text-blue-900"
+                className="ml-1 hover:text-accent"
               >
                 <FiX className="w-3 h-3" />
               </button>
@@ -258,9 +259,9 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-white rounded-[4px] border border-border p-5 animate-pulse"
+                className="bg-surface-white rounded-xl border border-border p-5 animate-pulse"
               >
-                <div className="h-5 bg-bg-secondary rounded-[4px] w-3/4 mb-3" />
+                <div className="h-5 bg-bg-secondary rounded-xl w-3/4 mb-3" />
                 <div className="h-4 bg-bg-secondary rounded w-1/2 mb-4" />
                 <div className="space-y-2 mb-4">
                   <div className="h-3 bg-bg-secondary rounded w-full" />
@@ -276,7 +277,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full py-20">
-            <div className="w-20 h-20 rounded-[4px] bg-surface-white flex items-center justify-center mb-5 shadow-none">
+            <div className="w-20 h-20 rounded-xl bg-surface-white flex items-center justify-center mb-5 shadow-none">
               <svg
                 className="w-10 h-10 text-red-400"
                 fill="none"
@@ -303,9 +304,9 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         ) : papers.length > 0 ? (
           <>
             {fetching && (
-              <div className="flex items-center gap-2 mb-4 p-3 bg-blue-50 rounded-[4px] border border-blue-100">
-                <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin" />
-                <span className="text-xs text-blue-700 font-medium">
+              <div className="flex items-center gap-2 mb-4 p-3 bg-primary-light rounded-xl border border-primary/20">
+                <LoadingSpinner size="sm" />
+                <span className="text-xs text-accent font-medium">
                   Updating dataset...
                 </span>
               </div>
@@ -320,7 +321,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                   {Math.min(page * pageSize, totalCount)}
                 </span>{" "}
                 of{" "}
-                <span className="font-bold text-blue-600">
+                <span className="font-bold text-accent">
                   {totalCount.toLocaleString()}
                 </span>{" "}
                 papers
@@ -346,11 +347,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center h-full py-20 px-4">
             <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-[4px] bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center shadow-none">
+              <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center shadow-none">
                 <FiDatabase className="w-14 h-14 text-slate-300" />
               </div>
-              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-blue-100 rounded-[4px] flex items-center justify-center shadow-none">
-                <FiSearch className="w-5 h-5 text-blue-400" />
+              <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary-light rounded-xl flex items-center justify-center shadow-none">
+                <FiSearch className="w-5 h-5 text-accent" />
               </div>
             </div>
             <h3 className="text-xl font-bold text-text-primary mb-2">
@@ -367,11 +368,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                 Clear All Filters
               </Button>
             ) : (
-              <div className="flex items-center gap-3 px-4 py-3 bg-blue-50 rounded-[4px] border border-blue-100">
-                <div className="w-8 h-8 rounded-[4px] bg-blue-100 flex items-center justify-center">
-                  <FiDatabase className="w-4 h-4 text-blue-500" />
+              <div className="flex items-center gap-3 px-4 py-3 bg-primary-light rounded-xl border border-primary/20">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <FiDatabase className="w-4 h-4 text-accent" />
                 </div>
-                <p className="text-sm text-blue-700 font-medium">
+                <p className="text-sm text-accent font-medium">
                   Add papers from Ready Papers panel
                 </p>
               </div>
@@ -398,21 +399,21 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                 disabled={page <= 1 || fetching}
                 onClick={onPreviousPage}
                 className={cn(
-                  "px-3 py-2 text-xs font-medium rounded-[4px] transition-all",
+                  "px-3 py-2 text-xs font-medium rounded-xl transition-all",
                   "text-text-secondary bg-surface-white border border-border",
                   "hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed",
                 )}
               >
                 Previous
               </button>
-              <div className="px-3 py-2 text-xs font-semibold text-text-primary bg-bg-secondary rounded-[4px] mx-1">
+              <div className="px-3 py-2 text-xs font-semibold text-text-primary bg-bg-secondary rounded-xl mx-1">
                 {page} / {totalPages}
               </div>
               <button
                 disabled={page >= totalPages || fetching}
                 onClick={onNextPage}
                 className={cn(
-                  "px-3 py-2 text-xs font-medium rounded-[4px] transition-all",
+                  "px-3 py-2 text-xs font-medium rounded-xl transition-all",
                   "text-text-secondary bg-surface-white border border-border",
                   "hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed",
                 )}
@@ -430,7 +431,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         mode="drawer"
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
-        zIndexClassName="z-[6000]"
+        zIndexClassName="z-(--z-index-popover)"
       />
     </div>
   );

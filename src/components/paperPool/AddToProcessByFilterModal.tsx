@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
-import { createPortal } from "react-dom";
-import { FiX, FiFilter, FiCheckCircle } from "react-icons/fi";
+import { FiFilter, FiCheckCircle } from "react-icons/fi";
 import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import type {
   ProcessSnapshot,
@@ -48,39 +48,36 @@ export default function AddToProcessByFilterModal({
     [processSnapshots, selectedProcessId],
   );
 
-  if (!isOpen) return null;
-
   const handleConfirm = async () => {
     if (!selectedProcessId || !selectedSavedFilterId) return;
     await onAddFromFilter(selectedProcessId, selectedSavedFilterId);
   };
 
-  const modalContent = (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300"
-        onClick={onClose}
-      />
-
-      <div className="relative w-full max-w-2xl bg-surface-white rounded-[4px] shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
-        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
-          <div>
-            <h3 className="text-xl font-black text-text-primary uppercase tracking-tight">
-              Add Filter Results to Process
-            </h3>
-            <p className="text-sm text-text-secondary mt-0.5">
-              Transfer papers matching a filter to a review process
-            </p>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary hover:text-text-primary"
-          >
-            <FiX className="w-5 h-5" />
-          </button>
-        </div>
-
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-8">
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title="Add Filter Results to Process"
+      description="Transfer papers matching a filter to a review process"
+      size="md"
+      bodyClassName="custom-scrollbar p-8"
+      footer={
+        !insertResult ? (
+          <>
+            <Button variant="secondary" onClick={onClose} disabled={isAdding}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirm}
+              isLoading={isAdding}
+              disabled={!selectedProcessId || !selectedSavedFilterId}
+            >
+              Confirm Transfer
+            </Button>
+          </>
+        ) : undefined
+      }
+    >
           {insertResult ? (
             <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
               <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
@@ -91,14 +88,14 @@ export default function AddToProcessByFilterModal({
               </h4>
               <p className="text-text-secondary max-w-md mx-auto mb-8 font-medium">
                 We've processed the paper transfer to{" "}
-                <span className="text-blue-600 font-bold">
+                <span className="text-accent font-bold">
                   {selectedProcess?.processName}
                 </span>
                 .
               </p>
 
               <div className="grid grid-cols-2 gap-4 w-full max-w-sm">
-                <div className="bg-bg-primary p-4 rounded-[4px] border border-border">
+                <div className="bg-bg-primary p-4 rounded-xl border border-border">
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Added
                   </div>
@@ -106,7 +103,7 @@ export default function AddToProcessByFilterModal({
                     {insertResult.inserted}
                   </div>
                 </div>
-                <div className="bg-bg-primary p-4 rounded-[4px] border border-border">
+                <div className="bg-bg-primary p-4 rounded-xl border border-border">
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Skipped
                   </div>
@@ -117,11 +114,7 @@ export default function AddToProcessByFilterModal({
               </div>
 
               <div className="mt-10 flex gap-3">
-                <Button
-                  variant="outline"
-                  onClick={onClose}
-                  className="px-8 rounded-[4px] font-bold uppercase tracking-wider text-xs"
-                >
+                <Button variant="secondary" onClick={onClose}>
                   Close
                 </Button>
                 <Button
@@ -131,7 +124,6 @@ export default function AddToProcessByFilterModal({
                     }
                     onClose();
                   }}
-                  className="px-8 rounded-[4px] font-bold uppercase tracking-wider text-xs"
                 >
                   View Process
                 </Button>
@@ -168,7 +160,7 @@ export default function AddToProcessByFilterModal({
                   <select
                     value={selectedSavedFilterId || ""}
                     onChange={(e) => onSelectFilter(e.target.value)}
-                    className="w-full bg-bg-primary border-2 border-border rounded-[4px] px-5 py-4 text-sm font-bold text-text-primary focus:outline-none focus:border-blue-500 transition-all appearance-none cursor-pointer"
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary appearance-none cursor-pointer"
                   >
                     <option value="" disabled>
                       Choose a filter collection...
@@ -182,12 +174,12 @@ export default function AddToProcessByFilterModal({
                 </div>
 
                 {selectedSavedFilterId && (
-                  <div className="bg-blue-50/50 border border-blue-100 rounded-[4px] p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-blue-700">
+                  <div className="bg-primary-light/50 border border-accent/20 rounded-xl p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-accent">
                       <FiFilter className="w-5 h-5" />
                       <span className="text-sm font-bold">Matched Papers</span>
                     </div>
-                    <div className="text-xl font-black text-blue-700">
+                    <div className="text-xl font-black text-accent">
                       {selectedSavedFilterMatchedCount ?? (
                         <LoadingSpinner size="sm" />
                       )}
@@ -197,31 +189,6 @@ export default function AddToProcessByFilterModal({
               </div>
             </div>
           )}
-        </div>
-
-        {!insertResult && (
-          <div className="px-8 py-6 border-t border-border bg-bg-primary flex items-center justify-end gap-3 sticky bottom-0 z-10">
-            <Button
-              variant="outline"
-              onClick={onClose}
-              disabled={isAdding}
-              className="px-6 rounded-[4px] font-bold uppercase tracking-wider text-xs border-border"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleConfirm}
-              isLoading={isAdding}
-              disabled={!selectedProcessId || !selectedSavedFilterId}
-              className="px-10 rounded-[4px] font-bold uppercase tracking-wider text-xs shadow-lg shadow-blue-500/20"
-            >
-              Confirm Transfer
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+    </Modal>
   );
-
-  return createPortal(modalContent, document.body);
 }

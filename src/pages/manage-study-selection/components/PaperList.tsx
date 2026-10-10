@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../../utils/cn";
 import Input from "../../../components/ui/Input";
+import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import {
   useInfiniteTitleAbstractAssignmentPapers,
   useInfiniteFullTextAssignmentPapers,
@@ -84,7 +85,7 @@ const statusConfig: Record<
     icon: CheckCircle2,
     color: "text-accent",
     bgColor: "bg-bg-secondary",
-    borderColor: "border-indigo-200",
+    borderColor: "border-accent/20",
   },
 };
 
@@ -292,7 +293,7 @@ export const PaperList: React.FC<PaperListProps> = ({
       <div className="flex flex-col items-center py-6 h-full bg-bg-secondary border-r border-border animate-in fade-in slide-in-from-left-4 duration-300">
         <button
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-surface-white hover:shadow-none rounded-[4px] transition-all text-text-secondary hover:text-accent mb-8 border border-transparent hover:border-indigo-100"
+          className="p-2 hover:bg-surface-white hover:shadow-none rounded-xl transition-all text-text-secondary hover:text-accent mb-8 border border-transparent hover:border-accent/20"
           title="Expand List"
         >
           <PanelLeftOpen className="w-5 h-5" />
@@ -318,7 +319,7 @@ export const PaperList: React.FC<PaperListProps> = ({
         </p>
         <button
           onClick={() => query.refetch()}
-          className="mt-2 text-xs font-bold text-blue-600 hover:underline"
+          className="mt-2 text-xs font-bold text-accent hover:underline"
         >
           Try again
         </button>
@@ -329,14 +330,14 @@ export const PaperList: React.FC<PaperListProps> = ({
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden bg-surface-white">
       {/* Header & Search */}
-      <div className="space-y-4 border-b border-[#e4ebf0] bg-white p-4">
+      <div className="space-y-4 border-b border-border bg-white p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             {isAssignmentMode && (
               <div className="flex items-center justify-center w-5 h-5">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer"
+                  className="w-4 h-4 rounded border-slate-300 text-accent focus:ring-accent accent-accent cursor-pointer"
                   checked={isAllSelected}
                   ref={(el) => {
                     if (el) el.indeterminate = isSomeSelected;
@@ -353,7 +354,7 @@ export const PaperList: React.FC<PaperListProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onToggleCollapse}
-              className="rounded-lg border border-transparent p-2 text-slate-500 transition-colors hover:border-slate-200 hover:bg-slate-50 hover:text-blue-700"
+              className="rounded-xl border border-transparent p-2 text-slate-500 transition-colors hover:border-slate-200 hover:bg-slate-50 hover:text-accent"
               title="Collapse List"
             >
               <PanelLeftClose className="w-4 h-4" />
@@ -369,10 +370,10 @@ export const PaperList: React.FC<PaperListProps> = ({
         </div>
 
         <div className="relative group">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-blue-500 transition-colors" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-accent transition-colors" />
           <Input
             placeholder="Search title or authors..."
-            className="rounded-lg border-[#dce6ed] bg-white pl-10 transition-all focus:border-blue-400 focus:ring-blue-100"
+            className="border-border bg-white pl-10 transition-all"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -380,7 +381,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
         <div className="grid grid-cols-2 gap-2">
           <select
-            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             value={yearFilter}
             onChange={(e) => handleFilterChange(setYearFilter, e.target.value)}
           >
@@ -396,7 +397,7 @@ export const PaperList: React.FC<PaperListProps> = ({
           </select>
 
           <select
-            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             value={decisionFilter}
             onChange={(e) =>
               handleFilterChange(setDecisionFilter, e.target.value)
@@ -410,7 +411,7 @@ export const PaperList: React.FC<PaperListProps> = ({
           </select>
 
           <select
-            className="rounded-lg border border-[#dce6ed] bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
             value={assignmentFilter}
             onChange={(e) =>
               handleFilterChange(setAssignmentFilter, e.target.value)
@@ -425,7 +426,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
       {/* List */}
       <div
-        className="min-h-0 flex-1 touch-pan-y space-y-2 overflow-y-auto overscroll-contain bg-[#f7f9fb] p-3 custom-scrollbar"
+        className="min-h-0 flex-1 touch-pan-y space-y-2 overflow-y-auto overscroll-contain bg-bg-primary p-3 custom-scrollbar"
         onScroll={handleScroll}
       >
         {isLoading ? (
@@ -454,19 +455,19 @@ export const PaperList: React.FC<PaperListProps> = ({
                 className={cn(
                   "group relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all",
                   isPaperActive
-                    ? "border-blue-300 bg-white shadow-sm ring-2 ring-blue-100"
-                    : "border-[#e2e9ef] bg-white hover:border-blue-200 hover:shadow-sm",
+                    ? "border-accent bg-white shadow-sm ring-2 ring-accent/20"
+                    : "border-border bg-white hover:border-accent/20 hover:shadow-sm",
                 )}
               >
                 {isPaperActive && (
-                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full" />
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-accent rounded-r-full" />
                 )}
 
                 {isAssignmentMode && (
                   <div className="flex-shrink-0 pt-1">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="w-4 h-4 rounded border-slate-300 text-accent focus:ring-accent accent-accent cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
                       checked={isPaperSelected}
                       disabled={
                         ["Included", "Excluded", "Resolved"].includes(paper.status)
@@ -482,8 +483,8 @@ export const PaperList: React.FC<PaperListProps> = ({
                     className={cn(
                       "line-clamp-2 text-[13px] font-semibold leading-5 transition-colors",
                       isPaperActive
-                        ? "text-blue-700"
-                        : "text-slate-800 group-hover:text-blue-600",
+                        ? "text-accent"
+                        : "text-slate-800 group-hover:text-accent",
                     )}
                   >
                     {paper.title}
@@ -522,7 +523,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                         className={cn(
                           "flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider",
                           paper.isAssigned
-                            ? "bg-bg-secondary text-accent border-indigo-100"
+                            ? "bg-bg-secondary text-accent border-accent/20"
                             : "bg-bg-secondary text-text-secondary border-border",
                         )}
                       >
@@ -539,7 +540,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                                 paper.assignedReviewers || [],
                               )
                             }
-                            className="ml-1 p-0.5 hover:bg-indigo-200 rounded-md transition-colors"
+                            className="ml-1 p-0.5 hover:bg-primary-light rounded-xl transition-colors"
                             title="View Reviewers"
                           >
                             <Eye className="w-3 h-3" />
@@ -582,7 +583,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                 setDecisionFilter("0");
                 setAssignmentFilter("all");
               }}
-              className="mt-2 text-xs font-bold text-blue-600 hover:underline"
+              className="mt-2 text-xs font-bold text-accent hover:underline"
             >
               Clear all filters
             </button>
@@ -591,8 +592,8 @@ export const PaperList: React.FC<PaperListProps> = ({
 
         {isFetchingNextPage && (
           <div className="py-4 flex justify-center">
-            <div className="flex items-center gap-2 text-blue-500 font-bold text-[10px] uppercase tracking-widest">
-              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            <div className="flex items-center gap-2 text-accent font-bold text-[10px] uppercase tracking-widest">
+              <LoadingSpinner size="sm" />
               Loading more...
             </div>
           </div>

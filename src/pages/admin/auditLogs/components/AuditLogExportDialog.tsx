@@ -138,7 +138,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
                 onClick={() => setFormat(option.value)}
                 aria-pressed={isSelected}
                 className={cn(
-                  "flex min-h-[92px] items-start gap-3 rounded-lg border p-3.5 text-left transition-colors",
+                  "flex min-h-[92px] items-start gap-3 rounded-xl border p-3.5 text-left transition-colors",
                   isSelected
                     ? "border-accent bg-bg-secondary"
                     : "border-border bg-white hover:bg-bg-primary",
@@ -149,7 +149,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
                       "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border",
                       isSelected
                         ? "border-accent"
-                        : "border-[#AAB7C0]",
+                        : "border-text-muted",
                     )}
                   >
                     {isSelected && <span className="h-2 w-2 rounded-full bg-accent" />}
@@ -198,7 +198,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
               </div>
               <div className="text-sm font-semibold text-accent">{progress}%</div>
             </div>
-            <div className="h-2 overflow-hidden rounded-full bg-[#E4EAEE]">
+            <div className="h-2 overflow-hidden rounded-full bg-bg-secondary">
               <div
                 className="h-full rounded-full bg-accent transition-[width] duration-300"
                 style={{ width: `${progress}%` }}
@@ -212,7 +212,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
             type="button"
             onClick={onClose}
             disabled={isExporting}
-            className="h-10 rounded-lg border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary disabled:opacity-50"
+            className="h-10 rounded-xl border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary disabled:opacity-50"
           >
             Cancel
           </button>
@@ -221,7 +221,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
             onClick={handleStartExport}
             disabled={isExporting || hasInvalidRange}
             className={cn(
-              "inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium transition-colors",
+              "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium transition-colors",
               isExporting || hasInvalidRange
                 ? "bg-slate-200 text-slate-500 cursor-not-allowed"
                 : "bg-accent text-white hover:bg-primary-hover",

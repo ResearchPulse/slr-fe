@@ -46,14 +46,14 @@ export default function InvitationWaitlist({
             key={user.id}
             onClick={() => onSelect(user.id)}
             className={cn(
-              "group flex items-center justify-between p-2.5 rounded-md border transition-all duration-300 cursor-pointer",
+              "group flex items-center justify-between p-2.5 rounded-xl border transition-all duration-300 cursor-pointer",
               selectedUserId === user.id
                 ? "bg-bg-secondary/50 border-indigo-200"
                 : "bg-surface-white border-slate-100 hover:border-slate-200",
             )}
           >
             <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-[4px] bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:bg-accent group-hover:text-white transition-colors">
+              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:bg-accent group-hover:text-white transition-colors">
                 {getInitials(user.fullName)}
               </div>
               <div className="min-w-0">
@@ -66,7 +66,7 @@ export default function InvitationWaitlist({
                       "px-1.5 py-0.5 rounded text-[7px] font-black uppercase tracking-wider",
                       user.role === "Lecturer"
                         ? "bg-amber-50 text-amber-600"
-                        : "bg-blue-50 text-blue-600",
+                        : "bg-primary-light text-accent",
                     )}
                   >
                     {user.role}
@@ -85,7 +85,7 @@ export default function InvitationWaitlist({
                     e.stopPropagation();
                     onRemove(user.id);
                   }}
-                  className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-[4px] transition-all"
+                  className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-xl transition-all"
                 >
                   <FiTrash2 size={12} />
                 </button>

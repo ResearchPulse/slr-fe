@@ -50,13 +50,13 @@ export default function UserSearchSection({
           placeholder="Search username or email..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-[1.25rem] text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
         />
       </div>
 
       <div className="max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
         {isSearching && (
-          <div className="absolute inset-0 bg-surface-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-md">
+          <div className="absolute inset-0 bg-surface-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-xl">
             <LoadingSpinner size="sm" />
           </div>
         )}
@@ -74,7 +74,7 @@ export default function UserSearchSection({
                 key={user.id}
                 onClick={() => onSelectUser(user)}
                 className={cn(
-                  "group flex items-center gap-3 p-3 rounded-md border transition-all duration-300 cursor-pointer select-none",
+                  "group flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 cursor-pointer select-none",
                   isSelected
                     ? "bg-accent border-indigo-600 shadow-none shadow-indigo-100"
                     : "bg-surface-white border-slate-50 hover:border-slate-200 hover:bg-slate-50",
@@ -85,7 +85,7 @@ export default function UserSearchSection({
               >
                 <div
                   className={cn(
-                    "w-10 h-10 rounded-[4px] flex items-center justify-center text-xs font-black shrink-0",
+                    "w-10 h-10 rounded-full flex items-center justify-center text-xs font-black shrink-0",
                     isSelected
                       ? "bg-surface-white/20 text-white"
                       : "bg-slate-100 text-slate-500",
@@ -130,7 +130,7 @@ export default function UserSearchSection({
                 {isAdded || isInvited ? (
                   <span
                     className={cn(
-                      "px-2 py-0.5 rounded-[4px] text-[7px] font-black uppercase tracking-widest",
+                      "px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest",
                       isSelected
                         ? "bg-surface-white/20 text-white"
                         : "bg-slate-50 text-slate-400",
@@ -139,7 +139,7 @@ export default function UserSearchSection({
                     {isAdded ? "Member" : "Invited"}
                   </span>
                 ) : isAlreadyChosen && !isSelected ? (
-                  <div className="flex items-center gap-1.5 px-2 py-1.5 bg-bg-secondary text-accent text-[8px] font-black uppercase tracking-widest rounded-[4px]">
+                  <div className="flex items-center gap-1.5 px-2 py-1.5 bg-bg-secondary text-accent text-[8px] font-black uppercase tracking-widest rounded-full">
                     {assignedRoles[user.id]}
                     <FiCheck size={10} />
                   </div>
@@ -147,7 +147,7 @@ export default function UserSearchSection({
                   <FiChevronRight className="text-white animate-pulse" />
                 ) : (
                   isSelectable && (
-                    <div className="w-5 h-5 rounded-[4px] border-2 border-slate-100 group-hover:border-indigo-200 flex items-center justify-center transition-colors">
+                    <div className="w-5 h-5 rounded-md border-2 border-slate-100 group-hover:border-indigo-200 flex items-center justify-center transition-colors">
                       <FiPlus
                         className="text-slate-200 group-hover:text-indigo-400"
                         size={12}
@@ -191,7 +191,7 @@ export default function UserSearchSection({
               <button
                 onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 bg-surface-white border border-slate-200 rounded-[4px] text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
+                className="p-1.5 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
               >
                 <FiChevronRight className="rotate-180" size={14} />
               </button>
@@ -205,7 +205,7 @@ export default function UserSearchSection({
                   onPageChange?.(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="p-1.5 bg-surface-white border border-slate-200 rounded-[4px] text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
+                className="p-1.5 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
               >
                 <FiChevronRight size={14} />
               </button>

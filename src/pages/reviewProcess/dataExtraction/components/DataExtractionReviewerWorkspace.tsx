@@ -1697,7 +1697,7 @@ export default function DataExtractionReviewerWorkspace({
   return (
     <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] flex-col overflow-hidden bg-[#F4F7FA]">
       {ws.isDirectMode ? (
-        <div className="shrink-0 border-b border-blue-100 bg-blue-50 px-5 py-2.5 text-sm font-medium text-blue-800">
+        <div className="shrink-0 border-b border-accent/30 bg-primary-light px-5 py-2.5 text-sm font-medium text-accent">
           ⚡️ Direct Extraction Mode (Leader). Submitting this will finalize the
           data and skip the consensus phase.
         </div>

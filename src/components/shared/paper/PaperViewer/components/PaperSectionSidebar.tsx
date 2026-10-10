@@ -41,17 +41,17 @@ export function PaperSectionSidebar({
                 key={`${section.sectionTitle}-${section.order}`}
                 onClick={() => onSectionClick(section.sectionTitle)}
                 className={cn(
-                  "w-full text-left px-3 py-2 rounded-[4px] transition-all duration-200 group",
+                  "w-full text-left px-3 py-2 rounded-xl transition-all duration-200 group",
                   "text-xs font-bold uppercase tracking-tight",
                   isActive
-                    ? "bg-blue-100 text-blue-700 shadow-none"
+                    ? "bg-primary-light text-accent shadow-none"
                     : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary",
                 )}
               >
                 <div className="flex items-center justify-between">
                   <span className="truncate pr-2">{section.sectionTitle}</span>
                   {isActive && (
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)] shrink-0" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(37,99,235,0.5)] shrink-0" />
                   )}
                 </div>
               </button>

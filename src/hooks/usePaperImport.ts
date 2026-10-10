@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
+import { toastError, toastSuccess } from "../utils/toast";
 import { paperImportService } from "../services/paperImportService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
@@ -26,10 +26,10 @@ export function usePaperImport(projectId?: string) {
           queryKey: QUERY_KEYS.paperPool.metadata(projectId),
         });
       }
-      toast.success(response.message || "Papers imported successfully");
+      toastSuccess(response.message || "Papers imported successfully");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to import RIS file"));
+      toastError(getErrorMessage(error, "Failed to import RIS file"));
     },
   });
 
@@ -46,10 +46,10 @@ export function usePaperImport(projectId?: string) {
           queryKey: QUERY_KEYS.paperPool.metadata(projectId),
         });
       }
-      toast.success(response.message || "Papers imported successfully from BibTeX");
+      toastSuccess(response.message || "Papers imported successfully from BibTeX");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to import BibTeX file"));
+      toastError(getErrorMessage(error, "Failed to import BibTeX file"));
     },
   });
 
@@ -60,9 +60,9 @@ export function usePaperImport(projectId?: string) {
         queryClient.invalidateQueries({ queryKey: ["paper-pool", projectId] });
         queryClient.invalidateQueries({ queryKey: QUERY_KEYS.paperPool.metadata(projectId) });
       }
-      toast.success(response.message || "PDF imported successfully");
+      toastSuccess(response.message || "PDF imported successfully");
     },
-    onError: (error) => toast.error(getErrorMessage(error, "Failed to import PDF file")),
+    onError: (error) => toastError(getErrorMessage(error, "Failed to import PDF file")),
   });
 
   // ---- Mutation: Import by DOI ----
@@ -77,10 +77,10 @@ export function usePaperImport(projectId?: string) {
           queryKey: QUERY_KEYS.paperPool.metadata(projectId),
         });
       }
-      toast.success(response.message || "Paper imported successfully by DOI");
+      toastSuccess(response.message || "Paper imported successfully by DOI");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to import paper by DOI"));
+      toastError(getErrorMessage(error, "Failed to import paper by DOI"));
     },
   });
 
@@ -96,10 +96,10 @@ export function usePaperImport(projectId?: string) {
           queryKey: QUERY_KEYS.paperPool.metadata(projectId),
         });
       }
-      toast.success(response.message || "Papers imported successfully from Crossref");
+      toastSuccess(response.message || "Papers imported successfully from Crossref");
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to import papers from Crossref"));
+      toastError(getErrorMessage(error, "Failed to import papers from Crossref"));
     },
   });
 

@@ -40,11 +40,11 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         Back to projects
       </button>
 
-      <header className="rounded-2xl border border-border bg-white px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
+      <header className="rounded-2xl border border-border bg-surface-white px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             {project.domain && (
-              <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+              <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
                 <span>{project.domain}</span>
               </div>
             )}

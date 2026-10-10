@@ -28,7 +28,7 @@ export default function SearchesTabContent({
   return (
     <div>
       {/* Info Banner */}
-      <div className="bg-bg-primary border border-border rounded-[4px] p-4 mb-6">
+      <div className="bg-bg-primary border border-border rounded-xl p-4 mb-6">
         <div className="flex items-start gap-3">
           <FiFileText className="w-5 h-5 text-text-secondary mt-0.5" />
           <div>
@@ -52,10 +52,10 @@ export default function SearchesTabContent({
             <input
               type="text"
               placeholder="Filter documented searches..."
-              className="pl-10 pr-4 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 min-w-[300px]"
+              className="pl-10 pr-4 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent focus:border-accent min-w-[300px]"
             />
           </div>
-          <select className="px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500">
+          <select className="px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent">
             <option>All Databases</option>
             <option>PubMed</option>
             <option>IEEE Xplore</option>
@@ -105,7 +105,7 @@ export default function SearchesTabContent({
                 >
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      <FiDatabase className="w-4 h-4 text-blue-600" />
+                      <FiDatabase className="w-4 h-4 text-accent" />
                       <span className="font-medium text-text-primary">
                         {search.searchSource}
                       </span>
@@ -119,7 +119,7 @@ export default function SearchesTabContent({
                       >
                         {search.searchQuery}
                       </p>
-                      <button className="text-xs text-blue-600 hover:text-blue-700 mt-1 flex items-center gap-1">
+                      <button className="text-xs text-accent hover:text-primary-hover mt-1 flex items-center gap-1">
                         <FiCopy className="w-3 h-3" />
                         Copy query
                       </button>

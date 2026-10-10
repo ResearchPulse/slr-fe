@@ -11,6 +11,7 @@ import Button from "../../../../components/ui/Button";
 import EmptyState from "../../../../components/ui/EmptyState";
 import IdentificationFilterBar from "./IdentificationFilterBar";
 import type { PaperResponse } from "../../../../types/paper";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface ReadyPapersTableProps {
   papers: PaperResponse[];
@@ -110,7 +111,7 @@ export default function ReadyPapersTable({
         <button
           onClick={onRefetch}
           disabled={fetching}
-          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-md transition-colors"
+          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-xl transition-colors"
           title="Refresh"
         >
           <FiRefreshCw
@@ -169,7 +170,7 @@ export default function ReadyPapersTable({
             {/* Fetching indicator for subsequent loads */}
             {fetching && (
               <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600">
-                <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-emerald-600" />
+                <LoadingSpinner size="sm" />
                 Updating...
               </div>
             )}
@@ -245,7 +246,7 @@ export default function ReadyPapersTable({
                           target="_blank"
                           rel="noreferrer"
                           onClick={(e) => e.stopPropagation()}
-                          className="text-xs text-blue-600 hover:text-blue-700 hover:underline truncate max-w-[120px] block"
+                          className="text-xs text-accent hover:text-primary-hover hover:underline truncate max-w-[120px] block"
                         >
                           {paper.doi}
                         </a>
@@ -287,7 +288,7 @@ export default function ReadyPapersTable({
               <button
                 disabled={!hasPrev || fetching}
                 onClick={onPreviousPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Prev
               </button>
@@ -297,7 +298,7 @@ export default function ReadyPapersTable({
               <button
                 disabled={!hasNext || fetching}
                 onClick={onNextPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-md hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next
               </button>

@@ -112,7 +112,7 @@ export default function ReviewerFormPane({
             {activeSectionDescription}
           </p>
           {activeEvidenceTargetLabel ? (
-            <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+            <div className="mt-2 inline-flex max-w-full items-center gap-2 rounded-full border border-accent/30 bg-primary-light px-2.5 py-1 text-xs font-semibold text-accent">
               <span className="shrink-0">Target selected:</span>
               <span className="truncate" title={activeEvidenceTargetLabel}>
                 {activeEvidenceTargetLabel}
@@ -167,7 +167,7 @@ export default function ReviewerFormPane({
                             onRemoveMatrixRow(activeSectionId, rowIndex)
                           }
                           disabled={isReadOnly}
-                          className="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-surface-white hover:text-red-700"
+                          className="rounded-xl px-2 py-1 text-xs font-semibold text-red-600 hover:bg-surface-white hover:text-red-700"
                         >
                           Remove
                         </button>
@@ -185,7 +185,7 @@ export default function ReviewerFormPane({
 
                         {isPredefinedRow ? (
                           <>
-                            <div className="w-full rounded-lg border border-border bg-bg-secondary px-3 py-2 text-base font-semibold text-text-primary">
+                            <div className="w-full rounded-xl border border-border bg-bg-secondary px-3 py-2 text-base font-semibold text-text-primary">
                               {itemName || "Predefined column"}
                             </div>
                             <p className="mt-1 text-xs text-text-secondary">
@@ -208,7 +208,7 @@ export default function ReviewerFormPane({
                               )
                             }
                             placeholder="e.g. Group A, Baseline Tool"
-                            className="w-full rounded-lg border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500"
+                            className="w-full rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-accent"
                           />
                         )}
                       </div>
@@ -296,7 +296,7 @@ export default function ReviewerFormPane({
                                   )
                                 }
                                 disabled={isReadOnly || isAskingAi}
-                                className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                                className="inline-flex items-center gap-1 rounded-xl border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                               >
                                 <Sparkles className="h-3.5 w-3.5" />
                                 Ask AI
@@ -354,7 +354,7 @@ export default function ReviewerFormPane({
                                 }
                                 className={
                                   isTargetActive
-                                    ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                    ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-primary-light text-accent transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
                                     : hasLinkedEvidence
                                       ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
                                       : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
@@ -375,7 +375,7 @@ export default function ReviewerFormPane({
                 type="button"
                 onClick={() => onAddMatrixRow(activeSectionId)}
                 disabled={isReadOnly}
-                className="w-full rounded-xl border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-blue-400 hover:text-blue-700"
+                className="w-full rounded-xl border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent"
               >
                 + Add New {activeSection.name} Item
               </button>
@@ -443,7 +443,7 @@ export default function ReviewerFormPane({
                         type="button"
                         onClick={() => onAskAiField(field, null, null)}
                         disabled={isReadOnly || isAskingAi}
-                        className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                        className="inline-flex items-center gap-1 rounded-xl border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <Sparkles className="h-3.5 w-3.5" />
                         Ask AI
@@ -485,7 +485,7 @@ export default function ReviewerFormPane({
                         }
                         className={
                           isTargetActive
-                            ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-accent/30 bg-primary-light text-accent transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-60"
                             : hasLinkedEvidence
                               ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
                               : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"

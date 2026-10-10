@@ -24,7 +24,7 @@ export const DocumentAuthoringEditor: React.FC = () => {
       {/* Top Navigation / Header */}
       <header className="h-16 border-b border-gray-100 flex items-center justify-between px-6 shrink-0 bg-white/80 backdrop-blur-md z-20">
         <div className="flex items-center gap-4">
-          <div className="bg-blue-600 p-2 rounded-lg">
+          <div className="bg-blue-600 p-2 rounded-xl">
             <LayoutDashboard className="w-5 h-5 text-white" />
           </div>
           <div>

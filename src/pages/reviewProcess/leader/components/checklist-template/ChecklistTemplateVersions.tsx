@@ -101,7 +101,7 @@ export const ChecklistTemplateVersions: React.FC<
 
   if (error) {
     return (
-      <div className="p-8 text-center bg-surface-white rounded-[4px] border border-red-100">
+      <div className="p-8 text-center bg-surface-white rounded-xl border border-red-100">
         <p className="text-red-500 font-medium">{error}</p>
       </div>
     );
@@ -112,7 +112,7 @@ export const ChecklistTemplateVersions: React.FC<
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <div className="w-10 h-10 rounded-[4px] bg-bg-secondary flex items-center justify-center text-accent">
+            <div className="w-10 h-10 rounded-xl bg-bg-secondary flex items-center justify-center text-accent">
               <RiHistoryLine size={24} />
             </div>
             Template Versions
@@ -124,14 +124,14 @@ export const ChecklistTemplateVersions: React.FC<
 
         <Button
           onClick={() => setIsCreateModalOpen(true)}
-          className="rounded-[4px] px-6 py-3 font-bold shadow-none shadow-indigo-100 transition-all hover:-translate-y-0.5"
+          className="rounded-xl px-6 py-3 font-bold shadow-none shadow-primary/10 transition-all hover:-translate-y-0.5"
         >
           <RiAddLine className="mr-2" size={20} />
           Create Template
         </Button>
       </div>
 
-      <div className="bg-surface-white rounded-md border border-border overflow-hidden shadow-none">
+      <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent cursor-default">
@@ -156,7 +156,7 @@ export const ChecklistTemplateVersions: React.FC<
               templates.map((t) => (
                 <TableRow key={t.id}>
                   <TableCell>
-                    <span className="font-black text-accent bg-bg-secondary px-3 py-1 rounded-[4px] text-sm">
+                    <span className="font-black text-accent bg-bg-secondary px-3 py-1 rounded-xl text-sm">
                       v{t.version}
                     </span>
                   </TableCell>
@@ -191,7 +191,6 @@ export const ChecklistTemplateVersions: React.FC<
                       </Button>
                       <Button
                         size="sm"
-                        className="bg-accent hover:bg-indigo-700 shadow-none shadow-indigo-100"
                         disabled={t.isActive || isActivating}
                         onClick={() => handleActivateTemplate(t.id)}
                       >

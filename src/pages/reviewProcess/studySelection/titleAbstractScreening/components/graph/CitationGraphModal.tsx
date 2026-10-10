@@ -47,12 +47,12 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-(--z-index-popover) flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 md:p-8">
-      <div className="bg-surface-white w-full h-full rounded-[4px] shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
+    <div className="fixed inset-0 z-(--z-index-popover) flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 md:p-8">
+      <div className="bg-surface-white w-full h-full rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
         {/* Header */}
         <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-surface-white z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-50 rounded-[4px] text-blue-600">
+            <div className="p-2 bg-primary-light rounded-xl text-accent">
               <FiMaximize2 className="w-5 h-5" />
             </div>
             <div>
@@ -72,7 +72,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
                 Root Paper
               </div>
               <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="w-2 h-2 rounded-full bg-primary" />
                 Citations
               </div>
             </div>
@@ -94,7 +94,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
             {selectedPaperId ? (
               isLoadingDetails ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-text-secondary">
-                  <FiRefreshCw className="w-8 h-8 animate-spin mb-4 text-blue-500" />
+                  <FiRefreshCw className="w-8 h-8 animate-spin mb-4 text-accent" />
                   <p className="text-sm font-medium">Fetching details...</p>
                 </div>
               ) : paperDetails ? (
@@ -109,7 +109,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
               )
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-bg-primary/50">
-                <div className="w-16 h-16 bg-surface-white rounded-[4px] shadow-sm flex items-center justify-center mb-6 text-gray-300 border border-border">
+                <div className="w-16 h-16 bg-surface-white rounded-xl shadow-sm flex items-center justify-center mb-6 text-gray-300 border border-border">
                   <FiInfo className="w-8 h-8" />
                 </div>
                 <h3 className="text-sm font-bold text-text-primary mb-2">

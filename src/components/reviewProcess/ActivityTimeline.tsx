@@ -30,7 +30,7 @@ interface ActivityTimelineProps {
 const getActivityIcon = (type: Activity["type"]) => {
   switch (type) {
     case "phase_started":
-      return <FiActivity className="w-5 h-5 text-blue-600" />;
+      return <FiActivity className="w-5 h-5 text-accent" />;
     case "phase_completed":
       return <FiCheckCircle className="w-5 h-5 text-green-600" />;
     case "record_added":
@@ -78,7 +78,7 @@ export default function ActivityTimeline({
 }: ActivityTimelineProps) {
   if (activities.length === 0) {
     return (
-      <div className="bg-surface-white border border-border rounded-[4px] p-8">
+      <div className="bg-surface-white border border-border rounded-xl p-8">
         <div className="text-center text-text-secondary">
           <FiClock className="w-12 h-12 mx-auto mb-3 text-text-secondary" />
           <p className="text-sm">No recent activities</p>
@@ -91,9 +91,9 @@ export default function ActivityTimeline({
   }
 
   return (
-    <div className="bg-surface-white border border-border rounded-[4px] p-6">
+    <div className="bg-surface-white border border-border rounded-xl p-6">
       <h3 className="text-lg font-semibold text-text-primary mb-4 flex items-center gap-2">
-        <FiActivity className="w-5 h-5 text-blue-600" />
+        <FiActivity className="w-5 h-5 text-accent" />
         Recent Activity
       </h3>
 
@@ -135,7 +135,7 @@ export default function ActivityTimeline({
                   </span>
                 )}
                 {activity.phaseRelated && (
-                  <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded-full font-medium">
+                  <span className="px-2 py-0.5 bg-primary-light text-accent rounded-full font-medium">
                     {activity.phaseRelated}
                   </span>
                 )}
@@ -146,7 +146,7 @@ export default function ActivityTimeline({
       </div>
 
       {activities.length > 5 && (
-        <button className="w-full mt-4 py-2 text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
+        <button className="w-full mt-4 py-2 text-sm text-accent hover:text-primary-hover font-medium transition-colors">
           View all activities →
         </button>
       )}

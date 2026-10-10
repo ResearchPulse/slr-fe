@@ -70,7 +70,7 @@ export default function ReviewerSidebar({
               onClick={() => onSectionChange(sectionId)}
               className={`group flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                 isActive
-                  ? "border-primary/25 bg-blue-50/80 text-primary shadow-sm"
+                  ? "border-primary/25 bg-primary-light/80 text-primary shadow-sm"
                   : "border-border bg-surface-white text-text-secondary hover:border-primary/25 hover:bg-bg-secondary hover:text-text-primary"
               }`}
             >
@@ -78,7 +78,7 @@ export default function ReviewerSidebar({
                 {section.name}
               </span>
               <span
-                className={`shrink-0 rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${
+                className={`shrink-0 rounded-xl px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.08em] ${
                   isActive
                     ? "bg-white/80 text-primary/75"
                     : "bg-bg-secondary text-text-secondary"

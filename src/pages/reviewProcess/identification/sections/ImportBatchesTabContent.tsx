@@ -14,6 +14,7 @@ import {
 import Button from "../../../../components/ui/Button";
 import type { ImportBatch } from "../../../../types/identification";
 import { formatRelativeTime } from "../../../../utils/dateFormat";
+import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 
 interface ImportBatchesTabContentProps {
   importBatches: ImportBatch[];
@@ -40,7 +41,7 @@ export default function ImportBatchesTabContent({
     return (
       <div className="flex items-center justify-center py-12">
         <div className="flex flex-col items-center gap-3">
-          <FiRefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
+          <LoadingSpinner size="md" />
           <p className="text-sm text-text-secondary">
             Loading import batches...
           </p>
@@ -51,7 +52,7 @@ export default function ImportBatchesTabContent({
 
   if (importBatchesError) {
     return (
-      <div className="bg-surface-white border border-border rounded-[4px] p-4 flex items-start gap-3">
+      <div className="bg-surface-white border border-border rounded-xl p-4 flex items-start gap-3">
         <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
         <div className="flex-1">
           <h3 className="text-sm font-semibold text-red-900 mb-1">
@@ -75,9 +76,9 @@ export default function ImportBatchesTabContent({
       {/* Hero Upload Zone or Filter Bar */}
       {importBatches.length === 0 ? (
         <div
-          className={`relative border-2 border-dashed rounded-[4px] p-12 mb-6 transition-all ${
+          className={`relative border-2 border-dashed rounded-xl p-12 mb-6 transition-all ${
             isDragging
-              ? "border-blue-500 bg-blue-50"
+              ? "border-accent bg-primary-light"
               : "border-border bg-bg-primary hover:border-gray-400"
           }`}
           onDragOver={onDragOver}
@@ -107,13 +108,13 @@ export default function ImportBatchesTabContent({
       ) : (
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <select className="px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500">
+            <select className="px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent">
               <option>All Sources</option>
               <option>PubMed</option>
               <option>IEEE Xplore</option>
               <option>ACM Digital Library</option>
             </select>
-            <select className="px-3 py-2 border border-border rounded-[4px] text-sm focus:ring-2 focus:ring-blue-500">
+            <select className="px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent">
               <option>All Statuses</option>
               <option>Completed</option>
               <option>Processing</option>
@@ -168,7 +169,7 @@ export default function ImportBatchesTabContent({
                   </td>
                   <td className="py-4 px-4">
                     <div className="flex items-center gap-2">
-                      <FiDatabase className="w-4 h-4 text-blue-600" />
+                      <FiDatabase className="w-4 h-4 text-accent" />
                       <span className="text-sm text-text-primary">
                         {batch.source}
                       </span>

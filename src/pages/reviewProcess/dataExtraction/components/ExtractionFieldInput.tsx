@@ -97,7 +97,7 @@ export default function ExtractionFieldInput({
       : [];
 
     return (
-      <div className="space-y-2 rounded-[4px] border border-border bg-bg-secondary p-4">
+      <div className="space-y-2 rounded-xl border border-border bg-bg-secondary p-4">
         {options.map((option) => {
           const optionId = option.optionId ?? "";
           const checked =
@@ -123,7 +123,7 @@ export default function ExtractionFieldInput({
 
                   onChange(selectedValues.filter((item) => item !== optionId));
                 }}
-                className="h-4 w-4 rounded border-slate-300 text-blue-600"
+                className="h-4 w-4 rounded border-slate-300 text-accent"
                 disabled={!optionId}
               />
               <span>{option.value}</span>

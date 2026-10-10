@@ -24,7 +24,7 @@ export default function ConsensusHeader({
           <h1 className="line-clamp-1 text-lg font-semibold text-text-primary">
             {paperTitle}
           </h1>
-          <span className="shrink-0 rounded-full border border-indigo-200 bg-bg-secondary px-3 py-1 text-xs font-semibold text-indigo-700">
+          <span className="shrink-0 rounded-full border border-accent/30 bg-bg-secondary px-3 py-1 text-xs font-semibold text-accent">
             Consensus Mode
           </span>
           <Button variant="outline" size="sm" onClick={onOpenDocument}>

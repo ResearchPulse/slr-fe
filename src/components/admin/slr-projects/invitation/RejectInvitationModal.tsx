@@ -36,7 +36,7 @@ export default function RejectInvitationModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Decline Invitation">
       <div className="p-6">
-        <div className="w-16 h-16 bg-bg-secondary text-error rounded-md flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
+        <div className="w-16 h-16 bg-bg-secondary text-error rounded-xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-border">
           <FiXCircle size={32} />
         </div>
         <p className="text-center text-text-secondary font-medium mb-4">
@@ -46,7 +46,7 @@ export default function RejectInvitationModal({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message here..."
-          className="w-full h-32 p-4 bg-surface-white border border-border rounded-md text-sm font-medium focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all resize-none mb-6 shadow-sm"
+          className="w-full h-32 p-4 bg-surface-white border border-border rounded-xl text-sm font-medium focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all resize-none mb-6 shadow-sm"
         />
         <div className="flex gap-3">
           <Button variant="secondary" onClick={onClose} className="flex-1">

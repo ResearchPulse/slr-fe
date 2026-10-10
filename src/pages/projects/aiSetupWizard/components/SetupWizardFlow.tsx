@@ -117,7 +117,7 @@ export default function SetupWizardFlow({
             <FieldLabel title="Research Topic / Raw Idea" />
             <textarea
               rows={7}
-              className="w-full rounded-[4px] border border-slate-300 bg-bg-secondary px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
               placeholder="Describe your idea..."
               value={topic}
               onChange={(e) => onTopicChange(e.target.value)}
@@ -128,7 +128,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(2)}
                 disabled={!topic.trim()}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -151,29 +151,29 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={onAnalyzeIdea}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary"
               >
                 Generate suggestions
               </button>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="rounded-[4px] border border-border bg-surface-white p-4">
+              <div className="rounded-xl border border-border bg-surface-white p-4">
                 <FieldLabel title="Objectives (Goal)" />
                 <textarea
                   rows={3}
                   value={scopeForm.objectives}
                   onChange={(e) => onScopeChange("objectives", e.target.value)}
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
-              <div className="rounded-[4px] border border-border bg-surface-white p-4">
+              <div className="rounded-xl border border-border bg-surface-white p-4">
                 <FieldLabel title="Domain" />
                 <textarea
                   rows={3}
                   value={scopeForm.domain}
                   onChange={(e) => onScopeChange("domain", e.target.value)}
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(1)}
-                className="rounded-[4px] border border-slate-300 px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
               >
                 Back
               </button>
@@ -190,7 +190,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(3)}
                 disabled={!isStep2Valid}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -218,7 +218,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGeneratePicoc}
                 disabled={!isStep2Valid}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Generate suggestions
               </button>
@@ -262,7 +262,7 @@ export default function SetupWizardFlow({
                 <div
                   key={key}
                   className={[
-                    "rounded-[4px] border border-border bg-surface-white p-4",
+                    "rounded-xl border border-border bg-surface-white p-4",
                     key === "context" ? "sm:col-span-2" : "",
                   ].join(" ")}
                 >
@@ -274,7 +274,7 @@ export default function SetupWizardFlow({
                     rows={rows}
                     value={picocForm[key]}
                     onChange={(e) => onPicocChange(key, e.target.value)}
-                    className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                    className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                   />
                   <div className="mt-2 text-right">
                     <button
@@ -293,7 +293,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(2)}
-                className="rounded-[4px] border border-slate-300 px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
               >
                 Back
               </button>
@@ -301,7 +301,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(4)}
                 disabled={!isStep3Valid}
-                className="rounded-[4px] bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -328,14 +328,14 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGenerateRQ}
                 disabled={!isStep3Valid}
-                className="inline-flex items-center gap-2 rounded-[4px] border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Generate suggestions
               </button>
             </div>
 
             {/* PICO-C Reference Section */}
-            <div className="mb-8 rounded-[4px] border border-border bg-bg-primary p-5">
+            <div className="mb-8 rounded-xl border border-border bg-bg-primary p-5">
               <div className="mb-3 flex items-center gap-2 text-accent">
                 <p className="text-xs font-bold uppercase tracking-wider">
                   PICO-C Reference
@@ -387,7 +387,7 @@ export default function SetupWizardFlow({
 
             <div className="grid gap-4">
               {rqOptions.length === 0 && (
-                <div className="rounded-[4px] border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
                   No suggestions were returned. Please add custom research
                   questions manually.
                 </div>
@@ -401,10 +401,10 @@ export default function SetupWizardFlow({
                     key={option}
                     onClick={() => onToggleSuggestedRQ(index)}
                     className={[
-                      "w-full rounded-[4px] border p-4 text-left transition",
+                      "w-full rounded-xl border p-4 text-left transition",
                       selected
                         ? "border-accent bg-bg-secondary"
-                        : "border-border bg-surface-white hover:border-slate-300",
+                        : "border-border bg-surface-white hover:border-border",
                     ].join(" ")}
                   >
                     <span className="inline-flex items-center gap-1 text-xs font-medium text-accent">
@@ -418,7 +418,7 @@ export default function SetupWizardFlow({
               })}
             </div>
 
-            <div className="mt-6 rounded-[4px] border border-border bg-bg-secondary p-4">
+            <div className="mt-6 rounded-xl border border-border bg-bg-secondary p-4">
               <FieldLabel title="Custom RQ (Optional, multiple allowed)" />
               <div className="space-y-3">
                 <textarea
@@ -426,14 +426,14 @@ export default function SetupWizardFlow({
                   value={customRQInput}
                   onChange={(e) => onCustomRQInputChange(e.target.value)}
                   placeholder="Write a custom research question, then click Add"
-                  className="w-full rounded-[4px] border border-slate-300 bg-surface-white px-3 py-2 text-sm text-slate-800 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
                 <div className="flex justify-end">
                   <button
                     type="button"
                     onClick={onAddCustomRQ}
                     disabled={!customRQInput.trim()}
-                    className="rounded-[4px] border border-slate-300 bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Add Custom RQ
                   </button>
@@ -444,7 +444,7 @@ export default function SetupWizardFlow({
                     {customRQs.map((rq, index) => (
                       <div
                         key={`${rq}-${index}`}
-                        className="flex items-start justify-between gap-3 rounded-[4px] border border-border bg-surface-white p-3"
+                        className="flex items-start justify-between gap-3 rounded-xl border border-border bg-surface-white p-3"
                       >
                         <p className="text-sm text-text-primary">{rq}</p>
                         <button
@@ -465,14 +465,14 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(3)}
-                className="rounded-[4px] border border-slate-300 px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={onConfirmAndReview}
-                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover"
+                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover"
               >
                 Confirm & Review
               </button>
@@ -490,16 +490,16 @@ export default function SetupWizardFlow({
             </p>
 
             <div className="space-y-5">
-              <div className="rounded-[4px] border border-border bg-surface-white p-5">
+              <div className="rounded-xl border border-border bg-surface-white p-5">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Finalized Topic
                 </p>
-                <p className="text-sm leading-relaxed text-slate-800">
+                <p className="text-sm leading-relaxed text-text-primary">
                   {topic}
                 </p>
               </div>
 
-              <div className="rounded-[4px] border border-border bg-surface-white p-5">
+              <div className="rounded-xl border border-border bg-surface-white p-5">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   Scope Definition
                 </p>
@@ -508,7 +508,7 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Objectives
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {scopeForm.objectives}
                     </p>
                   </div>
@@ -516,12 +516,12 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Domain
                     </p>
-                    <p className="text-sm text-slate-800">{scopeForm.domain}</p>
+                    <p className="text-sm text-text-primary">{scopeForm.domain}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-[4px] border border-border bg-surface-white p-5">
+              <div className="rounded-xl border border-border bg-surface-white p-5">
                 <p className="mb-4 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                   PICO-C Structure
                 </p>
@@ -530,7 +530,7 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Population (P)
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {picocForm.population}
                     </p>
                   </div>
@@ -538,7 +538,7 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Intervention (I)
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {picocForm.intervention}
                     </p>
                   </div>
@@ -546,7 +546,7 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Comparator (C)
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {picocForm.comparator}
                     </p>
                   </div>
@@ -554,7 +554,7 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Outcome (O)
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {picocForm.outcome}
                     </p>
                   </div>
@@ -562,14 +562,14 @@ export default function SetupWizardFlow({
                     <p className="text-xs font-semibold text-text-secondary">
                       Context (C)
                     </p>
-                    <p className="text-sm text-slate-800">
+                    <p className="text-sm text-text-primary">
                       {picocForm.context}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-[4px] border border-border bg-bg-primary p-5">
+              <div className="rounded-xl border border-border bg-bg-primary p-5">
                 <div className="mb-2 border-b border-border pb-2 text-sm font-semibold text-text-primary">
                   Final Research Questions
                 </div>
@@ -582,12 +582,12 @@ export default function SetupWizardFlow({
                   {finalizedWizardRQs.map((rq, index) => (
                     <div
                       key={`${rq}-${index}`}
-                      className="rounded-[4px] border border-border bg-surface-white p-3"
+                      className="rounded-xl border border-border bg-surface-white p-3"
                     >
                       <p className="text-xs font-semibold text-accent">
                         RQ {index + 1}
                       </p>
-                      <p className="text-sm leading-relaxed text-slate-800">
+                      <p className="text-sm leading-relaxed text-text-primary">
                         {rq}
                       </p>
                     </div>
@@ -600,7 +600,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(4)}
-                className="rounded-[4px] border border-slate-300 px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
               >
                 Back
               </button>
@@ -608,7 +608,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onSaveWizardSetup}
                 disabled={isSavingSetup}
-                className="rounded-[4px] bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSavingSetup ? "Saving..." : "Save Details"}
               </button>

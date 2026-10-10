@@ -97,7 +97,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
                   setActiveSuggestion(payload.suggestion);
                   toast.dismiss(t.id);
                 }}
-                className="mt-3 w-full rounded-[4px] bg-slate-900 py-2 text-xs font-bold text-white hover:bg-accent transition-all shadow-none active:scale-[0.98]"
+                className="mt-3 w-full rounded-xl bg-slate-900 py-2 text-xs font-bold text-white hover:bg-accent transition-all shadow-none active:scale-[0.98]"
               >
                 Review & Apply Suggestions
               </button>
@@ -172,10 +172,10 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
           }}
           disabled={!onUploadPdf || isUploadingPdf}
           className={cn(
-            "p-1.5 rounded-[4px] transition-colors border",
+            "p-1.5 rounded-xl transition-colors border",
             !paper.pdfUrl
               ? "text-amber-600 bg-amber-50 border-amber-200 hover:bg-amber-100 hover:text-amber-700 shadow-none"
-              : "text-text-secondary hover:text-blue-600 hover:bg-blue-50 border-transparent hover:border-blue-100",
+              : "text-text-secondary hover:text-accent hover:bg-primary-light border-transparent hover:border-primary/30",
             (!onUploadPdf || isUploadingPdf) && "opacity-50 cursor-not-allowed",
           )}
           title={
@@ -197,7 +197,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 text-text-secondary hover:text-blue-600 hover:bg-blue-50 rounded-[4px] transition-colors border border-transparent hover:border-blue-100"
+            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
             title="Open PDF"
           >
             <FiFileText className="w-4 h-4" />
@@ -208,7 +208,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               ? { download: (paper as any).pdfFileName }
               : {})}
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 text-text-secondary hover:text-blue-600 hover:bg-blue-50 rounded-[4px] transition-colors border border-transparent hover:border-blue-100"
+            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
             title="Download PDF"
           >
             <FiDownload className="w-4 h-4" />
@@ -222,7 +222,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             onClick={handleRemovePdf}
             disabled={isActionDisabled}
             className={cn(
-              "p-1.5 rounded-[4px] transition-colors border",
+              "p-1.5 rounded-xl transition-colors border",
               !hasPdf
                 ? "text-text-secondary bg-bg-secondary border-border"
                 : "text-text-secondary hover:text-red-600 hover:bg-surface-white border-transparent hover:border-red-100",
@@ -293,7 +293,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             Title:{" "}
             <span className="font-medium text-text-primary">{paper.title}</span>
           </p>
-          <p className="text-[10px] text-amber-600 bg-amber-50 p-2 rounded-[4px] border border-amber-100 italic">
+          <p className="text-[10px] text-amber-600 bg-amber-50 p-2 rounded-xl border border-amber-100 italic">
             Note: This will clear the PDF metadata and delete the file from the
             server.
           </p>
@@ -303,7 +303,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               type="button"
               onClick={() => setIsConfirmNotRetrievedOpen(false)}
               disabled={isPending}
-              className="px-4 py-2 rounded-[4px] border border-border text-text-secondary hover:bg-bg-secondary disabled:opacity-50"
+              className="px-4 py-2 rounded-xl border border-border text-text-secondary hover:bg-bg-secondary disabled:opacity-50"
             >
               Cancel
             </button>
@@ -311,7 +311,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               type="button"
               onClick={handleConfirmAction}
               disabled={isPending}
-              className="px-4 py-2 rounded-[4px] bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50"
             >
               {isPending ? "Processing..." : "Confirm"}
             </button>

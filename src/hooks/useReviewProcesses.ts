@@ -16,7 +16,7 @@ import type {
   AddFromFilterSettingRequest,
   AddPapersFromFilterResponse,
 } from "../types/reviewProcess";
-import toast from "react-hot-toast";
+import { toastError } from "../utils/toast";
 
 /**
  * Fetch a single review process by ID
@@ -101,7 +101,7 @@ export const useReviewProcessMutations = () => {
       reviewProcessService.createReviewProcess(projectId, data),
     onSuccess: (_, variables) => invalidateAll(undefined, variables.projectId),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to create review process"));
+      toastError(getErrorMessage(error, "Failed to create review process"));
     },
   });
 
@@ -110,7 +110,7 @@ export const useReviewProcessMutations = () => {
       reviewProcessService.updateReviewProcess(id, data),
     onSuccess: (_, variables) => invalidateAll(variables.id),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to update review process"));
+      toastError(getErrorMessage(error, "Failed to update review process"));
     },
   });
 
@@ -118,7 +118,7 @@ export const useReviewProcessMutations = () => {
     mutationFn: (id: string) => reviewProcessService.startReviewProcess(id),
     onSuccess: (_, id) => invalidateAll(id),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to start review process"));
+      toastError(getErrorMessage(error, "Failed to start review process"));
     },
   });
 
@@ -126,7 +126,7 @@ export const useReviewProcessMutations = () => {
     mutationFn: (id: string) => reviewProcessService.completeReviewProcess(id),
     onSuccess: (_, id) => invalidateAll(id),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to complete review process"));
+      toastError(getErrorMessage(error, "Failed to complete review process"));
     },
   });
 
@@ -134,7 +134,7 @@ export const useReviewProcessMutations = () => {
     mutationFn: (id: string) => reviewProcessService.cancelReviewProcess(id),
     onSuccess: (_, id) => invalidateAll(id),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to cancel review process"));
+      toastError(getErrorMessage(error, "Failed to cancel review process"));
     },
   });
 
@@ -142,7 +142,7 @@ export const useReviewProcessMutations = () => {
     mutationFn: (id: string) => reviewProcessService.deleteReviewProcess(id),
     onSuccess: () => invalidateAll(),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to delete review process"));
+      toastError(getErrorMessage(error, "Failed to delete review process"));
     },
   });
 
@@ -151,7 +151,7 @@ export const useReviewProcessMutations = () => {
       reviewProcessService.reopenPhase(id, phase),
     onSuccess: (_, variables) => invalidateAll(variables.id),
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to reopen phase"));
+      toastError(getErrorMessage(error, "Failed to reopen phase"));
     },
   });
 
@@ -258,7 +258,7 @@ export const useAddSelectedPapers = () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reviewProcesses.all });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to add papers to review process"));
+      toastError(getErrorMessage(error, "Failed to add papers to review process"));
     },
   });
 
@@ -300,7 +300,7 @@ export const useAddPapersFromFilterSetting = () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reviewProcesses.all });
     },
     onError: (error) => {
-      toast.error(getErrorMessage(error, "Failed to add papers from filter"));
+      toastError(getErrorMessage(error, "Failed to add papers from filter"));
     },
   });
 

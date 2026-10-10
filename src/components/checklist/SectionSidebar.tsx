@@ -46,7 +46,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
       {onToggleCollapse && (
         <button
           onClick={onToggleCollapse}
-          className="absolute -right-4 top-8 z-40 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-none shadow-slate-200/50  hover:border-indigo-200 hover:text-accent active:scale-90"
+          className="absolute -right-4 top-8 z-40 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-none shadow-slate-200/50  hover:border-accent/20 hover:text-accent active:scale-90"
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -76,12 +76,12 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
               onClick={() => onSectionClick(section.section)}
               title={isCollapsed ? section.displayName : undefined}
               className={cn(
-                "group relative flex w-full items-center overflow-hidden rounded-[4px] border text-left transition-all",
+                "group relative flex w-full items-center overflow-hidden rounded-xl border text-left transition-all",
                 isCollapsed
                   ? "h-14 justify-center px-2"
                   : "justify-between px-3 py-2.5",
                 isActive
-                  ? "border-indigo-300 bg-bg-secondary"
+                  ? "border-accent bg-bg-secondary"
                   : "border-transparent hover:border-border hover:bg-bg-primary",
               )}
             >
@@ -107,7 +107,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
                     className={cn(
                       "truncate text-sm font-medium",
                       isActive
-                        ? "text-indigo-900"
+                        ? "text-text-primary"
                         : "text-text-primary group-hover:text-text-primary",
                     )}
                   >
