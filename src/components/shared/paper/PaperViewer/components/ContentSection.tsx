@@ -14,9 +14,9 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 }) => {
   return (
     <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none">
-      <div className="p-6 md:p-8 space-y-8">
+      <div className="p-5 md:p-6 space-y-5">
         {/* Abstract */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em]">
               Abstract
@@ -43,7 +43,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 
         {/* Keywords */}
         {paper.keywords && (
-          <div className="pt-8 border-t border-border space-y-4">
+          <div className="pt-5 border-t border-border space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em]">
                 Keywords
@@ -73,7 +73,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
 
         {/* Conference Info */}
         {paper.conferenceName && (
-          <div className="pt-8 border-t border-border space-y-4">
+          <div className="pt-5 border-t border-border space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em]">
                 Conference Information
