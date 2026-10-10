@@ -2,6 +2,36 @@ import React, { useState } from "react";
 import { FiArrowUpRight } from "react-icons/fi";
 import Button from "../../ui/Button";
 import type { ReviewNeed } from "../../../types/coreAndGovernance";
+import ReactMarkdown from "react-markdown";
+
+function normalizeReviewNeedMarkdown(content: string): string {
+  return content
+    .replace(/\s+-\s+(?=\*\*\d+\*\*)/g, "\n\n- ")
+    .replace(/\s+-\s+(?=E\d+\b)/g, "\n- ")
+    .replace(/\s+(?=(?:Limits?|Exclusion codes)\s*:)/gi, "\n\n");
+}
+
+function ReviewNeedMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown
+      components={{
+        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+        ul: ({ children }) => (
+          <ul className="my-2 list-disc space-y-1 pl-5">{children}</ul>
+        ),
+        ol: ({ children }) => (
+          <ol className="my-2 list-decimal space-y-1 pl-5">{children}</ol>
+        ),
+        li: ({ children }) => <li className="pl-1">{children}</li>,
+        strong: ({ children }) => (
+          <strong className="font-semibold text-text-primary">{children}</strong>
+        ),
+      }}
+    >
+      {normalizeReviewNeedMarkdown(content)}
+    </ReactMarkdown>
+  );
+}
 
 interface ReviewNeedsTabProps {
   reviewNeeds: ReviewNeed[];
@@ -47,13 +77,13 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
                       : `Added by ${need.identified_by || "Project team"}`}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-text-primary">
-                  {need.description}
-                </p>
+                <div className="mt-2 text-sm leading-6 text-text-primary">
+                  <ReviewNeedMarkdown content={need.description} />
+                </div>
                 {need.justification && (
-                  <p className="mt-1 text-sm leading-6 text-text-secondary">
-                    {need.justification}
-                  </p>
+                  <div className="mt-3 text-sm leading-6 text-text-secondary">
+                    <ReviewNeedMarkdown content={need.justification} />
+                  </div>
                 )}
               </li>
             );
