@@ -1,5 +1,6 @@
 export * from "./PaperHeroHeader";
 export * from "./ContentSection";
+export * from "./PaperInfoSummary";
 export * from "./PublicationInfoCard";
 export * from "./IdentifierSection";
 export * from "./SystemMetadataCollapse";

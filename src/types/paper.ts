@@ -566,6 +566,22 @@ export interface PaperDetailsResponse {
   fullTextRetrievalStatusText?: string | null;
   fullTextAvailable?: boolean | null;
   fullTextSections?: ParsedSectionDto[] | null;
+  /** The project paper document stores the publication year as `year`. */
+  year?: number | null;
+  pdfFileName?: string | null;
+  updatedAt?: string | null;
+  pdf?: {
+    fileName?: string;
+    sizeBytes?: number;
+    processingStatus?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+    processingError?: { message?: string } | null;
+    fullText?: {
+      status?: string;
+      sectionCount?: number;
+      referenceCount?: number;
+      figureCount?: number;
+    } | null;
+  } | null;
   createdAt: string;
   modifiedAt: string;
 }

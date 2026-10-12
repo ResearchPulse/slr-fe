@@ -272,7 +272,7 @@ export default function PaperRepositoryPage({
           {isLeader && (
             <Button
               variant="outline"
-              className="w-full rounded-xl border-border px-4 hover:border-accent hover:text-accent sm:w-auto"
+              className="w-full rounded-xl border-border px-4 hover:border-accent hover:bg-accent hover:text-text-on-primary sm:w-auto"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FiUpload className="w-4 h-4 mr-2" />
