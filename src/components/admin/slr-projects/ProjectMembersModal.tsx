@@ -122,7 +122,6 @@ export default function ProjectMembersModal({
 
   const {
     invitations,
-    isLoading: isLoadingInvitations,
     refetch: refetchInvitations,
   } = useProjectInvitations(projectId, undefined, { enabled: isOpen });
 
@@ -248,13 +247,6 @@ export default function ProjectMembersModal({
     return resolveProjectLeader(members, invitations);
   }, [members, invitations]);
 
-  const isLeaderResolved = !isLoadingMembers && !isLoadingInvitations;
-
-  const canAssignLeaderRole = useMemo(() => {
-    if (!isLeaderResolved) return false;
-    if (currentLeader) return false;
-    return true;
-  }, [isLeaderResolved, currentLeader]);
   const effectivelyHideLeaderRole = hideLeaderRole;
 
   const selectedUser = useMemo(
@@ -310,7 +302,7 @@ export default function ProjectMembersModal({
 
     try {
       await updateMemberRole({ userId, role });
-      toastSuccess(`Role updated to ${role === "OWNER" ? "Project Leader" : "Reviewer"}.`);
+      toastSuccess("Role updated to Reviewer.");
     } catch (error) {
       toastError(
         error instanceof Error
@@ -733,15 +725,8 @@ export default function ProjectMembersModal({
                 <div className="lg:col-span-5 space-y-6">
                   <RoleAssignmentPanel
                     selectedUser={selectedUser}
-                    canAssignLeaderRole={
-                      canAssignLeaderRole && !effectivelyHideLeaderRole
-                    }
-                    isLeaderResolved={isLeaderResolved}
-                    currentLeader={currentLeader}
                     onRemoveFromWaitlist={handleRemoveFromWaitlist}
                     getInitials={getInitials}
-                    hideLeaderRole={effectivelyHideLeaderRole}
-                    disableMemberRole={isGlobalAdmin}
                   />
 
                   <InvitationWaitlist
