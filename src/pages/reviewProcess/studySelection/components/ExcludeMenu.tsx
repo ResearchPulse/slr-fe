@@ -148,8 +148,9 @@ export default function ExcludeMenu({
   }, [isOpen, onResetReasons]);
 
   const handleConfirm = () => {
-    if (selectedReasonId && exclusionJustification.trim()) {
-      onExclude(paperId, selectedReasonId, exclusionJustification);
+    const reason = exclusionJustification.trim();
+    if (selectedReasonId && reason) {
+      onExclude(paperId, selectedReasonId, reason);
       setIsOpen(false);
     }
   };
@@ -276,12 +277,12 @@ export default function ExcludeMenu({
                 {/* Justification Textarea */}
                 <div>
                   <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 ml-0.5">
-                    Justification <span className="text-red-500">*</span>
+                    Reason / comment <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     value={exclusionJustification}
                     onChange={(e) => setExclusionJustification(e.target.value)}
-                    placeholder="Briefly explain the exclusion..."
+                    placeholder="Explain why this paper should be excluded..."
                     rows={3}
                     className="w-full px-4 py-3 text-xs border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-red-300 focus:ring-4 focus:ring-red-50/50 outline-none transition-all resize-none shadow-inner"
                   />

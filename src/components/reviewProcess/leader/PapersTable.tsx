@@ -298,17 +298,16 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                     </div>
                   </div>
 
-                  {rd.decision?.decisionText === "Exclude" &&
-                    (rd.decision.exclusionReasonName || rd.decision.reason) && (
+                  {(rd.decision?.exclusionReasonName || rd.decision?.comment || rd.decision?.reason) && (
                       <div className="pl-11 pr-2 pb-1 space-y-1.5 animate-in fade-in slide-in-from-left-1 duration-200">
-                        {rd.decision.exclusionReasonName && (
+                        {rd.decision.decisionText === "Exclude" && rd.decision.exclusionReasonName && (
                           <div className="text-[11px] text-red-600 font-bold bg-surface-white/50 px-2 py-0.5 rounded border border-red-100/50 w-fit">
                             {rd.decision.exclusionReasonName}
                           </div>
                         )}
-                        {rd.decision.reason && (
+                        {(rd.decision.comment ?? rd.decision.reason) && (
                           <div className="text-[11px] text-text-secondary italic line-clamp-2 leading-relaxed bg-bg-secondary/30 p-1.5 rounded-xl border border-border/50">
-                            "{rd.decision.reason}"
+                            "{rd.decision.comment ?? rd.decision.reason}"
                           </div>
                         )}
                       </div>

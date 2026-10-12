@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { FiCheck, FiX, FiAlertTriangle } from "react-icons/fi";
@@ -6,11 +6,12 @@ import { type RootState } from "../../../../../redux/store";
 import { cn } from "../../../../../utils/cn";
 import { useStudySelectionExclusionReasons } from "../../../../../hooks/useStudySelection";
 import ExcludeMenu from "../../components/ExcludeMenu";
+import ReviewCommentField from "../../components/ReviewCommentField";
 import type { FullTextPaper } from "../types";
 
 interface DecisionBarProps {
   paper: FullTextPaper;
-  onInclude: (paperId: string) => void;
+  onInclude: (paperId: string, comment?: string | null) => void;
   onExclude: (
     paperId: string,
     exclusionReasonId: string | null,
@@ -33,6 +34,7 @@ export default function DecisionBar({
     (paper.screeningStatus === "included" ? "Included" : "Excluded");
 
   const [reasonPageSize, setReasonPageSize] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
   const { data: exclusionReasons = [] } = useStudySelectionExclusionReasons(
     screeningProcessId,
     { onlyActive: true, pageSize: reasonPageSize },
@@ -44,6 +46,10 @@ export default function DecisionBar({
   const myDecision = currentUser
     ? paper.decisions.find((d) => d.reviewerId === currentUser.id)
     : null;
+
+  useEffect(() => {
+    setReviewComment("");
+  }, [paper.id]);
 
   if (!canReview) {
     if (
@@ -115,10 +121,16 @@ export default function DecisionBar({
 
   return (
     <div className="border-t border-border bg-surface-white px-4 py-3 shrink-0">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col gap-3">
+        <ReviewCommentField
+          value={reviewComment}
+          onChange={setReviewComment}
+          disabled={isSubmitting}
+        />
+        <div className="flex items-center gap-2">
         {/* Include */}
         <button
-          onClick={() => onInclude(paper.id)}
+          onClick={() => onInclude(paper.id, reviewComment.trim() || null)}
           disabled={isSubmitting}
           className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
         >
@@ -139,6 +151,7 @@ export default function DecisionBar({
           onShowMoreReasons={() => setReasonPageSize((prev) => prev + 5)}
           onResetReasons={() => setReasonPageSize(5)}
         />
+        </div>
       </div>
     </div>
   );
