@@ -81,6 +81,9 @@ function mapPaperFromApi(paper: PaperPoolApiResponse): PaperPoolItem {
     pdfUrl: paper.pdfUrl || null,
     fullTextRetrievalStatus: paper.fullTextRetrievalStatus ?? null,
     fullTextRetrievalStatusText: paper.fullTextRetrievalStatusText || null,
+    pdfProcessingStatus: paper.pdfProcessingStatus ?? null,
+    pdfFullTextStatus: paper.pdfFullTextStatus ?? null,
+    pdfProcessingError: paper.pdfProcessingError ?? null,
   };
 }
 
@@ -249,7 +252,10 @@ export default function PaperPoolTab({
     papersPage,
     isLoading: isLoadingPapers,
     isFetching: isFetchingPapers,
-  } = usePaperPool(projectId, activePaperQuery, { enabled: isYearRangeValid });
+  } = usePaperPool(projectId, activePaperQuery, {
+    enabled: isYearRangeValid,
+    pollWhileProcessing: true,
+  });
   const isStepCompleted = useCallback(
     (stepId: number) => {
       switch (stepId) {
