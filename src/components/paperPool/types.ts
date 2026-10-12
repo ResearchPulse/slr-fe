@@ -13,7 +13,13 @@ export interface PaperPoolItem {
   pdfUrl: string | null;
   fullTextRetrievalStatus: number | null;
   fullTextRetrievalStatusText: string | null;
+  /** Background GROBID processing of the uploaded PDF; null when the paper has no PDF. */
+  pdfProcessingStatus?: PdfProcessingStatus | null;
+  pdfFullTextStatus?: "COMPLETED" | "PARTIAL" | null;
+  pdfProcessingError?: string | null;
 }
+
+export type PdfProcessingStatus = "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
 
 export interface PaperPoolFilters {
   keyword: string;
@@ -92,6 +98,9 @@ export interface PaperPoolApiResponse {
   pdfUrl?: string;
   fullTextRetrievalStatus?: number;
   fullTextRetrievalStatusText?: string;
+  pdfProcessingStatus?: PdfProcessingStatus | null;
+  pdfFullTextStatus?: "COMPLETED" | "PARTIAL" | null;
+  pdfProcessingError?: string | null;
 }
 
 export interface FilterSettingRequest {

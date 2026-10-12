@@ -5,10 +5,12 @@ import paperPoolService from "../services/paperPoolService";
 import { getErrorMessage } from "../utils/errorUtils";
 import type { FilterSettingRequest, PaperPoolQueryParams } from "../components/paperPool/types";
 
+const PDF_PROCESSING_POLL_MS = 5000;
+
 export const usePaperPool = (
   projectId: string | undefined,
   params: PaperPoolQueryParams,
-  options: { enabled?: boolean } = {},
+  options: { enabled?: boolean; pollWhileProcessing?: boolean } = {},
 ) => {
   const query = useQuery({
     queryKey: QUERY_KEYS.paperPool.papers(projectId || "", params as Record<string, unknown>),
@@ -16,6 +18,17 @@ export const usePaperPool = (
       projectId ? paperPoolService.getPapers(projectId, params) : Promise.reject(new Error("No project ID")),
     enabled: !!projectId && (options.enabled ?? true),
     staleTime: 60 * 1000,
+    // Keep refreshing while GROBID is still extracting PDFs so the status column updates on its own.
+    refetchInterval: options.pollWhileProcessing
+      ? (current) =>
+          current.state.data?.items?.some(
+            (paper) =>
+              paper.pdfProcessingStatus === "PENDING" ||
+              paper.pdfProcessingStatus === "PROCESSING",
+          )
+            ? PDF_PROCESSING_POLL_MS
+            : false
+      : false,
   });
 
   return {

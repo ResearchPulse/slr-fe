@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   FiUpload,
   FiSearch,
@@ -25,8 +25,6 @@ interface PaperImportModalProps {
 }
 
 type ImportMode = "ris" | "bibtex" | "pdf" | "doi" | "crossref";
-
-const MAX_PDF_FILE_SIZE = 10 * 1024 * 1024;
 
 interface SelectedPdf {
   file: File;
@@ -71,6 +69,11 @@ export default function PaperImportModal({
   const [pdfSourceId, setPdfSourceId] = useState<string>("");
   const [isDraggingPdf, setIsDraggingPdf] = useState(false);
 
+  // Hidden file inputs: the whole drop zone opens the file browser, not just the "browse" link.
+  const risInputRef = useRef<HTMLInputElement>(null);
+  const bibInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+
   // DOI State
   const [doi, setDoi] = useState("");
   const [doiSourceId, setDoiSourceId] = useState<string>("");
@@ -97,6 +100,14 @@ export default function PaperImportModal({
     // Reset state if needed or keep it
   };
 
+  const zoneKeyDown = (e: React.KeyboardEvent, input: { current: HTMLInputElement | null }) => {
+    if (e.target !== e.currentTarget) return;
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      input.current?.click();
+    }
+  };
+
   const addPdfFiles = (incoming: FileList | null) => {
     if (!incoming || incoming.length === 0) return;
     const rejected: string[] = [];
@@ -108,8 +119,6 @@ export default function PaperImportModal({
         rejected.push(`${file.name}: not a PDF file`);
       } else if (file.size === 0) {
         rejected.push(`${file.name}: file is empty`);
-      } else if (file.size > MAX_PDF_FILE_SIZE) {
-        rejected.push(`${file.name}: larger than 10MB`);
       } else if (keys.has(pdfKey(file))) {
         rejected.push(`${file.name}: already selected`);
       } else if (next.length >= MAX_PDF_BATCH_FILES) {
@@ -288,15 +297,26 @@ export default function PaperImportModal({
               <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 flex gap-3">
                 <FiInfo className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
                 <p className="text-sm text-rose-700 font-medium">
-                  Upload up to {MAX_PDF_BATCH_FILES} PDF papers at once (max 10MB each). Metadata is extracted automatically when GROBID is available.
+                  Upload up to {MAX_PDF_BATCH_FILES} PDF papers at once. Metadata is extracted automatically when GROBID is available.
                 </p>
               </div>
               <div
                 className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
-                  isDraggingPdf ? "border-rose-500 bg-rose-50" : "border-border bg-bg-secondary/50 hover:bg-bg-secondary"
+                  isImportingPdfs ? "cursor-not-allowed opacity-60" : "cursor-pointer"
+                } ${
+                  isDraggingPdf
+                    ? "border-accent bg-primary-light"
+                    : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
                 }`}
                 onDragOver={(e) => { e.preventDefault(); setIsDraggingPdf(true); }}
                 onDragLeave={() => setIsDraggingPdf(false)}
+                role="button"
+                tabIndex={0}
+                aria-label="Select PDF files"
+                onClick={() => {
+                  if (!isImportingPdfs) pdfInputRef.current?.click();
+                }}
+                onKeyDown={(e) => zoneKeyDown(e, pdfInputRef)}
                 onDrop={(e) => {
                   e.preventDefault();
                   setIsDraggingPdf(false);
@@ -306,22 +326,21 @@ export default function PaperImportModal({
                 <FiUpload className="w-9 h-9 text-text-secondary mx-auto mb-2" />
                 <h3 className="text-lg font-black text-text-primary uppercase">Drop your PDF files</h3>
                 <p className="text-sm text-text-secondary">
-                  Drag and drop or{" "}
-                  <label className="text-accent hover:underline cursor-pointer">
-                    browse your computer
-                    <input
-                      type="file"
-                      multiple
-                      accept=".pdf,application/pdf"
-                      disabled={isImportingPdfs}
-                      onChange={(e) => {
-                        addPdfFiles(e.target.files);
-                        e.target.value = "";
-                      }}
-                      className="hidden"
-                    />
-                  </label>
+                  Drag and drop or <span className="text-accent hover:underline">browse your computer</span>
                 </p>
+                <input
+                  ref={pdfInputRef}
+                  type="file"
+                  multiple
+                  accept=".pdf,application/pdf"
+                  disabled={isImportingPdfs}
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    addPdfFiles(e.target.files);
+                    e.target.value = "";
+                  }}
+                  className="hidden"
+                />
                 <p className="text-xs text-text-secondary mt-1">
                   {pdfFiles.length}/{MAX_PDF_BATCH_FILES} files selected
                 </p>
@@ -404,7 +423,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center cursor-pointer ${
                   isDragging
                     ? "border-accent bg-primary-light"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -414,6 +433,11 @@ export default function PaperImportModal({
                   setIsDragging(true);
                 }}
                 onDragLeave={() => setIsDragging(false)}
+                role="button"
+                tabIndex={0}
+                aria-label="Select RIS file"
+                onClick={() => risInputRef.current?.click()}
+                onKeyDown={(e) => zoneKeyDown(e, risInputRef)}
                 onDrop={(e) => {
                   e.preventDefault();
                   setIsDragging(false);
@@ -421,6 +445,18 @@ export default function PaperImportModal({
                   if (files.length > 0) setSelectedFile(files[0]);
                 }}
               >
+                <input
+                  ref={risInputRef}
+                  type="file"
+                  accept=".ris"
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setSelectedFile(file);
+                    e.target.value = "";
+                  }}
+                  className="hidden"
+                />
                 {selectedFile ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-16 h-16 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
@@ -436,7 +472,10 @@ export default function PaperImportModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setSelectedFile(null)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                      }}
                       className="text-red-500 text-sm font-black uppercase tracking-widest hover:underline"
                     >
                       Remove File
@@ -452,18 +491,7 @@ export default function PaperImportModal({
                     </h3>
                     <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
-                      <label className="text-accent hover:underline cursor-pointer">
-                        browse your computer
-                        <input
-                          type="file"
-                          accept=".ris"
-                          onChange={(e) =>
-                            e.target.files?.[0] &&
-                            setSelectedFile(e.target.files[0])
-                          }
-                          className="hidden"
-                        />
-                      </label>
+                      <span className="text-accent hover:underline">browse your computer</span>
                     </p>
                     <div className="flex items-center justify-center gap-2">
                       <span className="px-3 py-1 bg-surface-white border border-border rounded-xl text-[10px] font-black text-text-secondary uppercase tracking-widest">
@@ -528,7 +556,7 @@ export default function PaperImportModal({
               </div>
 
               <div
-                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center ${
+                className={`relative border-2 border-dashed rounded-xl p-6 transition-all text-center cursor-pointer ${
                   isDraggingBib
                     ? "border-emerald-500 bg-emerald-50"
                     : "border-border bg-bg-secondary/50 hover:bg-bg-secondary hover:border-slate-300"
@@ -538,6 +566,11 @@ export default function PaperImportModal({
                   setIsDraggingBib(true);
                 }}
                 onDragLeave={() => setIsDraggingBib(false)}
+                role="button"
+                tabIndex={0}
+                aria-label="Select BibTeX file"
+                onClick={() => bibInputRef.current?.click()}
+                onKeyDown={(e) => zoneKeyDown(e, bibInputRef)}
                 onDrop={(e) => {
                   e.preventDefault();
                   setIsDraggingBib(false);
@@ -545,6 +578,18 @@ export default function PaperImportModal({
                   if (files.length > 0) setBibFile(files[0]);
                 }}
               >
+                <input
+                  ref={bibInputRef}
+                  type="file"
+                  accept=".bib"
+                  onClick={(e) => e.stopPropagation()}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) setBibFile(file);
+                    e.target.value = "";
+                  }}
+                  className="hidden"
+                />
                 {bibFile ? (
                   <div className="flex flex-col items-center gap-3">
                     <div className="w-16 h-16 bg-green-100 text-green-600 rounded-xl flex items-center justify-center">
@@ -560,7 +605,10 @@ export default function PaperImportModal({
                     </div>
                     <button
                       type="button"
-                      onClick={() => setBibFile(null)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setBibFile(null);
+                      }}
                       className="text-red-500 text-sm font-black uppercase tracking-widest hover:underline"
                     >
                       Remove File
@@ -576,17 +624,7 @@ export default function PaperImportModal({
                     </h3>
                     <p className="text-text-secondary font-medium mb-3">
                       Drag and drop or{" "}
-                      <label className="text-accent hover:underline cursor-pointer">
-                        browse your computer
-                        <input
-                          type="file"
-                          accept=".bib"
-                          onChange={(e) =>
-                            e.target.files?.[0] && setBibFile(e.target.files[0])
-                          }
-                          className="hidden"
-                        />
-                      </label>
+                      <span className="text-accent hover:underline">browse your computer</span>
                     </p>
                     <div className="flex items-center justify-center gap-2">
                       <span className="px-3 py-1 bg-surface-white border border-border rounded-xl text-[10px] font-black text-text-secondary uppercase tracking-widest">

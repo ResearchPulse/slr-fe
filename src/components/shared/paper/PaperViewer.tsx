@@ -23,6 +23,7 @@ import {
   PublicationInfoCard,
   IdentifierSection,
   SystemMetadataCollapse,
+  PaperInfoSummary,
   TabButton,
   DecisionStatus,
   ResolutionDetails,
@@ -48,6 +49,7 @@ export default function PaperViewer({
   onRetryExtraction,
   isRetryingExtraction = false,
   hideActions = false,
+  infoSummary = null,
   isLeaderView = false,
   phase = PaperPhase.TitleAbstract,
   isDisabled = false,
@@ -241,6 +243,9 @@ export default function PaperViewer({
           <div className="space-y-2 animate-in fade-in duration-300">
             {activeTab === "abstract" && (
               <>
+                {infoSummary && (
+                  <PaperInfoSummary paper={paper} />
+                )}
                 <ContentSection
                   paper={paper as any}
                   isFieldUpdated={isFieldUpdated}
@@ -257,7 +262,10 @@ export default function PaperViewer({
                   />
                 </div>
 
-                <SystemMetadataCollapse paper={paper} />
+                <SystemMetadataCollapse
+                  paper={paper}
+                  extras={infoSummary ?? undefined}
+                />
 
                 {paper.extraction?.status === "failed" &&
                   paper.extraction.requested && (
