@@ -172,7 +172,7 @@ export default function ExcludeMenu({
         <FiX
           className={cn("w-4 h-4 transition-transform", isOpen && "rotate-90")}
         />
-        {isOpen ? "Close" : "Exclude"}
+        {isOpen ? "Close" : "Exclude paper"}
         <kbd
           className={cn(
             "ml-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",

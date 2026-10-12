@@ -11,9 +11,7 @@ import {
   FiUsers,
   FiArrowLeft,
   FiCheckCircle,
-  FiCpu,
 } from "react-icons/fi";
-import ProjectAgentAssignments from "../../components/projects/ProjectAgentAssignments";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams<{ id: string }>();
@@ -22,7 +20,7 @@ export default function ProjectSettingsPage() {
   const { project, refetch } = useProject(id);
   const { completeProject, isCompleting } = useProjectMutations();
 
-  const [activeTab, setActiveTab] = useState<"general" | "members" | "agents">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "members">("general");
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   const handleComplete = async () => {
@@ -128,17 +126,6 @@ export default function ProjectSettingsPage() {
                 />
                 Members
               </button>
-              <button
-                onClick={() => setActiveTab("agents")}
-                className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
-                  activeTab === "agents"
-                    ? "bg-text-primary text-bg-primary"
-                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
-                }`}
-              >
-                <FiCpu size={14} className={activeTab === "agents" ? "text-bg-primary" : "text-text-secondary"} />
-                AI Agents
-              </button>
             </nav>
           </aside>
 
@@ -229,9 +216,7 @@ export default function ProjectSettingsPage() {
                   </div>
                 </div>
               </div>
-            ) : (
-              <ProjectAgentAssignments projectId={id} />
-            )}
+            ) : null}
           </main>
         </div>
 

@@ -7,6 +7,7 @@ export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElemen
   error?: boolean;
   options: { value: string; label: string }[];
   placeholder?: string;
+  containerClassName?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
@@ -15,6 +16,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     error,
     options,
     placeholder,
+    containerClassName,
     value,
     defaultValue,
     onChange,
@@ -111,7 +113,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     };
 
     return (
-      <div className="relative inline-block min-w-0">
+      <div className={cn("relative inline-block min-w-0", containerClassName)}>
         <select
           ref={nativeSelectRef}
           tabIndex={-1}
@@ -136,6 +138,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           ref={triggerRef}
           id={selectId}
           type="button"
+          aria-label={props["aria-label"]}
           disabled={props.disabled}
           aria-haspopup="listbox"
           aria-expanded={isOpen}

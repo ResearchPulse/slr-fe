@@ -1,6 +1,6 @@
 import type { ScreeningPaper } from "../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type { UploadPdfOptions } from "../../../../pages/reviewProcess/studySelection/uploadTypes";
-import type { PaperWithDecisionsResponse } from "../../../../types/studySelection";
+import type { PaperPhase, PaperWithDecisionsResponse } from "../../../../types/studySelection";
 
 export interface PaperViewerProps {
   paper: ScreeningPaper | null;
@@ -23,7 +23,7 @@ export interface PaperViewerProps {
   isRetryingExtraction?: boolean;
   hideActions?: boolean;
   isLeaderView?: boolean;
-  phase?: number;
+  phase?: PaperPhase;
   isDisabled?: boolean;
 }
 

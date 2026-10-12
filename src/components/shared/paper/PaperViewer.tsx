@@ -1,5 +1,6 @@
-import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import {
   FiCheck,
@@ -11,6 +12,7 @@ import {
   FiList,
   FiExternalLink,
   FiUploadCloud,
+  FiChevronUp,
 } from "react-icons/fi";
 import { cn } from "../../../utils/cn";
 import LoadingSpinner from "../../ui/LoadingSpinner";
@@ -28,7 +30,6 @@ import {
   ResolutionDetails,
   GraphSection,
   PaperNodeList,
-  PaperSectionSidebar,
 } from "./PaperViewer/components";
 import PdfJsViewer from "./PdfJsViewer/PdfJsViewer";
 import CitationGraphModal from "../../../pages/reviewProcess/studySelection/titleAbstractScreening/components/graph/CitationGraphModal";
@@ -39,6 +40,13 @@ import { useReviewerDecisions } from "../../../hooks/useStudySelection";
 import ConflictResolutionModal from "../../reviewProcess/leader/ConflictResolutionModal";
 import UploadFullTextPdfModal from "../../../pages/reviewProcess/studySelection/components/UploadFullTextPdfModal";
 import ReviewCommentField from "../../../pages/reviewProcess/studySelection/components/ReviewCommentField";
+import api from "../../../config/axios";
+
+interface AgentReviewTask {
+  id: string;
+  agentName: string;
+  status: "ASSIGNED" | "COMPLETED";
+}
 
 export default function PaperViewer({
   paper,
@@ -61,6 +69,8 @@ export default function PaperViewer({
     setReasonPageSize,
     includePaper,
     excludePaper,
+    aiAnalysis,
+    isAnalyzing,
     uploadPaperPdf,
     retryMetadataExtraction,
     isSubmittingDecision,
@@ -79,7 +89,7 @@ export default function PaperViewer({
     hasMoreReasons,
     canReview,
     isFieldUpdated,
-  } = usePaperViewerState(paper);
+  } = usePaperViewerState(paper, phase);
 
   const { id, projectId } = useParams<{ id: string; projectId: string }>();
   const activeProjectId = projectId || id;
@@ -90,6 +100,8 @@ export default function PaperViewer({
   const navigate = useNavigate();
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isReviewerProgressCollapsed, setIsReviewerProgressCollapsed] =
+    useState(false);
   const [reviewComment, setReviewComment] = useState("");
 
   useEffect(() => {
@@ -101,36 +113,6 @@ export default function PaperViewer({
     isRetryingExtraction || isHookRetryingExtraction;
 
   const [activeSection, setActiveSection] = useState<string | null>(null);
-  const [sidebarWidth, setSidebarWidth] = useState(200);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [isResizing, setIsResizing] = useState(false);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizing(true);
-
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (sidebarRef.current) {
-        const sidebarRect = sidebarRef.current.getBoundingClientRect();
-        const newWidth = moveEvent.clientX - sidebarRect.left;
-        if (newWidth >= 160 && newWidth <= 450) {
-          setSidebarWidth(newWidth);
-        }
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "default";
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.body.style.cursor = "col-resize";
-  }, []);
-
   const handleSectionClick = (sectionKey: string) => {
     setActiveSection(sectionKey);
   };
@@ -145,10 +127,33 @@ export default function PaperViewer({
 
   const { data: reviewerDecisions, isLoading: isLoadingReviewers } =
     useReviewerDecisions(screeningProcessId, paper?.id, phase, isLeaderView);
+  const { data: agentReviewTasks = [] } = useQuery({
+    queryKey: ["paper-agent-review-tasks", activeProjectId, paper?.id],
+    queryFn: async () => {
+      const response = await api.get<{ data: AgentReviewTask[] }>(
+        `/projects/${activeProjectId}/agents/tasks`,
+        { params: { paperIds: paper!.id } },
+      );
+      return response.data.data;
+    },
+    enabled: Boolean(isLeaderView && activeProjectId && paper?.id),
+    refetchInterval: 15_000,
+  });
 
   const hasPendingAssignedReviewer = !!reviewerDecisions?.some(
     (rd) => !rd.decision,
   );
+  const submittedReviewCount = reviewerDecisions?.filter((item) => item.decision).length ?? 0;
+  const totalReviewCount = reviewerDecisions?.length ?? 0;
+  const hasPendingReview = hasPendingAssignedReviewer;
+  const aiDecisionText = aiAnalysis?.aiOutput?.recommendation || "Pending";
+  const aiDecisionTone = aiAnalysis
+    ? aiDecisionText.toLowerCase().includes("include")
+      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+      : aiDecisionText.toLowerCase().includes("exclude")
+        ? "border-rose-200 bg-rose-50 text-rose-700"
+        : "border-amber-200 bg-amber-50 text-amber-700"
+    : "border-slate-200 bg-slate-50 text-slate-600";
 
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
   console.log("paper sections ", paper?.fullTextSections);
@@ -169,7 +174,7 @@ export default function PaperViewer({
   // const hasPendingAssignedReviewer = !!paper.assignedReviewers?.some((r) => !r.decision);
 
   return (
-    <div className="flex h-full flex-col bg-bg-primary">
+    <div className="relative flex h-full flex-col bg-bg-primary">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         <div className={cn("space-y-2 px-4 py-3 transition-all duration-300 lg:px-6 lg:py-4")}>
@@ -335,59 +340,24 @@ export default function PaperViewer({
             )}
 
             {activeTab === "fulltext" && (
-              <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
-                <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary/50">
+              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                {!paper.pdfUrl && <div className="flex items-center border-b border-border bg-bg-secondary/50 px-4 py-3">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
-                    {paper.pdfUrl ? "PDF Viewer" : "Full-Text Access"}
+                    Full-Text Access
                   </h2>
-                  {paper.pdfUrl && (
-                    <a
-                      href={paper.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-accent hover:text-accent text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
-                    >
-                      Open in New Tab
-                      <FiExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
+                </div>}
 
                 {paper.pdfUrl ? (
-                  <div className="flex-1 flex min-h-0 relative">
-                    {/* Dynamic Section Sidebar Integration */}
-                    <div ref={sidebarRef}>
-                      <PaperSectionSidebar
-                        sections={paper.fullTextSections ?? null}
-                        activeSection={activeSection}
-                        onSectionClick={handleSectionClick}
-                        width={sidebarWidth}
-                      />
-                    </div>
-
-                    {/* Resizable Divider */}
-                    <div
-                      onMouseDown={handleMouseDown}
-                      className={cn(
-                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-accent cursor-col-resize transition-all duration-200 z-10 relative group",
-                        isResizing && "bg-accent w-1.5",
-                      )}
-                    >
-                      <div className="absolute inset-y-0 -left-1 -right-1 cursor-col-resize" />
-                    </div>
-
-                    <div
-                      className={cn(
-                        "flex-1 relative bg-bg-secondary transition-opacity",
-                        isResizing && "pointer-events-none opacity-80",
-                      )}
-                    >
+                  <div className="min-h-0 flex-1">
                       <PdfJsViewer
                         fileUrl={paper.pdfUrl}
+                        documentTitle={paper.title}
                         coordinateStr={activeSectionCoords}
-                        scale={1.5}
+                        sections={paper.fullTextSections}
+                        activeSection={activeSection}
+                        onSectionSelect={handleSectionClick}
+                        scale={1.25}
                       />
-                    </div>
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
@@ -426,18 +396,44 @@ export default function PaperViewer({
       </div>
 
       {!hideActions && isLeaderView && (
+        <div
+          aria-hidden={isReviewerProgressCollapsed}
+          className={cn(
+            "grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+            isReviewerProgressCollapsed
+              ? "pointer-events-none grid-rows-[0fr] opacity-0"
+              : "grid-rows-[1fr] opacity-100",
+          )}
+        >
+        <div className="min-h-0 overflow-hidden">
         <div className="border-t border-border bg-white px-4 py-3 lg:px-6">
           <div className="mx-auto flex max-w-5xl flex-col gap-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
-                Assigned reviewer progress
+                Reviewer progress
               </span>
-              <span className="text-xs font-semibold text-slate-700">
-                {isLoadingReviewers
-                  ? "Checking submissions…"
-                  : `${reviewerDecisions?.filter((item) => item.decision).length ?? 0} of ${reviewerDecisions?.length ?? 0} submitted`}
-              </span>
+              <div className="ml-auto flex items-center gap-3">
+                <span className="text-xs font-semibold text-slate-700">
+                  {isLoadingReviewers
+                    ? "Checking submissions…"
+                    : `${submittedReviewCount} of ${totalReviewCount} human reviews submitted`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setIsReviewerProgressCollapsed(true)}
+                  aria-expanded={!isReviewerProgressCollapsed}
+                  aria-label="Hide reviewer progress"
+                  title="Hide reviewer progress"
+                  tabIndex={isReviewerProgressCollapsed ? -1 : 0}
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                >
+                  <FiChevronUp className="h-4 w-4" />
+                </button>
+              </div>
             </div>
+            <div
+              className="space-y-2.5"
+            >
             <div className="flex flex-wrap gap-2">
               {reviewerDecisions?.map((item) => {
                 const decisionText = item.decision?.decisionText;
@@ -459,8 +455,33 @@ export default function PaperViewer({
                   </span>
                 );
               })}
-              {!isLoadingReviewers && !reviewerDecisions?.length && (
-                <span className="text-xs text-slate-500">No reviewers are assigned to this paper.</span>
+              {!isAnalyzing && !agentReviewTasks.length && (
+                <span
+                  title={aiAnalysis?.aiOutput?.reasoning || "AI screening has not been run yet."}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
+                    aiDecisionTone,
+                  )}
+                >
+                  AI screening suggestion: {aiDecisionText}
+                </span>
+              )}
+              {agentReviewTasks.map((task) => (
+                <span
+                  key={task.id}
+                  title={task.status === "COMPLETED" ? "Agent review submitted" : "Waiting for agent review"}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
+                    task.status === "COMPLETED"
+                      ? "border-violet-200 bg-violet-50 text-violet-700"
+                      : "border-slate-200 bg-slate-50 text-slate-600",
+                  )}
+                >
+                  {task.agentName}: {task.status === "COMPLETED" ? "Submitted" : "Pending"}
+                </span>
+              ))}
+              {!isLoadingReviewers && !reviewerDecisions?.length && !agentReviewTasks.length && (
+                <span className="text-xs text-slate-500">No human reviewers are assigned to this paper.</span>
               )}
             </div>
             {reviewerDecisions?.some((item) => item.decision?.comment ?? item.decision?.reason) && (
@@ -476,19 +497,32 @@ export default function PaperViewer({
                 })}
               </div>
             )}
-            {!paper.hasConflict && !isLoadingReviewers && reviewerDecisions?.length ? (
+            </div>
+            {!paper.hasConflict && !isLoadingReviewers && !isAnalyzing && (reviewerDecisions?.length || !aiAnalysis) ? (
               <p className="text-xs text-slate-500">
-                {hasPendingAssignedReviewer
-                  ? "Waiting for the remaining reviewer. The paper will advance after reviewer consensus."
-                  : "Reviewer submissions are complete. Leader action is only needed if a conflict is raised."}
+                {hasPendingReview
+                  ? "Waiting for the remaining Human Reviewer submissions. AI suggestions are separate and do not count toward consensus."
+                  : "Human Reviewer submissions are complete. AI recommendations remain advisory and do not change paper status."}
               </p>
             ) : null}
           </div>
+        </div>
+        </div>
         </div>
       )}
 
       {/* Decision Action Bar */}
       {!hideActions && (
+        <div
+          aria-hidden={isLeaderView && isReviewerProgressCollapsed && !onInclude && !onExclude}
+          className={cn(
+            "grid overflow-hidden transition-[grid-template-rows,opacity] duration-300 ease-in-out motion-reduce:transition-none",
+            isLeaderView && isReviewerProgressCollapsed && !onInclude && !onExclude
+              ? "pointer-events-none grid-rows-[0fr] opacity-0"
+              : "grid-rows-[1fr] opacity-100",
+          )}
+        >
+        <div className="min-h-0 overflow-hidden">
         <div className="border-t border-border bg-white/95 px-4 py-3 backdrop-blur-md lg:px-6">
           <div className="mx-auto max-w-5xl">
             {(!isLeaderView && canReview) ||
@@ -561,7 +595,7 @@ export default function PaperViewer({
                         className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <FiCheck className="w-4 h-4" />
-                        Include
+                        Include paper
                         <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
                           1
                         </kbd>
@@ -594,6 +628,27 @@ export default function PaperViewer({
             )}
           </div>
         </div>
+        </div>
+        </div>
+      )}
+
+      {!hideActions && isLeaderView && (
+        <button
+          type="button"
+          onClick={() => setIsReviewerProgressCollapsed(false)}
+          aria-hidden={!isReviewerProgressCollapsed}
+          tabIndex={isReviewerProgressCollapsed ? 0 : -1}
+          aria-label="Show reviewer progress and status"
+          title="Show reviewer progress and status"
+          className={cn(
+            "absolute bottom-3 right-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white/95 text-slate-500 shadow-sm transition-[opacity,transform,color,background-color] duration-300 ease-out hover:bg-white hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 motion-reduce:transition-none",
+            isReviewerProgressCollapsed
+              ? "translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none translate-y-2 scale-90 opacity-0",
+          )}
+        >
+          <FiChevronUp className="h-4 w-4" />
+        </button>
       )}
 
       {isResolutionModalOpen && (
