@@ -5,7 +5,9 @@ import {
   CheckCircle,
   XCircle,
   ListChecks,
+  Pencil,
 } from "lucide-react";
+import Button from "../../../components/ui/Button";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import ProjectPICOCElement from "../../../components/reviewProcess/leader/ProjectPICOCElement";
 import ProjectResearchQuestions from "../../../components/reviewProcess/leader/ProjectResearchQuestions";
@@ -18,11 +20,13 @@ import { useSelectionCriteria } from "../../../hooks/useSelectionCriteria";
 interface CriteriaTabProps {
   projectId?: string;
   screeningProcessId?: string;
+  onEditCriteria?: () => void;
 }
 
 export const CriteriaTab: React.FC<CriteriaTabProps> = ({
   projectId,
   screeningProcessId,
+  onEditCriteria,
 }) => {
   const [showPicoc, setShowPicoc] = useState(true);
   const [showRq, setShowRq] = useState(true);
@@ -91,24 +95,37 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
 
       {/* Criteria Groups Section */}
       <div className="space-y-3 pb-4">
-        <button
-          onClick={() => setShowCriteria(!showCriteria)}
-          className="flex items-center justify-between w-full text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em] hover:text-text-secondary transition-colors group"
-        >
-          <div className="flex items-center gap-2">
-            <span>Selection Criteria</span>
-            {criteria && criteria.length > 0 && (
-              <span className="bg-bg-secondary text-text-secondary px-1.5 py-0.5 rounded-full text-[8px] tracking-normal">
-                {criteria.length}
-              </span>
+        <div className="flex items-center justify-between gap-2">
+          <button
+            onClick={() => setShowCriteria(!showCriteria)}
+            className="flex min-w-0 flex-1 items-center justify-between text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em] hover:text-text-secondary transition-colors group"
+          >
+            <div className="flex items-center gap-2">
+              <span>Selection Criteria</span>
+              {criteria && criteria.length > 0 && (
+                <span className="bg-bg-secondary text-text-secondary px-1.5 py-0.5 rounded-full text-[8px] tracking-normal">
+                  {criteria.length}
+                </span>
+              )}
+            </div>
+            {showCriteria ? (
+              <ChevronUp className="w-3 h-3" />
+            ) : (
+              <ChevronDown className="w-3 h-3" />
             )}
-          </div>
-          {showCriteria ? (
-            <ChevronUp className="w-3 h-3" />
-          ) : (
-            <ChevronDown className="w-3 h-3" />
+          </button>
+          {onEditCriteria && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onEditCriteria}
+              className="shrink-0 px-2.5 py-1 text-[9px]"
+            >
+              <Pencil className="mr-1.5 h-3 w-3" />
+              Edit
+            </Button>
           )}
-        </button>
+        </div>
 
         {showCriteria && (
           <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">

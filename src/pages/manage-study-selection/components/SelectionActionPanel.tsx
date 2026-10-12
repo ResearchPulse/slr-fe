@@ -24,6 +24,7 @@ interface SelectionActionPanelProps {
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
   isDisabled?: boolean;
+  onEditCriteria?: () => void;
 }
 
 export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
@@ -35,6 +36,7 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
   isCollapsed,
   onToggleCollapse,
   isDisabled,
+  onEditCriteria,
 }) => {
   const { projectId, screeningProcessId } = useParams<{
     projectId: string;
@@ -101,6 +103,7 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
               <CriteriaTab
                 projectId={projectId}
                 screeningProcessId={screeningProcessId}
+                onEditCriteria={onEditCriteria}
               />
             )}
 
