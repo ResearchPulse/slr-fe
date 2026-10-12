@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { studySelectionService } from "../../services/studySelectionService";
@@ -34,7 +34,6 @@ import {
   TabButton,
   GraphSection,
   PaperNodeList,
-  PaperSectionSidebar,
 } from "../../components/shared/paper/PaperViewer/components";
 import PdfJsViewer from "../../components/shared/paper/PdfJsViewer/PdfJsViewer";
 import CitationGraphModal from "../reviewProcess/studySelection/titleAbstractScreening/components/graph/CitationGraphModal";
@@ -76,36 +75,7 @@ export default function PaperDetailsPage() {
     },
   );
 
-  const [sidebarWidth, setSidebarWidth] = useState(200);
-  const sidebarRef = useRef<HTMLDivElement>(null);
-  const [isResizing, setIsResizing] = useState(false);
   const [activeSection, setActiveSection] = useState<string | null>(null);
-
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsResizing(true);
-
-    const handleMouseMove = (moveEvent: MouseEvent) => {
-      if (sidebarRef.current) {
-        const sidebarRect = sidebarRef.current.getBoundingClientRect();
-        const newWidth = moveEvent.clientX - sidebarRect.left;
-        if (newWidth >= 160 && newWidth <= 450) {
-          setSidebarWidth(newWidth);
-        }
-      }
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-      document.removeEventListener("mousemove", handleMouseMove);
-      document.removeEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "default";
-    };
-
-    document.addEventListener("mousemove", handleMouseMove);
-    document.addEventListener("mouseup", handleMouseUp);
-    document.body.style.cursor = "col-resize";
-  }, []);
 
   const handleSectionClick = (sectionKey: string) => {
     setActiveSection(sectionKey);
@@ -391,73 +361,27 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "fulltext" && (
-              <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none h-[800px] flex flex-col">
-                <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary/50">
+              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                {!paper.pdfUrl && <div className="flex items-center border-b border-border bg-bg-secondary/50 px-4 py-3">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
-                    {paper.pdfUrl ? "PDF Viewer" : "Full-Text Access"}
+                    Full-Text Access
                   </h2>
-                  {paper.pdfUrl && (
-                    <a
-                      href={paper.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-accent hover:text-primary-hover text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5"
-                    >
-                      Open in New Tab
-                      <FiExternalLink className="w-3 h-3" />
-                    </a>
-                  )}
-                </div>
+                </div>}
 
                 {paper.pdfUrl ? (
-                  <div className="flex-1 flex min-h-0 relative">
-                    {/* Dynamic Section Sidebar Integration */}
-                    <div ref={sidebarRef}>
-                      <PaperSectionSidebar
-                        sections={paper.fullTextSections ?? null}
-                        activeSection={activeSection}
-                        onSectionClick={handleSectionClick}
-                        width={sidebarWidth}
-                      />
-                    </div>
-
-                    {/* Resizable Divider */}
-                    <div
-                      onMouseDown={handleMouseDown}
-                      className={cn(
-                        "w-1 hover:w-1.5 bg-bg-secondary hover:bg-accent/60 cursor-col-resize transition-all duration-200 z-10 relative group",
-                        isResizing && "bg-accent w-1.5",
-                      )}
-                    >
-                      <div className="absolute inset-y-0 -left-1 -right-1 cursor-col-resize" />
-                    </div>
-
-                    <div
-                      className={cn(
-                        "flex-1 relative bg-bg-secondary transition-opacity",
-                        isResizing && "pointer-events-none opacity-80",
-                      )}
-                    >
-                      {paper.pdfUrl ? (
-                        <PdfJsViewer
-                          fileUrl={paper.pdfUrl}
-                          coordinateStr={activeSectionCoords}
-                          scale={1.5}
-                        />
-                      ) : (
-                        <div className="flex flex-col items-center justify-center h-full bg-bg-secondary text-text-secondary p-8 text-center">
-                          <FiUploadCloud className="w-12 h-12 mb-4 opacity-20" />
-                          <p className="font-bold text-lg">No PDF Available</p>
-                          <p className="text-sm max-w-xs mt-2">
-                            Full-text content was not found or could not be
-                            extracted for this paper.
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                  <div className="min-h-0 flex-1">
+                    <PdfJsViewer
+                      fileUrl={paper.pdfUrl}
+                      documentTitle={paper.title}
+                      coordinateStr={activeSectionCoords}
+                      sections={paper.fullTextSections}
+                      activeSection={activeSection}
+                      onSectionSelect={handleSectionClick}
+                      scale={1.25}
+                    />
                   </div>
                 ) : (
-                  <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
+                  <div className="flex flex-1 flex-col items-center justify-center bg-bg-secondary/30 p-12">
                     <div className="w-20 h-20 bg-surface-white rounded-xl shadow-none flex items-center justify-center mb-6 text-text-muted border border-border">
                       <FiFileText className="w-10 h-10" />
                     </div>

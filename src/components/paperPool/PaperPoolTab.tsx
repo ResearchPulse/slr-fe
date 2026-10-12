@@ -215,7 +215,7 @@ export default function PaperPoolTab({
 
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
-  const canUploadPdf = isLeader || member?.role === 2;
+  const canUploadPdf = isLeader;
 
   // Reviewers are restricted from setup steps (1-4) and automatically land on step 5 (Select & Assign)
   useEffect(() => {

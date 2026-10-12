@@ -296,7 +296,7 @@ export const useSendInvitations = (projectId: string | undefined) => {
 export const useUpdateProjectMemberRole = (projectId: string | undefined) => {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: ({ userId, role }: { userId: string; role: "OWNER" | "LECTURER" | "REVIEWER" }) =>
+    mutationFn: ({ userId, role }: { userId: string; role: "OWNER" | "REVIEWER" }) =>
       projectId
         ? projectService.updateMemberRole(projectId, userId, role)
         : Promise.reject("No Project ID"),

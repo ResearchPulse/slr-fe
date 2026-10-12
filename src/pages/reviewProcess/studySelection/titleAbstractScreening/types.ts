@@ -40,6 +40,7 @@ export interface ReviewerDecision {
   exclusionReasonCode: number | null;
   exclusionReasonName: string | null;
   decidedAt: string;
+  phase?: number;
 }
 
 export interface ScreeningPaper {
@@ -75,6 +76,7 @@ export interface ScreeningPaper {
   finalDecision: ScreeningDecision | null;
   finalDecisionText: string | null;
   decisions: ReviewerDecision[];
+  aiReviewSubmitted?: boolean;
   extraction: ExtractionStatusResponse | null;
   metadataSources: MetadataSourcesResponse | null;
   extractionResult: ExtractionResultResponse | null;
@@ -293,6 +295,7 @@ function mapDecisionResponse(d: ScreeningDecisionResponse): ReviewerDecision {
     exclusionReasonCode: d.exclusionReasonCode,
     exclusionReasonName: d.exclusionReasonName,
     decidedAt: d.decidedAt,
+    phase: d.phase,
   };
 }
 
@@ -329,6 +332,7 @@ export function adaptPaperWithDecisions(paper: PaperWithDecisionsResponse): Scre
     finalDecision: paper.finalDecision !== null ? mapDecisionType(paper.finalDecision) : null,
     finalDecisionText: paper.finalDecisionText,
     decisions: paper.decisions.map(mapDecisionResponse),
+    aiReviewSubmitted: paper.aiReviewSubmitted,
     extraction: paper.extraction,
     metadataSources: paper.metadataSources,
     extractionResult: paper.extractionResult,
@@ -383,6 +387,7 @@ export function adaptAssignedPaper(paper: AssignedPaperResponse): ScreeningPaper
     finalDecision: paper.finalDecision !== null ? mapDecisionType(paper.finalDecision) : null,
     finalDecisionText: paper.finalDecisionText,
     decisions: paper.decisions.map(mapDecisionResponse),
+    aiReviewSubmitted: paper.aiReviewSubmitted,
     extraction: paper.extraction,
     metadataSources: paper.metadataSources,
     extractionResult: paper.extractionResult,

@@ -18,6 +18,7 @@ import { MarkdownContent } from "../../../../../components/ui/MarkdownContent";
 import type { AiAnalysisResult, FullTextPaper, MatchStatus } from "../types";
 import { MATCH_STATUS_CONFIG } from "../constants";
 import { cn } from "../../../../../utils/cn";
+import ReviewerAiAgentPanel from "../../components/ReviewerAiAgentPanel";
 
 interface AiAnalysisPanelProps {
   paper: FullTextPaper | null;
@@ -132,6 +133,7 @@ export default function AiAnalysisPanel({
       </div>
 
       <div className="p-4 space-y-4">
+        <ReviewerAiAgentPanel paper={paper} stage="FULL_TEXT" />
         {/* Run Analysis Button */}
         {!aiAnalysis && !isAnalyzing && (
           <div className="analysis-card bg-surface-white p-6 rounded-xl border border-border shadow-none text-center">

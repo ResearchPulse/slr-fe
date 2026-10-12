@@ -301,7 +301,7 @@ class ProjectService {
   updateMemberRole = async (
     projectId: string,
     userId: string,
-    role: "OWNER" | "LECTURER" | "REVIEWER",
+    role: "OWNER" | "REVIEWER",
   ): Promise<ApiResponse<unknown>> => {
     const response = await api.put<ApiResponse<unknown>>(
       `${this.endpoint}/${projectId}/members/${userId}`,

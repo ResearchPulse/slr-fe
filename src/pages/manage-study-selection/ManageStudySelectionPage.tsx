@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from "react";
 import { toastSuccess, toastError } from "../../utils/toast";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { PaperList } from "./components/PaperList";
 import { SelectionActionPanel } from "./components/SelectionActionPanel";
 import {
@@ -25,15 +25,23 @@ import BulkAssignmentPanel from "../../components/reviewProcess/leader/BulkAssig
 import StudySelectionCriteriaModal from "../../components/reviewProcess/leader/StudySelectionCriteriaModal";
 import { useStudySelection } from "../reviewProcess/studySelection/titleAbstractScreening/hooks/useStudySelection";
 import { SelectionProcessStatus } from "../../types/studySelection";
+import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiList } from "react-icons/fi";
+import { getAdjacentPaperId, getPaperQueueNeighbors } from "../reviewProcess/studySelection/navigatePaperQueue";
+import { useProject } from "../../hooks/useProjects";
 
 export default function ManageStudySelectionPage() {
-  const { screeningProcessId } = useParams<{
+  const { projectId, processId, screeningProcessId, paperId } = useParams<{
+    projectId: string;
+    processId: string;
     screeningProcessId: string;
+    paperId?: string;
   }>();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [currentPhase, setCurrentPhase] =
     useState<SelectionPhase>("TITLE_ABSTRACT");
   const [isAssignmentMode, setIsAssignmentMode] = useState(false);
-  const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
+  const [selectedPaperId, setSelectedPaperId] = useState<string | null>(paperId ?? null);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [leftWidth, setLeftWidth] = useState(320); // px
   const [rightWidth, setRightWidth] = useState(300); // px
@@ -63,10 +71,18 @@ export default function ManageStudySelectionPage() {
   );
 
   // AI Analysis Hook
-  const { aiAnalysis, isAnalyzing, runAiAnalysis } = useStudySelection(
+  const selectionWorkspace = useStudySelection(
     currentPhaseNumeric,
     selectedPaperId,
   );
+  const { aiAnalysis, isAnalyzing, runAiAnalysis } = selectionWorkspace;
+  const { project } = useProject(projectId);
+  const [contextOpen, setContextOpen] = useState(() => {
+    try { return localStorage.getItem("study-selection:context-open") !== "false"; } catch { return true; }
+  });
+  const [mobileContextOpen, setMobileContextOpen] = useState(false);
+  const [directNeighbors, setDirectNeighbors] = useState<{ paperId: string; previous: boolean; next: boolean } | null>(null);
+  React.useEffect(() => setSelectedPaperId(paperId ?? null), [paperId]);
 
   // Fetch conflict status to check for conflicts on the selected paper
   const { data: conflictStatusList } = useConflictStatus(
@@ -212,6 +228,89 @@ export default function ManageStudySelectionPage() {
     },
     [screeningProcessId, currentUser, currentPhaseNumeric, resolveConflict],
   );
+
+  const listPath = `/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}`;
+  const detailPath = (id: string) => `${listPath}/papers/${id}`;
+  const currentPaperIndex = selectionWorkspace.papers.findIndex((paper) => paper.id === paperId);
+  React.useEffect(() => {
+    if (!paperId || currentPaperIndex >= 0 || selectionWorkspace.isLoading || !screeningProcessId) return;
+    let active = true;
+    void getPaperQueueNeighbors({
+      processId: screeningProcessId,
+      phase: currentPhaseNumeric,
+      currentId: paperId,
+      papers: selectionWorkspace.papers,
+      pagination: selectionWorkspace.pagination,
+      filters: selectionWorkspace.filters,
+    }).then((neighbors) => {
+      if (active) setDirectNeighbors({ paperId, previous: !!neighbors.previous, next: !!neighbors.next });
+    }).catch(() => {
+      if (active) setDirectNeighbors({ paperId, previous: false, next: false });
+    });
+    return () => { active = false; };
+  }, [paperId, currentPaperIndex, selectionWorkspace.isLoading, screeningProcessId, currentPhaseNumeric, selectionWorkspace.papers, selectionWorkspace.pagination, selectionWorkspace.filters]);
+
+  const navigateAdjacent = async (direction: -1 | 1) => {
+    if (!paperId || !screeningProcessId) return;
+    try {
+      const adjacent = await getAdjacentPaperId({
+        processId: screeningProcessId,
+        phase: currentPhaseNumeric,
+        currentId: paperId,
+        papers: selectionWorkspace.papers,
+        pagination: selectionWorkspace.pagination,
+        filters: selectionWorkspace.filters,
+        direction,
+      });
+      if (!adjacent) return;
+      selectionWorkspace.goToPage(adjacent.pageNumber);
+      navigate(detailPath(adjacent.paperId), { state: location.state });
+    } catch {
+      // Stay on the current paper if the adjacent result cannot be loaded.
+    }
+  };
+
+  const toggleContextPanel = () => {
+    if (window.matchMedia("(max-width: 1279px)").matches) {
+      setMobileContextOpen(true);
+      return;
+    }
+    setContextOpen((open) => {
+      const nextOpen = !open;
+      try { localStorage.setItem("study-selection:context-open", String(nextOpen)); } catch { /* optional preference */ }
+      return nextOpen;
+    });
+  };
+
+  if (paperId) {
+    const backToList = () => navigate((location.state as { listPath?: string } | null)?.listPath || listPath);
+    const closeContext = () => {
+      setContextOpen(false);
+      setMobileContextOpen(false);
+      try { localStorage.setItem("study-selection:context-open", "false"); } catch { /* optional preference */ }
+    };
+    const previousDisabled = currentPaperIndex >= 0
+      ? currentPaperIndex === 0 && !selectionWorkspace.pagination.hasPreviousPage
+      : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.previous;
+    const nextDisabled = currentPaperIndex >= 0
+      ? currentPaperIndex === selectionWorkspace.papers.length - 1 && !selectionWorkspace.pagination.hasNextPage
+      : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next;
+    return <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-bg-primary">
+      <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b border-border bg-surface-white px-3 sm:px-5">
+        <button onClick={backToList} className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary"><FiArrowLeft/><span className="hidden sm:inline">Back to papers</span></button>
+        <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">{project?.title || "Study Selection"} · Leader review</div><div className="truncate text-xs font-semibold sm:text-sm">Paper {currentPaperIndex >= 0 ? (selectionWorkspace.filters.pageNumber - 1) * selectionWorkspace.pagination.pageSize + currentPaperIndex + 1 : "—"} of {selectionWorkspace.pagination.totalCount || "—"}</div></div>
+        <div className="flex shrink-0 items-center gap-1"><button onClick={() => void navigateAdjacent(-1)} disabled={previousDisabled} aria-label="Previous paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronLeft/></button><button onClick={() => void navigateAdjacent(1)} disabled={nextDisabled} aria-label="Next paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronRight/></button><button onClick={() => navigate(`${listPath}/assignment-management`)} className="hidden rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-secondary hover:bg-bg-secondary sm:inline-flex">Manage assignments</button><button onClick={toggleContextPanel} aria-label="Toggle review context" className="ml-1 rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary"><FiList/></button></div>
+      </header>
+      <div className="flex min-h-0 flex-1">
+        <main className="min-w-0 flex-1 overflow-hidden rounded-xl bg-surface-white">
+          <PaperViewer paper={selectedPaper ? { ...selectedPaper, hasConflict: paperHasConflict } : null} isLeaderView onInclude={!isCompleted && (paperHasConflict || selectedPaper?.hasConflict) ? handleInclude : undefined} onExclude={!isCompleted && (paperHasConflict || selectedPaper?.hasConflict) ? handleExclude : undefined} isSubmitting={isResolving} phase={currentPhaseNumeric} isDisabled={isCompleted}/>
+        </main>
+        {contextOpen && <aside className="hidden w-[340px] shrink-0 border-l border-border bg-surface-white xl:block"><SelectionActionPanel currentPhase={currentPhase} selectedPaper={selectedPaper} aiAnalysis={aiAnalysis} isAnalyzing={isAnalyzing} runAiAnalysis={runAiAnalysis} isCollapsed={false} onToggleCollapse={toggleContextPanel} isDisabled={isCompleted} onEditCriteria={() => setIsCriteriaModalOpen(true)}/></aside>}
+        {mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={closeContext}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><SelectionActionPanel currentPhase={currentPhase} selectedPaper={selectedPaper} aiAnalysis={aiAnalysis} isAnalyzing={isAnalyzing} runAiAnalysis={runAiAnalysis} isCollapsed={false} onToggleCollapse={closeContext} isDisabled={isCompleted} onEditCriteria={() => setIsCriteriaModalOpen(true)}/></aside></div>}
+      </div>
+      <StudySelectionCriteriaModal isOpen={isCriteriaModalOpen} onClose={() => setIsCriteriaModalOpen(false)} studySelectionProcessId={screeningProcessId || ""}/>
+    </div>;
+  }
 
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden overscroll-none bg-bg-secondary">

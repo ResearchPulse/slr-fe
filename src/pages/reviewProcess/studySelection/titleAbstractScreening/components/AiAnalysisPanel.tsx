@@ -18,6 +18,7 @@ import { MarkdownContent } from "../../../../../components/ui/MarkdownContent";
 import type { AiAnalysisResult, ScreeningPaper, MatchStatus } from "../types";
 import { MATCH_STATUS_CONFIG } from "../constants";
 import { cn } from "../../../../../utils/cn";
+import ReviewerAiAgentPanel from "../../components/ReviewerAiAgentPanel";
 
 interface AiAnalysisPanelProps {
   paper: ScreeningPaper | null;
@@ -132,6 +133,7 @@ export default function AiAnalysisPanel({
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+        <ReviewerAiAgentPanel paper={paper} stage="TITLE_ABSTRACT" />
         {/* Run Analysis Button */}
         {!aiAnalysis && !isAnalyzing && (
           <div className="analysis-card bg-surface-white p-6 rounded-xl border border-border shadow-none text-center">

@@ -3,6 +3,7 @@ import { FiCopy, FiEye, FiKey, FiRefreshCw, FiUserPlus } from "react-icons/fi";
 import { isAxiosError } from "axios";
 import api from "../../config/axios";
 import { toastError, toastSuccess } from "../../utils/toast";
+import AIReviewResultCard from "./AIReviewResultCard";
 
 type Agent = { id: string; name: string; description: string; isActive: boolean };
 type ProjectAccess = { id: string; agentId: string; projectId: string; projectName: string; isActive: boolean };
@@ -168,10 +169,10 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
             </form>}
             <h3 className="mb-3 mt-5 font-semibold text-text-primary">Agent tasks</h3>
             {!tasks.length && <p className="text-sm text-text-secondary">No tasks assigned to this agent in the project.</p>}
-            <div className="space-y-2">{tasks.map(task => <article key={task.id} className="rounded-lg border border-border p-3 text-sm">
-              <div className="flex items-start justify-between gap-3"><div><p className="font-medium text-text-primary">{task.paperTitle || task.paperId}</p><p className="text-xs text-text-secondary">{task.status}</p></div><button type="button" disabled={busy} onClick={() => removeTask(task)} className="text-xs text-rose-600">Remove</button></div>
-              {task.instructions && <p className="mt-2 whitespace-pre-wrap text-text-secondary">{task.instructions}</p>}
-              {task.result && <div className="mt-3 rounded bg-emerald-50 p-3"><strong>{task.result.decision}</strong><p className="mt-1 whitespace-pre-wrap"><strong>Reason/comment:</strong> {task.result.reasoning}</p>{task.result.data && <pre className="mt-2 overflow-x-auto text-xs">{JSON.stringify(task.result.data, null, 2)}</pre>}</div>}
+            <div className="space-y-3">{tasks.map(task => <article key={task.id} className="min-w-0 space-y-2 rounded-lg border border-border p-3 text-sm">
+              <div className="flex items-start justify-between gap-3"><div className="min-w-0"><p className="break-words font-medium text-text-primary">{task.paperTitle || task.paperId}</p></div>{task.status !== "COMPLETED" && <button type="button" disabled={busy} onClick={() => removeTask(task)} className="shrink-0 text-xs text-rose-600">Remove</button>}</div>
+              {task.instructions && <p className="break-words text-xs text-text-secondary">{task.instructions}</p>}
+              {task.result && <AIReviewResultCard task={{ ...task, agentId: selectedAgentId, agentName: selected?.agent.name }} />}
             </article>)}</div>
           </>}
         </section>

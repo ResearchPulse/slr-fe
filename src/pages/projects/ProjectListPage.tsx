@@ -15,7 +15,7 @@ import {
 import { getProjectRoleLabel } from "../../types/project";
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 
-type RoleFilter = "All" | "Owner" | "Lecturer" | "Reviewer";
+type RoleFilter = "All" | "Project Leader" | "Reviewer";
 
 export default function ProjectListPage() {
   const navigate = useNavigate();
@@ -99,16 +99,14 @@ export default function ProjectListPage() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="mb-1 text-[28px] font-semibold leading-tight tracking-tight text-text-primary sm:text-[32px]">
-              {roleFilter === "All" ? "Research Projects" : `${roleFilter === "Owner" ? "Leader" : roleFilter} Projects`}
+              {roleFilter === "All" ? "Research Projects" : `${roleFilter} Projects`}
             </h1>
             <p className="max-w-3xl text-sm leading-relaxed text-text-secondary">
               {roleFilter === "Reviewer"
                 ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
-                : roleFilter === "Lecturer"
-                  ? "Projects where you support the research team and contribute to the review workflow."
-                  : roleFilter === "Owner"
-                    ? "Projects you lead, with setup, team coordination, and review process controls."
-                    : "Your research workspace, organized around the role you hold in each project."}
+                : roleFilter === "Project Leader"
+                  ? "Projects you lead, with setup, team coordination, and review process controls."
+                  : "Your research workspace, organized around the role you hold in each project."}
             </p>
           </div>
           <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2">
@@ -119,8 +117,7 @@ export default function ProjectListPage() {
         <div className="mb-4 flex flex-wrap gap-2" aria-label="Filter projects by role">
           {([
             { value: "All", label: "All roles" },
-            { value: "Owner", label: "Leader" },
-            { value: "Lecturer", label: "Lecturer" },
+            { value: "Project Leader", label: "Project Leader" },
             { value: "Reviewer", label: "Reviewer" },
           ] as const).map(({ value, label }) => {
             const count = value === "All"
