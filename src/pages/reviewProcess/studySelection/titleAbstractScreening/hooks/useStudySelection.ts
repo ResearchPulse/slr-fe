@@ -250,7 +250,7 @@ export function useStudySelection(
     mutationFn: async (vars: {
       paperId: string;
       decision: number;
-      reason?: string;
+      comment?: string | null;
       exclusionReasonId?: string;
     }) => {
       if (!currentUser?.id) {
@@ -261,7 +261,7 @@ export function useStudySelection(
         reviewerId: currentUser.id,
         decision: vars.decision as 0 | 1,
         phase,
-        reason: vars.reason ?? null,
+        comment: vars.comment ?? null,
         exclusionReasonId: vars.exclusionReasonId ?? null,
       });
     },
@@ -299,9 +299,9 @@ export function useStudySelection(
 
   // ---- Screening Actions ----
   const includePaper = useCallback(
-    (paperId: string) => {
+    (paperId: string, comment?: string | null) => {
       decisionMutation.mutate(
-        { paperId, decision: 0 }, // Include
+        { paperId, decision: 0, comment }, // Include
         {
           onSuccess: () => {
             // Auto-advance to next pending paper on current page
@@ -319,13 +319,13 @@ export function useStudySelection(
   );
 
   const excludePaper = useCallback(
-    (paperId: string, exclusionReasonId: string | null, reason: string | null) => {
+    (paperId: string, exclusionReasonId: string | null, comment: string | null) => {
       decisionMutation.mutate(
         {
           paperId,
           decision: 1,
           exclusionReasonId: exclusionReasonId ?? undefined,
-          reason: reason ?? undefined,
+          comment: comment ?? undefined,
         }, // Exclude
         {
           onSuccess: () => {

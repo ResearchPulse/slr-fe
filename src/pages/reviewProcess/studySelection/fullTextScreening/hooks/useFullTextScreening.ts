@@ -288,7 +288,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
     mutationFn: async (vars: { 
       paperId: string; 
       decision: number; 
-      reason?: string | null; 
+      comment?: string | null;
       exclusionReasonId?: string | null; 
     }) => {
       if (!currentUser?.id) {
@@ -298,7 +298,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         reviewerId: currentUser.id,
         decision: vars.decision as 0 | 1,
         phase: PaperPhase.FullText,
-        reason: vars.reason ?? null,
+        comment: vars.comment ?? null,
         exclusionReasonId: vars.exclusionReasonId ?? null,
       });
     },
@@ -337,9 +337,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
   });
 
   const includePaper = useCallback(
-    (paperId: string) => {
+    (paperId: string, comment?: string | null) => {
       decisionMutation.mutate(
-        { paperId, decision: 0 }, // Include
+        { paperId, decision: 0, comment }, // Include
         {
           onSuccess: () => {
             const idx = papers.findIndex((p) => p.id === paperId);
@@ -354,9 +354,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
   );
 
   const excludePaper = useCallback(
-    (paperId: string, exclusionReasonId: string | null, reason: string | null) => {
+    (paperId: string, exclusionReasonId: string | null, comment: string | null) => {
       decisionMutation.mutate(
-        { paperId, decision: 1, exclusionReasonId, reason }, // Exclude
+        { paperId, decision: 1, exclusionReasonId, comment }, // Exclude
         {
           onSuccess: () => {
             const idx = papers.findIndex((p) => p.id === paperId);

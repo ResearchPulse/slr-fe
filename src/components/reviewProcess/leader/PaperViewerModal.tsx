@@ -104,6 +104,7 @@ function adaptPaperToScreening(
       reviewerName: r.name,
       decision: "included", // Mocking - not used with hideActions=true
       reason: null,
+      comment: null,
       exclusionReasonCode: null,
       exclusionReasonName: null,
       decidedAt: new Date().toISOString(),

@@ -21,7 +21,7 @@ interface FullTextRightPanelProps {
   paper: FullTextPaper | null;
   aiAnalysis: AiAnalysisResult | null;
   isAnalyzing: boolean;
-  onInclude: (paperId: string) => void;
+  onInclude: (paperId: string, comment?: string | null) => void;
   onExclude: (
     paperId: string,
     exclusionReasonId: string | null,

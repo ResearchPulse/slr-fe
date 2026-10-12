@@ -4,7 +4,7 @@ import type { PaperWithDecisionsResponse } from "../../../../types/studySelectio
 
 export interface PaperViewerProps {
   paper: ScreeningPaper | null;
-  onInclude?: (paperId: string) => void;
+  onInclude?: (paperId: string, comment?: string | null) => void;
   onExclude?: (paperId: string, exclusionReasonId: string | null, reason: string | null) => void;
   onUploadPdf?: (
     paperId: string,
