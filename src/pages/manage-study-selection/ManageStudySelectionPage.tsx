@@ -22,6 +22,7 @@ import Button from "../../components/ui/Button";
 import { Users, X, AlertCircle } from "lucide-react";
 import { cn } from "../../utils/cn";
 import BulkAssignmentPanel from "../../components/reviewProcess/leader/BulkAssignmentPanel";
+import StudySelectionCriteriaModal from "../../components/reviewProcess/leader/StudySelectionCriteriaModal";
 import { useStudySelection } from "../reviewProcess/studySelection/titleAbstractScreening/hooks/useStudySelection";
 import { SelectionProcessStatus } from "../../types/studySelection";
 
@@ -38,6 +39,7 @@ export default function ManageStudySelectionPage() {
   const [rightWidth, setRightWidth] = useState(300); // px
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
+  const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
   const currentPhaseNumeric =
     currentPhase === "TITLE_ABSTRACT"
       ? PaperPhase.TitleAbstract
@@ -366,6 +368,7 @@ export default function ManageStudySelectionPage() {
             isCollapsed={isRightCollapsed}
             onToggleCollapse={() => setIsRightCollapsed(!isRightCollapsed)}
             isDisabled={isCompleted}
+            onEditCriteria={() => setIsCriteriaModalOpen(true)}
           />
         </div>
       </div>
@@ -402,6 +405,12 @@ export default function ManageStudySelectionPage() {
           }}
         />
       )}
+
+      <StudySelectionCriteriaModal
+        isOpen={isCriteriaModalOpen}
+        onClose={() => setIsCriteriaModalOpen(false)}
+        studySelectionProcessId={screeningProcessId || ""}
+      />
     </div>
   );
 }

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
 import { useParams } from "react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   useProjectPicocs,
   useProjectResearchQuestions,
@@ -9,6 +10,7 @@ import {
 import {
   useGenerateAiCriteria,
   useSaveAiCriteria,
+  useSelectionCriteria,
 } from "../../../hooks/useSelectionCriteria";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import { ClipboardList, ChevronDown, ChevronUp } from "lucide-react";
@@ -40,12 +42,38 @@ const StudySelectionCriteriaModal: React.FC<
   const { mutate: generateAi, isPending: isGenerating } =
     useGenerateAiCriteria();
   const { mutate: saveCriteria, isPending: isSaving } = useSaveAiCriteria();
+  const { data: savedCriteria, isLoading: criteriaLoading } =
+    useSelectionCriteria(studySelectionProcessId);
+  const queryClient = useQueryClient();
 
   const [criteriaGroups, setCriteriaGroups] = useState<CriteriaGroup[]>([]);
   const [rawJson, setRawJson] = useState<string>("");
   const [showRefData, setShowRefData] = useState(true);
 
-  const isLoading = picocLoading || rqLoading;
+  const isLoading = picocLoading || rqLoading || criteriaLoading;
+
+  useEffect(() => {
+    if (!isOpen || !savedCriteria) return;
+
+    setCriteriaGroups(
+      savedCriteria.map((group) => ({
+        localId: uuidv4(),
+        description: group.description || "",
+        isAiGenerated: false,
+        isExpanded: true,
+        inclusionCriteria: group.inclusionCriteria.map((criterion) => ({
+          localId: uuidv4(),
+          text: criterion.rule,
+          sources: [],
+        })),
+        exclusionCriteria: group.exclusionCriteria.map((criterion) => ({
+          localId: uuidv4(),
+          text: criterion.rule,
+          sources: [],
+        })),
+      })),
+    );
+  }, [isOpen, savedCriteria]);
 
   const handleAiSuggest = () => {
     generateAi(studySelectionProcessId, {
@@ -206,6 +234,9 @@ const StudySelectionCriteriaModal: React.FC<
 
     saveCriteria(requestData, {
       onSuccess: () => {
+        queryClient.invalidateQueries({
+          queryKey: ["selection-criteria", studySelectionProcessId],
+        });
         toastSuccess("Study selection criteria saved successfully!");
         onClose();
       },
