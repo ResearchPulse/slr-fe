@@ -47,7 +47,7 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
   const tabItems = [
     { id: "criteria", label: "Criteria", icon: Target },
     { id: "panel", label: "Panel", icon: Layout },
-    { id: "ai", label: "AI Analysis", icon: Cpu },
+    { id: "ai", label: "AI Analysis", compactLabel: "AI", icon: Cpu },
   ];
 
   if (isCollapsed) {
@@ -94,8 +94,8 @@ export const SelectionActionPanel: React.FC<SelectionActionPanelProps> = ({
           activeTabId={activeTab}
           onTabChange={setActiveTab}
           className="flex-1 flex flex-col min-h-0 gap-3"
-          listClassName="w-full flex-nowrap overflow-x-auto no-scrollbar rounded-xl border border-slate-100 bg-slate-50 p-1"
-          itemClassName="min-w-fit flex-1 justify-center rounded-xl px-2.5 py-2 text-[11px]"
+          listClassName="selection-action-tabs w-full flex-nowrap overflow-x-auto hide-scrollbar border-b border-slate-200"
+          itemClassName="min-w-fit flex-none justify-center gap-1.5 rounded-none px-2 py-2.5 text-[11px] normal-case tracking-normal sm:text-xs"
           contentClassName="flex-1 min-h-0"
         >
           <div className="flex-1 overflow-y-auto h-full custom-scrollbar pr-1">

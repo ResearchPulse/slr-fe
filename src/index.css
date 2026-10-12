@@ -359,6 +359,44 @@ select:focus {
   background: var(--color-text-muted);
 }
 
+.compact-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.compact-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.selection-action-tabs {
+  container-name: selection-action-tabs;
+  container-type: inline-size;
+}
+
+.tab-label-compact {
+  display: none;
+}
+
+@container selection-action-tabs (max-width: 300px) {
+  .tab-label-full {
+    display: none;
+  }
+
+  .tab-label-compact {
+    display: inline;
+  }
+}
+
 /* =====================================================
    STEP PROGRESS
    ===================================================== */
