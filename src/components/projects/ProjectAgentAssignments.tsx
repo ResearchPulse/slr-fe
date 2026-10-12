@@ -171,7 +171,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
             <div className="space-y-2">{tasks.map(task => <article key={task.id} className="rounded-lg border border-border p-3 text-sm">
               <div className="flex items-start justify-between gap-3"><div><p className="font-medium text-text-primary">{task.paperTitle || task.paperId}</p><p className="text-xs text-text-secondary">{task.status}</p></div><button type="button" disabled={busy} onClick={() => removeTask(task)} className="text-xs text-rose-600">Remove</button></div>
               {task.instructions && <p className="mt-2 whitespace-pre-wrap text-text-secondary">{task.instructions}</p>}
-              {task.result && <div className="mt-3 rounded bg-emerald-50 p-3"><strong>{task.result.decision}</strong><p className="mt-1 whitespace-pre-wrap">{task.result.reasoning}</p>{task.result.data && <pre className="mt-2 overflow-x-auto text-xs">{JSON.stringify(task.result.data, null, 2)}</pre>}</div>}
+              {task.result && <div className="mt-3 rounded bg-emerald-50 p-3"><strong>{task.result.decision}</strong><p className="mt-1 whitespace-pre-wrap"><strong>Reason/comment:</strong> {task.result.reasoning}</p>{task.result.data && <pre className="mt-2 overflow-x-auto text-xs">{JSON.stringify(task.result.data, null, 2)}</pre>}</div>}
             </article>)}</div>
           </>}
         </section>

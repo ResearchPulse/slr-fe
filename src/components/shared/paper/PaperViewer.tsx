@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from "react";
+import React, { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 import {
@@ -38,6 +38,7 @@ import { PaperPhase } from "../../../types/studySelection";
 import { useReviewerDecisions } from "../../../hooks/useStudySelection";
 import ConflictResolutionModal from "../../reviewProcess/leader/ConflictResolutionModal";
 import UploadFullTextPdfModal from "../../../pages/reviewProcess/studySelection/components/UploadFullTextPdfModal";
+import ReviewCommentField from "../../../pages/reviewProcess/studySelection/components/ReviewCommentField";
 
 export default function PaperViewer({
   paper,
@@ -89,6 +90,11 @@ export default function PaperViewer({
   const navigate = useNavigate();
 
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [reviewComment, setReviewComment] = useState("");
+
+  useEffect(() => {
+    setReviewComment("");
+  }, [paper?.id]);
 
   const finalOnRetryExtraction = onRetryExtraction || retryMetadataExtraction;
   const finalIsRetryingExtraction =
@@ -457,6 +463,19 @@ export default function PaperViewer({
                 <span className="text-xs text-slate-500">No reviewers are assigned to this paper.</span>
               )}
             </div>
+            {reviewerDecisions?.some((item) => item.decision?.comment ?? item.decision?.reason) && (
+              <div className="mt-2 space-y-1.5">
+                {reviewerDecisions.map((item) => {
+                  const comment = item.decision?.comment ?? item.decision?.reason;
+                  return comment ? (
+                    <p key={`${item.reviewerId}-comment`} className="text-xs text-slate-600">
+                      <span className="font-semibold">{item.reviewerName} comment:</span>{" "}
+                      {comment}
+                    </p>
+                  ) : null;
+                })}
+              </div>
+            )}
             {!paper.hasConflict && !isLoadingReviewers && reviewerDecisions?.length ? (
               <p className="text-xs text-slate-500">
                 {hasPendingAssignedReviewer
@@ -496,6 +515,19 @@ export default function PaperViewer({
                     Checking assignments...
                   </div>
                 )}
+                {!(paper.hasConflict && isLeaderView) && (
+                  <ReviewCommentField
+                    value={reviewComment}
+                    onChange={setReviewComment}
+                    disabled={
+                      isDisabled ||
+                      isSubmittingDecision ||
+                      isSubmitting ||
+                      (isLeaderView && hasPendingAssignedReviewer) ||
+                      isLoadingReviewers
+                    }
+                  />
+                )}
                 <div className="flex items-center gap-3">
                   {paper.hasConflict && isLeaderView ? (
                     <button
@@ -516,8 +548,8 @@ export default function PaperViewer({
                       <button
                         onClick={() =>
                           onInclude
-                            ? onInclude(paper.id)
-                            : includePaper(paper.id)
+                            ? onInclude(paper.id, reviewComment.trim() || null)
+                            : includePaper(paper.id, reviewComment.trim() || null)
                         }
                         disabled={
                           isDisabled ||

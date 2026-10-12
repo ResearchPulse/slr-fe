@@ -33,6 +33,7 @@ export interface ReviewerDecision {
   reviewerName: string;
   decision: ScreeningDecision;
   reason: string | null;
+  comment: string | null;
   exclusionReasonCode: number | null;
   exclusionReasonName: string | null;
   decidedAt: string;
@@ -175,7 +176,7 @@ export interface UseFullTextScreeningReturn {
   selectPreviousPaper: () => void;
 
   // Screening actions
-  includePaper: (paperId: string) => void;
+  includePaper: (paperId: string, comment?: string | null) => void;
   excludePaper: (paperId: string, exclusionReasonId: string | null, reason: string | null) => void;
   isSubmitting: boolean;
 
@@ -255,6 +256,7 @@ function mapDecisionResponse(d: ScreeningDecisionResponse): ReviewerDecision {
     reviewerName: d.reviewerName,
     decision: mapDecisionType(d.decision),
     reason: d.reason,
+    comment: d.comment ?? d.reason,
     exclusionReasonCode: d.exclusionReasonCode,
     exclusionReasonName: d.exclusionReasonName,
     decidedAt: d.decidedAt,

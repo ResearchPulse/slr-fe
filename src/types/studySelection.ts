@@ -156,6 +156,8 @@ export interface SubmitScreeningDecisionRequest {
   reviewerId: string;
   decision: ScreeningDecisionType;
   phase: PaperPhase;
+  comment?: string | null;
+  /** @deprecated Use comment. Kept for older callers. */
   reason?: string | null;
   exclusionReasonId?: string | null;
 }
@@ -275,6 +277,7 @@ export interface ScreeningDecisionResponse {
   exclusionReasonCode: number | null;
   exclusionReasonName: string | null;
   reason: string | null;
+  comment?: string | null;
   decidedAt: string;
 }
 
