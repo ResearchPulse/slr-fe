@@ -97,7 +97,7 @@ export default function ProjectDetailPage() {
     return (
       projectForHeader.isLeader === true ||
       Number(projectForHeader.role) === ProjectRole.Leader ||
-      getProjectRoleLabel(projectForHeader.role ?? projectForHeader.roleText) === "Owner"
+      getProjectRoleLabel(projectForHeader.role ?? projectForHeader.roleText) === "Project Leader"
     );
   }, [projectForHeader, currentProjectMember]);
 

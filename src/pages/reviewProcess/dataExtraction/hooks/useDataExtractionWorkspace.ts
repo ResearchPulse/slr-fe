@@ -8,7 +8,7 @@ import { dataExtractionConductingService } from "../../../../services/dataExtrac
 import { dataExtractionTemplateService } from "../../../../services/dataExtractionService";
 import { getErrorMessage } from "../../../../utils/errorUtils";
 import { toastError, toastSuccess } from "../../../../utils/toast";
-import { ProjectRole, type ProjectRoleType } from "../../../../types/project";
+import { ProjectRole } from "../../../../types/project";
 import {
   type AddCommentRequestDto,
   type ExtractionAssignmentRequestDto,
@@ -254,7 +254,10 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
     return Number(member?.role) === ProjectRole.Owner || ["OWNER", "LECTURER", "LEADER", "ADMIN", "1"].includes(role);
   }, [currentUserId, projectMembers]);
   const reviewerOptions = useMemo<ReviewerOption[]>(() => projectMembers
-    .filter((member) => [ProjectRole.Reviewer, ProjectRole.Lecturer, ProjectRole.Owner].includes(member.role as ProjectRoleType))
+    .filter((member) => {
+      const role = String(member.roleText ?? member.role).trim().toUpperCase();
+      return member.role === ProjectRole.Reviewer || ["REVIEWER", "3"].includes(role);
+    })
     .map((member) => ({
       id: member.userId,
       name: member.userName || member.fullName?.trim() || member.email || "Unknown",

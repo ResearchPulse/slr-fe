@@ -13,7 +13,7 @@ interface WaitlistUser {
   id: string;
   fullName: string;
   userName: string;
-  role: "Lecturer" | "Reviewer";
+  role: "Reviewer";
 }
 
 interface SelectionSectionProps {
@@ -24,7 +24,7 @@ interface SelectionSectionProps {
   selectedUserId: string | null;
   onSelectUser: (user: User) => void;
   onSelectFromWaitlist: (id: string) => void;
-  assignedRoles: Record<string, "Lecturer" | "Reviewer">;
+  assignedRoles: Record<string, "Reviewer">;
   waitlistUsers: WaitlistUser[];
   onRemoveFromWaitlist: (userId: string) => void;
   getInitials: (name: string) => string;

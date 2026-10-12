@@ -96,7 +96,8 @@ function MainRoutes() {
               {/* Canonical Project-Centric Routes (FR-G0-01) */}
               <Route path=":projectId/identification" element={<IdentificationPhaseWorkspace />} />
               <Route path=":projectId/screening" element={<ScreeningPhaseRouter />} />
-              <Route path=":projectId/screening/dashboard" element={<ManageStudySelectionPage />} />
+              <Route path=":projectId/screening/dashboard" element={<ScreeningPhaseRouter />} />
+              <Route path=":projectId/screening/assignment-management" element={<ManageStudySelectionPage />} />
               <Route path=":projectId/screening/full-text" element={<FullTextScreeningWorkspace />} />
               <Route path=":projectId/quality-assessment" element={<QualityAssessmentWorkspace />} />
               <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
@@ -137,7 +138,9 @@ function MainRoutes() {
                 }
               >
                 <Route index element={<ScreeningPhaseRouter />} />
-                <Route path="dashboard" element={<ManageStudySelectionPage />} />
+                <Route path="papers/:paperId" element={<ScreeningPhaseRouter />} />
+                <Route path="dashboard" element={<ScreeningPhaseRouter />} />
+                <Route path="assignment-management" element={<ManageStudySelectionPage />} />
               </Route>
 
               <Route
@@ -154,6 +157,10 @@ function MainRoutes() {
 
               <Route
                 path=":projectId/processes/:processId/full-text-screening/:screeningProcessId"
+                element={<FullTextScreeningWorkspace />}
+              />
+              <Route
+                path=":projectId/processes/:processId/full-text-screening/:screeningProcessId/papers/:paperId"
                 element={<FullTextScreeningWorkspace />}
               />
               {/* Quality Assessment Workspace */}

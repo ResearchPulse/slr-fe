@@ -1,6 +1,6 @@
 import type { ScreeningPaper } from "../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type { UploadPdfOptions } from "../../../../pages/reviewProcess/studySelection/uploadTypes";
-import type { PaperWithDecisionsResponse } from "../../../../types/studySelection";
+import type { PaperPhase, PaperWithDecisionsResponse } from "../../../../types/studySelection";
 import type { SystemMetadataExtras } from "./components/SystemMetadataCollapse";
 
 export interface PaperViewerProps {
@@ -29,7 +29,7 @@ export interface PaperViewerProps {
    */
   infoSummary?: SystemMetadataExtras | null;
   isLeaderView?: boolean;
-  phase?: number;
+  phase?: PaperPhase;
   isDisabled?: boolean;
 }
 

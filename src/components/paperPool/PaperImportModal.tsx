@@ -41,7 +41,7 @@ export default function PaperImportModal({
 }: PaperImportModalProps) {
   const [mode, setMode] = useState<ImportMode>("ris");
   const { member } = useProjectMember(projectId);
-  const canImportPapers = member?.isLeader === true || member?.role === 2;
+  const canImportPapers = member?.isLeader === true;
 
   const {
     importRis,

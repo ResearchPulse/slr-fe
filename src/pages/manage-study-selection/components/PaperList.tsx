@@ -362,7 +362,7 @@ export const PaperList: React.FC<PaperListProps> = ({
             </button>
             {isAssignmentMode && selectedIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-accent bg-bg-secondary px-2 py-0.5 rounded-full uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
+                <span className="inline-flex shrink-0 whitespace-nowrap items-center rounded-full bg-bg-secondary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-accent animate-in fade-in slide-in-from-right-4">
                   {selectedIds.length} Selected
                 </span>
               </div>

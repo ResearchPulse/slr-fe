@@ -346,7 +346,7 @@ const StuSePaperStatisticPage: React.FC = () => {
             <button
               onClick={() =>
                 navigate(
-                  `/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}/dashboard`,
+                  `/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}`,
                 )
               }
               className="group flex items-center gap-2.5 px-4 py-2 bg-surface-white border border-border rounded-xl text-text-secondary transition-all hover:border-accent/20 hover:text-accent hover:shadow-none active:scale-95"

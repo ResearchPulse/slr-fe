@@ -1,22 +1,48 @@
 import {
+  useCallback,
   useEffect,
+  useImperativeHandle,
+  useMemo,
   useRef,
   useState,
-  useImperativeHandle,
   forwardRef,
 } from "react";
+import type { FormEvent } from "react";
 import * as pdfjsLib from "pdfjs-dist";
+import {
+  BookOpen,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeftRight,
+  Download,
+  ExternalLink,
+  FileText,
+  Grid2X2,
+  ListTree,
+  Maximize2,
+  Minimize2,
+  Search,
+  X,
+  ZoomIn,
+  ZoomOut,
+} from "lucide-react";
 import { PDF_WORKER_URL } from "../../../../config/pdfWorker";
+import type { ParsedSectionDto } from "../../../../types/paper";
+import { cn } from "../../../../utils/cn";
 import { usePdfHighlights, type HighlightArea } from "./hooks/usePdfHighlights";
 
-// Initialize PDF.js worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = PDF_WORKER_URL;
 
 interface PdfJsViewerProps {
   fileUrl: string;
+  documentTitle?: string;
   coordinateStr?: string | null;
+  sections?: ParsedSectionDto[] | null;
+  activeSection?: string | null;
+  onSectionSelect?: (sectionTitle: string) => void;
   onPageLoad?: (pageIndex: number, viewport: pdfjsLib.PageViewport) => void;
   scale?: number;
+  allowDownload?: boolean;
 }
 
 export interface PdfJsViewerRef {
@@ -24,53 +50,285 @@ export interface PdfJsViewerRef {
   scrollToPage: (pageIndex: number) => void;
 }
 
+interface OutlineEntry {
+  title: string;
+  pageIndex: number;
+  children: OutlineEntry[];
+  sectionTitle?: string;
+}
+
+interface PdfOutlineNode {
+  title?: string;
+  dest?: string | unknown[] | null;
+  items?: PdfOutlineNode[];
+}
+
+type NavigationMode = "outline" | "thumbnails" | null;
+type FitMode = "free" | "width" | "page";
+
+const ZOOM_LEVELS = [50, 75, 100, 125, 150, 175, 200, 250, 300];
+const EMPTY_SECTIONS: ParsedSectionDto[] = [];
+
+const getSectionPageIndex = (section: ParsedSectionDto) => {
+  const firstCoordinate = section.coordinates?.split(";")[0];
+  const pageNumber = Number(firstCoordinate?.split(",")[0]);
+  return Number.isFinite(pageNumber) && pageNumber > 0 ? pageNumber - 1 : 0;
+};
+
+function PdfPageThumbnail({
+  pdf,
+  pageNumber,
+  observerRoot,
+}: {
+  pdf: pdfjsLib.PDFDocumentProxy;
+  pageNumber: number;
+  observerRoot: HTMLElement | null;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [isRendered, setIsRendered] = useState(false);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !observerRoot) return;
+    let cancelled = false;
+    let renderTask: pdfjsLib.RenderTask | undefined;
+
+    const render = async () => {
+      try {
+        const page = await pdf.getPage(pageNumber);
+        if (cancelled) return;
+        const viewport = page.getViewport({ scale: 0.2 });
+        const context = canvas.getContext("2d");
+        if (!context) return;
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        renderTask = page.render({ canvasContext: context, viewport });
+        await renderTask.promise;
+        if (!cancelled) setIsRendered(true);
+      } catch {
+        // A thumbnail is optional; the full page remains available in the reader.
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect();
+          void render();
+        }
+      },
+      { root: observerRoot, rootMargin: "160px 0px" },
+    );
+    observer.observe(canvas);
+
+    return () => {
+      cancelled = true;
+      observer.disconnect();
+      renderTask?.cancel();
+    };
+  }, [observerRoot, pageNumber, pdf]);
+
+  return (
+    <div className="flex h-[116px] items-center justify-center overflow-hidden rounded-md bg-slate-100 p-1.5">
+      <canvas
+        ref={canvasRef}
+        aria-label={`Preview of page ${pageNumber}`}
+        className={cn(
+          "max-h-full max-w-full bg-white shadow-sm transition-opacity duration-200",
+          isRendered ? "opacity-100" : "opacity-30",
+        )}
+      />
+    </div>
+  );
+}
+
 const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
-  ({ fileUrl, coordinateStr, scale = 1.5 }, ref) => {
+  (
+    {
+      fileUrl,
+      documentTitle,
+      coordinateStr,
+      sections = EMPTY_SECTIONS,
+      activeSection,
+      onSectionSelect,
+      onPageLoad,
+      scale = 1.25,
+      allowDownload = true,
+    },
+    ref,
+  ) => {
     const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
     const [loadedUrl, setLoadedUrl] = useState<string | null>(null);
     const [numPages, setNumPages] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [pageInfoMap, setPageInfoMap] = useState<
-      Record<number, { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }>
+      Record<
+        number,
+        { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }
+      >
     >({});
+    const [zoom, setZoom] = useState(scale);
+    const [fitMode, setFitMode] = useState<FitMode>("free");
+    const [activePage, setActivePage] = useState(1);
+    const [pageInput, setPageInput] = useState("1");
+    const [navigationMode, setNavigationMode] = useState<NavigationMode>(null);
+    const [outline, setOutline] = useState<OutlineEntry[]>([]);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchInput, setSearchInput] = useState("");
+    const [searchPages, setSearchPages] = useState<number[]>([]);
+    const [searchResultIndex, setSearchResultIndex] = useState(0);
+    const [isSearching, setIsSearching] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [thumbnailRoot, setThumbnailRoot] = useState<HTMLDivElement | null>(null);
+
+    const viewerRef = useRef<HTMLDivElement>(null);
+    const lastCoordinateStrRef = useRef(coordinateStr);
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const highlightRefs = useRef<Record<string, HTMLDivElement | null>>({});
     const activePdf = loadedUrl === fileUrl ? pdf : null;
+    const normalizedSections = sections ?? [];
+    const highlights = usePdfHighlights(coordinateStr, pageInfoMap);
 
-    // 1. Load PDF Document
+    const sectionEntries = useMemo<OutlineEntry[]>(
+      () =>
+        normalizedSections
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((section) => ({
+            title: section.sectionTitle,
+            sectionTitle: section.sectionTitle,
+            pageIndex: getSectionPageIndex(section),
+            children: [],
+          })),
+      [normalizedSections],
+    );
+    const navigationEntries = outline.length > 0 ? outline : sectionEntries;
+    const flattenedNavigationEntries = useMemo(() => {
+      const flatten = (entries: OutlineEntry[]): OutlineEntry[] =>
+        entries.flatMap((entry) => [entry, ...flatten(entry.children)]);
+      return flatten(navigationEntries).sort((a, b) => a.pageIndex - b.pageIndex);
+    }, [navigationEntries]);
+    const documentName = useMemo(() => {
+      if (documentTitle?.trim()) return documentTitle.trim();
+      const rawName = fileUrl.split("/").pop()?.split("?")[0] || "PDF document";
+      try {
+        return decodeURIComponent(rawName);
+      } catch {
+        return rawName;
+      }
+    }, [documentTitle, fileUrl]);
+
+    const scrollToPage = useCallback(
+      (pageIndex: number) => {
+        const target = pageRefs.current[pageIndex];
+        const container = containerRef.current;
+        if (!target || !container) return;
+        const top =
+          container.scrollTop +
+          target.getBoundingClientRect().top -
+          container.getBoundingClientRect().top -
+          12;
+        container.scrollTo({ top, behavior: "smooth" });
+        setActivePage(pageIndex + 1);
+        setPageInput(String(pageIndex + 1));
+      },
+      [],
+    );
+
+    useImperativeHandle(ref, () => ({
+      scrollToHighlight: (area) => {
+        const element = highlightRefs.current[area.id];
+        const container = containerRef.current;
+        if (!element || !container) return;
+        const top =
+          container.scrollTop +
+          element.getBoundingClientRect().top -
+          container.getBoundingClientRect().top -
+          container.clientHeight / 2;
+        container.scrollTo({ top, behavior: "smooth" });
+      },
+      scrollToPage,
+    }));
+
     useEffect(() => {
       let isMounted = true;
       setError(null);
+      setPdf(null);
+      setLoadedUrl(null);
+      setNumPages(0);
+      setPageInfoMap({});
+      setActivePage(1);
+      setPageInput("1");
+      setOutline([]);
+      setNavigationMode(null);
+      setIsSearchOpen(false);
+      setSearchInput("");
+      setSearchPages([]);
+      setSearchResultIndex(0);
+      setHasSearched(false);
+
       const loadingTask = pdfjsLib.getDocument(fileUrl);
       const loadPdf = async () => {
         try {
           const pdfDoc = await loadingTask.promise;
-          if (isMounted) {
-            setPageInfoMap({});
-            setPdf(pdfDoc);
-            setNumPages(pdfDoc.numPages);
-            setLoadedUrl(fileUrl);
+          if (!isMounted) return;
+          setPdf(pdfDoc);
+          setNumPages(pdfDoc.numPages);
+          setLoadedUrl(fileUrl);
+          try {
+            const rawOutline = (await pdfDoc.getOutline()) as
+              | PdfOutlineNode[]
+              | null;
+            const resolveEntries = async (
+              nodes: PdfOutlineNode[],
+            ): Promise<OutlineEntry[]> =>
+              Promise.all(
+                nodes.map(async (node) => {
+                  let destination = node.dest;
+                  if (typeof destination === "string") {
+                    destination = await pdfDoc.getDestination(destination);
+                  }
+                  let pageIndex = 0;
+                  if (Array.isArray(destination) && destination[0]) {
+                    try {
+                      pageIndex = await pdfDoc.getPageIndex(destination[0] as never);
+                    } catch {
+                      pageIndex = 0;
+                    }
+                  }
+                  return {
+                    title: node.title?.trim() || "Untitled section",
+                    pageIndex,
+                    children: await resolveEntries(node.items ?? []),
+                  };
+                }),
+              );
+            const resolvedOutline = rawOutline?.length
+              ? await resolveEntries(rawOutline)
+              : [];
+            if (isMounted) setOutline(resolvedOutline);
+          } catch {
+            if (isMounted) setOutline([]);
           }
-        } catch (err: any) {
+        } catch (err: unknown) {
           if (isMounted) {
             console.error("Error loading PDF:", err);
-            setError(err?.message || "Failed to load PDF document");
+            setError(
+              err instanceof Error ? err.message : "Failed to load PDF document",
+            );
           }
         }
       };
 
-      loadPdf();
+      void loadPdf();
       return () => {
         isMounted = false;
         void loadingTask.destroy();
       };
     }, [fileUrl]);
 
-    // 2. Transform Highlights
-    const highlights = usePdfHighlights(coordinateStr, pageInfoMap);
-
-    // 3. Read page geometry, then render only pages close to the viewport.
     useEffect(() => {
       if (!activePdf) return;
       let cancelled = false;
@@ -79,57 +337,66 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           number,
           { viewport: pdfjsLib.PageViewport; offset: { x: number; y: number } }
         > = {};
-
         for (let i = 1; i <= numPages && !cancelled; i++) {
           const page = await activePdf.getPage(i);
-          const viewport = page.getViewport({ scale });
-
+          const viewport = page.getViewport({ scale: zoom });
           const cropBox = page.view;
-          const offset = {
-            x: cropBox[0],
-            y: cropBox[1],
+          info[i - 1] = {
+            viewport,
+            offset: { x: cropBox[0], y: cropBox[1] },
           };
-          info[i - 1] = { viewport, offset };
+          onPageLoad?.(i - 1, viewport);
         }
         if (!cancelled) setPageInfoMap(info);
       };
       void loadPageGeometry();
-      return () => { cancelled = true; };
-    }, [activePdf, numPages, scale]);
+      return () => {
+        cancelled = true;
+      };
+    }, [activePdf, numPages, onPageLoad, zoom]);
 
     useEffect(() => {
       const container = containerRef.current;
-      if (!activePdf || !container || Object.keys(pageInfoMap).length !== numPages) return;
+      if (!activePdf || !container || Object.keys(pageInfoMap).length !== numPages) {
+        return;
+      }
       const rendered = new Set<number>();
       const tasks = new Map<number, pdfjsLib.RenderTask>();
       let cancelled = false;
-      const observer = new IntersectionObserver((entries) => {
-        for (const entry of entries) {
-          if (!entry.isIntersecting) continue;
-          const pageNumber = Number((entry.target as HTMLElement).dataset.pageNumber);
-          if (rendered.has(pageNumber)) continue;
-          rendered.add(pageNumber);
-          observer.unobserve(entry.target);
-          void (async () => {
-            try {
-              const page = await activePdf.getPage(pageNumber);
-              if (cancelled) return;
-              const canvas = entry.target.querySelector('canvas');
-              const viewport = pageInfoMap[pageNumber - 1]?.viewport;
-              const context = canvas?.getContext('2d');
-              if (!canvas || !viewport || !context) return;
-              canvas.width = viewport.width;
-              canvas.height = viewport.height;
-              const task = page.render({ canvasContext: context, viewport });
-              tasks.set(pageNumber, task);
-              await task.promise;
-              tasks.delete(pageNumber);
-            } catch (error) {
-              if (!cancelled) console.error('Error rendering PDF page:', error);
-            }
-          })();
-        }
-      }, { root: container, rootMargin: '800px 0px' });
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            const pageNumber = Number(
+              (entry.target as HTMLElement).dataset.pageNumber,
+            );
+            if (rendered.has(pageNumber)) continue;
+            rendered.add(pageNumber);
+            observer.unobserve(entry.target);
+            void (async () => {
+              try {
+                const page = await activePdf.getPage(pageNumber);
+                if (cancelled) return;
+                const canvas = entry.target.querySelector("canvas");
+                const viewport = pageInfoMap[pageNumber - 1]?.viewport;
+                const context = canvas?.getContext("2d");
+                if (!canvas || !viewport || !context) return;
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const task = page.render({ canvasContext: context, viewport });
+                tasks.set(pageNumber, task);
+                await task.promise;
+                tasks.delete(pageNumber);
+              } catch (renderError) {
+                if (!cancelled) {
+                  console.error("Error rendering PDF page:", renderError);
+                }
+              }
+            })();
+          }
+        },
+        { root: container, rootMargin: "700px 0px" },
+      );
       Object.values(pageRefs.current).forEach((element) => {
         if (element) observer.observe(element);
       });
@@ -140,67 +407,232 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       };
     }, [activePdf, numPages, pageInfoMap]);
 
-    // 4. Auto-scroll to first highlight when it changes
-    useEffect(() => {
-      if (highlights.length > 0) {
-        const firstArea = highlights[0];
-        // Short delay to ensure DOM is ready
-        const timer = setTimeout(() => {
-          const element = highlightRefs.current[firstArea.id];
-          if (element) {
-            element.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-          }
-        }, 100);
-        return () => clearTimeout(timer);
-      }
-    }, [highlights]);
+    const currentNavigationEntry = [...flattenedNavigationEntries]
+      .reverse()
+      .find((entry) => entry.pageIndex + 1 <= activePage);
+    const currentSectionTitle =
+      currentNavigationEntry?.sectionTitle ?? currentNavigationEntry?.title;
 
-    // 5. Expose Navigation Methods
-    useImperativeHandle(ref, () => ({
-      scrollToHighlight: (area: HighlightArea) => {
-        const element = highlightRefs.current[area.id];
-        if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+      let frame = 0;
+      const updatePage = () => {
+        cancelAnimationFrame(frame);
+        frame = requestAnimationFrame(() => {
+          const top = container.getBoundingClientRect().top;
+          const visiblePages = Object.entries(pageRefs.current)
+            .map(([index, element]) => ({
+              index: Number(index),
+              element,
+            }))
+            .filter(({ element }) => element !== null)
+            .map(({ index, element }) => ({
+              index,
+              rect: element!.getBoundingClientRect(),
+            }))
+            .filter(({ rect }) => rect.bottom > top);
+          const current = visiblePages.reduce<(typeof visiblePages)[number] | null>(
+            (closest, page) =>
+              !closest ||
+              Math.abs(page.rect.top - top) < Math.abs(closest.rect.top - top)
+                ? page
+                : closest,
+            null,
+          );
+          if (current) {
+            const pageNumber = current.index + 1;
+            setActivePage(pageNumber);
+            setPageInput(String(pageNumber));
+          }
+        });
+      };
+      container.addEventListener("scroll", updatePage, { passive: true });
+      updatePage();
+      return () => {
+        container.removeEventListener("scroll", updatePage);
+        cancelAnimationFrame(frame);
+      };
+    }, [numPages, pageInfoMap]);
+
+    useEffect(() => {
+      if (lastCoordinateStrRef.current === coordinateStr) return;
+      lastCoordinateStrRef.current = coordinateStr;
+      if (!highlights.length) return;
+      const timer = window.setTimeout(() => {
+        const element = highlightRefs.current[highlights[0].id];
+        const container = containerRef.current;
+        if (!element || !container) return;
+        const top =
+          container.scrollTop +
+          element.getBoundingClientRect().top -
+          container.getBoundingClientRect().top -
+          container.clientHeight / 2;
+        container.scrollTo({ top, behavior: "smooth" });
+      }, 100);
+      return () => window.clearTimeout(timer);
+    }, [coordinateStr, highlights]);
+
+    useEffect(() => {
+      if (fitMode === "free" || !activePdf) return;
+      const container = containerRef.current;
+      if (!container) return;
+      let cancelled = false;
+      const updateFit = async () => {
+        try {
+          const page = await activePdf.getPage(1);
+          if (cancelled || !container.clientWidth || !container.clientHeight) return;
+          const viewport = page.getViewport({ scale: 1 });
+          const availableWidth = Math.max(240, container.clientWidth - 40);
+          const availableHeight = Math.max(240, container.clientHeight - 40);
+          const widthScale = availableWidth / viewport.width;
+          const nextScale =
+            fitMode === "width"
+              ? widthScale
+              : Math.min(widthScale, availableHeight / viewport.height);
+          setZoom(Math.min(3, Math.max(0.4, nextScale)));
+        } catch {
+          // Keep the current zoom if the page geometry cannot be read.
         }
-      },
-      scrollToPage: (pageIndex: number) => {
-        const element = pageRefs.current[pageIndex];
-        if (element) {
-          element.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
+      };
+      void updateFit();
+      const observer = new ResizeObserver(() => void updateFit());
+      observer.observe(container);
+      return () => {
+        cancelled = true;
+        observer.disconnect();
+      };
+    }, [activePdf, fitMode]);
+
+    useEffect(() => {
+      const root = viewerRef.current;
+      if (!root) return;
+      const updateFullscreen = () =>
+        setIsFullscreen(document.fullscreenElement === root);
+      document.addEventListener("fullscreenchange", updateFullscreen);
+      return () =>
+        document.removeEventListener("fullscreenchange", updateFullscreen);
+    }, []);
+
+    const handleScrollToPage = (pageNumber: number) => {
+      const clamped = Math.min(numPages, Math.max(1, pageNumber));
+      scrollToPage(clamped - 1);
+    };
+
+    const handlePageSubmit = () => {
+      const next = Number.parseInt(pageInput, 10);
+      if (Number.isFinite(next)) handleScrollToPage(next);
+      else setPageInput(String(activePage));
+    };
+
+    const updateZoom = (next: number) => {
+      setFitMode("free");
+      setZoom(Math.min(3, Math.max(0.4, next)));
+    };
+
+    const fitDocument = (mode: Exclude<FitMode, "free">) => {
+      setFitMode(mode);
+    };
+
+    const searchDocument = async (event: FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      if (!activePdf || !searchInput.trim()) return;
+      setIsSearching(true);
+      setHasSearched(true);
+      const matches: number[] = [];
+      try {
+        for (let pageNumber = 1; pageNumber <= numPages; pageNumber++) {
+          const page = await activePdf.getPage(pageNumber);
+          const content = await page.getTextContent();
+          const pageText = content.items
+            .map((item) => ("str" in item ? item.str : ""))
+            .join(" ");
+          if (pageText.toLocaleLowerCase().includes(searchInput.trim().toLocaleLowerCase())) {
+            matches.push(pageNumber);
+          }
         }
-      },
-    }));
+        setSearchPages(matches);
+        setSearchResultIndex(0);
+        if (matches.length) handleScrollToPage(matches[0]);
+      } catch {
+        setSearchPages([]);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const moveSearchResult = (direction: -1 | 1) => {
+      if (!searchPages.length) return;
+      const next =
+        (searchResultIndex + direction + searchPages.length) % searchPages.length;
+      setSearchResultIndex(next);
+      handleScrollToPage(searchPages[next]);
+    };
+
+    const toggleFullscreen = async () => {
+      if (!viewerRef.current) return;
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await viewerRef.current.requestFullscreen();
+    };
+
+    const handleOutlineEntry = (entry: OutlineEntry) => {
+      if (entry.sectionTitle) onSectionSelect?.(entry.sectionTitle);
+      handleScrollToPage(entry.pageIndex + 1);
+    };
+
+    const renderOutlineEntries = (entries: OutlineEntry[], depth = 0) =>
+      entries.map((entry, index) => {
+        const isActive = entry.sectionTitle
+          ? currentSectionTitle === entry.sectionTitle ||
+            (!currentSectionTitle && activeSection === entry.sectionTitle)
+          : currentSectionTitle === entry.title ||
+            activePage === entry.pageIndex + 1;
+        return (
+          <div key={`${entry.title}-${entry.pageIndex}-${depth}-${index}`}>
+            <button
+              type="button"
+              onClick={() => handleOutlineEntry(entry)}
+              title={`${entry.title} · page ${entry.pageIndex + 1}`}
+              className={cn(
+                "flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors",
+                isActive
+                  ? "bg-blue-50 font-medium text-blue-700"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+              )}
+              style={{ paddingLeft: `${10 + depth * 14}px` }}
+            >
+              <span className="min-w-0 flex-1 truncate">{entry.title}</span>
+              <span className="shrink-0 text-[10px] tabular-nums text-slate-400">
+                {entry.pageIndex + 1}
+              </span>
+            </button>
+            {entry.children.length > 0 &&
+              renderOutlineEntries(entry.children, depth + 1)}
+          </div>
+        );
+      });
 
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-bg-secondary text-text-secondary gap-3">
-          <div className="w-12 h-12 rounded-full bg-red-50 text-red-500 flex items-center justify-center shadow-sm">
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
+        <div className="flex h-full flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center text-slate-500">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+            <FileText className="h-6 w-6" />
           </div>
-          <div className="font-semibold text-text-primary text-sm">Unable to display PDF preview</div>
-          <p className="text-xs text-text-secondary max-w-md">
+          <div className="text-sm font-semibold text-slate-800">
+            Unable to display PDF preview
+          </div>
+          <p className="max-w-md text-xs text-slate-500">
             {error.includes("401") || error.includes("Missing PDF")
-              ? "Access to the PDF was denied (Cloudinary security restriction or invalid URL)."
+              ? "Access to the PDF was denied or the document URL is no longer valid."
               : error}
           </p>
           <a
             href={fileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-2 inline-flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-[4px] transition-colors"
+            className="mt-1 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
           >
-            Open or Download File
+            Open PDF <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
       );
@@ -208,65 +640,385 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
     if (!activePdf || Object.keys(pageInfoMap).length !== numPages) {
       return (
-        <div className="flex items-center justify-center h-full bg-bg-secondary text-text-secondary font-medium">
-          Loading document...
+        <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-500">
+          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
+          Loading document…
         </div>
       );
     }
 
+    const activeZoomPercent = Math.round(zoom * 100);
     return (
       <div
-        ref={containerRef}
-        className="w-full h-full overflow-y-auto bg-slate-200 p-4 space-y-4 scroll-smooth"
+        ref={viewerRef}
+        className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-slate-100 text-slate-800"
       >
-        {Array.from({ length: numPages }, (_, i) => i + 1).map((pageNum) => {
-          const pageIndex = pageNum - 1;
-          const viewport = pageInfoMap[pageIndex]?.viewport;
-          const pageHighlights = highlights.filter(
-            (h) => h.pageIndex === pageIndex,
-          );
+        <header className="z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2 shadow-sm sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
+          <div className="flex min-w-0 flex-1 items-center gap-2 lg:max-w-[23%]">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+              <FileText className="h-4 w-4" />
+            </span>
+            <div className="min-w-0">
+              <p title={documentName} className="truncate text-xs font-semibold text-slate-800">
+                {documentName}
+              </p>
+              <p className="text-[10px] text-slate-400">
+                {numPages} {numPages === 1 ? "page" : "pages"}
+              </p>
+            </div>
+          </div>
 
-          return (
-            <div
-              key={pageNum}
-              ref={(el) => {
-                pageRefs.current[pageIndex] = el;
-              }}
-              data-page-number={pageNum}
-              className="relative mx-auto shadow-2xl bg-surface-white transition-all duration-300"
-              style={{
-                width: viewport?.width || "auto",
-                height: viewport?.height || "auto",
+          <div className="flex min-w-0 flex-wrap items-center justify-center gap-1.5 lg:flex-1">
+            <button
+              type="button"
+              onClick={() => handleScrollToPage(activePage - 1)}
+              disabled={activePage <= 1}
+              title="Previous page"
+              aria-label="Previous page"
+              className="reader-icon-button"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <form
+              className="flex items-center gap-1 text-xs text-slate-500"
+              onSubmit={(event) => {
+                event.preventDefault();
+                handlePageSubmit();
               }}
             >
-              <canvas id={`pdf-canvas-${pageNum}`} className="block" />
+              <input
+                aria-label="Current page"
+                value={pageInput}
+                onChange={(event) => setPageInput(event.target.value)}
+                onBlur={handlePageSubmit}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") setPageInput(String(activePage));
+                }}
+                inputMode="numeric"
+                className="h-8 w-11 rounded-md border border-slate-200 bg-white text-center text-xs font-medium tabular-nums outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              />
+              <span className="whitespace-nowrap">/ {numPages}</span>
+            </form>
+            <button
+              type="button"
+              onClick={() => handleScrollToPage(activePage + 1)}
+              disabled={activePage >= numPages}
+              title="Next page"
+              aria-label="Next page"
+              className="reader-icon-button"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
 
-              {/* Highlight Layer */}
-              <div className="absolute inset-0 pointer-events-none">
-                {pageHighlights.map((h) => (
+            <span className="mx-1 hidden h-5 w-px bg-slate-200 sm:block" />
+            <button
+              type="button"
+              onClick={() => updateZoom(zoom - 0.1)}
+              title="Zoom out"
+              aria-label="Zoom out"
+              className="reader-icon-button"
+            >
+              <ZoomOut className="h-4 w-4" />
+            </button>
+            <select
+              value={activeZoomPercent}
+              aria-label="Zoom percentage"
+              onChange={(event) => updateZoom(Number(event.target.value) / 100)}
+              className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+            >
+              {!ZOOM_LEVELS.includes(activeZoomPercent) && (
+                <option value={activeZoomPercent}>{activeZoomPercent}%</option>
+              )}
+              {ZOOM_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {level}%
+                </option>
+              ))}
+            </select>
+            <button
+              type="button"
+              onClick={() => updateZoom(zoom + 0.1)}
+              title="Zoom in"
+              aria-label="Zoom in"
+              className="reader-icon-button"
+            >
+              <ZoomIn className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => fitDocument("width")}
+              title="Fit width"
+              aria-label="Fit width"
+              className={cn("reader-text-button", fitMode === "width" && "reader-control-active")}
+            >
+              <ChevronsLeftRight className="h-3.5 w-3.5" />
+              <span>Fit width</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => fitDocument("page")}
+              title="Fit page"
+              aria-label="Fit page"
+              className={cn("reader-text-button", fitMode === "page" && "reader-control-active")}
+            >
+              <BookOpen className="h-3.5 w-3.5" />
+              <span>Fit page</span>
+            </button>
+          </div>
+
+          <div className="ml-auto flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen((open) => !open);
+                setNavigationMode(null);
+              }}
+              title="Search inside PDF"
+              aria-label="Search inside PDF"
+              aria-pressed={isSearchOpen}
+              className={cn("reader-icon-button", isSearchOpen && "reader-control-active")}
+            >
+              <Search className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen(false);
+                setNavigationMode((mode) => (mode === "outline" ? null : "outline"));
+              }}
+              title="Toggle document outline"
+              aria-label="Toggle document outline"
+              aria-pressed={navigationMode === "outline"}
+              className={cn("reader-icon-button", navigationMode === "outline" && "reader-control-active")}
+            >
+              <ListTree className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setIsSearchOpen(false);
+                setNavigationMode((mode) => (mode === "thumbnails" ? null : "thumbnails"));
+              }}
+              title="Toggle page thumbnails"
+              aria-label="Toggle page thumbnails"
+              aria-pressed={navigationMode === "thumbnails"}
+              className={cn("reader-icon-button", navigationMode === "thumbnails" && "reader-control-active")}
+            >
+              <Grid2X2 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => void toggleFullscreen()}
+              title={isFullscreen ? "Exit fullscreen" : "Fullscreen reading mode"}
+              aria-label={isFullscreen ? "Exit fullscreen" : "Fullscreen reading mode"}
+              className="reader-icon-button"
+            >
+              {isFullscreen ? (
+                <Minimize2 className="h-4 w-4" />
+              ) : (
+                <Maximize2 className="h-4 w-4" />
+              )}
+            </button>
+            <a
+              href={fileUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Open PDF in a new tab"
+              aria-label="Open PDF in a new tab"
+              className="reader-icon-button"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
+            {allowDownload && (
+              <a
+                href={fileUrl}
+                download
+                title="Download PDF"
+                aria-label="Download PDF"
+                className="reader-icon-button hidden sm:inline-flex"
+              >
+                <Download className="h-4 w-4" />
+              </a>
+            )}
+          </div>
+        </header>
+
+        {isSearchOpen && (
+          <form
+            onSubmit={searchDocument}
+            className="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2"
+          >
+            <Search className="h-4 w-4 shrink-0 text-slate-400" />
+            <input
+              autoFocus
+              value={searchInput}
+              onChange={(event) => {
+                setSearchInput(event.target.value);
+                setSearchPages([]);
+                setSearchResultIndex(0);
+                setHasSearched(false);
+              }}
+              placeholder="Search text in this document…"
+              aria-label="Search text in PDF"
+              className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
+            />
+            {searchPages.length > 0 && (
+              <>
+                <span className="whitespace-nowrap text-xs tabular-nums text-slate-500">
+                  {searchResultIndex + 1} / {searchPages.length} pages
+                </span>
+                <button type="button" onClick={() => moveSearchResult(-1)} className="reader-icon-button" title="Previous match">
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button type="button" onClick={() => moveSearchResult(1)} className="reader-icon-button" title="Next match">
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </>
+            )}
+            {isSearching && <span className="text-xs text-slate-500">Searching…</span>}
+            {!isSearching && hasSearched && searchInput && searchPages.length === 0 && (
+              <span className="whitespace-nowrap text-xs text-slate-500">No matches</span>
+            )}
+            {!isSearching && searchInput && searchPages.length === 0 && (
+              <button type="submit" className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700">
+                Search
+              </button>
+            )}
+            <button type="button" onClick={() => setIsSearchOpen(false)} title="Close search" aria-label="Close search" className="reader-icon-button">
+              <X className="h-4 w-4" />
+            </button>
+          </form>
+        )}
+
+        <div className="flex min-h-0 flex-1">
+          {navigationMode && (
+            <aside className="flex w-60 shrink-0 flex-col border-r border-slate-200 bg-white sm:w-64">
+              <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2.5">
+                <div className="min-w-0">
+                  <h2 className="text-xs font-semibold text-slate-800">
+                    {navigationMode === "outline" ? "Document outline" : "Page thumbnails"}
+                  </h2>
+                  {navigationMode === "outline" && currentSectionTitle && (
+                    <p title={currentSectionTitle} className="mt-0.5 truncate text-[10px] text-slate-400">
+                      {currentSectionTitle}
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setNavigationMode(null)}
+                  title="Close navigation panel"
+                  aria-label="Close navigation panel"
+                  className="reader-icon-button h-7 w-7"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+              <div
+                ref={setThumbnailRoot}
+                className="custom-scrollbar min-h-0 flex-1 space-y-1 overflow-y-auto p-2"
+              >
+                {navigationMode === "outline" ? (
+                  navigationEntries.length ? (
+                    renderOutlineEntries(navigationEntries)
+                  ) : (
+                    <div className="flex h-full min-h-40 flex-col items-center justify-center px-4 text-center">
+                      <ListTree className="mb-2 h-5 w-5 text-slate-300" />
+                      <p className="text-xs font-medium text-slate-600">No outline available</p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                        This PDF has no bookmarks or detected section headings.
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  Array.from({ length: numPages }, (_, pageIndex) => (
+                    <button
+                      key={pageIndex}
+                      type="button"
+                      onClick={() => handleScrollToPage(pageIndex + 1)}
+                      aria-current={activePage === pageIndex + 1 ? "page" : undefined}
+                      className={cn(
+                        "group w-full rounded-lg border p-2 text-left transition-colors",
+                        activePage === pageIndex + 1
+                          ? "border-blue-300 bg-blue-50/70"
+                          : "border-transparent hover:border-slate-200 hover:bg-slate-50",
+                      )}
+                    >
+                      <PdfPageThumbnail
+                        pdf={activePdf}
+                        pageNumber={pageIndex + 1}
+                        observerRoot={thumbnailRoot}
+                      />
+                      <span className="mt-1.5 block text-center text-[10px] font-medium tabular-nums text-slate-500">
+                        Page {pageIndex + 1}
+                      </span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </aside>
+          )}
+
+          <div
+            ref={containerRef}
+            className="min-h-0 min-w-0 flex-1 overflow-auto bg-slate-100 p-3 scroll-smooth sm:p-5"
+          >
+            <div className="mx-auto flex w-fit min-w-full flex-col items-center gap-4 pb-4">
+              {Array.from({ length: numPages }, (_, pageIndex) => {
+                const viewport = pageInfoMap[pageIndex]?.viewport;
+                const pageHighlights = highlights.filter(
+                  (highlight) => highlight.pageIndex === pageIndex,
+                );
+                return (
                   <div
-                    key={h.id}
-                    ref={(el) => {
-                      highlightRefs.current[h.id] = el;
+                    key={pageIndex + 1}
+                    ref={(element) => {
+                      pageRefs.current[pageIndex] = element;
                     }}
-                    className="absolute bg-blue-600/30 border border-blue-500/40 rounded-sm shadow-none transition-opacity duration-300"
+                    data-page-number={pageIndex + 1}
+                    className="relative shrink-0 bg-white shadow-[0_4px_18px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5"
                     style={{
-                      left: h.left,
-                      top: h.top,
-                      width: h.width,
-                      height: h.height,
+                      width: viewport?.width || "auto",
+                      height: viewport?.height || "auto",
                     }}
-                  />
-                ))}
-              </div>
-
-              {/* Page Number Badge */}
-              <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 text-white text-[10px] font-bold rounded backdrop-blur-sm pointer-events-none">
-                Page {pageNum}
-              </div>
+                  >
+                    <canvas id={`pdf-canvas-${pageIndex + 1}`} className="block" />
+                    <div className="pointer-events-none absolute inset-0">
+                      {pageHighlights.map((highlight) => (
+                        <div
+                          key={highlight.id}
+                          ref={(element) => {
+                            highlightRefs.current[highlight.id] = element;
+                          }}
+                          className="absolute rounded-sm border border-blue-500/40 bg-blue-500/25 transition-opacity duration-300"
+                          style={{
+                            left: highlight.left,
+                            top: highlight.top,
+                            width: highlight.width,
+                            height: highlight.height,
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <div className="pointer-events-none absolute bottom-2 right-2 rounded-md bg-slate-900/65 px-2 py-1 text-[10px] font-medium tabular-nums text-white backdrop-blur-sm">
+                      {pageIndex + 1} / {numPages}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
+          </div>
+        </div>
+        <style>{`
+          .reader-icon-button { display: inline-flex; height: 2rem; width: 2rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 0.5rem; color: #64748b; transition: color 150ms, background-color 150ms, border-color 150ms; }
+          .reader-icon-button:hover:not(:disabled) { background: #f1f5f9; color: #1e293b; }
+          .reader-icon-button:disabled { cursor: not-allowed; opacity: 0.35; }
+          .reader-icon-button:focus-visible, .reader-text-button:focus-visible { outline: 2px solid #93c5fd; outline-offset: 1px; }
+          .reader-text-button { display: inline-flex; height: 2rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: 0.5rem; padding: 0 0.55rem; color: #64748b; font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
+          .reader-text-button:hover { background: #f1f5f9; color: #1e293b; }
+          .reader-control-active { background: #eff6ff; color: #1d4ed8; }
+          @media (prefers-reduced-motion: reduce) { .reader-icon-button, .reader-text-button { transition: none; } }
+        `}</style>
       </div>
     );
   },
