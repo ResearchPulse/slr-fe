@@ -5,9 +5,10 @@ import { cn } from "../../utils/cn";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; description?: string }[];
   placeholder?: string;
   containerClassName?: string;
+  menuClassName?: string;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
@@ -17,6 +18,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     options,
     placeholder,
     containerClassName,
+    menuClassName,
     value,
     defaultValue,
     onChange,
@@ -49,7 +51,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
       setMenuStyle({
         left: bounds.left,
-        minWidth: bounds.width,
+        width: bounds.width,
         top: opensAbove ? bounds.top - menuHeight - 6 : bounds.bottom + 6,
       });
     };
@@ -182,7 +184,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               role="listbox"
               aria-label={props["aria-label"]}
-              className="fixed z-(--z-index-dropdown) max-h-60 overflow-auto rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]"
+              onClick={(event) => event.stopPropagation()}
+              className={cn(
+                "fixed z-(--z-index-popover) max-h-60 overflow-auto rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                menuClassName,
+              )}
               style={menuStyle}
             >
               {options.map((option, index) => {
@@ -196,13 +202,21 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => selectOption(option)}
                     className={cn(
-                      "flex h-9 w-full items-center rounded-xl px-2 text-left font-sans text-sm text-text-primary transition-colors",
+                      "flex w-full items-center rounded-xl px-2 text-left font-sans text-sm text-text-primary transition-colors",
+                      option.description ? "min-h-12 py-2" : "h-9",
                       "hover:bg-primary-light hover:text-accent",
                       (isSelected || activeIndex === index) && "bg-primary-light text-accent",
                       isSelected && "font-semibold",
                     )}
                   >
-                    {option.label}
+                    {option.description ? (
+                      <span className="flex min-w-0 flex-col gap-0.5">
+                        <span>{option.label}</span>
+                        <span className="text-xs font-normal leading-4 text-text-secondary">
+                          {option.description}
+                        </span>
+                      </span>
+                    ) : option.label}
                   </button>
                 );
               })}

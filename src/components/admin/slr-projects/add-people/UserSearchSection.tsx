@@ -17,8 +17,9 @@ interface UserSearchSectionProps {
   displayUsers: User[];
   selectedUserId: string | null;
   onSelectUser: (user: User) => void;
-  assignedRoles: Record<string, "Lecturer" | "Reviewer">;
+  assignedRoles: Record<string, "Reviewer">;
   getInitials: (name: string) => string;
+  showSuggestions?: boolean;
   // Pagination for admin list
   currentPage?: number;
   totalPages?: number;
@@ -34,6 +35,7 @@ export default function UserSearchSection({
   onSelectUser,
   assignedRoles,
   getInitials,
+  showSuggestions = false,
   currentPage,
   totalPages,
   onPageChange,
@@ -53,6 +55,12 @@ export default function UserSearchSection({
           className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
         />
       </div>
+
+      {showSuggestions && displayUsers.length > 0 && (
+        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Gợi ý người có thể mời
+        </p>
+      )}
 
       <div className="max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
         {isSearching && (
@@ -176,7 +184,9 @@ export default function UserSearchSection({
                 </>
               ) : (
                 <p className="text-xs font-bold text-slate-300">
-                  Type at least 2 characters to search
+                  {showSuggestions
+                    ? "Chưa có gợi ý phù hợp. Hãy tìm theo username hoặc email."
+                    : "Type at least 2 characters to search"}
                 </p>
               )}
             </div>

@@ -76,7 +76,7 @@ export const useIdentificationWorkspace = () => {
     }
   })();
 
-  const canEdit = phaseStatus === "in-progress" && (member?.isLeader === true || member?.role === 2);
+  const canEdit = phaseStatus === "in-progress" && member?.isLeader === true;
 
   // Drag state (for import tab)
   const [isDragging, setIsDragging] = useState(false);

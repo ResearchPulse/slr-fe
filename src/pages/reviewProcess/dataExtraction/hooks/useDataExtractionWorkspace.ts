@@ -845,9 +845,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
         const role = String(member.roleText ?? member.role).trim().toUpperCase();
         return (
           member.role === ProjectRole.Reviewer ||
-          member.role === ProjectRole.Lecturer ||
-          member.role === ProjectRole.Owner ||
-          ["REVIEWER", "LECTURER", "OWNER", "LEADER", "MEMBER", "3", "2", "1"].includes(role)
+          ["REVIEWER", "LECTURER", "MEMBER", "3", "2"].includes(role)
         );
       })
       .map((member) => ({

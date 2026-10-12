@@ -27,21 +27,24 @@ export const useProjectMember = (projectId: string | undefined) => {
     OWNER: 1,
     ADMIN: 1,
     LEADER: 1,
-    LECTURER: 2,
-    MEMBER: 2,
+    LECTURER: 3,
+    MEMBER: 3,
     REVIEWER: 3,
   };
+  const rawRoleNumber = typeof membership?.roleNumber === "number"
+    ? membership.roleNumber
+    : typeof membership?.role === "number"
+      ? membership.role
+      : undefined;
   const normalizedRole = membership
-    ? typeof membership.roleNumber === "number"
-      ? membership.roleNumber
-      : typeof membership.role === "number"
-        ? membership.role
-        : roleNames[String(membership.roleText || membership.role).toUpperCase()] || 3
+    ? rawRoleNumber === 1 ? 1 : rawRoleNumber === 2 || rawRoleNumber === 3
+      ? 3
+      : roleNames[String(membership.roleText || membership.role).toUpperCase()] || 3
     : null;
   const member = membership && normalizedRole !== null
     ? {
         role: normalizedRole,
-        roleText: membership.roleText || String(membership.role),
+        roleText: normalizedRole === 1 ? "OWNER" : "REVIEWER",
         isLeader: normalizedRole === 1,
       }
     : null;

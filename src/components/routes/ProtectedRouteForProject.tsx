@@ -92,10 +92,10 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
 
   // Case 2: Role not allowed
   const normalizeRoleToNumber = (r: unknown): number => {
-    if (typeof r === "number") return r;
+    if (typeof r === "number") return r === 1 ? 1 : r === 2 || r === 3 ? 3 : r;
     const str = String(r || "").toUpperCase();
     if (str === "OWNER" || str === "ADMIN") return 1;
-    if (str === "LECTURER") return 2;
+    if (str === "LECTURER" || str === "MEMBER") return 3;
     if (str === "REVIEWER") return 3;
     return 99;
   };

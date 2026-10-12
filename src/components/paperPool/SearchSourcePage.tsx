@@ -39,7 +39,7 @@ export default function SearchSourcePage({
     updateStrategies,
   } = useSearchSources(projectId);
   const { member } = useProjectMember(projectId);
-  const canEditSources = member?.isLeader === true || member?.role === 2;
+  const canEditSources = member?.isLeader === true;
 
   const [sources, setSources] = useState<SearchSourceDto[]>([]);
   const [selectedMasterId, setSelectedMasterId] = useState<string>("");

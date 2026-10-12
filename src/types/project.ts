@@ -43,10 +43,8 @@ export interface Project {
 
 // Project Roles
 export const ProjectRole = {
-  Owner: 1,
-  Leader: 1, // Compatibility alias for older project views.
-  Lecturer: 2,
-  Member: 2, // Compatibility alias for older project views.
+  Leader: 1,
+  Owner: 1, // Compatibility alias for API fields that still use OWNER.
   Reviewer: 3,
 } as const;
 
@@ -54,8 +52,8 @@ export type ProjectRoleType = typeof ProjectRole[keyof typeof ProjectRole];
 
 export const getProjectRoleLabel = (role: unknown): string => {
   const value = String(role ?? "").trim().toUpperCase();
-  if (["1", "OWNER", "ADMIN", "LEADER"].includes(value)) return "Owner";
-  if (["2", "LECTURER", "MEMBER"].includes(value)) return "Lecturer";
+  if (["1", "OWNER", "ADMIN", "LEADER"].includes(value)) return "Project Leader";
+  if (["2", "LECTURER", "MEMBER"].includes(value)) return "Reviewer";
   if (["3", "REVIEWER"].includes(value)) return "Reviewer";
   return "Unknown role";
 };
@@ -79,6 +77,7 @@ export interface UserSearchResult {
   username: string;
   fullName: string;
   role?: string;
+  isActive?: boolean;
   projectRole?: number;
   isAlreadyMember: boolean;
 }

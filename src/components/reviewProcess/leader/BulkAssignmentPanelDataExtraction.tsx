@@ -45,9 +45,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
         const role = String(m.roleText ?? m.role).trim().toUpperCase();
         return (
           m.role === ProjectRole.Reviewer ||
-          m.role === ProjectRole.Lecturer ||
-          m.role === ProjectRole.Owner ||
-          ["REVIEWER", "LECTURER", "OWNER", "LEADER", "MEMBER", "3", "2", "1"].includes(role)
+          ["REVIEWER", "LECTURER", "MEMBER", "3", "2"].includes(role)
         );
       }),
     [members],
