@@ -8,6 +8,8 @@ import type {
   RisImportResponse,
   BibTexFileImportRequest,
   PdfFileImportRequest,
+  PdfFilesImportRequest,
+  PdfBatchImportResponse,
   FileValidationResult,
   DoiImportRequest,
   CrossrefImportRequest,
@@ -21,6 +23,7 @@ import type {
  */
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_EXTENSIONS = [".ris", ".bib", ".pdf"];
+export const MAX_PDF_BATCH_FILES = 10;
 
 /**
  * Validate import file before upload
@@ -90,6 +93,42 @@ export const paperImportService = {
       throw new Error(result.message || "Failed to import PDF file");
     }
     return result;
+  },
+
+  /**
+   * Import up to MAX_PDF_BATCH_FILES PDFs in one request
+   * POST /api/papers/import/pdf/batch
+   *
+   * Files are imported independently: the result lists each file's outcome. When no file
+   * could be imported the backend answers 400 with the same result shape, which is returned
+   * here (isSuccess = false) so the caller can show per-file errors.
+   */
+  async importPdfFiles(
+    request: PdfFilesImportRequest,
+    onProgress?: ProgressCallback,
+  ): Promise<PdfBatchImportResponse> {
+    if (request.files.length === 0) throw new Error("Please select at least one PDF file.");
+    if (request.files.length > MAX_PDF_BATCH_FILES) {
+      throw new Error(`You can import at most ${MAX_PDF_BATCH_FILES} PDF files at once.`);
+    }
+
+    const formData = new FormData();
+    formData.append("projectId", request.projectId);
+    if (request.searchSourceId) formData.append("searchSourceId", request.searchSourceId);
+    request.files.forEach((file) => formData.append("files", file));
+
+    try {
+      const response = await api.post<PdfBatchImportResponse>("/papers/import/pdf/batch", formData, {
+        onUploadProgress: (event) => {
+          if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
+        },
+      });
+      return response.data;
+    } catch (error) {
+      const data = (error as { response?: { data?: PdfBatchImportResponse } }).response?.data;
+      if (data?.data?.items) return data;
+      throw error;
+    }
   },
 
   /**
