@@ -85,6 +85,30 @@ export interface RisImportResultDto {
 export type RisImportResponse = ApiResponse<RisImportResultDto>;
 
 /**
+ * PDF Batch Import Request
+ * POST /api/papers/import/pdf/batch (max 10 files, 10MB each)
+ */
+export interface PdfFilesImportRequest {
+  files: File[];
+  projectId: string;
+  searchSourceId?: string;
+}
+
+export interface PdfBatchImportItemDto {
+  fileName: string;
+  status: "IMPORTED" | "FAILED";
+  paperId?: string;
+  error?: string;
+  errorCode?: string;
+}
+
+export interface PdfBatchImportResultDto extends RisImportResultDto {
+  items: PdfBatchImportItemDto[];
+}
+
+export type PdfBatchImportResponse = ApiResponse<PdfBatchImportResultDto>;
+
+/**
  * File validation result
  */
 export interface FileValidationResult {
