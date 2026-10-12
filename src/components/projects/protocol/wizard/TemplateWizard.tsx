@@ -15,27 +15,18 @@ import Step3_MatrixSetup from "./steps/Step3_MatrixSetup";
 import Step4_Preview from "./steps/Step4_Preview";
 
 interface TemplateWizardProps {
-  dataExtractionProcessId?: string;
-  protocolId?: string;
-  projectId?: string;
+  projectId: string;
   onComplete: (template: ExtractionTemplateResponseDto) => void;
   isViewOnly?: boolean;
-  existingTemplate?:
-    | ExtractionTemplateDto
-    | ExtractionTemplateResponseDto
-    | null;
+  existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
 }
 
 export default function TemplateWizard({
-  dataExtractionProcessId,
-  protocolId,
   projectId,
   onComplete,
   isViewOnly = false,
   existingTemplate = null,
 }: TemplateWizardProps) {
-  const resolvedProcessId = dataExtractionProcessId || protocolId || "";
-
   const {
     state,
     goToStep,
@@ -46,7 +37,7 @@ export default function TemplateWizard({
     getCompletedTemplate,
     resetWizard,
   } = useTemplateWizard({
-    dataExtractionProcessId: resolvedProcessId,
+    projectId,
     existingTemplate,
   });
 
@@ -69,6 +60,7 @@ export default function TemplateWizard({
 
   useEffect(() => {
     if (
+      !existingTemplate &&
       !isPlanningLoading &&
       !planningError &&
       normalizedResearchQuestions.length > 0
@@ -76,6 +68,7 @@ export default function TemplateWizard({
       initializeSectionsForNewTemplate(normalizedResearchQuestions);
     }
   }, [
+    existingTemplate,
     initializeSectionsForNewTemplate,
     isPlanningLoading,
     planningError,
@@ -169,6 +162,15 @@ export default function TemplateWizard({
       case 4:
         return (
           <Step4_Preview
+            projectId={projectId}
+            expectedVersion={
+              existingTemplate &&
+              "version" in existingTemplate &&
+              typeof existingTemplate.version === "number"
+                ? existingTemplate.version
+                : undefined
+            }
+            existingTemplate={existingTemplate}
             state={state}
             getCompletedTemplate={getCompletedTemplate}
             onPublish={(savedTemplate: ExtractionTemplateResponseDto) => {

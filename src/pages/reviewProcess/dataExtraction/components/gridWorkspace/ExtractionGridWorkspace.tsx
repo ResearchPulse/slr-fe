@@ -6,8 +6,8 @@ import {
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ChevronDown,
@@ -16,7 +16,6 @@ import {
   FileText,
   RefreshCw,
 } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
 import { AgGridReact } from "ag-grid-react";
 import type {
   ColDef,
@@ -25,19 +24,16 @@ import type {
 } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 import Button from "../../../../../components/ui/Button";
-import { useReviewProcess } from "../../../../../hooks/useReviewProcesses";
 import { useDataExtractionWorkspace } from "../../hooks/useDataExtractionWorkspace";
 import { dataExtractionConductingService } from "../../../../../services/dataExtractionConductingService";
 import type {
   ExtractionEditableGridDto,
   ExtractionGridCellDto,
   ExtractionGridColumnMetaDto,
-  ExtractionGridRowDto,
-  UpdateGridCellRequestDto,
   GridFieldOptionDto,
-  ExtractionTemplateResponseDto,
-  ExtractionTemplateDto,
   ExtractionFieldDto,
+  ExtractionTemplateDto,
+  ExtractionTemplateResponseDto,
 } from "../../../../../types/dataExtraction";
 import { getErrorMessage } from "../../../../../utils/errorUtils";
 import { toastError, toastSuccess } from "../../../../../utils/toast";
@@ -48,7 +44,6 @@ import "./ExtractionGridWorkspace.css";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const GRID_QUERY_KEY = ["data-extraction-conducting", "editable-grid"] as const;
 const MIN_GRID_ROW_HEIGHT = 44;
 const MAX_GRID_ROW_HEIGHT = 140;
 const DEFAULT_GRID_ROW_HEIGHT = 56;
@@ -69,87 +64,6 @@ function createEmptyGrid(): ExtractionEditableGridDto {
   };
 }
 
-function normalizeGridPayload(payload: unknown): ExtractionEditableGridDto {
-  const data = payload as Record<string, unknown>;
-  const rawColumns = (data.columns ?? data.Columns) as unknown[] | undefined;
-  const rawRows = (data.rows ?? data.Rows) as unknown[] | undefined;
-
-  const columns: ExtractionGridColumnMetaDto[] = (rawColumns ?? []).map(
-    (rawColumn) => {
-      const column = rawColumn as Record<string, unknown>;
-      const rawOptions = (column.options ?? column.Options ?? []) as unknown[];
-
-      return {
-        fieldId: String(column.fieldId ?? column.FieldId ?? ""),
-        headerName: String(column.headerName ?? column.HeaderName ?? ""),
-        sectionName: String(column.sectionName ?? column.SectionName ?? ""),
-        displayFieldName: String(
-          column.displayFieldName ?? column.DisplayFieldName ?? "",
-        ),
-        fieldType: String(column.fieldType ?? column.FieldType ?? "Text"),
-        options: rawOptions.map((rawOption) => {
-          const option = rawOption as Record<string, unknown>;
-
-          return {
-            optionId: String(option.optionId ?? option.OptionId ?? ""),
-            value: String(option.value ?? option.Value ?? ""),
-          };
-        }),
-      };
-    },
-  );
-
-  const rows: ExtractionGridRowDto[] = (rawRows ?? []).map(
-    (rawRow, rowIndex) => {
-      const row = rawRow as Record<string, unknown>;
-      const rowId = String(row.rowId ?? row.RowId ?? `row-${rowIndex}`);
-      const paperTitle = String(row.paperTitle ?? row.PaperTitle ?? "");
-      const citation = String(row.citation ?? row.Citation ?? "");
-      const rawCells = (row.cells ?? row.Cells ?? {}) as Record<
-        string,
-        unknown
-      >;
-
-      const cells = Object.entries(rawCells).reduce<
-        Record<string, ExtractionGridCellDto>
-      >((accumulator, [header, rawCell]) => {
-        const cell = (rawCell ?? {}) as Record<string, unknown>;
-
-        accumulator[header] = {
-          paperId: (cell.paperId ?? cell.PaperId ?? null) as string | null,
-          fieldId: (cell.fieldId ?? cell.FieldId ?? null) as string | null,
-          matrixColumnId: (cell.matrixColumnId ??
-            cell.MatrixColumnId ??
-            null) as string | null,
-          matrixRowIndex: (cell.matrixRowIndex ??
-            cell.MatrixRowIndex ??
-            null) as number | null,
-          value: (cell.value ?? cell.Value ?? "") as string | null,
-          isNotReported: Boolean(
-            cell.isNotReported ?? cell.IsNotReported ?? false,
-          ),
-          fieldType: (cell.fieldType ?? cell.FieldType ?? null) as
-            | string
-            | null,
-        };
-
-        return accumulator;
-      }, {});
-
-      return {
-        rowId,
-        paperTitle,
-        citation,
-        cells,
-      };
-    },
-  );
-
-  return {
-    columns,
-    rows,
-  };
-}
 
 function getColumnFieldKey(
   column: ExtractionGridColumnMetaDto,
@@ -237,13 +151,9 @@ function enrichColumnsWithTemplateOptions(
 
 export default function ExtractionGridWorkspace() {
   const navigate = useNavigate();
-  const { projectId, processId } = useParams<{
-    projectId: string;
-    processId: string;
-  }>();
-  const { process } = useReviewProcess(processId);
-  const { selectedTemplate } = useDataExtractionWorkspace();
-  const extractionProcessId = process?.dataExtractionProcess?.id;
+  const ws = useDataExtractionWorkspace();
+  const projectId = ws.projectId;
+  const selectedTemplate = ws.selectedTemplate;
   const [gridData, setGridData] =
     useState<ExtractionEditableGridDto>(createEmptyGrid);
   const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
@@ -260,71 +170,14 @@ export default function ExtractionGridWorkspace() {
     minWidth: 0,
   });
 
-  const dashboardPath = useMemo(() => {
-    if (!projectId || !processId) {
-      return "/projects";
-    }
-
-    return `/projects/${projectId}/processes/${processId}/extraction`;
-  }, [processId, projectId]);
-
-  const gridQuery = useQuery({
-    queryKey: [...GRID_QUERY_KEY, extractionProcessId],
-    queryFn: async () => {
-      if (!extractionProcessId) {
-        throw new Error(
-          "Data extraction process ID is required to load editable grid",
-        );
-      }
-
-      const response =
-        await dataExtractionConductingService.getEditableGrid(
-          extractionProcessId,
-        );
-
-      if (!response.isSuccess || !response.data) {
-        throw new Error(response.message || "Failed to load editable grid");
-      }
-
-      return normalizeGridPayload(response.data);
-    },
-    enabled: !!extractionProcessId,
-    staleTime: 0,
-  });
+  const dashboardPath = useMemo(
+    () => (projectId ? `/projects/${projectId}/extraction` : "/projects"),
+    [projectId],
+  );
 
   useEffect(() => {
-    if (gridQuery.data) {
-      setGridData(gridQuery.data);
-    }
-  }, [gridQuery.data]);
-
-  const updateGridCellMutation = useMutation({
-    mutationFn: async (payload: UpdateGridCellRequestDto) => {
-      if (!extractionProcessId) {
-        throw new Error(
-          "Data extraction process ID is required to update editable grid cells",
-        );
-      }
-
-      const response = await dataExtractionConductingService.updateGridCell(
-        extractionProcessId,
-        payload,
-      );
-
-      if (!response.isSuccess) {
-        throw new Error(response.message || "Failed to update grid cell");
-      }
-
-      return response;
-    },
-    onError: (error) => {
-      toastError(
-        "Failed to save cell",
-        getErrorMessage(error, "Unable to save this cell right now."),
-      );
-    },
-  });
-
+    setGridData(ws.editableGrid ?? createEmptyGrid());
+  }, [ws.editableGrid]);
   // Enrich grid data with template field options
   const enrichedGridData = useMemo(() => {
     const enrichedColumns = enrichColumnsWithTemplateOptions(
@@ -390,8 +243,8 @@ export default function ExtractionGridWorkspace() {
   );
 
   const handleRefreshGrid = useCallback(async () => {
-    await gridQuery.refetch();
-  }, [gridQuery]);
+    await ws.getEditableGrid();
+  }, [ws]);
 
   const handleSaveCell = useCallback(
     async (
@@ -413,18 +266,21 @@ export default function ExtractionGridWorkspace() {
       }));
 
       const normalizedValue = nextValue.trim();
-      const requestPayload: UpdateGridCellRequestDto = {
-        paperId: cell.paperId,
-        fieldId: cell.fieldId,
-        matrixColumnId: cell.matrixColumnId,
-        matrixRowIndex: cell.matrixRowIndex,
-        newValue: isNotReported ? null : normalizedValue || null,
-        isNotReported,
-      };
 
       try {
-        await updateGridCellMutation.mutateAsync(requestPayload);
+        const expectedVersion = await ws.fetchPaperVersion(cell.paperId);
+        if (expectedVersion === null) {
+          throw new Error("Unable to determine the current version for this study.");
+        }
 
+        await ws.updateGridCell({
+          paperId: cell.paperId,
+          fieldId: cell.fieldId,
+          columnId: cell.matrixColumnId ?? undefined,
+          row: cell.matrixRowIndex ?? undefined,
+          value: isNotReported ? null : normalizedValue || null,
+          expectedVersion,
+        });
         setGridData((previous) => ({
           ...previous,
           rows: previous.rows.map((row) => {
@@ -452,6 +308,11 @@ export default function ExtractionGridWorkspace() {
         }));
 
         toastSuccess("Cell updated");
+      } catch (error) {
+        toastError(
+          "Failed to save cell",
+          getErrorMessage(error, "Unable to save this cell right now."),
+        );
       } finally {
         setSavingCells((previous) => {
           const next = { ...previous };
@@ -460,7 +321,7 @@ export default function ExtractionGridWorkspace() {
         });
       }
     },
-    [buildSavingCellKey, updateGridCellMutation],
+    [buildSavingCellKey, ws],
   );
 
   const columnDefs = useMemo<ColDef<AgGridRowData>[]>(() => {
@@ -508,7 +369,7 @@ export default function ExtractionGridWorkspace() {
 
           return (
             <EditableGridCell
-              extractionProcessId={extractionProcessId}
+              projectId={projectId}
               cell={cell}
               columnMeta={column}
               rowHeight={rowHeight}
@@ -573,15 +434,15 @@ export default function ExtractionGridWorkspace() {
     return [pinnedColumn, ...groupedColumnDefs];
   }, [
     buildSavingCellKey,
-    extractionProcessId,
+    projectId,
     enrichedGridData.columns,
     handleSaveCell,
     rowHeight,
     savingCells,
   ]);
 
-  const handleDownloadExcel = useCallback(async () => {
-    if (!extractionProcessId) {
+  const handleDownloadJson = useCallback(async () => {
+    if (!projectId) {
       return;
     }
 
@@ -589,14 +450,14 @@ export default function ExtractionGridWorkspace() {
     setIsExportMenuOpen(false);
 
     try {
-      const blob =
-        await dataExtractionConductingService.exportExtractedData(
-          extractionProcessId,
-        );
+      const blob = await dataExtractionConductingService.exportExtractedData(
+        projectId,
+        "json",
+      );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "Extraction_Data.xlsx";
+      anchor.download = "Extraction_Data.json";
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
@@ -604,18 +465,15 @@ export default function ExtractionGridWorkspace() {
     } catch (error) {
       toastError(
         "Download failed",
-        getErrorMessage(
-          error,
-          "Unable to download the extraction file right now.",
-        ),
+        getErrorMessage(error, "Unable to download the extraction data."),
       );
     } finally {
       setIsExportingExcel(false);
     }
-  }, [extractionProcessId]);
+  }, [projectId]);
 
   const handleDownloadCsv = useCallback(async () => {
-    if (!extractionProcessId) {
+    if (!projectId) {
       return;
     }
 
@@ -625,7 +483,7 @@ export default function ExtractionGridWorkspace() {
     try {
       const blob =
         await dataExtractionConductingService.exportExtractedDataCsv(
-          extractionProcessId,
+          projectId,
         );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
@@ -638,15 +496,13 @@ export default function ExtractionGridWorkspace() {
     } catch (error) {
       toastError(
         "Download failed",
-        getErrorMessage(
-          error,
-          "Unable to download the extraction CSV file right now.",
-        ),
+        getErrorMessage(error, "Unable to download the extraction CSV file."),
       );
     } finally {
       setIsExportingCsv(false);
     }
-  }, [extractionProcessId]);
+  }, [projectId]);
+
 
   const isExporting = isExportingExcel || isExportingCsv;
 
@@ -720,7 +576,7 @@ export default function ExtractionGridWorkspace() {
   const hasData =
     enrichedGridData.columns.length > 0 && enrichedGridData.rows.length > 0;
 
-  if (gridQuery.isLoading && !gridQuery.data) {
+  if (ws.isGridLoading && !ws.editableGrid) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-8">
         <div className="mx-auto flex max-w-7xl items-center justify-center rounded-xl border border-border bg-surface-white py-24 shadow-none">
@@ -743,8 +599,7 @@ export default function ExtractionGridWorkspace() {
                 Extraction Grid Workspace
               </h1>
               <p className="mt-1 text-sm text-text-secondary">
-                Review and standardize extracted values directly before moving
-                to synthesis.
+                Review and standardize reviewer submissions before leader consensus.
               </p>
             </div>
 
@@ -757,10 +612,10 @@ export default function ExtractionGridWorkspace() {
               <Button
                 variant="outline"
                 onClick={handleRefreshGrid}
-                disabled={gridQuery.isLoading}
+                disabled={ws.isGridLoading}
               >
                 <RefreshCw
-                  className={`mr-2 h-4 w-4 ${gridQuery.isLoading ? "animate-spin" : ""}`}
+                  className={`mr-2 h-4 w-4 ${ws.isGridLoading ? "animate-spin" : ""}`}
                 />
                 Refresh Grid
               </Button>
@@ -800,7 +655,7 @@ export default function ExtractionGridWorkspace() {
               <div className="relative z-50" ref={exportMenuRef}>
                 <Button
                   onClick={() => setIsExportMenuOpen((current) => !current)}
-                  disabled={isExporting || !extractionProcessId}
+                  disabled={isExporting || !projectId}
                 >
                   {isExporting ? (
                     <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -824,12 +679,12 @@ export default function ExtractionGridWorkspace() {
                       >
                         <button
                           type="button"
-                          onClick={handleDownloadExcel}
+                          onClick={handleDownloadJson}
                           disabled={isExporting}
                           className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
-                          <span className="truncate">Excel (.xlsx)</span>
+                          <span className="truncate">JSON (.json)</span>
                         </button>
                         <button
                           type="button"
@@ -849,9 +704,9 @@ export default function ExtractionGridWorkspace() {
           </div>
         </div>
 
-        {gridQuery.error ? (
+        {ws.error ? (
           <div className="rounded-xl border border-border bg-surface-white px-5 py-4 text-sm text-red-700">
-            {getErrorMessage(gridQuery.error, "Unable to load editable grid.")}
+            {ws.error}
           </div>
         ) : null}
 

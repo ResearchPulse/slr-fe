@@ -1,244 +1,280 @@
 import api from "../config/axios";
 import type {
-  AddCommentRequestDto,
-  AskAiFieldRequestDto,
-  AssignReviewersDto,
-  ExtractedValueDto,
+  ExtractionAiDraftRequestDto,
+  ExtractionAiDraftResponseDto,
+  ExtractionApiResponse,
+  ExtractionAssignmentRequestDto,
+  ExtractionAuditLogsResponseDto,
+  ExtractionCommentDto,
+  ExtractionCommentRequestDto,
+  ExtractionConsensusDraftDto,
   ExtractionDashboardFilterDto,
   ExtractionDashboardResponseDto,
-  ExtractedDataAuditLogDto,
   ExtractionEditableGridDto,
+  ExtractionExportProjectionDto,
+  ExtractionPhaseStateDto,
   ExtractionPreviewDto,
-  ExtractionWorkloadSummaryDto,
   ReopenExtractionRequestDto,
-  ReviewerWorkspaceDto,
-  SubmitExtractionRequestDto,
-  ConsensusWorkspaceDto,
-  SubmitConsensusRequestDto,
+  ExtractionWorkflowMutationDto,
+  ExtractionWorkloadSummaryDto,
   UpdateGridCellRequestDto,
+  ReviewerWorkspaceDto,
+  ConsensusWorkspaceDto,
 } from "../types/dataExtraction";
-import type { ApiResponse } from "../types/project";
+
+function unwrap<T>(envelope: ExtractionApiResponse<T>): T {
+  if (!envelope.success) {
+    throw new Error("Extraction API request failed");
+  }
+  return envelope.data;
+}
+
+function asBlob(data: unknown, contentType: string): Blob {
+  return data instanceof Blob
+    ? data
+    : new Blob([typeof data === "string" ? data : JSON.stringify(data) ?? ""], { type: contentType });
+}
+
+interface CanonicalExtractionCommentDto {
+  id: string;
+  fieldId: string;
+  reviewerId: string;
+  userId: string;
+  text: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export const dataExtractionConductingService = {
   async getDashboard(
-    extractionProcessId: string,
+    projectId: string,
     filters: ExtractionDashboardFilterDto
-  ): Promise<ApiResponse<ExtractionDashboardResponseDto>> {
-    const response = await api.get<ApiResponse<ExtractionDashboardResponseDto>>(
-      `/data-extraction-processes/${extractionProcessId}/dashboard`,
+  ): Promise<ExtractionDashboardResponseDto> {
+    const response = await api.get<ExtractionApiResponse<ExtractionDashboardResponseDto>>(
+      `/projects/${projectId}/extraction/dashboard`,
       {
-        params: filters,
-      }
+        params: {
+          pageNumber: filters.pageNumber,
+          pageSize: filters.pageSize,
+          search: filters.search ?? filters.searchQuery,
+          status: filters.statusFilter,
+        },
+      },
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async assignReviewers(
-    extractionProcessId: string,
-    paperId: string,
-    payload: AssignReviewersDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/assign`,
-      payload
-    );
 
-    return response.data;
+  async assignReviewers(
+    projectId: string,
+    paperId: string,
+    payload: ExtractionAssignmentRequestDto
+  ): Promise<unknown> {
+    const response = await api.put<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/assignment`, payload
+    );
+    return unwrap(response.data);
   },
 
   async submitExtraction(
-    extractionProcessId: string,
+    projectId: string,
     paperId: string,
-    payload: SubmitExtractionRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/submit`,
-      payload
+    payload: ExtractionWorkflowMutationDto
+  ): Promise<unknown> {
+    const response = await api.post<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/reviewer/submit`, payload
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async directExtractByLeader(
-    extractionProcessId: string,
+  async saveExtractionDraft(
+    projectId: string,
     paperId: string,
-    payload: SubmitExtractionRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/direct-extract`,
-      payload
+    payload: ExtractionWorkflowMutationDto
+  ): Promise<unknown> {
+    const response = await api.put<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/reviewer/draft`, payload
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
   async autoExtractWithAI(
-    extractionProcessId: string,
+    projectId: string,
     paperId: string,
-    templateId: string
-  ): Promise<ApiResponse<ExtractedValueDto[]>> {
-    const response = await api.post<ApiResponse<ExtractedValueDto[]>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/auto-extract`,
-      { templateId }
+    fieldIds?: string[],
+  ): Promise<ExtractionAiDraftResponseDto> {
+    const payload: ExtractionAiDraftRequestDto = fieldIds ? { fieldIds } : {};
+    const response = await api.post<ExtractionApiResponse<ExtractionAiDraftResponseDto>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/ai-draft`, payload
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
   async askAiSingleField(
-    extractionProcessId: string,
-    payload: AskAiFieldRequestDto
-  ): Promise<ApiResponse<ExtractedValueDto>> {
-    const response = await api.post<ApiResponse<ExtractedValueDto>>(
-      `/data-extraction-processes/${extractionProcessId}/ask-ai-field`,
-      payload
+    projectId: string,
+    paperId: string,
+    fieldId: string,
+  ): Promise<ExtractionAiDraftResponseDto> {
+    const response = await api.post<ExtractionApiResponse<ExtractionAiDraftResponseDto>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/fields/${fieldId}/ai-draft`, {}
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async getConsensusWorkspace(
-    extractionProcessId: string,
-    paperId: string
-  ): Promise<ApiResponse<ConsensusWorkspaceDto>> {
-    const response = await api.get<ApiResponse<ConsensusWorkspaceDto>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/consensus`
+  async getConsensusWorkspace(projectId: string, paperId: string): Promise<ConsensusWorkspaceDto> {
+    const response = await api.get<ExtractionApiResponse<ConsensusWorkspaceDto>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/consensus`
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async getReviewerWorkspace(
-    extractionProcessId: string,
-    paperId: string
-  ): Promise<ApiResponse<ReviewerWorkspaceDto>> {
-    const response = await api.get<ApiResponse<ReviewerWorkspaceDto>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/reviewer-workspace`
+  async getReviewerWorkspace(projectId: string, paperId: string): Promise<ReviewerWorkspaceDto> {
+    const response = await api.get<ExtractionApiResponse<ReviewerWorkspaceDto>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/reviewer`
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
   async addFieldComment(
-    extractionProcessId: string,
+    projectId: string,
     paperId: string,
     fieldId: string,
-    payload: AddCommentRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/fields/${fieldId}/comments`,
+    payload: ExtractionCommentRequestDto
+  ): Promise<unknown> {
+    const response = await api.post<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/fields/${fieldId}/comments`,
       payload
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async submitConsensus(
-    extractionProcessId: string,
+  async getFieldComments(projectId: string, paperId: string, fieldId: string): Promise<ExtractionCommentDto[]> {
+    const response = await api.get<ExtractionApiResponse<{ comments: CanonicalExtractionCommentDto[] }>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/fields/${fieldId}/comments`
+    );
+    return unwrap(response.data).comments.map((comment) => ({
+      id: comment.id,
+      fieldId: comment.fieldId,
+      threadOwnerId: comment.reviewerId,
+      userId: comment.userId,
+      userName: comment.userId,
+      content: comment.text,
+      createdAt: comment.createdAt,
+    }));
+  },
+
+  async checkConsensus(
+    projectId: string,
     paperId: string,
-    payload: SubmitConsensusRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/consensus/submit`,
-      payload
+    submissionVersions: Record<string, number>
+  ): Promise<unknown> {
+    const response = await api.post<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/consensus/check`, { submissionVersions }
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async exportExtractedData(extractionProcessId: string): Promise<Blob> {
-    const response = await api.get<Blob>(
-      `/data-extraction-processes/${extractionProcessId}/export`,
-      { responseType: "blob" }
+  async saveConsensusDraft(
+    projectId: string,
+    paperId: string,
+    payload: ExtractionConsensusDraftDto
+  ): Promise<unknown> {
+    const response = await api.put<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/consensus/draft`, payload
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async exportExtractedDataCsv(extractionProcessId: string): Promise<Blob> {
-    const response = await api.get<Blob>(
-      `/data-extraction-processes/${extractionProcessId}/export/csv`,
-      { responseType: "blob" }
+  async finalizeConsensus(projectId: string, paperId: string, expectedVersion: number): Promise<unknown> {
+    const response = await api.post<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/consensus/finalize`, { expectedVersion }
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async getExtractionPreview(
-    extractionProcessId: string
-  ): Promise<ApiResponse<ExtractionPreviewDto>> {
-    const response = await api.get<ApiResponse<ExtractionPreviewDto>>(
-      `/data-extraction-processes/${extractionProcessId}/export/preview`
-    );
-
-    return response.data;
+  async exportExtractedData(
+    projectId: string,
+    format: "json" | "markdown" | "csv" = "markdown",
+    search?: string
+  ): Promise<Blob> {
+    if (format === "json") {
+      const response = await api.get<ExtractionApiResponse<ExtractionExportProjectionDto>>(
+        `/projects/${projectId}/extraction/export`, { params: { format, search } }
+      );
+      return asBlob(unwrap(response.data), "application/json");
+    }
+    const response = await api.get<Blob>(`/projects/${projectId}/extraction/export`, {
+      params: { format, search }, responseType: "blob"
+    });
+    return asBlob(response.data, format === "markdown" ? "text/markdown" : "text/csv");
   },
 
-  async getEditableGrid(
-    extractionProcessId: string
-  ): Promise<ApiResponse<ExtractionEditableGridDto>> {
-    const response = await api.get<ApiResponse<ExtractionEditableGridDto>>(
-      `/data-extraction-processes/${extractionProcessId}/editable-grid`
-    );
-
-    return response.data;
+  async exportExtractedDataCsv(projectId: string, search?: string): Promise<Blob> {
+    return this.exportExtractedData(projectId, "csv", search);
   },
 
-  async updateGridCell(
-    extractionProcessId: string,
-    payload: UpdateGridCellRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.put<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/editable-grid/cell`,
-      payload
+  async getExtractionPreview(projectId: string, search?: string): Promise<ExtractionPreviewDto> {
+    const response = await api.get<ExtractionApiResponse<ExtractionPreviewDto>>(
+      `/projects/${projectId}/extraction/export/preview`, { params: { search } }
     );
+    return unwrap(response.data);
+  },
 
-    return response.data;
+  async getEditableGrid(projectId: string): Promise<ExtractionEditableGridDto> {
+    const response = await api.get<ExtractionApiResponse<ExtractionEditableGridDto>>(
+      `/projects/${projectId}/extraction/grid`
+    );
+    return unwrap(response.data);
+  },
+
+  async updateGridCell(projectId: string, payload: UpdateGridCellRequestDto): Promise<unknown> {
+    const response = await api.put<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/grid/cells`, payload
+    );
+    return unwrap(response.data);
   },
 
   async getCellAuditLogs(
-    extractionProcessId: string,
-    paperId: string,
-    fieldId: string,
-    matrixColumnId: string | null,
-    matrixRowIndex: number | null
-  ): Promise<ApiResponse<ExtractedDataAuditLogDto[]>> {
-    const response = await api.get<ApiResponse<ExtractedDataAuditLogDto[]>>(
-      `/data-extraction-processes/${extractionProcessId}/audit-logs`,
-      {
-        params: {
-          paperId,
-          fieldId,
-          matrixColumnId,
-          matrixRowIndex,
-        },
-      }
+    projectId: string,
+    paperId?: string,
+    fieldId?: string,
+    pageSize = 50
+  ): Promise<ExtractionAuditLogsResponseDto> {
+    const response = await api.get<ExtractionApiResponse<ExtractionAuditLogsResponseDto>>(
+      `/projects/${projectId}/extraction/audit-logs`, { params: { paperId, fieldId, pageSize } }
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
-  async getWorkloadSummary(
-    extractionProcessId: string
-  ): Promise<ApiResponse<ExtractionWorkloadSummaryDto>> {
-    const response = await api.get<ApiResponse<ExtractionWorkloadSummaryDto>>(
-      `/data-extraction-processes/${extractionProcessId}/workload-summary`
+  async getWorkloadSummary(projectId: string): Promise<ExtractionWorkloadSummaryDto> {
+    const response = await api.get<ExtractionApiResponse<ExtractionWorkloadSummaryDto>>(
+      `/projects/${projectId}/extraction/workload`
     );
-
-    return response.data;
+    return unwrap(response.data);
   },
 
   async reopenExtraction(
-    extractionProcessId: string,
+    projectId: string,
     paperId: string,
     payload: ReopenExtractionRequestDto
-  ): Promise<ApiResponse<null>> {
-    const response = await api.post<ApiResponse<null>>(
-      `/data-extraction-processes/${extractionProcessId}/papers/${paperId}/reopen`,
-      payload
+  ): Promise<unknown> {
+    const response = await api.post<ExtractionApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/papers/${paperId}/reopen`, payload
     );
+    return unwrap(response.data);
+  },
 
-    return response.data;
+  async startPhase(projectId: string, expectedVersion?: number): Promise<ExtractionPhaseStateDto> {
+    const response = await api.post<ExtractionApiResponse<ExtractionPhaseStateDto>>(
+      `/projects/${projectId}/extraction/phase/start`, { expectedVersion }
+    );
+    return unwrap(response.data);
+  },
+
+  async completePhase(projectId: string, expectedVersion?: number): Promise<ExtractionPhaseStateDto> {
+    const response = await api.post<ExtractionApiResponse<ExtractionPhaseStateDto>>(
+      `/projects/${projectId}/extraction/phase/complete`, { expectedVersion }
+    );
+    return unwrap(response.data);
   },
 };

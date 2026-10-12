@@ -1,49 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
+import { QUERY_KEYS } from "../constants/queryKeys";
 import type { ResearchQuestion } from "../types/coreAndGovernance";
 import { coreAndGovernanceService } from "../services/coreAndGovernanceService";
-import { dataExtractionProcessService } from "../services/dataExtractionProcessService";
-import reviewProcessService from "../services/reviewProcessService";
-import { QUERY_KEYS } from "../constants/queryKeys";
-
 /**
- * Hook to fetch planning data (Research Questions)
- * from a Data Extraction Process context.
+ * Hook to fetch planning data (Research Questions) for a project.
  */
 interface UsePlanningDataOptions {
   projectId?: string;
-  dataExtractionProcessId?: string;
 }
 
-export const usePlanningData = ({ projectId: projectIdOverride, dataExtractionProcessId }: UsePlanningDataOptions) => {
-  const projectContextQuery = useQuery({
-    queryKey: ["planning-project-context", projectIdOverride || dataExtractionProcessId || ""],
-    queryFn: async () => {
-      if (projectIdOverride) {
-        return { projectId: projectIdOverride };
-      }
-
-      if (!dataExtractionProcessId) {
-        throw new Error("Project ID or Data Extraction Process ID is required");
-      }
-
-      const extractionProcess = await dataExtractionProcessService.getById(dataExtractionProcessId);
-      const reviewProcessResponse = await reviewProcessService.getReviewProcessById(
-        extractionProcess.reviewProcessId
-      );
-
-      if (!reviewProcessResponse.isSuccess || !reviewProcessResponse.data?.projectId) {
-        throw new Error("Unable to resolve project from data extraction process");
-      }
-
-      return { projectId: reviewProcessResponse.data.projectId };
-    },
-    enabled: !!projectIdOverride || !!dataExtractionProcessId,
-    staleTime: 5 * 60 * 1000,
-    refetchOnMount: "always",
-  });
-
-  const projectId = projectContextQuery.data?.projectId;
-
+export const usePlanningData = ({ projectId }: UsePlanningDataOptions) => {
   const rqQuery = useQuery({
     queryKey: QUERY_KEYS.projects.researchQuestions(projectId || ""),
     queryFn: () => {
@@ -56,14 +22,11 @@ export const usePlanningData = ({ projectId: projectIdOverride, dataExtractionPr
     select: (response) => response.data || [],
   });
 
-  const isLoading = projectContextQuery.isLoading || rqQuery.isLoading;
-  const error = projectContextQuery.error || rqQuery.error;
-
   return {
     researchQuestions: rqQuery.data || [],
     picocElementsByQuestion: {},
-    isLoading,
-    error: error ? String(error) : null,
+    isLoading: rqQuery.isLoading,
+    error: rqQuery.error ? String(rqQuery.error) : null,
     projectId,
   };
 };

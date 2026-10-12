@@ -21,8 +21,7 @@ interface UseDataExtractionTabResult {
 }
 
 export function useDataExtractionTab(): UseDataExtractionTabResult {
-  const { processId, protocolId } = useParams<{ processId?: string; protocolId?: string }>();
-  const currentProcessId = processId || protocolId || "";
+  const { projectId = "" } = useParams<{ projectId?: string }>();
   const {
     templates,
     isLoading,
@@ -36,92 +35,65 @@ export function useDataExtractionTab(): UseDataExtractionTabResult {
   const [dataItems, setDataItems] = useState<DataItemDefinitionExtended[]>([]);
 
   useEffect(() => {
-    if (currentProcessId) {
-      void loadTemplates(currentProcessId);
+    if (projectId) void loadTemplates(projectId);
+  }, [projectId, loadTemplates]);
+
+  const handleSelectTemplate = useCallback(async (templateId: string) => {
+    const template = await loadTemplate(projectId, templateId);
+    if (template) {
+      setCurrentTemplate(template);
+      setDataItems(templateToDataItems(template, `form_${generateId()}`));
     }
-  }, [currentProcessId, loadTemplates]);
+  }, [loadTemplate, projectId]);
 
-  const handleSelectTemplate = useCallback(
-    async (templateId: string) => {
-      const template = await loadTemplate(templateId);
-      if (template) {
-        setCurrentTemplate(template);
-        const formId = `form_${generateId()}`;
-        setDataItems(templateToDataItems(template, formId));
-      }
-    },
-    [loadTemplate]
-  );
-
-  const handleDeleteTemplate = useCallback(
-    async (templateId: string) => {
-      const success = await deleteTemplate(templateId);
-      if (success && currentTemplate?.templateId === templateId) {
-        setCurrentTemplate(null);
-        setDataItems([]);
-      }
-      return success;
-    },
-    [deleteTemplate, currentTemplate]
-  );
+  const handleDeleteTemplate = useCallback(async (templateId: string) => {
+    const success = await deleteTemplate(projectId, templateId);
+    if (success && currentTemplate?.templateId === templateId) {
+      setCurrentTemplate(null);
+      setDataItems([]);
+    }
+    return success;
+  }, [deleteTemplate, projectId, currentTemplate]);
 
   const handleCreateNewTemplate = useCallback(() => {
-    const newTemplate: ExtractionTemplateDto = {
-      dataExtractionProcessId: currentProcessId,
+    setCurrentTemplate({
+      projectId,
       name: "",
       description: "",
       sections: [],
       fields: [],
-    };
-
-    setCurrentTemplate(newTemplate);
+    });
     setDataItems([]);
-  }, [currentProcessId]);
+  }, [projectId]);
 
   const handleDataItemsChange = useCallback((items: DataItemDefinitionExtended[]) => {
     setDataItems(items);
   }, []);
 
   const handleUpdateTemplateMeta = useCallback((name: string, description?: string) => {
-    setCurrentTemplate((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        name,
-        description: description || "",
-      };
-    });
+    setCurrentTemplate((prev) => prev ? { ...prev, name, description: description || "" } : null);
   }, []);
 
   const getCurrentTemplateData = useCallback((): ExtractionTemplateDto | null => {
-    if (!currentTemplate || !currentProcessId) {
-      return null;
-    }
-
-    if (!currentTemplate.name || !currentTemplate.name.trim()) {
-      return null;
-    }
-
+    if (!currentTemplate || !projectId || !currentTemplate.name.trim()) return null;
     const templateData = dataItemsToTemplate(
       dataItems,
-      currentProcessId,
+      projectId,
       currentTemplate.name,
       currentTemplate.description ?? undefined,
-      currentTemplate.templateId ?? undefined
+      currentTemplate.templateId ?? undefined,
     );
-
     return {
       ...templateData,
+      templateId: currentTemplate.templateId ?? undefined,
       sections: templateData.sections || [],
       fields: templateData.fields || [],
     };
-  }, [currentTemplate, currentProcessId, dataItems]);
+  }, [currentTemplate, projectId, dataItems]);
 
   const refreshTemplates = useCallback(() => {
-    if (currentProcessId) {
-      void loadTemplates(currentProcessId);
-    }
-  }, [currentProcessId, loadTemplates]);
+    if (projectId) void loadTemplates(projectId);
+  }, [projectId, loadTemplates]);
 
   return {
     templates,
