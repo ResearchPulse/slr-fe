@@ -64,6 +64,71 @@ export const validateImportFile = (file: File): FileValidationResult => {
  */
 export type ProgressCallback = (progressPercent: number) => void;
 
+export type PdfBatchProgress = {
+  index: number;
+  percent: number;
+  status: 'SIGNING' | 'UPLOADING' | 'FINALIZING' | 'IMPORTED' | 'FAILED';
+  error?: string;
+};
+export type PdfBatchProgressCallback = (progress: PdfBatchProgress) => void;
+
+interface PdfUploadSignature {
+  uploadUrl: string;
+  apiKey: string;
+  timestamp: number;
+  signature: string;
+  folder: string;
+  publicId: string;
+  baseName: string;
+  fileName: string;
+  expectedPublicId: string;
+}
+
+interface CloudinaryUploadResult {
+  public_id: string;
+  bytes: number;
+  secure_url: string;
+}
+
+function uploadPdfToCloudinary(
+  file: File,
+  signature: PdfUploadSignature,
+  onProgress: (percent: number) => void,
+): Promise<CloudinaryUploadResult> {
+  return new Promise((resolve, reject) => {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('api_key', signature.apiKey);
+    form.append('timestamp', String(signature.timestamp));
+    form.append('signature', signature.signature);
+    form.append('folder', signature.folder);
+    form.append('public_id', signature.publicId);
+
+    const request = new XMLHttpRequest();
+    request.open('POST', signature.uploadUrl);
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable) onProgress(Math.round((event.loaded / event.total) * 100));
+    };
+    request.onerror = () => reject(new Error('Network error while uploading to Cloudinary'));
+    request.onabort = () => reject(new Error('Upload was cancelled'));
+    request.onload = () => {
+      let response: CloudinaryUploadResult & { error?: { message?: string } };
+      try {
+        response = JSON.parse(request.responseText);
+      } catch {
+        reject(new Error('Cloudinary returned an invalid response'));
+        return;
+      }
+      if (request.status < 200 || request.status >= 300 || !response.public_id) {
+        reject(new Error(response.error?.message || 'Cloudinary upload failed'));
+        return;
+      }
+      resolve(response);
+    };
+    request.send(form);
+  });
+}
+
 /**
  * Paper Import Service
  * Implements RIS file import endpoint from PaperAPI.md
@@ -105,30 +170,124 @@ export const paperImportService = {
    */
   async importPdfFiles(
     request: PdfFilesImportRequest,
-    onProgress?: ProgressCallback,
+    onProgress?: PdfBatchProgressCallback,
   ): Promise<PdfBatchImportResponse> {
     if (request.files.length === 0) throw new Error("Please select at least one PDF file.");
     if (request.files.length > MAX_PDF_BATCH_FILES) {
       throw new Error(`You can import at most ${MAX_PDF_BATCH_FILES} PDF files at once.`);
     }
 
-    const formData = new FormData();
-    formData.append("projectId", request.projectId);
-    if (request.searchSourceId) formData.append("searchSourceId", request.searchSourceId);
-    request.files.forEach((file) => formData.append("files", file));
+    const assets: Array<PdfUploadSignature & { publicId: string; sizeBytes: number; index: number }> = [];
+    const items: PdfBatchImportResponse['data']['items'] = new Array(request.files.length);
+    let next = 0;
+    const worker = async () => {
+      while (next < request.files.length) {
+        const index = next++;
+        const file = request.files[index];
+        try {
+          const validation = validateImportFile(file);
+          if (!validation.valid || !file.name.toLowerCase().endsWith('.pdf')) {
+            throw new Error(validation.error || 'Only PDF files are supported');
+          }
+          onProgress?.({ index, percent: 0, status: 'SIGNING' });
+          const signed = await api.post<{ data: PdfUploadSignature }>(
+            '/papers/import/pdf/upload-signature',
+            { projectId: request.projectId, fileName: file.name },
+          );
+          const signature = signed.data.data;
+          onProgress?.({ index, percent: 0, status: 'UPLOADING' });
+          const uploaded = await uploadPdfToCloudinary(file, signature, (percent) =>
+            onProgress?.({ index, percent, status: 'UPLOADING' }),
+          );
+          if (uploaded.public_id !== signature.expectedPublicId) {
+            throw new Error('Uploaded PDF does not match its signed storage path');
+          }
+          assets.push({ ...signature, publicId: uploaded.public_id, sizeBytes: uploaded.bytes || file.size, index });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : 'Upload failed';
+          items[index] = { fileName: file.name, status: 'FAILED', error: message, errorCode: 'UPLOAD_FAILED' };
+          onProgress?.({ index, percent: 0, status: 'FAILED', error: message });
+        }
+      }
+    };
+    await Promise.all(Array.from({ length: Math.min(3, request.files.length) }, worker));
 
-    try {
-      const response = await api.post<PdfBatchImportResponse>("/papers/import/pdf/batch", formData, {
-        onUploadProgress: (event) => {
-          if (onProgress && event.total) onProgress(Math.round((event.loaded * 100) / event.total));
-        },
-      });
-      return response.data;
-    } catch (error) {
-      const data = (error as { response?: { data?: PdfBatchImportResponse } }).response?.data;
-      if (data?.data?.items) return data;
-      throw error;
+    if (assets.length > 0) {
+      assets.forEach(({ index }) => onProgress?.({ index, percent: 100, status: 'FINALIZING' }));
+      try {
+        const response = await api.post<PdfBatchImportResponse>('/papers/import/pdf/batch/finalize', {
+          projectId: request.projectId,
+          searchSourceId: request.searchSourceId,
+          assets: assets.map(({ publicId, baseName, fileName, sizeBytes }) => ({ publicId, baseName, fileName, sizeBytes })),
+        });
+        const finalized = response.data.data?.items ?? [];
+        assets.forEach(({ index }, assetIndex) => {
+          items[index] = finalized[assetIndex] ?? { fileName: request.files[index].name, status: 'FAILED', error: 'Import finalization failed' };
+          onProgress?.({
+            index,
+            percent: 100,
+            status: items[index].status,
+            ...(items[index].error ? { error: items[index].error } : {}),
+          });
+        });
+        const data = response.data.data;
+        const imported = items.filter((item) => item?.status === 'IMPORTED').length;
+        const failed = request.files.length - imported;
+        return {
+          ...response.data,
+          success: imported > 0,
+          data: {
+            ...data,
+            totalRecords: request.files.length,
+            importedRecords: imported,
+            skippedRecords: failed,
+            importedPaperIds: items.filter((item) => item?.paperId).map((item) => item!.paperId!),
+            errors: items.filter((item) => item?.status === 'FAILED').map((item) => `${item.fileName}: ${item.error || 'Import failed'}`),
+            items,
+          },
+        };
+      } catch (error) {
+        const data = (error as { response?: { data?: PdfBatchImportResponse } }).response?.data;
+        if (!data?.data?.items) {
+          assets.forEach(({ index }) => {
+            items[index] = { fileName: request.files[index].name, status: 'FAILED', error: 'Could not finalize the uploaded PDF', errorCode: 'FINALIZE_FAILED' };
+            onProgress?.({ index, percent: 100, status: 'FAILED', error: 'Could not finalize the uploaded PDF' });
+          });
+          throw error;
+        }
+        assets.forEach(({ index }, assetIndex) => {
+          items[index] = data.data.items[assetIndex] ?? { fileName: request.files[index].name, status: 'FAILED', error: 'Import finalization failed' };
+          onProgress?.({ index, percent: 100, status: items[index].status, ...(items[index].error ? { error: items[index].error } : {}) });
+        });
+        return {
+          ...data,
+          data: {
+            ...data.data,
+            totalRecords: request.files.length,
+            importedRecords: items.filter((item) => item?.status === 'IMPORTED').length,
+            skippedRecords: items.filter((item) => item?.status !== 'IMPORTED').length,
+            items,
+          },
+        };
+      }
     }
+
+    const failedItems = items.filter(Boolean);
+    return {
+      success: false,
+      message: 'No PDF files could be uploaded',
+      data: {
+        importBatchId: null,
+        totalRecords: request.files.length,
+        importedRecords: 0,
+        duplicateRecords: 0,
+        skippedRecords: request.files.length,
+        updatedRecords: 0,
+        errors: failedItems.map((item) => `${item.fileName}: ${item.error || 'Upload failed'}`),
+        importedPaperIds: [],
+        items,
+      },
+    };
   },
 
   /**
