@@ -1,6 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
 
 import {
   FiCheck,
@@ -41,13 +40,6 @@ import { useReviewerDecisions } from "../../../hooks/useStudySelection";
 import ConflictResolutionModal from "../../reviewProcess/leader/ConflictResolutionModal";
 import UploadFullTextPdfModal from "../../../pages/reviewProcess/studySelection/components/UploadFullTextPdfModal";
 import ReviewCommentField from "../../../pages/reviewProcess/studySelection/components/ReviewCommentField";
-import api from "../../../config/axios";
-
-interface AgentReviewTask {
-  id: string;
-  agentName: string;
-  status: "ASSIGNED" | "COMPLETED";
-}
 
 export default function PaperViewer({
   paper,
@@ -71,8 +63,6 @@ export default function PaperViewer({
     setReasonPageSize,
     includePaper,
     excludePaper,
-    aiAnalysis,
-    isAnalyzing,
     uploadPaperPdf,
     retryMetadataExtraction,
     isSubmittingDecision,
@@ -129,18 +119,6 @@ export default function PaperViewer({
 
   const { data: reviewerDecisions, isLoading: isLoadingReviewers } =
     useReviewerDecisions(screeningProcessId, paper?.id, phase, isLeaderView);
-  const { data: agentReviewTasks = [] } = useQuery({
-    queryKey: ["paper-agent-review-tasks", activeProjectId, paper?.id],
-    queryFn: async () => {
-      const response = await api.get<{ data: AgentReviewTask[] }>(
-        `/projects/${activeProjectId}/agents/tasks`,
-        { params: { paperIds: paper!.id } },
-      );
-      return response.data.data;
-    },
-    enabled: Boolean(isLeaderView && activeProjectId && paper?.id),
-    refetchInterval: 15_000,
-  });
 
   const hasPendingAssignedReviewer = !!reviewerDecisions?.some(
     (rd) => !rd.decision,
@@ -148,14 +126,6 @@ export default function PaperViewer({
   const submittedReviewCount = reviewerDecisions?.filter((item) => item.decision).length ?? 0;
   const totalReviewCount = reviewerDecisions?.length ?? 0;
   const hasPendingReview = hasPendingAssignedReviewer;
-  const aiDecisionText = aiAnalysis?.aiOutput?.recommendation || "Pending";
-  const aiDecisionTone = aiAnalysis
-    ? aiDecisionText.toLowerCase().includes("include")
-      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-      : aiDecisionText.toLowerCase().includes("exclude")
-        ? "border-rose-200 bg-rose-50 text-rose-700"
-        : "border-amber-200 bg-amber-50 text-amber-700"
-    : "border-slate-200 bg-slate-50 text-slate-600";
 
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
   console.log("paper sections ", paper?.fullTextSections);
@@ -463,32 +433,7 @@ export default function PaperViewer({
                   </span>
                 );
               })}
-              {!isAnalyzing && !agentReviewTasks.length && (
-                <span
-                  title={aiAnalysis?.aiOutput?.reasoning || "AI screening has not been run yet."}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
-                    aiDecisionTone,
-                  )}
-                >
-                  AI screening suggestion: {aiDecisionText}
-                </span>
-              )}
-              {agentReviewTasks.map((task) => (
-                <span
-                  key={task.id}
-                  title={task.status === "COMPLETED" ? "Agent review submitted" : "Waiting for agent review"}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-medium",
-                    task.status === "COMPLETED"
-                      ? "border-violet-200 bg-violet-50 text-violet-700"
-                      : "border-slate-200 bg-slate-50 text-slate-600",
-                  )}
-                >
-                  {task.agentName}: {task.status === "COMPLETED" ? "Submitted" : "Pending"}
-                </span>
-              ))}
-              {!isLoadingReviewers && !reviewerDecisions?.length && !agentReviewTasks.length && (
+              {!isLoadingReviewers && !reviewerDecisions?.length && (
                 <span className="text-xs text-slate-500">No human reviewers are assigned to this paper.</span>
               )}
             </div>
@@ -506,11 +451,11 @@ export default function PaperViewer({
               </div>
             )}
             </div>
-            {!paper.hasConflict && !isLoadingReviewers && !isAnalyzing && (reviewerDecisions?.length || !aiAnalysis) ? (
+            {!paper.hasConflict && !isLoadingReviewers && reviewerDecisions?.length ? (
               <p className="text-xs text-slate-500">
                 {hasPendingReview
-                  ? "Waiting for the remaining Human Reviewer submissions. AI suggestions are separate and do not count toward consensus."
-                  : "Human Reviewer submissions are complete. AI recommendations remain advisory and do not change paper status."}
+                  ? "Waiting for the remaining reviewer submissions."
+                  : "All reviewer submissions are complete."}
               </p>
             ) : null}
           </div>
@@ -557,8 +502,17 @@ export default function PaperViewer({
                     Checking assignments...
                   </div>
                 )}
-                <div className="flex flex-wrap items-center gap-2">
-                  {!(paper.hasConflict && isLeaderView) && (
+                <div
+                  className={cn(
+                    "flex flex-wrap items-center gap-2",
+                    paper.hasConflict && isLeaderView && "w-full justify-between",
+                  )}
+                >
+                  {paper.hasConflict && isLeaderView ? (
+                    <p className="min-w-[220px] flex-1 text-sm leading-5 text-text-secondary">
+                      Reviewer decisions differ. Review the submissions and record the final screening decision.
+                    </p>
+                  ) : (
                     <ReviewCommentField
                       value={reviewComment}
                       onChange={setReviewComment}
@@ -571,7 +525,12 @@ export default function PaperViewer({
                       }
                     />
                   )}
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div
+                    className={cn(
+                      "flex shrink-0 items-center gap-2",
+                      paper.hasConflict && isLeaderView && "ml-auto",
+                    )}
+                  >
                     {paper.hasConflict && isLeaderView ? (
                       <button
                         onClick={() =>
@@ -579,11 +538,11 @@ export default function PaperViewer({
                         }
                         disabled={isDisabled}
                         className={cn(
-                          "flex-1 inline-flex items-center justify-center gap-2 h-12 bg-amber-600 text-white font-black uppercase tracking-wider text-xs rounded-xl hover:bg-amber-700 active:scale-[0.98] transition-all shadow-none shadow-amber-900/10 animate-in zoom-in-95 duration-200",
-                          isDisabled && "opacity-50 cursor-not-allowed",
+                          "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-warning/30 bg-warning/10 px-4 py-2 text-sm font-semibold text-warning transition-colors hover:bg-warning/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30",
+                          isDisabled && "cursor-not-allowed opacity-50",
                         )}
                       >
-                        <FiAlertTriangle className="w-4 h-4" />
+                        <FiAlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
                         Resolve Conflict
                       </button>
                     ) : (

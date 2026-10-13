@@ -93,7 +93,7 @@ export default function FullTextRightPanel({
         onTabChange={setActiveTab}
         items={[
           { id: "criteria", label: "Criteria", icon: FiList },
-          { id: "ai", label: "AI Analysis", icon: FiCpu },
+          { id: "ai", label: "AI Agents", icon: FiCpu },
           { id: "checklist", label: "Checklist", icon: FiClipboard },
         ]}
       >

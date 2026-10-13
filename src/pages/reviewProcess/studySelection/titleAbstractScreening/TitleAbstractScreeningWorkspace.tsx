@@ -171,7 +171,7 @@ export default function TitleAbstractScreeningWorkspace() {
             onTabChange={setActiveTab}
             items={[
               { id: "criteria", label: "Criteria", icon: FiList },
-              { id: "ai", label: "AI Analysis", icon: FiCpu },
+              { id: "ai", label: "AI Agents", icon: FiCpu },
               { id: "checklist", label: "Checklist", icon: FiClipboard },
             ]}
           >
@@ -202,7 +202,7 @@ export default function TitleAbstractScreeningWorkspace() {
               </Tabs>
             </aside>}
           </div>
-          {mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={() => persistContextPanel(false)}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><div className="flex h-full flex-col"><button onClick={() => persistContextPanel(false)} className="self-end px-4 py-3 text-sm text-accent">Close context</button><Tabs className="min-h-0 flex-1 flex flex-col gap-0" contentClassName="flex-1 overflow-hidden" listClassName="mx-2 mt-2 grid grid-cols-3 gap-1 bg-bg-secondary p-1" itemClassName="justify-center px-2 py-2 text-[11px]" activeTabId={activeTab} onTabChange={setActiveTab} items={[{ id: "criteria", label: "Criteria", icon: FiList }, { id: "ai", label: "AI Analysis", icon: FiCpu }, { id: "checklist", label: "Checklist", icon: FiClipboard }]}>{activeTab === "criteria" && <div className="h-full overflow-y-auto p-4"><CriteriaTab projectId={projectId} screeningProcessId={screeningProcessId}/></div>}{activeTab === "ai" && <AiAnalysisPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} onRunAnalysis={ws.runAiAnalysis} isDisabled={isCompleted}/ >}{activeTab === "checklist" && <SelectionChecklist paper={ws.selectedPaper} processId={screeningProcessId!} onClose={() => setActiveTab("ai")}/>}</Tabs></div></aside></div>}
+          {mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={() => persistContextPanel(false)}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><div className="flex h-full flex-col"><button onClick={() => persistContextPanel(false)} className="self-end px-4 py-3 text-sm text-accent">Close context</button><Tabs className="min-h-0 flex-1 flex flex-col gap-0" contentClassName="flex-1 overflow-hidden" listClassName="mx-2 mt-2 grid grid-cols-3 gap-1 bg-bg-secondary p-1" itemClassName="justify-center px-2 py-2 text-[11px]" activeTabId={activeTab} onTabChange={setActiveTab} items={[{ id: "criteria", label: "Criteria", icon: FiList }, { id: "ai", label: "AI Agents", icon: FiCpu }, { id: "checklist", label: "Checklist", icon: FiClipboard }]}>{activeTab === "criteria" && <div className="h-full overflow-y-auto p-4"><CriteriaTab projectId={projectId} screeningProcessId={screeningProcessId}/></div>}{activeTab === "ai" && <AiAnalysisPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} onRunAnalysis={ws.runAiAnalysis} isDisabled={isCompleted}/ >}{activeTab === "checklist" && <SelectionChecklist paper={ws.selectedPaper} processId={screeningProcessId!} onClose={() => setActiveTab("ai")}/>}</Tabs></div></aside></div>}
         </div>
       </div>
     )
