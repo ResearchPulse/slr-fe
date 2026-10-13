@@ -1,6 +1,6 @@
 # SLR System spec (slr-be + slr-fe)
 
-> Đọc file này trước khi đọc code. Snapshot 2026-10-12: `slr-be@0327b66`, `slr-fe@9a0b7c7` (branch `dev`). Code lệch spec thì code đúng.
+> Đọc file này trước khi đọc code. Snapshot 2026-10-12: `slr-be@0327b66`, `slr-fe@9a0b7c7` (branch `dev`). Riêng Quality Assessment (§1, §4–§8, Phụ lục A/B §11/C/D/E) cập nhật 2026-10-13 trên `feature/implement-phase-3` (từ `slr-be@32c8cc3`, `slr-fe@afe7146`); phần Data Extraction chưa cập nhật theo PR #53/#67. Code lệch spec thì code đúng.
 > Phần 1–10: tổng quan (§10: 2 repo skill `/slr`). Phụ lục A–E: chi tiết endpoint, collection, field (Ctrl+F theo tên module/path).
 > Bản giống hệt ở root 2 repo. Sửa thì sửa cả 2.
 
@@ -12,10 +12,12 @@
 
 1. **Identification:** nguồn tìm kiếm (IEEE, Scopus, ACM, PubMed, Crossref, OpenAlex, Semantic Scholar), import (RIS, BibTeX, PDF, DOI, Crossref), dedup.
 2. **Study Selection:** reviewer chấm Title/Abstract → Full-text (Include/Exclude/Uncertain). Leader resolve conflict. AI (Gemini) và external AI agent hỗ trợ.
-3. **Quality Assessment:** chấm QA theo template.
-4. **Data Extraction:** form theo reviewer, consensus, grid.
+3. **Data Extraction:** form theo reviewer, consensus, grid.
+4. **Quality Assessment:** tiêu chí (strategy) → giao paper → reviewer chấm Yes/No/Unclear → leader resolve High/Low quality.
 5. **Synthesis:** theme, evidence, theo RQ.
 6. **PRISMA Report:** flow diagram, snapshot có version, xuất DOCX.
+
+**Thứ tự phase** (BE ép bằng `shared/utils/phase-order.ts`, khớp `derivePhaseStatus` ở FE): Study Selection hoàn thành → mở **Data Extraction** và **Quality Assessment** (chạy song song, không phụ thuộc nhau) → cả hai hoàn thành → mở **Synthesis**. Vi phạm trả 409 `PHASE_PREREQUISITE_NOT_MET`. Áp dụng khi *start* Extraction, QA, Synthesis. Mã số trong `reopen-phase`: 0 identification, 1 screening, 2 extraction, 3 quality, 4 synthesis. `feature_list.json` gộp "phase-03" = QA + Extraction Grid: đó là gói công việc khi viết lại BE, không phải số phase của workflow.
 
 Dùng chung: protocol (RQ, PICOC, inclusion/exclusion, AI setup), member/invitation, checklist PRISMA, audit log, snowballing, external AI agent (token `slrp_`).
 
@@ -56,7 +58,7 @@ Dev auth: `DEV_AUTH_ENABLED=true` + không production → nhận token `dev-<uid
 - **Global:** `ADMIN` | USER. Từ claim `roles`/`globalRole`, fallback `users/{uid}.globalRole`. Global ADMIN = OWNER mọi project.
 - **Project BE (string):** `OWNER` (legacy `ADMIN` → OWNER), `LECTURER`, `REVIEWER` tại `projects/{id}/members/{uid}.role`.
   - `requireProjectRole(X)`: OWNER luôn qua; `MEMBER` = member bất kỳ; còn lại phải **khớp đúng**. LECTURER ≠ REVIEWER, không phân cấp.
-  - LECTURER: import/tạo paper, search, synthesis, extraction canonical. REVIEWER: screening decision, QA scoring. OWNER: protocol, QA template, resolve, member.
+  - LECTURER: import/tạo paper, search, synthesis, extraction canonical. REVIEWER: screening decision; QA scoring (chỉ paper được giao). OWNER: protocol, QA criteria/giao paper/resolve/start/complete, member.
 - **Project FE (số):** `1` Owner/Leader, `2` Lecturer/Member, `3` Reviewer (từ `GET /projects/:id/my-membership`). Role guide ghi Reviewer = 2, sai; code dùng **3**.
 
 ## 5. Phase ↔ BE ↔ FE
@@ -67,7 +69,7 @@ Dev auth: `DEV_AUTH_ENABLED=true` + không production → nhận token `dev-<uid
 | Identification | `/api/papers/import/*`, `/api/works`, `/api/projects/:id/{papers,sources,filter-settings,duplicate-pairs}`, `/api/search-sources*`, `/api/identification-processes/:id/{start,complete,reopen}` | `/api/projects/:id/deduplication/run`, `/search/semantic-scholar` | `IdentificationPhaseWorkspace`, `components/paperPool/*` |
 | Review process | `/api/review-processes/:id/*`, `/api/projects/:id/review-processes` | | `ReviewProcessWorkspace`, `workflow/*` |
 | Study selection | `/api/study-selection/:processId/*` (`sp_`/`rp_` + projectId), `/api/papers/assign`, `/api/paper-fulltext/*` | `/api/projects/:id/screening/:paperId/*` | `ScreeningPhaseRouter`, `TitleAbstractScreeningWorkspace`, `FullTextScreeningWorkspace`, `ManageStudySelectionPage` |
-| Quality | `/api/quality-assessment/:processId/*` (compat, **chỉ đọc + start/complete**) | `/api/projects/:id/quality/*` | `QualityAssessmentWorkspace` |
+| Quality | `/api/quality-assessment/*` (module `quality-assessment`, process id `qa_{projectId}`) | `/api/projects/:id/quality/*` | `QualityAssessmentWorkspace` |
 | Extraction | `/api/data-extraction*`, `/api/data-extraction-processes/:id/*` (**nhiều stub**) | `/api/projects/:id/extraction/*` | `DataExtractionPhaseWorkspace`, `ExtractionGridWorkspace` |
 | Synthesis | `/api/synthesis-execution/*`, `/api/synthesis/*` (compat) | `/api/projects/:id/synthesis/*` | `SynthesisPhaseWorkspace` |
 | PRISMA | `/api/projects/:id/prisma/*` | | `PrismaReportWorkspace` |
@@ -76,14 +78,21 @@ Phase state: object trên `projects/{id}`: `identification`, `studySelection`, `
 
 **Screening** (`modules/screening/screening.service.ts`): 1 vote/reviewer/stage (`screeningDecisions/{uid}_{stage}`). **AI vote (`aiAnalysis/{0|1}`) tính là 1 reviewer** (e4e84f0). ≥2 vote: toàn INCLUDE → TA `SCREENING_FULL_TEXT`, FT `INCLUDED`; toàn EXCLUDE → `EXCLUDED`; lẫn/UNCERTAIN → `isConflict=true`. OWNER resolve.
 
+**Quality Assessment** (`modules/quality-assessment`, chi tiết Phụ lục B §11):
+- **Phase:** NotStarted → InProgress → Completed (`projects/{id}.qualityAssessment`). *Start* cần Study Selection hoàn thành và có tiêu chí (chưa có thì giữ nguyên trạng thái và trả `isHaveCriteria: false` để FE mở modal tiêu chí). *Complete* cần mọi paper INCLUDED đã có verdict (409 `QA_UNRESOLVED_PAPERS`); `?force=true` bỏ qua, FE hỏi confirm rồi gọi lại. Completed là chỉ đọc (giao paper, sửa tiêu chí, chấm, resolve đều 409 `QA_COMPLETED`); mở lại bằng `POST /review-processes/:id/reopen-phase/quality` (OWNER). Chấm và resolve cần phase đang InProgress (409 `QA_NOT_STARTED`).
+- **Dữ liệu:** 1 project = 1 strategy `qualityTemplates/{projectId}__strategy` (`checklists[] → criteria[{id, question, weight}]`); giao việc `qualityAssignments/{paperId}__{uid}`; điểm `papers/{id}/qualityAssessments/{uid}`; verdict `papers/{id}.qualityResolution`. Paper thuộc QA = trong `reviewProcessPapers`, `INCLUDED`, không `isDuplicate`.
+- **Giá trị trả lời (hợp đồng FE, kế thừa .NET):** `value` `0 = Yes`, `1 = No`, `2 = Unclear`. BE quy ra điểm Yes 1 / Unclear 0.5 / No 0 (`quality-decision.ts`); `totalScore` = Σ điểm × `weight` do server tính, `maxScore` = Σ `weight`. `finalDecision`: `1` High, `0` Low. FE luôn gửi `finalScore: 0`; server tự tính (trung bình `totalScore` các reviewer).
+- **Luồng:** OWNER chọn một mẫu từ thư viện mẫu tiêu chí (`qualityCriteriaTemplates`) hoặc tự viết câu hỏi (không còn bộ câu hỏi cứng trong code), rồi lưu tiêu chí (`strategies/upsert` → `checklists/bulk` → `criteria/bulk`; mỗi lần Apply thay toàn bộ tiêu chí của checklist, khoá khi đã có người chấm: 409 `QA_CRITERIA_LOCKED`) → giao paper (cộng dồn, idempotent; cảnh báo nếu <2 reviewer nhưng không chặn; không giao lại paper đã resolve) → reviewer chấm (chỉ paper được giao, chấm mù; OWNER không chấm) → OWNER resolve tay hoặc `auto-resolve` (ngưỡng `score` hoặc `percentage` của điểm tối đa; chỉ paper mà mọi reviewer được giao đã chấm đủ tiêu chí). Paper đã resolve thì reviewer không sửa điểm được.
+- **Audit:** `recordQaAudit` (`quality-audit.ts`) ghi `auditLogs` (+ `projects/{id}/auditLogs`) sau mỗi hành động thành công: start/complete (kèm `forced`), cập nhật tiêu chí, giao reviewer, nộp/sửa điểm, resolve, auto-resolve. Lỗi ghi log không làm hỏng request.
+
 **Paper status:** `IMPORTED → SCREENING_TITLE_ABSTRACT → SCREENING_FULL_TEXT → INCLUDED | EXCLUDED`, + `DUPLICATE`. Bibliographic data **không ở Firestore**, ở Markdown trên Cloudinary (`metadataFile`, `slr-paper-metadata-v1`). Mỗi lần đọc phải `hydratePapers()` → filter/phân trang trong memory.
 
 **PDF:** upload Cloudinary → `pdfProcessingJobs/{projectId}__{paperId}` → worker in-process gọi GROBID → parse TEI → ghi `pdf.fullText`, `pdf.processingStatus` (PENDING/PROCESSING/COMPLETED/FAILED). `fulltext-markdown`: 202 đang xử lý, 409 không có.
 
 ## 6. Firestore
 
-- Root: `users/{uid}` (+ `notifications`), `projects/{id}`, `invitations`, `agents/{id}` (+ `projectAccess`, `tasks`), `pdfProcessingJobs`, `masterSearchSources`, `exclusionReasonLibraries`, `checklistTemplates`, `reviewChecklists`, `auditLogs`, `candidate_papers`. Legacy governance: `reviewNeeds`, `commissioningDocuments`, `reviewObjectives`, `researchQuestions`, `picocElements`.
-- `projects/{id}/…`: `members`, `protocol/main`, `aiSetup/details`, `papers` (+ `screeningDecisions`, `aiAnalysis`, `qualityAssessments`, `extractionRecords`, `candidates`), `reviewProcessPapers`, `duplicatePairs`, `searchSources`, `filterSettings`, `importBatches`, `qualityTemplates`, `extractionTemplates`, `synthesisThemes`, `synthesisStrategies`, `prismaReports`, `studySelectionExclusionReasons`, `studySelectionChecklistTemplates`, `timeline`, `reviewNeeds`, `auditLogs`.
+- Root: `users/{uid}` (+ `notifications`), `projects/{id}`, `invitations`, `agents/{id}` (+ `projectAccess`, `tasks`), `pdfProcessingJobs`, `masterSearchSources`, `exclusionReasonLibraries`, `checklistTemplates`, `reviewChecklists`, `auditLogs`, `candidate_papers`, `qualityCriteriaTemplates`. Legacy governance: `reviewNeeds`, `commissioningDocuments`, `reviewObjectives`, `researchQuestions`, `picocElements`.
+- `projects/{id}/…`: `members`, `protocol/main`, `aiSetup/details`, `papers` (+ `screeningDecisions`, `aiAnalysis`, `qualityAssessments`, `extractionRecords`, `candidates`), `reviewProcessPapers`, `duplicatePairs`, `searchSources`, `filterSettings`, `importBatches`, `qualityTemplates`, `qualityAssignments`, `extractionTemplates`, `synthesisThemes`, `synthesisStrategies`, `prismaReports`, `studySelectionExclusionReasons`, `studySelectionChecklistTemplates`, `timeline`, `reviewNeeds`, `auditLogs`.
 - Rules: client **không ghi** subcollection project; mọi ghi qua BE (Admin SDK).
 - **Trùng nguồn:** RQ ở 3 nơi (`researchQuestions` root, `protocol/main.researchQuestions`, `aiSetup/details`). PICO 2 dạng (`aiSetup.picoc.comparator` string, `protocol.pico.comparison` mảng). Extraction template 2 dạng (`fields` canonical, `sections` legacy).
 
@@ -96,14 +105,13 @@ Phase state: object trên `projects/{id}`: `identification`, `studySelection`, `
 - **SignalR đã bỏ:** BE không hub. FE còn client no-op, proxy `/hubs`, dependency.
 - **FE gọi, BE không có** (Phụ lục E §10):
   - Identification data layer: `search-executions`, `import-batches`, `GET identification-processes/:id`, `ready-papers`, `snapshot`, `statistics`, `unique-papers`.
-  - QA writes: assignments, decisions, resolutions, AI decide, strategies upsert, bulk.
   - Study-selection: bulk-resolve, bulk-dataset, live-review-import, final-resolution-progress, included-full-text-papers, assignment-table, toggle/delete exclusion reason, checklist-submissions.
   - Selection-criteria AI generate/save.
   - Users: `progress-overview`, `change-password`.
   - Review-processes: `PUT`, `DELETE`, `cancel`, `POST /:id/study-selection`.
   - Khác: `/ai/projects/:id/analyze-picoc`, `mark-as-duplicate`, `PUT question-types`, synthesis `themes/:id/evidence`, `evidence/:id`, `findings/:id`.
   - Lệch method: notifications mark-read (FE `PUT`, BE `PATCH`); `read-all` không có.
-- **BE stub (dữ liệu giả/rỗng):** phần lớn data-extraction-processes (dashboard counts, workload, export, grid, consensus, ask-ai-field, auto-extract), QA `assignments/my`, synthesis `extracted-data`/findings, checklist `auto-fill`, `extract-references` (3 reference cứng), discovery (`references`/`citations`/`graph`/`suggestions`/`top-cited`), `selection-criteria`, audit admin (4 log giả khi rỗng).
+- **BE stub (dữ liệu giả/rỗng):** phần lớn data-extraction-processes (dashboard counts, workload, export, grid, consensus, ask-ai-field, auto-extract), synthesis `extracted-data`/findings, checklist `auto-fill`, `extract-references` (3 reference cứng), discovery (`references`/`citations`/`graph`/`suggestions`/`top-cited`), `selection-criteria`, audit admin (4 log giả khi rỗng).
 
 ## 8. Vấn đề đã biết
 
@@ -113,7 +121,7 @@ Phase state: object trên `projects/{id}`: `identification`, `studySelection`, `
 3. `/api/users/*`: `PATCH :id/status`, `PUT :id/profile`, list, export CSV không check admin/chính chủ.
 4. `/api/study-selection/*`: chỉ check membership, không role → REVIEWER resolve, start/complete được.
 5. Ẩn vote (blind review) là dead code: `req.projectRole` không được set → REVIEWER thấy mọi vote.
-6. Candidate-papers, `extract-references`, legacy data-extraction, compat QA/synthesis start/complete, exclusion-reason CRUD, checklist instance: không check membership/role. `DELETE /api/data-extraction/templates/:id` xoá theo collectionGroup (xuyên project).
+6. Candidate-papers, `extract-references`, legacy data-extraction, compat synthesis start/complete, exclusion-reason CRUD, checklist instance: không check membership/role. `DELETE /api/data-extraction/templates/:id` xoá theo collectionGroup (xuyên project).
 7. GET core-governance (needs, documents, RQ, PICOC, timeline), `GET /api/master-sources/available`: **không auth**.
 8. `helmet` import nhưng không `app.use`. `ENABLE_COMPATIBILITY_ROUTES` vô tác dụng (compat luôn mount). Gemini key trong query string → có thể lọt log.
 9. `slr-fe/.env.production` **bị git track** dù có trong `.gitignore` (public client key).
@@ -122,8 +130,8 @@ Phase state: object trên `projects/{id}`: `identification`, `studySelection`, `
 - PRISMA `reports/cleanup` giữ report **cũ nhất**, xoá các bản mới hơn. `GET reports/latest` tự tạo baseline nếu chưa có.
 - AI evaluate (study-selection) đọc criteria/RQ từ **root project doc**, code hiện ghi vào `protocol/main` → prompt có thể rỗng. Fallback: keyword cứng chủ đề SE/LLM.
 - `deleteReviewNeed` chỉ xoá bản root, bản subcollection còn → need hiện lại.
-- `AuditService.log`, `NotificationsService.send` không ai gọi → chỉ có dữ liệu seed.
-- `qualityResolution.finalDecision` không có writer → QA high/low luôn 0. `totalScore` do client gửi.
+- `NotificationsService.send` không ai gọi. `AuditService.log` chỉ QA gọi (qua `recordQaAudit`); các module khác chưa ghi audit. Trang audit admin hiện log mẫu khi `auditLogs` rỗng, nên khi đã có log thật từ QA thì log mẫu biến mất.
+- QA: seed `proj_ai_se_2026` có `studySelection` InProgress nhưng QA InProgress (sai thứ tự phase, chỉ là dữ liệu mẫu). Panel "My Assessment" vẫn hiện cho leader nhưng leader không được giao paper nên submit trả 403 `QA_NOT_ASSIGNED`. `reopen-phase` không kiểm tra phase sau (mở lại Study Selection khi QA đang chạy vẫn được). Chưa có "bỏ resolve". `finalScore` thủ công tính trung bình cả reviewer mới chấm một phần.
 - Import DOI/Crossref không dedupe; `cross-ref` chỉ lấy kết quả đầu. Dedup "TITLE_FUZZY" thực ra là khớp chính xác.
 - Hiệu năng: full scan (`collectionGroup('papers')`, theme scan mọi project, audit, users, master-source usage). PDF worker in-memory → giả định 1 instance.
 - Firebase project id lệch giữa `.firebaserc`, env default, CI, deploy.
@@ -314,7 +322,8 @@ Projects (top-level and nested):
 - `/api/projects/:projectId` -> duplicatePairsRouter (deduplication)
 - `/api/projects/:projectId/deduplication` -> `modules/deduplication`
 - `/api/projects/:projectId/screening` -> `modules/screening`
-- `/api/projects/:projectId/quality` -> `modules/quality-assessment`
+- `/api/quality-assessment` -> `modules/quality-assessment/quality-process.routes.ts` (mounted before `phaseCompatibilityRoutes`, so it wins over compat)
+- `/api/projects/:projectId/quality` -> `modules/quality-assessment` (project-scoped, `quality.routes.ts`)
 - `/api/projects/:projectId/extraction` -> `modules/data-extraction`
 - `/api/projects/:projectId/synthesis` -> `modules/synthesis`
 - `/api/projects/:projectId/prisma` -> `modules/prisma`
@@ -952,20 +961,13 @@ Review checklists (`requireAuth`):
 
 **Purpose:** Frontend-compatibility shims. The frontend still uses "process" ids (e.g. `qa_<projectId>`, `rp_<projectId>`, `sy_...`) and phase-centric endpoints. These handlers map them onto project-scoped Firestore docs. The file is 636 lines, all inline, mounted at the root of `/api`.
 
-**Files:** `phase-compatibility.routes.ts` (636). Exports `stripPhaseProcessPrefix(processId)` which removes the `qa_|de_|sy_|rp_|sp_` prefix, used by data-extraction too.
+**Files:** `phase-compatibility.routes.ts` (299). Re-exports `stripPhaseProcessPrefix(processId)` (defined in `shared/utils/process-id.ts`), which removes the `qa_|de_|sy_|rp_|sp_` prefix. Quality assessment routes are no longer here: they moved to `modules/quality-assessment` (Appendix B section 11).
 
-**Mount:** `router.use(phaseCompatibilityRoutes)` at `/api` root. Paths below are full. `requireAuth` is applied to prefixes `/quality-assessment`, `/identification-processes`, `/synthesis-execution`, `/synthesis`. Membership is checked only in `getAuthorizedProject` (used by QA leader, QA strategies, QA excel). That helper passes for global ADMIN, `project.ownerId`, or any `projects/{id}/members/{uid}`. Role is not checked.
+**Mount:** `router.use(phaseCompatibilityRoutes)` at `/api` root. Paths below are full. `requireAuth` is applied to prefixes `/identification-processes`, `/synthesis-execution`, `/synthesis`. No membership or role check remains in this file.
 
 **Endpoints:**
 
-Quality assessment:
-- `GET /api/quality-assessment/:processId` : status from `projects/{id}.qualityAssessment` (`status` 0 NotStarted / 1 InProgress / 2 Completed, `statusText`). Returns `{id, reviewProcessId: 'rp_'+id, status, statusText, isHaveCriteria: true}`.
-- `POST /api/quality-assessment/:processId/start` : sets status 1 (merge).
-- `POST /api/quality-assessment/:processId/complete` : sets status 2.
-- `GET /api/quality-assessment/:processId/leader` : per-paper QA rollup. Query `pageNumber`, `pageSize` (max 100, default 20), `search` (title substring). Includes only papers in `reviewProcessPapers` with `status == 'INCLUDED'` and not `isDuplicate`. For each, reads `projects/{id}/papers/{paperId}/qualityAssessments`. Returns `{papers:{items,pageNumber,pageSize,totalCount,totalPages}, reviewerProgresses: [], completionPercentage, totalPapers, completedPapers, inProgressPapers, notStartedPapers}`. Per-paper `completionPercentage` is 100 if `qualityResolution.finalDecision` is 0 or 1 (or '0'/'1'), 50 if any reviewer decision exists, else 0.
-- `GET /api/quality-assessment/:processId/assignments/my` : STUB. Returns empty pagination and zeros.
-- `GET /api/quality-assessment/:processId/strategies` : reads `projects/{id}/qualityTemplates`. Each template becomes a strategy `{qaStrategyId, description, checklists:[{checklistId: doc.id+'_checklist', name, criteria[{criterionId, question}]}]}`.
-- `GET /api/quality-assessment/:processId/export/excel` : despite the name, returns CSV (`text/csv`, UTF-8 BOM, CRLF, all cells quoted). Columns: Paper ID, Paper Title, Reviewer ID, Total Score, Scores (JSON), Created At, Updated At. Iterates all papers sequentially and hydrates each.
+Quality assessment: moved to `modules/quality-assessment` (see Appendix B section 11).
 
 Identification (process-phase lifecycle only):
 - `POST /api/identification-processes/:processId/start` : `projects/{id}.identification = {status:1, statusText:'InProgress'}`.
@@ -975,7 +977,7 @@ Identification (process-phase lifecycle only):
 Synthesis:
 - `GET /api/synthesis/process/:processId/synthesis-strategies` : reads `projects/{id}/synthesisStrategies`. Defaults `synthesisType` to `'NarrativeThematic'`.
 - `POST /api/synthesis/strategies/upsert` : body `{synthesisStrategyId?, synthesisProcessId (required), synthesisType, description, targetResearchQuestionIds[], dataGroupingPlan?, sensitivityAnalysisPlan?}`. Upserts `projects/{id}/synthesisStrategies/{strategyId}` with merge. Returns 400 if `synthesisProcessId` is missing. No Zod validation.
-- `POST /api/synthesis-execution/:processId/start` : `projects/{id}.synthesis = {status:1, statusText:'InProgress', startedAt, updatedAt}`.
+- `POST /api/synthesis-execution/:processId/start` : requires Data Extraction and Quality Assessment completed (`assertPhasePrerequisites`, 409 `PHASE_PREREQUISITE_NOT_MET`), then `projects/{id}.synthesis = {status:1, statusText:'InProgress', startedAt, updatedAt}`.
 - `POST /api/synthesis-execution/:processId/complete` : status 2, `completedAt`.
 - `GET /api/synthesis-execution/:processId/workspace` : returns `{process:{id, reviewProcessId, status, startedAt, completedAt}, totalExtractedPapers: 0 (hard-coded), themes: projects/{id}/synthesisThemes docs, findings: []}`.
 - `GET /api/synthesis-execution/:processId/extracted-data` : STUB, returns `[]`.
@@ -984,22 +986,14 @@ Synthesis:
 - `DELETE /api/synthesis-execution/themes/:themeId` : same full scan and delete.
 
 **Firestore:**
-- `projects/{id}` (`qualityAssessment`, `identification`, `synthesis` status objects, `title`/`name`, `ownerId`).
-- `projects/{id}/papers/{paperId}` (read: id, title, status, isDuplicate, authors, year, pdf, qualityResolution.finalDecision).
-- `projects/{id}/papers/{paperId}/qualityAssessments/{docId}` (reviewerId, reviewerName, scores map `{criterionId:{score, comment}}`, totalScore, createdAt, updatedAt).
-- `projects/{id}/reviewProcessPapers/{docId}` (paperId).
-- `projects/{id}/qualityTemplates/{id}` (name, criteria[{id, question}]).
+- `projects/{id}` (`identification`, `synthesis`, `studySelection`, `dataExtraction`, `qualityAssessment` status objects, `title`/`name`, `ownerId`).
 - `projects/{id}/synthesisStrategies/{id}`, `projects/{id}/synthesisThemes/{id}`.
 - `projects/{id}/members/{uid}` (read for membership).
 
 **Business rules / gaps:**
 - `synthesis-strategies/upsert` sets `createdAt = now` on every upsert, because merge overwrites it. Bug.
-- `getAuthorizedProject` ignores member role, so a REVIEWER can read the QA leader view and export.
-- Start/complete/reopen for identification, synthesis, and QA have no role or membership check. Only `requireAuth`.
-- `extracted-data`, `assignments/my`, and `findings` are stubs. `totalExtractedPapers` is always 0.
-- `reviewerProgresses` is always `[]`.
-- Export is named `excel` but emits CSV.
-- Many fields in the QA leader output are always null (publicationType, volume, issue, keywords, conference fields, selectionStatus is hard-coded to 1).
+- Start/complete/reopen for identification and synthesis have no role or membership check. Only `requireAuth`.
+- `extracted-data` and `findings` are stubs. `totalExtractedPapers` is always 0.
 - `stripPhaseProcessPrefix` is also used by data-extraction, which makes the prefix list a global contract.
 
 ---
@@ -1380,11 +1374,11 @@ Public (NO `requireAuth` on this route):
 
 #### Cross-module observations (for the context notes)
 
-- **Auth gaps (no role or membership check, `requireAuth` only):** audit admin (`/api/auditlog/admin`, the most serious: all audit logs visible to any user), invitations accept/reject/cancel/list-by-project, exclusion-reason create/toggle/delete, checklist instance read/update, data-extraction legacy routes, compat QA/identification/synthesis start/complete/reopen, and the cross-project template/theme scans.
+- **Auth gaps (no role or membership check, `requireAuth` only):** audit admin (`/api/auditlog/admin`, the most serious: all audit logs visible to any user), invitations accept/reject/cancel/list-by-project, exclusion-reason create/toggle/delete, checklist instance read/update, data-extraction legacy routes, compat identification/synthesis start/complete/reopen, and the cross-project template/theme scans.
 - **No auth at all:** `GET /api/master-sources/available`, `POST /api/auth/login|register|google/login|refresh|dev/quick-login`, and the core-governance GET routes (review needs, commissioning docs, objectives, timeline, research questions, PICOC, question types).
 - **Dev-auth fallback:** when `DEV_AUTH_ENABLED` and not production, a request with no Authorization header is auto-authenticated as the default dev account (`requireAuth`). Confirm `DEV_AUTH_ENABLED` is off in deployed environments.
 - **Role-matching quirk:** `requireProjectRole(R)` only lets OWNER through in addition to exact-role members. LECTURER-gated routes exclude REVIEWER members. REVIEWER-gated (screen-assist) excludes LECTURER members.
-- **Stubs returning 200 with fake or empty data:** compat `assignments/my`, `extracted-data`, `workload-summary`, `export-preview`, `export`, `audit-logs`, `editable-grid`, `consensus/submit`, `reopen`, `comments`, `ask-ai-field` (returns a canned string), `auto-extract`, checklist `auto-fill` (returns a fake taskId), and admin audit fallback seed data.
+- **Stubs returning 200 with fake or empty data:** compat `extracted-data`, `workload-summary`, `export-preview`, `export`, `audit-logs`, `editable-grid`, `consensus/submit`, `reopen`, `comments`, `ask-ai-field` (returns a canned string), `auto-extract`, checklist `auto-fill` (returns a fake taskId), and admin audit fallback seed data.
 - **Two RQ stores and two template shapes:** root `researchQuestions` (core-governance) vs `protocol/main.researchQuestions` (ai-setup); `extractionTemplates` with `fields` (canonical) vs `sections` (legacy). Expect drift.
 - **Enum-like numerics in use:** project-phase status (0 NotStarted, 1 InProgress, 2 Completed), dedup reviewStatus (0 Pending, 1 Confirmed, 2 Rejected), dedup method (0 DOI_MATCH, 1 TITLE_FUZZY), checklist template type (0 Full Review, 1 Abstract), invitation status (2 accepted, 3 rejected, 4 cancelled), data-extraction fieldType (0/1, meaning inferred), fullTextRetrievalStatus (1 Retrieved, 2 Not retrieved).
 - **Firestore hot spots:** collectionGroup scans in master-sources usage, data-extraction template by id, and the synthesis theme scan across all projects. Full-collection reads in audit and exclusion reasons.
@@ -1393,7 +1387,7 @@ Public (NO `requireAuth` on this route):
 #### Notable TODOs / incomplete parts (collected)
 
 - `checklist-templates`: auto-fill is a stub (no queue, no file read). PDF coordinates and PDF URL fields are always null. Template seed is a shortened PRISMA (5 items, not 27).
-- `compatibility`: assignments/my, extracted-data, findings stub, reviewerProgresses always `[]`, totalExtractedPapers hard 0, export labelled excel but CSV.
+- `compatibility`: extracted-data, findings stub, totalExtractedPapers hard 0 (the quality-assessment routes moved out to their own module).
 - `data-extraction`: dashboard counts hard-coded 0, status 'todo', workload/export/grid/audit-logs stubs, ask-ai-field fake, auto-extract `[]`, consensus submit and reopen no-ops, comments no-op.
 - `ai`: only gemini provider implemented, despite env enum including openai/groq/openrouter. No timeout or retry. No response validation.
 - `ai-setup`: activeFeatures lists DataExtraction and SummarySynthesis although they are not wired to AI.
@@ -1768,25 +1762,59 @@ Rules / gaps:
 
 #### 11. quality-assessment
 
-Purpose: quality-assessment templates per project and reviewer quality scores per paper.
+Purpose: the Quality Assessment phase: criteria (strategy), assigning included papers to reviewers, reviewer answers, leader verdicts, phase lifecycle, audit.
 
-Files (5): `quality.controller.ts` (53), `quality.routes.ts` (22), `quality.schemas.ts` (36), `quality.service.ts` (84), `quality.types.ts` (27).
+Files (`modules/quality-assessment`, plus `shared/utils/phase-order.ts`, `shared/utils/process-id.ts`):
+- Routing/controllers: `quality-process.routes.ts` (78, `/api/quality-assessment`), `quality-process.controller.ts` (286), `quality.routes.ts` (22, `/api/projects/:projectId/quality`), `quality.controller.ts` (61).
+- Services: `quality-strategy.service.ts` (criteria), `quality-assignment.service.ts`, `quality-dashboard.service.ts` (leader and reviewer views), `quality.service.ts` (answers), `quality-resolution.service.ts`, `quality-phase.service.ts` (start/complete).
+- Criteria template library: `quality-criteria-template.ts` (pure helpers), `quality-criteria-template.service.ts`, `quality-criteria-template.controller.ts`; seed script `src/scripts/seed-qa-criteria-templates.ts`.
+- Pure helpers (unit tested, no I/O): `quality-strategy.ts` (scoped ids, normalization), `quality-decision.ts` (answer enum, scoring), `quality-dashboard.ts` (progress, DTOs), `quality-resolution.ts` (final score, thresholds), `quality-eligibility.ts`, `quality-project.ts` (status checks), `quality-audit.ts`, `quality.schemas.ts`, `quality.types.ts`.
+- Tests: `quality-strategy|dashboard|decision|resolution|phase.test.ts`, `phase-order.test.ts` (no emulator needed).
 
-Endpoints (mount `/api/projects/:projectId/quality`, `requireAuth`):
-- `GET /api/projects/:projectId/quality/templates` - MEMBER.
-- `POST /api/projects/:projectId/quality/templates` - OWNER. body `name` (min 1), `criteria[]` (min 1) of `{ id, question (min 1), description?, maxScore (default 1), weight (default 1) }`. 201.
-- `GET /api/projects/:projectId/quality/papers/:paperId` - MEMBER. All reviewer assessments for paper.
-- `POST /api/projects/:projectId/quality/papers/:paperId` - REVIEWER (passes for REVIEWER and OWNER; LECTURER is refused). body `templateId?`, `scores` (record of `{ score: number, comment? }`), `totalScore: number`. Doc id = caller uid (one assessment per reviewer per paper, overwritten by merge). 201.
+Process id: the FE uses `qa_{projectId}` (any `qa_|de_|sy_|rp_|sp_` prefix is stripped). Endpoints that carry no project id use project-scoped ids so the role check needs no scan: strategy `{projectId}__strategy`, checklist `{projectId}__strategy__{x}`, decision `{projectId}__{paperId}__{reviewerId}`, resolution `{projectId}__{paperId}`. A project id containing `__` is not supported.
+
+Endpoints (mount `/api/quality-assessment`, `requireAuth`; role via `requireProjectRole`, global ADMIN = OWNER; the project is resolved from the process id, body or scoped id first):
+- `GET /criteria-templates` - any signed-in user (not tied to a project). The system templates plus the caller's own, each `{id, name, description, source, scope, canEdit, criteria[{question, description, weight}]}`.
+- `POST /criteria-templates` - any signed-in user. body `{name, description?, source?, scope? ('USER' default | 'SYSTEM'), criteria[1..50]}`. `SYSTEM` needs a global ADMIN (403 `TEMPLATE_SYSTEM_FORBIDDEN`); at most 50 personal templates (409 `TEMPLATE_LIMIT`). 201.
+- `PUT /criteria-templates/:id`, `DELETE /criteria-templates/:id` - the owner of a personal template, or a global ADMIN (403 `TEMPLATE_FORBIDDEN`). The scope cannot be changed. These literal paths are registered before `/:processId`.
+- `POST /strategies/upsert` - OWNER. body `{qaStrategyId?, qualityAssessmentProcessId, description, checklists?(ignored)}`. One strategy per project: a null id reuses it. Returns the FE `QualityAssessmentStrategy`.
+- `POST /checklists/bulk` - OWNER. body array `{checklistId?, qaStrategyId, name}`. Re-applying the same name reuses the checklist. Returns the checklists.
+- `POST /criteria/bulk` - OWNER. body array `{criterionId?, checklistId, question, description?, weight (>0, <=10, default 1)}`. **Replaces** the criteria of each named checklist; ids are generated by the server. Returns the criteria.
+  - The three calls above fail with 409 `QA_CRITERIA_LOCKED` once any reviewer has scored, and `QA_COMPLETED` after the phase is completed.
+- `POST /assignments` - OWNER. body `{qualityAssessmentProcessId, userIds[1..20], paperIds[1..200]}`. Papers must be eligible (included, non-duplicate, in the review process) and unresolved; users must be project REVIEWERs (400 `INVALID_QA_PAPERS` / `INVALID_QA_REVIEWERS`, 409 `QA_PAPER_RESOLVED`). Additive and idempotent. Returns `{assigned, alreadyAssigned, papersBelowMinimum}`; fewer than 2 reviewers per paper only warns in `message`.
+- `POST /decisions` - any member, but the caller must be assigned to the paper (403 `QA_NOT_ASSIGNED`). body `{paperId, qualityAssessmentProcessId, notes?, decisionItems[{qualityCriterionId, value 0|1|2, comment?, pdfHighlightCoordinates?}]}`. First submission only (409 `QA_DECISION_EXISTS` afterwards). Needs the phase InProgress, criteria set, paper not resolved.
+- `PUT /decisions/:id` - own decision only (403 `QA_NOT_YOUR_DECISION`). Scores not in the request are kept; totals are recomputed.
+- `POST /resolutions`, `PUT /resolutions/:id` - OWNER. body `{finalDecision 0|1, resolutionNotes?, finalScore?(ignored)}`. Needs at least one assessment (409 `QA_NO_ASSESSMENTS`). POST on a resolved paper is 409 `QA_PAPER_RESOLVED`; PUT without a resolution is 404.
+- `POST /auto-resolve` - OWNER. body `{qualityAssessmentProcessId, score | percentage}` (exactly one). Resolves every unresolved paper whose assigned reviewers all answered every criterion: High when the mean `totalScore` reaches the pass mark (`score`, or `percentage` of the maximum), else Low. Returns `{resolved, skipped, highQuality, lowQuality, requiredScore, maxScore}`.
+- `GET /:processId` - MEMBER. `{id, reviewProcessId, status, statusText, isHaveCriteria}`.
+- `POST /:processId/start` - OWNER. Needs Study Selection completed (409 `PHASE_PREREQUISITE_NOT_MET`). Without criteria the phase does not start and `isHaveCriteria` is false. A completed phase is 409 `QA_COMPLETED`.
+- `POST /:processId/complete` - OWNER. Needs InProgress, criteria, and every included paper resolved (409 `QA_UNRESOLVED_PAPERS`) unless `?force=true`. Idempotent when already completed.
+- `GET /:processId/strategies` - MEMBER.
+- `GET /:processId/leader` - OWNER. `{papers{items,...}, reviewerProgresses[], completionPercentage, totalPapers, completedPapers, inProgressPapers, notStartedPapers}`. Lists every eligible paper with its assigned `reviewers`, all `decisions`, `resolution`, `completionPercentage`. Query `pageNumber`, `pageSize` (max 100), `search` (title); header counts ignore `search`.
+- `GET /:processId/assignments/my` - MEMBER. The caller's assigned papers with only the caller's own decision (blind assessment) and the `resolution`.
+- `GET /:processId/export/csv` - OWNER. CSV (UTF-8 BOM, CRLF, all cells quoted), one row per reviewer assessment: Paper ID, Paper Title, Reviewer ID, Total Score, Scores (JSON, points), Created At, Updated At. Hydrates every paper sequentially.
+
+Endpoints (mount `/api/projects/:projectId/quality`, same services, not used by the FE):
+- `GET /templates` - MEMBER. The strategies.
+- `POST /templates` - OWNER. body `{name, description?, criteria[{question, description?, weight}]}`: one default checklist in one call. 201.
+- `GET /papers/:paperId` - MEMBER. Owners see every reviewer's decision, reviewers only their own.
+- `POST /papers/:paperId` - REVIEWER role (OWNER passes the role check but is refused as not assigned). body `{notes?, decisionItems[]}`; creates or updates the caller's decision. 201.
 
 Firestore:
-- `projects/{id}/qualityTemplates/{templateId}` `{ id, projectId, name, criteria[], createdAt }`.
-- `projects/{id}/papers/{paperId}/qualityAssessments/{reviewerId}` `{ id, projectId, paperId, reviewerId, templateId?, scores, totalScore, createdAt, updatedAt }`.
-- Read-only: `projects/{id}/papers/{paperId}.qualityResolution.finalDecision` (1 = high quality, other numeric = low; see below). Read by review-processes overview and phase-compatibility. NO writer exists in the in-scope code, so the high/low counts will always be zero unless data is written by some other path.
+- `projects/{id}/qualityTemplates/{projectId}__strategy` `{ id, projectId, description, checklists[{id, name, criteria[{id, question, description?, weight}]}], createdAt, updatedAt, createdBy }`. Documents from before checklists existed (`name` + flat `criteria[]`) are still read as one checklist; the first upsert replaces them (they cannot hold scores, because criteria are locked once scoring starts).
+- `qualityCriteriaTemplates/{id}` (root) `{ id, name, description, source (citation/link or null), scope ('SYSTEM'|'USER'), ownerId (null for SYSTEM), criteria[{question, description?, weight}], createdAt, updatedAt }`. Starting points only: applying one copies its questions into the project's strategy, with new criterion ids, and later edits to the template do not change existing projects.
+- `projects/{id}/qualityAssignments/{paperId}__{uid}` `{ id, projectId, paperId, userId, assignedBy, assignedAt }`.
+- `projects/{id}/papers/{paperId}/qualityAssessments/{reviewerId}` `{ id, projectId, paperId, reviewerId, reviewerName, scores{criterionId:{score (points 0|0.5|1), comment?, pdfHighlightCoordinates?}}, totalScore, maxScore, notes?, createdAt, updatedAt }`.
+- `projects/{id}/papers/{paperId}.qualityResolution` `{ id, qualityAssessmentProcessId, paperId, finalDecision (1 High | 0 Low), finalScore, resolutionNotes, resolvedBy, resolvedByName, resolvedAt, method (MANUAL|AUTO) }`.
+- `projects/{id}.qualityAssessment` `{status, statusText, startedAt, completedAt, updatedAt}`.
 
 Rules / gaps:
-- `totalScore` is client-supplied; not computed from `scores`, `weight`, or `maxScore`, and not checked against the template. `scores` keys are not validated against template criterion ids.
-- No consensus/resolution workflow in this module (where `qualityResolution` gets set is unknown in scope).
-- Review-process quality stats: included, non-duplicate papers in the process; `finalDecision` 1 = high, other numeric = low; otherwise "in progress" if any assessment exists, else "not started".
+- The default question set is data, not code: `seed-qa-criteria-templates.ts` loads one system template ("Default checklist", 12 questions, `source: null` because nobody documented where the questions come from). Add a verified citation, or replace it, on the admin screen `/admin/quality-criteria` (or through `/criteria-templates`).
+- Wire answer `0 = Yes, 1 = No, 2 = Unclear`; stored and totalled as points (Yes 1, Unclear 0.5, No 0). Keep the FE panels and `answerToPoints`/`pointsToAnswer` in step.
+- Review-process quality stats (`review-processes`) read `qualityResolution.finalDecision` (1 high, 0 low) and count papers with assessments but no verdict as in progress.
+- Reviewer progress on a paper = share of criteria answered; paper progress = mean over assigned reviewers, 100 once resolved.
+- Seed data (`seed.ts`, project `proj_ai_se_2026`) follows this model but its phase statuses do not respect the phase order.
+- Not done: audit log for other modules, "undo resolution", blocking `reopen-phase` of earlier phases.
 
 #### 12. review-processes
 
@@ -1798,7 +1826,7 @@ Endpoints:
 - `GET /api/review-processes/:id` - membership (any member; global ADMIN ok). Overview object.
 - `POST /api/review-processes/:id/papers` - body `paperIds` (1..500 unique). Role OWNER, ADMIN, or LECTURER (member doc). Inserts `projects/{p}/reviewProcessPapers/{paperId}` with `status: ASSIGNED` for papers that exist, are pool-visible, and are not yet assigned. Returns `{ inserted, skippedAsDuplicate, reviewProcessSnapshot }`. Missing paper id => 404 for the whole batch.
 - `POST /api/review-processes/:id/papers/add-from-filter-setting` - body `filterSettingId`. Pages through `listPaperPool` (100 per page) with saved filter options, then assigns (same as above). Returns `{ inserted, skippedAsDuplicate, matchedTotal, processSnapshot }`.
-- `POST /api/review-processes/:id/reopen-phase/:phase` - OWNER or LECTURER only (normalized role; global ADMIN ok). `phase`: `0|identification`, `1|screening|studyselection`, `2|extraction|dataextraction`, `3|quality|qualityassessment`, `4|synthesis`. Sets that phase object to `{status: 1, statusText: 'InProgress', completedAt: null, updatedAt}` on the project doc. Other values => 400 `INVALID_PHASE`.
+- `POST /api/review-processes/:id/reopen-phase/:phase` - OWNER only (global ADMIN ok; LECTURER refused: "Only project leaders can reopen review phases"). `phase`: `0|identification`, `1|screening|studyselection`, `2|extraction|dataextraction`, `3|quality|qualityassessment`, `4|synthesis`. Sets that phase object to `{status: 1, statusText: 'InProgress', completedAt: null, updatedAt}` on the project doc. Other values => 400 `INVALID_PHASE`.
 - `POST /api/review-processes/:id/start` - OWNER/ADMIN/LECTURER. Sets `reviewProcess.status = 1`, keeps `startedAt`.
 - `POST /api/review-processes/:id/complete` - OWNER/ADMIN/LECTURER. Sets `reviewProcess.status = 2`, `completedAt`. No phase precondition.
 - Project-level creation: `POST /api/projects/:projectId/review-processes` (see projects).
@@ -1820,7 +1848,7 @@ Business rules:
 - `skippedAsDuplicate` counts both already-assigned and non-visible (duplicate) papers.
 - Start after complete is allowed (no state machine).
 
-Notable TODO / incomplete: no state machine for phases; complete does not verify phases; quality stats depend on `qualityResolution` which has no writer in scope.
+Notable TODO / incomplete: phase order is enforced only when *starting* Extraction, Quality Assessment and Synthesis (`shared/utils/phase-order.ts`); process complete does not verify phases; quality stats read `qualityResolution`, which the quality-assessment module writes.
 
 #### 13. screening
 
@@ -1975,9 +2003,10 @@ Rules / gaps:
 | Screening resolve (canonical) | MEMBER | OWNER | |
 | Study-selection endpoints | membership | membership only (no role) | gap, see cross-cutting #1 |
 | Review process assign | membership | OWNER/ADMIN/LECTURER | |
-| Reopen phase | membership | OWNER/LECTURER | |
-| Quality templates | MEMBER | OWNER | |
-| Quality assessments | MEMBER | REVIEWER or OWNER | |
+| Reopen phase | membership | OWNER | |
+| Quality criteria (strategy/checklists/criteria) | MEMBER | OWNER | locked once scoring starts |
+| Quality assign, resolve, auto-resolve, start, complete, leader dashboard, CSV export | OWNER | OWNER | complete needs all papers resolved (or `force`) |
+| Quality scoring (decisions) | MEMBER (own only) | assigned REVIEWER only | OWNER is refused (not assigned); blind assessment |
 | PRISMA live/report | MEMBER | MEMBER (incl. REVIEWER) | cleanup deletes latest |
 | Semantic Scholar search | LECTURER | - | |
 | Synthesis themes/evidence | MEMBER | LECTURER | |
@@ -2182,6 +2211,7 @@ Source: `slr-fe/package.json`, `slr-fe/vite.config.ts`, `slr-fe/eslint.config.js
 | `/admin/master-sources` | `pages/admin/MasterSourcePage.tsx` | Admin |
 | `/admin/settings` | `pages/admin/SystemSettings.tsx` | Admin |
 | `/admin/templates` | `pages/admin/TemplateManager.tsx` | Admin |
+| `/admin/quality-criteria` | `pages/admin/QualityCriteriaTemplates.tsx` | Admin |
 | `/admin/profile` | `pages/profile/MyProfilePage.tsx` | Admin |
 | `/admin/*` other | Navigate to `/404` | none |
 
@@ -2323,6 +2353,9 @@ Entry point: `reviewProcess/ReviewProcessWorkspace.tsx` (hook `useReviewProcessW
   - Hooks: `hooks/useQualityAssessment.ts` (local), plus `useProjects`.
   - Role views: `ReviewerQAPanel` (scoring), `LeaderQAPanel` (leader overview). Also `AssessmentQueue`, `AssessmentPaperViewer`, `AssessmentContextPanel` (unused), `QAPaperDetails`, `QAAssignModal`, `QAAutoResolveModal`, `ReviewerProgressPanel`.
   - Sections: `QAHeader`, `QAPapersTabContent`, `AssignMembersTabContent`.
+  - Admin screen "QA Criteria" (sidebar, group Management): lists the system templates of quality criteria and lets a global admin create, edit (name, description, source, questions with weights) and delete them, using the editor modal `components/admin/QualityCriteriaTemplateEditor.tsx` and `hooks/useQualityCriteriaTemplates.ts`. It warns when a template has no documented source. Personal templates are not shown there.
+  - Criteria modal (`components/reviewProcess/leader/QualityAssessmentCriteriaModal.tsx`): no built-in questions. "Start from" lists the system and personal templates (`hooks/useQualityCriteriaTemplates.ts`), the leader edits the questions, can save them as a personal template, then applies them. Picking one of the leader's own templates also offers "Update this template" (rename and overwrite its questions) and "Delete"; system templates never do. Starts blank when no template is chosen.
+  - Notes: the AI helper ("Analyze with AI Helper") was removed; the assign table has select-all and row selection (UI state only, assigning is still per paper); the header button is "Export CSV" (`/export/csv`). Answer values are `0` Yes, `1` No, `2` Unclear. Completing the phase from the workflow timeline asks for confirmation and retries with `force` when the BE answers `QA_UNRESOLVED_PAPERS` (`useReviewProcessWorkspace.handleCompletePhase`, `getErrorCode` in `utils/errorUtils.ts`).
 - Synthesis: `reviewProcess/synthesisExecution/SynthesisPhaseWorkspace.tsx` (routed under `/synthesis/*`).
   - Sub-views by section (`SECTION_LABELS`): `SynthesisDashboard`, `ThematicWorkspace`, `EvidenceMatrixView`, `SubgroupAnalysisMatrix`, `DescriptiveChartsWorkspace` (recharts pie and bar), `RqReportingWorkspace` (findings per research question), `RichTextEditor` (tiptap).
   - Modals: `SynthesisStrategyModal`, `StrategyGuidelinesModal`, `SynthesisThemeModal`, `SynthesisThemeCard`, `SourceDataAccordion`, `ConfirmationModal`, `SynthesisWorkspaceErrorBoundary`.
@@ -3008,23 +3041,22 @@ Summary: the entire **Identification phase data layer** (search executions, impo
 ##### qualityAssessmentService.ts (`/quality-assessment`)
 - GET /quality-assessment/:id (OK)
 - POST /quality-assessment/:id/start (OK)
-- POST /quality-assessment/:id/complete (OK)
-- POST /quality-assessment/assignments (**MISS**)
-- POST /quality-assessment/auto-resolve (**MISS**)
+- POST /quality-assessment/:id/complete (OK, optional `?force=true`)
+- POST /quality-assessment/assignments (OK)
+- POST /quality-assessment/auto-resolve (OK)
 - GET /quality-assessment/:id/leader (OK)
 - GET /quality-assessment/:id/assignments/my (OK)
 - GET /quality-assessment/:id/strategies (OK)
-- POST /quality-assessment/decisions (**MISS**)
-- PUT /quality-assessment/decisions/:id (**MISS**)
-- POST /quality-assessment/resolutions/ (**MISS**)
-- PUT /quality-assessment/resolutions/:id (**MISS**)
-- POST /quality-assessment/decisions/ai (**MISS**)
-- POST /quality-assessment/strategies/upsert (**MISS**)
-- POST /quality-assessment/checklists/bulk (**MISS**)
-- POST /quality-assessment/criteria/bulk (**MISS**)
-- GET /quality-assessment/:id/export/excel (OK)
+- POST /quality-assessment/decisions (OK)
+- PUT /quality-assessment/decisions/:id (OK)
+- POST /quality-assessment/resolutions/ (OK)
+- PUT /quality-assessment/resolutions/:id (OK)
+- POST /quality-assessment/strategies/upsert (OK)
+- POST /quality-assessment/checklists/bulk (OK)
+- POST /quality-assessment/criteria/bulk (OK)
+- GET /quality-assessment/:id/export/csv (OK, was `export/excel`)
 
-Summary: all QA write paths (assign, decide, resolve, AI decide, strategies upsert, bulk checklists/criteria) are absent in BE. Only reads, start/complete, and export exist (`phase-compatibility.routes.ts`). The BE QA module (`/projects/:projectId/quality/...`) is not what the FE calls.
+Summary: every endpoint `qualityAssessmentService.ts` calls exists in the BE (`modules/quality-assessment`). `decisions/ai` and `getAiDecision` were removed from both sides.
 
 ##### synthesisExecutionService.ts
 - GET /synthesis-execution/:rpId/workspace (OK)
