@@ -138,6 +138,30 @@ export default function ExcludeMenu({
     return () => document.removeEventListener("keydown", handleEsc);
   }, [isOpen]);
 
+  useEffect(() => {
+    const handleShortcut = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        event.key !== "2" ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName) ||
+        isDisabled ||
+        isSubmitting
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      setIsOpen(true);
+    };
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
+  }, [isDisabled, isSubmitting]);
+
   // Reset state when closing
   useEffect(() => {
     if (!isOpen) {
@@ -156,29 +180,29 @@ export default function ExcludeMenu({
   };
 
   return (
-    <div className="relative flex-1">
+    <div className="relative">
       <button
         ref={buttonRef}
         onClick={() => !isDisabled && setIsOpen(!isOpen)}
         disabled={isSubmitting || isDisabled}
         className={cn(
-          "inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
           isOpen
-            ? "border-rose-600 bg-rose-600 text-white ring-2 ring-rose-100"
-            : "border-rose-200 bg-rose-50 text-rose-700 hover:border-rose-300 hover:bg-rose-100 focus-visible:ring-rose-200",
+            ? "border-border bg-bg-secondary text-text-primary ring-2 ring-accent/10"
+            : "border-border bg-surface-white text-text-primary hover:border-rose-300 hover:bg-rose-50/60 focus-visible:ring-accent/20",
           isDisabled && "opacity-50 grayscale-[0.5]",
         )}
       >
         <FiX
           className={cn("w-4 h-4 transition-transform", isOpen && "rotate-90")}
         />
-        {isOpen ? "Close" : "Exclude paper"}
+        {isOpen ? "Close" : "Exclude"}
         <kbd
           className={cn(
             "ml-1 rounded-md px-1.5 py-0.5 text-[10px] font-bold",
             isOpen
-              ? "bg-rose-500 text-white"
-              : "border border-rose-200 bg-white/80 text-rose-700",
+              ? "border border-border bg-surface-white text-text-secondary"
+              : "border border-border bg-bg-secondary text-text-secondary",
           )}
         >
           2
@@ -234,7 +258,11 @@ export default function ExcludeMenu({
                           label: r.name,
                         }))}
                         placeholder="Select a reason..."
-                        className="!py-2.5 !text-xs !rounded-xl !bg-bg-primary focus:!bg-surface-white focus:!border-red-300 focus:!ring-4 focus:!ring-red-50/50 transition-all"
+                        searchable
+                        searchPlaceholder="Search exclusion reasons..."
+                        containerClassName="w-full"
+                        className="!py-2.5 !text-xs !rounded-lg !bg-bg-primary focus:!bg-surface-white focus:!border-accent focus:!ring-2 focus:!ring-accent/15 transition-all"
+                        menuClassName="max-h-40"
                         autoFocus
                       />
                     ) : (

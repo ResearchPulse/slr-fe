@@ -16,6 +16,46 @@ interface ProjectPICOCElementProps {
   isCompact?: boolean;
 }
 
+interface OutcomeGroup {
+  label: string;
+  values: string[];
+}
+
+const parseOutcomeGroups = (value: string): OutcomeGroup[] | null => {
+  const parts: string[] = [];
+  let depth = 0;
+  let start = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] === "(") depth += 1;
+    if (value[index] === ")") depth = Math.max(0, depth - 1);
+    if (value[index] === ";" && depth === 0) {
+      parts.push(value.slice(start, index));
+      start = index + 1;
+    }
+  }
+  parts.push(value.slice(start));
+
+  const groups = parts
+    .map((part) => {
+      const match = part
+        .trim()
+        .match(/^([^()]+?)\s*\(([\s\S]*)\)\s*[,.;]*$/);
+      if (!match) return null;
+
+      return {
+        label: match[1].trim().replace(/[:,;]+$/, ""),
+        values: match[2]
+          .split(";")
+          .map((item) => item.trim().replace(/^[,;\s]+|[,;\s]+$/g, ""))
+          .filter(Boolean),
+      };
+    })
+    .filter((group): group is OutcomeGroup => group !== null);
+
+  return groups.length > 1 ? groups : null;
+};
+
 const ProjectPICOCElement: React.FC<ProjectPICOCElementProps> = ({
   picocs,
   isCompact,
@@ -103,12 +143,17 @@ const PicocElementCard = ({
     blue: "bg-primary-light text-accent border-primary/20",
     amber: "bg-amber-50 text-amber-700 border-amber-100",
     emerald: "bg-emerald-50 text-emerald-700 border-emerald-100",
-    rose: "bg-rose-50 text-rose-700 border-rose-100",
+    rose: "bg-bg-secondary text-text-primary border-border",
     indigo: "bg-bg-secondary text-indigo-700 border-indigo-100",
   };
 
   const text = value || `No ${label.toLowerCase()}`;
-  const isLongText = text.length > 60; // Approximate threshold for 2 lines
+  const isLongText = text.length > (isCompact ? 100 : 60);
+  const outcomeGroups =
+    isCompact && label === "Outcome" ? parseOutcomeGroups(text) : null;
+  const visibleOutcomeGroups = isExpanded
+    ? outcomeGroups
+    : outcomeGroups?.slice(0, 3);
 
   return (
     <div
@@ -130,23 +175,47 @@ const PicocElementCard = ({
             {label}
           </span>
         </div>
-        {isLongText && !isCompact && (
+        {isLongText && (
           <button
+            type="button"
             onClick={() => setIsExpanded(!isExpanded)}
-            className="text-[9px] font-black uppercase tracking-tighter hover:underline opacity-60 hover:opacity-100"
+            aria-expanded={isExpanded}
+            className="shrink-0 text-[10px] font-medium text-accent hover:underline"
           >
-            {isExpanded ? "Collapse" : "View Full"}
+            {isExpanded ? "Show less" : "Show all"}
           </button>
         )}
       </div>
-      <p
-        className={clsx(
-          "text-[11px] font-semibold leading-relaxed break-words",
-          !isCompact && !isExpanded && "line-clamp-2",
-        )}
-      >
-        {text}
-      </p>
+      {visibleOutcomeGroups ? (
+        <div className="mt-1 divide-y divide-border/70">
+          {visibleOutcomeGroups.map((group) => (
+            <div key={group.label} className="py-1.5 first:pt-0 last:pb-0">
+              <p className="break-words text-[10px] font-semibold capitalize leading-4 text-text-secondary">
+                {group.label}
+              </p>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {group.values.map((item, index) => (
+                  <span
+                    key={`${group.label}-${index}`}
+                    className="max-w-full break-words rounded bg-surface-white/80 px-1.5 py-0.5 text-[10px] leading-4 text-text-primary"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p
+          className={clsx(
+            "break-words text-[11px] font-medium leading-relaxed",
+            !isExpanded && (isCompact ? "line-clamp-4" : "line-clamp-2"),
+          )}
+        >
+          {text}
+        </p>
+      )}
     </div>
   );
 };

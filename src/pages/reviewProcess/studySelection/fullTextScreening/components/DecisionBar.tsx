@@ -120,23 +120,23 @@ export default function DecisionBar({
   }
 
   return (
-    <div className="border-t border-border bg-surface-white px-4 py-3 shrink-0">
-      <div className="flex flex-col gap-3">
+    <div className="shrink-0 border-t border-border bg-surface-white px-3 py-2.5 sm:px-4">
+      <div className="flex flex-wrap items-center gap-2">
         <ReviewCommentField
           value={reviewComment}
           onChange={setReviewComment}
           disabled={isSubmitting}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
         {/* Include */}
         <button
           onClick={() => onInclude(paper.id, reviewComment.trim() || null)}
           disabled={isSubmitting}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FiCheck className="w-4 h-4" />
-          Include paper
-          <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+          <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
+          Include
+          <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
             1
           </kbd>
         </button>
