@@ -10,6 +10,7 @@ import SystemSettings from "../pages/admin/SystemSettings";
 import TemplateManager from "../pages/admin/TemplateManager";
 import MyProfilePage from "../pages/profile/MyProfilePage";
 import AgentManagement from "../pages/admin/AgentManagement";
+import QualityCriteriaTemplates from "../pages/admin/QualityCriteriaTemplates";
 
 function AdminRoutes() {
   return (
@@ -24,6 +25,7 @@ function AdminRoutes() {
           <Route path="master-sources" element={<MasterSourcePage />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="templates" element={<TemplateManager />} />
+          <Route path="quality-criteria" element={<QualityCriteriaTemplates />} />
           <Route path="profile" element={<MyProfilePage />} />
         </Route>
       </Route>

@@ -184,6 +184,7 @@ export const QUERY_KEYS = {
     myAssignedPapers: (qaProcessId: string) =>
       ["quality-assessment", qaProcessId, "assigned-papers", "my"] as const,
     strategies: (qaProcessId: string) => ["quality-assessment", qaProcessId, "strategies"] as const,
+    criteriaTemplates: () => ["quality-assessment", "criteria-templates"] as const,
   },
 
   // Master Search Sources

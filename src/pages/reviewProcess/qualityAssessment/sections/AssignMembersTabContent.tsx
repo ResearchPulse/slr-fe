@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { WorkspaceQAPaper } from "../QualityAssessmentWorkspace";
 import {
   Search,
@@ -64,6 +65,28 @@ export function AssignMembersTabContent({
   onPageChange,
 }: AssignMembersTabContentProps) {
   const pageSize = 10;
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const selectedOnPage = papers.filter((p) => selectedIds.has(p.paperId)).length;
+  const allSelected = papers.length > 0 && selectedOnPage === papers.length;
+  const someSelected = selectedOnPage > 0 && !allSelected;
+
+  const togglePaper = (paperId: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(paperId)) next.add(paperId);
+      return next;
+    });
+  };
+
+  // "Select all" acts on the papers currently listed; selections from other pages are kept.
+  const toggleAll = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      papers.forEach((p) => (allSelected ? next.delete(p.paperId) : next.add(p.paperId)));
+      return next;
+    });
+  };
 
   return (
     <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
@@ -108,6 +131,13 @@ export function AssignMembersTabContent({
               <TableHead className="w-12 text-center">
                 <input
                   type="checkbox"
+                  aria-label="Select all papers"
+                  checked={allSelected}
+                  disabled={papers.length === 0}
+                  ref={(el) => {
+                    if (el) el.indeterminate = someSelected;
+                  }}
+                  onChange={toggleAll}
                   className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
                 />
               </TableHead>
@@ -140,6 +170,9 @@ export function AssignMembersTabContent({
                 >
                   <input
                     type="checkbox"
+                    aria-label={`Select ${paper.title}`}
+                    checked={selectedIds.has(paper.paperId)}
+                    onChange={() => togglePaper(paper.paperId)}
                     className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
                   />
                 </TableCell>
@@ -302,6 +335,11 @@ export function AssignMembersTabContent({
         <div className="text-sm text-text-secondary">
           Showing {(currentPage - 1) * pageSize + 1} to{" "}
           {Math.min(currentPage * pageSize, totalItems)} of {totalItems} results
+          {selectedIds.size > 0 && (
+            <span className="ml-2 font-medium text-accent">
+              · {selectedIds.size} selected
+            </span>
+          )}
         </div>
         <Pagination
           currentPage={currentPage}
