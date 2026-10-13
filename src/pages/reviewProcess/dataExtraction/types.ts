@@ -118,6 +118,8 @@ export interface UseDataExtractionWorkspaceReturn {
   currentUserId: string | null;
   isCurrentUserLeader: boolean;
   extractionProcessStatus: "NotStarted" | "InProgress" | "Completed";
+  extractionProcessStartedAt: string | null;
+  extractionProcessLastUpdatedAt: string | null;
 
   isLoading: boolean;
   error: string | null;

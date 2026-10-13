@@ -19,11 +19,18 @@ interface PhaseCardProps {
   disabled?: boolean;
 }
 
-const ICON_TONE: Record<string, string> = {
-  Completed: "bg-emerald-50 text-emerald-700",
-  InProgress: "bg-blue-50 text-blue-700",
-  NotStarted: "bg-slate-100 text-slate-500",
-  Locked: "bg-slate-100 text-slate-400",
+const CARD_STYLES: Record<string, string> = {
+  Completed: "border-success/20 bg-success/5",
+  InProgress: "border-primary/35 bg-primary-light/50 shadow-sm ring-1 ring-primary/10",
+  NotStarted: "border-border bg-surface-white",
+  Locked: "border-border bg-bg-primary/80 opacity-70",
+};
+
+const ICON_BG: Record<string, string> = {
+  Completed: "bg-success/10 text-success",
+  InProgress: "bg-primary-light text-primary",
+  NotStarted: "bg-bg-secondary text-text-secondary",
+  Locked: "bg-bg-secondary text-text-secondary",
 };
 
 export default function PhaseCard({
@@ -40,27 +47,41 @@ export default function PhaseCard({
   disabled = false,
 }: PhaseCardProps) {
   return (
-    <article className="flex min-h-[220px] flex-1 flex-col rounded-xl border border-border/70 bg-surface-white p-4 transition-[border-color,background-color,box-shadow] duration-150 hover:border-primary/30 hover:bg-bg-secondary/20 hover:shadow-sm sm:p-5">
-      <div className="flex min-w-0 items-start gap-3">
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ICON_TONE[phase.status]}`}>
-          {phase.status === "Locked" ? <FiLock className="h-4 w-4" aria-hidden="true" /> : <Icon className="h-4 w-4" aria-hidden="true" />}
-        </span>
-        <div className="min-w-0 flex-1">
-          <h4 className="text-sm font-semibold leading-5 text-text-primary">{phase.name}</h4>
-          <div className="mt-1.5">
-            <PhaseStatusBadge status={phase.status} />
+    <div
+      className={`relative flex w-60 min-w-[200px] max-w-60 flex-col rounded-xl border p-4 transition-[border-color,box-shadow,background-color] duration-200 print:break-inside-avoid ${CARD_STYLES[phase.status]}`}
+    >
+      {/* Header: Icon + Name + Badge */}
+      <div className="flex items-start justify-between gap-2 mb-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+          <div
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ICON_BG[phase.status]}`}
+          >
+            {phase.status === "Locked" ? (
+              <FiLock className="w-4 h-4" />
+            ) : (
+              <Icon className="w-4.5 h-4.5" />
+            )}
           </div>
+          <h3 className="line-clamp-2 text-sm font-semibold leading-tight text-text-primary">
+            {phase.name}
+          </h3>
         </div>
       </div>
 
-      {phase.status === "Locked" && phase.lockReason ? (
-        <p className="mt-3 text-xs leading-5 text-text-secondary">{phase.lockReason}</p>
-      ) : phase.stats.length > 0 ? (
-        <PhaseStatistics stats={phase.stats} status={phase.status} />
-      ) : (
-        <p className="mt-3 text-xs text-text-secondary">No activity recorded yet.</p>
+      {/* Status Badge */}
+      <PhaseStatusBadge status={phase.status} />
+
+      {/* Lock Reason */}
+      {phase.status === "Locked" && phase.lockReason && (
+        <p className="mt-2 text-xs leading-5 text-text-secondary">
+          {phase.lockReason}
+        </p>
       )}
 
+      {/* Statistics */}
+      <PhaseStatistics stats={phase.stats} status={phase.status} />
+
+      {/* Actions */}
       <PhaseActions
         status={phase.status}
         phaseKey={phase.key}
@@ -74,6 +95,6 @@ export default function PhaseCard({
         reopenLoading={reopenLoading}
         disabled={disabled}
       />
-    </article>
+    </div>
   );
 }
