@@ -23,8 +23,6 @@ interface PhaseActionsProps {
   disabled?: boolean;
 }
 
-const actionBase = "inline-flex min-h-9 flex-1 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-45";
-
 export default function PhaseActions({
   status,
   onStart,
@@ -37,75 +35,100 @@ export default function PhaseActions({
   reopenLoading = false,
   disabled = false,
 }: PhaseActionsProps) {
-  const [confirmAction, setConfirmAction] = useState<"complete" | "reopen" | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    "complete" | "reopen" | null
+  >(null);
+
+  const handleCompleteClick = () => {
+    setConfirmAction("complete");
+  };
+
+  const handleCompleteConfirm = () => {
+    setConfirmAction(null);
+    onComplete?.();
+  };
+
+  const handleReopenClick = () => {
+    setConfirmAction("reopen");
+  };
+
+  const handleReopenConfirm = () => {
+    setConfirmAction(null);
+    onReopen?.();
+  };
+
   if (status === "Locked") return null;
 
   const showReopen = canManageActions && status === "Completed" && onReopen;
-  const actions = (
-    <div className="mt-auto flex flex-wrap gap-2 pt-4">
+
+  return (
+    <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
       {canManageActions && status === "NotStarted" && onStart && (
         <button
           onClick={onStart}
           disabled={startLoading || disabled}
-          title={disabled ? "Start the review process first" : undefined}
-          className={`${actionBase} border-primary/20 bg-primary/5 text-primary hover:border-primary/40 hover:bg-primary/10`}
+          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:bg-primary-hover hover:border-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FiPlay className="h-3.5 w-3.5" aria-hidden="true" />
-          {startLoading ? "Starting…" : "Start phase"}
+          <FiPlay className="w-3.5 h-3.5" />
+          {startLoading ? "Starting..." : "Start Phase"}
         </button>
       )}
 
-      {status === "InProgress" && onOpen && (
-        <button
-          onClick={onOpen}
-          disabled={disabled}
-          title={disabled ? "Start the review process first" : undefined}
-          className={`${actionBase} border-primary bg-primary text-text-on-primary hover:bg-primary-hover`}
-        >
-          <FiExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
-          Open workspace
-        </button>
-      )}
-      {status === "InProgress" && canManageActions && onComplete && (
-        <button
-          onClick={() => setConfirmAction("complete")}
-          disabled={completeLoading || disabled}
-          className={`${actionBase} border-border bg-surface-white text-text-secondary hover:bg-bg-secondary hover:text-text-primary`}
-        >
-          <FiCheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
-          {completeLoading ? "Saving…" : "Complete"}
-        </button>
+      {status === "InProgress" && (
+        <>
+          {onOpen && (
+            <button
+              onClick={onOpen}
+              disabled={disabled}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:border-primary-hover hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FiExternalLink className="w-3.5 h-3.5" />
+              Open Workspace
+            </button>
+          )}
+          {canManageActions && onComplete && (
+            <button
+              onClick={handleCompleteClick}
+              disabled={completeLoading || disabled}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-success/35 bg-success/10 px-3 py-2 text-sm font-semibold text-success transition-colors hover:border-success/50 hover:bg-success/15 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FiCheckCircle className="w-3.5 h-3.5" />
+              {completeLoading ? "Completing..." : "Complete Phase"}
+            </button>
+          )}
+        </>
       )}
 
-      {status === "Completed" && onOpen && (
-        <button
-          onClick={onOpen}
-          className={`${actionBase} border-border bg-surface-white text-text-secondary hover:bg-bg-secondary hover:text-text-primary`}
-        >
-          <FiEye className="h-3.5 w-3.5" aria-hidden="true" />
-          View results
-        </button>
-      )}
-      {showReopen && (
-        <button
-          onClick={() => setConfirmAction("reopen")}
-          disabled={reopenLoading || disabled}
-          className={`${actionBase} border-border bg-surface-white text-text-secondary hover:bg-bg-secondary hover:text-text-primary`}
-        >
-          <FiRotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
-          {reopenLoading ? "Reopening…" : "Reopen"}
-        </button>
-      )}
-    </div>
-  );
+      {status === "Completed" && (
+        <>
+          {onOpen && (
+            <button
+              onClick={onOpen}
+              disabled={disabled}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-white px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-text-muted hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FiEye className="w-3.5 h-3.5" />
+              View Results
+            </button>
+          )}
 
-  return (
-    <>
-      {actions}
+          {showReopen && (
+            <button
+              onClick={handleReopenClick}
+              disabled={reopenLoading || disabled}
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-warning/40 bg-warning/15 px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-warning/60 hover:bg-warning/25 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FiRotateCcw className="w-3.5 h-3.5" />
+              {reopenLoading ? "Reopening..." : "Reopen Phase"}
+            </button>
+          )}
+        </>
+      )}
+
       <ConfirmModal
         isOpen={confirmAction === "complete"}
         onClose={() => setConfirmAction(null)}
-        onConfirm={() => { setConfirmAction(null); onComplete?.(); }}
+        onConfirm={handleCompleteConfirm}
         title="Complete Phase?"
         message="Are you sure you want to mark this phase as complete? You can reopen it later if needed."
         confirmText="Complete"
@@ -113,10 +136,11 @@ export default function PhaseActions({
         isLoading={completeLoading}
         variant="info"
       />
+
       <ConfirmModal
         isOpen={confirmAction === "reopen"}
         onClose={() => setConfirmAction(null)}
-        onConfirm={() => { setConfirmAction(null); onReopen?.(); }}
+        onConfirm={handleReopenConfirm}
         title="Reopen Phase?"
         message="Are you sure you want to reopen this phase? This will mark it as in-progress again."
         confirmText="Reopen"
@@ -124,6 +148,6 @@ export default function PhaseActions({
         isLoading={reopenLoading}
         variant="warning"
       />
-    </>
+    </div>
   );
 }

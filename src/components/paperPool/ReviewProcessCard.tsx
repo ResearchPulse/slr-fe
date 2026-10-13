@@ -50,18 +50,18 @@ export default function ReviewProcessCard({
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex items-center gap-3">
           <div
-            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors ${
+            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${
               isSelected
                 ? "bg-accent text-surface-white"
-                : "border border-primary/15 bg-primary-light text-primary"
+                : "bg-surface-white border border-border text-accent"
             }`}
           >
-            <FiUsers className="h-5 w-5 shrink-0" aria-hidden="true" />
+            <FiUsers className="w-5 h-5" />
           </div>
-          <div className="min-w-0 flex-1 text-left">
-            <p className="line-clamp-1 text-sm font-semibold text-text-primary">
+          <div className="text-left">
+            <p className="text-sm font-serif font-bold text-text-primary line-clamp-1">
               {process.processName}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">

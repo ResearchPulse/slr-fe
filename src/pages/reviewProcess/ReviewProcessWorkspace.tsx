@@ -1,9 +1,10 @@
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import { useReviewProcessWorkspace } from "../../hooks/useReviewProcessWorkspace";
 import ProcessHeader from "../../components/reviewProcess/ProcessHeader";
 import WorkflowTimeline from "../../components/reviewProcess/workflow/WorkflowTimeline";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import PrismaReportCard from "../../components/reviewProcess/PrismaReportCard";
 import { useState } from "react";
 import PaperPoolSelectorModal from "../../components/reviewProcess/modals/PaperPoolSelectorModal";
 import StudySelectionCriteriaModal from "../../components/reviewProcess/leader/StudySelectionCriteriaModal";
@@ -12,7 +13,6 @@ import SynthesisStrategyModal from "./synthesisExecution/components/SynthesisStr
 import { SelectionProcessStatus } from "../../types/studySelection";
 
 export default function ReviewProcessWorkspace() {
-  const navigate = useNavigate();
   const { projectId, processId } = useParams<{
     projectId: string;
     processId: string;
@@ -95,6 +95,12 @@ export default function ReviewProcessWorkspace() {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 print:px-4">
+        {/* PRISMA Report Access */}
+        <PrismaReportCard
+          projectId={projectId || ""}
+          processId={processId || ""}
+        />
+
         {/* Workflow Timeline */}
         <WorkflowTimeline
           phases={workflowPhases}
@@ -104,7 +110,6 @@ export default function ReviewProcessWorkspace() {
           onOpenPhase={handleOpenPhase}
           onReopenPhase={handleReopenPhase}
           onAddPapers={() => setIsAddPapersModalOpen(true)}
-          onOpenReport={() => navigate(`/projects/${projectId}/processes/${processId}/prisma-report`)}
           canManageActions={canManagePhaseActions}
           startLoadingMap={phaseStartLoadingMap}
           completeLoadingMap={phaseCompleteLoadingMap}
