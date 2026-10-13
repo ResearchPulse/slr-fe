@@ -81,16 +81,29 @@ function templateFields(template: ExtractionTemplateDto | null): ExtractionField
   return fields.length ? fields : template.fields ?? [];
 }
 
+function citationAuthors(task: ExtractionDashboardTaskDto): string | null {
+  const authors = task.citation?.authors ?? [];
+  const formatted = authors
+    .map((author) => typeof author === "string" ? author : author.name)
+    .map((author) => author.trim())
+    .filter(Boolean)
+    .join(", ");
+
+  return formatted || null;
+}
+
 function toStudy(task: ExtractionDashboardTaskDto): ExtractionStudyItem {
+  const authors = task.authors?.trim() || citationAuthors(task);
+  const publicationYear = task.publicationYear ?? task.citation?.year ?? null;
   const raw = {
     paperId: task.paperId,
-    title: task.title,
-    doi: null,
-    authors: task.authors ?? null,
-    publicationYear: task.publicationYear ?? null,
+    title: task.title || task.citation?.title || "Untitled paper",
+    doi: task.citation?.doi ?? null,
+    authors,
+    publicationYear,
     publicationDate: null,
-    abstract: null,
-    journal: null,
+    abstract: task.citation?.abstract ?? null,
+    journal: task.citation?.journal ?? null,
     source: null,
     keywords: null,
     publicationType: null,
@@ -123,9 +136,9 @@ function toStudy(task: ExtractionDashboardTaskDto): ExtractionStudyItem {
   } as unknown as PaperWithDecisionsResponse;
   return {
     paperId: task.paperId,
-    title: task.title,
-    authors: task.authors ?? null,
-    publicationYear: task.publicationYear ?? null,
+    title: task.title || task.citation?.title || "Untitled paper",
+    authors,
+    publicationYear,
     pdfUrl: task.pdfUrl ?? null,
     source: null,
     raw,
@@ -694,8 +707,20 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
       updatedAt: "",
     };
   }, [consensusWorkspace, currentUserId, currentUserName, getPaperStatus, reviewerNameById, reviewerState, reviewerWorkspace, selectedPaperId, taskByPaperId]);
-  const canCurrentUserExtractPaper = useCallback((paperId: string) => !isCurrentUserLeader && paperId === selectedPaperId && !!reviewerWorkspace && !isSubmitted, [isCurrentUserLeader, reviewerWorkspace, selectedPaperId, isSubmitted]);
-  const hasCurrentUserSubmitted = useCallback((paperId: string) => paperId === selectedPaperId && isSubmitted, [isSubmitted, selectedPaperId]);
+  const canCurrentUserExtractPaper = useCallback((paperId: string) => {
+    if (isCurrentUserLeader) return false;
+
+    const task = taskByPaperId[paperId];
+    if (!task) return false;
+
+    const status = normalizeStatus(task.status);
+    return status === "todo" || status === "in-progress";
+  }, [isCurrentUserLeader, taskByPaperId]);
+  const hasCurrentUserSubmitted = useCallback((paperId: string) => {
+    const task = taskByPaperId[paperId];
+    const taskOwnStatus = String(task?.ownStatus ?? "").trim().toUpperCase();
+    return taskOwnStatus === "SUBMITTED" || (paperId === selectedPaperId && isSubmitted);
+  }, [isSubmitted, selectedPaperId, taskByPaperId]);
   const fetchReviewerWorkspace = useCallback(async (paperId: string) => {
     if (!projectId) return null;
     return queryClient.fetchQuery({ queryKey: [...ROOT, projectId, "reviewer", paperId], queryFn: () => dataExtractionConductingService.getReviewerWorkspace(projectId, paperId), staleTime: 0 });

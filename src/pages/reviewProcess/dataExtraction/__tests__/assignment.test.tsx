@@ -17,7 +17,15 @@ vi.mock("react-router-dom", () => ({
   useParams: () => ({ projectId: "project-1" }),
 }));
 
-function TestProviders({ children }: { children: ReactNode }) {
+function TestProviders({
+  children,
+  userId = "leader-1",
+  userName = "Project Leader",
+}: {
+  children: ReactNode;
+  userId?: string;
+  userName?: string;
+}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -34,7 +42,7 @@ function TestProviders({ children }: { children: ReactNode }) {
       login({
         accessToken: "token",
         accessTokenExpiresAt: "2026-10-13T00:00:00.000Z",
-        user: { id: "leader-1", name: "Project Leader" },
+        user: { id: userId, name: userName },
       }),
     );
     return nextStore;
@@ -113,6 +121,7 @@ describe("data extraction assignment", () => {
       },
     } as never);
     vi.spyOn(dataExtractionConductingService, "getWorkloadSummary").mockResolvedValue({} as never);
+    vi.spyOn(dataExtractionConductingService, "getReviewerWorkspace").mockResolvedValue({} as never);
     vi.spyOn(dataExtractionTemplateService, "list").mockResolvedValue([
       {
         templateId: "template-1",
@@ -148,5 +157,90 @@ describe("data extraction assignment", () => {
         templateId: "template-1",
       },
     );
+  });
+
+  it("lets a reviewer open every assigned paper from the dashboard", async () => {
+    vi.mocked(dataExtractionConductingService.getDashboard).mockResolvedValue({
+      summary: {
+        totalIncluded: 2,
+        inProgress: 1,
+        awaitingConsensus: 0,
+        completed: 0,
+        notStarted: 1,
+      },
+      tasks: {
+        items: [
+          { paperId: "paper-1", title: "Paper 1", status: "NOT_STARTED", ownStatus: "NOT_STARTED" },
+          { paperId: "paper-2", title: "Paper 2", status: "IN_PROGRESS", ownStatus: "SUBMITTED" },
+        ],
+        totalCount: 2,
+        pageNumber: 1,
+        pageSize: 10,
+        totalPages: 1,
+      },
+    } as never);
+
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <TestProviders userId="reviewer-1" userName="Jane Doe">
+        {children}
+      </TestProviders>
+    );
+    const { result } = renderHook(() => useDataExtractionWorkspace(), { wrapper });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.canCurrentUserExtractPaper("paper-1")).toBe(true);
+    expect(result.current.canCurrentUserExtractPaper("paper-2")).toBe(true);
+    expect(result.current.hasCurrentUserSubmitted("paper-2")).toBe(true);
+    expect(result.current.canCurrentUserExtractPaper("unassigned-paper")).toBe(false);
+  });
+
+  it("uses citation metadata when the dashboard omits flattened paper fields", async () => {
+    vi.mocked(dataExtractionConductingService.getDashboard).mockResolvedValue({
+      summary: {
+        totalIncluded: 1,
+        inProgress: 0,
+        awaitingConsensus: 0,
+        completed: 0,
+        notStarted: 1,
+      },
+      tasks: {
+        items: [
+          {
+            paperId: "paper-1",
+            title: "Paper 1",
+            citation: {
+              title: "Paper 1",
+              authors: ["Alice Author", { name: "Bob Author" }],
+              doi: "10.1000/paper-1",
+              year: 2024,
+              journal: "Example Journal",
+              abstract: "An abstract",
+            },
+            status: "NOT_STARTED",
+          },
+        ],
+        totalCount: 1,
+        pageNumber: 1,
+        pageSize: 10,
+        totalPages: 1,
+      },
+    } as never);
+
+    const { result } = renderHook(() => useDataExtractionWorkspace(), {
+      wrapper: TestProviders,
+    });
+
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    expect(result.current.studies[0]).toMatchObject({
+      authors: "Alice Author, Bob Author",
+      publicationYear: 2024,
+    });
+    expect(result.current.studies[0].raw).toMatchObject({
+      doi: "10.1000/paper-1",
+      journal: "Example Journal",
+      abstract: "An abstract",
+    });
   });
 });

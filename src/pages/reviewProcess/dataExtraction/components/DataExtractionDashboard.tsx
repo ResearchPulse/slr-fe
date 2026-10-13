@@ -70,6 +70,7 @@ interface DashboardTask {
   reviewer1Status?: string | null;
   reviewer2Id: string | null;
   reviewer2Status?: string | null;
+  ownStatus?: string | null;
   status: ExtractionPaperStatus;
 }
 
@@ -184,18 +185,27 @@ export default function DataExtractionDashboard({
 
   const tasks = useMemo<DashboardTask[]>(
     () =>
-      ws.dashboardTasks.map((task) => ({
-        taskId: task.taskId ?? task.paperId,
-        paperId: task.paperId,
-        title: task.title,
-        authors: task.authors ?? null,
-        publicationYear: task.publicationYear ?? null,
-        reviewer1Id: task.reviewer1Id ?? null,
-        reviewer1Status: task.reviewer1Status ?? null,
-        reviewer2Id: task.reviewer2Id ?? null,
-        reviewer2Status: task.reviewer2Status ?? null,
-        status: normalizeStatus(task.status),
-      })),
+      ws.dashboardTasks.map((task) => {
+        const citationAuthors = (task.citation?.authors ?? [])
+          .map((author) => typeof author === "string" ? author : author.name)
+          .map((author) => author.trim())
+          .filter(Boolean)
+          .join(", ");
+
+        return {
+          taskId: task.taskId ?? task.paperId,
+          paperId: task.paperId,
+          title: task.title || task.citation?.title || "Untitled paper",
+          authors: task.authors?.trim() || citationAuthors || null,
+          publicationYear: task.publicationYear ?? task.citation?.year ?? null,
+          reviewer1Id: task.reviewer1Id ?? null,
+          reviewer1Status: task.reviewer1Status ?? null,
+          reviewer2Id: task.reviewer2Id ?? null,
+          reviewer2Status: task.reviewer2Status ?? null,
+          ownStatus: task.ownStatus ?? null,
+          status: normalizeStatus(task.status),
+        };
+      }),
     [ws.dashboardTasks],
   );
   const [selectedPaper, setSelectedPaper] = useState<PaperResponse | null>(
@@ -1053,6 +1063,8 @@ export default function DataExtractionDashboard({
                             task.reviewer1Id,
                             task.reviewer2Id,
                           ].filter((id): id is string => Boolean(id));
+                          const isAssignedToCurrentUser =
+                            !ws.isCurrentUserLeader && task.ownStatus != null;
 
                           const canExtractTask = ws.canCurrentUserExtractPaper(
                             task.paperId,
@@ -1170,6 +1182,10 @@ export default function DataExtractionDashboard({
                                         );
                                       })}
                                   </div>
+                                ) : isAssignedToCurrentUser ? (
+                                  <span className="inline-flex items-center rounded-full border border-accent/30 bg-primary-light px-2.5 py-1 text-xs font-semibold text-accent">
+                                    Assigned to you
+                                  </span>
                                 ) : (
                                   ws.isCurrentUserLeader ? (
                                     <button
@@ -1414,6 +1430,7 @@ export default function DataExtractionDashboard({
         paper={selectedPaper}
         isOpen={isPaperDetailsOpen}
         onClose={handleClosePaperDetails}
+        hideActions
       />
 
       <AssignReviewersModal

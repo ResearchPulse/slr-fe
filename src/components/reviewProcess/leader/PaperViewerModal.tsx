@@ -42,6 +42,7 @@ interface PaperViewerModalProps {
   ) => void;
   isResolving?: boolean;
   isSubmitting?: boolean;
+  hideActions?: boolean;
   phase?: PaperPhase;
 }
 
@@ -130,6 +131,7 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
   onRetryExtraction,
   isRetryingExtraction,
   isSubmitting,
+  hideActions = false,
   phase = PaperPhase.TitleAbstract,
 }) => {
   const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
@@ -208,13 +210,8 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
               onRetryExtraction={onRetryExtraction}
               isRetryingExtraction={isRetryingExtraction}
               isSubmitting={isSubmitting}
+              hideActions={hideActions}
               isLeaderView={true}
-              onInclude={function (): void {
-                throw new Error("Function not implemented.");
-              }}
-              onExclude={function (): void {
-                throw new Error("Function not implemented.");
-              }}
               phase={phase}
             />
           </div>
