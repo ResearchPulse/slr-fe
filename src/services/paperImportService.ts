@@ -235,7 +235,7 @@ export const paperImportService = {
         const failed = request.files.length - imported;
         return {
           ...response.data,
-          success: imported > 0,
+          isSuccess: imported > 0,
           data: {
             ...data,
             totalRecords: request.files.length,
@@ -274,8 +274,9 @@ export const paperImportService = {
 
     const failedItems = items.filter(Boolean);
     return {
-      success: false,
+      isSuccess: false,
       message: 'No PDF files could be uploaded',
+      errors: null,
       data: {
         importBatchId: null,
         totalRecords: request.files.length,
