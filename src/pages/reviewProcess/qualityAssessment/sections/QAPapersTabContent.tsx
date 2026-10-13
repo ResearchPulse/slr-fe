@@ -10,7 +10,6 @@ import type {
   QualityAssessmentResolutionRequest,
   LeaderQAPaperResponse,
   QAPaperResponse,
-  AutomateQualityAssessmentResponse,
 } from "../../../../types/qualityAssessment";
 import type { HighlightArea } from "@react-pdf-viewer/highlight";
 import { useSelector } from "react-redux";
@@ -46,7 +45,6 @@ interface QAPapersTabContentProps {
     >,
     decisionData?: { notes: string | null; items: ReviewerDecisionPayload[] },
   ) => void;
-  onAiAnalyze?: (paperId: string) => Promise<AutomateQualityAssessmentResponse>;
   highlightsByCriterion?: Record<string, HighlightData[]>;
   isSaving?: boolean;
   canEdit?: boolean;
@@ -67,7 +65,6 @@ export function QAPapersTabContent({
   onPageChange,
   onReviewerSave,
   onLeaderResolve,
-  onAiAnalyze,
   isSaving,
   canEdit,
 }: QAPapersTabContentProps) {
@@ -297,7 +294,6 @@ export function QAPapersTabContent({
                   paper={selectedPaper as LeaderQAPaperResponse}
                   strategies={strategies}
                   onResolve={onLeaderResolve!}
-                  onAiAnalyze={onAiAnalyze}
                   isResolving={isSaving}
                   activeCriterionId={activeCriterionId}
                   onSelectCriterion={setActiveCriterionId}
@@ -311,7 +307,6 @@ export function QAPapersTabContent({
                   paper={selectedPaper as QAPaperResponse}
                   strategies={strategies}
                   onSave={onReviewerSave!}
-                  onAiAnalyze={onAiAnalyze}
                   isSaving={isSaving}
                   activeCriterionId={activeCriterionId}
                   onSelectCriterion={setActiveCriterionId}
