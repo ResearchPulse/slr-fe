@@ -535,7 +535,7 @@ export default function PaperViewer({
           <div className="mx-auto max-w-5xl">
             {(!isLeaderView && canReview) ||
             (isLeaderView && (onInclude || onExclude)) ? (
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
                 {exclusionReasons.length === 0 && !isLoadingReasons && (
                   <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
                     <FiAlertTriangle className="w-4 h-4" />
@@ -557,78 +557,80 @@ export default function PaperViewer({
                     Checking assignments...
                   </div>
                 )}
-                {!(paper.hasConflict && isLeaderView) && (
-                  <ReviewCommentField
-                    value={reviewComment}
-                    onChange={setReviewComment}
-                    disabled={
-                      isDisabled ||
-                      isSubmittingDecision ||
-                      isSubmitting ||
-                      (isLeaderView && hasPendingAssignedReviewer) ||
-                      isLoadingReviewers
-                    }
-                  />
-                )}
-                <div className="flex items-center gap-3">
-                  {paper.hasConflict && isLeaderView ? (
-                    <button
-                      onClick={() =>
-                        !isDisabled && setIsResolutionModalOpen(true)
+                <div className="flex flex-wrap items-center gap-2">
+                  {!(paper.hasConflict && isLeaderView) && (
+                    <ReviewCommentField
+                      value={reviewComment}
+                      onChange={setReviewComment}
+                      disabled={
+                        isDisabled ||
+                        isSubmittingDecision ||
+                        isSubmitting ||
+                        (isLeaderView && hasPendingAssignedReviewer) ||
+                        isLoadingReviewers
                       }
-                      disabled={isDisabled}
-                      className={cn(
-                        "flex-1 inline-flex items-center justify-center gap-2 h-12 bg-amber-600 text-white font-black uppercase tracking-wider text-xs rounded-xl hover:bg-amber-700 active:scale-[0.98] transition-all shadow-none shadow-amber-900/10 animate-in zoom-in-95 duration-200",
-                        isDisabled && "opacity-50 cursor-not-allowed",
-                      )}
-                    >
-                      <FiAlertTriangle className="w-4 h-4" />
-                      Resolve Conflict
-                    </button>
-                  ) : (
-                    <>
+                    />
+                  )}
+                  <div className="flex shrink-0 items-center gap-2">
+                    {paper.hasConflict && isLeaderView ? (
                       <button
                         onClick={() =>
-                          onInclude
-                            ? onInclude(paper.id, reviewComment.trim() || null)
-                            : includePaper(paper.id, reviewComment.trim() || null)
+                          !isDisabled && setIsResolutionModalOpen(true)
                         }
-                        disabled={
-                          isDisabled ||
-                          isSubmittingDecision ||
-                          isSubmitting ||
-                          (isLeaderView && hasPendingAssignedReviewer) ||
-                          isLoadingReviewers
-                        }
-                        className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+                        disabled={isDisabled}
+                        className={cn(
+                          "flex-1 inline-flex items-center justify-center gap-2 h-12 bg-amber-600 text-white font-black uppercase tracking-wider text-xs rounded-xl hover:bg-amber-700 active:scale-[0.98] transition-all shadow-none shadow-amber-900/10 animate-in zoom-in-95 duration-200",
+                          isDisabled && "opacity-50 cursor-not-allowed",
+                        )}
                       >
-                        <FiCheck className="w-4 h-4" />
-                        Include paper
-                        <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
-                          1
-                        </kbd>
+                        <FiAlertTriangle className="w-4 h-4" />
+                        Resolve Conflict
                       </button>
+                    ) : (
+                      <>
+                        <button
+                          onClick={() =>
+                            onInclude
+                              ? onInclude(paper.id, reviewComment.trim() || null)
+                              : includePaper(paper.id, reviewComment.trim() || null)
+                          }
+                          disabled={
+                            isDisabled ||
+                            isSubmittingDecision ||
+                            isSubmitting ||
+                            (isLeaderView && hasPendingAssignedReviewer) ||
+                            isLoadingReviewers
+                          }
+                          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
+                          Include
+                          <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
+                            1
+                          </kbd>
+                        </button>
 
-                      <ExcludeMenu
-                        paperId={paper.id}
-                        onExclude={onExclude || excludePaper}
-                        isSubmitting={
-                          isDisabled ||
-                          isSubmittingDecision ||
-                          isSubmitting ||
-                          (isLeaderView && hasPendingAssignedReviewer) ||
-                          isLoadingReviewers
-                        }
-                        exclusionReasons={exclusionReasons}
-                        hasMoreReasons={hasMoreReasons}
-                        onShowMoreReasons={() =>
-                          setReasonPageSize((prev) => prev + 5)
-                        }
-                        onResetReasons={() => setReasonPageSize(5)}
-                        isDisabled={isDisabled}
-                      />
-                    </>
-                  )}
+                        <ExcludeMenu
+                          paperId={paper.id}
+                          onExclude={onExclude || excludePaper}
+                          isSubmitting={
+                            isDisabled ||
+                            isSubmittingDecision ||
+                            isSubmitting ||
+                            (isLeaderView && hasPendingAssignedReviewer) ||
+                            isLoadingReviewers
+                          }
+                          exclusionReasons={exclusionReasons}
+                          hasMoreReasons={hasMoreReasons}
+                          onShowMoreReasons={() =>
+                            setReasonPageSize((prev) => prev + 5)
+                          }
+                          onResetReasons={() => setReasonPageSize(5)}
+                          isDisabled={isDisabled}
+                        />
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
             ) : (

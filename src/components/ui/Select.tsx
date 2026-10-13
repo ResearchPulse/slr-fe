@@ -1,12 +1,15 @@
 import React, { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronDown } from "lucide-react";
+import { FiSearch } from "react-icons/fi";
 import { cn } from "../../utils/cn";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
   options: { value: string; label: string; description?: string }[];
   placeholder?: string;
+  searchable?: boolean;
+  searchPlaceholder?: string;
   containerClassName?: string;
   menuClassName?: string;
 }
@@ -17,6 +20,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     error,
     options,
     placeholder,
+    searchable = false,
+    searchPlaceholder = "Search options...",
     containerClassName,
     menuClassName,
     value,
@@ -29,15 +34,20 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const selectId = id ?? generatedId;
     const triggerRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
     const nativeSelectRef = useRef<HTMLSelectElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
     const [activeIndex, setActiveIndex] = useState(0);
+    const [searchTerm, setSearchTerm] = useState("");
     const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
     const selectedValue = value ?? uncontrolledValue;
     const selectedOption = options.find(
       (option) => String(option.value) === String(selectedValue),
     );
+    const visibleOptions = searchable && searchTerm.trim()
+      ? options.filter((option) => option.label.toLowerCase().includes(searchTerm.trim().toLowerCase()))
+      : options;
 
     React.useImperativeHandle(ref, () => nativeSelectRef.current as HTMLSelectElement);
 
@@ -80,10 +90,18 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       };
     }, [isOpen]);
 
+    useEffect(() => {
+      if (isOpen && searchable) {
+        searchInputRef.current?.focus({ preventScroll: true });
+        if (menuRef.current) menuRef.current.scrollTop = 0;
+      }
+    }, [isOpen, searchable]);
+
     const selectOption = (option: (typeof options)[number]) => {
       const nativeSelect = nativeSelectRef.current;
       if (nativeSelect) nativeSelect.value = option.value;
       setUncontrolledValue(option.value);
+      setSearchTerm("");
       onChange?.({
         target: { value: option.value },
         currentTarget: { value: option.value },
@@ -105,12 +123,27 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           return;
         }
         const direction = event.key === "ArrowDown" ? 1 : -1;
-        setActiveIndex((index) => (index + direction + options.length) % options.length);
+        setActiveIndex((index) => (index + direction + visibleOptions.length) % visibleOptions.length);
       }
 
       if ((event.key === "Enter" || event.key === " ") && isOpen) {
         event.preventDefault();
-        selectOption(options[activeIndex]);
+        if (visibleOptions[activeIndex]) selectOption(visibleOptions[activeIndex]);
+      }
+    };
+
+    const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      } else if (event.key === "ArrowDown" && visibleOptions.length) {
+        event.preventDefault();
+        setActiveIndex(0);
+        menuRef.current?.querySelector<HTMLButtonElement>("[role='option']")?.focus();
+      } else if (event.key === "Enter" && visibleOptions.length) {
+        event.preventDefault();
+        selectOption(visibleOptions[Math.min(activeIndex, visibleOptions.length - 1)]);
       }
     };
 
@@ -144,11 +177,12 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           disabled={props.disabled}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
-          aria-controls={`${selectId}-options`}
+          aria-controls={`${selectId}-listbox`}
           aria-invalid={error || undefined}
           onClick={() => {
             if (!isOpen) {
-              const selectedIndex = options.findIndex(
+              setSearchTerm("");
+              const selectedIndex = visibleOptions.findIndex(
                 (option) => String(option.value) === String(selectedValue),
               );
               setActiveIndex(selectedIndex >= 0 ? selectedIndex : 0);
@@ -182,16 +216,31 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             <div
               ref={menuRef}
               id={`${selectId}-options`}
-              role="listbox"
-              aria-label={props["aria-label"]}
               onClick={(event) => event.stopPropagation()}
               className={cn(
-                "fixed z-(--z-index-popover) max-h-60 overflow-auto rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                "fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
                 menuClassName,
               )}
               style={menuStyle}
             >
-              {options.map((option, index) => {
+              {searchable && <div className="shrink-0 border-b border-border bg-surface-white p-2">
+                <div className="flex h-9 items-center gap-2 rounded-lg border border-border bg-bg-primary px-2.5 focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/15">
+                  <FiSearch aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />
+                  <input
+                    ref={searchInputRef}
+                    type="search"
+                    role="searchbox"
+                    aria-label={searchPlaceholder}
+                    value={searchTerm}
+                    onChange={(event) => { setSearchTerm(event.target.value); setActiveIndex(0); }}
+                    onKeyDown={handleSearchKeyDown}
+                    placeholder={searchPlaceholder}
+                    className="h-full min-w-0 flex-1 bg-transparent text-xs text-text-primary outline-none placeholder:text-text-tertiary"
+                  />
+                </div>
+              </div>}
+              <div id={`${selectId}-listbox`} role="listbox" aria-label={props["aria-label"]} className="min-h-0 flex-1 overflow-y-auto">
+              {visibleOptions.map((option, index) => {
                 const isSelected = String(option.value) === String(selectedValue);
                 return (
                   <button
@@ -202,8 +251,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => selectOption(option)}
                     className={cn(
-                      "flex w-full items-center rounded-xl px-2 text-left font-sans text-sm text-text-primary transition-colors",
-                      option.description ? "min-h-12 py-2" : "h-9",
+                      "flex w-full min-w-0 items-center rounded-lg px-2 text-left font-sans text-[13px] leading-5 text-text-primary transition-colors whitespace-normal break-words",
+                      option.description ? "min-h-12 py-2" : "min-h-9 h-auto py-1.5",
                       "hover:bg-primary-light hover:text-accent",
                       (isSelected || activeIndex === index) && "bg-primary-light text-accent",
                       isSelected && "font-semibold",
@@ -211,15 +260,17 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   >
                     {option.description ? (
                       <span className="flex min-w-0 flex-col gap-0.5">
-                        <span>{option.label}</span>
+                        <span className="break-words">{option.label}</span>
                         <span className="text-xs font-normal leading-4 text-text-secondary">
                           {option.description}
                         </span>
                       </span>
-                    ) : option.label}
+                    ) : <span className="min-w-0 flex-1 break-words">{option.label}</span>}
                   </button>
                 );
               })}
+              {!visibleOptions.length && <p className="px-3 py-4 text-center text-xs text-text-tertiary">No matching options.</p>}
+              </div>
             </div>,
             document.body,
           )}
