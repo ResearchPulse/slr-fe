@@ -563,7 +563,7 @@ export default function PaperViewer({
                           className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
-                          Include
+                          {phase === PaperPhase.TitleAbstract ? "Advance to Full Text" : "Include in review"}
                           <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
                             1
                           </kbd>
@@ -593,7 +593,7 @@ export default function PaperViewer({
                 </div>
               </div>
             ) : (
-              <DecisionStatus paper={paper} />
+              <DecisionStatus paper={paper} phase={phase} />
             )}
           </div>
         </div>

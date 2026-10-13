@@ -50,7 +50,7 @@ export function QAHeader({
             <FileCheck2 size={20} />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-semibold leading-6 text-text-primary sm:text-xl">
+            <h1 className="review-process-header-title truncate text-lg font-semibold leading-6 text-text-primary sm:text-xl">
               Quality Assessment
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">

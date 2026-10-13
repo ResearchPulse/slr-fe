@@ -48,7 +48,7 @@ export default function ProcessHeader({
           </div>
 
           <div className="min-w-0 max-w-3xl">
-            <h1 className="process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+            <h1 className="review-process-header-title process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
               {process.name || "Systematic Review Process"}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">

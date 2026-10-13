@@ -73,6 +73,7 @@ export const useStudySelectionProcessMutations = (reviewProcessId?: string) => {
     queryClient.invalidateQueries({ queryKey: ["full-text-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-title-abstract-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-full-text-assignment-papers"] });
+    queryClient.invalidateQueries({ queryKey: ["data-extraction-conducting", "dashboard"] });
   };
 
   const startMutation = useMutation({

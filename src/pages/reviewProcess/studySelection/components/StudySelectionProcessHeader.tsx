@@ -96,7 +96,7 @@ export default function StudySelectionProcessHeader({
                 <PhaseIcon className={cn("w-4 h-4", phaseIconTextClass)} />
               </div>
               <div>
-                <h1 className="text-sm font-semibold text-text-primary">
+                <h1 className="review-process-header-title text-sm font-semibold text-text-primary">
                   Study Selection Process
                 </h1>
                 <p className="text-[10px] text-text-secondary">

@@ -221,6 +221,22 @@ body {
   letter-spacing: -0.025em !important;
 }
 
+/* Keep review-process workspace titles consistent across phase headers. */
+.review-process-header-title,
+.standard-content h1.review-process-header-title {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+}
+
+@media (max-width: 639px) {
+  .review-process-header-title,
+  .standard-content h1.review-process-header-title {
+    font-size: 22px !important;
+  }
+}
+
 .standard-content h2 {
   font-size: 24px !important;
   line-height: 1.25 !important;
