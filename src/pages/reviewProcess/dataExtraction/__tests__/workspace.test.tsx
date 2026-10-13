@@ -36,6 +36,16 @@ describe("canonical extraction workflow rules", () => {
     expect(
       findMissingRequiredFields(
         fields,
+        {
+          title: { stringValue: "Study title", numericValue: null },
+          year: { stringValue: null, numericValue: 2026 },
+        },
+        {},
+      ),
+    ).toEqual([]);
+    expect(
+      findMissingRequiredFields(
+        fields,
         { title: "", year: 2020 },
         { title: true },
       ),

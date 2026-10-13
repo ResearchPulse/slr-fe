@@ -33,6 +33,7 @@ import Select from "../../../../components/ui/Select";
 import BulkAssignmentPanelDataExtraction from "../../../../components/reviewProcess/leader/BulkAssignmentPanelDataExtraction";
 import { getErrorMessage } from "../../../../utils/errorUtils";
 import { toastError } from "../../../../utils/toast";
+import { formatAuthorPreview, formatAuthors } from "../../../../utils/formatAuthors";
 import {
   Table,
   TableBody,
@@ -65,6 +66,7 @@ interface DashboardTask {
   paperId: string;
   title: string;
   authors: string | null;
+  authorPreview: string | null;
   publicationYear: number | null;
   reviewer1Id: string | null;
   reviewer1Status?: string | null;
@@ -186,17 +188,15 @@ export default function DataExtractionDashboard({
   const tasks = useMemo<DashboardTask[]>(
     () =>
       ws.dashboardTasks.map((task) => {
-        const citationAuthors = (task.citation?.authors ?? [])
-          .map((author) => typeof author === "string" ? author : author.name)
-          .map((author) => author.trim())
-          .filter(Boolean)
-          .join(", ");
+        const citationAuthors = formatAuthors(task.citation?.authors);
+        const authors = task.authors?.trim() || citationAuthors || null;
 
         return {
           taskId: task.taskId ?? task.paperId,
           paperId: task.paperId,
           title: task.title || task.citation?.title || "Untitled paper",
-          authors: task.authors?.trim() || citationAuthors || null,
+          authors,
+          authorPreview: formatAuthorPreview(task.citation?.authors) || formatAuthorPreview(authors),
           publicationYear: task.publicationYear ?? task.citation?.year ?? null,
           reviewer1Id: task.reviewer1Id ?? null,
           reviewer1Status: task.reviewer1Status ?? null,
@@ -1112,8 +1112,11 @@ export default function DataExtractionDashboard({
                                       </span>
                                     )}
                                   </div>
-                                  <p className="mt-1 text-xs text-text-secondary">
-                                    {task.authors ?? "Unknown authors"} •{" "}
+                                  <p
+                                    className="mt-1 block max-w-full truncate text-xs text-text-secondary"
+                                    title={task.authors ?? undefined}
+                                  >
+                                    {task.authorPreview ?? task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
                                   </p>
                                 </div>

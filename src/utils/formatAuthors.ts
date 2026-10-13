@@ -31,3 +31,14 @@ export function formatAuthors(authors: unknown): string | null {
 
   return names.length > 0 ? names.join(", ") : null;
 }
+
+/** Keep paper lists compact while preserving the complete author string for tooltips/details. */
+export function formatAuthorPreview(authors: unknown, maxAuthors = 3): string | null {
+  const formatted = formatAuthors(authors);
+  if (!formatted) return null;
+
+  const names = formatted.split(",").map((name) => name.trim()).filter(Boolean);
+  if (names.length <= maxAuthors) return formatted;
+
+  return `${names.slice(0, maxAuthors).join(", ")}, et al.`;
+}
