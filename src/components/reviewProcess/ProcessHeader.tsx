@@ -47,8 +47,8 @@ export default function ProcessHeader({
             <FiPackage className="h-5 w-5" aria-hidden="true" />
           </div>
 
-          <div className="min-w-0">
-            <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+          <div className="min-w-0 max-w-3xl">
+            <h1 className="process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
               {process.name || "Systematic Review Process"}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">

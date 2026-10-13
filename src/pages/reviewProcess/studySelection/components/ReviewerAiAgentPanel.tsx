@@ -208,19 +208,31 @@ export default function ReviewerAiAgentPanel({
             )}
           </div>
         ) : (
-          <div className="flex min-w-0 flex-wrap items-center gap-2 rounded-lg border border-border bg-slate-50 px-3 py-2.5">
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">Your project agent</p>
-              <p className="truncate text-xs font-semibold text-text-primary">{selectedAgent.agent.name}</p>
+          <div className="min-w-0 rounded-lg border border-border bg-slate-50/70 px-3 py-2.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-white text-blue-600">
+                <FiCpu className="h-[18px] w-[18px]" aria-hidden="true" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-text-secondary">Project agent</p>
+                <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                  <p className="max-w-full truncate text-[13px] font-semibold leading-5 text-text-primary">{selectedAgent.agent.name}</p>
+                  <span className={`inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium ${selectedAgent.access?.isActive ? "text-emerald-700" : "text-text-secondary"}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${selectedAgent.access?.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+                    {selectedAgent.access?.isActive ? "Connected" : "Disabled"}
+                  </span>
+                </div>
+              </div>
+              <div className="ml-auto flex shrink-0 items-center gap-1.5">
+                <button type="button" aria-label={`View ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "token" })} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white text-text-secondary transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" title="View token"><FiKey className="h-4 w-4" /></button>
+                <button type="button" aria-label={`Rotate ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "rotate" })} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white text-text-secondary transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" title="Rotate token"><FiRefreshCw className="h-4 w-4" /></button>
+                <button type="button" onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: selectedAgent.access?.isActive ? "disable" : "enable" })} className="h-8 rounded-md border border-border bg-white px-2.5 text-[11px] font-medium text-text-secondary transition hover:border-slate-300 hover:bg-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">{selectedAgent.access?.isActive ? "Disable" : "Enable"}</button>
+              </div>
             </div>
-            <span className={`text-[10px] font-medium ${selectedAgent.access?.isActive ? "text-emerald-700" : "text-rose-700"}`}>
-              {selectedAgent.access?.isActive ? "Connected" : "Disabled"}
-            </span>
-            <button type="button" aria-label={`View ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "token" })} className="rounded-md border border-border bg-white p-1.5 text-text-secondary" title="View token"><FiKey /></button>
-            <button type="button" aria-label={`Rotate ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "rotate" })} className="rounded-md border border-border bg-white p-1.5 text-text-secondary" title="Rotate token"><FiRefreshCw /></button>
-            <button type="button" onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: selectedAgent.access?.isActive ? "disable" : "enable" })} className="rounded-md border border-border bg-white px-2 py-1.5 text-[10px] text-text-secondary">{selectedAgent.access?.isActive ? "Disable" : "Enable"}</button>
             {available.length > 0 && (
-              <button type="button" onClick={() => setIsChangingAgent(true)} className="rounded-md px-2 py-1.5 text-[10px] font-medium text-violet-700 hover:bg-violet-50">Change agent</button>
+              <div className="mt-1.5 pl-12">
+                <button type="button" onClick={() => setIsChangingAgent(true)} className="rounded px-1.5 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">Change agent</button>
+              </div>
             )}
           </div>
         )}

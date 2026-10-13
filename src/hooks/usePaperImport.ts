@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toastError, toastSuccess, toastWarning } from "../utils/toast";
 import { paperImportService } from "../services/paperImportService";
+import type { PdfBatchProgressCallback } from "../services/paperImportService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
 import type {
@@ -67,7 +68,8 @@ export function usePaperImport(projectId?: string) {
   });
 
   const pdfBatchImportMutation = useMutation({
-    mutationFn: (request: PdfFilesImportRequest) => paperImportService.importPdfFiles(request),
+    mutationFn: ({ request, onProgress }: { request: PdfFilesImportRequest; onProgress?: PdfBatchProgressCallback }) =>
+      paperImportService.importPdfFiles(request, onProgress),
     onSuccess: (response) => {
       const result = response.data;
       const imported = result?.importedRecords ?? 0;
@@ -135,7 +137,8 @@ export function usePaperImport(projectId?: string) {
     isImportingBibTex: importBibTexMutation.isPending,
     importPdf: pdfImportMutation.mutateAsync,
     isImportingPdf: pdfImportMutation.isPending,
-    importPdfs: pdfBatchImportMutation.mutateAsync,
+    importPdfs: (request: PdfFilesImportRequest, onProgress?: PdfBatchProgressCallback) =>
+      pdfBatchImportMutation.mutateAsync({ request, onProgress }),
     isImportingPdfs: pdfBatchImportMutation.isPending,
 
     // DOI

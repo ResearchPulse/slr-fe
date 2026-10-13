@@ -14,6 +14,7 @@ import Button from "../ui/Button";
 import { usePaperImport } from "../../hooks/usePaperImport";
 import { useProjectMember } from "../../hooks/useProjectMember";
 import { MAX_PDF_BATCH_FILES } from "../../services/paperImportService";
+import type { PdfBatchProgress } from "../../services/paperImportService";
 import { toastWarning } from "../../utils/toast";
 import type { CrossrefQueryParameters } from "../../types/paper";
 
@@ -29,6 +30,8 @@ type ImportMode = "ris" | "bibtex" | "pdf" | "doi" | "crossref";
 interface SelectedPdf {
   file: File;
   error?: string;
+  progress?: number;
+  progressStatus?: PdfBatchProgress["status"];
 }
 
 const pdfKey = (file: File) => `${file.name}::${file.size}::${file.lastModified}`;
@@ -147,6 +150,15 @@ export default function PaperImportModal({
         files: pdfFiles.map((item) => item.file),
         projectId,
         searchSourceId: pdfSourceId || undefined,
+      }, (progress) => {
+        setPdfFiles((current) => current.map((item, index) => index === progress.index
+          ? {
+              ...item,
+              progress: progress.percent,
+              progressStatus: progress.status,
+              error: progress.error,
+            }
+          : item));
       });
       const items = response.data?.items ?? [];
       // Keep only failed files (with their reason) so the user can review or retry them.
@@ -244,7 +256,19 @@ export default function PaperImportModal({
       title="Import Papers to Repository"
       size="xl"
       className="max-h-[calc(100vh-1rem)]"
-      bodyClassName="md:overflow-hidden"
+      bodyClassName="min-h-0 overflow-y-auto overscroll-contain"
+      footer={mode === "pdf" && canImportPapers ? (
+        <>
+          <Button variant="secondary" onClick={handleClose} type="button" className="rounded-xl px-8">Cancel</Button>
+          <Button type="submit" form="paper-pdf-import-form" disabled={pdfFiles.length === 0 || isImportingPdfs} className="rounded-xl px-8">
+            {isImportingPdfs
+              ? "Importing..."
+              : pdfFiles.length > 1
+              ? `Import ${pdfFiles.length} PDFs`
+              : "Import PDF"}
+          </Button>
+        </>
+      ) : undefined}
     >
       {!canImportPapers ? (
         <div className="flex flex-col items-center justify-center py-12 px-6 text-center">
@@ -293,10 +317,10 @@ export default function PaperImportModal({
           </div>
 
           {mode === "pdf" && (
-            <form onSubmit={handlePdfSubmit} className="space-y-4 animate-in fade-in duration-300">
-              <div className="bg-rose-50 border border-rose-100 rounded-xl p-3 flex gap-3">
-                <FiInfo className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-rose-700 font-medium">
+            <form id="paper-pdf-import-form" onSubmit={handlePdfSubmit} className="space-y-4 animate-in fade-in duration-300">
+              <div className="bg-sky-50 border border-sky-100 rounded-xl p-3 flex gap-3">
+                <FiInfo className="w-5 h-5 text-sky-600 shrink-0 mt-0.5" />
+                <p className="text-sm text-sky-800 font-medium">
                   Upload up to {MAX_PDF_BATCH_FILES} PDF papers at once. Metadata is extracted automatically when GROBID is available.
                 </p>
               </div>
@@ -369,8 +393,17 @@ export default function PaperImportModal({
                         <div className="min-w-0 flex-1 text-left">
                           <p className="truncate text-sm font-bold text-text-primary">{item.file.name}</p>
                           <p className={`text-xs ${item.error ? "text-red-500" : "text-text-secondary"}`}>
-                            {item.error ?? `${(item.file.size / 1024).toFixed(2)} KB`}
+                            {item.error ?? (item.progressStatus === "SIGNING" ? "Preparing secure upload…"
+                              : item.progressStatus === "UPLOADING" ? `Uploading to Cloudinary… ${item.progress ?? 0}%`
+                              : item.progressStatus === "FINALIZING" ? "Registering paper and queueing GROBID…"
+                              : item.progressStatus === "IMPORTED" ? "Imported · GROBID is processing in background"
+                              : `${(item.file.size / 1024).toFixed(2)} KB`)}
                           </p>
+                          {isImportingPdfs && item.progressStatus === "UPLOADING" && (
+                            <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={item.progress ?? 0} aria-valuemin={0} aria-valuemax={100} aria-label={`Upload progress for ${item.file.name}`}>
+                              <div className="h-full rounded-full bg-accent transition-[width] duration-200" style={{ width: `${item.progress ?? 0}%` }} />
+                            </div>
+                          )}
                         </div>
                         <button
                           type="button"
@@ -394,16 +427,6 @@ export default function PaperImportModal({
                   <option value="">Unspecified source</option>
                   {sourceOptions.map((source) => <option key={source.value} value={source.value}>{source.label}</option>)}
                 </select>
-              </div>
-              <div className="flex justify-end gap-3 pt-4 border-t border-border">
-                <Button variant="secondary" onClick={handleClose} type="button" className="rounded-xl px-8">Cancel</Button>
-                <Button type="submit" disabled={pdfFiles.length === 0 || isImportingPdfs} className="rounded-xl px-8">
-                  {isImportingPdfs
-                    ? "Importing..."
-                    : pdfFiles.length > 1
-                    ? `Import ${pdfFiles.length} PDFs`
-                    : "Import PDF"}
-                </Button>
               </div>
             </form>
           )}

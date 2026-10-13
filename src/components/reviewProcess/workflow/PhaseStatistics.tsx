@@ -5,40 +5,26 @@ interface PhaseStatisticsProps {
   status: PhaseStatusType;
 }
 
-const VARIANT_CLASSES: Record<string, string> = {
+const VALUE_TONE: Record<string, string> = {
   default: "text-text-primary",
-  success: "text-green-700",
+  success: "text-emerald-700",
   warning: "text-amber-700",
-  danger: "text-red-700",
+  danger: "text-rose-700",
 };
 
-export default function PhaseStatistics({
-  stats,
-  status,
-}: PhaseStatisticsProps) {
+export default function PhaseStatistics({ stats }: PhaseStatisticsProps) {
   if (stats.length === 0) return null;
 
-  const isDisabled = status === "Locked";
-
   return (
-    <div
-      className={`grid grid-cols-2 gap-2 mt-3 ${isDisabled ? "opacity-40" : ""}`}
-    >
+    <dl className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-border/70 pt-3">
       {stats.map((stat, index) => (
-        <div
-          key={index}
-          className="rounded-xl border border-border bg-bg-primary px-2.5 py-2"
-        >
-          <p className="text-[10px] text-text-secondary leading-tight mb-0.5">
-            {stat.label}
-          </p>
-          <p
-            className={`text-sm font-bold ${VARIANT_CLASSES[stat.variant ?? "default"]}`}
-          >
+        <div key={`${stat.label}-${index}`} className="min-w-0">
+          <dt className="truncate text-[11px] leading-4 text-text-secondary">{stat.label}</dt>
+          <dd className={`mt-0.5 truncate text-sm font-semibold tabular-nums ${VALUE_TONE[stat.variant ?? "default"]}`}>
             {stat.value}
-          </p>
+          </dd>
         </div>
       ))}
-    </div>
+    </dl>
   );
 }
