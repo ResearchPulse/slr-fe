@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { isAxiosError } from "axios";
-import { FiCpu, FiKey, FiRefreshCw, FiTrash2 } from "react-icons/fi";
+import { FiCpu, FiKey, FiRefreshCw, FiSettings, FiTrash2 } from "react-icons/fi";
 import api from "../../../../config/axios";
 import Select from "../../../../components/ui/Select";
 import Button from "../../../../components/ui/Button";
@@ -17,10 +17,7 @@ type AgentEntry = {
   agent: { id: string; name: string; description: string; isActive: boolean };
   access: { isActive: boolean } | null;
 };
-type AgentWorkspace = {
-  agents: AgentEntry[];
-  selectedAgentId: string | null;
-};
+type AgentWorkspace = { agents: AgentEntry[]; selectedAgentId: string | null };
 type AgentTask = {
   id: string;
   agentId: string;
@@ -28,8 +25,9 @@ type AgentTask = {
   paperId: string;
   stage?: ReviewStage;
   instructions: string;
-  status: "ASSIGNED" | "COMPLETED";
+  status: string;
   result?: { decision: string; reasoning: string; data?: Record<string, unknown> };
+  error?: { code?: string; message?: string };
   createdAt: string;
 };
 
@@ -58,11 +56,13 @@ export default function ReviewerAiAgentPanel({
   const { member } = useProjectMember(projectId);
   const currentUserId = useSelector((state: RootState) => state.auth.user?.id);
   const queryClient = useQueryClient();
-  const [isChangingAgent, setIsChangingAgent] = useState(false);
-  const [token, setToken] = useState("");
-  const [taskError, setTaskError] = useState("");
+  const [activeAgentId, setActiveAgentId] = useState("");
+  const [isChoosingAgent, setIsChoosingAgent] = useState(false);
+  const [tokens, setTokens] = useState<Record<string, string>>({});
+  const [taskErrors, setTaskErrors] = useState<Record<string, string>>({});
   const agentsKey = ["reviewer-ai-agents", projectId];
   const tasksKey = ["reviewer-ai-agent-tasks", projectId, paper?.id];
+  const taskStateKey = (agentId: string, paperId = paper?.id, taskStage = stage) => `${paperId ?? ""}:${taskStage}:${agentId}`;
 
   const agentsQuery = useQuery({
     queryKey: agentsKey,
@@ -88,11 +88,12 @@ export default function ReviewerAiAgentPanel({
   const connectMutation = useMutation({
     mutationFn: async (agentId: string) => {
       const response = await api.post<{ data: { accessToken: string } }>(`/projects/${projectId}/ai-review/agents`, { agentId });
-      return response.data.data;
+      return { agentId, accessToken: response.data.data.accessToken };
     },
-    onSuccess: async (result) => {
-      setToken(result.accessToken);
-      setIsChangingAgent(false);
+    onSuccess: async ({ agentId, accessToken }) => {
+      setTokens((previous) => ({ ...previous, [agentId]: accessToken }));
+      setActiveAgentId(agentId);
+      setIsChoosingAgent(false);
       toastSuccess("AI agent connected", "This agent is now connected to your reviewer workspace for this project.");
       await queryClient.invalidateQueries({ queryKey: agentsKey });
     },
@@ -100,21 +101,24 @@ export default function ReviewerAiAgentPanel({
   });
 
   const taskMutation = useMutation({
-    mutationFn: async (agentId: string) => api.post(`/projects/${projectId}/ai-review/agents/${agentId}/tasks`, {
-      paperId: paper!.id,
-      stage,
-      instructions: "Review this paper against the protocol criteria. Return a recommendation with criterion-level evidence and reasoning. Do not make or submit a human screening decision.",
-    }),
-    onSuccess: async () => {
-      setTaskError("");
-      toastSuccess("AI review task assigned");
-      await queryClient.invalidateQueries({ queryKey: tasksKey });
+    mutationFn: async ({ agentId, paperId, taskStage }: { agentId: string; paperId: string; taskStage: ReviewStage }) => {
+      await api.post(`/projects/${projectId}/ai-review/agents/${agentId}/tasks`, {
+        paperId,
+        stage: taskStage,
+        instructions: "Review this paper against the protocol criteria. Return a recommendation with criterion-level evidence and reasoning. Do not make or submit a human screening decision.",
+      });
+      return { agentId, paperId, taskStage };
     },
-    onError: (error) => {
+    onSuccess: async ({ agentId, paperId, taskStage }) => {
+      setTaskErrors((previous) => ({ ...previous, [taskStateKey(agentId, paperId, taskStage)]: "" }));
+      toastSuccess("AI review task assigned");
+      await queryClient.invalidateQueries({ queryKey: ["reviewer-ai-agent-tasks", projectId, paperId] });
+    },
+    onError: (error, variables) => {
       const message = isAxiosError(error)
         ? error.response?.data?.error?.message || error.response?.data?.error?.code || error.message
         : error instanceof Error ? error.message : "Could not assign the paper to this AI agent.";
-      setTaskError(message);
+      setTaskErrors((previous) => ({ ...previous, [taskStateKey(variables.agentId, variables.paperId, variables.taskStage)]: message }));
       toastError("Could not assign the paper to this AI agent", message);
     },
   });
@@ -123,18 +127,18 @@ export default function ReviewerAiAgentPanel({
     mutationFn: async ({ agentId, action }: { agentId: string; action: "rotate" | "disable" | "enable" | "token" }) => {
       if (action === "rotate") {
         const response = await api.post<{ data: { accessToken: string } }>(`/projects/${projectId}/ai-review/agents/${agentId}/rotate-token`);
-        return response.data.data.accessToken;
+        return { agentId, accessToken: response.data.data.accessToken };
       }
       if (action === "token") {
         const response = await api.get<{ data: { accessToken: string } }>(`/projects/${projectId}/ai-review/agents/${agentId}/token`);
-        return response.data.data.accessToken;
+        return { agentId, accessToken: response.data.data.accessToken };
       }
       await api.patch(`/projects/${projectId}/ai-review/agents/${agentId}`, { isActive: action === "enable" });
-      return "";
+      return { agentId, accessToken: "" };
     },
-    onSuccess: async (nextToken, variables) => {
-      if (nextToken) setToken(nextToken);
-      if (variables.action === "disable") setToken("");
+    onSuccess: async ({ agentId, accessToken }, variables) => {
+      if (accessToken) setTokens((previous) => ({ ...previous, [agentId]: accessToken }));
+      if (variables.action === "disable") setTokens((previous) => ({ ...previous, [agentId]: "" }));
       await queryClient.invalidateQueries({ queryKey: agentsKey });
     },
     onError: () => toastError("Could not update AI agent access"),
@@ -147,139 +151,126 @@ export default function ReviewerAiAgentPanel({
     onError: () => toastError("Only pending AI tasks can be removed"),
   });
 
-  if (member?.role !== 3 || !paper || !projectId) return null;
   const entries = agentsQuery.data?.agents ?? [];
-  const selectedAgent = entries.find(({ agent }) => agent.id === agentsQuery.data?.selectedAgentId) ?? null;
-  const available = entries.filter(({ agent }) => agent.isActive && agent.id !== selectedAgent?.agent.id);
-  const canAssignTask = Boolean(selectedAgent?.agent.isActive && selectedAgent.access?.isActive);
-  const tasks = (tasksQuery.data ?? []).filter((task) => task.stage === stage);
+  const available = entries.filter(({ agent, access }) => agent.isActive && !access);
+  const agentTasks = useMemo(() => {
+    const grouped = new Map<string, AgentTask[]>();
+    for (const task of tasksQuery.data ?? []) {
+      if (task.paperId !== paper?.id || task.stage !== stage) continue;
+      grouped.set(task.agentId, [...(grouped.get(task.agentId) ?? []), task]);
+    }
+    return grouped;
+  }, [paper?.id, stage, tasksQuery.data]);
+
+  useEffect(() => {
+    if (!entries.length) return;
+    if (activeAgentId && entries.some(({ agent }) => agent.id === activeAgentId)) return;
+    const defaultEntry = entries.find(({ agent }) => agent.id === agentsQuery.data?.selectedAgentId)
+      ?? entries.find(({ access }) => access?.isActive)
+      ?? entries.find(({ access }) => access)
+      ?? entries[0];
+    setActiveAgentId(defaultEntry.agent.id);
+  }, [activeAgentId, agentsQuery.data?.selectedAgentId, entries]);
+
+  if (member?.role !== 3 || !paper || !projectId) return null;
   const ownDecision = paper.decisions?.find((decision) =>
     decision.reviewerId === currentUserId && decision.phase === (stage === "FULL_TEXT" ? 1 : 0),
   );
-  const completedRecommendations = [...new Set(tasks
-    .filter((task) => task.status === "COMPLETED" && task.result?.decision)
+  const recommendations = [...new Set((tasksQuery.data ?? [])
+    .filter((task) => task.paperId === paper.id && task.stage === stage && task.status === "COMPLETED" && task.result?.decision)
     .map((task) => normalizeDecision(task.result!.decision)))];
 
   return (
-    <section className="w-full min-w-0 rounded-xl border border-violet-200 bg-white p-4 shadow-sm" aria-label="My AI agent reviews">
-      <div className="flex items-start gap-3">
-        <div className="shrink-0 rounded-lg bg-violet-50 p-2 text-violet-700"><FiCpu /></div>
-        <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-semibold text-text-primary">My AI review workspace</h3>
-          <p className="mt-1 max-w-3xl text-xs leading-5 text-text-secondary">Choose one AI agent for your reviewer workspace in this project. Its token is reused for every task you assign, and its results stay separate from human decisions.</p>
+    <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-white" aria-label="AI review workspace">
+      <div className="flex min-w-0 items-center gap-2 border-b border-border px-3 pt-3">
+        <FiCpu className="h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <div role="tablist" aria-label="AI review agents" className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
+          {entries.map(({ agent, access }) => (
+            <button
+              key={agent.id}
+              id={`ai-agent-tab-${agent.id}`}
+              type="button"
+              role="tab"
+              aria-selected={activeAgentId === agent.id}
+              aria-controls={`ai-agent-panel-${agent.id}`}
+              onClick={() => { setActiveAgentId(agent.id); setIsChoosingAgent(false); }}
+              className={`relative flex min-h-9 max-w-40 shrink-0 items-center gap-1.5 rounded-t-md px-2.5 text-xs font-medium transition ${activeAgentId === agent.id ? "bg-blue-50 text-blue-800" : "text-text-secondary hover:bg-slate-50 hover:text-text-primary"}`}
+              title={agent.name}
+            >
+              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${access?.isActive ? "bg-emerald-500" : access ? "bg-slate-400" : "bg-slate-300"}`} />
+              <span className="truncate">{agent.name}</span>
+              {activeAgentId === agent.id && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-blue-600" />}
+            </button>
+          ))}
+          {available.length > 0 && <button type="button" onClick={() => setIsChoosingAgent(true)} className="min-h-9 shrink-0 rounded-t-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50">+ Connect</button>}
         </div>
+        <button type="button" aria-label="Refresh AI agents" title="Refresh agents" onClick={() => void agentsQuery.refetch()} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><FiRefreshCw className="h-3.5 w-3.5" /></button>
       </div>
 
-      <div className="mt-4 flex min-w-0 flex-col gap-2">
-        {!selectedAgent || isChangingAgent ? (
+      {agentsQuery.isError && <div role="alert" className="m-3 flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load your AI workspace.</span><button type="button" onClick={() => void agentsQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
+      {!entries.length && !agentsQuery.isLoading && !agentsQuery.isError && <div className="p-3 text-xs text-text-secondary">No AI agents are available in this project.</div>}
+
+      {entries.map((entry) => {
+        const entryTasks = agentTasks.get(entry.agent.id) ?? [];
+        return <div
+        key={entry.agent.id}
+        id={`ai-agent-panel-${entry.agent.id}`}
+        role="tabpanel"
+        aria-labelledby={`ai-agent-tab-${entry.agent.id}`}
+        hidden={activeAgentId !== entry.agent.id}
+        className="min-w-0 p-3"
+      >
+        <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><FiCpu className="h-3.5 w-3.5" /></span>
+          <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">{entry.agent.name}</h3>
+          <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium ${entry.access?.isActive ? "text-emerald-700" : "text-text-secondary"}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${entry.access?.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+            {entry.access?.isActive ? "Connected" : entry.access ? "Disconnected" : "Not connected"}
+          </span>
+          {entry.access && <div className="ml-auto flex shrink-0 items-center gap-1">
+            <button type="button" aria-label={`Refresh ${entry.agent.name} review`} title="Refresh this agent's results" onClick={() => void tasksQuery.refetch()} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiRefreshCw className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`View ${entry.agent.name} token`} title="View token" onClick={() => actionMutation.mutate({ agentId: entry.agent.id, action: "token" })} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiKey className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`Rotate ${entry.agent.name} token`} title="Rotate token" onClick={() => { if (window.confirm(`Rotate ${entry.agent.name}'s token? The previous token will stop working.`)) actionMutation.mutate({ agentId: entry.agent.id, action: "rotate" }); }} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiRefreshCw className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`${entry.access.isActive ? "Disconnect" : "Reconnect"} ${entry.agent.name}`} title={entry.access.isActive ? "Disconnect agent" : "Reconnect agent"} onClick={() => { const action = entry.access!.isActive ? "disable" : "enable"; if (action === "disable" && !window.confirm(`Disconnect ${entry.agent.name}? Its existing review history will remain available.`)) return; actionMutation.mutate({ agentId: entry.agent.id, action }); }} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiSettings className="h-3.5 w-3.5" /></button>
+          </div>}
+        </div>
+
+        {(isChoosingAgent && activeAgentId === entry.agent.id || !entry.access) && <div className="mt-3 flex min-w-0 items-center gap-2">
+          <Select aria-label="Connect an AI agent" value="" placeholder={available.length ? "Connect another AI agent" : "No additional active agents"} disabled={!available.length || connectMutation.isPending} onChange={(event) => { if (event.target.value) connectMutation.mutate(event.target.value); }} options={available.map(({ agent }) => ({ value: agent.id, label: agent.name, description: agent.description }))} containerClassName="min-w-0 flex-1" menuClassName="max-h-72" className="h-9 rounded-lg px-3 text-xs" />
+          {isChoosingAgent && <button type="button" onClick={() => setIsChoosingAgent(false)} className="shrink-0 px-2 py-1 text-xs text-text-secondary hover:text-text-primary">Cancel</button>}
+          {!entry.agent.isActive && <span className="text-[10px] text-text-secondary">This catalog agent is unavailable.</span>}
+        </div>}
+
+        {tokens[entry.agent.id] && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
+          <label className="text-[10px] font-semibold text-amber-900">Reviewer token</label>
+          <input readOnly value={tokens[entry.agent.id]} onFocus={(event) => event.currentTarget.select()} className="mt-1 w-full rounded border border-amber-200 bg-white px-2 py-1.5 font-mono text-[10px]" />
+        </div>}
+
+        {entry.access?.isActive && <Button type="button" variant="primary" size="sm" disabled={!entry.agent.isActive || (taskMutation.isPending && taskMutation.variables?.agentId === entry.agent.id && taskMutation.variables.paperId === paper.id && taskMutation.variables.taskStage === stage)} onClick={() => taskMutation.mutate({ agentId: entry.agent.id, paperId: paper.id, taskStage: stage })} className="mt-3 h-9 w-full rounded-lg normal-case tracking-normal text-xs font-semibold">
+          {taskMutation.isPending && taskMutation.variables?.agentId === entry.agent.id && taskMutation.variables.paperId === paper.id && taskMutation.variables.taskStage === stage ? "Sending to agent…" : "Send to agent"}
+        </Button>}
+        {taskErrors[taskStateKey(entry.agent.id)] && <div role="alert" className="mt-2 break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">Task assignment failed: {taskErrors[taskStateKey(entry.agent.id)]}</div>}
+
+        {ownDecision && <div className="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-[11px] text-blue-900">Your human decision: <strong>{ownDecision.decision}</strong>. AI recommendations never change it.</div>}
+        {recommendations.length > 1 && <div className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">Agents recommend different outcomes. This is AI only and does not create a human review conflict.</div>}
+
+        <div className="mt-4 border-t border-border pt-3">
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <h4 className="text-[11px] font-semibold text-text-primary">{stage === "FULL_TEXT" ? "Full text" : "Title / abstract"} screening</h4>
+            <span className="text-[10px] text-text-tertiary">{entryTasks.length} {entryTasks.length === 1 ? "task" : "tasks"}</span>
+          </div>
+          {tasksQuery.isLoading && <p role="status" className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-text-secondary">Loading AI review results…</p>}
+          {tasksQuery.isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load AI task results.</span><button type="button" onClick={() => void tasksQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
+          {!tasksQuery.isLoading && !tasksQuery.isError && !entryTasks.length && <p className="rounded-lg bg-slate-50 px-3 py-3 text-xs text-text-secondary">{entry.access?.isActive ? "No review yet for this paper." : "Connect this agent to send papers for review. Past results remain available."}</p>}
           <div className="space-y-2">
-            <Select
-              aria-label="Connect an AI agent"
-              value=""
-              placeholder={available.length
-                ? selectedAgent ? "Choose a replacement AI agent" : "Choose one AI agent for this project"
-                : "No other active agents are available"}
-              disabled={!available.length || connectMutation.isPending}
-              onChange={(event) => {
-                if (event.target.value) connectMutation.mutate(event.target.value);
-              }}
-              options={available.map(({ agent }) => ({
-                value: agent.id,
-                label: agent.name,
-                description: agent.description,
-              }))}
-              containerClassName="w-full min-w-0"
-              menuClassName="max-h-72"
-              className="h-10 rounded-lg px-3 text-xs"
-            />
-            {selectedAgent && isChangingAgent && (
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[11px] leading-4 text-text-secondary">
-                  Switching agents disables the current token; its pending tasks may stop being processed.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setIsChangingAgent(false)}
-                  className="shrink-0 text-xs font-medium text-text-secondary hover:text-text-primary"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
+            {entryTasks.map((task) => <div key={task.id} className="relative min-w-0">
+              <AIReviewResultCard task={task} humanDecision={ownDecision?.decision} paperInput={{ hasPdf: Boolean(paper.pdfUrl), extractionStatus: paper.extraction?.status, extractionMessage: paper.extraction?.message }} />
+              {task.status === "ASSIGNED" && <div className="mt-1 flex justify-end"><button type="button" aria-label="Remove pending AI review" onClick={() => { if (window.confirm("Remove this pending AI review task?")) removeMutation.mutate({ agentId: task.agentId, taskId: task.id }); }} className="inline-flex items-center gap-1 rounded px-2 py-1 text-[10px] text-text-secondary hover:bg-rose-50 hover:text-rose-700"><FiTrash2 /> Remove pending task</button></div>}
+            </div>)}
           </div>
-        ) : (
-          <div className="min-w-0 rounded-lg border border-border bg-slate-50/70 px-3 py-2.5">
-            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-white text-blue-600">
-                <FiCpu className="h-[18px] w-[18px]" aria-hidden="true" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[9px] font-semibold uppercase tracking-[0.12em] text-text-secondary">Project agent</p>
-                <div className="mt-0.5 flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-                  <p className="max-w-full truncate text-[13px] font-semibold leading-5 text-text-primary">{selectedAgent.agent.name}</p>
-                  <span className={`inline-flex shrink-0 items-center gap-1.5 text-[10px] font-medium ${selectedAgent.access?.isActive ? "text-emerald-700" : "text-text-secondary"}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${selectedAgent.access?.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
-                    {selectedAgent.access?.isActive ? "Connected" : "Disabled"}
-                  </span>
-                </div>
-              </div>
-              <div className="ml-auto flex shrink-0 items-center gap-1.5">
-                <button type="button" aria-label={`View ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "token" })} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white text-text-secondary transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" title="View token"><FiKey className="h-4 w-4" /></button>
-                <button type="button" aria-label={`Rotate ${selectedAgent.agent.name} token`} onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: "rotate" })} className="inline-flex h-8 w-8 items-center justify-center rounded-md border border-border bg-white text-text-secondary transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500" title="Rotate token"><FiRefreshCw className="h-4 w-4" /></button>
-                <button type="button" onClick={() => actionMutation.mutate({ agentId: selectedAgent.agent.id, action: selectedAgent.access?.isActive ? "disable" : "enable" })} className="h-8 rounded-md border border-border bg-white px-2.5 text-[11px] font-medium text-text-secondary transition hover:border-slate-300 hover:bg-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">{selectedAgent.access?.isActive ? "Disable" : "Enable"}</button>
-              </div>
-            </div>
-            {available.length > 0 && (
-              <div className="mt-1.5 pl-12">
-                <button type="button" onClick={() => setIsChangingAgent(true)} className="rounded px-1.5 py-1 text-[11px] font-medium text-blue-700 transition hover:bg-blue-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500">Change agent</button>
-              </div>
-            )}
-          </div>
-        )}
-        <Button
-          type="button"
-          variant="primary"
-          size="sm"
-          disabled={!canAssignTask || taskMutation.isPending}
-          onClick={() => selectedAgent && taskMutation.mutate(selectedAgent.agent.id)}
-          className="h-10 w-full rounded-lg normal-case tracking-normal text-xs font-semibold"
-        >
-          {taskMutation.isPending
-            ? "Assigning…"
-            : selectedAgent
-              ? `Send paper to ${selectedAgent.agent.name}`
-              : "Choose an AI agent to continue"}
-        </Button>
-      </div>
-
-      {token && <div className="mt-3 rounded-lg border border-amber-300 bg-amber-50 p-3">
-        <label className="text-[10px] font-semibold uppercase text-amber-900">Reviewer scoped agent token</label>
-        <input readOnly value={token} onFocus={(event) => event.currentTarget.select()} className="mt-1 w-full rounded border border-amber-300 bg-white px-2 py-1.5 font-mono text-[10px]" />
-        <p className="mt-1 text-[10px] text-amber-900">This token only retrieves your AI review tasks for this project.</p>
-      </div>}
-
-      <div className="mt-4 space-y-2">
-        <p className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">Agent results · {stage === "FULL_TEXT" ? "Full text" : "Title / abstract"}</p>
-        {agentsQuery.isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load your AI workspace.</span><button type="button" onClick={() => void agentsQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
-        {tasksQuery.isLoading && <p role="status" className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-text-secondary">Loading AI review results…</p>}
-        {tasksQuery.isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load AI task results.</span><button type="button" onClick={() => void tasksQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
-        {taskError && <div role="alert" className="break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">Task assignment failed: {taskError}</div>}
-        {ownDecision && <div className="rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-900">
-          Your screening decision: <strong>{ownDecision.decision}</strong>. AI recommendations below are for comparison and never create a human-review conflict by themselves.
-        </div>}
-        {completedRecommendations.length > 1 && <div className="rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs text-amber-950">
-          AI recommendations differ. This is an AI-only disagreement, not a formal conflict between Human Reviewers.
-        </div>}
-        {tasks.length === 0 && !tasksQuery.isLoading && !tasksQuery.isError && <p className="rounded-lg bg-slate-50 px-3 py-3 text-xs text-text-secondary">No AI tasks for this paper yet.</p>}
-        {tasks.map((task) => <div key={task.id} className="relative min-w-0">
-          <AIReviewResultCard
-            task={task}
-            humanDecision={ownDecision?.decision}
-            paperInput={{ hasPdf: Boolean(paper.pdfUrl), extractionStatus: paper.extraction?.status, extractionMessage: paper.extraction?.message }}
-          />
-          {task.status === "ASSIGNED" && <div className="mt-1 flex justify-end"><button type="button" aria-label="Remove pending AI review" onClick={() => removeMutation.mutate({ agentId: task.agentId, taskId: task.id })} className="inline-flex items-center gap-1 rounded px-2 py-1 text-[10px] text-text-secondary hover:bg-rose-50 hover:text-rose-700"><FiTrash2 /> Remove pending task</button></div>}
-        </div>)}
-      </div>
+        </div>
+      </div>;
+      })}
     </section>
   );
 }
