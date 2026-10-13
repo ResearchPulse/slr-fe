@@ -37,16 +37,27 @@ function isRequiredValueMissing(value: unknown): boolean {
 
   const record = value as Record<string, unknown>;
   if (record.isNotReported === true) return false;
-  if ("stringValue" in record) {
-    return typeof record.stringValue !== "string" || record.stringValue.trim() === "";
+  if (typeof record.stringValue === "string") {
+    return record.stringValue.trim() === "";
   }
-  if ("numericValue" in record) {
-    return typeof record.numericValue !== "number" || !Number.isFinite(record.numericValue);
+  if (typeof record.numericValue === "number") {
+    return !Number.isFinite(record.numericValue);
   }
-  if ("booleanValue" in record) return typeof record.booleanValue !== "boolean";
-  if ("optionId" in record) return typeof record.optionId !== "string" || record.optionId.length === 0;
-  if ("optionIds" in record) return !Array.isArray(record.optionIds) || record.optionIds.length === 0;
-  if ("values" in record) return !Array.isArray(record.values) || record.values.length === 0;
+  if (typeof record.booleanValue === "boolean") return false;
+  if (typeof record.optionId === "string") return record.optionId.trim() === "";
+  if (Array.isArray(record.optionIds)) return record.optionIds.length === 0;
+  if (Array.isArray(record.values)) return record.values.length === 0;
+
+  const hasTypedValue = [
+    "stringValue",
+    "numericValue",
+    "booleanValue",
+    "optionId",
+    "optionIds",
+    "values",
+  ].some((key) => key in record);
+  if (hasTypedValue) return true;
+
   return Object.keys(record).length === 0;
 }
 

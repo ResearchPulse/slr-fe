@@ -94,7 +94,7 @@ export function QAHeader({
               className="h-12 min-h-12 flex items-center gap-2 rounded-xl border-border bg-surface-white text-sm font-medium text-text-primary shadow-none transition-colors hover:bg-bg-primary hover:text-text-primary"
             >
               <Download size={16} className="text-text-secondary" />
-              Export Excel
+              Export CSV
             </Button>
           )}
           {rightControls}

@@ -199,6 +199,11 @@ export interface ExtractionDashboardSummaryDto {
   notStarted: number;
 }
 
+export interface ExtractionDashboardMetadataDto {
+  startedAt?: string | null;
+  lastUpdatedAt?: string | null;
+}
+
 export interface ExtractionCitationDto {
   title: string;
   authors: Array<string | { name: string; affiliation?: string }>;
@@ -233,6 +238,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface ExtractionDashboardResponseDto {
+  metadata?: ExtractionDashboardMetadataDto;
   summary: ExtractionDashboardSummaryDto;
   tasks: PaginatedResponse<ExtractionDashboardTaskDto>;
 }

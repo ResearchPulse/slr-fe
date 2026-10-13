@@ -3,7 +3,9 @@ import { toastError } from "../../utils/toast";
 import {
   FiSearch,
   FiUpload,
+  FiPlus,
   FiLayers,
+  FiArrowDown,
   FiInfo,
 } from "react-icons/fi";
 import Button from "../ui/Button";
@@ -342,6 +344,21 @@ export default function PaperRepositoryPage({
             canUploadPdf={canUploadPdf}
           />
         </div>
+      </div>
+
+      {/* Flow Indicator */}
+      <div className="my-2 flex items-center gap-4 px-1 sm:gap-6 sm:px-4">
+        <div className="h-px flex-1 bg-gradient-to-r from-transparent to-border" />
+        <div className="flex flex-col items-center gap-2">
+          <div className="flex items-center gap-2.5 rounded-full border border-border bg-white px-4 py-2 shadow-sm sm:px-5">
+            <FiPlus className="h-4 w-4 text-accent" />
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              Assign papers to review processes
+            </span>
+            <FiArrowDown className="h-4 w-4 text-accent" />
+          </div>
+        </div>
+        <div className="h-px flex-1 bg-gradient-to-l from-transparent to-border" />
       </div>
 
       <div id="review-process-panel">

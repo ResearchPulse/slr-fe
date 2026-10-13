@@ -13,6 +13,7 @@ import {
   FiFileText,
   FiUser,
   FiCpu,
+  FiClipboard,
 } from "react-icons/fi";
 import { SiTask } from "react-icons/si";
 import { MdChecklist } from "react-icons/md";
@@ -51,6 +52,12 @@ const AdminDashboard: React.FC = () => {
       icon: MdChecklist,
       label: "Checklist Templates",
       path: "/admin/templates",
+      group: "Management",
+    },
+    {
+      icon: FiClipboard,
+      label: "QA Criteria",
+      path: "/admin/quality-criteria",
       group: "Management",
     },
     { icon: FiFileText, label: "Audit Logs", path: "/admin/audit-logs", group: "System" },

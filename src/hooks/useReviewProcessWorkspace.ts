@@ -32,6 +32,7 @@ import type {
 } from "../components/reviewProcess/workflow/types";
 import { WORKFLOW_PHASES } from "../components/reviewProcess/workflow/constants";
 import { toastWarning, toastSuccess } from "../utils/toast";
+import { getErrorCode } from "../utils/errorUtils";
 
 
 interface UseReviewProcessWorkspaceParams {
@@ -646,7 +647,18 @@ export const useReviewProcessWorkspace = ({
         if (phaseKey === "quality") {
           const qualityId = process.qualityAssessmentProcess?.id;
           if (qualityId) {
-            await completeQualityAssessment(qualityId);
+            try {
+              await completeQualityAssessment({ id: qualityId });
+            } catch (error) {
+              if (getErrorCode(error) !== "QA_UNRESOLVED_PAPERS") throw error;
+              if (
+                window.confirm(
+                  "Some included papers have no final quality verdict yet.\n\nComplete Quality Assessment anyway? Those papers will stay unresolved.",
+                )
+              ) {
+                await completeQualityAssessment({ id: qualityId, force: true });
+              }
+            }
           }
           return;
         }

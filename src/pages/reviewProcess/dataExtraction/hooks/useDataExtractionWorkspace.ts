@@ -34,7 +34,6 @@ import type { PaperWithDecisionsResponse } from "../../../../types/studySelectio
 import { FullTextRetrievalStatus, PaperSelectionStatus } from "../../../../types/studySelection";
 import type {
   ExtractionPaperRecord,
-  ExtractionPaperStatus,
   ExtractionStudyItem,
   ExtractionValue,
   FlattenedExtractionField,
@@ -43,6 +42,7 @@ import type {
 } from "../types";
 import { applyAiProposalToDraft, canFinalizeConsensus, findMissingRequiredFields, getReviewerWorkspaceState, hasTwoIndependentSubmissions } from "../workflowRules";
 import { mapExtractedValueToFormValue } from "../components/reviewerWorkspace/reviewerFormUtils";
+import { normalizeExtractionStatus } from "../status";
 
 const ROOT = ["project-extraction"] as const;
 interface ConsensusWorkflowSnapshot extends ConsensusWorkspaceDto {
@@ -58,15 +58,6 @@ function readVersion(value: unknown): number | null {
 const DEFAULT_PAGE_SIZE = 10;
 const EMPTY_TEMPLATES: ExtractionTemplateDto[] = [];
 const EMPTY_SUMMARY = { totalIncluded: 0, inProgress: 0, awaitingConsensus: 0, completed: 0, notStarted: 0 };
-
-function normalizeStatus(status?: string): ExtractionPaperStatus {
-  switch ((status ?? "").toLowerCase().replaceAll("_", "-")) {
-    case "in-progress": return "in-progress";
-    case "awaiting-consensus": return "awaiting-consensus";
-    case "completed": return "completed";
-    default: return "todo";
-  }
-}
 
 function flattenFields(fields: ExtractionFieldDto[], depth = 0): FlattenedExtractionField[] {
   return [...fields].sort((a, b) => a.orderIndex - b.orderIndex).flatMap((field) => [
@@ -256,7 +247,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
       const response = await projectService.getProjectById(projectId);
       if (!response.isSuccess) throw new Error(response.message || "Failed to load project phase");
       return (response.data as typeof response.data & {
-        dataExtraction?: { status?: number | string; statusText?: string; version?: number };
+        dataExtraction?: { status?: number | string; statusText?: string; version?: number; startedAt?: string | null; updatedAt?: string | null };
       }).dataExtraction ?? null;
     },
   });
@@ -323,7 +314,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
   const selectedStudy = studies.find((item) => item.paperId === selectedPaperId) ?? null;
   const taskByPaperId = useMemo(() => Object.fromEntries(dashboardTasks.map((task) => [task.paperId, task])), [dashboardTasks]);
   const selectedTask = taskByPaperId[selectedPaperId];
-  const selectedStatus = normalizeStatus(selectedTask?.status);
+  const selectedStatus = normalizeExtractionStatus(selectedTask?.status);
 
   const reviewerWorkspaceQuery = useQuery({
     queryKey: [...ROOT, projectId, "reviewer", selectedPaperId],
@@ -688,7 +679,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
     }));
     return extractedValues;
   }, [answerFields, autoAiMutation]);
-  const getPaperStatus = useCallback((paperId: string) => normalizeStatus(taskByPaperId[paperId]?.status), [taskByPaperId]);
+  const getPaperStatus = useCallback((paperId: string) => normalizeExtractionStatus(taskByPaperId[paperId]?.status), [taskByPaperId]);
   const getRecord = useCallback((paperId: string): ExtractionPaperRecord | null => {
     if (paperId !== selectedPaperId) return null;
     if (!reviewerWorkspace && !consensusWorkspace) return null;
@@ -713,7 +704,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
     const task = taskByPaperId[paperId];
     if (!task) return false;
 
-    const status = normalizeStatus(task.status);
+      const status = normalizeExtractionStatus(task.status);
     return status === "todo" || status === "in-progress";
   }, [isCurrentUserLeader, taskByPaperId]);
   const hasCurrentUserSubmitted = useCallback((paperId: string) => {
@@ -768,6 +759,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
   const completedStudies = studies.filter((study) => getPaperStatus(study.paperId) === "completed");
   const dataExtractionStatus: "NotStarted" | "InProgress" | "Completed" =
     phaseStatus === "Completed" ? "Completed" : phaseStatus === "InProgress" ? "InProgress" : "NotStarted";
+  const extractionMetadata = dashboardQuery.data?.metadata;
   const isLoading = dashboardQuery.isLoading || projectMembersQuery.isLoading || templatesQuery.isLoading || workloadQuery.isLoading;
   const error = dashboardQuery.error ? getErrorMessage(dashboardQuery.error, "Failed to load extraction dashboard") : null;
 
@@ -776,6 +768,8 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
     currentUserId,
     isCurrentUserLeader,
     extractionProcessStatus: dataExtractionStatus,
+    extractionProcessStartedAt: extractionMetadata?.startedAt ?? projectPhaseQuery.data?.startedAt ?? null,
+    extractionProcessLastUpdatedAt: extractionMetadata?.lastUpdatedAt ?? projectPhaseQuery.data?.updatedAt ?? null,
     isLoading,
     error,
     isMockMode: false,

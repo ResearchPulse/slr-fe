@@ -33,6 +33,8 @@ import Select from "../../../../components/ui/Select";
 import BulkAssignmentPanelDataExtraction from "../../../../components/reviewProcess/leader/BulkAssignmentPanelDataExtraction";
 import { getErrorMessage } from "../../../../utils/errorUtils";
 import { toastError } from "../../../../utils/toast";
+import { formatAuthorPreview, formatAuthors } from "../../../../utils/formatAuthors";
+import { formatDate } from "../../../../utils/dateFormat";
 import {
   Table,
   TableBody,
@@ -45,6 +47,7 @@ import type {
   ExtractionPaperStatus,
   UseDataExtractionWorkspaceReturn,
 } from "../types";
+import { normalizeExtractionStatus } from "../status";
 import type { PaperResponse } from "../../../../types/paper";
 import {
   TargetReviewer,
@@ -65,6 +68,7 @@ interface DashboardTask {
   paperId: string;
   title: string;
   authors: string | null;
+  authorPreview: string | null;
   publicationYear: number | null;
   reviewer1Id: string | null;
   reviewer1Status?: string | null;
@@ -92,27 +96,6 @@ const STATUS_FILTER_OPTIONS: Array<{
   { value: "awaiting-consensus", label: "Consensus" },
   { value: "completed", label: "Completed" },
 ];
-
-function normalizeStatus(status: string): ExtractionPaperStatus {
-  const normalized = status.trim().toLowerCase();
-
-  if (normalized === "in-progress" || normalized === "inprogress") {
-    return "in-progress";
-  }
-
-  if (
-    normalized === "awaiting-consensus" ||
-    normalized === "awaitingconsensus"
-  ) {
-    return "awaiting-consensus";
-  }
-
-  if (normalized === "completed") {
-    return "completed";
-  }
-
-  return "todo";
-}
 
 function mapStudyToPaperResponse(
   study: UseDataExtractionWorkspaceReturn["studies"][number],
@@ -186,24 +169,22 @@ export default function DataExtractionDashboard({
   const tasks = useMemo<DashboardTask[]>(
     () =>
       ws.dashboardTasks.map((task) => {
-        const citationAuthors = (task.citation?.authors ?? [])
-          .map((author) => typeof author === "string" ? author : author.name)
-          .map((author) => author.trim())
-          .filter(Boolean)
-          .join(", ");
+        const citationAuthors = formatAuthors(task.citation?.authors);
+        const authors = task.authors?.trim() || citationAuthors || null;
 
         return {
           taskId: task.taskId ?? task.paperId,
           paperId: task.paperId,
           title: task.title || task.citation?.title || "Untitled paper",
-          authors: task.authors?.trim() || citationAuthors || null,
+          authors,
+          authorPreview: formatAuthorPreview(task.citation?.authors) || formatAuthorPreview(authors),
           publicationYear: task.publicationYear ?? task.citation?.year ?? null,
           reviewer1Id: task.reviewer1Id ?? null,
           reviewer1Status: task.reviewer1Status ?? null,
           reviewer2Id: task.reviewer2Id ?? null,
           reviewer2Status: task.reviewer2Status ?? null,
           ownStatus: task.ownStatus ?? null,
-          status: normalizeStatus(task.status),
+          status: normalizeExtractionStatus(task.status),
         };
       }),
     [ws.dashboardTasks],
@@ -328,13 +309,9 @@ export default function DataExtractionDashboard({
 
   const handleOpenWorkspace = useCallback(
     (paperId: string) => {
-      if (isProcessCompleted) {
-        return;
-      }
-
       navigate(`${dashboardPath}/workspace/${paperId}`);
     },
-    [dashboardPath, isProcessCompleted, navigate],
+    [dashboardPath, navigate],
   );
 
   const handleOpenConsensusWorkspace = useCallback(
@@ -692,12 +669,16 @@ export default function DataExtractionDashboard({
             <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Started</div>
-              <div className="mt-0.5 font-medium text-text-primary">—</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(ws.extractionProcessStartedAt)}
+              </div>
             </div>
             <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Last updated</div>
-              <div className="mt-0.5 font-medium text-text-primary">—</div>
+              <div className="mt-0.5 font-medium text-text-primary">
+                {formatDate(ws.extractionProcessLastUpdatedAt)}
+              </div>
             </div>
             {ws.isCurrentUserLeader && (
               <Button
@@ -1069,11 +1050,14 @@ export default function DataExtractionDashboard({
                           const canExtractTask = ws.canCurrentUserExtractPaper(
                             task.paperId,
                           );
+                          const hasSubmittedExtraction =
+                            !ws.isCurrentUserLeader &&
+                            ws.hasCurrentUserSubmitted(task.paperId);
 
                           return (
                             <TableRow
                               key={task.taskId || task.paperId}
-                              className="cursor-default hover:bg-primary-light/60"
+                              className="group cursor-pointer transition-colors hover:bg-primary-light/60"
                             >
                               {ws.isCurrentUserLeader && (
                               <TableCell className="w-12 px-4 py-3">
@@ -1103,17 +1087,28 @@ export default function DataExtractionDashboard({
                               <TableCell className="min-w-[320px] px-4 py-3">
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <p className="text-sm font-semibold leading-5 text-text-primary">
-                                      {task.title}
-                                    </p>
-                                    {canExtractTask && (
-                                      <span className="inline-flex items-center rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-accent ring-1 ring-inset ring-accent/20 shrink-0">
-                                        Assigned to you
-                                      </span>
+                                    {hasSubmittedExtraction ? (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleOpenWorkspace(task.paperId)
+                                        }
+                                        className="text-left text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                        aria-label={`Review submitted extraction: ${task.title}`}
+                                      >
+                                        {task.title}
+                                      </button>
+                                    ) : (
+                                      <p className="text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary">
+                                        {task.title}
+                                      </p>
                                     )}
                                   </div>
-                                  <p className="mt-1 text-xs text-text-secondary">
-                                    {task.authors ?? "Unknown authors"} •{" "}
+                                  <p
+                                    className="mt-1 block max-w-full truncate text-xs text-text-secondary"
+                                    title={task.authors ?? undefined}
+                                  >
+                                    {task.authorPreview ?? task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
                                   </p>
                                 </div>
@@ -1225,7 +1220,11 @@ export default function DataExtractionDashboard({
                                     <Eye className="h-4 w-4" />
                                   </Button>
 
-                                  {task.status === "todo" ? (
+                                  {hasSubmittedExtraction ? (
+                                    <span className="inline-flex items-center rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-xs font-semibold text-text-secondary">
+                                      Submitted (Locked)
+                                    </span>
+                                  ) : task.status === "todo" ? (
                                     canExtractTask ? (
                                       <Button
                                         size="sm"
@@ -1246,17 +1245,7 @@ export default function DataExtractionDashboard({
                                       </span>
                                     )
                                   ) : task.status === "in-progress" ? (
-                                    canExtractTask &&
-                                    ws.hasCurrentUserSubmitted(task.paperId) ? (
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        disabled
-                                        className="border-slate-300 bg-bg-secondary text-text-secondary"
-                                      >
-                                        Submitted (Locked)
-                                      </Button>
-) : ws.isCurrentUserLeader ? (
+                                    ws.isCurrentUserLeader ? (
                                       <Button
                                         size="sm"
                                         variant="outline"

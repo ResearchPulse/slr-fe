@@ -10,9 +10,6 @@ import type {
   CreateQualityAssessmentDecisionRequest,
   UpdateQualityAssessmentDecisionRequest,
   UpdateQualityAssessmentResolutionRequest,
-  AiDecisionRequest,
-  AutomateQualityAssessmentResponse,
-  ApiResponse,
   QADashboardParams,
   QualityAssessmentStrategy,
   QualityAssessmentChecklist,
@@ -128,17 +125,6 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     }
   });
 
-  const aiDecisionMutation = useMutation({
-    mutationFn: (data: AiDecisionRequest) => qualityAssessmentService.getAiDecision(data),
-    onSuccess: (res: ApiResponse<AutomateQualityAssessmentResponse>) => {
-      toastSuccess("AI analysis completed successfully");
-      return res.data;
-    },
-    onError: (error) => {
-      toastError(getErrorMessage(error, "Failed to get AI decision"));
-    }
-  });
-
   const startProcessMutation = useMutation({
     mutationFn: () => qualityAssessmentService.start(id!),
     onSuccess: () => toastSuccess("Quality Assessment started"),
@@ -183,10 +169,10 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     }
   });
 
-  const exportExcel = async () => {
+  const exportCsv = async () => {
     if (!id) return;
     try {
-      const blob = await qualityAssessmentService.exportExcel(id);
+      const blob = await qualityAssessmentService.exportCsv(id);
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -217,7 +203,6 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     isSubmittingResolution: submitResolutionMutation.isPending,
     isUpdatingResolution: updateResolutionMutation.isPending,
     isAutoResolving: autoResolveMutation.isPending,
-    isAiDeciding: aiDecisionMutation.isPending,
     isStartingProcess: startProcessMutation.isPending,
     isCompletingProcess: completeProcessMutation.isPending,
     isUpsertingStrategy: upsertStrategyMutation.isPending,
@@ -227,12 +212,11 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     submitResolution: submitResolutionMutation.mutateAsync,
     updateResolution: updateResolutionMutation.mutateAsync,
     autoResolve: autoResolveMutation.mutateAsync,
-    aiDecision: aiDecisionMutation.mutateAsync,
     startProcess: startProcessMutation.mutateAsync,
     completeProcess: completeProcessMutation.mutateAsync,
     upsertStrategy: upsertStrategyMutation.mutateAsync,
     bulkChecklists: bulkChecklistsMutation.mutateAsync,
     bulkCriteria: bulkCriteriaMutation.mutateAsync,
-    exportExcel,
+    exportCsv,
   };
 }

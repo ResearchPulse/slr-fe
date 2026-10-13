@@ -78,8 +78,7 @@ export default function QualityAssessmentWorkspace() {
     submitResolution,
     updateResolution,
     autoResolve,
-    aiDecision,
-    exportExcel,
+    exportCsv,
   } = useQualityAssessment(qualityAssessmentId, project?.isLeader, {
     pageNumber: qaPage,
     pageSize: 10,
@@ -331,23 +330,6 @@ export default function QualityAssessmentWorkspace() {
     }
   };
 
-  const handleAiAnalyze = async (paperId: string) => {
-    if (!qualityAssessmentId)
-      return { pageWidth: null, pageHeight: null, decisionItems: [] };
-    try {
-      const result = await aiDecision({
-        qualityAssessmentProcessId: qualityAssessmentId,
-        paperId: paperId,
-      });
-      return (
-        result.data ?? { pageWidth: null, pageHeight: null, decisionItems: [] }
-      );
-    } catch (error) {
-      console.error(error);
-      return { pageWidth: null, pageHeight: null, decisionItems: [] };
-    }
-  };
-
   const handleAutoResolve = async (data: {
     score?: number | null;
     percentage?: number | null;
@@ -371,7 +353,7 @@ export default function QualityAssessmentWorkspace() {
         onBack={viewMode === "edit" ? closeEditSpace : handleBack}
         stats={stats}
         phaseStatus={phaseStatus ?? "NotStarted"}
-        onExport={project?.isLeader ? exportExcel : undefined}
+        onExport={project?.isLeader ? exportCsv : undefined}
         rightControls={
           project?.isLeader &&
           canEdit && (
@@ -491,7 +473,6 @@ export default function QualityAssessmentWorkspace() {
             onPageChange={setQaPage}
             onReviewerSave={handleReviewerSave}
             onLeaderResolve={handleLeaderResolve}
-            onAiAnalyze={handleAiAnalyze}
             isSaving={
               isSubmittingDecisions ||
               isUpdatingDecisions ||

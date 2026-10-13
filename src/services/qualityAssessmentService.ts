@@ -8,14 +8,14 @@ import type {
   QualityAssessmentStrategy,
   UpdateQualityAssessmentDecisionRequest,
   UpdateQualityAssessmentResolutionRequest,
-  AiDecisionRequest,
-  AutomateQualityAssessmentResponse,
   LeaderQADashboardResponse,
   QAMemberDashboardResponse,
   QADashboardParams,
   QualityAssessmentChecklist,
   QualityAssessmentCriterion,
-  QualityAssessmentProcessResponse
+  QualityAssessmentProcessResponse,
+  QualityCriteriaTemplate,
+  SaveQualityCriteriaTemplateRequest
 } from "../types/qualityAssessment";
 
 export const qualityAssessmentService = {
@@ -29,8 +29,13 @@ export const qualityAssessmentService = {
     return response.data;
   },
 
-  async complete(id: string): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
-    const response = await api.post<ApiResponse<QualityAssessmentProcessResponse>>(`/quality-assessment/${id}/complete`);
+  /** `force` completes the phase even though some included papers have no final verdict yet. */
+  async complete(id: string, options?: { force?: boolean }): Promise<ApiResponse<QualityAssessmentProcessResponse>> {
+    const response = await api.post<ApiResponse<QualityAssessmentProcessResponse>>(
+      `/quality-assessment/${id}/complete`,
+      undefined,
+      { params: options?.force ? { force: true } : undefined },
+    );
     return response.data;
   },
 
@@ -79,11 +84,6 @@ export const qualityAssessmentService = {
     return response.data;
   },
 
-  async getAiDecision(data: AiDecisionRequest): Promise<ApiResponse<AutomateQualityAssessmentResponse>> {
-    const response = await api.post<ApiResponse<AutomateQualityAssessmentResponse>>(`/quality-assessment/decisions/ai`, data);
-    return response.data;
-  },
-
   async upsertStrategy(data: QualityAssessmentStrategy): Promise<ApiResponse<QualityAssessmentStrategy>> {
     const response = await api.post<ApiResponse<QualityAssessmentStrategy>>(`/quality-assessment/strategies/upsert`, data);
     return response.data;
@@ -99,8 +99,31 @@ export const qualityAssessmentService = {
     return response.data;
   },
 
-  async exportExcel(qaProcessId: string): Promise<Blob> {
-    const response = await api.get(`/quality-assessment/${qaProcessId}/export/excel`, {
+  async listCriteriaTemplates(): Promise<ApiResponse<QualityCriteriaTemplate[]>> {
+    const response = await api.get<ApiResponse<QualityCriteriaTemplate[]>>(`/quality-assessment/criteria-templates`);
+    return response.data;
+  },
+
+  async createCriteriaTemplate(data: SaveQualityCriteriaTemplateRequest): Promise<ApiResponse<QualityCriteriaTemplate>> {
+    const response = await api.post<ApiResponse<QualityCriteriaTemplate>>(`/quality-assessment/criteria-templates`, data);
+    return response.data;
+  },
+
+  async updateCriteriaTemplate(
+    id: string,
+    data: Omit<SaveQualityCriteriaTemplateRequest, "scope">,
+  ): Promise<ApiResponse<QualityCriteriaTemplate>> {
+    const response = await api.put<ApiResponse<QualityCriteriaTemplate>>(`/quality-assessment/criteria-templates/${id}`, data);
+    return response.data;
+  },
+
+  async deleteCriteriaTemplate(id: string): Promise<ApiResponse<null>> {
+    const response = await api.delete<ApiResponse<null>>(`/quality-assessment/criteria-templates/${id}`);
+    return response.data;
+  },
+
+  async exportCsv(qaProcessId: string): Promise<Blob> {
+    const response = await api.get(`/quality-assessment/${qaProcessId}/export/csv`, {
       responseType: 'blob'
     });
     return response.data;
