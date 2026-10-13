@@ -1,18 +1,13 @@
 import { useState } from "react";
 import { FiArrowLeft, FiCheck, FiLock, FiPlus, FiTrash2 } from "react-icons/fi";
-import { Loader2, Sparkles } from "lucide-react";
-import api from "../../../../../config/axios";
 import type { ResearchQuestion } from "../../../../../types/coreAndGovernance";
 import type {
   DataItemDefinitionExtended,
   DataItemType,
-  ExtractionFieldDto,
   FieldOption,
 } from "../../../../../types/dataExtraction";
 import type { WizardSection } from "../../../../../types/templateWizard";
-import { getErrorMessage } from "../../../../../utils/errorUtils";
 import { toastWarning } from "../../../../../utils/toast";
-import { toastError, toastSuccess } from "../../../../../utils/toast";
 import { generateId } from "../../../../../utils/uuid";
 import Button from "../../../../ui/Button";
 import Input from "../../../../ui/Input";
@@ -36,12 +31,6 @@ interface FieldEditorState {
   options: Array<{ id: string; value: string }>;
 }
 
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  message: string;
-  data?: T;
-  errors?: Array<{ code: string; message: string }>;
-}
 
 const FIELD_TYPES: Array<{ value: 0 | 1 | 2 | 3 | 4 | 5; label: string }> = [
   { value: 0, label: "Text" },
@@ -104,22 +93,6 @@ function mapInitialItemsToEditableFields(
     }));
 }
 
-function mapSuggestedFieldToEditorState(
-  field: ExtractionFieldDto,
-): FieldEditorState {
-  return {
-    id: `temp_${generateId()}`,
-    name: field.name,
-    fieldType:
-      field.fieldType >= 0 && field.fieldType <= 5 ? field.fieldType : 0,
-    required: field.isRequired,
-    description: field.instruction || "",
-    options: (field.options || []).map((opt) => ({
-      id: `opt_${generateId()}`,
-      value: opt.value,
-    })),
-  };
-}
 
 export default function Step2_FlatSetup({
   section,
@@ -132,7 +105,6 @@ export default function Step2_FlatSetup({
     mapInitialItemsToEditableFields(initialItems),
   );
   const [showCustomForm, setShowCustomForm] = useState(false);
-  const [isSuggestingFields, setIsSuggestingFields] = useState(false);
   const [formState, setFormState] = useState<FieldEditorState>({
     id: "",
     name: "",
@@ -193,58 +165,6 @@ export default function Step2_FlatSetup({
     setCustomFields((prev) => prev.filter((field) => field.id !== fieldId));
   };
 
-  const handleSuggestFields = async () => {
-    if (!section.name.trim()) {
-      toastWarning(
-        "Validation",
-        "Section name is required for AI suggestions.",
-      );
-      return;
-    }
-
-    if (isSuggestingFields) {
-      return;
-    }
-
-    setIsSuggestingFields(true);
-
-    try {
-      const response = await api.post<ApiResponse<ExtractionFieldDto[]>>(
-        "/data-extraction/suggest-fields",
-        {
-          sectionName: section.name,
-        },
-      );
-
-      if (!response.data.isSuccess) {
-        const errorMessage =
-          response.data.errors?.map((error) => error.message).join(", ") ||
-          response.data.message ||
-          "Failed to suggest fields.";
-        throw new Error(errorMessage);
-      }
-
-      const suggestedFields = (response.data.data || []).map(
-        mapSuggestedFieldToEditorState,
-      );
-
-      if (suggestedFields.length > 0) {
-        setCustomFields((prev) => [...prev, ...suggestedFields]);
-      }
-
-      toastSuccess(
-        "AI suggestions added",
-        `AI suggested ${suggestedFields.length} new fields.`,
-      );
-    } catch (error) {
-      toastError(
-        "AI Suggest Failed",
-        getErrorMessage(error, "Failed to suggest fields."),
-      );
-    } finally {
-      setIsSuggestingFields(false);
-    }
-  };
 
   const handleSave = () => {
     const items: DataItemDefinitionExtended[] = customFields.map(
@@ -322,18 +242,6 @@ export default function Step2_FlatSetup({
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold text-text-primary">Fields</h3>
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={handleSuggestFields}
-              disabled={isSuggestingFields}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium text-white bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 hover:from-indigo-500 hover:via-violet-500 hover:to-fuchsia-500 transition shadow-none disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isSuggestingFields ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Sparkles className="w-4 h-4" />
-              )}
-              {isSuggestingFields ? "Suggesting..." : "Suggest Fields with AI"}
-            </button>
 
             {!showCustomForm && (
               <button

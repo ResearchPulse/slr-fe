@@ -1,8 +1,9 @@
 import api from "../config/axios";
-import type { AxiosResponse, AxiosError } from "axios";
+import type { AxiosResponse } from "axios";
 import type {
   ExtractionTemplateDto,
   ExtractionTemplateResponseDto,
+  ExtractionTemplateInputDto,
   ExtractionSectionDto,
   ExtractionFieldDto,
   ExtractionMatrixColumnDto,
@@ -20,82 +21,15 @@ import {
 } from "../constants/dataExtraction";
 import { TEMPLATE_SECTIONS } from "../constants/templateSections";
 
-interface ApiResponse<T> {
-  isSuccess: boolean;
-  message: string;
-  data?: T;
-  errors?: Array<{ code: string; message: string }>;
-}
 
-const GUID_REGEX =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
-function normalizeNullableGuid(value: string | null | undefined): string | null {
-  if (value === null || value === undefined) {
-    return null;
-  }
-
-  const trimmed = value.trim();
-  if (!trimmed) {
-    return null;
-  }
-
-  // Frontend temporary ids must never be sent to Guid? fields.
-  if (trimmed.startsWith("temp_") || trimmed.startsWith("opt_")) {
-    return null;
-  }
-
-  // Backend expects Guid? for id fields. Non-GUID strings should be null.
-  if (!GUID_REGEX.test(trimmed)) {
-    return null;
-  }
-
-  return trimmed;
-}
-
-function handleResponse<T>(response: AxiosResponse<ApiResponse<T>>): T {
-  const { data } = response;
-
-  if (!data.isSuccess) {
-    const errorMessage = data.errors?.map((e) => e.message).join(", ") || data.message;
-    throw new Error(errorMessage);
-  }
-
-  if (data.data === undefined) {
-    throw new Error("Response data is missing");
-  }
-
-  return data.data;
-}
-
-function extractErrorMessage(error: unknown): string {
-  // Check if it's an AxiosError with response data containing message
-  if (error && typeof error === "object" && "response" in error) {
-    const axiosError = error as AxiosError;
-    const responseData = axiosError.response?.data as Record<string, unknown> | undefined;
-    
-    if (responseData && typeof responseData === "object" && "message" in responseData) {
-      const message = responseData.message;
-      if (typeof message === "string" && message.trim()) {
-        return message;
-      }
-    }
-  }
-
-  // Fallback to standard error message
-  if (error instanceof Error) {
-    return error.message;
-  }
-
-  return "An unexpected error occurred";
-}
 
 // ==================== MAPPING FUNCTIONS ====================
 
 function mapFieldOptionToBackend(option: FieldOption): FieldOptionDto {
   return {
-    optionId: normalizeNullableGuid(option.option_id),
-    fieldId: normalizeNullableGuid(option.field_id),
+    optionId: option.option_id || null,
+    fieldId: option.field_id || null,
     value: option.option_value,
     displayOrder: option.display_order,
   };
@@ -114,9 +48,9 @@ function mapExtractionFieldToBackend(
   field: DataItemDefinitionExtended
 ): ExtractionFieldDto {
   return {
-    fieldId: normalizeNullableGuid(field.data_item_id),
-    sectionId: normalizeNullableGuid(field.form_id),
-    parentFieldId: normalizeNullableGuid(field.parent_field_id),
+    fieldId: field.data_item_id || null,
+    sectionId: field.form_id || null,
+    parentFieldId: field.parent_field_id || null,
     name: field.name,
     instruction: field.description || undefined,
     fieldType: FRONTEND_TO_BACKEND_TYPE[field.data_type],
@@ -148,16 +82,8 @@ function mapExtractionFieldFromBackend(
 function sanitizeFieldForBackend(field: ExtractionFieldDto): ExtractionFieldDto {
   return {
     ...field,
-    fieldId: normalizeNullableGuid(field.fieldId),
-    templateId: normalizeNullableGuid(field.templateId),
-    sectionId: normalizeNullableGuid(field.sectionId),
-    parentFieldId: normalizeNullableGuid(field.parentFieldId),
-    options: (field.options || []).map((opt) => ({
-      ...opt,
-      optionId: normalizeNullableGuid(opt.optionId),
-      fieldId: normalizeNullableGuid(opt.fieldId),
-    })),
-    subFields: (field.subFields || []).map(sanitizeFieldForBackend),
+    options: field.options.map((option) => ({ ...option })),
+    subFields: field.subFields.map(sanitizeFieldForBackend),
   };
 }
 
@@ -168,22 +94,11 @@ function mapTemplateSectionType(type: "flat" | "matrix"): SectionTypeEnum {
 }
 
 function sanitizeSectionForBackend(section: ExtractionSectionDto): ExtractionSectionDto {
-  const matrixColumns =
-    section.sectionType === TemplateSectionTypeEnum.MatrixGrid
-      ? (section.matrixColumns || []).map((column) => ({
-          ...column,
-          columnId: normalizeNullableGuid(column.columnId),
-        }))
-      : undefined;
-
   return {
     ...section,
-    sectionId: normalizeNullableGuid(section.sectionId),
-    templateId: normalizeNullableGuid(section.templateId),
-    linkedResearchQuestionId: normalizeNullableGuid(section.linkedResearchQuestionId),
     isPicoc: section.isPicoc ?? false,
-    fields: (section.fields || []).map(sanitizeFieldForBackend),
-    matrixColumns,
+    fields: section.fields.map(sanitizeFieldForBackend),
+    matrixColumns: section.matrixColumns?.map((column) => ({ ...column })),
   };
 }
 
@@ -224,51 +139,22 @@ function buildSectionsFromLegacyFields(
 function mapExtractionTemplateToBackend(
   template: ExtractionTemplateDto
 ): ExtractionTemplateDto {
-  const resolvedProcessId =
-    template.dataExtractionProcessId ||
-    (template as unknown as { protocolId?: string }).protocolId ||
-    "";
-
-  const sections = template.sections && template.sections.length > 0
-    ? template.sections
-    : buildSectionsFromLegacyFields(template.fields || []);
+  const sections =
+    template.sections && template.sections.length > 0
+      ? template.sections
+      : buildSectionsFromLegacyFields(template.fields || []);
 
   return {
-    templateId: normalizeNullableGuid(template.templateId),
-    dataExtractionProcessId: resolvedProcessId,
-    name: template.name,
-    description: template.description,
+    ...template,
     sections: sections.map(sanitizeSectionForBackend),
   };
 }
 
-function normalizeTemplateFromBackend(template: ExtractionTemplateDto): ExtractionTemplateDto {
-  return {
-    ...template,
-    dataExtractionProcessId:
-      template.dataExtractionProcessId ||
-      (template as unknown as { protocolId?: string }).protocolId ||
-      "",
-  };
-}
-
-function normalizeTemplateResponseFromBackend(
-  template: ExtractionTemplateResponseDto
-): ExtractionTemplateResponseDto {
-  return {
-    ...template,
-    dataExtractionProcessId:
-      template.dataExtractionProcessId ||
-      (template as unknown as { protocolId?: string }).protocolId ||
-      "",
-  };
-}
 
 /**
- * Deep sanitizer for upsert payloads.
- * Converts empty/whitespace/undefined/non-guid id values to null for Guid? fields.
+ * Preserve canonical fields, nested structures, and matrix metadata.
  */
-export function sanitizeTemplatePayloadForUpsert(
+export function sanitizeExtractionTemplateInput(
   template: ExtractionTemplateDto
 ): ExtractionTemplateDto {
   return mapExtractionTemplateToBackend(template);
@@ -276,66 +162,74 @@ export function sanitizeTemplatePayloadForUpsert(
 
 // ==================== API SERVICE ====================
 
+
+interface CanonicalApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+function unwrapCanonicalResponse<T>(response: AxiosResponse<CanonicalApiResponse<T>>): T {
+  if (!response.data.success) {
+    throw new Error("Extraction API request failed");
+  }
+
+  return response.data.data;
+}
+
+
 export const dataExtractionTemplateService = {
-  /**
-   * Create or Update extraction template
-   * @param template - Template data (with or without templateId for update/create)
-   * @returns Created/Updated template with server-generated IDs
-   */
-  async upsert(template: ExtractionTemplateDto): Promise<ExtractionTemplateResponseDto> {
-    try {
-      const payload = sanitizeTemplatePayloadForUpsert(template);
-
-      const response = await api.post<ApiResponse<ExtractionTemplateResponseDto>>(
-        "/data-extraction/templates/upsert",
-        payload
-      );
-
-      return normalizeTemplateResponseFromBackend(handleResponse(response));
-    } catch (error) {
-      const message = extractErrorMessage(error);
-      throw new Error(message);
-    }
-  },
-
-  /**
-   * Get all templates for a data extraction process
-   * @param processId - Data Extraction Process ID
-   * @returns Array of templates
-   */
-  async getByProcessId(processId: string): Promise<ExtractionTemplateDto[]> {
-    const response = await api.get<ApiResponse<ExtractionTemplateDto[]>>(
-      `/data-extraction/process/${processId}/templates`
+  async list(projectId: string): Promise<ExtractionTemplateResponseDto[]> {
+    const response = await api.get<CanonicalApiResponse<{ templates: ExtractionTemplateResponseDto[] }>>(
+      `/projects/${projectId}/extraction/templates`
     );
-
-    return handleResponse(response).map(normalizeTemplateFromBackend);
+    return unwrapCanonicalResponse(response).templates;
   },
 
-  /**
-   * Get template detail by ID
-   * @param templateId - Template ID
-   * @returns Template with full field tree structure
-   */
-  async getById(templateId: string): Promise<ExtractionTemplateDto> {
-    const response = await api.get<ApiResponse<ExtractionTemplateDto>>(
-      `/data-extraction/templates/${templateId}`
+  async create(projectId: string, template: ExtractionTemplateInputDto): Promise<ExtractionTemplateResponseDto> {
+    const response = await api.post<CanonicalApiResponse<ExtractionTemplateResponseDto>>(
+      `/projects/${projectId}/extraction/templates`,
+      {
+        name: template.name,
+        description: template.description,
+        sections: template.sections,
+        fields: template.fields,
+      }
     );
-
-    return normalizeTemplateFromBackend(handleResponse(response));
+    return unwrapCanonicalResponse(response);
   },
 
-  /**
-   * Delete template
-   * @param templateId - Template ID to delete
-   */
-  async delete(templateId: string): Promise<void> {
-    const response = await api.delete<ApiResponse<void>>(
-      `/data-extraction/templates/${templateId}`
+  async update(
+    projectId: string,
+    templateId: string,
+    template: ExtractionTemplateInputDto & { expectedVersion: number }
+  ): Promise<ExtractionTemplateResponseDto> {
+    const response = await api.put<CanonicalApiResponse<ExtractionTemplateResponseDto>>(
+      `/projects/${projectId}/extraction/templates/${templateId}`,
+      {
+        name: template.name,
+        description: template.description,
+        sections: template.sections,
+        fields: template.fields,
+        expectedVersion: template.expectedVersion,
+      }
     );
-
-    handleResponse(response);
+    return unwrapCanonicalResponse(response);
   },
 
+  async clone(projectId: string, templateId: string, name: string): Promise<ExtractionTemplateResponseDto> {
+    const response = await api.post<CanonicalApiResponse<ExtractionTemplateResponseDto>>(
+      `/projects/${projectId}/extraction/templates/${templateId}/clone`,
+      { name }
+    );
+    return unwrapCanonicalResponse(response);
+  },
+
+  async delete(projectId: string, templateId: string): Promise<void> {
+    const response = await api.delete<CanonicalApiResponse<unknown>>(
+      `/projects/${projectId}/extraction/templates/${templateId}`
+    );
+    unwrapCanonicalResponse(response);
+  },
 };
 
 // ==================== HELPER FUNCTIONS FOR FRONTEND ====================
@@ -346,26 +240,18 @@ export const dataExtractionTemplateService = {
  */
 export function dataItemsToTemplate(
   dataItems: DataItemDefinitionExtended[],
-  dataExtractionProcessId: string,
+  projectId: string,
   templateName: string,
   templateDescription?: string,
   templateId?: string,
-  matrixDataMap?: Map<string, MatrixSectionData>
-  ,
-  wizardSections?: WizardSection[]
+  matrixDataMap?: Map<string, MatrixSectionData>,
+  wizardSections?: WizardSection[],
+  matrixColumnsBySection?: Map<string, ExtractionMatrixColumnDto[]>
 ): ExtractionTemplateDto {
-  // ✅ Debug logging
-  console.log("🔍 dataItemsToTemplate called with:", {
-    dataItemsCount: dataItems.length,
-    dataExtractionProcessId,
-    templateName,
-    templateId,
-  });
 
   // ✅ Filter root-level items only (no parent_field_id)
   const rootItems = (dataItems || []).filter((item) => !item.parent_field_id);
 
-  console.log("🔍 Root items count:", rootItems.length);
 
   // Group by wizard section id (form_id)
   const groupedItems = new Map<string, DataItemDefinitionExtended[]>();
@@ -377,6 +263,11 @@ export function dataItemsToTemplate(
   }
 
   const mapMatrixColumns = (sectionId: string): ExtractionMatrixColumnDto[] => {
+    const existingColumns = matrixColumnsBySection?.get(sectionId);
+    if (existingColumns) {
+      return existingColumns.map((column) => ({ ...column }));
+    }
+
     const columns = matrixDataMap?.get(sectionId)?.columns || [];
     return columns.map((columnName, index) => ({
       name: columnName,
@@ -439,28 +330,13 @@ export function dataItemsToTemplate(
 
   const sections = sectionsFromWizard.length > 0 ? sectionsFromWizard : sectionsFallback;
 
-  const fieldCount = sections.reduce(
-    (sum, section) => sum + section.fields.length,
-    0
-  );
-  const matrixColumnCount = sections.reduce(
-    (sum, section) => sum + (section.matrixColumns?.length || 0),
-    0
-  );
-
-  console.log("🔍 Mapped sections:", {
-    sectionCount: sections.length,
-    fieldCount,
-    matrixColumnCount,
-  });
 
   return {
     templateId,
-    dataExtractionProcessId,
+    projectId,
     name: templateName || "Untitled Template",
     description: templateDescription,
     sections,
-    // Legacy fallback for old consumers that still read template.fields.
     fields: sections.flatMap((section) => section.fields),
   };
 }
@@ -473,21 +349,14 @@ export function templateToDataItems(
   template: ExtractionTemplateDto,
   formId: string
 ): DataItemDefinitionExtended[] {
-  const normalizedTemplate = {
-    ...template,
-    dataExtractionProcessId:
-      template.dataExtractionProcessId ||
-      (template as unknown as { protocolId?: string }).protocolId ||
-      "",
-  };
 
   // New API shape: template.sections[].fields[]
-  if (normalizedTemplate.sections && normalizedTemplate.sections.length > 0) {
+  if (template.sections && template.sections.length > 0) {
     const sectionNameToId = new Map(
       TEMPLATE_SECTIONS.map((section) => [section.name, section.id])
     );
 
-    return normalizedTemplate.sections.flatMap((section) => {
+    return template.sections.flatMap((section) => {
       const targetFormId =
         section.sectionId ||
         sectionNameToId.get(section.name) ||
@@ -500,7 +369,7 @@ export function templateToDataItems(
   }
 
   // Legacy fallback: template.fields[]
-  return (normalizedTemplate.fields || []).map((field) =>
+  return (template.fields || []).map((field) =>
     mapExtractionFieldFromBackend(field, formId)
   );
 }

@@ -5,23 +5,28 @@ import type {
   ExtractedValueDto,
   ExtractionDashboardSummaryDto,
   ExtractionDashboardTaskDto,
+  ExtractionEditableGridDto,
   ExtractionFieldDto,
   ExtractionPreviewDto,
   ExtractionWorkloadSummaryDto,
-  TargetReviewer,
-  SubmitExtractionRequestDto,
   ExtractionTemplateDto,
+  ExtractionTemplateResponseDto,
   ConsensusWorkspaceDto,
   ReviewerWorkspaceDto,
+  ExtractionConsensusDraftDto,
+  ExtractionFindingDto,
+  ReopenExtractionRequestDto,
+  ExtractionWorkflowMutationDto,
   SubmitConsensusRequestDto,
+  SubmitExtractionRequestDto,
+  ExtractionAuditEntryDto,
+  ExtractionCommentDto,
 } from "../../../types/dataExtraction";
 import type { PaperWithDecisionsResponse } from "../../../types/studySelection";
-import type { DataExtractionProcess } from "../../../types/reviewProcess";
 
 export type ExtractionTabKey = "dashboard" | "workspace" | "consensus" | "grid";
-export type ExtractionMode = "single" | "double";
+export type ExtractionMode = "double";
 export type ExtractionPaperStatus = "todo" | "in-progress" | "awaiting-consensus" | "completed";
-
 export type ExtractionValue = string | number | boolean | string[] | null;
 
 export interface ReviewerOption {
@@ -32,8 +37,33 @@ export interface ReviewerOption {
 export interface ReviewerSubmission {
   reviewerId: string;
   reviewerName: string;
-  submittedAt: string;
+  submittedAt?: string | null;
   values: Record<string, ExtractionValue>;
+}
+export interface CanonicalReviewerSubmission {
+  reviewerId: string;
+  values: Record<string, unknown>;
+  version: number;
+  templateVersion: number;
+  status: string;
+  submittedAt?: string | null;
+}
+
+export interface CanonicalExtractionDraft {
+  values: Record<string, unknown>;
+  status: string;
+  version: number;
+  updatedAt?: string | null;
+}
+
+export interface CanonicalExtractionSubmission extends CanonicalExtractionDraft {
+  templateVersion: number;
+  submittedAt?: string | null;
+}
+
+export interface CanonicalExtractionLeaderDraft extends CanonicalExtractionDraft {
+  findings: ExtractionFindingDto[];
+  updatedAt: string;
 }
 
 export interface ExtractionPaperRecord {
@@ -43,9 +73,9 @@ export interface ExtractionPaperRecord {
   status: ExtractionPaperStatus;
   draftsByReviewer: Record<string, Record<string, ExtractionValue>>;
   submissions: ReviewerSubmission[];
-  finalValues: Record<string, ExtractionValue>;
-  conflictFieldIds: string[];
-  updatedAt: string;
+  finalValues?: Record<string, ExtractionValue>;
+  conflictFieldIds?: string[];
+  updatedAt?: string;
 }
 
 export interface FlattenedExtractionField {
@@ -68,6 +98,7 @@ export interface AskAiFieldResult {
   matrixRowIndex: number | null;
   isNotReported?: boolean;
   evidenceCoordinates?: string | null;
+  evidenceRefs?: Array<{ fieldId: string; quote: string }>;
 }
 
 export interface ExtractionStudyItem {
@@ -84,10 +115,9 @@ export type ExtractionSummaryMetrics = ExtractionDashboardSummaryDto;
 
 export interface UseDataExtractionWorkspaceReturn {
   projectId?: string;
-  processId?: string;
   currentUserId: string | null;
   isCurrentUserLeader: boolean;
-  extractionProcessStatus: DataExtractionProcess["statusText"];
+  extractionProcessStatus: "NotStarted" | "InProgress" | "Completed";
 
   isLoading: boolean;
   error: string | null;
@@ -96,13 +126,11 @@ export interface UseDataExtractionWorkspaceReturn {
 
   activeTab: ExtractionTabKey;
   setActiveTab: (tab: ExtractionTabKey) => void;
-
   extractionMode: ExtractionMode;
   setExtractionMode: (mode: ExtractionMode) => void;
-
-  reviewerOptions: ReviewerOption[];
   activeReviewerId: string;
   setActiveReviewerId: (reviewerId: string) => void;
+  reviewerOptions: ReviewerOption[];
 
   templates: ExtractionTemplateDto[];
   selectedTemplateId: string;
@@ -137,14 +165,15 @@ export interface UseDataExtractionWorkspaceReturn {
   setPageSize: (value: number) => void;
 
   getPaperStatus: (paperId: string) => ExtractionPaperStatus;
-  getRecord: (paperId: string) => ExtractionPaperRecord;
+  getRecord: (paperId: string) => ExtractionPaperRecord | null;
   canCurrentUserExtractPaper: (paperId: string) => boolean;
-
   assignPaper: (paperId: string, payload: AssignReviewersDto) => Promise<unknown>;
   isAssigningReviewers: boolean;
+  startPhase: () => Promise<void>;
+  isStarting: boolean;
   completePhase: () => Promise<void>;
   isCompleting: boolean;
-  reopenExtraction: (paperId: string, target: TargetReviewer) => void;
+  reopenExtraction: (paperId: string, target: ReopenExtractionRequestDto) => Promise<void>;
   isReopeningExtraction: boolean;
   hasCurrentUserSubmitted: (paperId: string) => boolean;
 
@@ -154,11 +183,35 @@ export interface UseDataExtractionWorkspaceReturn {
     fieldId: string,
     value: ExtractionValue
   ) => void;
-  saveDraft: (paperId: string, reviewerId: string) => void;
-  submitExtraction: (paperId: string, payload: SubmitExtractionRequestDto) => void;
+  saveDraft: (
+    paperId: string,
+    reviewerId: string,
+    payload: ExtractionWorkflowMutationDto
+  ) => Promise<void>;
+  submitExtraction: (
+    paperId: string,
+    payload: ExtractionWorkflowMutationDto | SubmitExtractionRequestDto
+  ) => Promise<void>;
   isSubmittingExtraction: boolean;
-  isDirectMode: boolean;
-  handleOpenDirectWorkspace: (paperId: string) => void;
+  editableGrid: ExtractionEditableGridDto | null;
+  isGridLoading: boolean;
+  getEditableGrid: () => Promise<ExtractionEditableGridDto | null>;
+  updateGridCell: (payload: {
+    paperId: string;
+    fieldId: string;
+    columnId?: string;
+    row?: number;
+    value: unknown;
+    expectedVersion: number;
+  }) => Promise<void>;
+  isUpdatingGrid: boolean;
+  auditLogs: ExtractionAuditEntryDto[];
+  fetchAuditLogs: (filters?: {
+    paperId?: string;
+    fieldId?: string;
+    pageSize?: number;
+  }) => Promise<ExtractionAuditEntryDto[]>;
+  isAuditLoading: boolean;
 
   autoExtractWithAI: (
     paperId: string,
@@ -176,28 +229,50 @@ export interface UseDataExtractionWorkspaceReturn {
   ) => Promise<AskAiFieldResult | null>;
   isAskingAi: boolean;
 
-  resolveConsensus: (
+  checkConsensus: (
     paperId: string,
-    finalValues: Record<string, ExtractionValue>
-  ) => void;
+    submissionVersions: Record<string, number>
+  ) => Promise<{
+    findings: ExtractionFindingDto[];
+    proposedValues: Record<string, unknown>;
+  }>;
+  saveConsensusDraft: (
+    paperId: string,
+    payload: ExtractionConsensusDraftDto
+  ) => Promise<void>;
+  finalizeConsensus: (paperId: string, expectedVersion: number) => Promise<void>;
+  submitConsensus: (paperId: string, payload: SubmitConsensusRequestDto) => Promise<void>;
+  isSubmittingConsensus: boolean;
+  isCheckingConsensus: boolean;
+  isSavingConsensusDraft: boolean;
+  isFinalizingConsensus: boolean;
 
-  consensusWorkspace: ConsensusWorkspaceDto | null;
+  consensusWorkspace: (ConsensusWorkspaceDto & {
+    templateSnapshot?: ExtractionTemplateResponseDto;
+    reviewerSubmissions?: CanonicalReviewerSubmission[];
+    leaderDraft?: CanonicalExtractionLeaderDraft;
+    findings?: ExtractionFindingDto[];
+  }) | null;
   isConsensusLoading: boolean;
   fetchConsensusWorkspace: (
     paperId: string
   ) => Promise<ConsensusWorkspaceDto | null>;
-  submitConsensus: (
-    paperId: string,
-    payload: SubmitConsensusRequestDto
-  ) => void;
-  isSubmittingConsensus: boolean;
+  fetchPaperVersion: (paperId: string) => Promise<number | null>;
 
-  reviewerWorkspace: ReviewerWorkspaceDto | null;
+  reviewerWorkspace: (ReviewerWorkspaceDto & {
+    templateSnapshot?: ExtractionTemplateResponseDto;
+    ownDraft?: CanonicalExtractionDraft;
+    ownSubmission?: CanonicalExtractionSubmission;
+    version?: number;
+  }) | null;
   isReviewerWorkspaceLoading: boolean;
   fetchReviewerWorkspace: (
     paperId: string
   ) => Promise<ReviewerWorkspaceDto | null>;
-
+  fetchFieldComments: (
+    paperId: string,
+    fieldId: string
+  ) => Promise<ExtractionCommentDto[]>;
   addFieldComment: (
     paperId: string,
     fieldId: string,

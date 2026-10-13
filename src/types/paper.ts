@@ -354,17 +354,6 @@ export interface AddPapersToSnapshotRequest {
   paperIds: string[];
 }
 
-/**
- * Query parameters for data extraction unique papers endpoint
- * GET /api/data-extraction-processes/{dataExtractionProcessId}/unique-papers
- */
-export interface GetDataExtractionUniquePapersParams {
-  dataExtractionProcessId: string; // UUID (path param)
-  search?: string; // Search in Title, DOI, or Authors
-  year?: number; // Filter by exact publication year
-  pageNumber?: number; // Default: 1
-  pageSize?: number; // Default: 20, max: 100
-}
 
 /**
  * API Response for Get Project Papers
@@ -419,10 +408,6 @@ export type AssignPapersResponse = ApiResponse<null>;
  */
 export type GetUniquePapersResponse = ApiResponse<PaginatedPaperResponse>;
 
-/**
- * API Response for Get Data Extraction Unique Papers
- */
-export type GetDataExtractionUniquePapersResponse = ApiResponse<PaginatedPaperResponse>;
 
 // Deduplication types moved to src/types/deduplication.ts
 

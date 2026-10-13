@@ -13,12 +13,12 @@ export default function DataExtractionPhaseWorkspace() {
   const { studyId } = useParams<{ studyId?: string }>();
 
   const dashboardPath = useMemo(() => {
-    if (!ws.projectId || !ws.processId) {
+    if (!ws.projectId) {
       return "/projects";
     }
 
-    return `/projects/${ws.projectId}/processes/${ws.processId}/extraction`;
-  }, [ws.processId, ws.projectId]);
+    return `/projects/${ws.projectId}/extraction`;
+  }, [ws.projectId]);
 
   if (ws.isLoading) {
     return (

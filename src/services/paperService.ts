@@ -7,8 +7,7 @@ import api from "../config/axios";
 import type {
   GetUniquePapersParams,
   GetUniquePapersResponse,
-  GetDataExtractionUniquePapersParams,
-  GetDataExtractionUniquePapersResponse,
+  PaginatedPaperResponse,
   AssignPapersRequest,
   AssignPapersResponse,
   GetPaperDetailsApiResponse,
@@ -47,24 +46,31 @@ export const paperService = {
   },
 
   /**
-   * Get unique papers for a data extraction process.
-   * GET /api/data-extraction-processes/{dataExtractionProcessId}/unique-papers
+   * List extraction-eligible papers for a project.
+   * GET /api/projects/:projectId/extraction/papers
    */
-  async getDataExtractionUniquePapers(
-    params: GetDataExtractionUniquePapersParams,
-  ): Promise<GetDataExtractionUniquePapersResponse> {
-    const queryParams = new URLSearchParams();
+  async getExtractionPapers(params: {
+    projectId: string;
+    search?: string;
+    pageNumber?: number;
+    pageSize?: number;
+  }): Promise<PaginatedPaperResponse> {
+    const response = await api.get<{ success: boolean; data: PaginatedPaperResponse }>(
+      `/projects/${params.projectId}/extraction/papers`,
+      {
+        params: {
+          search: params.search,
+          pageNumber: params.pageNumber,
+          pageSize: params.pageSize,
+        },
+      }
+    );
 
-    if (params.search) queryParams.set("search", params.search);
-    if (params.year) queryParams.set("year", params.year.toString());
-    if (params.pageNumber) queryParams.set("pageNumber", params.pageNumber.toString());
-    if (params.pageSize) queryParams.set("pageSize", params.pageSize.toString());
+    if (!response.data.success) {
+      throw new Error("Failed to load extraction papers");
+    }
 
-    const queryString = queryParams.toString();
-    const url = `/data-extraction-processes/${params.dataExtractionProcessId}/unique-papers${queryString ? `?${queryString}` : ""}`;
-
-    const response = await api.get<GetDataExtractionUniquePapersResponse>(url);
-    return response.data;
+    return response.data.data;
   },
 
   async assignPapers(request: AssignPapersRequest): Promise<AssignPapersResponse> {

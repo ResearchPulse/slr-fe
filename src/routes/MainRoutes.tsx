@@ -101,6 +101,7 @@ function MainRoutes() {
               <Route path=":projectId/screening/full-text" element={<FullTextScreeningWorkspace />} />
               <Route path=":projectId/quality-assessment" element={<QualityAssessmentWorkspace />} />
               <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
+              <Route path=":projectId/extraction/workspace/:studyId" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/grid" element={<ExtractionGridWorkspace />} />
               <Route path=":projectId/synthesis/*" element={<SynthesisPhaseWorkspace />} />
               <Route path=":projectId/prisma-report" element={<PrismaReportWorkspace />} />
@@ -166,18 +167,6 @@ function MainRoutes() {
               <Route
                 path=":projectId/processes/:processId/quality-assessment/:qualityAssessmentId"
                 element={<QualityAssessmentWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction"
-                element={<DataExtractionPhaseWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction/workspace/:studyId"
-                element={<DataExtractionPhaseWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction/grid"
-                element={<ExtractionGridWorkspace />}
               />
               <Route
                 path=":projectId/processes/:processId/synthesis/*"

@@ -1,58 +1,71 @@
-import { useQuery } from "@tanstack/react-query";
-import { dataExtractionConductingService } from "../../../../services/dataExtractionConductingService";
-import type { ExtractedDataAuditLogDto } from "../../../../types/dataExtraction";
-
-const CELL_AUDIT_LOGS_QUERY_KEY = ["data-extraction-conducting", "cell-audit-logs"] as const;
+import { useEffect, useState } from "react";
+import { useDataExtractionWorkspace } from "./useDataExtractionWorkspace";
+import type { ExtractionAuditEntryDto } from "../../../../types/dataExtraction";
 
 export interface UseCellAuditLogsParams {
-  extractionProcessId?: string;
+  projectId?: string;
   paperId?: string | null;
   fieldId?: string | null;
-  matrixColumnId?: string | null;
-  matrixRowIndex?: number | null;
   isOpen: boolean;
 }
 
 export function useCellAuditLogs({
-  extractionProcessId,
+  projectId,
   paperId,
   fieldId,
-  matrixColumnId,
-  matrixRowIndex,
   isOpen,
 }: UseCellAuditLogsParams) {
-  return useQuery<ExtractedDataAuditLogDto[]>({
-    queryKey: [
-      ...CELL_AUDIT_LOGS_QUERY_KEY,
-      extractionProcessId,
-      paperId,
-      fieldId,
-      matrixColumnId,
-      matrixRowIndex,
-    ],
-    queryFn: async () => {
-      if (!extractionProcessId || !paperId || !fieldId) {
-        throw new Error("Missing required cell coordinates for audit logs");
-      }
+  const workspace = useDataExtractionWorkspace();
+  const [data, setData] = useState<ExtractionAuditEntryDto[]>([]);
+  const [error, setError] = useState<unknown>(null);
 
-      const response = await dataExtractionConductingService.getCellAuditLogs(
-        extractionProcessId,
-        paperId,
-        fieldId,
-        matrixColumnId ?? null,
-        matrixRowIndex ?? null
-      );
+  useEffect(() => {
+    if (
+      !isOpen ||
+      !projectId ||
+      workspace.projectId !== projectId ||
+      !paperId ||
+      !fieldId
+    ) {
+      setData([]);
+      setError(null);
+      return;
+    }
 
-      if (!response.isSuccess) {
-        throw new Error(response.message || "Failed to load cell audit logs");
-      }
+    let isCurrent = true;
+    setError(null);
 
-      return response.data ?? [];
-    },
-    enabled: Boolean(isOpen && extractionProcessId && paperId && fieldId),
-    staleTime: 30_000,
-    placeholderData: (previousData) => previousData,
-  });
+    void workspace
+      .fetchAuditLogs({ paperId, fieldId })
+      .then((logs) => {
+        if (isCurrent) {
+          setData(logs);
+        }
+      })
+      .catch((caughtError: unknown) => {
+        if (isCurrent) {
+          setError(caughtError);
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [
+    fieldId,
+    isOpen,
+    paperId,
+    projectId,
+    workspace.fetchAuditLogs,
+    workspace.isAuditLoading,
+    workspace.projectId,
+  ]);
+
+  return {
+    data,
+    error,
+    isLoading: workspace.isAuditLoading,
+  };
 }
 
 export default useCellAuditLogs;

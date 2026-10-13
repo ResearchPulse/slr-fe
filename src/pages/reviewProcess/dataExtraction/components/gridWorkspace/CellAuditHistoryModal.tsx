@@ -6,11 +6,9 @@ import { useCellAuditLogs } from "../../hooks/useCellAuditLogs";
 interface CellAuditHistoryModalProps {
   isOpen: boolean;
   onClose: () => void;
-  extractionProcessId?: string;
+  projectId?: string;
   paperId: string | null;
   fieldId: string | null;
-  matrixColumnId: string | null;
-  matrixRowIndex: number | null;
   fieldLabel: string;
 }
 
@@ -27,27 +25,19 @@ function formatHistoryTime(value: string): string {
   }).format(date);
 }
 
-function formatCellText(value: string | null | undefined): string {
-  const normalized = String(value ?? "").trim();
-  return normalized || "(empty)";
-}
 
 export default function CellAuditHistoryModal({
   isOpen,
   onClose,
-  extractionProcessId,
+  projectId,
   paperId,
   fieldId,
-  matrixColumnId,
-  matrixRowIndex,
   fieldLabel,
 }: CellAuditHistoryModalProps) {
   const auditLogsQuery = useCellAuditLogs({
-    extractionProcessId,
+    projectId,
     paperId,
     fieldId,
-    matrixColumnId,
-    matrixRowIndex,
     isOpen,
   });
 
@@ -117,7 +107,7 @@ export default function CellAuditHistoryModal({
                       <UserCircle2 className="h-5 w-5 shrink-0 text-text-secondary" />
                       <div className="min-w-0">
                         <p className="truncate text-sm font-semibold text-text-primary">
-                          {log.userName || "Unknown user"}
+                          {log.actorId || "Unknown user"}
                         </p>
                         <p className="text-xs text-text-secondary">
                           {formatHistoryTime(log.createdAt)}
@@ -133,13 +123,14 @@ export default function CellAuditHistoryModal({
                   </div>
 
                   <div className="mt-3 rounded-xl border border-border bg-bg-secondary px-3 py-2 text-sm">
-                    <span className="mr-2 inline-block text-red-500 line-through decoration-red-400">
-                      {formatCellText(log.oldValue)}
-                    </span>
-                    <span className="mr-2 text-text-secondary">-&gt;</span>
-                    <span className="font-semibold text-green-600">
-                      {formatCellText(log.newValue)}
-                    </span>
+                    <p>
+                      <span className="font-semibold">Action:</span>{" "}
+                      {log.action || "Unknown action"}
+                    </p>
+                    <p className="mt-1">
+                      <span className="font-semibold">Version:</span>{" "}
+                      {log.version}
+                    </p>
                   </div>
                 </li>
               );
