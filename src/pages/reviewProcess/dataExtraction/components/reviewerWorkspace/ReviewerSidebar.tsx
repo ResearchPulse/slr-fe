@@ -19,7 +19,7 @@ interface ReviewerSidebarProps {
   onAutoExtract: () => void;
   onSectionChange: (sectionId: string) => void;
   onBack: () => void;
-  onSubmitExtraction: () => void;
+  onSubmitExtraction: () => void | Promise<void>;
 }
 
 export default function ReviewerSidebar({

@@ -1171,7 +1171,7 @@ export default function DataExtractionReviewerWorkspace({
     notReportedFields,
   ]);
 
-  const handleSubmitExtraction = useCallback(() => {
+  const handleSubmitExtraction = useCallback(async () => {
     if (!selectedPaperId) {
       return;
     }
@@ -1226,12 +1226,31 @@ export default function DataExtractionReviewerWorkspace({
       toastError(
         "Validation Failed",
         `Please fill in all required fields:\n${uniqueMissingFields.join("\n")}`,
+        { duration: 8000 },
       );
       return;
     }
 
     const payload = buildSubmissionPayload();
-    submitExtraction(selectedPaperId, payload);
+    try {
+      await submitExtraction(selectedPaperId, payload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to submit extraction.";
+
+      // submitMutation already reports transport/API errors. This branch is
+      // still needed for canonical validation failures thrown before the
+      // mutation starts, otherwise they become an unhandled promise rejection.
+      if (message.startsWith("Complete required fields before submitting:")) {
+        toastError(
+          "Validation Failed",
+          `Please fill in all required fields:\n${message.replace(
+            "Complete required fields before submitting: ",
+            "",
+          )}`,
+          { duration: 8000 },
+        );
+      }
+    }
   }, [
     buildSubmissionPayload,
     formValues,

@@ -1,6 +1,8 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { FieldTypeEnum, SectionTypeEnum } from "../../../../types/dataExtraction";
+import { CustomToast } from "../../../../components/ui/toast/CustomToast";
+import type { Toast } from "react-hot-toast";
 import ReviewerFormPane from "../components/reviewerWorkspace/ReviewerFormPane";
 import type { ExtractionFieldDto, ExtractionSectionDto } from "../../../../types/dataExtraction";
 import {
@@ -12,6 +14,32 @@ import {
 } from "../workflowRules";
 
 describe("canonical extraction workflow rules", () => {
+  it("exposes validation toast feedback to users and assistive technology", () => {
+    render(
+      <CustomToast
+        t={
+          {
+            id: "validation-toast",
+            type: "custom",
+            visible: true,
+            createdAt: Date.now(),
+            message: "",
+            pauseDuration: 0,
+            duration: 8000,
+          } as Toast
+        }
+        type="error"
+        title="Validation Failed"
+        message={"Please fill in all required fields:\nIdentification - Study Title"}
+      />,
+    );
+
+    const alert = screen.getByRole("alert");
+    expect(alert.textContent).toContain("Validation Failed");
+    expect(alert.textContent).toContain("Identification - Study Title");
+    expect(alert.getAttribute("aria-live")).toBe("assertive");
+  });
+
   it("keeps reviewer records private to their owner", () => {
     const state = getReviewerWorkspaceState(
       { reviewerId: "reviewer-a", values: { title: "A" }, version: 2 },
