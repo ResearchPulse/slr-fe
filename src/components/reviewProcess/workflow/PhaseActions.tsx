@@ -62,7 +62,8 @@ export default function PhaseActions({
   const showReopen = canManageActions && status === "Completed" && onReopen;
 
   return (
-    <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-border">
+    <div className="mt-auto pt-2">
+      <div className="flex flex-col gap-2 border-t border-border pt-4">
       {canManageActions && status === "NotStarted" && onStart && (
         <button
           onClick={onStart}
@@ -124,6 +125,8 @@ export default function PhaseActions({
           )}
         </>
       )}
+
+      </div>
 
       <ConfirmModal
         isOpen={confirmAction === "complete"}

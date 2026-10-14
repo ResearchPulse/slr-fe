@@ -6,6 +6,7 @@ import {
   useRef,
   useState,
 } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
 import {
@@ -20,6 +21,7 @@ import { AgGridReact } from "ag-grid-react";
 import type {
   ColDef,
   ICellRendererParams,
+  RowHeightParams,
   ValueFormatterParams,
 } from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
@@ -45,8 +47,10 @@ import "./ExtractionGridWorkspace.css";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const MIN_GRID_ROW_HEIGHT = 44;
-const MAX_GRID_ROW_HEIGHT = 140;
+const MAX_GRID_ROW_HEIGHT = 320;
 const DEFAULT_GRID_ROW_HEIGHT = 56;
+const MIN_GRID_FRAME_HEIGHT = 360;
+const MAX_GRID_FRAME_HEIGHT = 900;
 
 interface AgGridRowData {
   id: string;
@@ -161,9 +165,15 @@ export default function ExtractionGridWorkspace() {
   const [isExportingCsv, setIsExportingCsv] = useState(false);
   const [savingCells, setSavingCells] = useState<Record<string, boolean>>({});
   const [rowHeight, setRowHeight] = useState(DEFAULT_GRID_ROW_HEIGHT);
+  const [gridFrameHeight, setGridFrameHeight] = useState<number | null>(null);
+  const [isGridFrameResizing, setIsGridFrameResizing] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const exportMenuPanelRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<AgGridReact<AgGridRowData> | null>(null);
+  const gridShellRef = useRef<HTMLDivElement | null>(null);
+  const gridResizeStartRef = useRef<{ startY: number; startHeight: number } | null>(
+    null,
+  );
   const [exportMenuPosition, setExportMenuPosition] = useState({
     top: 0,
     left: 0,
@@ -231,9 +241,122 @@ export default function ExtractionGridWorkspace() {
       filter: true,
       minWidth: 140,
       flex: 1,
+      wrapText: true,
+      autoHeight: true,
     }),
     [],
   );
+
+  const getGridRowHeight = useCallback(
+    (params: RowHeightParams<AgGridRowData>) => {
+      if (!params.data) {
+        return rowHeight;
+      }
+
+      const values = [
+        params.data.citationPaper,
+        ...enrichedGridData.columns.map((column, columnIndex) =>
+          params.data?.[getColumnFieldKey(column, columnIndex)],
+        ),
+      ];
+
+      const estimatedLines = values.reduce<number>((maxLines, value, index) => {
+        const text = String(value ?? "-");
+        const fieldKey =
+          index === 0
+            ? "citationPaper"
+            : getColumnFieldKey(enrichedGridData.columns[index - 1], index - 1);
+        const actualWidth = params.api.getColumn(fieldKey)?.getActualWidth();
+        const fallbackWidth = index === 0 ? 360 : 220;
+        const usableCharactersPerLine = Math.max(
+          12,
+          Math.floor(((actualWidth ?? fallbackWidth) - 24) / 7),
+        );
+        const lineCount = text.split(/\r?\n/).reduce(
+          (maxLineCount, line) =>
+            Math.max(
+              maxLineCount,
+              Math.ceil(line.length / usableCharactersPerLine),
+            ),
+          1,
+        );
+
+        return Math.max(maxLines, lineCount);
+      }, 1);
+
+      const contentHeight = 24 + estimatedLines * 20;
+      return Math.min(
+        MAX_GRID_ROW_HEIGHT,
+        Math.max(rowHeight, contentHeight),
+      );
+    },
+    [enrichedGridData.columns, rowHeight],
+  );
+
+  const handleColumnResized = useCallback(
+    (event: { finished?: boolean; api: { resetRowHeights: () => void } }) => {
+      if (event.finished !== false) {
+        event.api.resetRowHeights();
+      }
+    },
+    [],
+  );
+
+  const handleGridFrameResizeStart = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      const shell = gridShellRef.current;
+      if (!shell) {
+        return;
+      }
+
+      event.preventDefault();
+      gridResizeStartRef.current = {
+        startY: event.clientY,
+        startHeight: shell.getBoundingClientRect().height,
+      };
+      setIsGridFrameResizing(true);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (!isGridFrameResizing) {
+      return;
+    }
+
+    const handlePointerMove = (event: globalThis.PointerEvent) => {
+      const resizeStart = gridResizeStartRef.current;
+      if (!resizeStart) {
+        return;
+      }
+
+      const viewportLimit = Math.max(
+        MIN_GRID_FRAME_HEIGHT,
+        Math.min(MAX_GRID_FRAME_HEIGHT, window.innerHeight - 220),
+      );
+      const nextHeight = Math.min(
+        viewportLimit,
+        Math.max(
+          MIN_GRID_FRAME_HEIGHT,
+          resizeStart.startHeight + event.clientY - resizeStart.startY,
+        ),
+      );
+      setGridFrameHeight(nextHeight);
+    };
+
+    const handlePointerUp = () => {
+      gridResizeStartRef.current = null;
+      setIsGridFrameResizing(false);
+    };
+
+    document.addEventListener("pointermove", handlePointerMove);
+    document.addEventListener("pointerup", handlePointerUp);
+
+    return () => {
+      document.removeEventListener("pointermove", handlePointerMove);
+      document.removeEventListener("pointerup", handlePointerUp);
+    };
+  }, [isGridFrameResizing]);
 
   const buildSavingCellKey = useCallback(
     (rowId: string, fieldKey: string): string => {
@@ -332,7 +455,9 @@ export default function ExtractionGridWorkspace() {
       editable: false,
       minWidth: 300,
       maxWidth: 460,
-      cellClass: "font-medium",
+      wrapText: true,
+      autoHeight: true,
+      cellClass: "grid-paper-cell",
       tooltipValueGetter: (params) =>
         `${params.data?.citation || "-"}\n${params.data?.paperTitle || "Untitled paper"}`,
       valueFormatter: (params: ValueFormatterParams<AgGridRowData>) => {
@@ -355,6 +480,9 @@ export default function ExtractionGridWorkspace() {
         field: fieldKey,
         editable: false,
         minWidth: 180,
+        wrapText: true,
+        autoHeight: true,
+        cellClass: "grid-value-cell",
         cellRenderer: (params: ICellRendererParams<AgGridRowData>) => {
           const rowId = params.data?.id;
           const cell = params.data?.__cellMeta?.[fieldKey];
@@ -593,9 +721,9 @@ export default function ExtractionGridWorkspace() {
     <div className="min-h-screen bg-bg-primary px-6 py-8">
       <div className="mx-auto max-w-[96rem] space-y-4">
         <div className="relative z-50 rounded-xl border border-white/70 bg-surface-white/85 px-5 py-4 shadow-none shadow-slate-200/40 backdrop-blur">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-text-primary">
+          <div className="flex flex-col gap-4 2xl:flex-row 2xl:items-center 2xl:justify-between">
+            <div className="min-w-0">
+              <h1 className="text-2xl font-bold leading-tight text-text-primary 2xl:whitespace-nowrap">
                 Extraction Grid Workspace
               </h1>
               <p className="mt-1 text-sm text-text-secondary">
@@ -603,7 +731,7 @@ export default function ExtractionGridWorkspace() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="flex flex-wrap items-center gap-2 2xl:justify-end">
               <Button variant="outline" onClick={() => navigate(dashboardPath)}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Dashboard
@@ -711,22 +839,26 @@ export default function ExtractionGridWorkspace() {
         ) : null}
 
         <div
-          className="rounded-xl border border-border bg-surface-white shadow-none"
-          style={{ height: "calc(100vh - 200px)" }}
+          ref={gridShellRef}
+          style={gridFrameHeight ? { height: `${gridFrameHeight}px` } : undefined}
+          className="extraction-grid-shell min-h-[360px] rounded-xl border border-border bg-surface-white shadow-none"
         >
           {hasData ? (
-            <div className="ag-theme-quartz h-full w-full">
+            <div className="ag-theme-quartz extraction-grid w-full">
               <AgGridReact<AgGridRowData>
                 ref={gridRef}
                 rowData={agRowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
                 rowHeight={rowHeight}
+                getRowHeight={getGridRowHeight}
                 headerHeight={56}
                 groupHeaderHeight={28}
+                domLayout="autoHeight"
                 animateRows
                 stopEditingWhenCellsLoseFocus
                 suppressDragLeaveHidesColumns
+                onColumnResized={handleColumnResized}
               />
             </div>
           ) : (
@@ -742,6 +874,16 @@ export default function ExtractionGridWorkspace() {
               </div>
             </div>
           )}
+
+          <div
+            role="separator"
+            aria-orientation="horizontal"
+            aria-label="Resize grid height"
+            onPointerDown={handleGridFrameResizeStart}
+            className={`grid-vertical-resize-handle${
+              isGridFrameResizing ? " is-resizing" : ""
+            }`}
+          />
         </div>
       </div>
     </div>

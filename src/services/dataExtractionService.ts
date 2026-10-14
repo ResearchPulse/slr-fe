@@ -4,6 +4,7 @@ import type {
   ExtractionTemplateDto,
   ExtractionTemplateResponseDto,
   ExtractionTemplateInputDto,
+  ExtractionTemplatePresetDto,
   ExtractionSectionDto,
   ExtractionFieldDto,
   ExtractionMatrixColumnDto,
@@ -178,6 +179,13 @@ function unwrapCanonicalResponse<T>(response: AxiosResponse<CanonicalApiResponse
 
 
 export const dataExtractionTemplateService = {
+  async listPresets(projectId: string): Promise<ExtractionTemplatePresetDto[]> {
+    const response = await api.get<CanonicalApiResponse<{ presets: ExtractionTemplatePresetDto[] }>>(
+      `/projects/${projectId}/extraction/templates/presets`
+    );
+    return unwrapCanonicalResponse(response).presets;
+  },
+
   async list(projectId: string): Promise<ExtractionTemplateResponseDto[]> {
     const response = await api.get<CanonicalApiResponse<{ templates: ExtractionTemplateResponseDto[] }>>(
       `/projects/${projectId}/extraction/templates`

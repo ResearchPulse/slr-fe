@@ -118,6 +118,10 @@ export interface ExtractionTemplateInputDto {
   fields?: ExtractionFieldDto[];
 }
 
+export interface ExtractionTemplatePresetDto extends ExtractionTemplateInputDto {
+  presetId: string;
+}
+
 export interface ExtractionApiResponse<T> {
   success: boolean;
   data: T;

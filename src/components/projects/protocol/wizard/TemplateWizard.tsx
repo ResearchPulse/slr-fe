@@ -1,7 +1,13 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { FiArrowLeft } from "react-icons/fi";
 import { useTemplateWizard } from "../../../../hooks/useTemplateWizard";
 import { useProjectResearchQuestions } from "../../../../hooks/useProjects";
-import type { ExtractionTemplateDto } from "../../../../types/dataExtraction";
+import { dataExtractionTemplateService } from "../../../../services/dataExtractionService";
+import type {
+  ExtractionTemplateDto,
+  ExtractionTemplatePresetDto,
+} from "../../../../types/dataExtraction";
 import type { ExtractionTemplateResponseDto } from "../../../../types/dataExtraction";
 import type { DataItemDefinitionExtended } from "../../../../types/dataExtraction";
 import type { ResearchQuestion } from "../../../../types/coreAndGovernance";
@@ -27,6 +33,171 @@ export default function TemplateWizard({
   isViewOnly = false,
   existingTemplate = null,
 }: TemplateWizardProps) {
+  const [presetSelection, setPresetSelection] = useState<ExtractionTemplateDto | null | undefined>(
+    undefined,
+  );
+  const presetsQuery = useQuery<ExtractionTemplatePresetDto[]>({
+    queryKey: ["data-extraction-template-presets", projectId],
+    queryFn: () => dataExtractionTemplateService.listPresets(projectId),
+    enabled: !(isViewOnly && !!existingTemplate),
+    staleTime: 10 * 60 * 1000,
+  });
+
+  if (!(isViewOnly && existingTemplate) && presetSelection === undefined) {
+    return (
+      <TemplatePresetPicker
+        presets={presetsQuery.data ?? []}
+        isLoading={presetsQuery.isLoading}
+        error={presetsQuery.error instanceof Error ? presetsQuery.error.message : null}
+        currentTemplate={existingTemplate}
+        onSelect={(preset) => {
+          setPresetSelection(preset
+            ? {
+                projectId,
+                name: preset.name,
+                description: preset.description,
+                sections: preset.sections,
+                fields: preset.fields,
+              }
+            : null);
+        }}
+        onSelectCurrent={() => setPresetSelection(existingTemplate)}
+      />
+    );
+  }
+
+  const selectedTemplate =
+    presetSelection !== undefined ? presetSelection : existingTemplate;
+
+  return (
+    <TemplateWizardEditor
+      projectId={projectId}
+      onComplete={onComplete}
+      isViewOnly={isViewOnly}
+      existingTemplate={selectedTemplate}
+      onBackToPresetPicker={
+        !isViewOnly ? () => setPresetSelection(undefined) : undefined
+      }
+    />
+  );
+}
+
+interface TemplatePresetPickerProps {
+  presets: ExtractionTemplatePresetDto[];
+  isLoading: boolean;
+  error: string | null;
+  currentTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
+  onSelect: (preset: ExtractionTemplatePresetDto | null) => void;
+  onSelectCurrent: () => void;
+}
+
+function TemplatePresetPicker({
+  presets,
+  isLoading,
+  error,
+  currentTemplate,
+  onSelect,
+  onSelectCurrent,
+}: TemplatePresetPickerProps) {
+  return (
+    <div className="mx-auto max-w-5xl px-2 py-2">
+      <div className="mb-6">
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-text-secondary">
+          Start from a template
+        </p>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-text-primary">
+          Choose an extraction form
+        </h2>
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-text-secondary">
+          Select a built-in form and customize it before publishing. Existing project templates are not changed.
+        </p>
+      </div>
+
+      {isLoading ? (
+        <div className="rounded-xl border border-border bg-bg-secondary/50 px-5 py-8 text-center text-sm text-text-secondary">
+          Loading available templates...
+        </div>
+      ) : error ? (
+        <div className="rounded-xl border border-red-200 bg-red-50 px-5 py-8 text-center text-sm text-red-700">
+          Could not load the built-in templates: {error}
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {currentTemplate ? (
+            <button
+              type="button"
+              onClick={onSelectCurrent}
+              className="group rounded-2xl border border-primary/40 bg-primary-light/20 p-5 text-left transition-colors hover:border-primary hover:bg-primary-light/35 focus:outline-none focus:ring-2 focus:ring-primary/25"
+            >
+              <h3 className="text-base font-semibold text-text-primary transition-colors group-hover:text-primary">
+                Edit current template
+              </h3>
+              <p className="mt-2 text-sm leading-6 text-text-secondary">
+                Continue editing “{currentTemplate.name || "Untitled template"}” without changing its existing fields.
+              </p>
+              <p className="mt-4 text-xs font-medium text-primary">Continue editing →</p>
+            </button>
+          ) : null}
+
+          {presets.map((preset) => (
+            <button
+              key={preset.presetId}
+              type="button"
+              onClick={() => onSelect(preset)}
+              className="group rounded-2xl border border-border bg-surface-white p-5 text-left transition-colors hover:border-primary hover:bg-primary-light/20 focus:outline-none focus:ring-2 focus:ring-primary/25"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <h3 className="text-base font-semibold text-text-primary transition-colors group-hover:text-primary">
+                    {preset.name}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-text-secondary">
+                    {preset.description}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-full bg-primary-light px-2.5 py-1 text-[11px] font-medium text-primary">
+                  {preset.sections?.length ?? 0} sections
+                </span>
+              </div>
+              <p className="mt-4 text-xs font-medium text-text-secondary">
+                {preset.sections?.reduce((count, section) => count + (section.fields?.length ?? 0), 0) ?? 0} fields
+                <span className="ml-2 text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                  Use this template →
+                </span>
+              </p>
+            </button>
+          ))}
+
+          <button
+            type="button"
+            onClick={() => onSelect(null)}
+            className="group rounded-2xl border border-dashed border-border bg-bg-secondary/30 p-5 text-left transition-colors hover:border-primary hover:bg-primary-light/20 focus:outline-none focus:ring-2 focus:ring-primary/25"
+          >
+            <h3 className="text-base font-semibold text-text-primary transition-colors group-hover:text-primary">
+              Custom / blank template
+            </h3>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              Start with the project research questions and define every section and field yourself.
+            </p>
+            <p className="mt-4 text-xs font-medium text-primary">Start from blank →</p>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface TemplateWizardEditorProps extends TemplateWizardProps {
+  onBackToPresetPicker?: () => void;
+}
+
+function TemplateWizardEditor({
+  projectId,
+  onComplete,
+  isViewOnly = false,
+  existingTemplate = null,
+  onBackToPresetPicker,
+}: TemplateWizardEditorProps) {
   const {
     state,
     goToStep,
@@ -194,7 +365,18 @@ export default function TemplateWizard({
       <div className="sticky top-0 bg-surface-white border-b border-border shadow-none z-10">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              {onBackToPresetPicker ? (
+                <button
+                  type="button"
+                  onClick={onBackToPresetPicker}
+                  className="inline-flex items-center gap-1 rounded-xl px-2 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary"
+                >
+                  <FiArrowLeft className="h-4 w-4" />
+                  Back to templates
+                </button>
+              ) : null}
+
               {[1, 4].map((step) => (
                 <button
                   key={step}

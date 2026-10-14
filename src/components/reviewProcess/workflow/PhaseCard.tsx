@@ -40,7 +40,7 @@ export default function PhaseCard({
   disabled = false,
 }: PhaseCardProps) {
   return (
-    <article className="flex min-h-[220px] flex-1 flex-col rounded-xl border border-border/70 bg-surface-white p-4 transition-[border-color,background-color,box-shadow] duration-150 hover:border-primary/30 hover:bg-bg-secondary/20 hover:shadow-sm sm:p-5">
+    <article className="flex h-full min-h-[220px] min-w-0 flex-1 flex-col rounded-xl border border-border/70 bg-surface-white p-4 transition-[border-color,background-color,box-shadow] duration-150 hover:border-primary/30 hover:bg-bg-secondary/20 hover:shadow-sm sm:p-5">
       <div className="flex min-w-0 items-start gap-3">
         <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ICON_TONE[phase.status]}`}>
           {phase.status === "Locked" ? (

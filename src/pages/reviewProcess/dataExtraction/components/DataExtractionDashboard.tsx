@@ -355,6 +355,36 @@ export default function DataExtractionDashboard({
     setSelectedPaper(null);
   }, []);
 
+  const handleOpenTask = useCallback(
+    (task: DashboardTask) => {
+      if (isProcessCompleted) {
+        return;
+      }
+
+      if (ws.isCurrentUserLeader && (task.status === "awaiting-consensus" || task.status === "completed")) {
+        void handleOpenConsensusWorkspace(task.paperId);
+        return;
+      }
+
+      if (
+        !ws.isCurrentUserLeader &&
+        (ws.hasCurrentUserSubmitted(task.paperId) || ws.canCurrentUserExtractPaper(task.paperId))
+      ) {
+        handleOpenWorkspace(task.paperId);
+        return;
+      }
+
+      handleOpenPaperDetails(task.paperId);
+    },
+    [
+      handleOpenConsensusWorkspace,
+      handleOpenPaperDetails,
+      handleOpenWorkspace,
+      isProcessCompleted,
+      ws,
+    ],
+  );
+
   const handleDownloadJson = useCallback(async () => {
     if (!ws.projectId || isProcessCompleted) {
       return;
@@ -1058,6 +1088,13 @@ export default function DataExtractionDashboard({
                             <TableRow
                               key={task.taskId || task.paperId}
                               className="group cursor-pointer transition-colors hover:bg-primary-light/60"
+                              onClick={(event) => {
+                                const target = event.target as HTMLElement | null;
+                                if (target?.closest("button, input, select, textarea, a, [role='button']")) {
+                                  return;
+                                }
+                                handleOpenTask(task);
+                              }}
                             >
                               {ws.isCurrentUserLeader && (
                               <TableCell className="w-12 px-4 py-3">
