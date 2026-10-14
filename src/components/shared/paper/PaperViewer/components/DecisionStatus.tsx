@@ -4,12 +4,14 @@ import { FiCheck, FiX, FiAlertTriangle } from "react-icons/fi";
 import type { ScreeningPaper } from "../../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type { RootState } from "../../../../../redux/store";
 import { cn } from "../../../../../utils/cn";
+import { PaperPhase } from "../../../../../types/studySelection";
 
 interface DecisionStatusProps {
   paper: ScreeningPaper;
+  phase: PaperPhase;
 }
 
-export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper }) => {
+export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper, phase }) => {
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const myDecision = currentUser
     ? paper.decisions.find((d) => d.reviewerId === currentUser.id)
@@ -42,7 +44,9 @@ export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper }) => {
         ) : (
           <FiX className="w-4 h-4" />
         )}
-        You {isInclude ? "Included" : "Excluded"} this paper
+        You {isInclude
+          ? phase === PaperPhase.TitleAbstract ? "Advanced this paper to Full Text" : "Marked this paper for inclusion"
+          : "Excluded this paper"}
         <span className="ml-auto opacity-50">
           {paper.screeningStatus === "conflicted"
             ? "(Conflicted)"

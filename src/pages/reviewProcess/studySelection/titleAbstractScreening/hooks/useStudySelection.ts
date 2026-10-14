@@ -302,6 +302,9 @@ export function useStudySelection(
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewProcesses.all,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["data-extraction-conducting", "dashboard"],
+      });
     },
     onError: (error) => {
       toastError(getErrorMessage(error, "Failed to submit screening decision"));

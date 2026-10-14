@@ -5,7 +5,7 @@ import { qualityAssessmentService } from "../services/qualityAssessmentService";
 import { dataExtractionConductingService } from "../services/dataExtractionConductingService";
 import synthesisExecutionService from "../services/synthesisExecutionService";
 import { QUERY_KEYS } from "../constants/queryKeys";
-import { getErrorMessage } from "../utils/errorUtils";
+import { getErrorCode, getErrorMessage } from "../utils/errorUtils";
 import { toastError } from "../utils/toast";
 
 /**
@@ -73,6 +73,7 @@ export const useStudySelectionProcessMutations = (reviewProcessId?: string) => {
     queryClient.invalidateQueries({ queryKey: ["full-text-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-title-abstract-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-full-text-assignment-papers"] });
+    queryClient.invalidateQueries({ queryKey: ["data-extraction-conducting", "dashboard"] });
   };
 
   const startMutation = useMutation({
@@ -130,9 +131,12 @@ export const useQualityAssessmentProcessMutations = (reviewProcessId?: string) =
   });
 
   const completeMutation = useMutation({
-    mutationFn: (id: string) => qualityAssessmentService.complete(id),
+    mutationFn: ({ id, force }: { id: string; force?: boolean }) =>
+      qualityAssessmentService.complete(id, { force }),
     onSuccess: () => invalidate(),
     onError: (error) => {
+      // The caller asks the leader whether to complete anyway, so no error toast for this case.
+      if (getErrorCode(error) === "QA_UNRESOLVED_PAPERS") return;
       toastError("Complete Failed", getErrorMessage(error, "Failed to complete quality assessment"));
     },
   });

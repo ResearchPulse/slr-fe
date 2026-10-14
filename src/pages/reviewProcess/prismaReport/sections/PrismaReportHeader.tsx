@@ -30,7 +30,7 @@ export default function PrismaReportHeader({
                 <FiClipboard className="w-5 h-5 text-accent" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-xl font-semibold text-text-primary truncate">
+                <h1 className="review-process-header-title text-xl font-semibold text-text-primary truncate">
                   PRISMA Report
                 </h1>
                 <p className="text-xs text-text-secondary">

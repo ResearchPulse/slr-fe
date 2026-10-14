@@ -170,24 +170,6 @@ export interface QualityAssessmentDecisionItemResponse {
     pdfHighlightCoordinates?: string | null;
 }
 
-export interface AiDecisionRequest {
-    qualityAssessmentProcessId: string;
-    paperId: string;
-}
-
-export interface AiDecisionResponseItem {
-    qualityCriterionId: string;
-    value: number;
-    comment: string;
-    pdfHighlightCoordinates: string;
-}
-
-export interface AutomateQualityAssessmentResponse {
-    pageWidth: number | null;
-    pageHeight: number | null;
-    decisionItems: AiDecisionResponseItem[];
-}
-
 export interface QAReviewerProgressResponse {
     reviewerId: string;
     reviewerName: string | null;
@@ -236,4 +218,25 @@ export interface QADashboardParams {
     pageNumber?: number;
     pageSize?: number;
     search?: string;
+}
+
+/** A reusable set of quality criteria the leader can start from. `SYSTEM` ones are shared, `USER` ones are private. */
+export interface QualityCriteriaTemplate {
+    id: string;
+    name: string;
+    description: string;
+    /** Citation or link of the question set; null when nobody documented it. */
+    source: string | null;
+    scope: "SYSTEM" | "USER";
+    canEdit: boolean;
+    criteria: { question: string; description: string | null; weight: number }[];
+}
+
+export interface SaveQualityCriteriaTemplateRequest {
+    /** Only a global admin may create a `SYSTEM` template; the default is a personal one. */
+    scope?: "SYSTEM" | "USER";
+    name: string;
+    description?: string;
+    source?: string | null;
+    criteria: { question: string; weight: number }[];
 }

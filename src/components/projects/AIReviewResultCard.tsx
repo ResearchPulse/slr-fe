@@ -1,12 +1,14 @@
 import { useState } from "react";
 import {
-  FiAlertCircle,
   FiCheck,
   FiChevronDown,
   FiChevronRight,
   FiClipboard,
   FiCopy,
+  FiClock,
+  FiHelpCircle,
   FiInfo,
+  FiX,
 } from "react-icons/fi";
 import { toastError, toastSuccess } from "../../utils/toast";
 
@@ -29,10 +31,30 @@ export type AIReviewTask = {
 type Criterion = {
   id: string;
   name: string;
+  group: "Exclusion" | "Inclusion" | "Other";
   status?: string;
   detail?: string;
   evidence: unknown[];
   raw: unknown;
+};
+type AssessmentExpansion = {
+  groups: Record<Criterion["group"], boolean>;
+  criteria: Record<string, boolean>;
+};
+
+const assessmentExpansionByTask = new Map<string, AssessmentExpansion>();
+const defaultAssessmentExpansion = (): AssessmentExpansion => ({
+  groups: { Exclusion: false, Inclusion: false, Other: false },
+  criteria: {},
+});
+
+const rememberExpansion = (taskId: string, expansion: AssessmentExpansion) => {
+  assessmentExpansionByTask.delete(taskId);
+  assessmentExpansionByTask.set(taskId, expansion);
+  if (assessmentExpansionByTask.size > 250) {
+    const oldestTaskId = assessmentExpansionByTask.keys().next().value;
+    if (oldestTaskId) assessmentExpansionByTask.delete(oldestTaskId);
+  }
 };
 
 const recordOf = (value: unknown): Record<string, unknown> | null =>
@@ -77,27 +99,35 @@ const criteriaFrom = (data?: Record<string, unknown>): Criterion[] => {
     const id = firstText(criterion, ["criterionId", "id", "code", "key"]) || key;
     const status = firstText(criterion, ["assessment", "status", "result", "decision", "met"]);
     const detail = firstText(criterion, ["reasoning", "rationale", "justification", "analysis", "explanation"]);
+    const kind = firstText(criterion, ["type", "category", "criterionType", "group"])?.toLowerCase() || "";
+    const groupHint = `${kind} ${id} ${name || ""}`.toLowerCase();
+    const group: Criterion["group"] = /exclu|\bec\b/.test(groupHint) || /^(?:ec|exclusion)[\s_-]*\d*/i.test(id)
+      ? "Exclusion"
+      : /inclu|\bic\b/.test(groupHint) || /^(?:ic|inclusion)[\s_-]*\d*/i.test(id) ? "Inclusion" : "Other";
     const evidenceValue = criterion.evidence ?? criterion.supportingEvidence ?? criterion.evidences;
     const evidence = Array.isArray(evidenceValue) ? evidenceValue : evidenceValue == null ? [] : [evidenceValue];
-    return [{ id, name: name && name !== id ? name : "", status, detail, evidence, raw: value }];
+    return [{ id, name: name && name !== id ? name : "", group, status, detail, evidence, raw: value }];
   });
 };
 
 const statusStyle = (value?: string) => {
   const normalized = (value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
   if (["MET", "PASS", "PASSED", "SATISFIED", "INCLUDE", "INCLUDED", "TRUE"].includes(normalized)) {
-    return { label: "MET", className: "border-emerald-200 bg-emerald-50 text-emerald-700", Icon: FiCheck };
+    return { label: "Met", className: "text-emerald-600", Icon: FiCheck };
   }
   if (["NOT_MET", "NOTMET", "FAIL", "FAILED", "UNMET", "EXCLUDE", "EXCLUDED", "FALSE"].includes(normalized)) {
-    return { label: "NOT MET", className: "border-rose-200 bg-rose-50 text-rose-700", Icon: FiAlertCircle };
+    return { label: "Not met", className: "text-rose-500", Icon: FiX };
   }
   if (["INSUFFICIENT_EVIDENCE", "NO_EVIDENCE", "MISSING_EVIDENCE"].includes(normalized)) {
-    return { label: "INSUFFICIENT EVIDENCE", className: "border-amber-200 bg-amber-50 text-amber-800", Icon: FiInfo };
+    return { label: "Insufficient evidence", className: "text-slate-500", Icon: FiInfo };
   }
   if (["UNCLEAR", "UNCERTAIN", "UNKNOWN", "PARTIAL", "INCONCLUSIVE"].includes(normalized)) {
-    return { label: "UNCLEAR", className: "border-amber-200 bg-amber-50 text-amber-800", Icon: FiInfo };
+    return { label: value || "Uncertain", className: "text-amber-600", Icon: FiHelpCircle };
   }
-  return { label: value || "DETAILS", className: "border-slate-200 bg-slate-50 text-slate-600", Icon: FiInfo };
+  if (["PENDING", "ASSIGNED", "NOT_ASSESSED"].includes(normalized)) {
+    return { label: value || "Pending", className: "text-slate-400", Icon: FiClock };
+  }
+  return { label: value || "Not assessed", className: "text-slate-400", Icon: FiHelpCircle };
 };
 
 const recommendationStyle = (decision: string) => {
@@ -108,10 +138,8 @@ const recommendationStyle = (decision: string) => {
   return "border-slate-200 bg-slate-50 text-slate-700";
 };
 
-const isPriorityCriterion = (criterion: Criterion) => {
-  const value = `${criterion.status || ""} ${criterion.detail || ""}`.toUpperCase().replace(/[\s-]+/g, "_");
-  return value.includes("NOT_MET") || value.includes("INSUFFICIENT_EVIDENCE") || value.includes("NO_EVIDENCE");
-};
+const isMet = (value?: string) => ["MET", "PASS", "PASSED", "SATISFIED", "INCLUDE", "INCLUDED", "TRUE"]
+  .includes((value || "").trim().toUpperCase().replace(/[\s-]+/g, "_"));
 
 function EvidenceBlock({ value }: { value: unknown }) {
   const evidence = recordOf(value);
@@ -123,7 +151,7 @@ function EvidenceBlock({ value }: { value: unknown }) {
   const text = quote || (evidence ? firstText(evidence, ["reasoning", "description"]) : undefined);
 
   return (
-    <blockquote className="min-w-0 border-l-2 border-sky-200 pl-3 text-xs leading-5 text-text-secondary">
+    <blockquote className="min-w-0 border-l-2 border-slate-200 pl-3 text-xs leading-5 text-text-secondary">
       {text ? <p className="break-words">{text}</p> : <p>Evidence details were provided without a readable quotation.</p>}
       {(location || label) && <footer className="mt-1 text-[10px] text-text-tertiary">{[label, location].filter(Boolean).join(" · ")}</footer>}
     </blockquote>
@@ -142,23 +170,27 @@ function JsonPreview({ value }: { value: string }) {
   })}</pre>;
 }
 
-function CriterionRow({ criterion }: { criterion: Criterion }) {
-  const [open, setOpen] = useState(false);
-  const badge = statusStyle(criterion.status);
-  const StatusIcon = badge.Icon;
+function CriterionRow({ criterion, open, onToggle }: { criterion: Criterion; open: boolean; onToggle: () => void }) {
+  const status = statusStyle(criterion.status);
+  const StatusIcon = status.Icon;
+  const hasDetails = Boolean(criterion.name || criterion.status || criterion.detail || criterion.evidence.length);
   return (
-    <div className={`overflow-hidden rounded-lg border ${isPriorityCriterion(criterion) ? "border-amber-200 bg-amber-50/30" : "border-border bg-white"}`}>
-      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex min-h-11 w-full min-w-0 items-center gap-2 px-3 py-2 text-left hover:bg-bg-secondary/60">
-        {open ? <FiChevronDown className="h-3.5 w-3.5 shrink-0 text-text-tertiary" /> : <FiChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />}
-        <span className="shrink-0 text-[11px] font-semibold text-text-primary">{criterion.id}</span>
-        {criterion.name && <span className="min-w-0 flex-1 truncate text-xs text-text-secondary" title={criterion.name}>{criterion.name}</span>}
-        <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-semibold ${badge.className}`}><StatusIcon className="h-3 w-3" />{badge.label}</span>
+    <div className="min-w-0">
+      <button type="button" aria-expanded={hasDetails ? open : undefined} aria-label={`${criterion.id}${criterion.name ? `, ${criterion.name}` : ""}${hasDetails ? ", toggle assessment details" : ""}`} onClick={() => hasDetails && onToggle()} className="flex min-h-[34px] w-full min-w-0 items-center gap-2 px-1.5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500">
+        <span className="w-8 shrink-0 text-[11px] font-semibold text-text-secondary">{criterion.id}</span>
+        {criterion.name && <span className="min-w-0 flex-1 truncate text-[12px] text-text-primary" title={criterion.name}>{criterion.name}</span>}
+        {!criterion.name && <span className="min-w-0 flex-1" />}
+        <span className={`inline-flex h-4 w-4 shrink-0 items-center justify-center ${status.className}`} title={status.label} aria-label={`Assessment: ${status.label}`}><StatusIcon className="h-3.5 w-3.5" /></span>
+        {hasDetails
+          ? open ? <FiChevronDown className="h-3 w-3 shrink-0 text-text-tertiary" /> : <FiChevronRight className="h-3 w-3 shrink-0 text-text-tertiary" />
+          : <span className="w-3 shrink-0" />}
       </button>
-      {open && <div className="space-y-3 border-t border-border px-3 py-3">
-        {criterion.detail && <p className="whitespace-pre-wrap break-words text-xs leading-5 text-text-secondary">{criterion.detail}</p>}
+      {open && <div className="ml-10 space-y-1.5 border-l border-slate-200 py-1.5 pl-3 pr-2">
+        {criterion.name && <p className="break-words text-[11px] leading-4 text-text-secondary"><span className="font-medium text-text-primary">Description: </span>{criterion.name}</p>}
+        {criterion.status && <p className="text-[11px] text-text-secondary"><span className="font-medium text-text-primary">Assessment: </span>{status.label}</p>}
+        {criterion.detail && <p className="whitespace-pre-wrap break-words text-[11px] leading-4 text-text-secondary"><span className="font-medium text-text-primary">Reasoning: </span>{criterion.detail}</p>}
         {criterion.evidence.length > 0
-          ? <div className="space-y-2">{criterion.evidence.map((item, index) => <EvidenceBlock key={index} value={item} />)}</div>
-          : <p className="text-[11px] text-text-tertiary">No supporting evidence was included for this criterion.</p>}
+          && <div className="space-y-1.5">{criterion.evidence.map((item, index) => <EvidenceBlock key={index} value={item} />)}</div>}
       </div>}
     </div>
   );
@@ -203,9 +235,14 @@ export default function AIReviewResultCard({
 }) {
   const [showReasoning, setShowReasoning] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [expandedGroups, setExpandedGroups] = useState(() => assessmentExpansionByTask.get(task.id)?.groups ?? defaultAssessmentExpansion().groups);
+  const [expandedCriteria, setExpandedCriteria] = useState(() => assessmentExpansionByTask.get(task.id)?.criteria ?? {});
   const result = task.result;
   const data = result?.data;
-  const criteria = criteriaFrom(data).sort((a, b) => Number(isPriorityCriterion(b)) - Number(isPriorityCriterion(a)));
+  const criteria = criteriaFrom(data);
+  const criteriaGroups = (["Exclusion", "Inclusion", "Other"] as const)
+    .map((group) => ({ group, items: criteria.filter((criterion) => criterion.group === group) }))
+    .filter(({ group, items }) => group !== "Other" || items.length > 0);
   const summary = data && firstText(data, ["keyFinding", "summary", "conclusion"]);
   const finding = summary || result?.reasoning || "The agent has not provided a finding.";
   const notice = inputNotice(task, paperInput);
@@ -235,7 +272,7 @@ export default function AIReviewResultCard({
         <span className="max-w-full truncate text-xs font-semibold text-text-primary">{task.agentName || "AI Agent"}</span>
         <span className="text-[10px] text-text-tertiary">·</span>
         <span className="text-[10px] text-text-secondary">{stageLabel}</span>
-        {result?.decision && <span className={`ml-auto rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${recommendationStyle(result.decision)}`}>{result.decision}</span>}
+        {result?.decision && <span className={`ml-auto rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${recommendationStyle(result.decision)}`}>{normalizeDecision(result.decision)}</span>}
         <span className={`rounded-full px-2 py-1 text-[9px] font-semibold ${task.status === "COMPLETED" ? "bg-slate-100 text-slate-600" : "bg-sky-50 text-sky-700"}`}>{stateLabel}</span>
       </header>
 
@@ -252,9 +289,35 @@ export default function AIReviewResultCard({
             {showSeparateReasoning && <div className="mt-2 rounded-lg bg-slate-50 p-3"><h5 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">Full reasoning</h5><p className="whitespace-pre-wrap break-words text-xs leading-5 text-text-secondary">{result.reasoning}</p></div>}
           </section>
 
-          {criteria.length > 0 && <section className="space-y-1.5">
-            <h4 className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wide text-text-tertiary"><span>Criteria assessment</span><span className="font-medium normal-case tracking-normal">{criteria.length} criteria</span></h4>
-            {criteria.map((criterion, index) => <CriterionRow key={`${criterion.id}-${index}`} criterion={criterion} />)}
+          {criteria.length > 0 && <section className="min-w-0">
+            {criteriaGroups.map(({ group, items }) => <div key={group} className="min-w-0">
+              <button type="button" aria-expanded={expandedGroups[group]} onClick={() => setExpandedGroups((previous) => {
+                const groups = { ...previous, [group]: !previous[group] };
+                rememberExpansion(task.id, { groups, criteria: expandedCriteria });
+                return groups;
+              })} className="flex min-h-[36px] w-full min-w-0 items-center gap-2 border-b border-slate-100 px-1.5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500">
+                {expandedGroups[group] ? <FiChevronDown className="h-3.5 w-3.5 shrink-0 text-text-tertiary" /> : <FiChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />}
+                <span className="min-w-0 flex-1 text-[13px] font-semibold text-text-primary">{group === "Exclusion" ? "Exclusion Criteria (EC)" : group === "Inclusion" ? "Inclusion Criteria (IC)" : "Other Criteria"}</span>
+                <span className="shrink-0 text-[11px] tabular-nums text-text-secondary" title={`${items.filter((criterion) => isMet(criterion.status)).length} met of ${items.length}`}>
+                  {items.filter((criterion) => isMet(criterion.status)).length}/{items.length} met
+                </span>
+              </button>
+              {expandedGroups[group] && <div className="pb-1 pt-0.5">
+                {items.map((criterion, index) => {
+                  const criterionKey = `${criterion.id}-${index}`;
+                  return <CriterionRow
+                    key={criterionKey}
+                    criterion={criterion}
+                    open={Boolean(expandedCriteria[criterionKey])}
+                    onToggle={() => setExpandedCriteria((previous) => {
+                      const criteriaState = { ...previous, [criterionKey]: !previous[criterionKey] };
+                      rememberExpansion(task.id, { groups: expandedGroups, criteria: criteriaState });
+                      return criteriaState;
+                    })}
+                  />;
+                })}
+              </div>}
+            </div>)}
           </section>}
 
           {!criteria.length && Array.isArray(data?.evidence) && data.evidence.length > 0 && <section className="space-y-2">
@@ -267,9 +330,9 @@ export default function AIReviewResultCard({
           </p>}
         </> : <p className="text-xs text-text-secondary">The agent has not submitted a result yet.</p>}
 
-        <details className="group border-t border-border pt-2">
-          <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[10px] font-semibold text-text-secondary [&::-webkit-details-marker]:hidden">
-            <FiChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" /> Advanced details <span className="font-normal text-text-tertiary">· Raw agent response</span>
+        <details className="group pt-1">
+          <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-[11px] font-medium text-text-tertiary hover:text-text-secondary [&::-webkit-details-marker]:hidden">
+            <FiChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" /> View raw response
           </summary>
           <div className="mt-2 min-w-0">
             <div className="mb-1.5 flex items-center justify-between gap-2"><span className="text-[10px] text-text-tertiary">Original response payload</span><button type="button" onClick={() => void copyRaw()} className="inline-flex shrink-0 items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-text-secondary hover:bg-bg-secondary">{copied ? <FiClipboard /> : <FiCopy />}{copied ? "Copied" : "Copy JSON"}</button></div>

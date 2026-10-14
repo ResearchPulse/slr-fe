@@ -109,31 +109,17 @@ export default function AiAnalysisPanel({
 
   return (
     <div className="flex flex-col h-full bg-bg-secondary/30 overflow-hidden">
-      {/* Header */}
-      <div className="px-5 py-4 bg-surface-white border-b border-border/60 sticky top-0 z-10 backdrop-blur-md bg-surface-white/90">
-        <div className="flex items-center justify-between mb-1">
-          <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-bg-secondary rounded-xl">
-              <FiCpu className="w-4 h-4 text-accent" />
-            </div>
-            <h2 className="text-sm font-bold text-text-primary tracking-tight">
-              AI Assistant
-            </h2>
-          </div>
-          {aiAnalysis && (
-            <div className="flex items-center gap-1 px-2 py-0.5 bg-bg-secondary rounded-full text-[10px] font-medium text-text-secondary">
-              <FiActivity className="w-3 h-3" />
-              Analyzed
-            </div>
-          )}
-        </div>
-        <p className="text-[11px] text-text-secondary font-medium">
-          Evidence-based screening evaluation & scoring
-        </p>
-      </div>
-
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar">
         <ReviewerAiAgentPanel paper={paper} stage="TITLE_ABSTRACT" />
+        <details className="overflow-hidden rounded-lg border border-border bg-surface-white">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-xs font-medium text-text-secondary hover:bg-slate-50">
+            <span>Additional local analysis</span>
+            <span className="flex shrink-0 items-center gap-1.5 text-[10px] text-text-tertiary">
+              {aiAnalysis ? "Results available" : isAnalyzing ? "Running" : "Optional"}
+              <FiChevronDown aria-hidden="true" className="h-3.5 w-3.5" />
+            </span>
+          </summary>
+          <div className="space-y-4 border-t border-border p-3">
         {/* Run Analysis Button */}
         {!aiAnalysis && !isAnalyzing && (
           <div className="analysis-card bg-surface-white p-6 rounded-xl border border-border shadow-none text-center">
@@ -378,6 +364,8 @@ export default function AiAnalysisPanel({
             </div>
           </div>
         )}
+          </div>
+        </details>
       </div>
     </div>
   );

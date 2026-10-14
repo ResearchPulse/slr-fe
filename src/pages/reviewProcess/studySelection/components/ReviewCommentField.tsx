@@ -1,3 +1,5 @@
+import { FiMessageSquare } from "react-icons/fi";
+
 interface ReviewCommentFieldProps {
   value: string;
   onChange: (value: string) => void;
@@ -10,18 +12,23 @@ export default function ReviewCommentField({
   disabled = false,
 }: ReviewCommentFieldProps) {
   return (
-    <div className="rounded-xl border border-border bg-bg-secondary/50 px-3 py-2.5">
-      <label className="mb-1.5 block text-[10px] font-bold uppercase tracking-wider text-text-secondary">
-        Review comment <span className="font-normal normal-case">(optional)</span>
-      </label>
+    <div className="flex min-w-[150px] flex-1 items-center gap-2 rounded-lg border border-border bg-surface-white px-2.5 transition-colors focus-within:border-accent focus-within:ring-2 focus-within:ring-accent/10">
+      <FiMessageSquare aria-hidden="true" className="h-4 w-4 shrink-0 text-text-secondary" />
+      <label className="sr-only" htmlFor="review-note">Add review note (optional)</label>
       <textarea
+        id="review-note"
         value={value}
         onChange={(event) => onChange(event.target.value)}
         disabled={disabled}
         maxLength={16000}
-        rows={2}
-        placeholder="Add a note about this decision..."
-        className="w-full resize-none rounded-lg border border-border bg-surface-white px-3 py-2 text-xs text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:cursor-not-allowed disabled:opacity-50"
+        rows={1}
+        placeholder="Add review note…"
+        onInput={(event) => {
+          const input = event.currentTarget;
+          input.style.height = "auto";
+          input.style.height = `${Math.min(input.scrollHeight, 88)}px`;
+        }}
+        className="max-h-[88px] min-h-[36px] w-full resize-none border-0 bg-transparent py-2 text-xs leading-5 text-text-primary outline-none placeholder:text-text-secondary/80 disabled:cursor-not-allowed disabled:opacity-50"
       />
     </div>
   );

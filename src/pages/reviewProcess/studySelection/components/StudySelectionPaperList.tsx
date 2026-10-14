@@ -136,10 +136,11 @@ export default function StudySelectionPaperList(props: Props) {
     return grouped;
   }, [agentTaskQuery.data]);
 
+  const includedLabel = activeStage === "title-abstract" ? "Passed to Full Text" : "Included";
   const metrics = [
     { label: "Total papers", value: stats.total, tone: "text-slate-800", dot: "bg-slate-300" },
     { label: "Pending", value: stats.pending, tone: "text-slate-700", dot: "bg-slate-400" },
-    { label: "Included", value: stats.included, tone: "text-emerald-700", dot: "bg-emerald-500" },
+    { label: includedLabel, value: stats.included, tone: "text-emerald-700", dot: "bg-emerald-500" },
     { label: "Excluded", value: stats.excluded, tone: "text-rose-700", dot: "bg-rose-400" },
     { label: "Conflicts", value: stats.conflicted, tone: "text-amber-700", dot: "bg-amber-400" },
     { label: "Complete", value: `${Math.round(stats.completionPercentage)}%`, tone: "text-blue-700", dot: "bg-blue-500" },
@@ -172,7 +173,7 @@ export default function StudySelectionPaperList(props: Props) {
         <nav className="mx-auto flex max-w-[1600px] gap-3 overflow-x-auto px-6 pb-4 pt-2 lg:px-10" aria-label="Screening stage">
           <button onClick={() => onStageChange("title-abstract")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", activeStage === "title-abstract" ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "text-text-secondary hover:bg-bg-secondary")}>Title &amp; Abstract</button>
           <button onClick={() => onStageChange("full-text")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", activeStage === "full-text" ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "text-text-secondary hover:bg-bg-secondary")}>Full Text</button>
-          <button onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", filters.status === "included" ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "text-text-secondary hover:bg-bg-secondary")}>Review Included</button>
+          <button onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", filters.status === "included" ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "text-text-secondary hover:bg-bg-secondary")}>{activeStage === "title-abstract" ? "Review Passed Papers" : "Review Included"}</button>
         </nav>
       </header>
 
@@ -219,13 +220,17 @@ export default function StudySelectionPaperList(props: Props) {
                   const humanDecisionCount = paper.decisions?.filter((decision) => decision.phase === undefined || decision.phase === phase).length ?? 0;
                   const hasHumanReviewActivity = assignedCount > 0 || humanDecisionCount > 0;
                   const displayState = state === "pending" && hasHumanReviewActivity ? "in-progress" : state;
-                  const statusLabel = displayState === "in-progress" ? "In progress" : STATUS_CONFIG[state as keyof typeof STATUS_CONFIG]?.label ?? state;
+                  const statusLabel = displayState === "in-progress"
+                    ? "In progress"
+                    : state === "included" && activeStage === "title-abstract"
+                      ? "Passed to Full Text"
+                      : STATUS_CONFIG[state as keyof typeof STATUS_CONFIG]?.label ?? state;
                   return <tr key={paper.id} tabIndex={0} role="link" onClick={() => onOpenPaper(paper.id)} onKeyDown={(event) => { if (event.key === "Enter") onOpenPaper(paper.id); }} className="cursor-pointer transition hover:bg-bg-primary/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
                     <td className="max-w-[420px] px-5 py-4"><div className="line-clamp-2 text-sm font-semibold text-text-primary">{paper.title || "Untitled paper"}</div><div className="mt-1 truncate text-xs text-text-secondary">{paper.authors || "Authors unavailable"}{paper.journal || paper.source ? ` · ${paper.journal || paper.source}` : ""}</div></td>
                     <td className="px-5 py-4 text-sm tabular-nums">{paper.publicationYear ?? "—"}</td>
                     <td className="max-w-40 truncate px-5 py-4 text-sm text-text-secondary">{paper.journal || paper.source || "—"}</td>
                     <td className="px-5 py-4">{paper.doi ? <a href={`https://doi.org/${paper.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}`} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="inline-flex max-w-40 items-center gap-1 truncate text-xs text-accent hover:underline">{paper.doi}<FiExternalLink className="shrink-0"/></a> : <span className="text-sm text-text-secondary">—</span>}</td>
-                    <td className="px-5 py-4"><span className={cn("inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLES[displayState] ?? STATUS_STYLES[state] ?? "bg-slate-100 text-slate-700")}>{state === "conflicted" && <FiAlertTriangle/>}{statusLabel}</span></td>
+                    <td className="px-5 py-4"><span className={cn("inline-flex items-center whitespace-nowrap gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLES[displayState] ?? STATUS_STYLES[state] ?? "bg-slate-100 text-slate-700")}>{state === "conflicted" && <FiAlertTriangle/>}{statusLabel}</span></td>
                     <td className="max-w-44 truncate px-5 py-4 text-xs text-text-secondary" title={assignmentLabel || undefined}>{assignmentLabel || (agentTaskQuery.isLoading && member?.role === 1 ? "Loading assignments…" : "Unassigned")}</td>
                     <td className="px-5 py-4 text-xs text-text-secondary"><span>{humanDecisionCount}/{Math.max(assignedCount, 2)} human reviews</span>{agentTasks.length > 0 && <span className="mt-1 block text-violet-700">{completedAgentTaskCount}/{agentTasks.length} AI tasks</span>}</td>
                     <td className="px-5 py-4"><button onClick={(event) => { event.stopPropagation(); onOpenPaper(paper.id); }} className="rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-white hover:brightness-95">Open review</button></td>

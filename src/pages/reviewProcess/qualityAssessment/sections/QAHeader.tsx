@@ -50,7 +50,7 @@ export function QAHeader({
             <FileCheck2 size={20} />
           </div>
           <div className="min-w-0">
-            <h1 className="truncate text-lg font-semibold leading-6 text-text-primary sm:text-xl">
+            <h1 className="review-process-header-title truncate text-lg font-semibold leading-6 text-text-primary sm:text-xl">
               Quality Assessment
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -94,7 +94,7 @@ export function QAHeader({
               className="h-12 min-h-12 flex items-center gap-2 rounded-xl border-border bg-surface-white text-sm font-medium text-text-primary shadow-none transition-colors hover:bg-bg-primary hover:text-text-primary"
             >
               <Download size={16} className="text-text-secondary" />
-              Export Excel
+              Export CSV
             </Button>
           )}
           {rightControls}

@@ -32,6 +32,7 @@ import type {
 } from "../components/reviewProcess/workflow/types";
 import { WORKFLOW_PHASES } from "../components/reviewProcess/workflow/constants";
 import { toastWarning, toastSuccess } from "../utils/toast";
+import { getErrorCode } from "../utils/errorUtils";
 
 
 interface UseReviewProcessWorkspaceParams {
@@ -311,7 +312,7 @@ function buildPhaseStats(phaseKey: string, phaseStats: PhaseStats): PhaseStatIte
         { label: "Total Papers", value: phaseStats.screening.totalPapers },
         { label: "Included", value: phaseStats.screening.included, variant: "success" },
         { label: "Excluded", value: phaseStats.screening.excluded },
-        { label: "Pending", value: phaseStats.screening.pendingCount, variant: "warning" },
+        { label: "Awaiting decision", value: phaseStats.screening.pendingCount, variant: "warning" },
       ];
     case "quality":
       return [
@@ -646,7 +647,18 @@ export const useReviewProcessWorkspace = ({
         if (phaseKey === "quality") {
           const qualityId = process.qualityAssessmentProcess?.id;
           if (qualityId) {
-            await completeQualityAssessment(qualityId);
+            try {
+              await completeQualityAssessment({ id: qualityId });
+            } catch (error) {
+              if (getErrorCode(error) !== "QA_UNRESOLVED_PAPERS") throw error;
+              if (
+                window.confirm(
+                  "Some included papers have no final quality verdict yet.\n\nComplete Quality Assessment anyway? Those papers will stay unresolved.",
+                )
+              ) {
+                await completeQualityAssessment({ id: qualityId, force: true });
+              }
+            }
           }
           return;
         }
@@ -732,7 +744,10 @@ export const useReviewProcessWorkspace = ({
             excluded: selectionStats.excludedCount,
             inScreeningCount: selectionStats.inScreeningCount ?? 0,
             conflictCount: selectionStats.conflictCount,
-            pendingCount: selectionStats.pendingCount,
+            pendingCount:
+              (selectionStats.pendingCount ?? 0) +
+              (selectionStats.inScreeningCount ?? 0) +
+              (selectionStats.conflictCount ?? 0),
           }
         : EMPTY_PHASE_STATS.screening,
       quality: qualityStats
@@ -861,7 +876,7 @@ export const useReviewProcessWorkspace = ({
     const excluded = stats?.excludedCount ?? process?.totalExcludedPapers ?? 0;
     const pending = stats?.pendingCount ?? 0;
 
-    const inScreening = stats?.inScreeningCount ?? 0;
+    const inScreening = (stats?.inScreeningCount ?? 0) + (stats?.conflictCount ?? 0);
     const notScreened = pending;
 
     return {

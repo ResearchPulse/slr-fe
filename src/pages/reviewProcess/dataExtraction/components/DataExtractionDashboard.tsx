@@ -636,7 +636,7 @@ export default function DataExtractionDashboard({
               <Package className="h-6 w-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+              <h1 className="review-process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
                 {ws.selectedTemplate?.name || "Study extraction"}
               </h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">

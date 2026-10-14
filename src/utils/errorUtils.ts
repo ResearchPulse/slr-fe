@@ -36,3 +36,15 @@ export const getErrorMessage = (error: unknown, defaultMessage: string): string 
   
   return defaultMessage;
 };
+
+/**
+ * Machine readable code of an API error (`{ error: { code } }`), or null when the request failed
+ * before the server answered.
+ */
+export const getErrorCode = (error: unknown): string | null => {
+  if (error && typeof error === "object" && "response" in error) {
+    const code = (error as { response?: { data?: { error?: { code?: unknown } } } }).response?.data?.error?.code;
+    return typeof code === "string" ? code : null;
+  }
+  return null;
+};
