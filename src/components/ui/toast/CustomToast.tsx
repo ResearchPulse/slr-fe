@@ -158,6 +158,8 @@ export const CustomToast: React.FC<CustomToastProps> = ({
   return (
     <div
       ref={containerRef}
+      role={type === "error" || type === "warning" ? "alert" : "status"}
+      aria-live={type === "error" || type === "warning" ? "assertive" : "polite"}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       className={cn(
@@ -178,7 +180,7 @@ export const CustomToast: React.FC<CustomToastProps> = ({
             {title}
           </p>
           {message && (
-            <p className="mt-0.5 text-xs text-text-secondary line-clamp-2">
+            <p className="mt-0.5 max-h-24 overflow-y-auto whitespace-pre-line text-xs text-text-secondary">
               {message}
             </p>
           )}

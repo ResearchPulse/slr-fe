@@ -973,7 +973,7 @@ export default function DataExtractionConsensusWorkspace({
     [handleFinalAnswerChange, handleFinalAnswerNotReportedChange, isReadOnly],
   );
 
-  const submitConsensusNow = useCallback(() => {
+  const submitConsensusNow = useCallback(async () => {
     if (!ws.selectedPaperId || !consensusWorkspace) {
       return;
     }
@@ -1029,8 +1029,9 @@ export default function DataExtractionConsensusWorkspace({
     });
 
     const payload: SubmitConsensusRequestDto = { values };
-    ws.submitConsensus(ws.selectedPaperId, payload);
-  }, [effectiveFinalAnswers, consensusWorkspace, ws, getFieldType]);
+    await ws.submitConsensus(ws.selectedPaperId, payload);
+    navigate(dashboardPath);
+  }, [dashboardPath, effectiveFinalAnswers, consensusWorkspace, ws, getFieldType, navigate]);
 
   const handleSaveAndComplete = useCallback(() => {
     if (hasUnresolvedConflicts) {
