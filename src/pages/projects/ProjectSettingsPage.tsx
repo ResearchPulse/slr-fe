@@ -11,7 +11,10 @@ import {
   FiUsers,
   FiArrowLeft,
   FiCheckCircle,
+  FiCpu,
 } from "react-icons/fi";
+import ProjectAgentAssignments from "../../components/projects/ProjectAgentAssignments";
+import ReviewerProjectAgentCard from "../../components/projects/detail/ReviewerProjectAgentCard";
 
 export default function ProjectSettingsPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +23,7 @@ export default function ProjectSettingsPage() {
   const { project, refetch } = useProject(id);
   const { completeProject, isCompleting } = useProjectMutations();
 
-  const [activeTab, setActiveTab] = useState<"general" | "members">("general");
+  const [activeTab, setActiveTab] = useState<"general" | "members" | "agents">("general");
   const [isMemberModalOpen, setIsMemberModalOpen] = useState(false);
 
   const handleComplete = async () => {
@@ -39,22 +42,7 @@ export default function ProjectSettingsPage() {
   const isLeader = project?.isLeader === true ||
     getProjectRoleLabel(project?.role ?? project?.roleText) === "Project Leader";
 
-  if (project && !isLeader) {
-    return (
-      <div className="min-h-screen bg-bg-primary">
-        <div className="container mx-auto max-w-3xl px-4 py-16">
-          <div className="rounded-xl border border-border bg-surface-white p-8">
-            <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary mb-3">Project settings</p>
-            <h1 className="font-cormorant text-3xl text-text-primary mb-3">Leader access required</h1>
-            <p className="text-sm leading-relaxed text-text-secondary mb-6">
-              Your role is {getProjectRoleLabel(project.role ?? project.roleText)}. You can view project details and contribute to the review workflow, while project settings are managed by the leader.
-            </p>
-            <Button onClick={() => navigate(`/projects/${id}`)}>Back to project</Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const settingsTab = project && !isLeader ? "agents" : activeTab;
 
   return (
     <div className="min-h-screen bg-bg-primary">
@@ -90,48 +78,70 @@ export default function ProjectSettingsPage() {
           {/* Sidebar Navigation */}
           <aside className="w-full lg:w-56 shrink-0">
             <nav className="flex lg:flex-col gap-0 overflow-hidden rounded-xl border border-border">
+              {isLeader && (
+                <>
+                  <button
+                    onClick={() => setActiveTab("general")}
+                    className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
+                      settingsTab === "general"
+                        ? "bg-text-primary text-bg-primary"
+                        : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    <FiSettings
+                      size={14}
+                      className={
+                        settingsTab === "general"
+                          ? "text-bg-primary"
+                          : "text-text-secondary"
+                      }
+                    />
+                    General
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("members")}
+                    className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
+                      settingsTab === "members"
+                        ? "bg-text-primary text-bg-primary"
+                        : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                    }`}
+                  >
+                    <FiUsers
+                      size={14}
+                      className={
+                        settingsTab === "members"
+                          ? "text-bg-primary"
+                          : "text-text-secondary"
+                      }
+                    />
+                    Members
+                  </button>
+                </>
+              )}
               <button
-                onClick={() => setActiveTab("general")}
+                onClick={() => setActiveTab("agents")}
                 className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
-                  activeTab === "general"
+                  settingsTab === "agents"
                     ? "bg-text-primary text-bg-primary"
                     : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
                 }`}
               >
-                <FiSettings
+                <FiCpu
                   size={14}
                   className={
-                    activeTab === "general"
+                      settingsTab === "agents"
                       ? "text-bg-primary"
                       : "text-text-secondary"
                   }
                 />
-                General
-              </button>
-              <button
-                onClick={() => setActiveTab("members")}
-                className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
-                  activeTab === "members"
-                    ? "bg-text-primary text-bg-primary"
-                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
-                }`}
-              >
-                <FiUsers
-                  size={14}
-                  className={
-                    activeTab === "members"
-                      ? "text-bg-primary"
-                      : "text-text-secondary"
-                  }
-                />
-                Members
+                AI Agents
               </button>
             </nav>
           </aside>
 
           {/* Main Content Area */}
           <main className="flex-1 space-y-6">
-            {activeTab === "general" ? (
+            {settingsTab === "general" ? (
               <div className="space-y-6">
                 {/* General Settings Card */}
                 <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
@@ -175,7 +185,7 @@ export default function ProjectSettingsPage() {
                   </div>
                 </div>
               </div>
-            ) : activeTab === "members" ? (
+            ) : settingsTab === "members" ? (
               <div className="space-y-6">
                 <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
                   <div className="px-6 py-4 border-b border-border bg-bg-primary">
@@ -216,16 +226,24 @@ export default function ProjectSettingsPage() {
                   </div>
                 </div>
               </div>
+            ) : settingsTab === "agents" ? (
+              isLeader ? (
+                <ProjectAgentAssignments projectId={id} />
+              ) : (
+                <ReviewerProjectAgentCard projectId={id || ""} />
+              )
             ) : null}
           </main>
         </div>
 
-        <ProjectMembersModal
-          isOpen={isMemberModalOpen}
-          onClose={() => setIsMemberModalOpen(false)}
-          projectId={id}
-          projectName={project?.title ?? ""}
-        />
+        {isLeader && (
+          <ProjectMembersModal
+            isOpen={isMemberModalOpen}
+            onClose={() => setIsMemberModalOpen(false)}
+            projectId={id}
+            projectName={project?.title ?? ""}
+          />
+        )}
       </div>
     </div>
   );

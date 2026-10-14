@@ -155,9 +155,7 @@ describe("canonical extraction workflow rules", () => {
         renderFieldControl={() => <input aria-label="Title value" />}
         isFieldNotReported={() => false}
         isMatrixFieldNotReported={() => false}
-        isAskingAi={false}
         isEvidenceTargetActive={() => false}
-        onAskAiField={vi.fn()}
         onSelectEvidenceTarget={vi.fn()}
         onSetMatrixFieldValue={vi.fn()}
         onToggleFieldNotReported={onToggleFieldNotReported}
