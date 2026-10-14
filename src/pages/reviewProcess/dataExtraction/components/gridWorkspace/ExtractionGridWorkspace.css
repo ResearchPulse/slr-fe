@@ -7,43 +7,78 @@
   max-width: 100%;
   height: min(68vh, 720px);
   max-height: calc(100vh - 220px);
-  overflow: auto;
+  overflow: hidden;
   position: relative;
 }
 
 .extraction-grid {
-  min-width: 100%;
-  width: max-content;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 100%;
 }
 
-.grid-vertical-resize-handle {
+.extraction-grid .ag-root-wrapper,
+.extraction-grid .ag-root {
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+}
+
+.extraction-grid .ag-root {
+  position: absolute;
+  inset: 0;
+}
+
+.extraction-grid .ag-body {
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.extraction-grid .ag-body-viewport,
+.extraction-grid .ag-center-cols-viewport {
+  height: 100% !important;
+  max-height: 100% !important;
+  min-height: 0 !important;
+}
+
+.extraction-grid .ag-center-cols-container,
+.extraction-grid .ag-pinned-left-cols-container {
+  min-height: 0;
+}
+
+.grid-row-resize-handle {
   position: absolute;
   right: 0;
-  bottom: 0;
   left: 0;
   z-index: 20;
-  height: 10px;
+  height: 12px;
+  transform: translateY(-4px);
   cursor: ns-resize;
+  touch-action: none;
+  pointer-events: auto;
   background: linear-gradient(
     to bottom,
     transparent 0,
-    transparent 3px,
-    rgba(11, 120, 200, 0.18) 3px,
-    rgba(11, 120, 200, 0.18) 5px,
     transparent 5px,
+    rgba(11, 120, 200, 0.24) 5px,
+    rgba(11, 120, 200, 0.24) 7px,
+    transparent 7px,
     transparent 100%
   );
 }
 
-.grid-vertical-resize-handle:hover,
-.grid-vertical-resize-handle.is-resizing {
+.grid-row-resize-handle:hover,
+.grid-row-resize-handle.is-resizing {
   background: linear-gradient(
     to bottom,
     transparent 0,
-    transparent 2px,
-    rgba(11, 120, 200, 0.7) 2px,
-    rgba(11, 120, 200, 0.7) 6px,
-    transparent 6px,
+    transparent 3px,
+    rgba(11, 120, 200, 0.82) 3px,
+    rgba(11, 120, 200, 0.82) 9px,
+    transparent 9px,
     transparent 100%
   );
 }
@@ -69,8 +104,9 @@
 
 .ag-theme-quartz .ag-header-cell-resize,
 .ag-theme-quartz .ag-header-group-cell-resize {
-  width: 10px;
+  width: 14px;
   cursor: col-resize;
+  z-index: 4;
 }
 
 .ag-theme-quartz .ag-header-cell-resize::after,
@@ -114,6 +150,18 @@
 .ag-theme-quartz .ag-cell-value {
   min-width: 0;
   white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.ag-theme-quartz .ag-cell-wrapper {
+  align-items: flex-start;
+}
+
+.ag-theme-quartz .grid-cell-content,
+.ag-theme-quartz .grid-paper-content {
+  min-width: 0;
+  max-width: 100%;
+  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
 

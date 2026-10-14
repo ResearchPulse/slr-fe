@@ -49,8 +49,6 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 const MIN_GRID_ROW_HEIGHT = 44;
 const MAX_GRID_ROW_HEIGHT = 320;
 const DEFAULT_GRID_ROW_HEIGHT = 56;
-const MIN_GRID_FRAME_HEIGHT = 360;
-const MAX_GRID_FRAME_HEIGHT = 900;
 
 interface AgGridRowData {
   id: string;
@@ -59,6 +57,12 @@ interface AgGridRowData {
   citationPaper: string;
   __cellMeta: Record<string, ExtractionGridCellDto>;
   [key: string]: unknown;
+}
+
+interface GridRowResizeHandle {
+  rowId: string;
+  top: number;
+  height: number;
 }
 
 function createEmptyGrid(): ExtractionEditableGridDto {
@@ -165,15 +169,22 @@ export default function ExtractionGridWorkspace() {
   const [isExportingCsv, setIsExportingCsv] = useState(false);
   const [savingCells, setSavingCells] = useState<Record<string, boolean>>({});
   const [rowHeight, setRowHeight] = useState(DEFAULT_GRID_ROW_HEIGHT);
-  const [gridFrameHeight, setGridFrameHeight] = useState<number | null>(null);
-  const [isGridFrameResizing, setIsGridFrameResizing] = useState(false);
+  const [customRowHeights, setCustomRowHeights] = useState<
+    Record<string, number>
+  >({});
+  const [rowResizeHandles, setRowResizeHandles] = useState<
+    GridRowResizeHandle[]
+  >([]);
+  const [activeRowResize, setActiveRowResize] = useState<string | null>(null);
   const exportMenuRef = useRef<HTMLDivElement | null>(null);
   const exportMenuPanelRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<AgGridReact<AgGridRowData> | null>(null);
   const gridShellRef = useRef<HTMLDivElement | null>(null);
-  const gridResizeStartRef = useRef<{ startY: number; startHeight: number } | null>(
-    null,
-  );
+  const rowResizeStartRef = useRef<{
+    rowId: string;
+    startY: number;
+    startHeight: number;
+  } | null>(null);
   const [exportMenuPosition, setExportMenuPosition] = useState({
     top: 0,
     left: 0,
@@ -242,12 +253,11 @@ export default function ExtractionGridWorkspace() {
       minWidth: 140,
       flex: 1,
       wrapText: true,
-      autoHeight: true,
     }),
     [],
   );
 
-  const getGridRowHeight = useCallback(
+  const getCalculatedGridRowHeight = useCallback(
     (params: RowHeightParams<AgGridRowData>) => {
       if (!params.data) {
         return rowHeight;
@@ -293,60 +303,177 @@ export default function ExtractionGridWorkspace() {
     [enrichedGridData.columns, rowHeight],
   );
 
+  const getGridRowHeight = useCallback(
+    (params: RowHeightParams<AgGridRowData>) => {
+      const rowId = params.data?.id;
+      return rowId && customRowHeights[rowId]
+        ? customRowHeights[rowId]
+        : getCalculatedGridRowHeight(params);
+    },
+    [customRowHeights, getCalculatedGridRowHeight],
+  );
+
+  const refreshRowResizeHandles = useCallback(() => {
+    const shell = gridShellRef.current;
+    if (!shell) {
+      return;
+    }
+
+    const shellRect = shell.getBoundingClientRect();
+    const rows = Array.from(
+      shell.querySelectorAll<HTMLElement>(
+        ".ag-center-cols-container .ag-row",
+      ),
+    );
+
+    setRowResizeHandles(
+      rows.slice(0, -1).flatMap((row) => {
+        const rowId = row.getAttribute("row-id");
+        if (!rowId) {
+          return [];
+        }
+
+        const rowRect = row.getBoundingClientRect();
+        return [
+          {
+            rowId,
+            top: rowRect.bottom - shellRect.top,
+            height: rowRect.height,
+          },
+        ];
+      }),
+    );
+  }, []);
+
+  const syncRenderedRowHeights = useCallback(() => {
+    const shell = gridShellRef.current;
+    const gridApi = gridRef.current?.api;
+    if (!shell || !gridApi) {
+      return;
+    }
+
+    let hasChanges = false;
+    const rows = Array.from(
+      shell.querySelectorAll<HTMLElement>(
+        ".ag-center-cols-container .ag-row",
+      ),
+    );
+
+    rows.forEach((row) => {
+      const rowId = row.getAttribute("row-id");
+      if (!rowId || customRowHeights[rowId]) {
+        return;
+      }
+
+      const rowNode = gridApi.getRowNode(rowId);
+      if (!rowNode) {
+        return;
+      }
+
+      const measuredHeight = Array.from(
+        row.querySelectorAll<HTMLElement>(".ag-cell"),
+      ).reduce((maxHeight, cell) => {
+        const content =
+          cell.querySelector<HTMLElement>(
+            ".grid-cell-content, .grid-paper-content",
+          ) ?? cell.querySelector<HTMLElement>(".ag-cell-value");
+
+        if (!content) {
+          return maxHeight;
+        }
+
+        const cellStyle = window.getComputedStyle(cell);
+        const cellPadding =
+          Number.parseFloat(cellStyle.paddingTop) +
+          Number.parseFloat(cellStyle.paddingBottom);
+        const contentHeight = Math.max(
+          content.scrollHeight,
+          Math.ceil(content.getBoundingClientRect().height),
+        );
+
+        return Math.max(maxHeight, contentHeight + cellPadding + 4);
+      }, rowHeight);
+
+      const nextHeight = Math.min(
+        MAX_GRID_ROW_HEIGHT,
+        Math.max(MIN_GRID_ROW_HEIGHT, Math.ceil(measuredHeight)),
+      );
+
+      if (Math.abs(row.getBoundingClientRect().height - nextHeight) > 1) {
+        rowNode.setRowHeight(nextHeight);
+        hasChanges = true;
+      }
+    });
+
+    if (hasChanges) {
+      gridApi.onRowHeightChanged();
+    }
+
+    window.requestAnimationFrame(refreshRowResizeHandles);
+  }, [customRowHeights, refreshRowResizeHandles, rowHeight]);
+
   const handleColumnResized = useCallback(
     (event: { finished?: boolean; api: { resetRowHeights: () => void } }) => {
       if (event.finished !== false) {
         event.api.resetRowHeights();
       }
+      window.requestAnimationFrame(syncRenderedRowHeights);
     },
-    [],
+    [syncRenderedRowHeights],
   );
 
-  const handleGridFrameResizeStart = useCallback(
+  const handleRowResizeStart = useCallback(
     (event: ReactPointerEvent<HTMLDivElement>) => {
-      const shell = gridShellRef.current;
-      if (!shell) {
+      const rowId = event.currentTarget.dataset.rowId;
+      if (!rowId) {
         return;
       }
 
       event.preventDefault();
-      gridResizeStartRef.current = {
+      event.stopPropagation();
+      rowResizeStartRef.current = {
+        rowId,
         startY: event.clientY,
-        startHeight: shell.getBoundingClientRect().height,
+        startHeight: Number(event.currentTarget.dataset.rowHeight) || rowHeight,
       };
-      setIsGridFrameResizing(true);
+      setActiveRowResize(rowId);
     },
-    [],
+    [rowHeight],
   );
 
   useEffect(() => {
-    if (!isGridFrameResizing) {
+    if (!activeRowResize) {
       return;
     }
 
     const handlePointerMove = (event: globalThis.PointerEvent) => {
-      const resizeStart = gridResizeStartRef.current;
-      if (!resizeStart) {
+      const resizeStart = rowResizeStartRef.current;
+      if (!resizeStart || resizeStart.rowId !== activeRowResize) {
         return;
       }
 
-      const viewportLimit = Math.max(
-        MIN_GRID_FRAME_HEIGHT,
-        Math.min(MAX_GRID_FRAME_HEIGHT, window.innerHeight - 220),
-      );
       const nextHeight = Math.min(
-        viewportLimit,
+        MAX_GRID_ROW_HEIGHT,
         Math.max(
-          MIN_GRID_FRAME_HEIGHT,
+          MIN_GRID_ROW_HEIGHT,
           resizeStart.startHeight + event.clientY - resizeStart.startY,
         ),
       );
-      setGridFrameHeight(nextHeight);
+
+      setCustomRowHeights((previous) => ({
+        ...previous,
+        [resizeStart.rowId]: nextHeight,
+      }));
+
+      const rowNode = gridRef.current?.api.getRowNode(resizeStart.rowId);
+      rowNode?.setRowHeight(nextHeight);
+      gridRef.current?.api.onRowHeightChanged();
+      window.requestAnimationFrame(refreshRowResizeHandles);
     };
 
     const handlePointerUp = () => {
-      gridResizeStartRef.current = null;
-      setIsGridFrameResizing(false);
+      rowResizeStartRef.current = null;
+      setActiveRowResize(null);
     };
 
     document.addEventListener("pointermove", handlePointerMove);
@@ -356,7 +483,7 @@ export default function ExtractionGridWorkspace() {
       document.removeEventListener("pointermove", handlePointerMove);
       document.removeEventListener("pointerup", handlePointerUp);
     };
-  }, [isGridFrameResizing]);
+  }, [activeRowResize, refreshRowResizeHandles]);
 
   const buildSavingCellKey = useCallback(
     (rowId: string, fieldKey: string): string => {
@@ -456,7 +583,6 @@ export default function ExtractionGridWorkspace() {
       minWidth: 300,
       maxWidth: 460,
       wrapText: true,
-      autoHeight: true,
       cellClass: "grid-paper-cell",
       tooltipValueGetter: (params) =>
         `${params.data?.citation || "-"}\n${params.data?.paperTitle || "Untitled paper"}`,
@@ -481,7 +607,6 @@ export default function ExtractionGridWorkspace() {
         editable: false,
         minWidth: 180,
         wrapText: true,
-        autoHeight: true,
         cellClass: "grid-value-cell",
         cellRenderer: (params: ICellRendererParams<AgGridRowData>) => {
           const rowId = params.data?.id;
@@ -704,6 +829,58 @@ export default function ExtractionGridWorkspace() {
   const hasData =
     enrichedGridData.columns.length > 0 && enrichedGridData.rows.length > 0;
 
+  useEffect(() => {
+    if (!hasData) {
+      setRowResizeHandles([]);
+      return;
+    }
+
+    const shell = gridShellRef.current;
+    if (!shell) {
+      return;
+    }
+
+    let firstFrame = 0;
+    let secondFrame = 0;
+    const scheduleRefresh = () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      firstFrame = window.requestAnimationFrame(() => {
+        secondFrame = window.requestAnimationFrame(refreshRowResizeHandles);
+      });
+    };
+
+    scheduleRefresh();
+
+    const scrollContainers = [
+      shell.querySelector<HTMLElement>(".ag-body-viewport"),
+      shell.querySelector<HTMLElement>(".ag-center-cols-viewport"),
+    ].filter((element): element is HTMLElement => Boolean(element));
+
+    scrollContainers.forEach((element) => {
+      element.addEventListener("scroll", scheduleRefresh, { passive: true });
+    });
+
+    const resizeObserver = new ResizeObserver(scheduleRefresh);
+    resizeObserver.observe(shell);
+
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      window.cancelAnimationFrame(secondFrame);
+      scrollContainers.forEach((element) => {
+        element.removeEventListener("scroll", scheduleRefresh);
+      });
+      resizeObserver.disconnect();
+    };
+  }, [
+    agRowData,
+    customRowHeights,
+    hasData,
+    refreshRowResizeHandles,
+    rowHeight,
+    syncRenderedRowHeights,
+  ]);
+
   if (ws.isGridLoading && !ws.editableGrid) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-8">
@@ -840,7 +1017,6 @@ export default function ExtractionGridWorkspace() {
 
         <div
           ref={gridShellRef}
-          style={gridFrameHeight ? { height: `${gridFrameHeight}px` } : undefined}
           className="extraction-grid-shell min-h-[360px] rounded-xl border border-border bg-surface-white shadow-none"
         >
           {hasData ? (
@@ -848,16 +1024,20 @@ export default function ExtractionGridWorkspace() {
               <AgGridReact<AgGridRowData>
                 ref={gridRef}
                 rowData={agRowData}
+                getRowId={(params) => params.data.id}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
+                colResizeDefault="shift"
                 rowHeight={rowHeight}
                 getRowHeight={getGridRowHeight}
                 headerHeight={56}
                 groupHeaderHeight={28}
-                domLayout="autoHeight"
                 animateRows
                 stopEditingWhenCellsLoseFocus
                 suppressDragLeaveHidesColumns
+                onFirstDataRendered={() => {
+                  window.requestAnimationFrame(syncRenderedRowHeights);
+                }}
                 onColumnResized={handleColumnResized}
               />
             </div>
@@ -875,15 +1055,21 @@ export default function ExtractionGridWorkspace() {
             </div>
           )}
 
-          <div
-            role="separator"
-            aria-orientation="horizontal"
-            aria-label="Resize grid height"
-            onPointerDown={handleGridFrameResizeStart}
-            className={`grid-vertical-resize-handle${
-              isGridFrameResizing ? " is-resizing" : ""
-            }`}
-          />
+          {rowResizeHandles.map((handle) => (
+            <div
+              key={handle.rowId}
+              role="separator"
+              aria-orientation="horizontal"
+              aria-label="Resize row height"
+              data-row-id={handle.rowId}
+              data-row-height={handle.height}
+              onPointerDown={handleRowResizeStart}
+              style={{ top: `${handle.top}px` }}
+              className={`grid-row-resize-handle${
+                activeRowResize === handle.rowId ? " is-resizing" : ""
+              }`}
+            />
+          ))}
         </div>
       </div>
     </div>
