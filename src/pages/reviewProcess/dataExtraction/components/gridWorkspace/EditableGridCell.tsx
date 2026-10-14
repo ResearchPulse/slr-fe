@@ -277,7 +277,7 @@ export default function EditableGridCell({
 
   return (
     <div
-      className="group relative h-full min-h-9 min-w-0 px-1 py-1 text-sm text-text-primary"
+      className="group relative h-full min-h-9 px-1 py-1 text-sm text-text-primary"
       title={displayedValue || "-"}
       onDoubleClick={beginEdit}
     >
@@ -324,18 +324,18 @@ export default function EditableGridCell({
           )}
         </div>
       ) : (
-        <div className="grid-cell-content flex min-h-6 min-w-0 items-start justify-between gap-2">
+        <div className="flex min-h-6 items-start justify-between gap-2">
           {cell.isNotReported ? (
             <span className="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
               NR
             </span>
           ) : (
-            <span className="min-w-0 flex-1 whitespace-pre-wrap break-words leading-5 [overflow-wrap:anywhere]">
+            <span className="whitespace-pre-wrap break-words leading-5">
               {displayedValue || "-"}
             </span>
           )}
 
-          <span className="flex shrink-0 items-center gap-1">
+          <span className="flex items-center gap-1">
             {isSaving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
             ) : null}

@@ -1,88 +1,4 @@
 /* Grouped Header Styling */
-.extraction-grid-shell {
-  --grid-border: #e2e8f0;
-  --grid-muted-surface: #f8fafc;
-  --grid-hover-surface: #f1f7ff;
-  width: 100%;
-  max-width: 100%;
-  height: min(68vh, 720px);
-  max-height: calc(100vh - 220px);
-  overflow: hidden;
-  position: relative;
-}
-
-.extraction-grid {
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  height: 100%;
-}
-
-.extraction-grid .ag-root-wrapper,
-.extraction-grid .ag-root {
-  width: 100%;
-  height: 100%;
-  max-height: 100%;
-  min-height: 0;
-}
-
-.extraction-grid .ag-root {
-  position: absolute;
-  inset: 0;
-}
-
-.extraction-grid .ag-body {
-  max-height: 100%;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.extraction-grid .ag-body-viewport,
-.extraction-grid .ag-center-cols-viewport {
-  height: 100% !important;
-  max-height: 100% !important;
-  min-height: 0 !important;
-}
-
-.extraction-grid .ag-center-cols-container,
-.extraction-grid .ag-pinned-left-cols-container {
-  min-height: 0;
-}
-
-.grid-row-resize-handle {
-  position: absolute;
-  right: 0;
-  left: 0;
-  z-index: 20;
-  height: 12px;
-  transform: translateY(-4px);
-  cursor: ns-resize;
-  touch-action: none;
-  pointer-events: auto;
-  background: linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 5px,
-    rgba(11, 120, 200, 0.24) 5px,
-    rgba(11, 120, 200, 0.24) 7px,
-    transparent 7px,
-    transparent 100%
-  );
-}
-
-.grid-row-resize-handle:hover,
-.grid-row-resize-handle.is-resizing {
-  background: linear-gradient(
-    to bottom,
-    transparent 0,
-    transparent 3px,
-    rgba(11, 120, 200, 0.82) 3px,
-    rgba(11, 120, 200, 0.82) 9px,
-    transparent 9px,
-    transparent 100%
-  );
-}
-
 .ag-theme-quartz .ag-header-group-cell {
   background-color: #f0fdf4;
   border-right: 1px solid #e2e8f0;
@@ -96,82 +12,6 @@
 
 .ag-theme-quartz .ag-header-cell {
   background-color: #ffffff;
-}
-
-.ag-theme-quartz .ag-header-cell-label {
-  align-items: center;
-}
-
-.ag-theme-quartz .ag-header-cell-resize,
-.ag-theme-quartz .ag-header-group-cell-resize {
-  width: 14px;
-  cursor: col-resize;
-  z-index: 4;
-}
-
-.ag-theme-quartz .ag-header-cell-resize::after,
-.ag-theme-quartz .ag-header-group-cell-resize::after {
-  content: "";
-  position: absolute;
-  top: 8px;
-  right: 4px;
-  bottom: 8px;
-  width: 2px;
-  background-color: #0b78c8;
-  opacity: 0;
-  transition: opacity 150ms ease;
-}
-
-.ag-theme-quartz .ag-header-cell:hover .ag-header-cell-resize::after,
-.ag-theme-quartz .ag-header-cell-resize:hover::after,
-.ag-theme-quartz .ag-header-group-cell:hover .ag-header-group-cell-resize::after,
-.ag-theme-quartz .ag-header-group-cell-resize:hover::after {
-  opacity: 0.85;
-}
-
-.ag-theme-quartz .ag-row {
-  border-bottom: 1px solid var(--grid-border);
-  transition: background-color 150ms ease;
-}
-
-.ag-theme-quartz .ag-row:hover .ag-cell {
-  background-color: var(--grid-hover-surface);
-}
-
-.ag-theme-quartz .ag-cell {
-  align-items: flex-start;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  line-height: 1.45;
-  white-space: normal;
-}
-
-.ag-theme-quartz .ag-cell-wrapper,
-.ag-theme-quartz .ag-cell-value {
-  min-width: 0;
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-.ag-theme-quartz .ag-cell-wrapper {
-  align-items: flex-start;
-}
-
-.ag-theme-quartz .grid-cell-content,
-.ag-theme-quartz .grid-paper-content {
-  min-width: 0;
-  max-width: 100%;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.ag-theme-quartz .grid-paper-cell {
-  color: #0f2742;
-  font-weight: 600;
-}
-
-.ag-theme-quartz .grid-value-cell {
-  color: #334155;
 }
 
 /* Ensure proper spacing and alignment for grouped headers */
@@ -189,10 +29,6 @@
   border-right: 2px solid #e2e8f0;
 }
 
-.ag-theme-quartz .ag-pinned-left-cols-container {
-  border-right: 1px solid #e2e8f0;
-}
-
 .ag-theme-quartz .ag-pinned-left-header .ag-header-cell {
   background-color: #f8fafc;
 }
@@ -201,10 +37,4 @@
 .ag-theme-quartz .ag-header-cell-text {
   white-space: normal;
   word-wrap: break-word;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ag-theme-quartz .ag-row {
-    transition: none;
-  }
 }
