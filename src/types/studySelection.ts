@@ -399,6 +399,7 @@ export interface PaperWithDecisionsResponse {
   finalDecision: ScreeningDecisionType | null;
   finalDecisionText: string | null;
   aiReviewSubmitted?: boolean;
+  myDecision?: ScreeningDecisionResponse | null;
   citationCount: number;
   referenceCount: number;
   decisions: ScreeningDecisionResponse[];

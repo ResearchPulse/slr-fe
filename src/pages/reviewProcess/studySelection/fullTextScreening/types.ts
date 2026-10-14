@@ -68,6 +68,7 @@ export interface FullTextPaper {
   finalDecision: ScreeningDecision | null;
   finalDecisionText: string | null;
   decisions: ReviewerDecision[];
+  myDecision?: ReviewerDecision | null;
   assignedReviewers?: Array<{ reviewerId: string; reviewerName: string }>;
   extraction: ExtractionStatusResponse | null;
   metadataSources: MetadataSourcesResponse | null;
@@ -171,6 +172,7 @@ export interface UseFullTextScreeningReturn {
   pagination: PaginationInfo;
   isLoading: boolean;
   error: string | null;
+  canReview: boolean;
 
   // Paper selection
   selectPaper: (paperId: string) => void;
@@ -293,6 +295,7 @@ export function adaptPaperWithDecisions(paper: PaperWithDecisionsResponse): Full
     finalDecision: paper.finalDecision !== null ? mapDecisionType(paper.finalDecision) : null,
     finalDecisionText: paper.finalDecisionText,
     decisions: paper.decisions.map(mapDecisionResponse),
+    myDecision: paper.myDecision ? mapDecisionResponse(paper.myDecision) : null,
     assignedReviewers: paper.assignedReviewers?.map((reviewer) => ({ reviewerId: reviewer.reviewerId, reviewerName: reviewer.reviewerName })),
     extraction: paper.extraction,
     metadataSources: paper.metadataSources,

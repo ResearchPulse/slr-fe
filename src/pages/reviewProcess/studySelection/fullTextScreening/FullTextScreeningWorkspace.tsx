@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiFileText, FiList } from "react-icons/fi";
 import { useFullTextScreening } from "./hooks/useFullTextScreening";
 import FullTextReader from "./components/FullTextReader";
 import FullTextRightPanel from "./components/FullTextRightPanel";
+import DecisionBar from "./components/DecisionBar";
 import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
-import type { AiHighlight } from "./types";
 import { useStudySelectionDetails } from "../../../../hooks/useStudySelection";
 import { useProject } from "../../../../hooks/useProjects";
 import { PaperPhase, SelectionProcessStatus } from "../../../../types/studySelection";
@@ -37,11 +37,6 @@ export default function FullTextScreeningWorkspace() {
       .catch(() => { if (active) setDirectNeighbors({ paperId, previous: false, next: false }); });
     return () => { active = false; };
   }, [paperId, hasQueueContext, currentIndex, ws.isLoading, screeningProcessId, ws.papers, ws.pagination, ws.filters]);
-
-  const aiHighlights: AiHighlight[] = useMemo(() => {
-    if (!ws.aiAnalysis?.aiOutput) return [];
-    return ws.aiAnalysis.aiOutput.exclusionHighlights.map((text) => ({ section: "Exclusion", text, page: 1 }));
-  }, [ws.aiAnalysis]);
 
   const listPath = `/projects/${projectId}/processes/${processId}/full-text-screening/${screeningProcessId}`;
   const detailPath = (id: string) => `${listPath}/papers/${id}`;
@@ -121,7 +116,7 @@ export default function FullTextScreeningWorkspace() {
 
   const backToList = () => navigate((location.state as { listPath?: string } | null)?.listPath || listPath);
 
-  return <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-bg-primary">
+  return <div className="flex h-full min-h-0 flex-col overflow-hidden bg-bg-primary">
     <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b border-border bg-surface-white px-3 sm:px-5">
       <button onClick={backToList} className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary"><FiArrowLeft /><span className="hidden sm:inline">Back to papers</span></button>
       <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">Full-Text Screening</div><div className="truncate text-xs font-semibold sm:text-sm">Paper {currentIndex >= 0 ? (ws.filters.pageNumber - 1) * ws.pagination.pageSize + currentIndex + 1 : "—"} of {ws.pagination.totalCount || "—"}</div></div>
@@ -131,10 +126,21 @@ export default function FullTextScreeningWorkspace() {
         <button onClick={toggleContextPanel} className="ml-1 inline-flex items-center gap-2 rounded-lg border border-border px-2.5 py-2 text-xs text-text-secondary hover:bg-bg-secondary"><FiList /><span className="hidden lg:inline">Review context</span></button>
       </div>
     </header>
-    <div className="min-h-0 flex-1">
-      {!ws.selectedPaper && ws.papers.length === 0 ? <div className="flex h-full flex-col items-center justify-center bg-surface-white p-8 text-center"><FiFileText className="mb-4 h-9 w-9 text-text-secondary/50"/><h2 className="text-lg font-semibold">No papers available</h2><p className="mt-2 max-w-md text-sm text-text-secondary">Included papers from Title &amp; Abstract screening will appear here.</p><button onClick={navigateToTitleAbstract} className="mt-5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white">Go to Title &amp; Abstract Screening</button></div> : <div className="flex h-full min-h-0">
-        <main className="min-w-0 flex-1"><FullTextReader paper={ws.selectedPaper} aiHighlights={aiHighlights} onUploadPdf={ws.uploadFullText} onApplyMetadataSuggestion={ws.applyMetadataSuggestion} isUploading={ws.isUploadingFullText} isApplyingMetadataSuggestion={ws.isApplyingMetadataSuggestion} onRetryExtraction={ws.retryMetadataExtraction} isRetryingExtraction={ws.isRetryingMetadataExtraction} /></main>
-        {contextOpen && <aside className="hidden w-[340px] shrink-0 border-l border-border xl:block"><FullTextRightPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} runAiAnalysis={ws.runAiAnalysis} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} onResolveConflict={ws.resolveConflict} isResolving={ws.isResolving} isDisabled={isCompleted} /></aside>}
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+      {!ws.selectedPaper && ws.papers.length === 0 ? <div className="flex min-h-0 flex-1 flex-col items-center justify-center bg-surface-white p-8 text-center"><FiFileText className="mb-4 h-9 w-9 text-text-secondary/50"/><h2 className="text-lg font-semibold">No papers available</h2><p className="mt-2 max-w-md text-sm text-text-secondary">Included papers from Title &amp; Abstract screening will appear here.</p><button onClick={navigateToTitleAbstract} className="mt-5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white">Go to Title &amp; Abstract Screening</button></div> : <div className="flex min-h-0 flex-1">
+        <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <FullTextReader
+            paper={ws.selectedPaper}
+            decisionBar={ws.selectedPaper ? <DecisionBar paper={ws.selectedPaper} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} canReview={ws.canReview && !isCompleted} /> : undefined}
+            onUploadPdf={ws.uploadFullText}
+            onApplyMetadataSuggestion={ws.applyMetadataSuggestion}
+            isUploading={ws.isUploadingFullText}
+            isApplyingMetadataSuggestion={ws.isApplyingMetadataSuggestion}
+            onRetryExtraction={ws.retryMetadataExtraction}
+            isRetryingExtraction={ws.isRetryingMetadataExtraction}
+          />
+        </main>
+        {contextOpen && <aside className="hidden w-[340px] shrink-0 border-l border-border xl:block"><FullTextRightPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} runAiAnalysis={ws.runAiAnalysis} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} onResolveConflict={ws.resolveConflict} isResolving={ws.isResolving} isDisabled={isCompleted} showDecisionBar={false} /></aside>}
       </div>}
       {paperId && mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={() => persistContextPanel(false)}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><div className="flex h-full flex-col"><button onClick={() => persistContextPanel(false)} className="self-end px-4 py-3 text-sm text-accent">Close review context</button><FullTextRightPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} runAiAnalysis={ws.runAiAnalysis} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} onResolveConflict={ws.resolveConflict} isResolving={ws.isResolving} isDisabled={isCompleted} /></div></aside></div>}
     </div>

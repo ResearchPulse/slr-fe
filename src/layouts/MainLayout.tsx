@@ -11,6 +11,11 @@ export default function MainLayout() {
     /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?screening(?:\/|$)/.test(
       pathname,
     );
+  const isFullTextScreeningWorkspace = /\/full-text-screening(?:\/|$)/.test(
+    pathname,
+  );
+  const isViewportWorkspace =
+    isScreeningWorkspace || isFullTextScreeningWorkspace;
   const isReviewProcessDashboard =
     /\/projects\/[^/]+\/processes\/[^/]+\/?$/.test(pathname);
   const isDataExtractionWorkspace =
@@ -31,7 +36,7 @@ export default function MainLayout() {
   return (
     <div
       className={
-        isScreeningWorkspace
+        isViewportWorkspace
           ? "flex h-dvh min-h-0 flex-col overflow-hidden bg-bg-primary"
           : "flex min-h-screen flex-col bg-bg-primary"
       }
@@ -45,7 +50,7 @@ export default function MainLayout() {
         !isPrismaReportWorkspace && <Header />}
       <main
         className={
-          isScreeningWorkspace
+          isViewportWorkspace
             ? "app-content min-h-0 flex-1 overflow-hidden overscroll-none"
             : `app-content flex-grow ${pathname === "/" ? "home-content" : "standard-content"}`
         }
@@ -57,7 +62,7 @@ export default function MainLayout() {
           {/* </InteractionGuard> */}
         </SectionGuard>
       </main>
-      {!isScreeningWorkspace && <Footer />}
+      {!isViewportWorkspace && <Footer />}
     </div>
   );
 }

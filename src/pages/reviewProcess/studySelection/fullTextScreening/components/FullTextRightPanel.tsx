@@ -36,6 +36,7 @@ interface FullTextRightPanelProps {
   ) => void;
   isResolving?: boolean;
   isDisabled?: boolean;
+  showDecisionBar?: boolean;
 }
 
 export default function FullTextRightPanel({
@@ -47,6 +48,7 @@ export default function FullTextRightPanel({
   onExclude,
   isSubmitting: isSubmittingDecision,
   isDisabled = false,
+  showDecisionBar = true,
 }: FullTextRightPanelProps) {
   const { projectId, screeningProcessId } = useParams<{
     projectId: string;
@@ -58,7 +60,9 @@ export default function FullTextRightPanel({
 
   const hasMyDecision = useMemo(() => {
     if (!currentUser || !paper) return false;
-    return paper.decisions.some((d) => d.reviewerId === currentUser.id);
+    return Boolean(paper.myDecision) || paper.decisions.some(
+      (d) => String(d.reviewerId) === String(currentUser.id) && Number(d.phase) === PaperPhase.FullText,
+    );
   }, [paper, currentUser]);
 
   const canReview = useMemo(() => {
@@ -175,13 +179,15 @@ export default function FullTextRightPanel({
       </Tabs>
 
       {/* Decision Actions — Sticky Bottom */}
-      <DecisionBar
-        paper={paper}
-        onInclude={onInclude}
-        onExclude={onExclude}
-        isSubmitting={isSubmittingDecision}
-        canReview={canReview && !isDisabled}
-      />
+      {showDecisionBar && (
+        <DecisionBar
+          paper={paper}
+          onInclude={onInclude}
+          onExclude={onExclude}
+          isSubmitting={isSubmittingDecision}
+          canReview={canReview && !isDisabled}
+        />
+      )}
     </div>
   );
 }

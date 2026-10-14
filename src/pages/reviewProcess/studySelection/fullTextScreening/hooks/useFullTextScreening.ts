@@ -14,7 +14,10 @@ import {
   PaperSelectionStatus,
   PaperPhase,
 } from "../../../../../types/studySelection";
-import type { AssignedPapersParams } from "../../../../../types/studySelection";
+import type {
+  AssignedPapersParams,
+  GetPaperDetailsResponse,
+} from "../../../../../types/studySelection";
 import type {
   FullTextPaper,
   ScreeningStats,
@@ -207,6 +210,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
     ),
     enabled: !!screeningProcessId && !!resolvedSelectedId && (isLeader || !!routePaperId),
     staleTime: 30_000,
+    refetchOnMount: "always",
   });
 
   const detailedPaper = useMemo(
@@ -313,7 +317,30 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         exclusionReasonId: vars.exclusionReasonId ?? null,
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (response, variables) => {
+      const detailsKey = QUERY_KEYS.studySelection.paperDetails(
+        screeningProcessId!,
+        variables.paperId,
+        PaperPhase.FullText,
+      );
+      const submittedDecision = response.data;
+      if (submittedDecision) {
+        queryClient.setQueryData<GetPaperDetailsResponse>(detailsKey, (current) => {
+          if (!current?.data) return current;
+          const decisions = current.data.decisions.filter((decision) =>
+            !(decision.reviewerId === submittedDecision.reviewerId
+              && Number(decision.phase) === PaperPhase.FullText),
+          );
+          return {
+            ...current,
+            data: {
+              ...current.data,
+              decisions: [...decisions, submittedDecision],
+              myDecision: submittedDecision,
+            },
+          };
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "papers"],
       });
@@ -321,10 +348,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         queryKey: ["study-selection", screeningProcessId!, "statistics"],
       });
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.studySelection.paperDetails(
-          screeningProcessId!,
-          variables.paperId,
-        ),
+        queryKey: detailsKey,
       });
       queryClient.invalidateQueries({
         queryKey: ["reviewer-decisions", screeningProcessId, variables.paperId],
@@ -578,7 +602,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
   const hasMyDecision = useMemo(() => {
     if (!currentUser || !selectedPaper) return false;
-    return selectedPaper.decisions.some((d) => d.reviewerId === currentUser.id);
+    return Boolean(selectedPaper.myDecision) || selectedPaper.decisions.some(
+      (d) => String(d.reviewerId) === String(currentUser.id) && Number(d.phase) === PaperPhase.FullText,
+    );
   }, [selectedPaper, currentUser]);
 
   const canReview = useMemo(() => {
@@ -640,6 +666,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           : (isLeader || !!routePaperId) && paperDetailsQuery.error
             ? getErrorMessage(paperDetailsQuery.error, "Failed to load paper details")
             : null,
+    canReview,
     selectPaper,
     selectNextPaper,
     selectPreviousPaper,

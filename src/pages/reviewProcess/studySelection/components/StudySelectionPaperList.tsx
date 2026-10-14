@@ -1,6 +1,4 @@
-import { useEffect, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 import {
   FiAlertTriangle,
   FiArrowLeft,
@@ -15,15 +13,6 @@ import type { ScreeningStats, StatusFilter } from "../titleAbstractScreening/typ
 import { SORT_OPTIONS, STATUS_FILTER_OPTIONS, STATUS_CONFIG } from "../titleAbstractScreening/constants";
 import { cn } from "../../../../utils/cn";
 import Select from "../../../../components/ui/Select";
-import api from "../../../../config/axios";
-import { useProjectMember } from "../../../../hooks/useProjectMember";
-
-interface AgentReviewTask {
-  id: string;
-  paperId: string;
-  agentName: string;
-  status: "ASSIGNED" | "COMPLETED";
-}
 
 export interface StudySelectionListPaper {
   id: string;
@@ -89,8 +78,6 @@ export default function StudySelectionPaperList(props: Props) {
     isLoading, contextKey, onBack, onOpenPaper, onStageChange, onSearchChange, onStatusChange,
     onSortChange, onFullTextChange, onConflictChange, onDecidedByMeChange, onPageChange, onPageSizeChange,
   } = props;
-  const { projectId } = useParams<{ projectId: string }>();
-  const { member } = useProjectMember(projectId);
   useEffect(() => {
     if (!contextKey) return;
     try {
@@ -106,35 +93,6 @@ export default function StudySelectionPaperList(props: Props) {
     onConflictChange?.(false);
     onDecidedByMeChange?.(false);
   };
-
-  const visiblePaperIds = useMemo(() => papers.map((paper) => paper.id), [papers]);
-  const agentTaskQuery = useQuery({
-    queryKey: ["study-selection-agent-review-tasks", projectId, visiblePaperIds.join(",")],
-    queryFn: async () => {
-      const batches = Array.from({ length: Math.ceil(visiblePaperIds.length / 30) }, (_, index) =>
-        visiblePaperIds.slice(index * 30, (index + 1) * 30),
-      );
-      const results = await Promise.all(batches.map(async (paperIds) => {
-        const response = await api.get<{ data: AgentReviewTask[] }>(
-          `/projects/${projectId}/agents/tasks`,
-          { params: { paperIds: paperIds.join(",") } },
-        );
-        return response.data.data;
-      }));
-      return results.flat();
-    },
-    enabled: Boolean(projectId && member?.role === 1 && visiblePaperIds.length),
-    refetchInterval: 15_000,
-  });
-  const agentTasksByPaper = useMemo(() => {
-    const grouped = new Map<string, AgentReviewTask[]>();
-    for (const task of agentTaskQuery.data ?? []) {
-      const tasks = grouped.get(task.paperId) ?? [];
-      tasks.push(task);
-      grouped.set(task.paperId, tasks);
-    }
-    return grouped;
-  }, [agentTaskQuery.data]);
 
   const includedLabel = activeStage === "title-abstract" ? "Passed to Full Text" : "Included";
   const metrics = [
@@ -170,10 +128,27 @@ export default function StudySelectionPaperList(props: Props) {
             {props.headerActionLabel && props.onHeaderAction && <button onClick={props.onHeaderAction} className="whitespace-nowrap rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm hover:brightness-95">{props.headerActionLabel}</button>}
           </div>
         </div>
-        <nav className="mx-auto flex max-w-[1600px] gap-3 overflow-x-auto px-6 pb-4 pt-2 lg:px-10" aria-label="Screening stage">
-          <button onClick={() => onStageChange("title-abstract")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", activeStage === "title-abstract" ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "text-text-secondary hover:bg-bg-secondary")}>Title &amp; Abstract</button>
-          <button onClick={() => onStageChange("full-text")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", activeStage === "full-text" ? "bg-blue-50 text-blue-700 ring-1 ring-blue-200" : "text-text-secondary hover:bg-bg-secondary")}>Full Text</button>
-          <button onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-medium transition", filters.status === "included" ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200" : "text-text-secondary hover:bg-bg-secondary")}>{activeStage === "title-abstract" ? "Review Passed Papers" : "Review Included"}</button>
+        <nav className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 pb-3 pt-2 lg:px-10" aria-label="Screening stage">
+          <div className="flex min-w-0 items-center">
+            <button
+              onClick={() => onStageChange("title-abstract")}
+              aria-current={activeStage === "title-abstract" ? "step" : undefined}
+              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "title-abstract" ? "border-blue-600 text-blue-700" : "border-transparent text-text-secondary hover:text-text-primary")}
+            >
+              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "title-abstract" ? "border-blue-600 text-blue-700" : "border-slate-300 text-slate-500")}>1</span>
+              <span className="whitespace-nowrap"><span className="block text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Step 1</span><span className="text-sm font-medium">Title &amp; Abstract</span></span>
+            </button>
+            <FiChevronRight aria-hidden="true" className="mx-1 shrink-0 text-slate-400 sm:mx-3" />
+            <button
+              onClick={() => onStageChange("full-text")}
+              aria-current={activeStage === "full-text" ? "step" : undefined}
+              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "full-text" ? "border-blue-600 text-blue-700" : "border-transparent text-text-secondary hover:text-text-primary")}
+            >
+              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "full-text" ? "border-blue-600 text-blue-700" : "border-slate-300 text-slate-500")}>2</span>
+              <span className="whitespace-nowrap"><span className="block text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Step 2</span><span className="text-sm font-medium">Full Text</span></span>
+            </button>
+          </div>
+          <button onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("whitespace-nowrap rounded-lg border px-4 py-2.5 text-sm font-medium transition", filters.status === "included" ? "border-emerald-300 text-emerald-700" : "border-border text-text-secondary hover:border-emerald-300 hover:text-emerald-700")}>{activeStage === "title-abstract" ? "Review Passed Papers" : "Review Included"}</button>
         </nav>
       </header>
 
@@ -205,19 +180,24 @@ export default function StudySelectionPaperList(props: Props) {
             {(filters.search || filters.status !== "all" || filters.hasFullText || filters.hasConflict || filters.decidedByMe) && <button onClick={clearFilters} className="h-12 whitespace-nowrap rounded-xl px-3 text-sm font-medium text-accent transition hover:bg-blue-50">Clear filters</button>}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] border-collapse text-left">
-              <thead className="bg-bg-primary text-[11px] uppercase tracking-wide text-text-secondary"><tr><th className="px-4 py-3 font-semibold">Paper</th><th className="px-4 py-3 font-semibold">Year</th><th className="px-4 py-3 font-semibold">Source</th><th className="px-4 py-3 font-semibold">DOI</th><th className="px-4 py-3 font-semibold">Review status</th><th className="px-4 py-3 font-semibold">Assignment</th><th className="px-4 py-3 font-semibold">Review progress</th><th className="px-4 py-3 font-semibold">Action</th></tr></thead>
+          <div className="w-full min-w-0 max-w-full overflow-x-clip">
+            <table className="w-full min-w-0 max-w-full table-fixed border-collapse text-left">
+              <colgroup><col className="w-[28%]"/><col className="w-[6%]"/><col className="w-[9%]"/><col className="w-[12%]"/><col className="w-[12%]"/><col className="w-[11%]"/><col className="w-[13%]"/><col className="w-[9%]"/></colgroup>
+              <thead className="bg-bg-primary text-[11px] uppercase tracking-wide text-text-secondary"><tr><th className="px-2 py-3 font-semibold lg:px-3">Paper</th><th className="px-1 py-3 font-semibold lg:px-2">Year</th><th className="px-1 py-3 font-semibold lg:px-2">Source</th><th className="px-1 py-3 font-semibold lg:px-2">DOI</th><th className="px-1 py-3 font-semibold lg:px-2">Review status</th><th className="px-1 py-3 font-semibold lg:px-2">Assignment</th><th className="whitespace-nowrap px-1 py-3 font-semibold lg:px-2">Review progress</th><th className="whitespace-nowrap px-1 py-3 font-semibold lg:px-2">Action</th></tr></thead>
               <tbody className="divide-y divide-border">
                 {isLoading && papers.length === 0 ? <tr><td colSpan={8} className="px-4 py-16 text-center text-sm text-text-secondary">Loading papers…</td></tr> : papers.length === 0 ? <tr><td colSpan={8} className="px-4 py-16 text-center"><FiFileText className="mx-auto mb-3 h-7 w-7 text-text-secondary/50"/><p className="text-sm font-medium">No papers found</p><p className="mt-1 text-xs text-text-secondary">Try changing the search or filters.</p></td></tr> : papers.map((paper) => {
                   const state = paper.screeningStatus;
-                  const assignedCount = paper.assignedReviewers?.length ?? 0;
-                  const agentTasks = agentTasksByPaper.get(paper.id) ?? [];
-                  const assignedNames = (paper.assignedReviewers ?? []).map((reviewer) => reviewer.reviewerName).filter(Boolean);
+                  const assignedReviewers = (paper.assignedReviewers ?? []).slice(0, 2);
+                  const assignedCount = assignedReviewers.length;
+                  const assignedNames = assignedReviewers.map((reviewer) => reviewer.reviewerName).filter(Boolean);
                   const assignmentLabel = [...new Set(assignedNames)].join(", ");
-                  const completedAgentTaskCount = agentTasks.filter((task) => task.status === "COMPLETED").length;
                   const phase = activeStage === "full-text" ? 1 : 0;
-                  const humanDecisionCount = paper.decisions?.filter((decision) => decision.phase === undefined || decision.phase === phase).length ?? 0;
+                  const assignedReviewerIds = new Set(assignedReviewers.map((reviewer) => String(reviewer.reviewerId ?? "")));
+                  const phaseDecisions = paper.decisions?.filter((decision) =>
+                    decision.phase === phase &&
+                    (!assignedReviewerIds.size || assignedReviewerIds.has(String(decision.reviewerId))),
+                  ) ?? [];
+                  const humanDecisionCount = Math.min(2, new Set(phaseDecisions.map((decision) => decision.reviewerId)).size);
                   const hasHumanReviewActivity = assignedCount > 0 || humanDecisionCount > 0;
                   const displayState = state === "pending" && hasHumanReviewActivity ? "in-progress" : state;
                   const statusLabel = displayState === "in-progress"
@@ -226,14 +206,14 @@ export default function StudySelectionPaperList(props: Props) {
                       ? "Passed to Full Text"
                       : STATUS_CONFIG[state as keyof typeof STATUS_CONFIG]?.label ?? state;
                   return <tr key={paper.id} tabIndex={0} role="link" onClick={() => onOpenPaper(paper.id)} onKeyDown={(event) => { if (event.key === "Enter") onOpenPaper(paper.id); }} className="cursor-pointer transition hover:bg-bg-primary/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
-                    <td className="max-w-[420px] px-5 py-4"><div className="line-clamp-2 text-sm font-semibold text-text-primary">{paper.title || "Untitled paper"}</div><div className="mt-1 truncate text-xs text-text-secondary">{paper.authors || "Authors unavailable"}{paper.journal || paper.source ? ` · ${paper.journal || paper.source}` : ""}</div></td>
-                    <td className="px-5 py-4 text-sm tabular-nums">{paper.publicationYear ?? "—"}</td>
-                    <td className="max-w-40 truncate px-5 py-4 text-sm text-text-secondary">{paper.journal || paper.source || "—"}</td>
-                    <td className="px-5 py-4">{paper.doi ? <a href={`https://doi.org/${paper.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}`} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="inline-flex max-w-40 items-center gap-1 truncate text-xs text-accent hover:underline">{paper.doi}<FiExternalLink className="shrink-0"/></a> : <span className="text-sm text-text-secondary">—</span>}</td>
-                    <td className="px-5 py-4"><span className={cn("inline-flex items-center whitespace-nowrap gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium", STATUS_STYLES[displayState] ?? STATUS_STYLES[state] ?? "bg-slate-100 text-slate-700")}>{state === "conflicted" && <FiAlertTriangle/>}{statusLabel}</span></td>
-                    <td className="max-w-44 truncate px-5 py-4 text-xs text-text-secondary" title={assignmentLabel || undefined}>{assignmentLabel || (agentTaskQuery.isLoading && member?.role === 1 ? "Loading assignments…" : "Unassigned")}</td>
-                    <td className="px-5 py-4 text-xs text-text-secondary"><span>{humanDecisionCount}/{Math.max(assignedCount, 2)} human reviews</span>{agentTasks.length > 0 && <span className="mt-1 block text-violet-700">{completedAgentTaskCount}/{agentTasks.length} AI tasks</span>}</td>
-                    <td className="px-5 py-4"><button onClick={(event) => { event.stopPropagation(); onOpenPaper(paper.id); }} className="rounded-lg bg-accent px-3 py-2 text-xs font-semibold text-white hover:brightness-95">Open review</button></td>
+                    <td className="min-w-0 overflow-hidden px-2 py-4 lg:px-3"><div className="line-clamp-2 text-sm font-semibold text-text-primary">{paper.title || "Untitled paper"}</div><div className="mt-1 truncate text-xs text-text-secondary">{paper.authors || "Authors unavailable"}{paper.journal || paper.source ? ` · ${paper.journal || paper.source}` : ""}</div></td>
+                    <td className="px-2 py-4 text-sm tabular-nums">{paper.publicationYear ?? "—"}</td>
+                    <td className="max-w-0 truncate px-2 py-4 text-sm text-text-secondary">{paper.journal || paper.source || "—"}</td>
+                    <td className="min-w-0 max-w-0 overflow-hidden px-1 py-4 lg:px-2">{paper.doi ? <a href={`https://doi.org/${paper.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}`} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="flex min-w-0 max-w-full items-center gap-1 text-xs text-accent hover:underline"><span className="min-w-0 truncate">{paper.doi}</span><FiExternalLink className="shrink-0"/></a> : <span className="text-sm text-text-secondary">—</span>}</td>
+                    <td className="overflow-hidden px-2 py-4"><span className={cn("inline-flex max-w-full items-center whitespace-nowrap gap-1.5 rounded-full px-2 py-1 text-xs font-medium", STATUS_STYLES[displayState] ?? STATUS_STYLES[state] ?? "bg-slate-100 text-slate-700")}>{state === "conflicted" && <FiAlertTriangle/>}{statusLabel}</span></td>
+                    <td className="max-w-0 truncate px-2 py-4 text-xs text-text-secondary" title={assignmentLabel || undefined}>{assignmentLabel || "Unassigned"}</td>
+                    <td className="whitespace-nowrap px-2 py-4 text-xs text-text-secondary">{humanDecisionCount}/2 human reviews</td>
+                    <td className="whitespace-nowrap px-2 py-4"><button onClick={(event) => { event.stopPropagation(); onOpenPaper(paper.id); }} className="min-w-[96px] whitespace-nowrap rounded-lg bg-accent px-2 py-2 text-xs font-semibold text-white hover:brightness-95">Open review</button></td>
                   </tr>;
                 })}
               </tbody>
