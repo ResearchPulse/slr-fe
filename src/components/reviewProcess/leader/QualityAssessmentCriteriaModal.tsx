@@ -210,7 +210,7 @@ const QualityAssessmentCriteriaModal: React.FC<
     >
       <div className="flex flex-col gap-4 py-2 h-[75vh]">
         {/* Header Section */}
-        <div className="flex items-center gap-3 px-4 py-3 bg-gradient-to-br from-primary-light to-white rounded-xl border border-primary/20 shadow-sm shrink-0">
+        <div className="flex shrink-0 items-center gap-3 rounded-xl border border-primary/20 bg-primary-light px-4 py-3">
           <div className="p-2 bg-surface-white rounded-lg shadow-sm border border-primary/20 shrink-0">
             <ShieldCheck className="w-5 h-5 text-accent" />
           </div>
@@ -291,13 +291,13 @@ const QualityAssessmentCriteriaModal: React.FC<
                     handleUpdateCriterion(criterion.id, e.target.value)
                   }
                   placeholder="Enter assessment question..."
-                  className="w-full bg-transparent border-none focus:ring-0 text-sm text-text-primary placeholder:text-slate-300 min-h-[60px] resize-none font-medium leading-relaxed"
+                  className="w-full bg-transparent border-none focus:ring-0 text-sm text-text-primary placeholder:text-text-secondary min-h-[60px] resize-none font-medium leading-relaxed"
                 />
               </div>
 
               <button
                 onClick={() => handleRemoveCriterion(criterion.id)}
-                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                className="mt-1 rounded-xl p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:opacity-100 group-hover:opacity-100"
                 title="Remove Criterion"
               >
                 <Trash2 className="w-4 h-4" />

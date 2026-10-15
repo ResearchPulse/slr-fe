@@ -371,7 +371,7 @@ export default function ProjectFormModal({
                 <FiInfo size={12} className="text-indigo-400" />
                 Tóm tắt dự án (Mô tả)
               </div>
-              <div className="text-sm text-slate-700 font-medium italic leading-relaxed border-l-2 border-indigo-100 pl-4 py-1 mt-1 whitespace-pre-line bg-indigo-50/5 rounded-r-md">
+              <div className="mt-1 whitespace-pre-line rounded-lg border border-border bg-bg-secondary/60 px-4 py-3 text-sm font-medium italic leading-relaxed text-text-primary">
                 {formData.description || "Không có mô tả chi tiết."}
               </div>
             </div>

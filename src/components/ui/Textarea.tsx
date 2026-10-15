@@ -15,14 +15,14 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           "w-full px-3 py-2.5 rounded-xl bg-surface-white border",
           "text-text-primary placeholder:text-text-muted",
           "text-sm transition-colors duration-200",
-          "focus:bg-surface-white focus:outline-none focus:ring-2",
+          "focus:bg-surface-white focus-visible:outline-none focus-visible:ring-2",
           "min-h-[100px] resize-y",
 
           // Default state (no error)
-          !error && "border-border focus:border-accent focus:ring-accent/20",
+          !error && "border-border focus-visible:border-accent focus-visible:ring-accent/20",
 
           // Error state
-          error && "border-error focus:border-error focus:ring-error/20",
+          error && "border-error focus-visible:border-error focus-visible:ring-error/20",
 
           className,
         )}

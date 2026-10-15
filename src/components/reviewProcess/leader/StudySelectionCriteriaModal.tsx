@@ -273,7 +273,7 @@ const StudySelectionCriteriaModal: React.FC<
     >
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="flex items-start justify-between gap-4 p-5 bg-gradient-to-br from-primary-light to-white rounded-xl border border-primary/20 shadow-sm shrink-0">
+        <div className="flex shrink-0 items-start justify-between gap-4 rounded-xl border border-primary/20 bg-primary-light p-5">
           <div className="flex gap-4">
             <div className="p-3 bg-surface-white rounded-xl shadow-sm border border-primary/20 shrink-0">
               <ClipboardList className="w-6 h-6 text-accent" />

@@ -1,5 +1,7 @@
 # SLRS Design System
 
+> Archived direction. The active product design system is documented in [`../DESIGN.md`](../DESIGN.md) and implemented in [`../src/index.css`](../src/index.css). Use those sources for current colors, typography, spacing, component behavior, and accessibility. The ivory and burgundy values below are historical and are not active product tokens.
+
 ## Important
 - DO NOT change business logic
 - DO NOT modify API calls, hooks, routes, validation, or state

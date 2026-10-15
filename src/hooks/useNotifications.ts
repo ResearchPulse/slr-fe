@@ -1,20 +1,15 @@
 import { useSelector } from "react-redux";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { notificationService } from "../services/notificationService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { getErrorMessage } from "../utils/errorUtils";
+import { toastError } from "../utils/toast";
 import type { RootState } from "../redux/store";
-import type { GetNotificationsParams } from "../types/notification";
-import type {
-  ApiResponse,
-  NotificationItem,
-  PaginatedData,
-} from "../types/notification";
+import type { GetNotificationsParams, NotificationItem } from "../types/notification";
 
-/**
- * Custom hook for fetching paginated notifications
- */
-export const useNotifications = (params: GetNotificationsParams = { pageNumber: 1, pageSize: 10 }) => {
+const DEFAULT_PARAMS: GetNotificationsParams = { pageNumber: 1, pageSize: 50 };
+
+export const useNotifications = (params: GetNotificationsParams = DEFAULT_PARAMS) => {
   const userId = useSelector((state: RootState) => state.auth.user?.id || "anonymous");
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -22,30 +17,20 @@ export const useNotifications = (params: GetNotificationsParams = { pageNumber: 
     queryKey: QUERY_KEYS.user.notifications.list(userId, params),
     queryFn: () => notificationService.getNotifications(params),
     enabled: isAuthenticated,
-    staleTime: 1 * 60 * 1000, // 1 minute
+    staleTime: 15_000,
+    refetchInterval: 60_000,
   });
 
   return {
-    notifications: query.data?.data?.items || [],
-    pagination: query.data?.data ? {
-      totalCount: query.data.data.totalCount,
-      pageNumber: query.data.data.pageNumber,
-      pageSize: query.data.data.pageSize,
-      totalPages: query.data.data.totalPages,
-      hasNextPage: query.data.data.hasNextPage,
-      hasPreviousPage: query.data.data.hasPreviousPage,
-    } : null,
+    notifications: query.data ?? [],
     isLoading: query.isLoading,
     isError: query.isError,
-    error: query.error ? getErrorMessage(query.error, "Failed to get notifications") : null,
+    error: query.error ? getErrorMessage(query.error, "Couldn't load notifications") : null,
     refetch: query.refetch,
     isFetching: query.isFetching,
   };
 };
 
-/**
- * Custom hook for fetching unread notification count
- */
 export const useUnreadCount = () => {
   const userId = useSelector((state: RootState) => state.auth.user?.id || "anonymous");
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -54,174 +39,76 @@ export const useUnreadCount = () => {
     queryKey: QUERY_KEYS.user.notifications.unreadCount(userId),
     queryFn: () => notificationService.getUnreadCount(),
     enabled: isAuthenticated,
-    staleTime: 30 * 1000, // 30 seconds
-    refetchInterval: 60 * 1000, // Poll every 1 minute
+    staleTime: 15_000,
+    refetchInterval: 30_000,
   });
 
   return {
-    unreadCount: query.data?.data || 0,
+    unreadCount: query.data ?? 0,
     isLoading: query.isLoading,
     refetch: query.refetch,
   };
 };
 
-/**
- * Custom hook for notification mutations
- */
 export const useNotificationMutations = () => {
   const queryClient = useQueryClient();
   const userId = useSelector((state: RootState) => state.auth.user?.id || "anonymous");
+  const listKey = QUERY_KEYS.user.notifications.list(userId);
+  const countKey = QUERY_KEYS.user.notifications.unreadCount(userId);
+
+  const invalidateNotifications = () => {
+    void queryClient.invalidateQueries({ queryKey: QUERY_KEYS.user.notifications.all(userId) });
+  };
 
   const markAsReadMutation = useMutation({
-    mutationFn: (id: string) => notificationService.markAsRead(id),
-    onMutate: async (id: string) => {
-      // Cancel any outgoing refetches (so they don't overwrite our optimistic update)
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.user.notifications.all(userId),
-      });
+    mutationFn: notificationService.markAsRead,
+    onMutate: async (id) => {
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.user.notifications.all(userId) });
+      const previousLists = queryClient.getQueriesData<NotificationItem[]>({ queryKey: listKey });
+      const wasUnread = previousLists.some(([, list]) => list?.some((item) => item.id === id && !item.isRead));
 
-      // Snapshot the previous values
-      const previousNotifications = queryClient.getQueryData<
-        ApiResponse<PaginatedData<NotificationItem>>
-      >(
-        QUERY_KEYS.user.notifications.list(userId, {
-          pageNumber: 1,
-          pageSize: 10,
-        })
+      queryClient.setQueriesData<NotificationItem[]>({ queryKey: listKey }, (items) =>
+        items?.map((item) => item.id === id ? { ...item, isRead: true } : item),
       );
-      const previousCount = queryClient.getQueryData<ApiResponse<number>>(
-        QUERY_KEYS.user.notifications.unreadCount(userId)
-      );
-
-      // Optimistically update the list
-      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
-        QUERY_KEYS.user.notifications.list(userId, {
-          pageNumber: 1,
-          pageSize: 10,
-        }),
-        (old) => {
-          if (!old?.data?.items) return old;
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              items: old.data.items.map((item) =>
-                item.id === id ? { ...item, isRead: true } : item
-              ),
-            },
-          };
-        }
-      );
-
-      // Optimistically update the count
-      queryClient.setQueryData<ApiResponse<number>>(
-        QUERY_KEYS.user.notifications.unreadCount(userId),
-        (old) => {
-          if (!old?.data || old.data <= 0) return old;
-          return { ...old, data: Math.max(0, old.data - 1) };
-        }
-      );
-
-      return { previousNotifications, previousCount };
-    },
-    onError: (_err, _id, context) => {
-      // Rollback on error
-      if (context) {
-        queryClient.setQueryData(
-          QUERY_KEYS.user.notifications.list(userId, {
-            pageNumber: 1,
-            pageSize: 10,
-          }),
-          context.previousNotifications
-        );
-        queryClient.setQueryData(
-          QUERY_KEYS.user.notifications.unreadCount(userId),
-          context.previousCount
-        );
+      const previousCount = queryClient.getQueryData<number>(countKey);
+      if (wasUnread && previousCount !== undefined) {
+        queryClient.setQueryData(countKey, Math.max(0, previousCount - 1));
       }
+
+      return { previousLists, previousCount };
     },
-    onSettled: () => {
-      // Invalidate both list and count to sync with server
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.user.notifications.all(userId),
-      });
+    onError: (error, _id, context) => {
+      context?.previousLists.forEach(([key, data]) => queryClient.setQueryData(key, data));
+      if (context?.previousCount !== undefined) queryClient.setQueryData(countKey, context.previousCount);
+      toastError("Couldn't update notification", getErrorMessage(error, "Please try again."));
     },
+    onSettled: invalidateNotifications,
   });
 
   const markAllAsReadMutation = useMutation({
     mutationFn: () => notificationService.markAllAsRead(),
     onMutate: async () => {
-      await queryClient.cancelQueries({
-        queryKey: QUERY_KEYS.user.notifications.all(userId),
-      });
-
-      const previousNotifications = queryClient.getQueryData<
-        ApiResponse<PaginatedData<NotificationItem>>
-      >(
-        QUERY_KEYS.user.notifications.list(userId, {
-          pageNumber: 1,
-          pageSize: 10,
-        })
+      await queryClient.cancelQueries({ queryKey: QUERY_KEYS.user.notifications.all(userId) });
+      const previousLists = queryClient.getQueriesData<NotificationItem[]>({ queryKey: listKey });
+      queryClient.setQueriesData<NotificationItem[]>({ queryKey: listKey }, (items) =>
+        items?.map((item) => ({ ...item, isRead: true })),
       );
-      const previousCount = queryClient.getQueryData<ApiResponse<number>>(
-        QUERY_KEYS.user.notifications.unreadCount(userId)
-      );
-
-      // Optimistically mark all in current list as read
-      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
-        QUERY_KEYS.user.notifications.list(userId, {
-          pageNumber: 1,
-          pageSize: 10,
-        }),
-        (old) => {
-          if (!old?.data?.items) return old;
-          return {
-            ...old,
-            data: {
-              ...old.data,
-              items: old.data.items.map((item) => ({
-                ...item,
-                isRead: true,
-              })),
-            },
-          };
-        }
-      );
-
-      // Optimistically set count to 0
-      queryClient.setQueryData<ApiResponse<number>>(
-        QUERY_KEYS.user.notifications.unreadCount(userId),
-        (old) => (old ? { ...old, data: 0 } : old)
-      );
-
-      return { previousNotifications, previousCount };
+      const previousCount = queryClient.getQueryData<number>(countKey);
+      queryClient.setQueryData(countKey, 0);
+      return { previousLists, previousCount };
     },
-    onError: (_err, _variables, context) => {
-      if (context) {
-      queryClient.setQueryData<ApiResponse<PaginatedData<NotificationItem>>>(
-          QUERY_KEYS.user.notifications.list(userId, {
-            pageNumber: 1,
-            pageSize: 10,
-          }),
-          context.previousNotifications
-        );
-      queryClient.setQueryData<ApiResponse<number>>(
-          QUERY_KEYS.user.notifications.unreadCount(userId),
-          context.previousCount
-        );
-      }
+    onError: (error, _ids, context) => {
+      context?.previousLists.forEach(([key, data]) => queryClient.setQueryData(key, data));
+      if (context?.previousCount !== undefined) queryClient.setQueryData(countKey, context.previousCount);
+      toastError("Couldn't update notifications", getErrorMessage(error, "Please try again."));
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.user.notifications.all(userId),
-      });
-    },
+    onSettled: invalidateNotifications,
   });
 
   return {
     markAsRead: markAsReadMutation.mutateAsync,
     isMarkingAsRead: markAsReadMutation.isPending,
-    markAllAsRead: markAllAsReadMutation.mutateAsync,
+    markAllAsRead: () => markAllAsReadMutation.mutate(),
     isMarkingAllAsRead: markAllAsReadMutation.isPending,
   };
 };

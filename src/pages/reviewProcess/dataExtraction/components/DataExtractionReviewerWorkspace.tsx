@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { KeyboardEvent as ReactKeyboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import Button from "../../../../components/ui/Button";
@@ -171,6 +172,7 @@ export default function DataExtractionReviewerWorkspace({
   const effectiveDocumentUrl = normalizedDocumentUrl || null;
 
   const [activeSectionIdState, setActiveSectionIdState] = useState("");
+  const [activeMobilePane, setActiveMobilePane] = useState<"document" | "sections" | "form">("document");
   const [formValues, setFormValues] = useState<Record<string, FormFieldState>>(
     {},
   );
@@ -1730,8 +1732,31 @@ export default function DataExtractionReviewerWorkspace({
       ? "This section uses matrix grid extraction."
       : "Capture extraction values for this section.";
 
+  const mobilePanes = ["document", "sections", "form"] as const;
+  const mobilePaneLabels = {
+    document: "PDF",
+    sections: "Sections",
+    form: "Extraction form",
+  } as const;
+  const handleMobilePaneKeyDown = (
+    event: ReactKeyboardEvent<HTMLButtonElement>,
+  ) => {
+    const currentIndex = mobilePanes.indexOf(activeMobilePane);
+    let nextIndex = currentIndex;
+    if (event.key === "ArrowRight") nextIndex = (currentIndex + 1) % mobilePanes.length;
+    else if (event.key === "ArrowLeft") nextIndex = (currentIndex + mobilePanes.length - 1) % mobilePanes.length;
+    else if (event.key === "Home") nextIndex = 0;
+    else if (event.key === "End") nextIndex = mobilePanes.length - 1;
+    else return;
+
+    event.preventDefault();
+    const nextPane = mobilePanes[nextIndex];
+    setActiveMobilePane(nextPane);
+    document.getElementById(`extraction-pane-tab-${nextPane}`)?.focus();
+  };
+
   return (
-    <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] flex-col overflow-hidden bg-[#F4F7FA]">
+    <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] min-w-0 flex-col overflow-hidden bg-bg-secondary">
 
       {isWorkspaceLocked ? (
         <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-5 py-2.5 text-sm font-medium text-amber-800">
@@ -1739,58 +1764,109 @@ export default function DataExtractionReviewerWorkspace({
         </div>
       ) : null}
 
-      <div className={`grid min-h-0 min-w-[1080px] flex-1 gap-3 p-3 sm:gap-4 sm:p-4 ${
+      <div className={`grid min-h-0 min-w-0 flex-1 grid-cols-1 grid-rows-[auto_minmax(0,1fr)] gap-3 p-3 sm:gap-4 sm:p-4 xl:grid-rows-1 ${
         effectiveDocumentUrl
-          ? "grid-cols-[minmax(0,1.12fr)_280px_minmax(360px,0.9fr)]"
-          : "grid-cols-[minmax(0,0.64fr)_260px_minmax(420px,1fr)]"
+          ? "xl:grid-cols-[minmax(0,1.12fr)_280px_minmax(360px,0.9fr)]"
+          : "xl:grid-cols-[minmax(0,0.64fr)_260px_minmax(420px,1fr)]"
       }`}>
-        <ReviewerPdfPanel
-          effectiveDocumentUrl={effectiveDocumentUrl}
-          activeHighlights={ws.activeHighlights}
-          activeEvidenceTargetLabel={activeEvidenceTargetLabel}
-          canUseEvidenceSelection={Boolean(activeEvidenceTarget)}
-          canRemoveEvidence={
-            Boolean(activeEvidenceTarget) && hasActiveTargetEvidence
-          }
-          onUseEvidenceSelection={handleUseEvidenceSelection}
-          onRemoveEvidence={handleRemoveEvidenceForTarget}
-        />
+        <nav
+          className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-surface-white p-1 xl:hidden"
+          role="tablist"
+          aria-label="Extraction workspace panels"
+        >
+          {mobilePanes.map((pane) => (
+            <button
+              key={pane}
+              id={`extraction-pane-tab-${pane}`}
+              type="button"
+              role="tab"
+              aria-selected={activeMobilePane === pane}
+              aria-controls={`extraction-pane-${pane}`}
+              tabIndex={activeMobilePane === pane ? 0 : -1}
+              onClick={() => setActiveMobilePane(pane)}
+              onKeyDown={handleMobilePaneKeyDown}
+              className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+                activeMobilePane === pane
+                  ? "bg-primary-light text-primary-hover"
+                  : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
+              }`}
+            >
+              {mobilePaneLabels[pane]}
+            </button>
+          ))}
+        </nav>
 
-        <ReviewerSidebar
-          sections={sections}
-          activeSectionId={activeSectionId}
-          selectedTemplateName={ws.selectedTemplate.name}
-          isSubmittingExtraction={isSubmittingExtraction}
-          canSubmit={!!selectedPaperId && !isWorkspaceLocked}
-          isReadOnly={isWorkspaceLocked}
-          onSectionChange={setActiveSectionIdState}
-          onBack={() => navigate(dashboardPath)}
-          onSubmitExtraction={handleSubmitExtraction}
-          submitButtonLabel="Submit Extraction"
-        />
+        <div
+          id="extraction-pane-document"
+          role="tabpanel"
+          aria-labelledby="extraction-pane-tab-document"
+          tabIndex={0}
+          className={`min-h-0 min-w-0 flex-col xl:col-span-1 xl:flex ${activeMobilePane === "document" ? "flex" : "hidden"}`}
+        >
+          <ReviewerPdfPanel
+            effectiveDocumentUrl={effectiveDocumentUrl}
+            activeHighlights={ws.activeHighlights}
+            activeEvidenceTargetLabel={activeEvidenceTargetLabel}
+            canUseEvidenceSelection={Boolean(activeEvidenceTarget)}
+            canRemoveEvidence={
+              Boolean(activeEvidenceTarget) && hasActiveTargetEvidence
+            }
+            onUseEvidenceSelection={handleUseEvidenceSelection}
+            onRemoveEvidence={handleRemoveEvidenceForTarget}
+          />
+        </div>
 
-        <ReviewerFormPane
-          activeSection={activeSection}
-          activeSectionId={activeSectionId}
-          activeSectionDescription={activeSectionDescription}
-          activeEvidenceTargetLabel={activeEvidenceTargetLabel}
-          matrixFields={matrixFields}
-          fieldStates={formValues}
-          currentRows={currentRows}
-          flattenedFields={flattenedFields}
-          renderFieldControl={renderFieldControl}
-          isFieldNotReported={isFieldNotReported}
-          isMatrixFieldNotReported={isMatrixFieldNotReported}
-          isReadOnly={isWorkspaceLocked}
-          isEvidenceTargetActive={isEvidenceTargetActive}
-          onSelectEvidenceTarget={handleSelectEvidenceTarget}
-          onSetMatrixFieldValue={setMatrixFieldValue}
-          onToggleFieldNotReported={setFieldNotReported}
-          onToggleMatrixFieldNotReported={setMatrixFieldNotReported}
-          onRemoveMatrixRow={removeMatrixRow}
-          onAddMatrixRow={addMatrixRow}
-          renderCommentButton={renderCommentButton}
-        />
+        <div
+          id="extraction-pane-sections"
+          role="tabpanel"
+          aria-labelledby="extraction-pane-tab-sections"
+          tabIndex={0}
+          className={`min-h-0 min-w-0 flex-col xl:col-span-1 xl:flex ${activeMobilePane === "sections" ? "flex" : "hidden"}`}
+        >
+          <ReviewerSidebar
+            sections={sections}
+            activeSectionId={activeSectionId}
+            selectedTemplateName={ws.selectedTemplate.name}
+            isSubmittingExtraction={isSubmittingExtraction}
+            canSubmit={!!selectedPaperId && !isWorkspaceLocked}
+            isReadOnly={isWorkspaceLocked}
+            onSectionChange={setActiveSectionIdState}
+            onBack={() => navigate(dashboardPath)}
+            onSubmitExtraction={handleSubmitExtraction}
+            submitButtonLabel="Submit Extraction"
+          />
+        </div>
+
+        <div
+          id="extraction-pane-form"
+          role="tabpanel"
+          aria-labelledby="extraction-pane-tab-form"
+          tabIndex={0}
+          className={`min-h-0 min-w-0 flex-col xl:col-span-1 xl:flex ${activeMobilePane === "form" ? "flex" : "hidden"}`}
+        >
+          <ReviewerFormPane
+            activeSection={activeSection}
+            activeSectionId={activeSectionId}
+            activeSectionDescription={activeSectionDescription}
+            activeEvidenceTargetLabel={activeEvidenceTargetLabel}
+            matrixFields={matrixFields}
+            fieldStates={formValues}
+            currentRows={currentRows}
+            flattenedFields={flattenedFields}
+            renderFieldControl={renderFieldControl}
+            isFieldNotReported={isFieldNotReported}
+            isMatrixFieldNotReported={isMatrixFieldNotReported}
+            isReadOnly={isWorkspaceLocked}
+            isEvidenceTargetActive={isEvidenceTargetActive}
+            onSelectEvidenceTarget={handleSelectEvidenceTarget}
+            onSetMatrixFieldValue={setMatrixFieldValue}
+            onToggleFieldNotReported={setFieldNotReported}
+            onToggleMatrixFieldNotReported={setMatrixFieldNotReported}
+            onRemoveMatrixRow={removeMatrixRow}
+            onAddMatrixRow={addMatrixRow}
+            renderCommentButton={renderCommentButton}
+          />
+        </div>
       </div>
     </div>
   );

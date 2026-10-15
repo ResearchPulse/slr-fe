@@ -10,6 +10,7 @@ interface EmptyStateProps {
   onAction: () => void;
   isLoading?: boolean;
   secondaryLabel?: string;
+  onSecondaryAction?: () => void;
   helperText?: string;
 }
 
@@ -21,6 +22,7 @@ export default function EmptyState({
   onAction,
   isLoading,
   secondaryLabel,
+  onSecondaryAction,
   helperText,
 }: EmptyStateProps) {
   return (
@@ -38,10 +40,10 @@ export default function EmptyState({
             {actionLabel}
           </Button>
         )}
-        {secondaryLabel && (
+        {secondaryLabel && onSecondaryAction && (
           <Button
             variant="secondary"
-            onClick={() => console.log("Secondary action")}
+            onClick={onSecondaryAction}
           >
             {secondaryLabel}
           </Button>

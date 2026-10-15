@@ -85,7 +85,7 @@ export default function SearchStrategiesPanel({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent"></div>
       </div>
     );
   }

@@ -1010,13 +1010,13 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           </div>
         </div>
         <style>{`
-          .reader-icon-button { display: inline-flex; height: 2rem; width: 2rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 0.5rem; color: #64748b; transition: color 150ms, background-color 150ms, border-color 150ms; }
-          .reader-icon-button:hover:not(:disabled) { background: #f1f5f9; color: #1e293b; }
+          .reader-icon-button { display: inline-flex; height: 2rem; width: 2rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: var(--radius-control); color: var(--color-text-secondary); transition: color 150ms, background-color 150ms, border-color 150ms; }
+          .reader-icon-button:hover:not(:disabled) { background: var(--color-bg-secondary); color: var(--color-text-primary); }
           .reader-icon-button:disabled { cursor: not-allowed; opacity: 0.35; }
-          .reader-icon-button:focus-visible, .reader-text-button:focus-visible { outline: 2px solid #93c5fd; outline-offset: 1px; }
-          .reader-text-button { display: inline-flex; height: 2rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: 0.5rem; padding: 0 0.55rem; color: #64748b; font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
-          .reader-text-button:hover { background: #f1f5f9; color: #1e293b; }
-          .reader-control-active { background: #eff6ff; color: #1d4ed8; }
+          .reader-icon-button:focus-visible, .reader-text-button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
+          .reader-text-button { display: inline-flex; height: 2rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: var(--radius-control); padding: 0 0.55rem; color: var(--color-text-secondary); font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
+          .reader-text-button:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
+          .reader-control-active { background: var(--color-primary-light); color: var(--color-primary-hover); }
           @media (prefers-reduced-motion: reduce) { .reader-icon-button, .reader-text-button { transition: none; } }
         `}</style>
       </div>

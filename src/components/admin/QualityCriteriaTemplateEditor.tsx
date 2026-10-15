@@ -187,7 +187,7 @@ export default function QualityCriteriaTemplateEditor({
                 <button
                   type="button"
                   onClick={() => setDraft((prev) => ({ ...prev, criteria: prev.criteria.filter((c) => c.key !== criterion.key) }))}
-                  className="mt-1 rounded-xl p-2 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-500"
+                  className="mt-1 rounded-xl p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error"
                   title="Remove question"
                 >
                   <FiTrash2 className="h-4 w-4" />

@@ -1,5 +1,9 @@
 # SLRS UI Redesign Guide
 
+> Current implementation reference: [`../DESIGN.md`](../DESIGN.md) and [`../src/index.css`](../src/index.css). This guide records an earlier palette and is retained as migration history; use the active design tokens for new or updated screens.
+
+The guidance below is historical. Its old color values and its claim that it is the active Admin reference are outdated; use `DESIGN.md` and `src/index.css` as the source of truth across the application.
+
 Tài liệu này mô tả style đang được áp dụng cho đợt làm mới giao diện SLRS, để các thành viên tiếp tục các trang còn lại theo cùng một hướng. Với khu vực Admin, tài liệu này là nguồn tham chiếu hiện hành và thay thế các quy tắc màu cũ trong [`design-system.md`](./design-system.md) khi có mâu thuẫn.
 
 ## Hướng thiết kế

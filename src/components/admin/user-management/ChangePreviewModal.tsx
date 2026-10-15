@@ -1,5 +1,6 @@
 import React from "react";
 import Modal from "../../ui/Modal";
+import Button from "../../ui/Button";
 import type { User } from "../../../types/user";
 import { FiArrowRight, FiCheckCircle } from "react-icons/fi";
 
@@ -33,9 +34,9 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
       size="md"
     >
       <div className="space-y-6">
-        <div className="bg-emerald-50 border border-emerald-100 p-4 rounded-xl flex items-center gap-3">
-          <FiCheckCircle className="text-emerald-500 shrink-0" size={20} />
-          <p className="text-xs font-bold text-emerald-800">
+        <div className="flex items-center gap-3 rounded-xl border border-success/20 bg-success/10 p-4 text-success">
+          <FiCheckCircle className="shrink-0" size={20} />
+          <p className="text-xs font-semibold">
             Admin authorization confirmed. Records updated.
           </p>
         </div>
@@ -45,17 +46,17 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
             changes.map((change, i) => (
               <div
                 key={i}
-                className="group p-4 bg-slate-50 rounded-xl border border-slate-100/50 hover:bg-surface-white hover:border-indigo-100 hover:shadow-lg hover:shadow-indigo-50/50 transition-all duration-300"
+                className="group rounded-xl border border-border bg-bg-primary p-4 transition-colors hover:border-primary/30 hover:bg-surface-white"
               >
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-2">
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
                   {change.label}
                 </p>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-slate-400 line-through truncate max-w-[120px]">
+                  <span className="max-w-[120px] truncate text-sm font-medium text-text-secondary line-through">
                     {change.old}
                   </span>
-                  <FiArrowRight className="text-indigo-400 shrink-0" />
-                  <span className="text-sm font-black text-slate-900 bg-surface-white px-3 py-1 rounded-full border border-indigo-50 shadow-sm truncate">
+                  <FiArrowRight className="shrink-0 text-primary" />
+                  <span className="truncate rounded-lg border border-border bg-surface-white px-3 py-1 text-sm font-semibold text-text-primary">
                     {change.new}
                   </span>
                 </div>
@@ -63,7 +64,7 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
             ))
           ) : (
             <div className="text-center py-10">
-              <p className="text-sm text-slate-500 font-medium italic">
+              <p className="text-sm font-medium italic text-text-secondary">
                 No structural changes detected (data remained identical).
               </p>
             </div>
@@ -71,12 +72,9 @@ const ChangePreviewModal: React.FC<ChangePreviewModalProps> = ({
         </div>
 
         <div className="flex justify-end pt-4">
-          <button
-            onClick={onClose}
-            className="px-8 py-3 bg-slate-900 text-white text-xs font-black uppercase tracking-widest rounded-xl hover:bg-accent shadow-xl shadow-slate-200 transition-all active:scale-95"
-          >
+          <Button onClick={onClose}>
             Acknowledge Changes
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

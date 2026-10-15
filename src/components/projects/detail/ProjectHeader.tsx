@@ -40,8 +40,8 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
         Back to projects
       </button>
 
-      <header className="rounded-2xl border border-border bg-surface-white px-5 py-5 sm:px-7 sm:py-6 shadow-sm">
-        <div className="flex flex-wrap items-start justify-between gap-4">
+      <header className="rounded-xl border border-border bg-surface-white px-5 py-5 shadow-sm sm:px-7 sm:py-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0 flex-1">
             {project.domain && (
               <div className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-text-secondary">
@@ -57,7 +57,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
               </p>
             )}
             {!isLeader && (
-              <div className="mt-4 max-w-2xl border-l-2 border-border pl-3 text-sm leading-5 text-text-secondary">
+              <div className="mt-4 max-w-2xl rounded-lg border border-border bg-bg-secondary p-3 text-sm leading-5 text-text-secondary">
                 <p>
                   Your project role is {getProjectRoleLabel(project.role ?? project.roleText)}. Only the project leader can edit setup or activate this review.
                 </p>
@@ -68,17 +68,10 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 </p>
               </div>
             )}
-            {!isLeader && (
-              <p className="mt-3 text-sm text-text-secondary">
-                You are a project member. Project setup and activation controls are available to the project leader
-                {project.leader?.fullName ? `, ${project.leader.fullName}` : ""}.
-                {project.leader?.email ? ` Contact ${project.leader.email} to request changes.` : " Contact the project leader to request access or changes."}
-              </p>
-            )}
           </div>
 
           {(isLeader || onSettings) && (
-            <div className="flex shrink-0 items-center gap-2">
+            <div className="flex w-full shrink-0 items-center gap-2 sm:w-auto sm:justify-end">
               {isLeader && (
                 <button
                   type="button"

@@ -46,20 +46,20 @@ const summaryToneClasses: Record<
   { container: string; icon: string }
 > = {
   indigo: {
-    container: "border-indigo-100 bg-bg-secondary",
-    icon: "bg-linear-to-br from-indigo-500 to-blue-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-primary-light text-primary",
   },
   emerald: {
-    container: "border-emerald-100 bg-emerald-50",
-    icon: "bg-linear-to-br from-emerald-500 to-teal-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-success/10 text-success",
   },
   rose: {
-    container: "border-rose-100 bg-rose-50",
-    icon: "bg-linear-to-br from-rose-500 to-pink-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-error/10 text-error",
   },
   amber: {
-    container: "border-amber-100 bg-amber-50",
-    icon: "bg-linear-to-br from-amber-500 to-orange-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-warning/15 text-warning",
   },
 };
 
@@ -80,7 +80,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
     >
       <div
         className={cn(
-          "w-11 h-11 rounded-xl flex items-center justify-center text-white mb-4",
+          "mb-4 flex h-11 w-11 items-center justify-center rounded-xl",
           classes.icon,
         )}
       >

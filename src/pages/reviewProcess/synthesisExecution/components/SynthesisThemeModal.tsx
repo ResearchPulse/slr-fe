@@ -12,7 +12,7 @@ interface SynthesisThemeModalProps {
   onSubmit: (request: CreateThemeRequest) => Promise<void>;
 }
 
-const DEFAULT_COLOR = "#2563eb";
+const DEFAULT_COLOR = "#0071BC";
 
 const THEME_COLOR_OPTIONS = [
   "#ef4444",
@@ -73,7 +73,7 @@ export default function SynthesisThemeModal({
 
   return (
     <div className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 px-4 py-6">
-      <div className="w-full max-w-lg rounded-xl border border-border bg-surface-white shadow-2xl">
+      <div className="w-full max-w-lg rounded-xl bg-surface-white shadow-[0_16px_40px_rgba(18,35,49,0.16)]">
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
           <div>
             <h3 className="text-lg font-semibold text-text-primary">
@@ -151,7 +151,7 @@ export default function SynthesisThemeModal({
                 return (
                   <button
                     key={color}
-                    id={color === "#2563eb" ? "theme-color" : undefined}
+                    id={color === DEFAULT_COLOR ? "theme-color" : undefined}
                     type="button"
                     onClick={() =>
                       setFormState((current) => ({

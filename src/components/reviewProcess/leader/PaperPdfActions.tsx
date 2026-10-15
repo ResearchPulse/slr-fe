@@ -107,12 +107,11 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             duration: 12000,
             position: "bottom-right",
             style: {
-              borderRadius: "24px",
+              borderRadius: "12px",
               background: "#fff",
               padding: "20px",
               border: "1px solid #f1f5f9",
-              boxShadow:
-                "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+              boxShadow: "0 4px 8px rgb(18 35 49 / 0.12)",
             },
           },
         );

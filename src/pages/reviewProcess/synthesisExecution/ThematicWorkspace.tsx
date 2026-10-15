@@ -577,8 +577,8 @@ export default function ThematicWorkspace({
 
           <DragOverlay>
             {activeDragEvidence ? (
-              <div className="pointer-events-none w-[340px] overflow-hidden rounded-xl border border-primary/20 bg-surface-white shadow-[0_18px_50px_rgba(37,99,235,0.18)]">
-                <div className="h-1.5 bg-gradient-to-r from-primary via-sky-500 to-cyan-400" />
+              <div className="pointer-events-none w-[340px] overflow-hidden rounded-xl border border-primary/20 bg-surface-white shadow-[0_8px_24px_rgba(18,35,49,0.12)]">
+                <div className="h-1.5 bg-primary" />
                 <div className="p-4">
                   <div className="flex items-center justify-between gap-3">
                     <span className="rounded-full bg-primary-light px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em] text-accent">

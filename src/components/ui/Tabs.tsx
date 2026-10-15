@@ -11,6 +11,7 @@ export interface TabItem {
 
 interface TabsProps {
   items: TabItem[];
+  "aria-label"?: string;
   activeTabId?: string;
   onTabChange?: (tabId: string) => void;
   className?: string;
@@ -22,6 +23,7 @@ interface TabsProps {
 
 const Tabs: React.FC<TabsProps> = ({
   items,
+  "aria-label": ariaLabel = "Sections",
   activeTabId: externalActiveTabId,
   onTabChange,
   className,
@@ -51,6 +53,8 @@ const Tabs: React.FC<TabsProps> = ({
   return (
     <div className={cn("flex flex-col gap-6", className)}>
       <div
+        role="tablist"
+        aria-label={ariaLabel}
         className={cn(
           "flex items-center gap-0 border-b border-border w-full overflow-x-auto no-scrollbar",
           listClassName,
@@ -63,9 +67,32 @@ const Tabs: React.FC<TabsProps> = ({
           return (
             <button
               key={item.id}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              tabIndex={isActive ? 0 : -1}
               onClick={() => handleTabClick(item.id)}
+              onKeyDown={(event) => {
+                if (!items.length) return;
+                let nextIndex: number | null = null;
+                if (event.key === "ArrowRight") {
+                  nextIndex = (items.findIndex(({ id }) => id === item.id) + 1) % items.length;
+                } else if (event.key === "ArrowLeft") {
+                  nextIndex = (items.findIndex(({ id }) => id === item.id) - 1 + items.length) % items.length;
+                } else if (event.key === "Home") {
+                  nextIndex = 0;
+                } else if (event.key === "End") {
+                  nextIndex = items.length - 1;
+                }
+                if (nextIndex === null) return;
+                event.preventDefault();
+                handleTabClick(items[nextIndex].id);
+                event.currentTarget.parentElement
+                  ?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]
+                  ?.focus();
+              }}
               className={cn(
-                "flex items-center gap-2 px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 border-b-2 -mb-px",
+                "flex min-h-11 items-center gap-2 border-b-2 px-4 py-2.5 -mb-px text-[11px] font-medium uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
                 isActive
                   ? "text-text-primary border-accent"
                   : "text-text-secondary border-transparent hover:text-text-primary hover:border-border",

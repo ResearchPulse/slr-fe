@@ -109,7 +109,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
             <option value="">Select an agent</option>
             {available.map(({ agent }) => <option key={agent.id} value={agent.id}>{agent.name}{agent.description ? ` — ${agent.description}` : ""}</option>)}
           </select>
-          <button type="button" disabled={busy || !connectAgentId} onClick={() => void connect()} className="rounded-lg bg-[#087BC1] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Connect and generate project token</button>
+          <button type="button" disabled={busy || !connectAgentId} onClick={() => void connect()} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">Connect and generate project token</button>
         </div>
         {!available.length && <p className="mt-2 text-xs text-text-secondary">{entries.some(({ agent }) => agent.isActive) ? "All active catalog agents are already connected to this project." : "There are no active agents in the system catalog."}</p>}
       </div>
@@ -120,7 +120,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
         <p className="mt-1 text-xs text-amber-900">This token scopes API access to this agent's review tasks in this project.</p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
           <input aria-label="Project agent access token" readOnly value={token} className="min-w-0 flex-1 rounded-lg border border-amber-300 bg-white px-3 py-2 font-mono text-xs" />
-          <button type="button" onClick={() => void copyToken()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087BC1] px-4 py-2 text-sm font-semibold text-white"><FiCopy /> Copy</button>
+          <button type="button" onClick={() => void copyToken()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"><FiCopy /> Copy</button>
           <button type="button" onClick={() => { setToken(""); setTokenLabel(""); }} className="rounded-lg border border-amber-300 px-4 py-2 text-sm">Close</button>
         </div>
         <p className="mt-2 text-xs text-amber-900">Configure this token in the MCP connection and run <code>/slr extract &lt;taskId&gt;</code>.</p>
@@ -130,7 +130,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
         <section className="border border-border bg-surface-white p-5">
           <h2 className="mb-3 font-semibold text-text-primary">Connected agents</h2>
           {!connected.length && <p className="text-sm text-text-secondary">No agents connected to this project.</p>}
-          <div className="space-y-2">{connected.map(entry => <div key={entry.agent.id} className={`rounded-lg border p-3 ${selectedAgentId === entry.agent.id ? "border-[#087BC1] bg-sky-50" : "border-border"}`}>
+          <div className="space-y-2">{connected.map(entry => <div key={entry.agent.id} className={`rounded-lg border p-3 ${selectedAgentId === entry.agent.id ? "border-primary bg-primary-light" : "border-border"}`}>
             <button type="button" onClick={() => { setToken(""); setSelectedAgentId(entry.agent.id); }} className="w-full text-left">
               <span className="font-medium text-text-primary">{entry.agent.name}</span>
               <span className={`ml-2 text-xs ${entry.access?.isActive ? "text-emerald-700" : "text-rose-700"}`}>{entry.access?.isActive ? "Connected" : "Access disabled"}</span>
@@ -151,7 +151,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
                 <option value="">Choose a paper</option>{papers.map(paper => <option key={paper.id} value={paper.id}>{paper.title || paper.id}</option>)}
               </select>
               <textarea aria-label="Agent review instructions" maxLength={5000} placeholder="Instructions for this review (optional)" value={instructions} onChange={event => setInstructions(event.target.value)} className="min-h-24 w-full rounded-lg border border-border bg-white px-3 py-2 text-sm" />
-              <button disabled={busy || !paperId} className="rounded-lg bg-[#087BC1] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Assign to {selected.agent.name}</button>
+              <button disabled={busy || !paperId} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">Assign to {selected.agent.name}</button>
             </form>}
             <h3 className="mb-3 mt-5 font-semibold text-text-primary">Extraction tasks</h3>
             {!tasks.length && <p className="text-sm text-text-secondary">No tasks assigned to this agent in the project.</p>}

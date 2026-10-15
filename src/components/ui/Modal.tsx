@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
@@ -32,7 +32,10 @@ export const Modal: React.FC<ModalProps> = ({
   closeOnEsc = true,
   mode = "modal",
 }) => {
+  const titleId = useId();
+  const descriptionId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
   const [isEntered, setIsEntered] = useState(false);
 
   useEffect(() => {
@@ -45,20 +48,61 @@ export const Modal: React.FC<ModalProps> = ({
 
   // Close on Escape key
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (closeOnEsc && e.key === "Escape") onClose();
-    };
-
     // Closed modals must not touch body scroll, or a re-render of an always-mounted
     // closed modal would unlock scrolling while another modal is open.
     if (!isOpen) return;
 
-    document.addEventListener("keydown", handleEscape);
+    previousFocusRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : null;
+    const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
+    const frame = window.requestAnimationFrame(() => {
+      const activeElement = document.activeElement;
+      if (activeElement instanceof HTMLElement && modalRef.current?.contains(activeElement)) return;
+      modalRef.current
+        ?.querySelector<HTMLElement>(
+          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+        )
+        ?.focus({ preventScroll: true });
+    });
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (closeOnEsc && event.key === "Escape") {
+        onClose();
+        return;
+      }
+
+      if (event.key !== "Tab" || !modalRef.current) return;
+      const focusable = Array.from(
+        modalRef.current.querySelectorAll<HTMLElement>(
+          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+        ),
+      ).filter((element) => element.getClientRects().length > 0);
+      if (focusable.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && (document.activeElement === first || !modalRef.current.contains(document.activeElement))) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (document.activeElement === last || !modalRef.current.contains(document.activeElement))) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
-      document.removeEventListener("keydown", handleEscape);
-      document.body.style.overflow = "unset";
+      window.cancelAnimationFrame(frame);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      previousFocusRef.current?.focus({ preventScroll: true });
     };
   }, [isOpen, onClose]);
 
@@ -93,7 +137,7 @@ export const Modal: React.FC<ModalProps> = ({
       {/* Backdrop with clean fade */}
       <div
         className={cn(
-          "fixed inset-0 bg-slate-900/40 transition-opacity duration-250 ease-out",
+          "fixed inset-0 bg-text-primary/40 transition-opacity duration-200 ease-out motion-reduce:transition-none",
           isEntered ? "opacity-100" : "opacity-0",
         )}
         aria-hidden="true"
@@ -104,14 +148,14 @@ export const Modal: React.FC<ModalProps> = ({
         ref={modalRef}
         onClick={(e) => e.stopPropagation()}
         className={cn(
-          "relative w-full bg-surface-white border border-border shadow-2xl overflow-hidden z-10 flex flex-col transform-gpu will-change-transform",
+          "relative z-10 flex w-full flex-col overflow-hidden bg-surface-white shadow-[0_16px_48px_rgba(18,35,49,0.16)] transform-gpu will-change-transform",
           mode === "drawer" 
             ? cn(
-                "h-full max-h-screen rounded-none border-l border-y-0 border-r-0 transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "h-full max-h-screen rounded-none transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
                 isEntered ? "translate-x-0" : "translate-x-full",
               )
             : cn(
-                "rounded-xl max-h-[85vh] transition-[opacity,transform] duration-200 ease-out",
+                "max-h-[calc(100dvh-2rem)] rounded-xl transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
                 isEntered
                   ? "translate-y-0 scale-100 opacity-100"
                   : "translate-y-2 scale-[0.985] opacity-0",
@@ -121,20 +165,24 @@ export const Modal: React.FC<ModalProps> = ({
         )}
         role="dialog"
         aria-modal="true"
+        aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
       >
         {/* Header Section */}
         <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border shrink-0">
           <div className="space-y-1">
-            <div className="text-[18px] font-medium text-text-primary leading-snug">
+            <div id={titleId} className="text-[18px] font-semibold text-text-primary leading-snug">
               {title}
             </div>
             {description && (
-              <div className="text-sm text-text-secondary">{description}</div>
+              <div id={descriptionId} className="text-sm text-text-secondary">{description}</div>
             )}
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors"
+            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Close dialog"
           >
             <FiX size={18} />
             <span className="sr-only">Close</span>

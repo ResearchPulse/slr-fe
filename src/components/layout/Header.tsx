@@ -66,8 +66,15 @@ const Header: React.FC = () => {
         setShowUserDropdown(false);
       }
     };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setShowNotifications(false);
+    };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   // Close mobile menu and dropdowns on route change
@@ -103,6 +110,9 @@ const Header: React.FC = () => {
     if (isLink || isAdminConsole || isMenuToggle) return;
 
     // Block other interactive elements (Notifications, Profile dropdown, etc.)
+    const isNotificationAction = target.closest("[data-notification-controls]");
+    if (isNotificationAction) return;
+
     const isForbiddenAction =
       button || target.closest("input, select, textarea");
     if (isForbiddenAction) {
@@ -125,7 +135,7 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-5 sm:px-8 lg:px-12 h-full">
           <div className="flex justify-between items-center h-full">
             {/* Left Side: Logo & Desktop Nav */}
-            <div className="flex items-center gap-8 lg:gap-12">
+            <div className="flex items-center gap-2 md:gap-8 lg:gap-12">
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -165,10 +175,13 @@ const Header: React.FC = () => {
               {isAuthenticated ? (
                 <>
                   {/* Notification Area */}
-                  <div className="relative" ref={notificationRef}>
+                  <div className="relative" ref={notificationRef} data-notification-controls>
                     <button
+                      type="button"
                       onClick={() => setShowNotifications(!showNotifications)}
                       aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+                      aria-expanded={showNotifications}
+                      aria-controls="notifications-popover"
                       className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-200 ${
                         showNotifications
                           ? "bg-primary-light text-primary"
@@ -178,16 +191,16 @@ const Header: React.FC = () => {
                       <FiBell className="h-[18px] w-[18px]" />
                       {/* Badge */}
                       {unreadCount > 0 && (
-                        <span className="absolute right-1 top-1 flex h-2.5 min-w-2.5 items-center justify-center rounded-full border-2 border-white bg-accent">
-                          {unreadCount > 9 ? (
-                            <span className="px-0.5 text-[6px] font-bold text-white">9+</span>
-                          ) : null}
+                        <span className="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-white bg-primary px-1 text-[9px] font-bold leading-none text-white">
+                          {unreadCount > 99 ? "99+" : unreadCount}
                         </span>
                       )}
                     </button>
 
                     {/* Dropdown */}
-                    {showNotifications && <NotificationDropdown />}
+                    {showNotifications && (
+                      <NotificationDropdown onClose={() => setShowNotifications(false)} />
+                    )}
                   </div>
 
                   {/* Admin Dashboard Access */}
@@ -209,8 +222,10 @@ const Header: React.FC = () => {
                   {/* User Profile Dropdown */}
                   <div className="relative" ref={userDropdownRef}>
                     <button
+                      type="button"
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
                       aria-expanded={showUserDropdown}
+                      aria-controls="header-user-menu"
                       className={`group flex items-center gap-2.5 rounded-xl py-1 pl-2 pr-1 transition-colors ${
                         showUserDropdown
                           ? "bg-bg-secondary"
@@ -232,7 +247,7 @@ const Header: React.FC = () => {
 
                     {/* Profile Dropdown Menu */}
                     {showUserDropdown && (
-                      <div className="absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_16px_42px_rgba(19,43,60,0.14)]">
+                      <div id="header-user-menu" className="absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.12)]">
                         <div className="flex items-center gap-3 px-3 py-3">
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">
                             {user?.name ? getUserInitials(user.name) : "U"}
@@ -266,7 +281,8 @@ const Header: React.FC = () => {
                             setShowUserDropdown(false);
                             handleLogout();
                           }}
-                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-[#9B5552] transition-colors hover:bg-[#FBF3F2] hover:text-[#823E3C]"
+                          type="button"
+                          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-error transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error"
                         >
                           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#FBF0EF] text-[#A65A56]"><FiLogOut className="h-4 w-4" /></span>
                           <span>

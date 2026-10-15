@@ -51,22 +51,22 @@ export default function DeduplicationProgressBanner({
   }, [duplicatePairs, sessionResolvedCount, total, sessionStartTime]);
 
   return (
-    <div className="bg-linear-to-r from-blue-50 to-indigo-50 border-2 border-accent/30 rounded-xl p-6 mb-6 shadow-none">
-      <div className="flex items-center ">
+    <div className="mb-6 rounded-xl border border-border bg-surface-white p-4 sm:p-6">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Metrics row */}
-        <div className="flex items-center  gap-8">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-8">
           <MetricBlock value={total} label="Total pairs" />
           <Divider />
           <MetricBlock
             value={resolvedCount}
             label="Resolved"
-            className="text-green-600"
+            className="text-success"
             emoji="✓"
           />
           <MetricBlock
             value={pendingCount}
             label="Pending"
-            className="text-orange-600"
+            className="text-warning"
             emoji="⏳"
           />
           <Divider />
@@ -77,9 +77,9 @@ export default function DeduplicationProgressBanner({
               <FiTrendingUp className="w-3.5 h-3.5" />
               Progress
             </div>
-            <div className="w-48 bg-bg-secondary rounded-full h-3 overflow-hidden">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-bg-secondary sm:w-48">
               <div
-                className="bg-linear-to-r from-blue-500 to-green-500 h-3 rounded-full transition-all duration-700 ease-out"
+                className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
@@ -113,7 +113,7 @@ export default function DeduplicationProgressBanner({
 
       {/* Contextual tips */}
       {pendingCount > 0 && (
-        <div className="mt-4 pt-4 border-t border-accent/30 flex items-center justify-between">
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           <p className="text-sm text-text-primary">
             <span className="font-semibold">💡 Tip:</span> Use keyboard
             shortcuts{" "}
@@ -130,7 +130,7 @@ export default function DeduplicationProgressBanner({
             jumps to next unresolved pair.
           </p>
           {stats.highConfidence > 0 && (
-            <span className="text-xs text-red-600 font-medium bg-surface-white px-2.5 py-1 rounded-full">
+            <span className="rounded-full bg-error/10 px-2.5 py-1 text-xs font-medium text-error">
               {stats.highConfidence} high-confidence pending
             </span>
           )}
@@ -165,5 +165,5 @@ function MetricBlock({
 }
 
 function Divider() {
-  return <div className="h-12 w-px bg-gray-300" />;
+  return <div className="hidden h-10 w-px bg-border sm:block" />;
 }

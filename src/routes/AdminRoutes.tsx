@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import AdminOverview from "../pages/admin/AdminOverview";
@@ -11,6 +12,9 @@ import TemplateManager from "../pages/admin/TemplateManager";
 import MyProfilePage from "../pages/profile/MyProfilePage";
 import AgentManagement from "../pages/admin/AgentManagement";
 import QualityCriteriaTemplates from "../pages/admin/QualityCriteriaTemplates";
+import LoadingSpinner from "../components/ui/LoadingSpinner";
+
+const NotificationCenterPage = lazy(() => import("../pages/notifications/NotificationCenterPage"));
 
 function AdminRoutes() {
   return (
@@ -18,6 +22,14 @@ function AdminRoutes() {
       <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
         <Route element={<AdminDashboard />}>
           <Route index element={<AdminOverview />} />
+          <Route
+            path="notifications"
+            element={
+              <Suspense fallback={<div className="flex min-h-[50vh] items-center justify-center"><LoadingSpinner size="lg" /></div>}>
+                <NotificationCenterPage disableNavigation />
+              </Suspense>
+            }
+          />
           <Route path="audit-logs" element={<AuditLogPage />} />
           <Route path="projects" element={<SLRProjectManagement />} />
           <Route path="users" element={<UserManagement />} />

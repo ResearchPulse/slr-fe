@@ -331,7 +331,7 @@ export default function DescriptiveChartsWorkspace({
                     >
                       <CartesianGrid
                         strokeDasharray="3 3"
-                        stroke="#e5e7eb"
+                        stroke="#DCE4E9"
                         vertical={!useHorizontalColumns}
                         horizontal={useHorizontalColumns}
                       />
@@ -341,14 +341,14 @@ export default function DescriptiveChartsWorkspace({
                             type="category"
                             dataKey="name"
                             interval={0}
-                            stroke="#94a3b8"
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            stroke="#8B9AA4"
+                            tick={{ fill: "#647381", fontSize: 12 }}
                           />
                           <YAxis
                             type="number"
                             allowDecimals={false}
-                            stroke="#94a3b8"
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            stroke="#8B9AA4"
+                            tick={{ fill: "#647381", fontSize: 12 }}
                           />
                         </>
                       ) : (
@@ -356,32 +356,32 @@ export default function DescriptiveChartsWorkspace({
                           <XAxis
                             type="number"
                             allowDecimals={false}
-                            stroke="#94a3b8"
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            stroke="#8B9AA4"
+                            tick={{ fill: "#647381", fontSize: 12 }}
                           />
                           <YAxis
                             type="category"
                             dataKey="name"
                             width={140}
-                            stroke="#94a3b8"
-                            tick={{ fill: "#64748b", fontSize: 12 }}
+                            stroke="#8B9AA4"
+                            tick={{ fill: "#647381", fontSize: 12 }}
                           />
                         </>
                       )}
                       <Tooltip
-                        cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
+                        cursor={{ fill: "rgba(0, 113, 188, 0.08)" }}
                         contentStyle={{
-                          borderRadius: 16,
-                          border: "1px solid #e5e7eb",
+                          borderRadius: 12,
+                          border: "1px solid #DCE4E9",
                         }}
                       />
                       <Legend />
                       <Bar
                         dataKey="count"
                         name="Studies"
-                        fill="#2563eb"
+                        fill="#0071BC"
                         radius={
-                          useHorizontalColumns ? [12, 12, 0, 0] : [0, 12, 12, 0]
+                          useHorizontalColumns ? [8, 8, 0, 0] : [0, 8, 8, 0]
                         }
                         maxBarSize={48}
                       />
@@ -390,8 +390,8 @@ export default function DescriptiveChartsWorkspace({
                     <PieChart>
                       <Tooltip
                         contentStyle={{
-                          borderRadius: 16,
-                          border: "1px solid #e5e7eb",
+                          borderRadius: 12,
+                          border: "1px solid #DCE4E9",
                         }}
                       />
                       <Legend />

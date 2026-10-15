@@ -101,9 +101,9 @@ export default function AssessmentPaperViewer({
     return (
       <div
         style={{
-          background: "rgba(0, 0, 0, 0.8)",
+          background: "rgba(18, 35, 49, 0.96)",
           border: "1px solid rgba(255, 255, 255, 0.2)",
-          borderRadius: "4px",
+          borderRadius: "8px",
           color: "#fff",
           cursor: "pointer",
           padding: "4px 8px",

@@ -46,53 +46,54 @@ export default function ProjectSettingsPage() {
 
   return (
     <div className="min-h-screen bg-bg-primary">
-      <div className="container mx-auto px-4 py-12 max-w-5xl">
+      <div className="container mx-auto max-w-5xl px-4 py-6 sm:px-6 sm:py-8">
         {/* Navigation / Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b border-border">
+        <div className="mb-7 flex flex-col justify-between gap-5 border-b border-border pb-6 md:flex-row md:items-end sm:mb-8 sm:pb-8">
           <div className="space-y-3">
             <button
               onClick={() => navigate(`/projects/${id}`)}
-              className="group flex items-center gap-2 text-text-secondary hover:text-text-primary transition-colors text-[11px] uppercase tracking-[0.2em] font-medium"
+              className="group inline-flex min-h-10 items-center gap-2 rounded-lg text-sm font-medium text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <FiArrowLeft
                 className="group-hover:-translate-x-1 transition-transform"
                 size={14}
               />
-              Back to Project
+              Back to project
             </button>
             <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-text-secondary mb-2">
-                Configuration
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.12em] text-text-secondary">
+                Project settings
               </p>
-              <h1 className="font-cormorant text-[40px] font-normal text-text-primary">
+              <h1 className="text-[28px] font-semibold leading-tight text-text-primary sm:text-[32px]">
                 Settings
               </h1>
             </div>
-            <p className="text-text-secondary text-sm">
+            <p className="text-sm text-text-secondary">
               Configure and manage your project preferences
             </p>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex min-w-0 flex-col gap-5 lg:flex-row lg:gap-8">
           {/* Sidebar Navigation */}
-          <aside className="w-full lg:w-56 shrink-0">
-            <nav className="flex lg:flex-col gap-0 overflow-hidden rounded-xl border border-border">
+          <aside className="w-full shrink-0 lg:w-56">
+            <nav aria-label="Project settings" className="flex gap-1 overflow-x-auto rounded-xl border border-border bg-surface-white p-1 lg:flex-col">
               {isLeader && (
                 <>
                   <button
                     onClick={() => setActiveTab("general")}
-                    className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
+                    aria-pressed={settingsTab === "general"}
+                    className={`flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:px-4 lg:w-full ${
                       settingsTab === "general"
-                        ? "bg-text-primary text-bg-primary"
-                        : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                        ? "bg-primary-light text-primary-hover"
+                        : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                     }`}
                   >
                     <FiSettings
                       size={14}
                       className={
                         settingsTab === "general"
-                          ? "text-bg-primary"
+                          ? "text-primary"
                           : "text-text-secondary"
                       }
                     />
@@ -100,17 +101,18 @@ export default function ProjectSettingsPage() {
                   </button>
                   <button
                     onClick={() => setActiveTab("members")}
-                    className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
+                    aria-pressed={settingsTab === "members"}
+                    className={`flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:px-4 lg:w-full ${
                       settingsTab === "members"
-                        ? "bg-text-primary text-bg-primary"
-                        : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                        ? "bg-primary-light text-primary-hover"
+                        : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                     }`}
                   >
                     <FiUsers
                       size={14}
                       className={
                         settingsTab === "members"
-                          ? "text-bg-primary"
+                          ? "text-primary"
                           : "text-text-secondary"
                       }
                     />
@@ -120,17 +122,18 @@ export default function ProjectSettingsPage() {
               )}
               <button
                 onClick={() => setActiveTab("agents")}
-                className={`flex items-center gap-3 px-4 py-3 text-[11px] uppercase tracking-[0.15em] font-medium transition-all border-b border-border last:border-0 ${
+                aria-pressed={settingsTab === "agents"}
+                className={`flex min-h-10 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors sm:px-4 lg:w-full ${
                   settingsTab === "agents"
-                    ? "bg-text-primary text-bg-primary"
-                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                    ? "bg-primary-light text-primary-hover"
+                    : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                 }`}
               >
                 <FiCpu
                   size={14}
                   className={
                       settingsTab === "agents"
-                      ? "text-bg-primary"
+                      ? "text-primary"
                       : "text-text-secondary"
                   }
                 />

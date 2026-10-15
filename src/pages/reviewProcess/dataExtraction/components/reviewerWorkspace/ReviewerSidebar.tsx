@@ -91,7 +91,7 @@ export default function ReviewerSidebar({
 
         <Button
           type="button"
-          variant="success"
+          variant="primary"
           className="w-full rounded-xl"
           isLoading={isSubmittingExtraction}
           disabled={!canSubmit}

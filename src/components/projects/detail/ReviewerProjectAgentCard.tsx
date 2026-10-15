@@ -163,7 +163,7 @@ export default function ReviewerProjectAgentCard({
                 type="button"
                 disabled={isBusy || !selectedAgentId || selectedAgentId === connected?.agent.id}
                 onClick={() => void connect()}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087BC1] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <FiUserPlus />
                 {connected ? "Switch agent" : "Connect agent"}
@@ -198,7 +198,7 @@ export default function ReviewerProjectAgentCard({
             <button
               type="button"
               onClick={() => void copyToken()}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#087BC1] px-4 py-2 text-sm font-semibold text-white"
+              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
             >
               <FiCopy />
               Copy
@@ -223,7 +223,7 @@ export default function ReviewerProjectAgentCard({
           {!connected ? (
             <p className="text-sm text-text-secondary">No reviewer agent connected to this project.</p>
           ) : (
-            <div className="rounded-lg border border-[#087BC1] bg-sky-50 p-3">
+            <div className="rounded-lg border border-primary bg-primary-light p-3">
               <button
                 type="button"
                 onClick={() => setToken("")}

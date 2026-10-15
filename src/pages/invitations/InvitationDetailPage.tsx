@@ -36,7 +36,7 @@ export default function InvitationDetailPage() {
           label: "Pending",
           icon: FiClock,
           color: "text-text-secondary",
-          bg: "bg-surface-white border border-border shadow-sm",
+          bg: "bg-bg-secondary",
           description: "This invitation is currently waiting for a response.",
         };
       case InvitationStatus.Accepted:
@@ -44,7 +44,7 @@ export default function InvitationDetailPage() {
           label: "Accepted",
           icon: FiCheckCircle,
           color: "text-success",
-          bg: "bg-surface-white border border-border shadow-sm",
+          bg: "bg-bg-secondary",
           description: "You have already joined this project.",
         };
       case InvitationStatus.Rejected:
@@ -52,7 +52,7 @@ export default function InvitationDetailPage() {
           label: "Rejected",
           icon: FiXCircle,
           color: "text-error",
-          bg: "bg-surface-white border border-border shadow-sm",
+          bg: "bg-bg-secondary",
           description: "This invitation was declined.",
         };
       case InvitationStatus.Cancelled:
@@ -60,7 +60,7 @@ export default function InvitationDetailPage() {
           label: "Cancelled",
           icon: FiTrash2,
           color: "text-text-secondary",
-          bg: "bg-surface-white border border-border shadow-sm",
+          bg: "bg-bg-secondary",
           description: "This invitation was revoked by the sender.",
         };
       default:
@@ -68,7 +68,7 @@ export default function InvitationDetailPage() {
           label: "Expired",
           icon: FiAlertCircle,
           color: "text-text-secondary",
-          bg: "bg-surface-white border border-border shadow-sm",
+          bg: "bg-bg-secondary",
           description: "This invitation has expired.",
         };
     }
@@ -88,9 +88,9 @@ export default function InvitationDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center">
+      <div className="flex min-h-[70vh] flex-col items-center justify-center bg-bg-primary">
         <LoadingSpinner size="lg" />
-        <p className="mt-4 text-slate-500 font-medium animate-pulse">
+        <p role="status" className="mt-4 text-sm font-medium text-text-secondary">
           Fetching invitation details...
         </p>
       </div>
@@ -99,26 +99,28 @@ export default function InvitationDetailPage() {
 
   if (error || !invitation) {
     return (
-      <div className="container mx-auto px-4 py-20 max-w-2xl">
-        <Card className="text-center p-12 border-2 border-dashed border-slate-200 shadow-none">
-          <div className="w-20 h-20 bg-rose-50 rounded-3xl flex items-center justify-center text-rose-500 mx-auto mb-6">
-            <FiAlertCircle size={40} />
+      <div className="mx-auto max-w-2xl bg-bg-primary px-4 py-12 sm:px-6 sm:py-16">
+        <Card className="p-6 text-center sm:p-10" role="alert">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-error">
+            <FiAlertCircle size={24} aria-hidden="true" />
           </div>
 
-          <h2 className="text-2xl font-black text-slate-900 mb-2">
+          <h2 className="mb-2 text-xl font-semibold text-text-primary">
             Invitation Not Found
           </h2>
 
-          <p className="text-slate-500 mb-8 max-w-md mx-auto">
+          <p className="mx-auto mb-6 max-w-md text-sm leading-6 text-text-secondary">
             The invitation link might be broken, expired, or you don't have
             permission to view it.
           </p>
 
-          <div className="flex justify-center">
+          <div className="flex flex-wrap justify-center gap-2">
+            <Button variant="secondary" onClick={() => void refetch()}>
+              Try again
+            </Button>
             <Button
               onClick={() => navigate("/")}
-              variant="outline"
-              className="px-8"
+              variant="primary"
             >
               Return Home
             </Button>
@@ -132,36 +134,34 @@ export default function InvitationDetailPage() {
   const StatusIcon = sc.icon;
 
   return (
-    <div className="min-h-screen bg-slate-50/50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-3xl mx-auto">
+    <div className="min-h-screen bg-bg-primary px-4 py-8 sm:px-6 sm:py-10">
+      <div className="mx-auto max-w-3xl">
         {/* Back Button */}
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-500 hover:text-accent font-bold text-xs uppercase tracking-widest mb-8 transition-colors group"
+          className="mb-5 normal-case tracking-normal"
         >
-          <FiArrowLeft className="group-hover:-translate-x-1 transition-transform" />
+          <FiArrowLeft aria-hidden="true" />
           Back
-        </button>
+        </Button>
 
-        <div className="grid gap-8">
+        <div className="grid gap-5">
           {/* Main Content Card */}
-          <Card className="p-0 overflow-hidden border-0 shadow-2xl shadow-slate-200/50 rounded-xl">
-            <div className="bg-slate-900 p-10 sm:p-12 text-white relative overflow-hidden">
-              {/* Decorative elements */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-accent/20 rounded-full blur-3xl -mr-32 -mt-32" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-accent/10 rounded-full blur-3xl -ml-24 -mb-24" />
-
-              <div className="relative z-10">
-                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/80 text-[10px] font-black uppercase tracking-widest mb-6">
-                  <FiInfo size={12} />
+          <Card className="overflow-hidden p-0">
+            <div className="border-b border-border bg-bg-secondary px-5 py-6 sm:px-8 sm:py-7">
+              <div>
+                <span className="mb-3 inline-flex items-center gap-2 rounded-full border border-border bg-surface-white px-3 py-1 text-xs font-medium text-text-secondary">
+                  <FiInfo size={14} aria-hidden="true" />
                   Project Invitation
                 </span>
-                <h1 className="text-3xl sm:text-4xl font-black tracking-tight mb-4">
+                <h1 className="mb-2 break-words text-2xl font-bold leading-tight text-text-primary sm:text-[28px]">
                   {invitation.projectTitle}
                 </h1>
-                <p className="text-white/60 text-sm font-medium max-w-lg leading-relaxed">
+                <p className="max-w-[65ch] text-sm leading-6 text-text-secondary">
                   You've been invited by{" "}
-                  <span className="text-white font-bold">
+                  <span className="font-semibold text-text-primary">
                     {invitation.invitedByUserFullName}
                   </span>{" "}
                   to collaborate on this systematic literature review project.
@@ -169,23 +169,23 @@ export default function InvitationDetailPage() {
               </div>
             </div>
 
-            <div className="p-10 sm:p-12 bg-white">
-              <div className="grid gap-10">
+            <div className="bg-surface-white p-5 sm:p-8">
+              <div className="grid gap-7">
                 {/* Details Grid */}
-                <div className="grid sm:grid-cols-2 gap-8">
+                <div className="grid gap-6 sm:grid-cols-2 sm:gap-8">
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <p className="text-xs font-medium text-text-secondary">
                       Your Assigned Role
                     </p>
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-bg-secondary text-accent flex items-center justify-center">
-                        <FiShield size={20} />
+                      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-light text-accent">
+                        <FiShield size={18} aria-hidden="true" />
                       </div>
                       <div>
-                        <p className="text-lg font-black text-slate-900">
+                        <p className="text-base font-semibold text-text-primary">
                           {getProjectRoleLabel(invitation.role)}
                         </p>
-                        <p className="text-xs text-slate-400 font-medium">
+                        <p className="text-xs text-text-secondary">
                           Full collaboration access
                         </p>
                       </div>
@@ -193,24 +193,24 @@ export default function InvitationDetailPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                    <p className="text-xs font-medium text-text-secondary">
                       Invitation Status
                     </p>
                     <div className="flex items-center gap-3">
                       <div
                         className={cn(
-                          "w-10 h-10 rounded-xl flex items-center justify-center",
+                          "flex h-10 w-10 items-center justify-center rounded-lg",
                           sc.bg,
                           sc.color,
                         )}
                       >
-                        <StatusIcon size={20} />
+                        <StatusIcon size={18} aria-hidden="true" />
                       </div>
                       <div>
-                        <p className={cn("text-lg font-black", sc.color)}>
+                        <p className={cn("text-base font-semibold", sc.color)}>
                           {sc.label}
                         </p>
-                        <p className="text-xs text-slate-400 font-medium">
+                        <p className="text-xs text-text-secondary">
                           {sc.description}
                         </p>
                       </div>
@@ -218,33 +218,33 @@ export default function InvitationDetailPage() {
                   </div>
                 </div>
 
-                <hr className="border-slate-100" />
+                <hr className="border-border" />
 
                 {/* Timeline / Dates */}
-                <div className="space-y-6">
+                <div className="space-y-5">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
-                      <FiCalendar size={16} />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary">
+                      <FiCalendar size={16} aria-hidden="true" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      <p className="mb-1 text-xs font-medium text-text-secondary">
                         Sent Date
                       </p>
-                      <p className="text-sm font-bold text-slate-700">
+                      <p className="text-sm font-medium text-text-primary">
                         {formatDate(invitation.createdAt)}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
-                      <FiClock size={16} />
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary">
+                      <FiClock size={16} aria-hidden="true" />
                     </div>
                     <div>
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                      <p className="mb-1 text-xs font-medium text-text-secondary">
                         Expires On
                       </p>
-                      <p className="text-sm font-bold text-slate-700">
+                      <p className="text-sm font-medium text-text-primary">
                         {formatDate(invitation.expiredAt)}
                       </p>
                     </div>
@@ -252,14 +252,14 @@ export default function InvitationDetailPage() {
 
                   {invitation.respondedAt && (
                     <div className="flex items-start gap-4">
-                      <div className="w-8 h-8 rounded-xl bg-slate-50 text-slate-400 flex items-center justify-center shrink-0">
-                        <FiCheckCircle size={16} />
+                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-success">
+                        <FiCheckCircle size={16} aria-hidden="true" />
                       </div>
                       <div>
-                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
+                        <p className="mb-1 text-xs font-medium text-text-secondary">
                           Responded At
                         </p>
-                        <p className="text-sm font-bold text-slate-700">
+                        <p className="text-sm font-medium text-text-primary">
                           {formatDate(invitation.respondedAt)}
                         </p>
                       </div>
@@ -271,14 +271,14 @@ export default function InvitationDetailPage() {
 
             {/* Actions Overlay for Pending */}
             {invitation.status === InvitationStatus.Pending && (
-              <div className="bg-slate-50/80 border-t border-slate-100 p-8 sm:px-12 flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-sm">
+              <div className="flex flex-col items-stretch justify-between gap-4 border-t border-border bg-bg-secondary p-5 sm:flex-row sm:items-center sm:px-8 sm:py-5">
                 {/* Left Info */}
-                <div className="flex items-center gap-4 text-slate-500">
-                  <div className="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center">
-                    <FiUser size={20} />
+                <div className="flex items-center gap-3 text-text-secondary">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-white">
+                    <FiUser size={18} aria-hidden="true" />
                   </div>
                   <div className="text-sm">
-                    <p className="font-bold text-slate-900">
+                    <p className="font-semibold text-text-primary">
                       Respond to this invitation
                     </p>
                     <p className="font-medium">
@@ -292,14 +292,14 @@ export default function InvitationDetailPage() {
                   <Button
                     variant="outline"
                     onClick={() => setIsRejectModalOpen(true)}
-                    className="flex-1 sm:flex-none border-border text-error hover:bg-bg-secondary hover:border-accent transition-all duration-200"
+                    className="flex-1 sm:flex-none"
                   >
                     Reject
                   </Button>
 
                   <Button
                     onClick={() => setIsAcceptModalOpen(true)}
-                    className="flex-1 sm:flex-none bg-accent hover:bg-primary-hover text-surface-white transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="flex-1 sm:flex-none"
                   >
                     Accept
                   </Button>
@@ -309,10 +309,10 @@ export default function InvitationDetailPage() {
           </Card>
 
           {/* Additional Info / Help */}
-          <div className="text-center px-12">
-            <p className="text-xs text-slate-400 font-medium">
+          <div className="px-4 text-center">
+            <p className="text-sm text-text-secondary">
               If you have questions about this invitation, please contact{" "}
-              <span className="text-accent font-bold">
+                <span className="font-semibold text-text-primary">
                 {invitation.invitedByUserFullName}
               </span>{" "}
               directly.

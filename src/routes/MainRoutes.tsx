@@ -21,6 +21,7 @@ const PrismaReportWorkspace = lazy(() => import("../pages/reviewProcess/prismaRe
 const FullTextScreeningWorkspace = lazy(() => import("../pages/reviewProcess/studySelection/fullTextScreening/FullTextScreeningWorkspace"));
 const QualityAssessmentWorkspace = lazy(() => import("../pages/reviewProcess/qualityAssessment/QualityAssessmentWorkspace"));
 const SynthesisPhaseWorkspace = lazy(() => import("../pages/reviewProcess/synthesisExecution/SynthesisPhaseWorkspace"));
+const CanonicalSynthesisRoute = lazy(() => import("../pages/reviewProcess/synthesisExecution/CanonicalSynthesisRoute"));
 const InvitationDetailPage = lazy(() => import("../pages/invitations/InvitationDetailPage"));
 const DataExtractionPhaseWorkspace = lazy(() => import("../pages/reviewProcess/dataExtraction/DataExtractionPhaseWorkspace"));
 const ExtractionGridWorkspace = lazy(() => import("../pages/reviewProcess/dataExtraction/components/gridWorkspace/ExtractionGridWorkspace"));
@@ -32,6 +33,7 @@ const PaperDetailsPage = lazy(() => import("../pages/projects/PaperDetailsPage")
 const ManageStudySelectionPage = lazy(() => import("../pages/manage-study-selection/ManageStudySelectionPage"));
 const ScreeningPhaseRouter = lazy(() => import("../pages/reviewProcess/studySelection/ScreeningPhaseRouter"));
 const StuSePaperStatisticPage = lazy(() => import("../pages/manage-study-selection/StuSePaperStatisticPage"));
+const NotificationCenterPage = lazy(() => import("../pages/notifications/NotificationCenterPage"));
 
 function MainRoutes() {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -63,6 +65,7 @@ function MainRoutes() {
           {/* Project Routes */}
           <Route>
             <Route element={<ProtectedRoute />}>
+              <Route path="notifications" element={<NotificationCenterPage />} />
               <Route path="projects" element={<ProjectLayout />}>
               <Route index element={<ProjectListPage />} />
 
@@ -103,7 +106,7 @@ function MainRoutes() {
               <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/workspace/:studyId" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/grid" element={<ExtractionGridWorkspace />} />
-              <Route path=":projectId/synthesis/*" element={<SynthesisPhaseWorkspace />} />
+              <Route path=":projectId/synthesis/*" element={<CanonicalSynthesisRoute />} />
               <Route path=":projectId/prisma-report" element={<PrismaReportWorkspace />} />
 
               {/* Review Process Workspace (Legacy paths kept for backward compatibility) */}

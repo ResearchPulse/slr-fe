@@ -273,7 +273,7 @@ export default function AIReviewResultCard({
         <span className="text-[10px] text-text-tertiary">·</span>
         <span className="text-[10px] text-text-secondary">{stageLabel}</span>
         {result?.decision && <span className={`ml-auto rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wide ${recommendationStyle(result.decision)}`}>{normalizeDecision(result.decision)}</span>}
-        <span className={`rounded-full px-2 py-1 text-[9px] font-semibold ${task.status === "COMPLETED" ? "bg-slate-100 text-slate-600" : "bg-sky-50 text-sky-700"}`}>{stateLabel}</span>
+        <span className={`rounded-full px-2 py-1 text-[9px] font-semibold ${task.status === "COMPLETED" ? "bg-bg-secondary text-text-secondary" : "bg-primary-light text-primary-hover"}`}>{stateLabel}</span>
       </header>
 
       <div className="space-y-3 p-3">
@@ -325,7 +325,7 @@ export default function AIReviewResultCard({
             {data.evidence.map((evidence, index) => <EvidenceBlock key={index} value={evidence} />)}
           </section>}
 
-          {humanDecision && <p className={`rounded-lg px-3 py-2 text-[10px] ${decisionAgrees ? "bg-emerald-50 text-emerald-800" : "bg-slate-50 text-slate-600"}`}>
+          {humanDecision && <p className={`rounded-lg px-3 py-2 text-[10px] ${decisionAgrees ? "bg-success/10 text-success" : "bg-bg-secondary text-text-secondary"}`}>
             AI recommendation {decisionAgrees ? "matches" : "differs from"} your human decision ({humanDecision}). The AI result does not change your decision.
           </p>}
         </> : <p className="text-xs text-text-secondary">The agent has not submitted a result yet.</p>}

@@ -1,6 +1,6 @@
-// Tab navigation bar for the Identification Phase Workspace
-
-import { FiSearch, FiGrid, FiDatabase } from "react-icons/fi";
+import type { KeyboardEvent } from "react";
+import { FiDatabase, FiGrid, FiSearch, FiUpload } from "react-icons/fi";
+import type { IconType } from "react-icons";
 import type { TabType } from "../types";
 
 interface TabNavigationProps {
@@ -11,6 +11,14 @@ interface TabNavigationProps {
   hasUniquePapers: boolean;
 }
 
+const TABS: { id: TabType; label: string; icon: IconType }[] = [
+  { id: "strategies", label: "Search Strategies", icon: FiSearch },
+  { id: "imports", label: "Imports", icon: FiUpload },
+  { id: "library", label: "Papers Library", icon: FiGrid },
+  { id: "searches", label: "Searches", icon: FiSearch },
+  { id: "dataset", label: "Build Dataset", icon: FiDatabase },
+];
+
 export default function TabNavigation({
   activeTab,
   onTabChange,
@@ -18,48 +26,83 @@ export default function TabNavigation({
   uniquePapersCount,
   hasUniquePapers,
 }: TabNavigationProps) {
-  const tabClass = (tab: TabType) =>
-    `flex items-center gap-2 px-6 py-4 text-sm font-medium border-b-2 transition-colors ${
-      activeTab === tab
-        ? "border-accent text-accent bg-surface-white"
-        : "border-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
-    }`;
+  const handleTabKeyDown = (
+    event: KeyboardEvent<HTMLButtonElement>,
+    currentTab: TabType,
+  ) => {
+    const currentIndex = TABS.findIndex((tab) => tab.id === currentTab);
+    const nextIndex =
+      event.key === "ArrowRight"
+        ? (currentIndex + 1) % TABS.length
+        : event.key === "ArrowLeft"
+          ? (currentIndex - 1 + TABS.length) % TABS.length
+          : event.key === "Home"
+            ? 0
+            : event.key === "End"
+              ? TABS.length - 1
+              : -1;
+
+    if (nextIndex < 0) return;
+
+    event.preventDefault();
+    const nextTab = TABS[nextIndex].id;
+    onTabChange(nextTab);
+    requestAnimationFrame(() =>
+      document.getElementById(`identification-tab-${nextTab}`)?.focus(),
+    );
+  };
 
   return (
-    <div className="border-b border-border bg-bg-primary">
-      <nav className="flex">
-        {/* Search Strategies */}
-        <button
-          onClick={() => onTabChange("strategies")}
-          className={tabClass("strategies")}
-        >
-          <FiSearch className="w-4 h-4" />
-          Search Strategies
-          <span className="ml-1 px-2 py-0.5 bg-primary-light text-accent rounded-full text-xs font-semibold">
-            {searchExecutionCount}
-          </span>
-        </button>
+    <div className="max-w-full overflow-x-auto border-b border-border bg-bg-primary">
+      <nav
+        className="flex min-w-max"
+        role="tablist"
+        aria-label="Identification sections"
+      >
+        {TABS.map(({ id, label, icon: Icon }) => {
+          const isSelected = activeTab === id;
+          const count =
+            id === "strategies"
+              ? searchExecutionCount
+              : id === "library"
+                ? hasUniquePapers
+                  ? uniquePapersCount.toLocaleString()
+                  : "--"
+                : null;
 
-        {/* Papers Library */}
-        <button
-          onClick={() => onTabChange("library")}
-          className={tabClass("library")}
-        >
-          <FiGrid className="w-4 h-4" />
-          Papers Library
-          <span className="ml-1 px-2 py-0.5 bg-bg-secondary text-text-primary rounded-full text-xs">
-            {hasUniquePapers ? uniquePapersCount.toLocaleString() : "--"}
-          </span>
-        </button>
-
-        {/* Build Dataset */}
-        <button
-          onClick={() => onTabChange("dataset")}
-          className={tabClass("dataset")}
-        >
-          <FiDatabase className="w-4 h-4" />
-          Build Dataset
-        </button>
+          return (
+            <button
+              key={id}
+              type="button"
+              id={`identification-tab-${id}`}
+              role="tab"
+              aria-selected={isSelected}
+              aria-controls="identification-panel"
+              tabIndex={isSelected ? 0 : -1}
+              onKeyDown={(event) => handleTabKeyDown(event, id)}
+              onClick={() => onTabChange(id)}
+              className={`flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors sm:px-6 sm:py-4 ${
+                isSelected
+                  ? "border-accent bg-surface-white text-accent"
+                  : "border-transparent text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+              }`}
+            >
+              <Icon className="h-4 w-4" aria-hidden="true" />
+              {label}
+              {count !== null && (
+                <span
+                  className={`ml-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+                    id === "strategies"
+                      ? "bg-primary-light text-accent"
+                      : "bg-bg-secondary text-text-primary"
+                  }`}
+                >
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
       </nav>
     </div>
   );

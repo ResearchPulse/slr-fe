@@ -61,7 +61,7 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
   if (isLoading || (isFetching && !currentProjectMember)) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary"></div>
         <span className="ml-3 text-sm text-muted-foreground">
           Verifying project access...
         </span>

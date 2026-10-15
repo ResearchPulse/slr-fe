@@ -13,15 +13,22 @@
 
   --color-bg-primary: #F7F9FA;
   --color-bg-secondary: #EEF2F5;
+  --color-bg-hover: #EEF2F5;
+  --color-bg-selected: #F0F7FC;
+  --color-bg-disabled: #EEF2F5;
 
   --color-surface-white: #FFFFFF;
   --color-surface-ground: #F7F9FA;
   --color-surface-card: #FFFFFF;
+  --color-surface-elevated: #FFFFFF;
 
   --color-text-primary: #122331;
   --color-text-secondary: #647381;
-  --color-text-muted: #8B9AA4;
+  --color-text-muted: #647381;
+  --color-text-tertiary: #647381;
+  --color-text-disabled: #8B9AA4;
   --color-text-main: #122331;
+  --color-muted-foreground: #647381;
 
   --color-accent: #0071BC;
   --color-primary: #0071BC;
@@ -34,14 +41,182 @@
   --color-border: #DCE4E9;
   --color-border-default: #DCE4E9;
   --color-border-focus: #0071BC;
+  --color-divider: #DCE4E9;
+  --color-secondary: #EEF2F5;
+  --color-info: #0071BC;
 
   /* =====================================================
      STATUS COLORS
      ===================================================== */
 
-  --color-success: #16A34A;
-  --color-warning: #F59E0B;
+  --color-success: #117035;
+  --color-warning: #92400E;
   --color-error: #DC2626;
+
+  /* Familiar Tailwind palette names resolve to the product's semantic ramps.
+     This keeps legacy screens on-brand while they move to semantic classes. */
+  --color-blue-50: #F0F7FC;
+  --color-blue-100: #E2F0FE;
+  --color-blue-200: #C1E0F4;
+  --color-blue-300: #86C4FE;
+  --color-blue-400: #3994E2;
+  --color-blue-500: #0071BC;
+  --color-blue-600: #0068AA;
+  --color-blue-700: #005F9E;
+  --color-blue-800: #044A79;
+  --color-blue-900: #12354A;
+  --color-blue-950: #102331;
+  --color-sky-50: #F0F7FC;
+  --color-sky-100: #E2F0FE;
+  --color-sky-200: #C1E0F4;
+  --color-sky-300: #86C4FE;
+  --color-sky-400: #3994E2;
+  --color-sky-500: #0071BC;
+  --color-sky-600: #0068AA;
+  --color-sky-700: #005F9E;
+  --color-sky-800: #044A79;
+  --color-sky-900: #12354A;
+  --color-sky-950: #102331;
+  --color-indigo-50: #F0F7FC;
+  --color-indigo-100: #E2F0FE;
+  --color-indigo-200: #C1E0F4;
+  --color-indigo-300: #86C4FE;
+  --color-indigo-400: #3994E2;
+  --color-indigo-500: #0071BC;
+  --color-indigo-600: #0068AA;
+  --color-indigo-700: #005F9E;
+  --color-indigo-800: #044A79;
+  --color-indigo-900: #12354A;
+  --color-indigo-950: #102331;
+  --color-violet-50: #F0F7FC;
+  --color-violet-100: #E2F0FE;
+  --color-violet-200: #C1E0F4;
+  --color-violet-300: #86C4FE;
+  --color-violet-400: #3994E2;
+  --color-violet-500: #0071BC;
+  --color-violet-600: #0068AA;
+  --color-violet-700: #005F9E;
+  --color-violet-800: #044A79;
+  --color-violet-900: #12354A;
+  --color-violet-950: #102331;
+  --color-cyan-50: #F0F7FC;
+  --color-cyan-100: #E2F0FE;
+  --color-cyan-200: #C1E0F4;
+  --color-cyan-300: #86C4FE;
+  --color-cyan-400: #3994E2;
+  --color-cyan-500: #0071BC;
+  --color-cyan-600: #0068AA;
+  --color-cyan-700: #005F9E;
+  --color-cyan-800: #044A79;
+  --color-cyan-900: #12354A;
+  --color-cyan-950: #102331;
+  --color-green-50: #ECF8EF;
+  --color-green-100: #D9F1DF;
+  --color-green-200: #B5E2C1;
+  --color-green-300: #81CE98;
+  --color-green-400: #43B765;
+  --color-green-500: #117035;
+  --color-green-600: #13893F;
+  --color-green-700: #117035;
+  --color-green-800: #0F562B;
+  --color-green-900: #0D3E21;
+  --color-green-950: #082616;
+  --color-emerald-50: #ECF8EF;
+  --color-emerald-100: #D9F1DF;
+  --color-emerald-200: #B5E2C1;
+  --color-emerald-300: #81CE98;
+  --color-emerald-400: #43B765;
+  --color-emerald-500: #117035;
+  --color-emerald-600: #13893F;
+  --color-emerald-700: #117035;
+  --color-emerald-800: #0F562B;
+  --color-emerald-900: #0D3E21;
+  --color-emerald-950: #082616;
+  --color-red-50: #FEF2F2;
+  --color-red-100: #FEE2E2;
+  --color-red-200: #FECACA;
+  --color-red-300: #FCA5A5;
+  --color-red-400: #F87171;
+  --color-red-500: #DC2626;
+  --color-red-600: #C51E1E;
+  --color-red-700: #B91C1C;
+  --color-red-800: #991B1B;
+  --color-red-900: #7F1D1D;
+  --color-red-950: #450A0A;
+  --color-rose-50: #FEF2F2;
+  --color-rose-100: #FEE2E2;
+  --color-rose-200: #FECACA;
+  --color-rose-300: #FCA5A5;
+  --color-rose-400: #F87171;
+  --color-rose-500: #DC2626;
+  --color-rose-600: #C51E1E;
+  --color-rose-700: #B91C1C;
+  --color-rose-800: #991B1B;
+  --color-rose-900: #7F1D1D;
+  --color-rose-950: #450A0A;
+  --color-amber-50: #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-300: #FCD34D;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #92400E;
+  --color-amber-600: #92400E;
+  --color-amber-700: #B45309;
+  --color-amber-800: #92400E;
+  --color-amber-900: #78350F;
+  --color-amber-950: #451A03;
+  --color-orange-50: #FFFBEB;
+  --color-orange-100: #FEF3C7;
+  --color-orange-200: #FDE68A;
+  --color-orange-300: #FCD34D;
+  --color-orange-400: #FBBF24;
+  --color-orange-500: #92400E;
+  --color-orange-600: #92400E;
+  --color-orange-700: #B45309;
+  --color-orange-800: #92400E;
+  --color-orange-900: #78350F;
+  --color-orange-950: #451A03;
+  --color-slate-50: #F7F9FA;
+  --color-slate-100: #EEF2F5;
+  --color-slate-200: #DCE4E9;
+  --color-slate-300: #C6D0D6;
+  --color-slate-400: #647381;
+  --color-slate-500: #52616D;
+  --color-slate-600: #52616D;
+  --color-slate-700: #3C4C58;
+  --color-slate-800: #263744;
+  --color-slate-900: #122331;
+  --color-slate-950: #0B1720;
+  --color-gray-50: #F7F9FA;
+  --color-gray-100: #EEF2F5;
+  --color-gray-200: #DCE4E9;
+  --color-gray-300: #C6D0D6;
+  --color-gray-400: #647381;
+  --color-gray-500: #52616D;
+  --color-gray-600: #52616D;
+  --color-gray-700: #3C4C58;
+  --color-gray-800: #263744;
+  --color-gray-900: #122331;
+  --color-gray-950: #0B1720;
+  --color-zinc-50: #F7F9FA;
+  --color-zinc-100: #EEF2F5;
+  --color-zinc-200: #DCE4E9;
+  --color-zinc-300: #C6D0D6;
+  --color-zinc-400: #647381;
+  --color-zinc-500: #52616D;
+  --color-zinc-600: #52616D;
+  --color-zinc-700: #3C4C58;
+  --color-zinc-800: #263744;
+  --color-zinc-900: #122331;
+  --color-zinc-950: #0B1720;
+
+  /* Shared shape and spacing tokens for app-level layouts. */
+  --radius-control: 0.75rem;
+  --radius-card: 0.75rem;
+  --radius-panel: 1rem;
+  --spacing-page: clamp(1rem, 2.5vw, 2rem);
+  --spacing-section: 1.5rem;
+  --spacing-card: 1.25rem;
 
   /* =====================================================
      TYPOGRAPHY
@@ -78,13 +253,13 @@
 
   --z-index-badge: 10;
   --z-index-header: 100;
-  --z-index-dropdown: 1000;
-  --z-index-drawer: 2000;
-  --z-index-modal: 5000;
-  --z-index-popover: 7000;
-  --z-index-tooltip: 99999;
-  --z-index-toast: 100000;
-  --z-index-section-loading: 100001;
+  --z-index-dropdown: 200;
+  --z-index-drawer: 300;
+  --z-index-modal: 400;
+  --z-index-popover: 500;
+  --z-index-tooltip: 600;
+  --z-index-toast: 700;
+  --z-index-section-loading: 800;
 
   /* =====================================================
      ANIMATIONS
@@ -143,55 +318,10 @@ html {
   }
 }
 
-.scroll-reveal:not(.is-visible),
-.scroll-pop:not(.is-visible) {
-  opacity: 0;
-  transform: translateY(22px) scale(0.985);
-}
-
-.scroll-reveal.is-visible,
-.scroll-pop.is-visible {
-  animation: scroll-bounce-in 720ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
-}
-
-.scroll-pop-delay-1.is-visible {
-  animation-delay: 70ms;
-}
-
-.scroll-pop-delay-2.is-visible {
-  animation-delay: 140ms;
-}
-
-@keyframes scroll-bounce-in {
-  0% {
-    opacity: 0;
-    transform: translateY(22px) scale(0.985);
-  }
-
-  68% {
-    opacity: 1;
-    transform: translateY(-3px) scale(1.003);
-  }
-
-  84% {
-    transform: translateY(1px) scale(0.999);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .scroll-reveal,
-  .scroll-pop,
-  .scroll-reveal.is-visible,
-  .scroll-pop.is-visible {
-    opacity: 1;
-    transform: none;
-    animation: none;
-  }
+.scroll-reveal,
+.scroll-pop {
+  opacity: 1;
+  transform: none;
 }
 
 body {
@@ -202,85 +332,78 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Shared page scale. The landing page keeps its intentionally large hero
-   display type; all application pages use this compact, consistent scale. */
-.standard-content {
-  font-size: 14px;
-  line-height: 1.5;
-}
+/* Base app typography provides defaults while component utilities retain
+   control over compact labels, metadata, table cells, and workspace titles. */
+@layer base {
+  .standard-content {
+    font-size: 14px;
+    line-height: 1.5;
+  }
 
-.standard-content,
-.standard-content * {
-  font-family: var(--font-primary) !important;
-}
+  .standard-content h1 {
+    font-size: 32px;
+    line-height: 1.2;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+  }
 
-.standard-content h1 {
-  font-size: 32px !important;
-  line-height: 1.2 !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.025em !important;
-}
+  .standard-content h2 {
+    font-size: 24px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
 
-/* Keep review-process workspace titles consistent across phase headers. */
-.review-process-header-title,
-.standard-content h1.review-process-header-title {
-  font-size: 28px !important;
-  line-height: 1.2 !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.025em !important;
-}
+  .standard-content h3 {
+    font-size: 18px;
+    line-height: 1.35;
+    font-weight: 700;
+  }
 
-@media (max-width: 639px) {
-  .review-process-header-title,
-  .standard-content h1.review-process-header-title {
-    font-size: 22px !important;
+  .standard-content .review-process-header-title {
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+  }
+
+  .standard-content .process-header-title {
+    font-size: 20px;
+    line-height: 1.25;
+  }
+
+  :where(button, input, textarea, select) {
+    font-family: var(--font-primary);
+  }
+
+  :where(
+    button:not(:disabled),
+    a[href]:not([aria-disabled="true"]),
+    [role="button"]:not([aria-disabled="true"]),
+    summary,
+    select:not(:disabled),
+    input[type="checkbox"]:not(:disabled),
+    input[type="radio"]:not(:disabled),
+    label[for],
+    label:has(input:not(:disabled))
+  ) {
+    cursor: pointer;
   }
 }
 
-.process-header-title {
-  font-size: 20px !important;
-  line-height: 1.25 !important;
+:where(button, a, input, textarea, select, [role="button"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--color-border-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 639px) {
-  .process-header-title {
-    font-size: 18px !important;
+  .standard-content .review-process-header-title {
+    font-size: 22px;
   }
-}
 
-.standard-content h2 {
-  font-size: 24px !important;
-  line-height: 1.25 !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
-}
-
-.standard-content h3 {
-  font-size: 18px !important;
-  line-height: 1.35 !important;
-  font-weight: 700 !important;
-}
-
-.standard-content p,
-.standard-content li,
-.standard-content td,
-.standard-content th,
-.standard-content label,
-.standard-content input,
-.standard-content textarea,
-.standard-content select {
-  font-size: 14px !important;
-  line-height: 1.5 !important;
-}
-
-.standard-content button,
-.standard-content [role="button"] {
-  font-size: 13px !important;
-  line-height: 1.35 !important;
-}
-
-.standard-content .font-mono {
-  font-family: var(--font-primary) !important;
+  .standard-content .process-header-title {
+    font-size: 18px;
+  }
 }
 
 /* =====================================================
@@ -355,54 +478,9 @@ select:focus {
   text-decoration-color: currentColor;
 }
 
-/* =====================================================
-   SCROLLBAR
-   ===================================================== */
-
-.custom-scrollbar::-webkit-scrollbar,
-.CustomScrollbar::-webkit-scrollbar,
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-track,
-.CustomScrollbar::-webkit-scrollbar-track,
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb,
-.CustomScrollbar::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-thumb {
-  background: var(--color-border);
-  border-radius: 999px;
-  transition: background-color 0.2s ease;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover,
-.CustomScrollbar::-webkit-scrollbar-thumb:hover,
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
-}
-
-.compact-scrollbar {
+/* Let the browser render scrollbars with its native platform affordance. */
+.custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: var(--color-border) transparent;
-}
-
-.compact-scrollbar::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-}
-
-.hide-scrollbar {
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
 }
 
 .selection-action-tabs {
@@ -424,47 +502,7 @@ select:focus {
   }
 }
 
-/* =====================================================
-   STEP PROGRESS
-   ===================================================== */
-
-@keyframes step-pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 rgba(8, 124, 193, 0.30);
-  }
-
-  50% {
-    box-shadow: 0 0 0 8px rgba(8, 124, 193, 0);
-  }
-}
-
-.step-current-pulse {
-  animation: step-pulse 2s ease-in-out infinite;
-}
-
-/* =====================================================
-   CONFLICT BADGE
-   ===================================================== */
-
-@keyframes subtle-blink {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: 0.8;
-    transform: scale(0.98);
-  }
-}
-
-.animate-subtle-blink {
-  animation: subtle-blink 3s ease-in-out infinite;
-}
-
 .google-signin-button iframe {
   display: block;
-  border-radius: 20px !important;
+  border-radius: var(--radius-control) !important;
 }

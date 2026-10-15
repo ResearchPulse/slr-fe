@@ -95,7 +95,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
               <TableRow
                 key={project.id}
                 onClick={() => onView(project.id)}
-                className="group bg-surface-white transition-colors hover:bg-bg-primary/60"
+                className="group cursor-pointer bg-surface-white transition-colors hover:bg-bg-primary/60"
               >
                 <TableCell className="px-5 py-4">
                   <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
