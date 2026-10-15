@@ -28,6 +28,7 @@ import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormMod
 import { aiProjectSetupService } from "../../services/aiProjectSetupService";
 import OverviewTabContent from "../../components/projects/detail/OverviewTabContent";
 import ProjectSetupSection from "../../components/projects/detail/ProjectSetupSection";
+import PicocWizard from "../../components/projects/picocWizard/PicocWizard";
 import BusinessJustificationSection from "../../components/projects/detail/BusinessJustificationSection";
 import PaperPoolTab from "../../components/paperPool/PaperPoolTab";
 import { useSelector } from "react-redux";
@@ -35,6 +36,7 @@ import type { RootState } from "../../redux/store";
 import { useProjectMember } from "../../hooks/useProjectMember";
 
 type WorkflowStepKey =
+  | "picoc-scope"
   | "business-justification"
   | "project-setup"
   | "activate-project";
@@ -106,7 +108,7 @@ export default function ProjectDetailPage() {
 
   // ── Current step & workflow steps ────────────────────────────────────────
   const selectedStep =
-    (searchParams.get("step") as WorkflowStepKey) || "project-setup";
+    (searchParams.get("step") as WorkflowStepKey) || "picoc-scope";
   const setSelectedStep = (step: WorkflowStepKey) => {
     setSearchParams(
       (prev) => {
@@ -162,8 +164,13 @@ export default function ProjectDetailPage() {
     const getStatus = (stepKey: WorkflowStepKey): StepStatus => {
       if (isProjectActive) return "completed";
 
+      // PICOC can be skipped and completed later, so it never locks the other steps.
+      if (stepKey === "picoc-scope") {
+        return selectedStep === "picoc-scope" ? "current" : "upcoming";
+      }
+
       if (stepKey === "project-setup") {
-        if (!isProjectSetupReady) return "current";
+        if (!isProjectSetupReady) return selectedStep === "project-setup" ? "current" : "upcoming";
         return selectedStep === "project-setup" ? "current" : "completed";
       }
 
@@ -183,6 +190,11 @@ export default function ProjectDetailPage() {
     };
 
     return [
+      {
+        key: "picoc-scope",
+        label: "PICOC Scope",
+        status: getStatus("picoc-scope"),
+      },
       {
         key: "project-setup",
         label: "Review Protocol",
@@ -470,6 +482,9 @@ export default function ProjectDetailPage() {
 
     // ── Draft project workflow steps ───────────────────────────────────
     switch (selectedStep) {
+      case "picoc-scope":
+        return <PicocWizard projectId={id || ""} canEdit={isLeader} />;
+
       case "business-justification":
         return (
           <BusinessJustificationSection
