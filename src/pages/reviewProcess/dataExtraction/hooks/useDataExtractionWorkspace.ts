@@ -40,7 +40,7 @@ import type {
   ReviewerOption,
   UseDataExtractionWorkspaceReturn,
 } from "../types";
-import { applyAiProposalToDraft, canFinalizeConsensus, findMissingRequiredFields, getReviewerWorkspaceState, hasTwoIndependentSubmissions } from "../workflowRules";
+import { applyAiProposalToDraft, canFinalizeConsensus, findMissingRequiredFields, getEffectiveReviewerValues, getReviewerWorkspaceState, hasTwoIndependentSubmissions } from "../workflowRules";
 import { mapExtractedValueToFormValue } from "../components/reviewerWorkspace/reviewerFormUtils";
 import { normalizeExtractionStatus } from "../status";
 
@@ -326,7 +326,7 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
   });
   const consensusWorkspaceQuery = useQuery({
     queryKey: [...ROOT, projectId, "consensus", selectedPaperId],
-    enabled: !!projectId && !!selectedPaperId && isCurrentUserLeader && ["awaiting-consensus", "completed"].includes(selectedStatus),
+    enabled: !!projectId && !!selectedPaperId && isCurrentUserLeader && selectedStatus !== "todo",
     queryFn: () => projectId && selectedPaperId
       ? dataExtractionConductingService.getConsensusWorkspace(projectId, selectedPaperId)
       : Promise.reject(new Error("Project and paper IDs are required")),
@@ -357,11 +357,15 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
       currentUserId ?? "",
     );
   }, [currentUserId, reviewerWorkspace]);
+  const effectiveReviewerValues = useMemo(
+    () => getEffectiveReviewerValues(reviewerState),
+    [reviewerState],
+  );
   useEffect(() => {
-    if (!selectedPaperId || !reviewerState.ownDraft) return;
-    setDraftValuesByPaper((current) => ({ ...current, [selectedPaperId]: extractValues(reviewerState.ownDraft!.values) }));
-  }, [reviewerState.ownDraft, selectedPaperId]);
-  const currentDraft = draftValuesByPaper[selectedPaperId] ?? (reviewerState.ownDraft ? extractValues(reviewerState.ownDraft.values) : {});
+    if (!selectedPaperId || !effectiveReviewerValues) return;
+    setDraftValuesByPaper((current) => ({ ...current, [selectedPaperId]: extractValues(effectiveReviewerValues) }));
+  }, [effectiveReviewerValues, selectedPaperId]);
+  const currentDraft = draftValuesByPaper[selectedPaperId] ?? (effectiveReviewerValues ? extractValues(effectiveReviewerValues) : {});
   const reviewerVersion = (reviewerWorkspace as (ReviewerWorkspaceDto & { version?: number; ownDraft?: { version: number } | null }) | null)?.version
     ?? reviewerState.ownDraft?.version ?? 0;
   const templateVersion = Number((selectedTemplate as (ExtractionTemplateDto & { version?: number }) | null)?.version ?? 1);

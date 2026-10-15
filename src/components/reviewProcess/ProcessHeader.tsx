@@ -23,7 +23,7 @@ export default function ProcessHeader({
   startLoading,
   completeLoading,
   disabled = false,
-  canManageActions = true,
+  canManageActions = false,
   isReadyToComplete = true,
 }: ProcessHeaderProps) {
   const statusLabel = process.statusText === "InProgress"
@@ -48,7 +48,7 @@ export default function ProcessHeader({
           </div>
 
           <div className="min-w-0 max-w-3xl">
-            <h1 className="review-process-header-title process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+            <h1 className="review-process-header-title process-header-title truncate whitespace-nowrap text-base font-semibold leading-5 text-text-primary sm:text-lg">
               {process.name || "Systematic Review Process"}
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
@@ -101,7 +101,7 @@ export default function ProcessHeader({
               </Button>
             )}
 
-            {process.statusText === "InProgress" && (
+            {process.statusText === "InProgress" && canManageActions && (
               <Button
                 onClick={onCompleteProcess}
                 disabled={completeLoading || disabled}
@@ -109,11 +109,9 @@ export default function ProcessHeader({
                 title={
                   disabled
                     ? "Select a protocol first"
-                    : canManageActions === false
-                      ? "Only Lead Reviewer can complete the process"
-                      : isReadyToComplete === false
-                        ? "Complete all 4 workflow phases first"
-                        : "Complete review process"
+                    : isReadyToComplete === false
+                      ? "Complete all 4 workflow phases first"
+                      : "Complete review process"
                 }
               >
                 <FiCheck className="mr-2 h-4 w-4" aria-hidden="true" />

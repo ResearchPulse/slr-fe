@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Crosshair, Sparkles } from "lucide-react";
+import { Crosshair } from "lucide-react";
 import {
   SectionTypeEnum,
   type ExtractionFieldDto,
@@ -38,17 +38,11 @@ interface ReviewerFormPaneProps {
     fieldKey: string,
   ) => boolean;
   isReadOnly?: boolean;
-  isAskingAi: boolean;
   isEvidenceTargetActive: (
     fieldKey: string,
     sectionId: string | null,
     rowIndex: number | null,
   ) => boolean;
-  onAskAiField: (
-    field: ExtractionFieldDto,
-    matrixColumnId: string | null,
-    matrixRowIndex: number | null,
-  ) => void;
   onSelectEvidenceTarget: (
     fieldKey: string,
     sectionId: string | null,
@@ -90,9 +84,7 @@ export default function ReviewerFormPane({
   isFieldNotReported,
   isMatrixFieldNotReported,
   isReadOnly = false,
-  isAskingAi,
   isEvidenceTargetActive,
-  onAskAiField,
   onSelectEvidenceTarget,
   onSetMatrixFieldValue,
   onToggleFieldNotReported,
@@ -283,24 +275,6 @@ export default function ReviewerFormPane({
                                 </label>
                               </div>
 
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  onAskAiField(
-                                    field,
-                                    typeof row[MATRIX_COLUMN_ID_KEY]?.value ===
-                                      "string"
-                                      ? row[MATRIX_COLUMN_ID_KEY].value
-                                      : null,
-                                    rowIndex,
-                                  )
-                                }
-                                disabled={isReadOnly || isAskingAi}
-                                className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
-                              >
-                                <Sparkles className="h-3.5 w-3.5" />
-                                Ask AI
-                              </button>
                             </div>
 
                             {field.instruction ? (
@@ -439,15 +413,6 @@ export default function ReviewerFormPane({
                         </label>
                       </div>
 
-                      <button
-                        type="button"
-                        onClick={() => onAskAiField(field, null, null)}
-                        disabled={isReadOnly || isAskingAi}
-                        className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
-                      >
-                        <Sparkles className="h-3.5 w-3.5" />
-                        Ask AI
-                      </button>
                     </div>
 
                     {field.instruction ? (

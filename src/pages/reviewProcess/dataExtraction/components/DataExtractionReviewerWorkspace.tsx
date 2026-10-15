@@ -40,6 +40,7 @@ import {
   parseEvidenceCoordinates,
   mergeEvidenceCoordinates,
 } from "../utils/evidenceCoordinates";
+import { getEffectiveReviewerRecordValues } from "../workflowRules";
 
 interface DataExtractionReviewerWorkspaceProps {
   ws: UseDataExtractionWorkspaceReturn;
@@ -461,7 +462,7 @@ export default function DataExtractionReviewerWorkspace({
       return;
     }
 
-    const canonicalValues = ownDraft?.values ?? ownSubmission?.values ?? {};
+    const canonicalValues = getEffectiveReviewerRecordValues(ownDraft, ownSubmission) ?? {};
     const flatFormUpdates: Record<string, FormFieldState> = {};
     const matrixUpdatesBySection: Record<
       string,
@@ -1691,6 +1692,11 @@ export default function DataExtractionReviewerWorkspace({
     [commentMap, localCommentsByKey, selectedPaperId, ws],
   );
 
+  // Legacy browser-AI handlers stay available only for backwards-compatible state shape.
+  // The reviewer UI does not expose them; MCP is the single extraction engine.
+  void handleAutoExtract;
+  void handleAskAiField;
+
   if (!ws.selectedTemplate) {
     return (
       <div className="h-[calc(100dvh-10.5rem)] min-h-[420px] overflow-hidden bg-[#F4F7FA] p-4">
@@ -1754,16 +1760,9 @@ export default function DataExtractionReviewerWorkspace({
           sections={sections}
           activeSectionId={activeSectionId}
           selectedTemplateName={ws.selectedTemplate.name}
-          isAutoExtracting={ws.isAutoExtracting}
           isSubmittingExtraction={isSubmittingExtraction}
-          canAutoExtract={
-            !!selectedPaperId &&
-            !!ws.selectedTemplate?.templateId &&
-            !isWorkspaceLocked
-          }
           canSubmit={!!selectedPaperId && !isWorkspaceLocked}
           isReadOnly={isWorkspaceLocked}
-          onAutoExtract={handleAutoExtract}
           onSectionChange={setActiveSectionIdState}
           onBack={() => navigate(dashboardPath)}
           onSubmitExtraction={handleSubmitExtraction}
@@ -1783,9 +1782,7 @@ export default function DataExtractionReviewerWorkspace({
           isFieldNotReported={isFieldNotReported}
           isMatrixFieldNotReported={isMatrixFieldNotReported}
           isReadOnly={isWorkspaceLocked}
-          isAskingAi={ws.isAskingAi}
           isEvidenceTargetActive={isEvidenceTargetActive}
-          onAskAiField={handleAskAiField}
           onSelectEvidenceTarget={handleSelectEvidenceTarget}
           onSetMatrixFieldValue={setMatrixFieldValue}
           onToggleFieldNotReported={setFieldNotReported}
