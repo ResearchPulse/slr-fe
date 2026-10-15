@@ -33,7 +33,7 @@ export interface PicocAnalyticsProperties {
   component?: "population" | "intervention" | "comparison" | "outcome" | "context";
   source?: "ai" | "openalex" | "user" | "openalex_fallback";
   count?: number;
-  gateId?: "G1" | "G2" | "G4" | "G6" | "G7";
+  gateId?: "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7";
   gateStatus?: "passed" | "needs_review" | "blocked" | "not_run";
 }
 
@@ -45,6 +45,12 @@ export const picocWizardStateService = {
 
   async saveState(projectId: string, expectedRevision: number, state: PicocWizardDraft): Promise<PicocWizardRecord> {
     const response = await api.put<ApiResponse<PicocWizardRecord>>(`${base(projectId)}/state`, { expectedRevision, state });
+    return response.data.data;
+  },
+
+  /** Runs the AI consistency gates (G3/G5) on the saved revision and returns the updated record. */
+  async semanticCheck(projectId: string, expectedRevision: number): Promise<PicocWizardRecord> {
+    const response = await api.post<ApiResponse<PicocWizardRecord>>(`${base(projectId)}/state/semantic-check`, { expectedRevision }, { timeout: 90000 });
     return response.data.data;
   },
 
