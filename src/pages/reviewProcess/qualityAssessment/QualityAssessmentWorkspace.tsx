@@ -7,7 +7,8 @@ import { QAPapersTabContent } from "./sections/QAPapersTabContent";
 import { QAAssignModal } from "./components/QAAssignModal";
 import { QAAutoResolveModal } from "./components/QAAutoResolveModal";
 import { ReviewerProgressPanel } from "./components/ReviewerProgressPanel";
-import { useProject, useProjectMembers } from "../../../hooks/useProjects";
+import { useProjectMembers } from "../../../hooks/useProjects";
+import { useProjectMember } from "../../../hooks/useProjectMember";
 import type {
   QAPaperResponse,
   LeaderQAPaperResponse,
@@ -49,10 +50,10 @@ export default function QualityAssessmentWorkspace() {
   const [searchQuery, setSearchQuery] = useState("");
   const [qaPage, setQaPage] = useState(1);
 
-  const { project } = useProject(projectId);
+  const { member: projectMember } = useProjectMember(projectId);
+  const isLeader = projectMember?.isLeader === true;
 
   const { members: projectMembers } = useProjectMembers(projectId);
-  // TODO: casi role nay co phai isLeader ko wtf :)?
   const members =
     projectMembers?.filter((m) => m.role === ProjectRole.Reviewer) || [];
 
@@ -79,7 +80,7 @@ export default function QualityAssessmentWorkspace() {
     updateResolution,
     autoResolve,
     exportCsv,
-  } = useQualityAssessment(qualityAssessmentId, project?.isLeader, {
+  } = useQualityAssessment(qualityAssessmentId, isLeader, {
     pageNumber: qaPage,
     pageSize: 10,
     search: searchQuery || undefined,
@@ -99,7 +100,7 @@ export default function QualityAssessmentWorkspace() {
   }, [strategies]);
 
   const activePapers = useMemo(() => {
-    const rawPapers = project?.isLeader ? allPapers : assignedPapers;
+    const rawPapers = isLeader ? allPapers : assignedPapers;
     // Apply different ordering depending on role
     return [...rawPapers].sort((a, b) => {
       // Helper to compute group priority for a paper
@@ -113,7 +114,7 @@ export default function QualityAssessmentWorkspace() {
           if (res.finalDecision === 0) return 5; // LowQuality
         }
 
-        if (project?.isLeader) {
+        if (isLeader) {
           // Leader: completed on top, then ongoing, pending, highQuality, LowQuality
           if (pct === 100) return 0; // completed
           if (pct > 0 && pct < 100) return 1; // ongoing
@@ -138,7 +139,7 @@ export default function QualityAssessmentWorkspace() {
       if (pctDiff !== 0) return pctDiff;
       return (a.title || "").localeCompare(b.title || "");
     });
-  }, [project?.isLeader, assignedPapers, allPapers]);
+  }, [isLeader, assignedPapers, allPapers]);
 
   const selectedPaper = useMemo(
     () => activePapers.find((p) => p.paperId === selectedPaperId) ?? null,
@@ -146,7 +147,7 @@ export default function QualityAssessmentWorkspace() {
   );
 
   const stats = useMemo(() => {
-    if (project?.isLeader && leaderStats) {
+    if (isLeader && leaderStats) {
       const completed = leaderStats.completedPapers ?? 0;
       const total = leaderStats.totalPapers ?? 0;
       return {
@@ -158,7 +159,7 @@ export default function QualityAssessmentWorkspace() {
         pending: total - completed,
         completionPercentage: leaderStats.completionPercentage ?? 0,
       };
-    } else if (!project?.isLeader && memberStats) {
+    } else if (!isLeader && memberStats) {
       const completed = memberStats.completedPapers ?? 0;
       const total = memberStats.totalPapers ?? 0;
       return {
@@ -193,7 +194,7 @@ export default function QualityAssessmentWorkspace() {
       pending: total - completed,
       completionPercentage: Math.round((completed / total) * 100) || 0,
     };
-  }, [activePapers, leaderStats, memberStats, project?.isLeader]);
+  }, [activePapers, leaderStats, memberStats, isLeader]);
 
   const openEditSpace = (paperId: string) => {
     setSelectedPaperId(paperId);
@@ -353,9 +354,9 @@ export default function QualityAssessmentWorkspace() {
         onBack={viewMode === "edit" ? closeEditSpace : handleBack}
         stats={stats}
         phaseStatus={phaseStatus ?? "NotStarted"}
-        onExport={project?.isLeader ? exportCsv : undefined}
+        onExport={isLeader ? exportCsv : undefined}
         rightControls={
-          project?.isLeader &&
+          isLeader &&
           canEdit && (
             <button
               onClick={() => setIsAutoResolveOpen(true)}
@@ -407,8 +408,8 @@ export default function QualityAssessmentWorkspace() {
             </div>
             <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-surface-white p-4 shadow-sm sm:p-5">
               <div>
-                <p className="text-sm text-text-secondary">{project?.isLeader ? "Not started" : "Pending"}</p>
-                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{project?.isLeader ? stats.notStarted : stats.pending}</p>
+                <p className="text-sm text-text-secondary">{isLeader ? "Not started" : "Pending"}</p>
+                <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{isLeader ? stats.notStarted : stats.pending}</p>
                 <p className="mt-2 text-xs text-text-secondary">Waiting for reviewer activity</p>
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600"><CircleDashed size={19} /></div>
@@ -417,21 +418,21 @@ export default function QualityAssessmentWorkspace() {
 
           <div
             className={
-              project?.isLeader && memberProgresses.length > 0
+              isLeader && memberProgresses.length > 0
                 ? "grid grid-cols-1 items-start gap-5 xl:grid-cols-4 xl:gap-6"
                 : "block"
             }
           >
             <div
               className={
-                project?.isLeader && memberProgresses.length > 0
+                isLeader && memberProgresses.length > 0
                   ? "min-w-0 xl:col-span-3"
                   : "w-full"
               }
             >
               <AssignMembersTabContent
                 papers={activePapers}
-                isLeader={project?.isLeader}
+                isLeader={isLeader}
                 onPaperClick={openEditSpace}
                 onAssignClick={handleAssignClick}
                 searchQuery={searchQuery}
@@ -446,7 +447,7 @@ export default function QualityAssessmentWorkspace() {
               />
             </div>
 
-            {project?.isLeader && memberProgresses.length > 0 && (
+            {isLeader && memberProgresses.length > 0 && (
               <div className="min-w-0 xl:col-span-1">
                 <ReviewerProgressPanel reviewerProgresses={memberProgresses} />
               </div>
@@ -458,7 +459,7 @@ export default function QualityAssessmentWorkspace() {
           <QAPapersTabContent
             papers={activePapers}
             strategies={strategies}
-            isLeader={project?.isLeader ?? false}
+            isLeader={isLeader}
             selectedPaper={selectedPaper}
             selectedPaperId={selectedPaperId}
             setSelectedPaperId={setSelectedPaperId}

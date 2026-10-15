@@ -29,13 +29,13 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
   const assignedPapersQuery = useQuery({
     queryKey: [...QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? ""), params],
     queryFn: () => qualityAssessmentService.getMyAssignedPapers(id ?? "", params),
-    enabled: !!id && !isLeader, // Leaders don't have assigned papers
+    enabled: !!id && isLeader === false, // Wait for the authoritative project role.
   });
 
   const allPapersQuery = useQuery({
     queryKey: [...QUERY_KEYS.qualityAssessment.papers(id ?? ""), params],
     queryFn: () => qualityAssessmentService.getPapers(id!, params),
-    enabled: !!id && !!isLeader,
+    enabled: !!id && isLeader === true,
   });
 
   const allPapers = allPapersQuery.data?.data?.papers?.items ?? [];

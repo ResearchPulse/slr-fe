@@ -35,6 +35,7 @@ export interface WizardContextType {
   state: WizardState;
   goToStep: (step: WizardStep) => void;
   startSectionSetup: (sectionId: string) => void;
+  removeSection: (sectionId: string) => void;
   updateSectionData: (sectionId: string, items: DataItemDefinitionExtended[]) => void;
   updateMatrixData: (sectionId: string, data: MatrixSectionData) => void;
   updateTemplateMeta: (name: string, description: string) => void;
