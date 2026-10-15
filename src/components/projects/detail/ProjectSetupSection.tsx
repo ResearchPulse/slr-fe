@@ -1,5 +1,6 @@
 import React from "react";
 import AIProjectSetupWizard from "../../../pages/projects/AIProjectSetupWizard";
+import PicocFieldConfirmation from "./PicocFieldConfirmation";
 
 interface ProjectSetupSectionProps {
   projectId: string;
@@ -35,6 +36,7 @@ const ProjectSetupSection: React.FC<ProjectSetupSectionProps> = ({
         hidePicoc={hidePicoc}
         hideResearchQuestions={hideResearchQuestions}
       />
+      <PicocFieldConfirmation projectId={projectId} projectTitle={projectTitle} />
     </div>
   );
 };
