@@ -1,7 +1,6 @@
 import api from "../config/axios";
 import type {
   ApiResponseDto,
-  ChecklistAutoFillStatusResponse,
   ChecklistCompletionDto,
   ChecklistEditorItemView,
   ChecklistItemResponseDto,
@@ -168,26 +167,6 @@ export const checklistApi = {
     });
 
     return response.data as Blob;
-  },
-
-  /**
-   * Upload a PDF to auto-fill checklist items via AI.
-   * Returns 202 Accepted with the initial "Queued" status.
-   * Real-time progress is delivered via SignalR "OnChecklistAutoFillStatus" event.
-   */
-  async autoFillChecklist(
-    checkListId: string,
-    file: File,
-  ): Promise<ChecklistAutoFillStatusResponse> {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    const response = await api.post<ApiResponseDto<ChecklistAutoFillStatusResponse>>(
-      `checklist/${checkListId}/auto-fill`,
-      formData,
-    );
-
-    return unwrapApiResponse(response.data);
   },
 };
 
