@@ -1,5 +1,6 @@
 import { useSelector } from "react-redux";
 import { Navigate, Outlet, useParams } from "react-router-dom";
+import { FiLoader } from "react-icons/fi";
 import { useProjectMember } from "../../hooks/useProjectMember";
 import type { RootState } from "../../redux/store";
 
@@ -61,8 +62,8 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
   if (isLoading || (isFetching && !currentProjectMember)) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        <span className="ml-3 text-sm text-muted-foreground">
+        <FiLoader className="h-7 w-7 animate-spin text-primary" />
+        <span className="ml-3 text-sm text-text-secondary">
           Verifying project access...
         </span>
       </div>
