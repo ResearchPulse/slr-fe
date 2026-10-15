@@ -71,8 +71,9 @@ describe("FieldStep", () => {
       subfield: { id: "https://openalex.org/subfields/1702" },
       source: "openalex_suggestion",
       classifierVersion: "2",
-      inputSnapshot: { title },
     }));
+    // The title/abstract snapshot is not stored until the retention policy is approved.
+    expect(probe.draft!.researchField).not.toHaveProperty("inputSnapshot");
     expect(probe.draft!.keywords).toEqual([
       { id: "k1", label: "Edge computing", origin: "openalex", kept: true },
       { id: "k2", label: "Blockchain", origin: "openalex", kept: false },

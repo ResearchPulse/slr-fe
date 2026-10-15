@@ -35,7 +35,8 @@ async function download(projectId: string, format: "json" | "md") {
 }
 
 const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
-  const { record, draft, loadError, saveStatus, update, saveNow, reload } = usePicocWizard(projectId, canEdit);
+  const { record, draft, loadError, saveStatus, update, saveNow, reload, runSemanticCheck } = usePicocWizard(projectId, canEdit);
+  const [semanticState, setSemanticState] = useState<"idle" | "running" | "failed">("idle");
   // Mutable per-session cache shared by the component steps; never rendered directly.
   const [suggestionCache] = useState<Partial<Record<PicocComponent, SuggestionCacheEntry>>>(() => ({}));
   const startedTracked = useRef(false);
@@ -102,6 +103,25 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
               <p className="mt-1 text-sm text-text-secondary">Gates are recalculated on every save. The draft can be saved even when a gate is not passed.</p>
             </header>
             <QualityGatePanel gates={record.qualityGate} onGoToStep={goTo} />
+            <div className="flex flex-wrap items-center gap-2 text-xs text-text-secondary">
+              <button
+                type="button"
+                disabled={semanticState === "running"}
+                onClick={async () => {
+                  setSemanticState("running");
+                  try {
+                    setSemanticState((await runSemanticCheck()) ? "idle" : "failed");
+                  } catch {
+                    setSemanticState("failed");
+                  }
+                }}
+                className="border border-text-primary px-3 py-2 text-xs text-text-primary disabled:opacity-40"
+              >
+                {semanticState === "running" ? "Checking…" : "Run AI consistency check (G3, G5)"}
+              </button>
+              <span>AI suggestions only — they can flag terms for review but never block saving.</span>
+              {semanticState === "failed" ? <span role="alert" className="text-text-primary">The AI check could not run. Try again later.</span> : null}
+            </div>
             <div className="flex flex-wrap gap-2">
               <button type="button" onClick={() => void saveNow(true)} className="border border-text-primary bg-text-primary px-4 py-2 text-xs text-surface-white">Save draft</button>
               <button type="button" onClick={() => void download(projectId, "md")} className="inline-flex items-center gap-1 border border-border px-3 py-2 text-xs"><FiDownload aria-hidden /> Markdown</button>

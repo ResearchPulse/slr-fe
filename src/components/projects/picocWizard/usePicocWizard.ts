@@ -90,5 +90,14 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
     timerRef.current = window.setTimeout(() => void saveNow(), AUTOSAVE_DELAY_MS);
   }, [canEdit, saveNow]);
 
-  return { record, draft, loadError, saveStatus, update, saveNow, reload: load };
+  /** Saves pending edits, then runs the AI consistency gates on that saved revision. */
+  const runSemanticCheck = useCallback(async () => {
+    await saveNow();
+    if (conflictRef.current || dirtyRef.current) return false;
+    const checked = await picocWizardStateService.semanticCheck(projectId, revisionRef.current);
+    if (checked.revision === revisionRef.current) setRecord(checked);
+    return true;
+  }, [projectId, saveNow]);
+
+  return { record, draft, loadError, saveStatus, update, saveNow, reload: load, runSemanticCheck };
 }
