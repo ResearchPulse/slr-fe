@@ -82,7 +82,18 @@ export default function AgentManagement() {
             <div key={agent.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#EEF6FB] text-[#087BC1]"><FiCpu /></div>
               <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2"><h3 className="font-semibold">{agent.name}</h3><span className={`rounded-full px-2 py-0.5 text-[10px] ${agent.isActive ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}>{agent.isActive ? "Available" : "Disabled"}</span></div>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-semibold text-text-primary">{agent.name}</h3>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${
+                      agent.isActive
+                        ? "border border-emerald-200 bg-emerald-50 text-emerald-800"
+                        : "border border-border bg-bg-secondary text-text-secondary"
+                    }`}
+                  >
+                    {agent.isActive ? "Available" : "Disabled"}
+                  </span>
+                </div>
                 <p className="mt-1 text-sm text-[#71838F]">{agent.description || "No description"}</p>
               </div>
               <div className="flex gap-2">

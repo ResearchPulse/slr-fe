@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from "react";
-import { FileText } from "lucide-react";
+import { FileText, ZoomIn, ZoomOut } from "lucide-react";
 import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { zoomPlugin } from "@react-pdf-viewer/zoom";
 import { PDF_WORKER_URL } from "../../../../../config/pdfWorker";
 import {
   highlightPlugin,
@@ -160,6 +161,7 @@ export default function ReviewerPdfPanel({
     renderHighlightTarget,
     renderHighlights,
   });
+  const zoomPluginInstance = zoomPlugin();
 
   useEffect(() => {
     highlightPluginInstance.switchTrigger(
@@ -170,13 +172,48 @@ export default function ReviewerPdfPanel({
   return (
     <section className="h-full min-h-0 min-w-0">
       <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
-        <div className="flex min-h-11 items-center justify-between gap-3 border-b border-border bg-[#F2F6F9] px-4 py-2">
-          <p className="text-xs font-medium text-text-secondary">
+        <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border bg-[#F2F6F9] px-3 py-2 sm:px-4">
+          <p className="min-w-0 flex-1 text-xs font-medium text-text-secondary">
             {activeEvidenceTargetLabel
               ? `Evidence mode: ${activeEvidenceTargetLabel}. Select text then click Use as Evidence.`
               : "Click a field crosshair button first to enter evidence mode for that field."}
           </p>
 
+          <div className="flex shrink-0 items-center gap-1 rounded-lg border border-border bg-surface-white p-1">
+            <zoomPluginInstance.ZoomOut>
+              {({ onClick }) => (
+                <button
+                  type="button"
+                  onClick={onClick}
+                  aria-label="Zoom out"
+                  title="Zoom out"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                >
+                  <ZoomOut className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </zoomPluginInstance.ZoomOut>
+            <zoomPluginInstance.CurrentScale>
+              {({ scale }) => (
+                <span className="min-w-10 text-center text-xs font-medium tabular-nums text-text-secondary" aria-live="polite">
+                  {Math.round(scale * 100)}%
+                </span>
+              )}
+            </zoomPluginInstance.CurrentScale>
+            <zoomPluginInstance.ZoomIn>
+              {({ onClick }) => (
+                <button
+                  type="button"
+                  onClick={onClick}
+                  aria-label="Zoom in"
+                  title="Zoom in"
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                >
+                  <ZoomIn className="h-4 w-4" aria-hidden="true" />
+                </button>
+              )}
+            </zoomPluginInstance.ZoomIn>
+          </div>
           {canUseEvidenceSelection ? (
             <span className="shrink-0 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
               Selection enabled
@@ -188,7 +225,7 @@ export default function ReviewerPdfPanel({
             <Worker workerUrl={PDF_WORKER_URL}>
               <Viewer
                 fileUrl={effectiveDocumentUrl}
-                plugins={[highlightPluginInstance]}
+                plugins={[highlightPluginInstance, zoomPluginInstance]}
               />
             </Worker>
           ) : (
