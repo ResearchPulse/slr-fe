@@ -2036,7 +2036,7 @@ export default function DataExtractionConsensusWorkspace({
                 disabled={ws.isSubmittingConsensus}
                 className="flex items-center gap-2 rounded-xl bg-primary text-white hover:bg-primary-hover shadow-xs"
               >
-                <FiCheck className="h-4 w-4" />
+                <CheckCircle2 className="h-4 w-4" />
                 <span>
                   {isCompletedPaper
                     ? "Update Final Data"
