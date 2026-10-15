@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlertTriangle, CheckCircle2, Eye, MessageSquare } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Clock3, Eye, Lock, MessageSquare } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Card from "../../../../components/ui/Card";
 import Drawer from "../../../../components/ui/Drawer";
@@ -15,6 +15,7 @@ import type {
   ConsensusValueDto,
   AnswerDetailDto,
   ExtractionCommentDto,
+  ExtractionConsensusAnalysisDto,
   SubmitConsensusRequestDto,
 } from "../../../../types/dataExtraction";
 import {
@@ -26,8 +27,18 @@ import ConsensusDocumentDrawer from "./consensusWorkspace/ConsensusDocumentDrawe
 import ConsensusHeader from "./consensusWorkspace/ConsensusHeader";
 import ConsensusSidebar from "./consensusWorkspace/ConsensusSidebar";
 import ConsensusStateScreen from "./consensusWorkspace/ConsensusStateScreen";
+import ExpandableAnswerText from "./consensusWorkspace/ExpandableAnswerText";
 import IsolatedFieldComments from "./comments/IsolatedFieldComments";
 import { parseEvidenceCoordinates } from "../utils/evidenceCoordinates";
+
+const FIELD_TYPE_LABELS: Record<number, string> = {
+  [FieldTypeEnum.Text]: "Text",
+  [FieldTypeEnum.Integer]: "Number (Integer)",
+  [FieldTypeEnum.Decimal]: "Number (Decimal)",
+  [FieldTypeEnum.Boolean]: "Yes/No",
+  [FieldTypeEnum.SingleSelect]: "Single Select",
+  [FieldTypeEnum.MultiSelect]: "Multi Select",
+};
 
 type ReviewerThreadKey = "reviewer1" | "reviewer2";
 
@@ -50,6 +61,97 @@ interface DataExtractionConsensusWorkspaceProps {
 
 function normalizeDisplayValue(value: string | null | undefined): string {
   return (value ?? "").trim() || "Not provided";
+}
+
+function formatConsensusValue(value: unknown): string {
+  if (value === undefined || value === null) return "Not provided";
+  if (typeof value === "string") return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function AgentConsensusAnalysisPanel({
+  analysis,
+}: {
+  analysis: ExtractionConsensusAnalysisDto;
+}) {
+  const evidenceRows = analysis.fields.flatMap((field) => [
+    ...(field.reviewer1Evidence ?? []).map((evidence) => ({ field, reviewer: "R1", evidence })),
+    ...(field.reviewer2Evidence ?? []).map((evidence) => ({ field, reviewer: "R2", evidence })),
+  ]);
+
+  return (
+    <Card className="mb-4 overflow-hidden rounded-xl border border-sky-200 bg-sky-50/40 p-0 shadow-xs">
+      <div className="border-b border-sky-200 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-semibold text-text-primary">MCP leader consensus analysis</h3>
+            <p className="mt-1 text-xs text-text-secondary">{analysis.summary}</p>
+          </div>
+          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${analysis.status === "CONFLICT" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>
+            {analysis.status}
+          </span>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-[1180px] w-full border-collapse text-left text-xs">
+          <thead className="bg-white/70 text-text-secondary">
+            <tr>
+              {[
+                "Field / section", "Required", "Status", "R1 value", "R2 value", "Recommended",
+                "Evidence", "Value/evidence checks", "Reason",
+              ].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {analysis.fields.map((field) => (
+              <tr key={field.fieldId} className="border-b border-sky-100 align-top last:border-0">
+                <td className="px-3 py-2"><div className="font-semibold text-text-primary">{field.fieldName ?? field.fieldId}</div><div className="text-text-muted">{field.sectionName ?? ""} · {field.fieldId}</div></td>
+                <td className="px-3 py-2">{field.isRequired ? "Yes" : "No"}</td>
+                <td className="px-3 py-2 font-semibold">{field.status}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.reviewer1Value)}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.reviewer2Value)}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.recommendedValue)}</td>
+                <td className="px-3 py-2">R1: {field.reviewer1Evidence?.length ?? 0}<br />R2: {field.reviewer2Evidence?.length ?? 0}</td>
+                <td className="max-w-[260px] whitespace-pre-wrap break-words px-3 py-2">{field.checks.join(" · ")}</td>
+                <td className="max-w-[280px] whitespace-pre-wrap break-words px-3 py-2">{field.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="border-t border-sky-200 px-4 py-3">
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Evidence details</h4>
+        <div className="overflow-x-auto">
+          <table className="min-w-[980px] w-full border-collapse text-left text-xs">
+            <thead className="bg-white/70 text-text-secondary"><tr>
+              {['Field', 'Reviewer', 'Quote', 'Start offset', 'End offset', 'Source asset', 'Source revision', 'Source hash', 'Quote hash', 'Section', 'Paragraph', 'PDF page'].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+            </tr></thead>
+            <tbody>
+              {evidenceRows.length ? evidenceRows.map(({ field, reviewer, evidence }, index) => (
+                <tr key={`${field.fieldId}-${reviewer}-${index}`} className="border-b border-sky-100 align-top last:border-0">
+                  <td className="px-3 py-2">{field.fieldName ?? field.fieldId}</td><td className="px-3 py-2">{reviewer}</td>
+                  <td className="max-w-[360px] whitespace-pre-wrap break-words px-3 py-2">{evidence.quote}</td>
+                  <td className="px-3 py-2">{evidence.startOffset}</td><td className="px-3 py-2">{evidence.endOffset}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceAssetId}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceRevision}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceHash}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.quoteHash}</td>
+                  <td className="px-3 py-2">{evidence.section ?? "—"}</td>
+                  <td className="px-3 py-2">{evidence.paragraph ?? "—"}</td><td className="px-3 py-2">{evidence.pdfPage ?? "—"}</td>
+                </tr>
+              )) : <tr><td colSpan={12} className="px-3 py-3 text-text-secondary">No evidence rows were submitted for these fields.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 function getReviewerDisplayName(
@@ -928,24 +1030,59 @@ export default function DataExtractionConsensusWorkspace({
           />
         );
       } else {
-        control = (
-          <Input
-            type="text"
-            value={finalValue?.stringValue ?? ""}
-            onChange={(event) =>
-              handleFinalAnswerChange(
-                sectionId,
-                field,
-                matrixColumnId,
-                matrixRowIndex,
-                event.target.value,
-              )
-            }
-            placeholder="Enter final decision"
-            className="bg-surface-white"
-            disabled={controlDisabled}
-          />
-        );
+        const strVal = finalValue?.stringValue ?? "";
+        if (isReadOnly) {
+          control = (
+            <div className="rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary min-h-[38px] flex items-start">
+              {strVal.trim() ? (
+                <ExpandableAnswerText text={strVal} />
+              ) : (
+                <span className="text-text-muted italic text-xs">Not provided</span>
+              )}
+            </div>
+          );
+        } else {
+          const isLong = strVal.length > 50 || strVal.includes("\n");
+          if (isLong) {
+            control = (
+              <textarea
+                value={strVal}
+                onChange={(event) =>
+                  handleFinalAnswerChange(
+                    sectionId,
+                    field,
+                    matrixColumnId,
+                    matrixRowIndex,
+                    event.target.value,
+                  )
+                }
+                placeholder="Enter final decision"
+                rows={Math.min(4, Math.max(2, Math.ceil(strVal.length / 40)))}
+                className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 resize-y leading-relaxed"
+                disabled={controlDisabled}
+              />
+            );
+          } else {
+            control = (
+              <Input
+                type="text"
+                value={strVal}
+                onChange={(event) =>
+                  handleFinalAnswerChange(
+                    sectionId,
+                    field,
+                    matrixColumnId,
+                    matrixRowIndex,
+                    event.target.value,
+                  )
+                }
+                placeholder="Enter final decision"
+                className="bg-surface-white"
+                disabled={controlDisabled}
+              />
+            );
+          }
+        }
       }
 
       return (
@@ -1203,11 +1340,13 @@ export default function DataExtractionConsensusWorkspace({
   const paperTitle = ws.selectedStudy?.title ?? "Unknown Study";
 
   return (
-    <div className="h-[calc(100vh-5rem)] flex flex-col overflow-hidden bg-bg-secondary pb-16">
+    <div className="flex flex-col h-[calc(100dvh-7.75rem)] min-h-[500px] overflow-hidden bg-bg-secondary">
       <ConsensusHeader
         paperTitle={paperTitle}
         onBack={() => navigate(dashboardPath)}
         onOpenDocument={() => setIsDocumentDrawerOpen(true)}
+        isReadOnly={isReadOnly}
+        isPartialPreview={partialConsensusPreview}
       />
 
       <main className="flex flex-1 min-h-0">
@@ -1219,7 +1358,7 @@ export default function DataExtractionConsensusWorkspace({
           onSectionChange={setActiveSectionId}
         />
 
-        <section className="w-[80%] overflow-y-auto p-6">
+        <section className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6">
           {isCorrectionMode && (
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700">
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -1229,8 +1368,11 @@ export default function DataExtractionConsensusWorkspace({
 
           {isReadOnly && (
             <div className="mb-4 rounded-xl border border-accent/30 bg-primary-light px-4 py-3 text-sm text-accent">
-              <p className="font-medium">💙 Read-Only Mode</p>
-              <p className="mt-1 text-accent">
+              <div className="flex items-center gap-1.5 font-semibold text-accent">
+                <Lock className="h-4 w-4 shrink-0" />
+                <span>Read-Only Mode</span>
+              </div>
+              <p className="mt-1 text-sm text-accent/90">
                 {partialConsensusPreview
                   ? `Reviewer preview: ${reviewer1Name} is ${consensusWorkspace?.reviewer1Status ?? "NOT SUBMITTED"}; ${reviewer2Name} is ${consensusWorkspace?.reviewer2Status ?? "NOT SUBMITTED"}. Consensus controls unlock after both reviewers submit.`
                   : "This paper's extraction is completed. You are viewing the consensus in read-only mode."}
@@ -1238,21 +1380,44 @@ export default function DataExtractionConsensusWorkspace({
             </div>
           )}
 
-          <Card className="rounded-xl border border-border bg-surface-white p-0 shadow-none">
-            <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          {consensusWorkspace.leaderDraft?.agentAnalysis && (
+            <AgentConsensusAnalysisPanel analysis={consensusWorkspace.leaderDraft.agentAnalysis} />
+          )}
+
+          {/* Section Header matching Template Wizard */}
+          <div className="mb-4">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg font-semibold text-text-primary sm:text-xl">
+                {activeSection.name}
+              </h2>
+              <span className="rounded-full bg-bg-secondary px-2.5 py-0.5 text-xs font-medium text-text-secondary">
+                Compatible section
+              </span>
+              {activeConflictCount > 0 && (
+                <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                  {activeConflictCount} remaining conflicts
+                </span>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-text-secondary">
+              {activeSection.description ||
+                "Compare Reviewer 1 and Reviewer 2 values, then set the final decision."}
+            </p>
+          </div>
+
+          <Card className="rounded-xl border border-border bg-surface-white p-0 shadow-xs overflow-hidden">
+            <div className="flex items-center justify-between border-b border-border px-4 py-3 sm:px-5">
               <div>
-                <h2 className="text-lg font-semibold text-text-primary">
-                  {activeSection.name}
-                </h2>
-                <p className="mt-1 text-sm text-text-secondary">
-                  Compare Reviewer 1 and Reviewer 2 values, then set the final
-                  decision.
+                <h3 className="text-sm font-semibold text-text-primary">
+                  Extraction fields
+                </h3>
+                <p className="mt-0.5 text-xs text-text-secondary">
+                  {activeSection.fields.length} fields configured ·{" "}
+                  {activeConflictCount === 0
+                    ? "All conflicts resolved"
+                    : `${activeConflictCount} conflicts require adjudication`}
                 </p>
               </div>
-
-              <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary">
-                {activeConflictCount} remaining conflicts in this section
-              </span>
             </div>
 
             {activeSection.sectionType === SectionType.FlatForm ? (
@@ -1260,29 +1425,29 @@ export default function DataExtractionConsensusWorkspace({
                 <table className="min-w-[980px] w-full border-collapse">
                   <thead className="sticky top-0 z-10 bg-bg-secondary">
                     <tr className="text-left">
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                      <th className="w-[24%] min-w-[200px] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Field Name
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                      <th className="w-[25%] min-w-[220px] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer1Name}
-                        <span className="ml-1 font-normal normal-case">
+                        <span className="ml-1 font-normal normal-case opacity-75">
                           ({consensusWorkspace.reviewer1Status ?? "SUBMITTED"})
                         </span>
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                      <th className="w-[25%] min-w-[220px] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer2Name}
-                        <span className="ml-1 font-normal normal-case">
+                        <span className="ml-1 font-normal normal-case opacity-75">
                           ({consensusWorkspace.reviewer2Status ?? "SUBMITTED"})
                         </span>
                       </th>
-                      <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                      <th className="w-[26%] min-w-[220px] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Final Decision
                       </th>
                     </tr>
                   </thead>
 
                   <tbody>
-                    {activeSection.fields.map((field) => {
+                    {activeSection.fields.map((field, fieldIndex) => {
                       const answerGroup = getPrimaryAnswerGroup(field);
                       const rev1Answer = answerGroup?.reviewer1Answer ?? null;
                       const rev2Answer = answerGroup?.reviewer2Answer ?? null;
@@ -1297,60 +1462,96 @@ export default function DataExtractionConsensusWorkspace({
                         null,
                       );
                       const finalValue = effectiveFinalAnswers[sectionKey];
-                      const rowHasUnresolvedConflict = hasUnresolvedConflict(
-                        activeSection.sectionId,
-                        field,
-                        answerGroup,
-                        effectiveFinalAnswers,
-                        explicitlyResolvedFields,
-                      );
+                      const rowHasUnresolvedConflict =
+                        !isReadOnly &&
+                        hasUnresolvedConflict(
+                          activeSection.sectionId,
+                          field,
+                          answerGroup,
+                          effectiveFinalAnswers,
+                          explicitlyResolvedFields,
+                        );
                       const rowConflictResolved =
-                        rowHasConflict && !rowHasUnresolvedConflict;
+                        !isReadOnly && rowHasConflict && !rowHasUnresolvedConflict;
 
                       return (
                         <tr
                           key={field.fieldId}
                           className={
                             rowHasUnresolvedConflict
-                              ? "border-t border-amber-100 bg-amber-50"
+                              ? "border-t border-amber-200/80 bg-amber-50/70"
                               : rowConflictResolved
-                                ? "border-t border-emerald-100 bg-emerald-50/40"
-                                : "border-t border-border bg-surface-white"
+                                ? "border-t border-emerald-200/60 bg-emerald-50/30"
+                                : "border-t border-border bg-surface-white hover:bg-bg-primary/20 transition-colors"
                           }
                         >
                           <td className="px-4 py-4 align-top">
-                            <div className="flex items-start gap-2">
-                              {rowHasUnresolvedConflict ? (
-                                <AlertTriangle className="mt-0.5 h-4 w-4 text-amber-600 shrink-0" />
-                              ) : (
-                                <CheckCircle2
-                                  className={
-                                    rowConflictResolved
-                                      ? "mt-0.5 h-4 w-4 text-emerald-600 shrink-0"
-                                      : "mt-0.5 h-4 w-4 text-green-600 shrink-0"
-                                  }
-                                />
-                              )}
-                              <div>
-                                <p className="text-sm font-semibold text-slate-800">
-                                  {field.name}
-                                </p>
-                                <p className="mt-1 text-xs text-text-secondary">
-                                  {rowHasUnresolvedConflict
-                                    ? "Conflict detected"
-                                    : rowConflictResolved
-                                      ? "Conflict resolved"
-                                      : "Answers match"}
-                                </p>
+                            <div className="flex items-start gap-2.5">
+                              <span className="w-5 shrink-0 pt-0.5 text-xs tabular-nums text-text-muted">
+                                {fieldIndex + 1}
+                              </span>
+                              <div className="min-w-0 flex-1 space-y-1.5">
+                                <div className="flex items-start gap-1.5">
+                                  {rowHasUnresolvedConflict ? (
+                                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 text-amber-600 shrink-0" />
+                                  ) : rowConflictResolved ? (
+                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                  ) : partialConsensusPreview ? (
+                                    <Clock3 className="mt-0.5 h-3.5 w-3.5 text-text-muted shrink-0" />
+                                  ) : (
+                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                  )}
+                                  <p className="text-sm font-semibold text-text-primary break-words">
+                                    {field.name}
+                                  </p>
+                                </div>
+
+                                {field.instruction && (
+                                  <p className="line-clamp-2 text-xs text-text-secondary">
+                                    {field.instruction}
+                                  </p>
+                                )}
+
+                                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                                  {field.fieldType !== FieldTypeEnum.Text && (
+                                    <span className="rounded-md border border-border bg-bg-primary/50 px-1.5 py-0.5 text-[10px] font-medium text-text-secondary">
+                                      {FIELD_TYPE_LABELS[field.fieldType] ?? "Text"}
+                                    </span>
+                                  )}
+                                  {field.isRequired && (
+                                    <span className="rounded-md bg-primary-light/60 px-1.5 py-0.5 text-[10px] font-medium text-primary">
+                                      Required
+                                    </span>
+                                  )}
+                                  {partialConsensusPreview ? (
+                                    <span className="rounded-md bg-bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-text-secondary">
+                                      Pending Reviewer 2
+                                    </span>
+                                  ) : isReadOnly ? (
+                                    <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                                      Finalized
+                                    </span>
+                                  ) : rowHasUnresolvedConflict ? (
+                                    <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
+                                      Conflict detected
+                                    </span>
+                                  ) : rowConflictResolved ? (
+                                    <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">
+                                      Conflict resolved
+                                    </span>
+                                  ) : (
+                                    <span className="rounded-md bg-bg-secondary px-1.5 py-0.5 text-[10px] font-medium text-text-secondary">
+                                      Answers match
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
                           </td>
 
                           <td className="px-4 py-4 align-top">
                             <div className="flex items-start gap-2 rounded-xl border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
-                              <div className="min-w-0 flex-1">
-                                {getAnswerDisplayValue(rev1Answer)}
-                              </div>
+                              <ExpandableAnswerText text={getAnswerDisplayValue(rev1Answer)} />
                               {hasEvidenceCoordinates(rev1Answer) ? (
                                 <button
                                   type="button"
@@ -1394,9 +1595,7 @@ export default function DataExtractionConsensusWorkspace({
 
                           <td className="px-4 py-4 align-top">
                             <div className="flex items-start gap-2 rounded-xl border border-border bg-bg-secondary px-3 py-2 text-sm text-text-primary">
-                              <div className="min-w-0 flex-1">
-                                {getAnswerDisplayValue(rev2Answer)}
-                              </div>
+                              <ExpandableAnswerText text={getAnswerDisplayValue(rev2Answer)} />
                               {hasEvidenceCoordinates(rev2Answer) ? (
                                 <button
                                   type="button"
@@ -1412,105 +1611,114 @@ export default function DataExtractionConsensusWorkspace({
                                   <Eye className="h-3.5 w-3.5" />
                                 </button>
                               ) : null}
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  openThread(
-                                    "reviewer2",
-                                    activeSection.sectionId,
-                                    field.fieldId,
-                                    field.name,
-                                    null,
-                                    null,
-                                  )
-                                }
-                                className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
-                                aria-label="Open reviewer 2 thread"
-                                title="Open reviewer 2 thread"
-                              >
-                                <MessageSquare className="h-3.5 w-3.5" />
-                                {(rev2Answer?.comments?.length ?? 0) > 0 ? (
-                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
-                                    {rev2Answer?.comments?.length}
-                                  </span>
-                                ) : null}
-                              </button>
+                              {rev2Answer ? (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    openThread(
+                                      "reviewer2",
+                                      activeSection.sectionId,
+                                      field.fieldId,
+                                      field.name,
+                                      null,
+                                      null,
+                                    )
+                                  }
+                                  className="relative inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
+                                  aria-label="Open reviewer 2 thread"
+                                  title="Open reviewer 2 thread"
+                                >
+                                  <MessageSquare className="h-3.5 w-3.5" />
+                                  {(rev2Answer?.comments?.length ?? 0) > 0 ? (
+                                    <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
+                                      {rev2Answer?.comments?.length}
+                                    </span>
+                                  ) : null}
+                                </button>
+                              ) : null}
                             </div>
                           </td>
 
                           <td className="px-4 py-4 align-top">
-                            <div className="space-y-2">
-                              {renderFinalDecisionControl(
-                                activeSection.sectionId,
-                                field,
-                                null,
-                                null,
-                                finalValue,
-                              )}
-
-                              {hasFinalEvidenceCoordinates(finalValue) ? (
-                                <button
-                                  type="button"
-                                  onClick={() =>
-                                    handleJumpToEvidence(
-                                      finalValue?.evidenceCoordinates ?? "",
-                                    )
-                                  }
-                                  className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
-                                  aria-label="View final evidence"
-                                  title="View final evidence"
-                                >
-                                  <Eye className="h-3.5 w-3.5" />
-                                </button>
-                              ) : null}
-
-                              <div className="flex items-center justify-between gap-2">
-                                <span className="text-xs font-medium text-text-secondary">
-                                  Final decision note
-                                </span>
-                                {renderFinalDecisionCommentButton(
+                            {partialConsensusPreview ? (
+                              <div className="flex items-center gap-2 rounded-xl border border-dashed border-border bg-bg-primary/40 px-3.5 py-3 text-xs text-text-muted">
+                                <Lock className="h-3.5 w-3.5 shrink-0 text-text-muted" />
+                                <span>Unlocked after both reviewers submit</span>
+                              </div>
+                            ) : (
+                              <div className="space-y-2">
+                                {renderFinalDecisionControl(
+                                  activeSection.sectionId,
                                   field,
                                   null,
                                   null,
-                                  answerGroup?.finalAnswer?.comments ?? [],
+                                  finalValue,
+                                )}
+
+                                {hasFinalEvidenceCoordinates(finalValue) ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      handleJumpToEvidence(
+                                        finalValue?.evidenceCoordinates ?? "",
+                                      )
+                                    }
+                                    className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
+                                    aria-label="View final evidence"
+                                    title="View final evidence"
+                                  >
+                                    <Eye className="h-3.5 w-3.5" />
+                                  </button>
+                                ) : null}
+
+                                <div className="flex items-center justify-between gap-2">
+                                  <span className="text-xs font-medium text-text-secondary">
+                                    Final decision note
+                                  </span>
+                                  {renderFinalDecisionCommentButton(
+                                    field,
+                                    null,
+                                    null,
+                                    answerGroup?.finalAnswer?.comments ?? [],
+                                  )}
+                                </div>
+
+                                {!isReadOnly && (
+                                  <div className="flex gap-2">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        handleUseReviewerAnswer(
+                                          activeSection.sectionId,
+                                          field,
+                                          answerGroup,
+                                          "reviewer1Answer",
+                                        )
+                                      }
+                                      className="!px-2 text-xs"
+                                    >
+                                      Use R1
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() =>
+                                        handleUseReviewerAnswer(
+                                          activeSection.sectionId,
+                                          field,
+                                          answerGroup,
+                                          "reviewer2Answer",
+                                        )
+                                      }
+                                      className="!px-2 text-xs"
+                                    >
+                                      Use R2
+                                    </Button>
+                                  </div>
                                 )}
                               </div>
-
-                              {!isReadOnly && (
-                                <div className="flex gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      handleUseReviewerAnswer(
-                                        activeSection.sectionId,
-                                        field,
-                                        answerGroup,
-                                        "reviewer1Answer",
-                                      )
-                                    }
-                                    className="!px-2 text-xs"
-                                  >
-                                    Use R1
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() =>
-                                      handleUseReviewerAnswer(
-                                        activeSection.sectionId,
-                                        field,
-                                        answerGroup,
-                                        "reviewer2Answer",
-                                      )
-                                    }
-                                    className="!px-2 text-xs"
-                                  >
-                                    Use R2
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
+                            )}
                           </td>
                         </tr>
                       );
@@ -1619,15 +1827,17 @@ export default function DataExtractionConsensusWorkspace({
                                   );
                                   const finalValue =
                                     effectiveFinalAnswers[answerKey];
-                                  const unresolved = hasUnresolvedConflict(
-                                    activeSection.sectionId,
-                                    field,
-                                    answerGroup,
-                                    effectiveFinalAnswers,
-                                    explicitlyResolvedFields,
-                                  );
+                                  const unresolved =
+                                    !isReadOnly &&
+                                    hasUnresolvedConflict(
+                                      activeSection.sectionId,
+                                      field,
+                                      answerGroup,
+                                      effectiveFinalAnswers,
+                                      explicitlyResolvedFields,
+                                    );
                                   const rowConflictResolved =
-                                    hasConflict && !unresolved;
+                                    !isReadOnly && hasConflict && !unresolved;
 
                                   return (
                                     <td
@@ -1644,11 +1854,11 @@ export default function DataExtractionConsensusWorkspace({
                                             {reviewer1Name}
                                           </p>
                                           <div className="mt-1 flex items-start gap-2 text-xs text-text-primary">
-                                            <p className="min-w-0 flex-1">
-                                              {getAnswerDisplayValue(
+                                            <ExpandableAnswerText
+                                              text={getAnswerDisplayValue(
                                                 rev1Answer,
                                               )}
-                                            </p>
+                                            />
                                             {hasEvidenceCoordinates(
                                               rev1Answer,
                                             ) ? (
@@ -1700,11 +1910,11 @@ export default function DataExtractionConsensusWorkspace({
                                             {reviewer2Name}
                                           </p>
                                           <div className="mt-1 flex items-start gap-2 text-xs text-text-primary">
-                                            <p className="min-w-0 flex-1">
-                                              {getAnswerDisplayValue(
+                                            <ExpandableAnswerText
+                                              text={getAnswerDisplayValue(
                                                 rev2Answer,
                                               )}
-                                            </p>
+                                            />
                                             {hasEvidenceCoordinates(
                                               rev2Answer,
                                             ) ? (
@@ -1723,77 +1933,98 @@ export default function DataExtractionConsensusWorkspace({
                                                 <Eye className="h-3 w-3" />
                                               </button>
                                             ) : null}
-                                            <button
-                                              type="button"
-                                              onClick={() =>
-                                                openThread(
-                                                  "reviewer2",
-                                                  activeSection.sectionId,
-                                                  field.fieldId,
-                                                  field.name,
-                                                  column.columnId ?? null,
-                                                  rowIndex,
-                                                  column.name,
-                                                )
-                                              }
-                                              className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
-                                              aria-label="Open reviewer 2 thread"
-                                              title="Open reviewer 2 thread"
-                                            >
-                                              <MessageSquare className="h-3 w-3" />
-                                              {(rev2Answer?.comments?.length ??
-                                                0) > 0 ? (
-                                                <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
-                                                  {rev2Answer?.comments?.length}
-                                                </span>
-                                              ) : null}
-                                            </button>
+                                            {rev2Answer ? (
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  openThread(
+                                                    "reviewer2",
+                                                    activeSection.sectionId,
+                                                    field.fieldId,
+                                                    field.name,
+                                                    column.columnId ?? null,
+                                                    rowIndex,
+                                                    column.name,
+                                                  )
+                                                }
+                                                className="relative inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
+                                                aria-label="Open reviewer 2 thread"
+                                                title="Open reviewer 2 thread"
+                                              >
+                                                <MessageSquare className="h-3 w-3" />
+                                                {(rev2Answer?.comments?.length ??
+                                                  0) > 0 ? (
+                                                  <span className="absolute -right-1 -top-1 inline-flex min-w-3.5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-bold text-white">
+                                                    {rev2Answer?.comments?.length}
+                                                  </span>
+                                                ) : null}
+                                              </button>
+                                            ) : null}
                                           </div>
                                         </div>
 
-                                        {renderFinalDecisionControl(
-                                          activeSection.sectionId,
-                                          field,
-                                          column.columnId ?? null,
-                                          rowIndex,
-                                          finalValue,
-                                          true,
+                                        {partialConsensusPreview ? (
+                                          <div className="flex items-center gap-1.5 rounded-xl border border-dashed border-border bg-bg-primary/40 px-2 py-1.5 text-[11px] text-text-muted">
+                                            <Lock className="h-3 w-3 shrink-0 text-text-muted" />
+                                            <span>Unlocked after submissions</span>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            {renderFinalDecisionControl(
+                                              activeSection.sectionId,
+                                              field,
+                                              column.columnId ?? null,
+                                              rowIndex,
+                                              finalValue,
+                                              true,
+                                            )}
+
+                                            {hasFinalEvidenceCoordinates(
+                                              finalValue,
+                                            ) ? (
+                                              <button
+                                                type="button"
+                                                onClick={() =>
+                                                  handleJumpToEvidence(
+                                                    finalValue?.evidenceCoordinates ??
+                                                      "",
+                                                  )
+                                                }
+                                                className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
+                                                aria-label="View final evidence"
+                                                title="View final evidence"
+                                              >
+                                                <Eye className="h-3 w-3" />
+                                              </button>
+                                            ) : null}
+
+                                            <div className="flex items-center justify-between gap-2">
+                                              <span className="text-[11px] font-medium text-text-secondary">
+                                                Final decision note
+                                              </span>
+                                              {renderFinalDecisionCommentButton(
+                                                field,
+                                                column.columnId ?? null,
+                                                rowIndex,
+                                                answerGroup?.finalAnswer
+                                                  ?.comments ?? [],
+                                                column.name,
+                                              )}
+                                            </div>
+                                          </>
                                         )}
 
-                                        {hasFinalEvidenceCoordinates(
-                                          finalValue,
-                                        ) ? (
-                                          <button
-                                            type="button"
-                                            onClick={() =>
-                                              handleJumpToEvidence(
-                                                finalValue?.evidenceCoordinates ??
-                                                  "",
-                                              )
-                                            }
-                                            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
-                                            aria-label="View final evidence"
-                                            title="View final evidence"
-                                          >
-                                            <Eye className="h-3 w-3" />
-                                          </button>
-                                        ) : null}
-
-                                        <div className="flex items-center justify-between gap-2">
-                                          <span className="text-[11px] font-medium text-text-secondary">
-                                            Final decision note
-                                          </span>
-                                          {renderFinalDecisionCommentButton(
-                                            field,
-                                            column.columnId ?? null,
-                                            rowIndex,
-                                            answerGroup?.finalAnswer
-                                              ?.comments ?? [],
-                                            column.name,
-                                          )}
-                                        </div>
-
-                                        {unresolved ? (
+                                        {partialConsensusPreview ? (
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-bg-secondary px-2 py-1 text-[11px] font-medium text-text-secondary">
+                                            <Clock3 className="h-3.5 w-3.5 text-text-muted" />
+                                            Pending Reviewer 2
+                                          </div>
+                                        ) : isReadOnly ? (
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
+                                            <CheckCircle2 className="h-3.5 w-3.5" />
+                                            Finalized
+                                          </div>
+                                        ) : unresolved ? (
                                           <div className="inline-flex items-center gap-1 rounded-xl bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-800">
                                             <AlertTriangle className="h-3.5 w-3.5" />
                                             Conflict detected
@@ -1876,7 +2107,7 @@ export default function DataExtractionConsensusWorkspace({
             )}
           </Card>
 
-          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between shadow-xs">
             <p
               className={
                 `min-w-0 ${hasUnresolvedConflicts && !isReadOnly
@@ -1899,10 +2130,14 @@ export default function DataExtractionConsensusWorkspace({
                 onClick={handleSaveAndComplete}
                 isLoading={ws.isSubmittingConsensus}
                 disabled={ws.isSubmittingConsensus}
+                className="flex items-center gap-2 rounded-xl bg-primary text-white hover:bg-primary-hover shadow-xs"
               >
-                {isCompletedPaper
-                  ? "Update Final Data"
-                  : "Save & Complete Consensus"}
+                <CheckCircle2 className="h-4 w-4" />
+                <span>
+                  {isCompletedPaper
+                    ? "Update Final Data"
+                    : "Save & Complete Consensus"}
+                </span>
               </Button>
             )}
           </div>

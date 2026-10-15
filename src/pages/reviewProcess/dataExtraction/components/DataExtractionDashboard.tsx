@@ -27,7 +27,9 @@ import {
   ArrowLeft,
   UserPlus,
   UsersRound,
+  AlertTriangle,
 } from "lucide-react";
+import { cn } from "../../../../utils/cn";
 import Button from "../../../../components/ui/Button";
 import Checkbox from "../../../../components/ui/Checkbox";
 import Input from "../../../../components/ui/Input";
@@ -202,6 +204,9 @@ export default function DataExtractionDashboard({
   const [reopenModalPaper, setReopenModalPaper] =
     useState<DashboardTask | null>(null);
   const [reopenReason, setReopenReason] = useState("");
+  const [reopenTarget, setReopenTarget] = useState<TargetReviewer>(
+    TargetReviewer.Reviewer1,
+  );
   const [assignModalTask, setAssignModalTask] = useState<DashboardTask | null>(
     null,
   );
@@ -272,6 +277,28 @@ export default function DataExtractionDashboard({
       }, {}),
     [reviewerOptions],
   );
+
+  const reopenReviewer1Name = useMemo(() => {
+    if (!reopenModalPaper?.reviewer1Id) return "Reviewer 1";
+    return (
+      reviewerLabelById[reopenModalPaper.reviewer1Id] ||
+      reopenModalPaper.reviewer1Id
+    );
+  }, [reopenModalPaper, reviewerLabelById]);
+
+  const reopenReviewer2Name = useMemo(() => {
+    if (!reopenModalPaper?.reviewer2Id) return "Reviewer 2";
+    return (
+      reviewerLabelById[reopenModalPaper.reviewer2Id] ||
+      reopenModalPaper.reviewer2Id
+    );
+  }, [reopenModalPaper, reviewerLabelById]);
+
+  const handleInitiateReopen = useCallback((task: DashboardTask) => {
+    setReopenReason("");
+    setReopenTarget(TargetReviewer.Reviewer1);
+    setReopenModalPaper(task);
+  }, []);
 
   const handleAssign = useCallback(
     (paperId: string, reviewer1Id: string, reviewer2Id: string) => {
@@ -1335,10 +1362,7 @@ export default function DataExtractionDashboard({
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        onClick={() => {
-                                          setReopenReason("");
-                                          setReopenModalPaper(task);
-                                        }}
+                                        onClick={() => handleInitiateReopen(task)}
                                         disabled={
                                           isProcessCompleted ||
                                           ws.isReopeningExtraction
@@ -1379,9 +1403,7 @@ export default function DataExtractionDashboard({
                                           <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() =>
-                                              setReopenModalPaper(task)
-                                            }
+                                            onClick={() => handleInitiateReopen(task)}
                                             disabled={
                                               isProcessCompleted ||
                                               ws.isReopeningExtraction
@@ -1412,9 +1434,7 @@ export default function DataExtractionDashboard({
                                           <Button
                                             size="sm"
                                             variant="outline"
-                                            onClick={() =>
-                                              setReopenModalPaper(task)
-                                            }
+                                            onClick={() => handleInitiateReopen(task)}
                                             disabled={
                                               isProcessCompleted ||
                                               ws.isReopeningExtraction
@@ -1559,83 +1579,200 @@ export default function DataExtractionDashboard({
 
       <Modal
         isOpen={!!reopenModalPaper}
-        onClose={() => setReopenModalPaper(null)}
+        onClose={() => {
+          if (!ws.isReopeningExtraction) {
+            setReopenModalPaper(null);
+            setReopenReason("");
+          }
+        }}
         title="Reopen Extraction Workspace"
-        description={
-          reopenModalPaper
-            ? `Study: ${reopenModalPaper.title}`
-            : "Select which reviewer extraction should be reopened."
-        }
+        description="Select which reviewer's extraction should be unlocked and provide a required reason."
         size="md"
       >
         <div className="space-y-4">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            Warning: Reopening an extraction will delete any previously saved
-            consensus decisions for this study.
+          {/* Target Study Info Card */}
+          {reopenModalPaper && (
+            <div className="rounded-xl border border-border bg-bg-primary/50 p-3">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                <FileText className="h-3.5 w-3.5 text-accent" />
+                Target Study
+              </div>
+              <p className="mt-1 line-clamp-2 text-xs font-semibold leading-relaxed text-text-primary">
+                {reopenModalPaper.title}
+              </p>
+            </div>
+          )}
+
+          {/* Destructive Warning Box */}
+          <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+            <div>
+              <span className="font-bold">Important Notice:</span> Reopening will unlock the selected extraction workspace and{" "}
+              <strong className="font-bold text-amber-950">
+                permanently delete
+              </strong>{" "}
+              any previously saved consensus decisions for this study.
+            </div>
           </div>
 
-          <Input
-            aria-label="Reason for reopening"
-            placeholder="Reason for reopening"
-            value={reopenReason}
-            onChange={(event) => setReopenReason(event.target.value)}
-            disabled={ws.isReopeningExtraction}
-          />
+          {/* Target Reviewer Selector */}
+          <div>
+            <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-text-secondary">
+              Select Extraction to Reopen <span className="text-rose-500">*</span>
+            </label>
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => setReopenTarget(TargetReviewer.Reviewer1)}
+                disabled={ws.isReopeningExtraction}
+                className={cn(
+                  "flex flex-col items-start rounded-xl border p-3 text-left transition-all",
+                  reopenTarget === TargetReviewer.Reviewer1
+                    ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
+                    : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
+                )}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-xs font-bold text-text-primary">Reviewer 1</span>
+                  <span
+                    className={cn(
+                      "flex h-4 w-4 items-center justify-center rounded-full border transition-colors",
+                      reopenTarget === TargetReviewer.Reviewer1
+                        ? "border-primary bg-primary"
+                        : "border-border bg-surface-white",
+                    )}
+                  >
+                    {reopenTarget === TargetReviewer.Reviewer1 && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                    )}
+                  </span>
+                </div>
+                <span className="mt-1 line-clamp-1 text-[11px] font-medium text-text-secondary">
+                  {reopenReviewer1Name}
+                </span>
+              </button>
 
-          <div className="space-y-2">
-            <Button
-              className="w-full"
-              onClick={() =>
-                void handleReopenExtraction(TargetReviewer.Reviewer1)
-              }
-              disabled={
-                isProcessCompleted ||
-                !reopenModalPaper ||
-                !reopenReason.trim() ||
-                ws.isReopeningExtraction
-              }
-              isLoading={ws.isReopeningExtraction}
+              <button
+                type="button"
+                onClick={() => setReopenTarget(TargetReviewer.Reviewer2)}
+                disabled={ws.isReopeningExtraction}
+                className={cn(
+                  "flex flex-col items-start rounded-xl border p-3 text-left transition-all",
+                  reopenTarget === TargetReviewer.Reviewer2
+                    ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
+                    : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
+                )}
+              >
+                <div className="flex w-full items-center justify-between">
+                  <span className="text-xs font-bold text-text-primary">Reviewer 2</span>
+                  <span
+                    className={cn(
+                      "flex h-4 w-4 items-center justify-center rounded-full border transition-colors",
+                      reopenTarget === TargetReviewer.Reviewer2
+                        ? "border-primary bg-primary"
+                        : "border-border bg-surface-white",
+                    )}
+                  >
+                    {reopenTarget === TargetReviewer.Reviewer2 && (
+                      <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                    )}
+                  </span>
+                </div>
+                <span className="mt-1 line-clamp-1 text-[11px] font-medium text-text-secondary">
+                  {reopenReviewer2Name}
+                </span>
+              </button>
+            </div>
+
+            {/* Both Reviewers Option */}
+            <button
+              type="button"
+              onClick={() => setReopenTarget(TargetReviewer.Both)}
+              disabled={ws.isReopeningExtraction}
+              className={cn(
+                "mt-2.5 flex w-full items-center justify-between rounded-xl border p-3 text-left transition-all",
+                reopenTarget === TargetReviewer.Both
+                  ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
+                  : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
+              )}
             >
-              Reopen Reviewer 1
-            </Button>
-            <Button
-              className="w-full"
-              onClick={() =>
-                void handleReopenExtraction(TargetReviewer.Reviewer2)
-              }
-              disabled={
-                isProcessCompleted ||
-                !reopenModalPaper ||
-                !reopenReason.trim() ||
-                ws.isReopeningExtraction
-              }
-              isLoading={ws.isReopeningExtraction}
-            >
-              Reopen Reviewer 2
-            </Button>
-            <Button
-              className="w-full"
-              onClick={() => void handleReopenExtraction(TargetReviewer.Both)}
-              disabled={
-                isProcessCompleted ||
-                !reopenModalPaper ||
-                !reopenReason.trim() ||
-                ws.isReopeningExtraction
-              }
-              isLoading={ws.isReopeningExtraction}
-            >
-              Reopen Both
-            </Button>
+              <div>
+                <span className="text-xs font-bold text-text-primary">Both Reviewers</span>
+                <p className="mt-0.5 text-[11px] text-text-secondary">
+                  Unlocks both {reopenReviewer1Name} and {reopenReviewer2Name} for full re-extraction.
+                </p>
+              </div>
+              <span
+                className={cn(
+                  "ml-3 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors",
+                  reopenTarget === TargetReviewer.Both
+                    ? "border-primary bg-primary"
+                    : "border-border bg-surface-white",
+                )}
+              >
+                {reopenTarget === TargetReviewer.Both && (
+                  <span className="h-1.5 w-1.5 rounded-full bg-white" />
+                )}
+              </span>
+            </button>
           </div>
-          <div className="flex justify-end pt-1">
+
+          {/* Reason Justification Textarea */}
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label
+                htmlFor="reopen-reason-textarea"
+                className="text-xs font-bold uppercase tracking-wider text-text-secondary"
+              >
+                Reason for Reopening <span className="text-rose-500">*</span>
+              </label>
+              <span className="text-[11px] text-text-muted">Required for Audit Trail</span>
+            </div>
+            <textarea
+              id="reopen-reason-textarea"
+              rows={2}
+              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-all focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+              placeholder="Explain why this extraction workspace needs to be reopened..."
+              value={reopenReason}
+              onChange={(e) => setReopenReason(e.target.value)}
+              disabled={ws.isReopeningExtraction}
+            />
+            {!reopenReason.trim() ? (
+              <p className="mt-2 text-xs font-medium text-amber-800">
+                Please provide a justification to enable confirmation.
+              </p>
+            ) : (
+              <p className="mt-2 text-xs font-medium text-emerald-700">
+                ✓ Justification provided ({reopenReason.trim().length} chars)
+              </p>
+            )}
+          </div>
+
+          {/* Dialog Footer Actions */}
+          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
             <Button
               variant="outline"
               onClick={() => {
                 setReopenModalPaper(null);
                 setReopenReason("");
               }}
+              disabled={ws.isReopeningExtraction}
             >
               Cancel
+            </Button>
+            <Button
+              onClick={() => void handleReopenExtraction(reopenTarget)}
+              disabled={
+                isProcessCompleted ||
+                !reopenModalPaper ||
+                !reopenReason.trim() ||
+                ws.isReopeningExtraction
+              }
+              isLoading={ws.isReopeningExtraction}
+              className="!rounded-xl bg-amber-600 text-white shadow-xs hover:bg-amber-700 focus-visible:ring-amber-500 disabled:!bg-bg-secondary disabled:!text-text-muted disabled:!border-border disabled:!opacity-100 disabled:!shadow-none"
+            >
+              <AlertTriangle className="mr-1.5 h-4 w-4" />
+              Confirm Reopen
             </Button>
           </div>
         </div>

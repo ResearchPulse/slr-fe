@@ -367,8 +367,8 @@ export default function ProjectFormModal({
 
             {/* Tóm tắt mô tả */}
             <div className="space-y-2 px-1">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <FiInfo size={12} className="text-indigo-400" />
+              <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
+                <FiInfo size={12} className="text-accent" />
                 Tóm tắt dự án (Mô tả)
               </div>
               <div className="mt-1 whitespace-pre-line rounded-lg border border-border bg-bg-secondary/60 px-4 py-3 text-sm font-medium italic leading-relaxed text-text-primary">

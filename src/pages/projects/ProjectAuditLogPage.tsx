@@ -74,7 +74,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <article
       className={cn(
-        "rounded-xl border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
+        "rounded-xl border bg-surface-white p-5 shadow-xs transition-all hover:border-primary/30",
         classes.container,
       )}
     >
