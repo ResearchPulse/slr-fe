@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FiArrowLeft, FiArrowRight, FiDownload } from "react-icons/fi";
 import { picocWizardStateService } from "../../../services/picocWizardStateService";
 import ComponentStep, { type SuggestionCacheEntry } from "./ComponentStep";
@@ -38,6 +38,27 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
   const { record, draft, loadError, saveStatus, update, saveNow, reload } = usePicocWizard(projectId, canEdit);
   // Mutable per-session cache shared by the component steps; never rendered directly.
   const [suggestionCache] = useState<Partial<Record<PicocComponent, SuggestionCacheEntry>>>(() => ({}));
+  const startedTracked = useRef(false);
+  const activeStep = draft?.currentStep;
+  const revision = record?.revision;
+
+  useEffect(() => {
+    if (canEdit && revision === 0 && !startedTracked.current) {
+      startedTracked.current = true;
+      picocWizardStateService.track(projectId, "wizard_started");
+    }
+  }, [canEdit, projectId, revision]);
+
+  // Gate results are reported when the user reviews them, one event per unresolved gate.
+  useEffect(() => {
+    if (!canEdit || activeStep !== "review" || !record) return;
+    for (const gate of record.qualityGate) {
+      if (gate.status === "blocked" || gate.status === "needs_review") {
+        picocWizardStateService.track(projectId, "quality_gate_triggered", { gateId: gate.gateId, gateStatus: gate.status });
+      }
+    }
+    // Fires on entering the review step and whenever a new revision is evaluated there.
+  }, [canEdit, projectId, activeStep, revision, record]);
 
   if (loadError) {
     return (
@@ -82,7 +103,7 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
             </header>
             <QualityGatePanel gates={record.qualityGate} onGoToStep={goTo} />
             <div className="flex flex-wrap gap-2">
-              <button type="button" onClick={() => void saveNow()} className="border border-text-primary bg-text-primary px-4 py-2 text-xs text-surface-white">Save draft</button>
+              <button type="button" onClick={() => void saveNow(true)} className="border border-text-primary bg-text-primary px-4 py-2 text-xs text-surface-white">Save draft</button>
               <button type="button" onClick={() => void download(projectId, "md")} className="inline-flex items-center gap-1 border border-border px-3 py-2 text-xs"><FiDownload aria-hidden /> Markdown</button>
               <button type="button" onClick={() => void download(projectId, "json")} className="inline-flex items-center gap-1 border border-border px-3 py-2 text-xs"><FiDownload aria-hidden /> JSON</button>
             </div>

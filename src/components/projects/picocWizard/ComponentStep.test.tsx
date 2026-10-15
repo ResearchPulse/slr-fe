@@ -8,7 +8,7 @@ import type { PicocComponent, PicocWizardDraft } from "./types";
 import { picocWizardStateService } from "../../../services/picocWizardStateService";
 
 vi.mock("../../../services/picocWizardStateService", () => ({
-  picocWizardStateService: { suggest: vi.fn() },
+  picocWizardStateService: { suggest: vi.fn(), track: vi.fn() },
 }));
 
 const suggest = vi.mocked(picocWizardStateService.suggest);
@@ -56,6 +56,8 @@ describe("ComponentStep", () => {
     fireEvent.click(within(card).getByRole("button", { name: "Why?" }));
     expect(within(card).getByText("Rationale for Robust aggregation")).toBeTruthy();
     expect(suggest.mock.calls[0][1]).toMatchObject({ component: "intervention", mode: "refresh" });
+    expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "suggestion_viewed", { component: "intervention", source: "ai", count: 5 });
+    expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "suggestion_selected", { component: "intervention", source: "ai" });
   });
 
   it("shows the OpenAlex fallback with a retry, and custom terms survive suggestion changes", async () => {
@@ -74,6 +76,7 @@ describe("ComponentStep", () => {
     fireEvent.change(screen.getByPlaceholderText("Add your own intervention term"), { target: { value: "My own method" } });
     fireEvent.click(screen.getByRole("button", { name: /Add/ }));
     expect(probe.draft!.picoc.intervention).toEqual([expect.objectContaining({ label: "My own method", origin: "user" })]);
+    expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "custom_concept_added", { component: "intervention" });
 
     fireEvent.click(screen.getByRole("button", { name: /Retry AI suggestions/ }));
     expect(await screen.findByText("Robust aggregation")).toBeTruthy();

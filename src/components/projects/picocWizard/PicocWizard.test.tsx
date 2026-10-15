@@ -7,7 +7,7 @@ import { emptyDraft, item, record } from "./picocTestUtils";
 import { picocWizardStateService } from "../../../services/picocWizardStateService";
 
 vi.mock("../../../services/picocWizardStateService", () => ({
-  picocWizardStateService: { getState: vi.fn(), saveState: vi.fn(), suggest: vi.fn(), exportFile: vi.fn() },
+  picocWizardStateService: { getState: vi.fn(), saveState: vi.fn(), suggest: vi.fn(), exportFile: vi.fn(), track: vi.fn() },
 }));
 
 const service = vi.mocked(picocWizardStateService);
@@ -62,6 +62,8 @@ describe("PicocWizard", () => {
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
     expect(service.saveState).toHaveBeenCalledWith("p1", 4, expect.objectContaining({ intent: { topic: "New topic", description: "Edge systems" } }));
     expect(await screen.findByText("Draft saved")).toBeTruthy();
+    expect(service.track).toHaveBeenCalledWith("p1", "picoc_saved");
+    expect(service.track).not.toHaveBeenCalledWith("p1", "wizard_started");
 
     fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
     await act(async () => { await vi.advanceTimersByTimeAsync(1500); });
@@ -96,6 +98,9 @@ describe("PicocWizard", () => {
     expect(within(gate).getByText("Blocked")).toBeTruthy();
     expect(within(gate).getByText("Not Run")).toBeTruthy();
     expect(gate.textContent).not.toMatch(/%|score/i);
+    await waitFor(() => expect(service.track).toHaveBeenCalledWith("p1", "quality_gate_triggered", { gateId: "G1", gateStatus: "needs_review" }));
+    expect(service.track).toHaveBeenCalledWith("p1", "quality_gate_triggered", { gateId: "G2", gateStatus: "blocked" });
+    expect(service.track).not.toHaveBeenCalledWith("p1", "quality_gate_triggered", expect.objectContaining({ gateId: "G7" }));
     fireEvent.click(within(gate).getByRole("button", { name: /Go to Context/ }));
     expect(await screen.findByRole("heading", { name: /setting or conditions/ })).toBeTruthy();
   });

@@ -16,8 +16,26 @@ interface ApiResponse<T> {
 
 const base = (projectId: string) => `/projects/${encodeURIComponent(projectId)}/picoc-wizard`;
 
-/** Version of the OpenAlex disclosure text shown next to the consent checkbox. */
-export const OPENALEX_DISCLOSURE_VERSION = "openalex-text-2026-10";
+/** Version of the OpenAlex disclosure text shown next to the consent checkbox; the server accepts only this value. */
+export const OPENALEX_DISCLOSURE_VERSION = "openalex-2026-10";
+
+export type PicocAnalyticsEvent =
+  | "wizard_started"
+  | "field_confirmed"
+  | "suggestion_viewed"
+  | "suggestion_selected"
+  | "custom_concept_added"
+  | "quality_gate_triggered"
+  | "picoc_saved";
+
+/** Structured properties only — never research text (the server rejects anything else). */
+export interface PicocAnalyticsProperties {
+  component?: "population" | "intervention" | "comparison" | "outcome" | "context";
+  source?: "ai" | "openalex" | "user" | "openalex_fallback";
+  count?: number;
+  gateId?: "G1" | "G2" | "G4" | "G6" | "G7";
+  gateStatus?: "passed" | "needs_review" | "blocked" | "not_run";
+}
 
 export const picocWizardStateService = {
   async getState(projectId: string): Promise<PicocWizardRecord> {
@@ -46,9 +64,14 @@ export const picocWizardStateService = {
 
   async browseTaxonomy(projectId: string, level: TaxonomyLevel, parentId?: string, search?: string): Promise<TaxonomyPage> {
     const response = await api.get<ApiResponse<TaxonomyPage>>(`${base(projectId)}/taxonomy`, {
-      params: { level, ...(parentId ? { parentId } : {}), ...(search ? { search } : {}), limit: 50 },
+      params: { level, ...(parentId ? { parentId } : {}), ...(search ? { search } : {}), limit: 100 },
     });
     return response.data.data;
+  },
+
+  /** Fire-and-forget: analytics failures never affect the wizard. */
+  track(projectId: string, event: PicocAnalyticsEvent, properties: PicocAnalyticsProperties = {}): void {
+    void api.post(`${base(projectId)}/analytics`, { event, properties }).catch(() => undefined);
   },
 
   async exportFile(projectId: string, format: "json" | "md"): Promise<Blob> {

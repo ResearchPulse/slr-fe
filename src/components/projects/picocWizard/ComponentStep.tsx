@@ -68,6 +68,11 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
       };
       cache[component] = next;
       setEntry(next);
+      picocWizardStateService.track(projectId, "suggestion_viewed", {
+        component,
+        source: response.source === "ai" ? "ai" : "openalex_fallback",
+        count: response.suggestions.length,
+      });
       // Only flag selections when an earlier step changed during this session (T-08).
       if (mode === "refresh" && previous && previous.signature !== signature) {
         update((current) => applyReviewFlags(current, component, response.selectionsToReview));
@@ -95,12 +100,15 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
 
   const toggle = (suggestion: PicocSuggestion, status: PicocItem["status"]) => {
     const current = itemFor(suggestion.label);
-    update((value) => setSuggestionState(value, component, suggestion, current?.status === status ? null : status));
+    const next = current?.status === status ? null : status;
+    update((value) => setSuggestionState(value, component, suggestion, next));
+    if (next === "selected") picocWizardStateService.track(projectId, "suggestion_selected", { component, source: suggestion.sourceType });
   };
 
   const addCustom = () => {
     if (!customTerm.trim()) return;
     update((value) => addCustomTerm(value, component, customTerm));
+    picocWizardStateService.track(projectId, "custom_concept_added", { component });
     setCustomTerm("");
   };
 

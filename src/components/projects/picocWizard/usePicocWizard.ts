@@ -28,6 +28,7 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
   const savingRef = useRef(false);
   const conflictRef = useRef(false);
   const timerRef = useRef<number | undefined>(undefined);
+  const savedThisSessionRef = useRef(false);
 
   const load = useCallback(async () => {
     setLoadError(null);
@@ -50,7 +51,7 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
     return () => window.clearTimeout(timerRef.current);
   }, [load]);
 
-  const saveNow = useCallback(async () => {
+  const saveNow = useCallback(async (explicit = false) => {
     window.clearTimeout(timerRef.current);
     if (!canEdit || !draftRef.current || conflictRef.current || savingRef.current) return;
     savingRef.current = true;
@@ -61,6 +62,8 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
       revisionRef.current = saved.revision;
       setRecord(saved);
       setSaveStatus("saved");
+      if (explicit || !savedThisSessionRef.current) picocWizardStateService.track(projectId, "picoc_saved");
+      savedThisSessionRef.current = true;
     } catch (error) {
       dirtyRef.current = true;
       if (axios.isAxiosError(error) && error.response?.status === 409) {

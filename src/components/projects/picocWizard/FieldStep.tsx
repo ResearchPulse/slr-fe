@@ -120,6 +120,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
     });
     setClassification(null);
     setBrowsing(false);
+    picocWizardStateService.track(projectId, "field_confirmed", { source: field.source === "openalex_suggestion" ? "openalex" : "user" });
   };
 
   const confirmSuggestion = () => {
