@@ -397,6 +397,51 @@ export interface AddCommentRequestDto {
 // Consensus Resolution Phase DTOs
 // ============================================
 
+export type ExtractionConsensusComparisonStatusDto =
+  | "AGREE"
+  | "SEMANTIC_AGREE"
+  | "CONFLICT"
+  | "MISSING";
+
+export interface ExtractionConsensusEvidenceDto {
+  fieldId: string;
+  sourceAssetId: string;
+  sourceRevision: string;
+  sourceHash: string;
+  startOffset: number;
+  endOffset: number;
+  quote: string;
+  quoteHash: string;
+  section?: string;
+  paragraph?: number;
+  pdfPage?: number;
+}
+
+export interface ExtractionConsensusFieldAnalysisDto {
+  fieldId: string;
+  fieldName?: string;
+  sectionName?: string;
+  isRequired?: boolean;
+  status: ExtractionConsensusComparisonStatusDto;
+  reviewer1Value?: unknown;
+  reviewer2Value?: unknown;
+  reviewer1Evidence?: ExtractionConsensusEvidenceDto[];
+  reviewer2Evidence?: ExtractionConsensusEvidenceDto[];
+  recommendedValue?: unknown;
+  reason: string;
+  checks: string[];
+}
+
+export interface ExtractionConsensusAnalysisDto {
+  schemaVersion: "leader-consensus-v1";
+  status: "READY" | "CONFLICT";
+  fields: ExtractionConsensusFieldAnalysisDto[];
+  summary: string;
+  generatedAt?: string;
+  sourceRevision?: string;
+  sourceHash?: string;
+}
+
 export interface AnswerDetailDto {
   optionId: string | null;
   stringValue: string | null;
@@ -456,6 +501,14 @@ export interface ConsensusWorkspaceDto {
   reviewer1Status?: "DRAFT" | "SUBMITTED" | "REOPENED";
   reviewer2Status?: "DRAFT" | "SUBMITTED" | "REOPENED";
   consensusReady?: boolean;
+  leaderDraft?: {
+    values: Record<string, unknown>;
+    findings: ExtractionFindingDto[];
+    status: string;
+    version: number;
+    updatedAt?: string;
+    agentAnalysis?: ExtractionConsensusAnalysisDto;
+  } | null;
   sections: ConsensusSectionDto[];
 }
 

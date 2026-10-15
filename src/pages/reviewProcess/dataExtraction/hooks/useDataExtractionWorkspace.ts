@@ -47,7 +47,6 @@ import { normalizeExtractionStatus } from "../status";
 const ROOT = ["project-extraction"] as const;
 interface ConsensusWorkflowSnapshot extends ConsensusWorkspaceDto {
   reviewerSubmissions?: Array<{ reviewerId: string; values: Record<string, unknown>; version: number }>;
-  leaderDraft?: { values: Record<string, unknown>; findings: ExtractionFindingDto[]; version: number } | null;
   findings?: ExtractionFindingDto[];
 }
 
