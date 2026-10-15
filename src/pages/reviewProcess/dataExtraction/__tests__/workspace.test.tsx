@@ -9,6 +9,8 @@ import {
   applyAiProposalToDraft,
   canFinalizeConsensus,
   findMissingRequiredFields,
+  getEffectiveReviewerRecordValues,
+  getEffectiveReviewerValues,
   getReviewerWorkspaceState,
   hasTwoIndependentSubmissions,
 } from "../workflowRules";
@@ -50,6 +52,20 @@ describe("canonical extraction workflow rules", () => {
     expect(state.ownDraft?.values).toEqual({ title: "A" });
     expect(state.ownSubmission).toBeNull();
     expect(state.otherReviewerRecord).toBeNull();
+  });
+
+  it("hydrates a submitted reviewer form from canonical submitted values", () => {
+    const state = getReviewerWorkspaceState(
+      { reviewerId: "reviewer-a", values: {}, version: 2 },
+      { reviewerId: "reviewer-a", values: { title: "Submitted title" }, version: 3 },
+      "reviewer-a",
+    );
+
+    expect(getEffectiveReviewerValues(state)).toEqual({ title: "Submitted title" });
+    expect(getEffectiveReviewerRecordValues(
+      { values: {} },
+      { values: { title: "Submitted title" } },
+    )).toEqual({ title: "Submitted title" });
   });
 
   it("blocks blank required fields but accepts explicit Not reported", () => {

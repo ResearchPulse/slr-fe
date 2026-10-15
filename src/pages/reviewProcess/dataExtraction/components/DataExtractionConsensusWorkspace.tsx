@@ -341,6 +341,15 @@ export default function DataExtractionConsensusWorkspace({
 
   const isCompletedPaper = currentPaperStatus === "completed";
   const isCorrectionMode = ws.isCurrentUserLeader && isCompletedPaper;
+  const consensusReady = consensusWorkspace
+    ? consensusWorkspace.consensusReady ?? (
+      (consensusWorkspace.reviewer1Status === "SUBMITTED" &&
+        consensusWorkspace.reviewer2Status === "SUBMITTED") ||
+      (consensusWorkspace.reviewer1Status === undefined &&
+        consensusWorkspace.reviewer2Status === undefined)
+    )
+    : false;
+  const partialConsensusPreview = Boolean(consensusWorkspace && !consensusReady);
 
   // Completed papers are editable only by project leaders for quick corrections.
   const isReadOnly = useMemo(() => {
@@ -348,8 +357,8 @@ export default function DataExtractionConsensusWorkspace({
       return true;
     }
 
-    return isCompletedPaper && !ws.isCurrentUserLeader;
-  }, [isCompletedPaper, ws]);
+    return partialConsensusPreview || (isCompletedPaper && !ws.isCurrentUserLeader);
+  }, [isCompletedPaper, partialConsensusPreview, ws]);
 
   const reviewer1Name = getReviewerDisplayName(
     consensusWorkspace?.reviewer1Username,
@@ -438,7 +447,7 @@ export default function DataExtractionConsensusWorkspace({
   }, [consensusWorkspace, effectiveActiveSectionId]);
 
   const activeConflictCount = useMemo(() => {
-    if (!activeSection) {
+    if (!activeSection || isReadOnly) {
       return 0;
     }
 
@@ -447,16 +456,17 @@ export default function DataExtractionConsensusWorkspace({
       effectiveFinalAnswers,
       explicitlyResolvedFields,
     );
-  }, [activeSection, effectiveFinalAnswers, explicitlyResolvedFields]);
+  }, [activeSection, effectiveFinalAnswers, explicitlyResolvedFields, isReadOnly]);
 
   const getSectionConflictCount = useCallback(
-    (section: ConsensusSectionDto) =>
-      countSectionUnresolvedConflicts(
-        section,
-        effectiveFinalAnswers,
-        explicitlyResolvedFields,
-      ),
-    [effectiveFinalAnswers, explicitlyResolvedFields],
+    (section: ConsensusSectionDto) => isReadOnly
+      ? 0
+      : countSectionUnresolvedConflicts(
+          section,
+          effectiveFinalAnswers,
+          explicitlyResolvedFields,
+        ),
+    [effectiveFinalAnswers, explicitlyResolvedFields, isReadOnly],
   );
 
   const getFieldType = useCallback(
@@ -1221,8 +1231,9 @@ export default function DataExtractionConsensusWorkspace({
             <div className="mb-4 rounded-xl border border-accent/30 bg-primary-light px-4 py-3 text-sm text-accent">
               <p className="font-medium">💙 Read-Only Mode</p>
               <p className="mt-1 text-accent">
-                This paper's extraction is completed. You are viewing the
-                consensus in read-only mode.
+                {partialConsensusPreview
+                  ? `Reviewer preview: ${reviewer1Name} is ${consensusWorkspace?.reviewer1Status ?? "NOT SUBMITTED"}; ${reviewer2Name} is ${consensusWorkspace?.reviewer2Status ?? "NOT SUBMITTED"}. Consensus controls unlock after both reviewers submit.`
+                  : "This paper's extraction is completed. You are viewing the consensus in read-only mode."}
               </p>
             </div>
           )}
@@ -1254,9 +1265,15 @@ export default function DataExtractionConsensusWorkspace({
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer1Name}
+                        <span className="ml-1 font-normal normal-case">
+                          ({consensusWorkspace.reviewer1Status ?? "SUBMITTED"})
+                        </span>
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         {reviewer2Name}
+                        <span className="ml-1 font-normal normal-case">
+                          ({consensusWorkspace.reviewer2Status ?? "SUBMITTED"})
+                        </span>
                       </th>
                       <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wide text-text-secondary">
                         Final Decision
@@ -1859,16 +1876,18 @@ export default function DataExtractionConsensusWorkspace({
             )}
           </Card>
 
-          <div className="sticky bottom-0 mt-4 flex items-center justify-between rounded-xl border border-border bg-surface-white/95 px-4 py-3 backdrop-blur">
+          <div className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <p
               className={
-                hasUnresolvedConflicts && !isReadOnly
+                `min-w-0 ${hasUnresolvedConflicts && !isReadOnly
                   ? "text-sm font-medium text-amber-700"
-                  : "text-sm text-text-secondary"
+                  : "text-sm text-text-secondary"}`
               }
             >
-              {isReadOnly
-                ? "This consensus has been finalized."
+              {partialConsensusPreview
+                ? "Viewing submitted reviewer values. Final consensus becomes available after both reviewers submit."
+                : isReadOnly
+                  ? "This consensus has been finalized."
                 : isCorrectionMode
                   ? "Review and update finalized consensus data for synthesis readiness."
                   : hasUnresolvedConflicts

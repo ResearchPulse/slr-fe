@@ -40,6 +40,7 @@ import {
   parseEvidenceCoordinates,
   mergeEvidenceCoordinates,
 } from "../utils/evidenceCoordinates";
+import { getEffectiveReviewerRecordValues } from "../workflowRules";
 
 interface DataExtractionReviewerWorkspaceProps {
   ws: UseDataExtractionWorkspaceReturn;
@@ -461,7 +462,7 @@ export default function DataExtractionReviewerWorkspace({
       return;
     }
 
-    const canonicalValues = ownDraft?.values ?? ownSubmission?.values ?? {};
+    const canonicalValues = getEffectiveReviewerRecordValues(ownDraft, ownSubmission) ?? {};
     const flatFormUpdates: Record<string, FormFieldState> = {};
     const matrixUpdatesBySection: Record<
       string,

@@ -316,10 +316,6 @@ export default function DataExtractionDashboard({
 
   const handleOpenConsensusWorkspace = useCallback(
     async (paperId: string) => {
-      if (isProcessCompleted) {
-        return;
-      }
-
       try {
         await ws.fetchConsensusWorkspace(paperId);
         navigate(`${dashboardPath}/workspace/${paperId}`);
@@ -330,7 +326,7 @@ export default function DataExtractionDashboard({
         );
       }
     },
-    [dashboardPath, isProcessCompleted, navigate, ws],
+    [dashboardPath, navigate, ws],
   );
 
   const handleOpenPaperDetails = useCallback(
@@ -361,7 +357,14 @@ export default function DataExtractionDashboard({
         return;
       }
 
-      if (ws.isCurrentUserLeader && (task.status === "awaiting-consensus" || task.status === "completed")) {
+      if (
+        ws.isCurrentUserLeader &&
+        (task.status === "in-progress" ||
+          task.status === "awaiting-consensus" ||
+          task.status === "completed") &&
+        task.reviewer1Id &&
+        task.reviewer2Id
+      ) {
         void handleOpenConsensusWorkspace(task.paperId);
         return;
       }
@@ -1249,10 +1252,22 @@ export default function DataExtractionDashboard({
                                     size="sm"
                                     className="!rounded-xl !px-2"
                                     onClick={() =>
-                                      handleOpenPaperDetails(task.paperId)
+                                      ws.isCurrentUserLeader &&
+                                      task.status !== "todo" &&
+                                      task.reviewer1Id &&
+                                      task.reviewer2Id
+                                        ? void handleOpenConsensusWorkspace(task.paperId)
+                                        : handleOpenPaperDetails(task.paperId)
                                     }
-                                    disabled={isProcessCompleted}
-                                    title="View paper details"
+                                    disabled={isProcessCompleted && !ws.isCurrentUserLeader}
+                                    title={
+                                      ws.isCurrentUserLeader &&
+                                      task.status !== "todo" &&
+                                      task.reviewer1Id &&
+                                      task.reviewer2Id
+                                        ? "View reviewer extraction"
+                                        : "View paper details"
+                                    }
                                   >
                                     <Eye className="h-4 w-4" />
                                   </Button>
