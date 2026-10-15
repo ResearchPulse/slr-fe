@@ -297,7 +297,7 @@ const QualityAssessmentCriteriaModal: React.FC<
 
               <button
                 onClick={() => handleRemoveCriterion(criterion.id)}
-                className="mt-1 p-2 text-slate-300 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                className="mt-1 rounded-xl p-2 text-text-muted transition-all hover:bg-rose-50 hover:text-rose-600 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 group-hover:opacity-100"
                 title="Remove Criterion"
               >
                 <Trash2 className="w-4 h-4" />

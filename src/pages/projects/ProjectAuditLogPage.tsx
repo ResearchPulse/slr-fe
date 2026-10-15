@@ -46,20 +46,20 @@ const summaryToneClasses: Record<
   { container: string; icon: string }
 > = {
   indigo: {
-    container: "border-indigo-100 bg-bg-secondary",
-    icon: "bg-linear-to-br from-indigo-500 to-blue-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-primary-light text-primary border border-primary/20",
   },
   emerald: {
-    container: "border-emerald-100 bg-emerald-50",
-    icon: "bg-linear-to-br from-emerald-500 to-teal-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-emerald-50 text-emerald-700 border border-emerald-200",
   },
   rose: {
-    container: "border-rose-100 bg-rose-50",
-    icon: "bg-linear-to-br from-rose-500 to-pink-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-rose-50 text-rose-700 border border-rose-200",
   },
   amber: {
-    container: "border-amber-100 bg-amber-50",
-    icon: "bg-linear-to-br from-amber-500 to-orange-600",
+    container: "border-border bg-surface-white",
+    icon: "bg-amber-50 text-amber-700 border border-amber-200",
   },
 };
 
@@ -74,13 +74,13 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   return (
     <article
       className={cn(
-        "rounded-xl border bg-surface-white p-5 shadow-none transition-all hover:shadow-none",
+        "rounded-xl border bg-surface-white p-5 shadow-xs transition-all hover:border-primary/30",
         classes.container,
       )}
     >
       <div
         className={cn(
-          "w-11 h-11 rounded-xl flex items-center justify-center text-white mb-4",
+          "w-10 h-10 rounded-xl flex items-center justify-center mb-4",
           classes.icon,
         )}
       >

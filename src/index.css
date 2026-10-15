@@ -146,40 +146,44 @@ html {
 .scroll-reveal:not(.is-visible),
 .scroll-pop:not(.is-visible) {
   opacity: 0;
-  transform: translateY(22px) scale(0.985);
+  transform: translateY(16px);
 }
 
 .scroll-reveal.is-visible,
 .scroll-pop.is-visible {
-  animation: scroll-bounce-in 720ms cubic-bezier(0.22, 1.35, 0.36, 1) both;
+  animation: scroll-fade-up 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 .scroll-pop-delay-1.is-visible {
-  animation-delay: 70ms;
+  animation-delay: 60ms;
 }
 
 .scroll-pop-delay-2.is-visible {
-  animation-delay: 140ms;
+  animation-delay: 120ms;
 }
 
-@keyframes scroll-bounce-in {
+@keyframes scroll-fade-up {
   0% {
     opacity: 0;
-    transform: translateY(22px) scale(0.985);
-  }
-
-  68% {
-    opacity: 1;
-    transform: translateY(-3px) scale(1.003);
-  }
-
-  84% {
-    transform: translateY(1px) scale(0.999);
+    transform: translateY(16px);
   }
 
   100% {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+  }
+}
+
+/* Backward-compatibility alias for scroll-bounce-in */
+@keyframes scroll-bounce-in {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -204,83 +208,73 @@ body {
 
 /* Shared page scale. The landing page keeps its intentionally large hero
    display type; all application pages use this compact, consistent scale. */
+/* Shared page scale. Default typography styles without !important so that
+   Tailwind utility classes (text-xs, text-lg, font-mono, etc.) can override naturally. */
 .standard-content {
+  font-family: var(--font-primary);
   font-size: 14px;
   line-height: 1.5;
 }
 
-.standard-content,
-.standard-content * {
-  font-family: var(--font-primary) !important;
-}
-
-.standard-content h1 {
-  font-size: 32px !important;
-  line-height: 1.2 !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.025em !important;
+:where(.standard-content) :where(h1) {
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.025em;
 }
 
 /* Keep review-process workspace titles consistent across phase headers. */
 .review-process-header-title,
-.standard-content h1.review-process-header-title {
-  font-size: 28px !important;
-  line-height: 1.2 !important;
-  font-weight: 600 !important;
-  letter-spacing: -0.025em !important;
+:where(.standard-content) :where(h1.review-process-header-title) {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.025em;
 }
 
 @media (max-width: 639px) {
   .review-process-header-title,
-  .standard-content h1.review-process-header-title {
-    font-size: 22px !important;
+  :where(.standard-content) :where(h1.review-process-header-title) {
+    font-size: 22px;
   }
 }
 
 .process-header-title {
-  font-size: 20px !important;
-  line-height: 1.25 !important;
+  font-size: 20px;
+  line-height: 1.25;
 }
 
 @media (max-width: 639px) {
   .process-header-title {
-    font-size: 18px !important;
+    font-size: 18px;
   }
 }
 
-.standard-content h2 {
-  font-size: 24px !important;
-  line-height: 1.25 !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em !important;
+:where(.standard-content) :where(h2) {
+  font-size: 24px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
-.standard-content h3 {
-  font-size: 18px !important;
-  line-height: 1.35 !important;
-  font-weight: 700 !important;
+:where(.standard-content) :where(h3) {
+  font-size: 18px;
+  line-height: 1.35;
+  font-weight: 700;
 }
 
-.standard-content p,
-.standard-content li,
-.standard-content td,
-.standard-content th,
-.standard-content label,
-.standard-content input,
-.standard-content textarea,
-.standard-content select {
-  font-size: 14px !important;
-  line-height: 1.5 !important;
+:where(.standard-content) :where(p, li, td, th, label, input, textarea, select) {
+  font-size: 14px;
+  line-height: 1.5;
 }
 
-.standard-content button,
-.standard-content [role="button"] {
-  font-size: 13px !important;
-  line-height: 1.35 !important;
+:where(.standard-content) :where(button, [role="button"]) {
+  font-size: 13px;
+  line-height: 1.35;
 }
 
-.standard-content .font-mono {
-  font-family: var(--font-primary) !important;
+.standard-content :where(.font-mono) {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
 /* =====================================================
