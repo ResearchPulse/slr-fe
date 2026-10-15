@@ -21,6 +21,7 @@ import type {
   SubmitExtractionRequestDto,
   ExtractionAuditEntryDto,
   ExtractionCommentDto,
+  ExtractionConsensusAnalysisDto,
 } from "../../../types/dataExtraction";
 import type { PaperWithDecisionsResponse } from "../../../types/studySelection";
 
@@ -64,6 +65,7 @@ export interface CanonicalExtractionSubmission extends CanonicalExtractionDraft 
 export interface CanonicalExtractionLeaderDraft extends CanonicalExtractionDraft {
   findings: ExtractionFindingDto[];
   updatedAt: string;
+  agentAnalysis?: ExtractionConsensusAnalysisDto;
 }
 
 export interface ExtractionPaperRecord {
