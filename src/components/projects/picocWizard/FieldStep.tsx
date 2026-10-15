@@ -47,8 +47,8 @@ function errorMessage(error: unknown): string {
 }
 
 const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
-  const [title, setTitle] = useState(draft.researchField?.inputSnapshot?.title ?? draft.intent.topic);
-  const [abstract, setAbstract] = useState(draft.researchField?.inputSnapshot?.abstract ?? draft.intent.description);
+  const [title, setTitle] = useState(draft.intent.topic);
+  const [abstract, setAbstract] = useState(draft.intent.description);
   const [consent, setConsent] = useState(false);
   const [classifying, setClassifying] = useState(false);
   const [classification, setClassification] = useState<FieldClassification | null>(null);
@@ -134,7 +134,6 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
       domain: taxon(topic.domain, "domain"),
       source: "openalex_suggestion",
       classifierVersion: classification.classifierVersion,
-      inputSnapshot: { title: title.trim(), abstract: abstract.trim() },
     }, classification.keywords.map((keyword) => ({ id: keyword.id, label: keyword.label, origin: "openalex", kept: keptKeywordIds.has(keyword.id) })));
   };
 

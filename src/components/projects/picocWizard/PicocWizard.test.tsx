@@ -7,7 +7,7 @@ import { emptyDraft, item, record } from "./picocTestUtils";
 import { picocWizardStateService } from "../../../services/picocWizardStateService";
 
 vi.mock("../../../services/picocWizardStateService", () => ({
-  picocWizardStateService: { getState: vi.fn(), saveState: vi.fn(), suggest: vi.fn(), exportFile: vi.fn(), track: vi.fn() },
+  picocWizardStateService: { getState: vi.fn(), saveState: vi.fn(), suggest: vi.fn(), exportFile: vi.fn(), track: vi.fn(), semanticCheck: vi.fn() },
 }));
 
 const service = vi.mocked(picocWizardStateService);
@@ -103,6 +103,31 @@ describe("PicocWizard", () => {
     expect(service.track).not.toHaveBeenCalledWith("p1", "quality_gate_triggered", expect.objectContaining({ gateId: "G7" }));
     fireEvent.click(within(gate).getByRole("button", { name: /Go to Context/ }));
     expect(await screen.findByRole("heading", { name: /setting or conditions/ })).toBeTruthy();
+  });
+
+  it("saves, then runs the AI consistency check (G3/G5) on that revision and shows the result", async () => {
+    const draft = emptyDraft({ currentStep: "review" });
+    service.getState.mockResolvedValue(record(draft, { revision: 2 }));
+    service.saveState.mockImplementation(async (_projectId, expectedRevision, state) => record(state, { revision: expectedRevision + 1 }));
+    service.semanticCheck.mockImplementation(async (_projectId, revision) => record(draft, {
+      revision,
+      qualityGate: [{ gateId: "G3", name: "Semantic consistency", status: "needs_review", reason: "AI suggestion — possibly misplaced: \"Krum\"", remediation: { step: "population", action: "Move it." } }],
+    }));
+    render(<PicocWizard projectId="p1" canEdit />);
+
+    fireEvent.click(await screen.findByRole("button", { name: "Run AI consistency check (G3, G5)" }));
+    expect(await screen.findByText(/possibly misplaced: "Krum"/)).toBeTruthy();
+    expect(service.saveState).toHaveBeenCalledWith("p1", 2, expect.anything());
+    expect(service.semanticCheck).toHaveBeenCalledWith("p1", 3);
+  });
+
+  it("reports when the AI consistency check cannot run", async () => {
+    service.getState.mockResolvedValue(record(emptyDraft({ currentStep: "review" })));
+    service.saveState.mockImplementation(async (_projectId, expectedRevision, state) => record(state, { revision: expectedRevision + 1 }));
+    service.semanticCheck.mockRejectedValue(new Error("network"));
+    render(<PicocWizard projectId="p1" canEdit />);
+    fireEvent.click(await screen.findByRole("button", { name: "Run AI consistency check (G3, G5)" }));
+    expect(await screen.findByText("The AI check could not run. Try again later.")).toBeTruthy();
   });
 
   it("is read-only for members who are not the project leader", async () => {

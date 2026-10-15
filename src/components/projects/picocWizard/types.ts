@@ -34,7 +34,6 @@ export interface ResearchField {
   domain?: Taxon;
   source: "openalex_suggestion" | "manual_browse";
   classifierVersion: string | null;
-  inputSnapshot?: { title: string; abstract: string };
   confirmedBy?: string;
   confirmedAt?: string;
 }
@@ -59,7 +58,7 @@ export interface PicocWizardDraft {
 export type GateStatus = "passed" | "needs_review" | "blocked" | "not_run";
 
 export interface QualityGateResult {
-  gateId: "G1" | "G2" | "G4" | "G6" | "G7";
+  gateId: "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7";
   name: string;
   status: GateStatus;
   reason: string;
