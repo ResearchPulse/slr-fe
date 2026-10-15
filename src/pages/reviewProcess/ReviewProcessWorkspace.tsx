@@ -142,13 +142,16 @@ export default function ReviewProcessWorkspace() {
           studySelectionProcessId={process.studySelectionProcess?.id || ""}
         />
 
-        <QualityAssessmentCriteriaModal
-          isOpen={isQualityCriteriaModalOpen}
-          onClose={() => setIsQualityCriteriaModalOpen(false)}
-          qualityAssessmentProcessId={
-            process.qualityAssessmentProcess?.id || ""
-          }
-        />
+        {/* Leader-only: it loads the leader's QA dashboard, which other members may not read. */}
+        {canManagePhaseActions && (
+          <QualityAssessmentCriteriaModal
+            isOpen={isQualityCriteriaModalOpen}
+            onClose={() => setIsQualityCriteriaModalOpen(false)}
+            qualityAssessmentProcessId={
+              process.qualityAssessmentProcess?.id || ""
+            }
+          />
+        )}
 
         {projectId && process.synthesisProcess?.id ? (
           <SynthesisStrategyModal

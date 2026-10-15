@@ -3,7 +3,6 @@ import { studySelectionService } from "../services/studySelectionService";
 import { QUERY_KEYS } from "../constants/queryKeys";
 import { adaptPaperWithDecisions } from "../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type {
-  StudySelectionPhaseStatus,
   AssignmentPaginatedResponse,
   SimplifiedPaperItem,
   GetAssignmentPapersParams,
@@ -28,22 +27,6 @@ import type {
   FinalResolutionProgressParams,
   FinalResolutionProgressResponse,
 } from "../types/studySelection";
-
-export const useStudySelectionPhaseStatus = (studySelectionProcessId: string | undefined) => {
-  return useQuery<StudySelectionPhaseStatus>({
-    queryKey: QUERY_KEYS.studySelection.statistics(studySelectionProcessId ?? ""),
-    queryFn: async () => {
-      const response = await studySelectionService.getPhaseStatus(studySelectionProcessId!);
-      if (!response.isSuccess) {
-        throw new Error(response.message || "Failed to fetch phase status");
-      }
-      return response.data;
-    },
-    enabled: !!studySelectionProcessId,
-    // Poll every 10 seconds if in progress, or just use normal caching
-    refetchOnWindowFocus: true,
-  });
-};
 
 export const useTitleAbstractAssignmentPapers = (
   studySelectionProcessId: string | undefined,
