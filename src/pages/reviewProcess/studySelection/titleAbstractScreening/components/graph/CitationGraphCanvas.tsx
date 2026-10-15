@@ -117,12 +117,12 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       {
         selector: "node[?isRoot]",
         style: {
-          "background-color": "#2563eb",
-          "border-color": "#1d4ed8",
+          "background-color": "#0071BC",
+          "border-color": "#005F9E",
           "border-width": 4,
           width: 58,
           height: 58,
-          color: "#111827",
+          color: "#122331",
           "font-weight": "bold",
         },
       },
@@ -130,8 +130,8 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         selector: "node.selected",
         style: {
           "border-width": 6,
-          "border-color": "#2563eb",
-          "background-color": "#eff6ff",
+          "border-color": "#0071BC",
+          "background-color": "#F0F7FC",
         },
       },
       {

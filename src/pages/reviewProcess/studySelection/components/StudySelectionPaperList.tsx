@@ -65,11 +65,11 @@ interface Props {
 }
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: "bg-slate-100 text-slate-700",
-  "in-progress": "bg-blue-50 text-blue-700",
-  included: "bg-emerald-50 text-emerald-700",
-  excluded: "bg-rose-50 text-rose-700",
-  conflicted: "bg-amber-50 text-amber-800",
+  pending: "bg-bg-secondary text-text-secondary",
+  "in-progress": "bg-primary-light text-primary-hover",
+  included: "bg-success/10 text-success",
+  excluded: "bg-error/10 text-error",
+  conflicted: "bg-warning/10 text-warning",
 };
 
 export default function StudySelectionPaperList(props: Props) {
@@ -96,12 +96,12 @@ export default function StudySelectionPaperList(props: Props) {
 
   const includedLabel = activeStage === "title-abstract" ? "Passed to Full Text" : "Included";
   const metrics = [
-    { label: "Total papers", value: stats.total, tone: "text-slate-800", dot: "bg-slate-300" },
-    { label: "Pending", value: stats.pending, tone: "text-slate-700", dot: "bg-slate-400" },
-    { label: includedLabel, value: stats.included, tone: "text-emerald-700", dot: "bg-emerald-500" },
-    { label: "Excluded", value: stats.excluded, tone: "text-rose-700", dot: "bg-rose-400" },
-    { label: "Conflicts", value: stats.conflicted, tone: "text-amber-700", dot: "bg-amber-400" },
-    { label: "Complete", value: `${Math.round(stats.completionPercentage)}%`, tone: "text-blue-700", dot: "bg-blue-500" },
+    { label: "Total papers", value: stats.total, tone: "text-text-primary", dot: "bg-text-secondary" },
+    { label: "Pending", value: stats.pending, tone: "text-text-secondary", dot: "bg-text-secondary" },
+    { label: includedLabel, value: stats.included, tone: "text-success", dot: "bg-success" },
+    { label: "Excluded", value: stats.excluded, tone: "text-error", dot: "bg-error" },
+    { label: "Conflicts", value: stats.conflicted, tone: "text-warning", dot: "bg-warning" },
+    { label: "Complete", value: `${Math.round(stats.completionPercentage)}%`, tone: "text-primary-hover", dot: "bg-primary" },
   ];
 
   return (
@@ -125,7 +125,7 @@ export default function StudySelectionPaperList(props: Props) {
               </div>
               <span className="text-xs font-semibold tabular-nums">{Math.round(stats.completionPercentage)}%</span>
             </div>
-            {props.headerActionLabel && props.onHeaderAction && <button onClick={props.onHeaderAction} className="whitespace-nowrap rounded-xl bg-accent px-5 py-3 text-sm font-semibold text-white shadow-sm hover:brightness-95">{props.headerActionLabel}</button>}
+            {props.headerActionLabel && props.onHeaderAction && <button onClick={props.onHeaderAction} className="min-h-11 whitespace-nowrap rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover">{props.headerActionLabel}</button>}
           </div>
         </div>
         <nav className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 pb-3 pt-2 lg:px-10" aria-label="Screening stage">
@@ -133,33 +133,33 @@ export default function StudySelectionPaperList(props: Props) {
             <button
               onClick={() => onStageChange("title-abstract")}
               aria-current={activeStage === "title-abstract" ? "step" : undefined}
-              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "title-abstract" ? "border-blue-600 text-blue-700" : "border-transparent text-text-secondary hover:text-text-primary")}
+              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "title-abstract" ? "border-primary text-primary-hover" : "border-transparent text-text-secondary hover:text-text-primary")}
             >
-              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "title-abstract" ? "border-blue-600 text-blue-700" : "border-slate-300 text-slate-500")}>1</span>
+              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "title-abstract" ? "border-primary text-primary-hover" : "border-border text-text-secondary")}>1</span>
               <span className="whitespace-nowrap"><span className="block text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Step 1</span><span className="text-sm font-medium">Title &amp; Abstract</span></span>
             </button>
             <FiChevronRight aria-hidden="true" className="mx-1 shrink-0 text-slate-400 sm:mx-3" />
             <button
               onClick={() => onStageChange("full-text")}
               aria-current={activeStage === "full-text" ? "step" : undefined}
-              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "full-text" ? "border-blue-600 text-blue-700" : "border-transparent text-text-secondary hover:text-text-primary")}
+              className={cn("group flex min-h-12 items-center gap-3 border-b-2 px-2 py-2 text-left transition sm:px-4", activeStage === "full-text" ? "border-primary text-primary-hover" : "border-transparent text-text-secondary hover:text-text-primary")}
             >
-              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "full-text" ? "border-blue-600 text-blue-700" : "border-slate-300 text-slate-500")}>2</span>
+              <span className={cn("flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs font-semibold", activeStage === "full-text" ? "border-primary text-primary-hover" : "border-border text-text-secondary")}>2</span>
               <span className="whitespace-nowrap"><span className="block text-[10px] font-semibold uppercase tracking-wider text-text-secondary">Step 2</span><span className="text-sm font-medium">Full Text</span></span>
             </button>
           </div>
-          <button onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("whitespace-nowrap rounded-lg border px-4 py-2.5 text-sm font-medium transition", filters.status === "included" ? "border-emerald-300 text-emerald-700" : "border-border text-text-secondary hover:border-emerald-300 hover:text-emerald-700")}>{activeStage === "title-abstract" ? "Review Passed Papers" : "Review Included"}</button>
+          <button aria-pressed={filters.status === "included"} onClick={() => onStatusChange(filters.status === "included" ? "all" : "included")} className={cn("min-h-11 whitespace-nowrap rounded-lg border px-4 py-2.5 text-sm font-medium transition", filters.status === "included" ? "border-success/40 bg-success/10 text-success" : "border-border text-text-secondary hover:border-success/40 hover:text-success")}>{activeStage === "title-abstract" ? "Review Passed Papers" : "Review Included"}</button>
         </nav>
       </header>
 
       <div className="mx-auto max-w-[1600px] px-6 py-8 lg:px-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div><p className="text-sm text-text-secondary">{subtitle}</p><p className="mt-1 text-xs text-text-secondary">{processName} · {pagination.totalCount.toLocaleString()} papers</p></div>
-          <button onClick={onBack} className="hidden rounded-lg border border-border bg-surface-white px-3 py-2 text-sm text-text-secondary hover:bg-bg-secondary md:block">Project workspace</button>
+          <button onClick={onBack} className="rounded-lg border border-border bg-surface-white px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-secondary">Project workspace</button>
         </div>
 
         <section className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-6" aria-label="Screening statistics">
-          {metrics.map((metric) => <div key={metric.label} className="rounded-2xl border border-slate-200/80 bg-white px-5 py-4 shadow-[0_1px_3px_rgba(15,23,42,0.04)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-[0_6px_18px_rgba(15,23,42,0.06)]"><div className="flex items-center gap-2"><span aria-hidden="true" className={cn("h-1.5 w-1.5 rounded-full", metric.dot)} /><span className="text-[13px] font-medium text-slate-500">{metric.label}</span></div><div className={cn("mt-3 text-[28px] font-semibold leading-none tracking-tight tabular-nums", metric.tone)}>{metric.value}</div></div>)}
+          {metrics.map((metric) => <div key={metric.label} className="rounded-xl border border-border bg-surface-white px-4 py-3.5"><div className="flex items-center gap-2"><span aria-hidden="true" className={cn("h-1.5 w-1.5 rounded-full", metric.dot)} /><span className="text-[13px] font-medium text-text-secondary">{metric.label}</span></div><div className={cn("mt-3 text-[26px] font-semibold leading-none tracking-tight tabular-nums", metric.tone)}>{metric.value}</div></div>)}
         </section>
 
         <section className="overflow-hidden rounded-xl border border-border bg-surface-white">
@@ -174,10 +174,10 @@ export default function StudySelectionPaperList(props: Props) {
             <div className="min-w-[202px] flex-1">
               <Select aria-label="Sort papers" value={String(filters.sortBy)} onChange={(event) => onSortChange(Number(event.target.value) as PaperSortBy)} options={SORT_OPTIONS.map((option) => ({ label: option.label, value: String(option.value) }))} containerClassName="block w-full" className="h-12 w-full rounded-xl px-4" />
             </div>
-            {onFullTextChange && <button onClick={() => onFullTextChange(!filters.hasFullText)} className={cn("h-12 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.hasFullText ? "border-blue-200 bg-blue-50 text-blue-700" : "border-border bg-surface-white text-text-secondary hover:border-slate-300 hover:bg-bg-primary")}>Has full text</button>}
-            {onConflictChange && <button onClick={() => onConflictChange(!filters.hasConflict)} className={cn("h-12 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.hasConflict ? "border-amber-200 bg-amber-50 text-amber-800" : "border-border bg-surface-white text-text-secondary hover:border-slate-300 hover:bg-bg-primary")}>Conflicts</button>}
-            {onDecidedByMeChange && <button onClick={() => onDecidedByMeChange(!filters.decidedByMe)} className={cn("h-12 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.decidedByMe ? "border-emerald-200 bg-emerald-50 text-emerald-700" : "border-border bg-surface-white text-text-secondary hover:border-slate-300 hover:bg-bg-primary")}>Decided by me</button>}
-            {(filters.search || filters.status !== "all" || filters.hasFullText || filters.hasConflict || filters.decidedByMe) && <button onClick={clearFilters} className="h-12 whitespace-nowrap rounded-xl px-3 text-sm font-medium text-accent transition hover:bg-blue-50">Clear filters</button>}
+            {onFullTextChange && <button aria-pressed={Boolean(filters.hasFullText)} onClick={() => onFullTextChange(!filters.hasFullText)} className={cn("min-h-11 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.hasFullText ? "border-primary/40 bg-primary-light text-primary-hover" : "border-border bg-surface-white text-text-secondary hover:border-primary/30 hover:bg-bg-primary")}>Has full text</button>}
+            {onConflictChange && <button aria-pressed={Boolean(filters.hasConflict)} onClick={() => onConflictChange(!filters.hasConflict)} className={cn("min-h-11 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.hasConflict ? "border-warning/30 bg-warning/10 text-warning" : "border-border bg-surface-white text-text-secondary hover:border-warning/30 hover:bg-bg-primary")}>Conflicts</button>}
+            {onDecidedByMeChange && <button aria-pressed={Boolean(filters.decidedByMe)} onClick={() => onDecidedByMeChange(!filters.decidedByMe)} className={cn("min-h-11 whitespace-nowrap rounded-xl border px-4 text-sm font-medium transition", filters.decidedByMe ? "border-success/30 bg-success/10 text-success" : "border-border bg-surface-white text-text-secondary hover:border-success/30 hover:bg-bg-primary")}>Decided by me</button>}
+            {(filters.search || filters.status !== "all" || filters.hasFullText || filters.hasConflict || filters.decidedByMe) && <button onClick={clearFilters} className="min-h-11 whitespace-nowrap rounded-xl px-3 text-sm font-medium text-primary transition hover:bg-primary-light">Clear filters</button>}
           </div>
 
           <div className="w-full min-w-0 max-w-full overflow-x-clip">

@@ -518,15 +518,9 @@ export default function DeduplicationTabContent({
             // Empty state: no duplicates at all
             <EmptyState
               icon={
-                <div className="relative flex items-center justify-center my-2">
-                  {/* Ambient soft glow */}
-                  <div className="absolute w-24 h-24 rounded-full bg-emerald-100/70 blur-xl pointer-events-none" />
-
-                  {/* Concentric layered ring */}
-                  <div className="relative p-3.5 bg-emerald-50/90 rounded-full ring-8 ring-emerald-50/50 border border-emerald-100/80 shadow-sm flex items-center justify-center transition-transform hover:scale-105 duration-300">
-                    <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 via-emerald-500 to-teal-400 flex items-center justify-center text-white shadow-lg shadow-emerald-500/30">
-                      <Check size={28} strokeWidth={2.75} className="text-white drop-shadow-sm" />
-                    </div>
+                <div className="my-2 flex items-center justify-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-success/20 bg-success/10 text-success">
+                    <Check size={28} strokeWidth={2.5} aria-hidden="true" />
                   </div>
                 </div>
               }

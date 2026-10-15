@@ -603,7 +603,7 @@ export default function ExtractionGridWorkspace() {
               </p>
             </div>
 
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div className="flex flex-col gap-2 sm:grid sm:grid-cols-2 xl:flex">
               <Button variant="outline" onClick={() => navigate(dashboardPath)}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Dashboard
@@ -620,36 +620,40 @@ export default function ExtractionGridWorkspace() {
                 Refresh Grid
               </Button>
 
-              <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-white px-3 py-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-text-secondary">
-                  Row Height
-                </span>
-                <input
-                  type="range"
-                  min={MIN_GRID_ROW_HEIGHT}
-                  max={MAX_GRID_ROW_HEIGHT}
-                  value={rowHeight}
-                  onChange={(event) => setRowHeight(Number(event.target.value))}
-                  className="h-1.5 w-28 accent-primary"
-                  aria-label="Grid row height"
-                />
-                <button
-                  type="button"
-                  onClick={() => setRowHeight(72)}
-                  className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
-                >
-                  Comfort
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRowHeight(DEFAULT_GRID_ROW_HEIGHT)}
-                  className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
-                >
-                  Reset
-                </button>
-                <span className="min-w-8 text-right text-xs font-semibold text-text-primary">
-                  {rowHeight}px
-                </span>
+              <div className="grid grid-cols-1 gap-2 rounded-xl border border-border bg-surface-white px-3 py-2 lg:flex lg:flex-wrap lg:items-center">
+                <div className="flex min-w-0 items-center gap-2 lg:flex-1">
+                  <span className="shrink-0 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+                    Row Height
+                  </span>
+                  <input
+                    type="range"
+                    min={MIN_GRID_ROW_HEIGHT}
+                    max={MAX_GRID_ROW_HEIGHT}
+                    value={rowHeight}
+                    onChange={(event) => setRowHeight(Number(event.target.value))}
+                    className="h-1.5 min-w-20 flex-1 accent-primary lg:w-28 lg:flex-none"
+                    aria-label="Grid row height"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setRowHeight(72)}
+                    className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                  >
+                    Comfort
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRowHeight(DEFAULT_GRID_ROW_HEIGHT)}
+                    className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                  >
+                    Reset
+                  </button>
+                  <span className="ml-auto min-w-8 text-right text-xs font-semibold text-text-primary">
+                    {rowHeight}px
+                  </span>
+                </div>
               </div>
 
               <div className="relative z-50" ref={exportMenuRef}>

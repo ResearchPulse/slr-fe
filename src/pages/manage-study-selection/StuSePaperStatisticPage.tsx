@@ -332,17 +332,17 @@ const StuSePaperStatisticPage: React.FC = () => {
   }
 
   const chartData = [
-    { name: "Included", value: stats.includedCount, color: "#10b981" },
-    { name: "Excluded", value: stats.excludedCount, color: "#f43f5e" },
-    { name: "Pending", value: stats.pendingCount, color: "#94a3b8" },
+    { name: "Included", value: stats.includedCount, color: "var(--color-success)" },
+    { name: "Excluded", value: stats.excludedCount, color: "var(--color-error)" },
+    { name: "Pending", value: stats.pendingCount, color: "var(--color-text-muted)" },
   ].filter((d) => d.value > 0);
 
   return (
     <div className="min-h-screen bg-bg-secondary/50 flex flex-col">
       {/* Sticky Header */}
-      <div className="sticky top-0 z-20 bg-surface-white/90 backdrop-blur-md border-b border-border px-6 py-3 shadow-none">
+      <div className="sticky top-0 z-20 bg-surface-white/90 backdrop-blur-md border-b border-border px-4 py-3 shadow-none sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6">
+          <div className="flex min-w-0 items-center gap-3 sm:gap-6">
             <button
               onClick={() =>
                 navigate(
@@ -357,10 +357,10 @@ const StuSePaperStatisticPage: React.FC = () => {
               </span>
             </button>
 
-            <div className="h-10 w-px bg-slate-200" />
+            <div className="h-10 w-px shrink-0 bg-border" />
 
             <div>
-              <h1 className="text-xl font-black text-text-primary tracking-tight flex items-center gap-2">
+              <h1 className="flex items-center gap-2 text-lg font-black tracking-tight text-text-primary sm:text-xl">
                 <BarChart3 className="w-5 h-5 text-accent" />
                 Decision Matrix
               </h1>
@@ -372,63 +372,70 @@ const StuSePaperStatisticPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="flex-1 p-6 max-w-7xl mx-auto w-full space-y-8">
+      <div className="mx-auto w-full max-w-7xl flex-1 space-y-6 p-4 sm:space-y-8 sm:p-6">
         {/* Visual Summary Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Main Chart Card */}
-          <div className="lg:col-span-2 bg-surface-white rounded-xl border border-border p-8 shadow-none flex items-center gap-12 relative overflow-hidden group">
+          <div className="group relative flex flex-col items-center gap-5 overflow-hidden rounded-xl border border-border bg-surface-white p-5 shadow-none sm:flex-row sm:gap-8 sm:p-8 lg:col-span-2 lg:gap-12">
             <div className="absolute top-0 right-0 w-32 h-32 bg-bg-secondary/50 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110" />
 
-            <div className="relative w-48 h-48 flex-shrink-0">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={chartData}
-                    innerRadius={65}
-                    outerRadius={85}
-                    paddingAngle={8}
-                    dataKey="value"
-                    stroke="none"
-                    animationBegin={200}
-                    animationDuration={1200}
-                  >
-                    {chartData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ReChartsTooltip
-                    content={({ active, payload }) => {
-                      if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const percentage = (
-                          (data.value / stats.totalPapers) *
-                          100
-                        ).toFixed(1);
-                        return (
-                          <div className="bg-slate-900 text-white px-3 py-2 rounded-xl text-[11px] font-bold shadow-none border border-slate-800">
-                            <div className="flex items-center gap-2 mb-1">
-                              <div
-                                className="w-2 h-2 rounded-full"
-                                style={{ backgroundColor: data.color }}
-                              />
-                              <span className="uppercase tracking-wider">
-                                {data.name}
-                              </span>
+            <div className="relative h-40 w-40 flex-shrink-0 sm:h-48 sm:w-48">
+              {chartData.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={chartData}
+                      innerRadius={55}
+                      outerRadius={72}
+                      paddingAngle={8}
+                      dataKey="value"
+                      stroke="none"
+                      animationBegin={200}
+                      animationDuration={1200}
+                    >
+                      {chartData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ReChartsTooltip
+                      content={({ active, payload }) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0].payload;
+                          const percentage = (
+                            (data.value / stats.totalPapers) *
+                            100
+                          ).toFixed(1);
+                          return (
+                            <div className="rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-[11px] font-bold text-white shadow-none">
+                              <div className="mb-1 flex items-center gap-2">
+                                <div
+                                  className="h-2 w-2 rounded-full"
+                                  style={{ backgroundColor: data.color }}
+                                />
+                                <span className="uppercase tracking-wider">
+                                  {data.name}
+                                </span>
+                              </div>
+                              <div className="text-lg font-black">
+                                {data.value}{" "}
+                                <span className="text-xs font-medium text-text-secondary">
+                                  ({percentage}%)
+                                </span>
+                              </div>
                             </div>
-                            <div className="text-lg font-black">
-                              {data.value}{" "}
-                              <span className="text-text-secondary font-medium text-xs">
-                                ({percentage}%)
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-                      return null;
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              ) : (
+                <div
+                  className="absolute inset-2 rounded-full border-2 border-dashed border-border bg-bg-secondary/60"
+                  aria-hidden="true"
+                />
+              )}
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-3xl font-black text-text-primary tracking-tight">
                   {stats.totalPapers}
@@ -439,7 +446,7 @@ const StuSePaperStatisticPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="flex-1 space-y-6">
+            <div className="relative z-10 w-full min-w-0 flex-1 space-y-5 sm:space-y-6">
               <div>
                 <h3 className="text-xl font-black text-text-primary tracking-tight mb-1">
                   Screening Distribution
@@ -558,9 +565,9 @@ const StuSePaperStatisticPage: React.FC = () => {
         </div>
 
         {/* Header & Filters */}
-        <div className="flex flex-col gap-6 w-full">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3 flex-1 max-w-4xl">
+        <div className="flex w-full flex-col gap-4 sm:gap-6">
+          <div className="flex flex-col items-stretch justify-between gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <div className="flex min-w-0 w-full max-w-4xl flex-1 items-center gap-2 sm:gap-3">
               {/* Modern Search Bar */}
               <div className="relative flex-1 group">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
@@ -586,7 +593,7 @@ const StuSePaperStatisticPage: React.FC = () => {
               <button
                 onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
                 className={cn(
-                  "flex items-center gap-2.5 px-5 py-2.5 rounded-xl border transition-all relative overflow-hidden group shadow-none",
+                  "relative flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 transition-all group overflow-hidden shadow-none sm:gap-2.5 sm:px-5",
                   activeFilterCount > 0 || isFilterPanelOpen
                     ? "bg-slate-900 border-slate-900 text-white"
                     : "bg-surface-white border-border text-text-secondary hover:border-accent/20 hover:bg-bg-secondary",
@@ -616,7 +623,7 @@ const StuSePaperStatisticPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="text-[10px] font-bold text-text-secondary uppercase tracking-widest bg-bg-secondary px-3 py-1.5 rounded-xl border border-border">
+            <div className="self-start whitespace-nowrap rounded-xl border border-border bg-bg-secondary px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-text-secondary sm:self-auto sm:tracking-widest">
               Showing {papers.length} of {stats.totalPapers} Papers
             </div>
           </div>

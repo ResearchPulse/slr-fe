@@ -207,7 +207,7 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={handleResetPassword}
-              className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-accent hover:text-indigo-700 transition-colors ml-1"
+              className="ml-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <FiRefreshCw size={10} />
               Reset to System Default
@@ -215,19 +215,14 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-50">
-          <button
-            type="button"
-            onClick={handleClose}
-            className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
-            disabled={isLoading}
-          >
+        <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+          <Button type="button" variant="ghost" onClick={handleClose} disabled={isLoading}>
             Cancel
-          </button>
+          </Button>
           <Button
             type="submit"
             isLoading={isLoading}
-            className="bg-accent hover:bg-indigo-700 shadow-lg shadow-indigo-100 min-w-[140px]"
+            className="min-w-[140px]"
           >
             Register User
           </Button>

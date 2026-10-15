@@ -331,7 +331,7 @@ export default function RqReportingWorkspace({
                   <div className="flex items-center gap-2">
                     <span
                       className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: theme.colorCode ?? "#94a3b8" }}
+                      style={{ backgroundColor: theme.colorCode ?? "var(--color-text-muted)" }}
                     />
                     <p className="text-sm font-semibold text-text-primary">
                       {theme.name}

@@ -178,7 +178,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </Button>
         </div>
         {draft.sections.map((section, sIdx) => (
-          <Card key={section.id} className="border border-border shadow-xs transition-colors hover:border-primary/40">
+          <Card key={section.id} className="border-primary/40 bg-primary-light/20">
             <CardHeader className="pb-2 space-y-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-2">

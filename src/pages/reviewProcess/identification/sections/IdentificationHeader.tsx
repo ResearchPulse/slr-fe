@@ -29,7 +29,7 @@ export default function IdentificationHeader({
 }: IdentificationHeaderProps) {
   return (
     <div className="bg-surface-white border-b border-border shadow-none">
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-text-secondary mb-4">
           <button
@@ -51,9 +51,9 @@ export default function IdentificationHeader({
           </span>
         </nav>
 
-        <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
+        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex min-w-0 flex-wrap items-center gap-3">
               <FiDatabase className="w-7 h-7 text-accent" />
               <h1 className="review-process-header-title text-2xl font-bold text-text-primary">
                 Identification Phase
@@ -89,10 +89,10 @@ export default function IdentificationHeader({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3">
+          <div className="grid w-full grid-cols-1 gap-2 sm:grid-cols-2 md:flex md:w-auto md:flex-wrap md:justify-end">
             <Button
               variant="secondary"
-              className="flex items-center gap-2"
+              className="flex w-full items-center gap-2 md:w-auto"
               onClick={onRefreshData}
               disabled={listLoading || statsLoading}
             >
@@ -103,7 +103,7 @@ export default function IdentificationHeader({
             </Button>
             {phaseStatus === "not-started" && (
               <Button
-                className="flex items-center gap-2"
+                className="flex w-full items-center gap-2 md:w-auto"
                 onClick={onStartPhase}
               >
                 <FiFileText className="w-4 h-4" />
@@ -112,7 +112,7 @@ export default function IdentificationHeader({
             )}
             {phaseStatus === "in-progress" && (
               <Button
-                className="flex items-center gap-2"
+                className="flex w-full items-center gap-2 md:w-auto"
                 onClick={onCompletePhase}
               >
                 <FiCheck className="w-4 h-4" />
@@ -122,7 +122,7 @@ export default function IdentificationHeader({
             {phaseStatus === "completed" && (
               <Button
                 variant="secondary"
-                className="flex items-center gap-2"
+                className="flex w-full items-center gap-2 md:w-auto"
                 onClick={onReopenPhase}
               >
                 <FiRefreshCw className="w-4 h-4" />

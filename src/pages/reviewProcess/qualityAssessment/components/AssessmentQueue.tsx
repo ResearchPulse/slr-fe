@@ -63,6 +63,7 @@ export default function AssessmentQueue({
           <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
           <input
             type="text"
+              aria-label="Search papers by title or author"
             placeholder="Search title, author..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
@@ -116,9 +117,13 @@ export default function AssessmentQueue({
               key={paper.paperId}
               role="button"
               tabIndex={0}
+              aria-pressed={isSelected}
               onClick={() => onSelectPaper(paper.paperId)}
               onKeyDown={(e) => {
-                if (e.key === "Enter") onSelectPaper(paper.paperId);
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onSelectPaper(paper.paperId);
+                }
               }}
               className={cn(
                 "w-full cursor-pointer select-none overflow-hidden rounded-xl border px-3.5 py-3 text-left outline-none transition-[background-color,border-color,box-shadow] focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-primary",

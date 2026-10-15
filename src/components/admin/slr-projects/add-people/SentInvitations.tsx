@@ -136,11 +136,11 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
         {invitations.map((inv: ProjectInvitation) => (
           <div
             key={inv.id}
-            className="group bg-surface-white border border-slate-100 rounded-xl p-4 transition-all duration-300 hover:shadow-none hover:shadow-slate-100/50 hover:border-indigo-100"
+            className="group rounded-xl border border-border bg-surface-white p-4 transition-colors hover:border-primary/35"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <div className="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-black">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                   {inv.invitedUserFullName[0].toUpperCase()}
                 </div>
                 <div className="space-y-0.5">

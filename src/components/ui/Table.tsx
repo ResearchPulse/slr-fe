@@ -7,9 +7,9 @@ interface TableProps extends React.HTMLAttributes<HTMLTableElement> {
 
 const Table: React.FC<TableProps> = ({ children, className, ...props }) => {
   return (
-    <div className="w-full">
+    <div className="w-full overflow-x-auto">
       <table
-        className={cn("w-full border-collapse text-left", className)}
+        className={cn("w-full border-collapse text-left text-sm", className)}
         {...props}
       >
         {children}
@@ -65,7 +65,7 @@ const TableRow: React.FC<TableRowProps> = ({
   return (
     <tr
       className={cn(
-        "transition-colors hover:bg-bg-secondary/60 group cursor-pointer",
+        "group transition-colors hover:bg-bg-secondary/60",
         className,
       )}
       {...props}
@@ -87,7 +87,7 @@ const TableHead: React.FC<TableHeadProps> = ({
   return (
     <th
       className={cn(
-        "p-4 text-[10px] font-medium text-text-secondary uppercase tracking-[0.15em]",
+        "px-4 py-3 text-left text-[11px] font-semibold text-text-secondary uppercase tracking-[0.12em]",
         className,
       )}
       {...props}
@@ -107,7 +107,7 @@ const TableCell: React.FC<TableCellProps> = ({
   ...props
 }) => {
   return (
-    <td className={cn("p-4 align-middle", className)} {...props}>
+    <td className={cn("px-4 py-3 align-middle text-text-primary", className)} {...props}>
       {children}
     </td>
   );

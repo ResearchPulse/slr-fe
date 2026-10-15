@@ -22,11 +22,11 @@ export default function PrismaSummaryCards({
   onTabChange,
 }: PrismaSummaryCardsProps) {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
       {/* Records Imported */}
       <button
         onClick={() => onTabChange("imports")}
-        className="bg-linear-to-br from-primary-light to-primary-light border border-primary/20 rounded-xl p-6 text-left hover:shadow-none transition-shadow-none"
+        className="rounded-xl border border-border bg-surface-white p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
           <FiDatabase className="w-6 h-6 text-accent" />
@@ -50,12 +50,12 @@ export default function PrismaSummaryCards({
       {/* Pending Selections */}
       <button
         onClick={() => onTabChange("library")}
-        className="bg-linear-to-br from-yellow-50 to-yellow-100 border border-border rounded-xl p-6 text-left hover:shadow-none transition-shadow-none"
+        className="rounded-xl border border-border bg-surface-white p-5 text-left transition-colors hover:border-warning/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
-          <FiSearch className="w-6 h-6 text-yellow-600" />
+          <FiSearch className="h-6 w-6 text-warning" />
           {prismaStats.pendingSelectionCount > 0 && (
-            <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
+            <div className="h-2 w-2 rounded-full bg-warning" />
           )}
         </div>
         <div className="text-3xl font-bold text-text-primary mb-1">
@@ -70,11 +70,11 @@ export default function PrismaSummaryCards({
       {/* After Deduplication - Key Success Metric */}
       <button
         onClick={() => onTabChange("dataset")}
-        className="bg-linear-to-br from-green-50 to-green-100 border-2 border-green-300 rounded-xl p-6 text-left hover:shadow-none transition-shadow-none shadow-none"
+        className="rounded-xl border border-success/30 bg-success/5 p-5 text-left transition-colors hover:border-success/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
-          <FiFilter className="w-6 h-6 text-green-600" />
-          <FiCheck className="w-5 h-5 text-green-600" />
+          <FiFilter className="h-6 w-6 text-success" />
+          <FiCheck className="h-5 w-5 text-success" />
         </div>
         <div className="text-3xl font-bold text-text-primary mb-1">
           {statsLoading ? (
@@ -83,10 +83,10 @@ export default function PrismaSummaryCards({
             prismaStats.uniqueRecords.toLocaleString()
           )}
         </div>
-        <div className="text-sm text-green-800 font-semibold">
+        <div className="text-sm font-semibold text-success">
           After Deduplication
         </div>
-        <div className="text-xs text-green-700 mt-1">
+        <div className="mt-1 text-xs text-text-secondary">
           Records using for screening phase
         </div>
       </button>

@@ -96,29 +96,6 @@ const MyProfilePage: React.FC = () => {
     }
   }, [user, isEditingProfile]);
 
-  useEffect(() => {
-    const revealItems = document.querySelectorAll<HTMLElement>(".profile-scroll-reveal");
-    if (!("IntersectionObserver" in window)) {
-      revealItems.forEach((item) => item.classList.add("is-visible"));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("is-visible");
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -24px 0px" },
-    );
-
-    revealItems.forEach((item) => observer.observe(item));
-    return () => observer.disconnect();
-  }, [isLoading, user]);
-
   const handleSaveProfile = async () => {
     if (!user) return;
     const fullName = profileDraft.fullName.trim();
@@ -198,7 +175,7 @@ const MyProfilePage: React.FC = () => {
   if (isError || !user) {
     return (
       <div className="flex min-h-[65vh] items-center justify-center bg-bg-primary px-4">
-        <div className="w-full max-w-md rounded-2xl border border-border bg-surface-white p-8 text-center shadow-[0_12px_35px_rgba(19,43,60,0.06)]">
+        <div className="w-full max-w-md rounded-xl border border-border bg-surface-white p-8 text-center">
           <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary"><FiInfo className="h-5 w-5" /></div>
           <h2 className="text-xl font-bold text-text-primary">Could not load your profile</h2>
           <p className="mt-2 text-sm leading-6 text-text-secondary">{error || "Please try again in a moment."}</p>
@@ -217,22 +194,22 @@ const MyProfilePage: React.FC = () => {
   const isAccountActive = user.isActive !== false;
   const activeProjects = projects.filter((project) => project.statusText === "Active").length;
   const roleBadgeStyle = user.role?.toLowerCase() === "admin"
-    ? "bg-[#EEF3FA] text-[#405F91]"
+    ? "bg-primary-light text-primary-hover"
     : "bg-primary-light text-accent";
 
   return (
     <div className="min-h-[calc(100vh-72px)] bg-bg-primary px-4 py-9 sm:px-6 sm:py-12 lg:px-8">
       <main className="mx-auto max-w-[1160px] space-y-8">
-        <header className="profile-scroll-reveal scroll-reveal mb-1">
+        <header className="mb-1">
           <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary">Account settings</p>
-          <h1 className="text-[32px] font-bold tracking-[-0.045em] text-text-primary sm:text-[38px]">Profile</h1>
+          <h1 className="text-[32px] font-bold tracking-[-0.025em] text-text-primary sm:text-[38px]">Profile</h1>
           <p className="mt-2 text-[14px] text-text-secondary">Manage your personal information and account settings.</p>
         </header>
 
-        <section aria-labelledby="profile-overview-title" className="profile-scroll-reveal scroll-reveal overflow-hidden rounded-[20px] border border-border bg-surface-white shadow-[0_10px_32px_rgba(19,43,60,0.045)]">
+        <section aria-labelledby="profile-overview-title" className="overflow-hidden rounded-xl border border-border bg-surface-white">
           <div className="grid gap-7 p-5 sm:p-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10 lg:p-8">
             <div className="flex min-w-0 flex-col gap-5 sm:flex-row sm:items-center">
-              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-[22px] bg-accent text-[30px] font-bold tracking-[-0.05em] text-white">
+              <div className="flex h-[76px] w-[76px] shrink-0 items-center justify-center rounded-xl bg-accent text-[30px] font-bold tracking-[-0.025em] text-white">
                 {getInitials(displayName)}
               </div>
               <div className="min-w-0">
@@ -256,8 +233,8 @@ const MyProfilePage: React.FC = () => {
               </div>
               <div className="col-span-2 rounded-xl bg-bg-primary px-3.5 py-3 sm:col-span-1">
                 <p className="text-[9px] font-bold uppercase tracking-[0.11em] text-text-muted">Account status</p>
-                <p className={`mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${isAccountActive ? "bg-[#2E9B68]" : "bg-[#C66B5E]"}`} />{isAccountActive ? "Active" : "Inactive"}
+                <p className={`mt-1.5 inline-flex items-center gap-1.5 text-[12px] font-bold ${isAccountActive ? "text-success" : "text-error"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${isAccountActive ? "bg-success" : "bg-error"}`} />{isAccountActive ? "Active" : "Inactive"}
                 </p>
               </div>
             </div>
@@ -275,7 +252,7 @@ const MyProfilePage: React.FC = () => {
           </div>
         </section>
 
-        <section aria-labelledby="personal-info-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-border bg-surface-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+        <section aria-labelledby="personal-info-title" className="rounded-xl border border-border bg-surface-white p-5 sm:p-7">
           <div className="mb-5">
             <h2 id="personal-info-title" className="text-[20px] font-bold tracking-[-0.03em] text-text-primary">Personal information</h2>
             <p className="mt-1 text-[12px] text-text-muted">Manage your identity and contact details.</p>
@@ -301,7 +278,7 @@ const MyProfilePage: React.FC = () => {
           {isEditingProfile && <p className="mt-3 text-[10px] text-text-muted">Email address cannot be changed here.</p>}
         </section>
 
-        <section aria-labelledby="security-title" className="profile-scroll-reveal scroll-reveal rounded-[20px] border border-border bg-surface-white p-5 shadow-[0_10px_32px_rgba(19,43,60,0.035)] sm:p-7">
+        <section aria-labelledby="security-title" className="rounded-xl border border-border bg-surface-white p-5 sm:p-7">
           <div className="mb-5">
             <h2 id="security-title" className="text-[20px] font-bold tracking-[-0.03em] text-text-primary">Security & account</h2>
             <p className="mt-1 text-[12px] text-text-muted">Manage how you access and protect your account.</p>
@@ -344,7 +321,7 @@ const MyProfilePage: React.FC = () => {
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             <div className="flex items-center gap-3 rounded-xl border border-border px-4 py-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-accent"><FiShield className="h-4 w-4" /></span>
-              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-text-muted">Account status</p><p className={`mt-1 text-[12px] font-bold ${isAccountActive ? "text-[#32815A]" : "text-[#A15F55]"}`}>{isAccountActive ? "Active" : "Inactive"}</p></div>
+              <div><p className="text-[9px] font-bold uppercase tracking-[0.1em] text-text-muted">Account status</p><p className={`mt-1 text-[12px] font-bold ${isAccountActive ? "text-success" : "text-error"}`}>{isAccountActive ? "Active" : "Inactive"}</p></div>
             </div>
             <div className="flex items-center gap-3 rounded-xl border border-border px-4 py-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-accent"><FiBriefcase className="h-4 w-4" /></span>

@@ -64,17 +64,17 @@ export default function BuildDatasetTabContent({
   return (
     <div>
       {/* Summary bar */}
-      <div className="flex items-center gap-6 mb-6 p-4 bg-gradient-to-r from-emerald-50 to-primary-light rounded-xl border border-border">
+      <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-3 rounded-xl border border-border bg-surface-white p-4">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-emerald-500" />
+          <div className="h-3 w-3 rounded-full bg-success" />
           <span className="text-sm text-text-primary">
-            <span className="font-semibold text-emerald-700">
+              <span className="font-semibold text-success">
               {dataset.readyTotalCount.toLocaleString()}
             </span>{" "}
             ready papers
           </span>
         </div>
-        <div className="w-px h-5 bg-gray-300" />
+        <div className="hidden h-5 w-px bg-border sm:block" />
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-primary" />
           <span className="text-sm text-text-primary">
@@ -86,9 +86,9 @@ export default function BuildDatasetTabContent({
         </div>
         {selection.count > 0 && (
           <>
-            <div className="w-px h-5 bg-gray-300" />
+            <div className="hidden h-5 w-px bg-border sm:block" />
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium text-emerald-600">
+              <span className="text-sm font-medium text-success">
                 {selection.count} selected
               </span>
             </div>

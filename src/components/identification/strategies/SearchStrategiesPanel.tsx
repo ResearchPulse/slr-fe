@@ -12,7 +12,6 @@ import {
   FiChevronRight,
   FiFile,
   FiX,
-  FiLoader,
 } from "react-icons/fi";
 import Button from "../../ui/Button";
 import type {
@@ -86,7 +85,7 @@ export default function SearchStrategiesPanel({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <FiLoader className="h-8 w-8 animate-spin text-accent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-accent"></div>
       </div>
     );
   }

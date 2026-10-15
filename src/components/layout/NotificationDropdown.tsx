@@ -1,175 +1,143 @@
-import React from "react";
-import {
-  FiCheckCircle,
-  FiInfo,
-  FiAlertTriangle,
-  FiClock,
-  FiBell,
-  FiLoader,
-} from "react-icons/fi";
-import {
-  useNotifications,
-  useNotificationMutations,
-} from "../../hooks/useNotifications";
-import { LoadingSpinner } from "../ui/LoadingSpinner";
-import { formatRelativeTime } from "../../utils/dateFormat";
-import {
-  NotificationType,
-  NotificationEntityType,
-  type NotificationItem,
-} from "../../types/notification";
+import { ArrowRight, Bell, CheckCheck, LoaderCircle, RefreshCw } from "lucide-react";
 import { useNavigate } from "react-router";
-import { LuUserPlus } from "react-icons/lu";
+import {
+  useNotificationMutations,
+  useNotifications,
+  useUnreadCount,
+} from "../../hooks/useNotifications";
+import type { NotificationItem } from "../../types/notification";
+import { getNotificationHref } from "../../utils/notificationNavigation";
+import NotificationListItem from "../notifications/NotificationListItem";
 
 interface NotificationDropdownProps {
   disableNavigation?: boolean;
+  activityPath?: string;
+  onClose?: () => void;
 }
 
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+export default function NotificationDropdown({
   disableNavigation = false,
-}) => {
+  activityPath = "/notifications",
+  onClose,
+}: NotificationDropdownProps) {
   const navigate = useNavigate();
-  const { notifications, isLoading, isFetching } = useNotifications({
+  const { notifications, isLoading, isError, error, refetch, isFetching } = useNotifications({
     pageNumber: 1,
-    pageSize: 10,
+    pageSize: 50,
   });
-  const { markAsRead, markAllAsRead, isMarkingAllAsRead } =
-    useNotificationMutations();
-
-  const getIcon = (type: number) => {
-    switch (type) {
-      case NotificationType.Invitation:
-        return <LuUserPlus className="text-green-500 w-5 h-5" />;
-      case NotificationType.System:
-        return <FiAlertTriangle className="text-amber-500 w-5 h-5" />;
-      case NotificationType.Project:
-        return <FiInfo className="text-accent w-5 h-5" />;
-      case NotificationType.Review:
-        return <FiCheckCircle className="text-indigo-500 w-5 h-5" />;
-      case NotificationType.Comment:
-        return <FiInfo className="text-text-secondary w-5 h-5" />;
-      default:
-        return <FiBell className="text-text-muted w-5 h-5" />;
-    }
-  };
-
-  console.log(notifications);
+  const { unreadCount } = useUnreadCount();
+  const { markAsRead, markAllAsRead, isMarkingAllAsRead } = useNotificationMutations();
+  const hasUnread = unreadCount > 0 || notifications.some((item) => !item.isRead);
 
   const handleNotificationClick = async (notification: NotificationItem) => {
     if (!notification.isRead) {
-      await markAsRead(notification.id);
+      try {
+        await markAsRead(notification.id);
+      } catch {
+        // The mutation shows an error and rolls back its optimistic update.
+      }
     }
 
     if (disableNavigation) return;
 
-    // Handle navigation based on entity type
-    if (notification.relatedEntityId) {
-      switch (notification.entityType) {
-        case NotificationEntityType.ProjectInvitation:
-          navigate(`/invitations/${notification.relatedEntityId}`);
-          break;
-        case NotificationEntityType.Project:
-          navigate(`/projects/${notification.relatedEntityId}`);
-          break;
-        default:
-          break;
-      }
-    }
-  };
-
-  const handleMarkAllAsRead = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    markAllAsRead();
+    const href = getNotificationHref(notification);
+    if (href) navigate(href);
+    onClose?.();
   };
 
   return (
-    <div className="absolute right-0 mt-3 w-80 sm:w-96 bg-surface-white rounded-xl shadow-2xl border border-border ring-1 ring-black/5 z-(--z-index-dropdown) overflow-hidden transform origin-top-right transition-all animate-in fade-in slide-in-from-top-2 duration-200">
-      {/* Header */}
-      <div className="p-4 border-b border-border flex items-center justify-between bg-bg-secondary">
-        <h3 className="font-medium text-text-primary uppercase tracking-[0.1em] text-[13px] flex items-center gap-2">
-          Notifications
-          {(isLoading || isFetching) && (
-            <FiLoader className="w-3 h-3 animate-spin text-accent" />
-          )}
-        </h3>
-        <button
-          onClick={handleMarkAllAsRead}
-          disabled={isMarkingAllAsRead || notifications.length === 0}
-          className="text-[10px] font-medium text-text-secondary hover:text-text-primary transition-colors disabled:opacity-50 uppercase tracking-widest"
-        >
-          {isMarkingAllAsRead ? "Marking..." : "Mark all as read"}
-        </button>
-      </div>
-
-      {/* List */}
-      <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
-        {isLoading ? (
-          <div className="p-12 text-center">
-            <LoadingSpinner size="md" className="mb-4" />
-            <p className="text-text-secondary text-sm">
-              Loading notifications...
+    <section
+      id="notifications-popover"
+      role="dialog"
+      aria-modal="false"
+      aria-label="Notifications"
+      className="fixed left-4 right-4 top-[72px] z-(--z-index-dropdown) mx-auto w-auto max-w-[27rem] overflow-hidden rounded-xl border border-border bg-surface-white shadow-[0_4px_12px_-4px_rgba(18,35,49,0.18)] animate-in fade-in slide-in-from-top-2 duration-150 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:mx-0 sm:w-[min(27rem,calc(100vw-2rem))]"
+    >
+      <header className="flex items-center justify-between gap-3 border-b border-border bg-surface-white px-4 py-3.5 sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/10 bg-primary-light text-primary">
+            <Bell className="h-[17px] w-[17px]" aria-hidden="true" />
+          </span>
+          <div className="min-w-0">
+            <h2 className="text-sm font-semibold leading-5 text-text-primary">Notifications</h2>
+            <p className="mt-0.5 text-xs leading-4 text-text-secondary">
+              {unreadCount > 0 ? `${unreadCount} unread` : "Updates across your review projects"}
             </p>
           </div>
-        ) : notifications.length > 0 ? (
-          <div className="divide-y divide-border">
-            {notifications.map((notif) => (
-              <div
-                key={notif.id}
-                onClick={() => handleNotificationClick(notif)}
-                className={`p-4 hover:bg-bg-secondary transition-colors cursor-pointer flex gap-4 ${
-                  !notif.isRead ? "bg-bg-secondary/50" : ""
-                }`}
-              >
-                <div className="mt-1 flex-shrink-0">{getIcon(notif.type)}</div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start mb-1 gap-2">
-                    <p
-                      className={`text-[13px] font-medium truncate tracking-wide ${
-                        !notif.isRead
-                          ? "text-text-primary"
-                          : "text-text-secondary"
-                      }`}
-                    >
-                      {notif.title}
-                    </p>
-                    <div className="flex items-center gap-1 text-[10px] text-text-secondary uppercase tracking-widest whitespace-nowrap">
-                      <FiClock className="w-3 h-3" />
-                      {formatRelativeTime(notif.createdAt)}
-                    </div>
-                  </div>
-                  <p className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
-                    {notif.message}
-                  </p>
+          {isFetching && <LoaderCircle className="h-3.5 w-3.5 animate-spin text-text-secondary" aria-label="Refreshing notifications" />}
+        </div>
+        <button
+          type="button"
+          onClick={() => markAllAsRead()}
+          disabled={!hasUnread || isMarkingAllAsRead || isLoading}
+          className="shrink-0 rounded-lg px-2.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:text-text-disabled disabled:hover:bg-transparent"
+        >
+          {isMarkingAllAsRead ? "Marking…" : "Mark all read"}
+        </button>
+      </header>
+
+      <div className="max-h-[min(26rem,65vh)] overflow-y-auto">
+        {isLoading ? (
+          <div className="space-y-4 p-5" aria-label="Loading notifications">
+            {[0, 1, 2].map((item) => (
+              <div key={item} className="flex gap-3 animate-pulse">
+                <div className="h-9 w-9 shrink-0 rounded-xl bg-bg-secondary" />
+                <div className="flex-1 space-y-2 py-1">
+                  <div className="h-3 w-3/4 rounded bg-bg-secondary" />
+                  <div className="h-2.5 w-full rounded bg-bg-secondary" />
+                  <div className="h-2.5 w-2/3 rounded bg-bg-secondary" />
                 </div>
-                {!notif.isRead && (
-                  <div className="w-2 h-2 rounded-full bg-accent mt-2 flex-shrink-0"></div>
-                )}
               </div>
             ))}
           </div>
+        ) : isError ? (
+          <div className="flex flex-col items-center px-6 py-9 text-center">
+            <p className="text-sm font-medium text-text-primary">Couldn’t load notifications</p>
+            <p className="mt-1 max-w-xs text-xs leading-5 text-text-secondary">{error || "Check your connection and try again."}</p>
+            <button
+              type="button"
+              onClick={() => void refetch()}
+              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary"
+            >
+              <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> Try again
+            </button>
+          </div>
+        ) : notifications.length > 0 ? (
+          <div className="divide-y divide-border/80">
+            {notifications.slice(0, 6).map((notification) => (
+              <NotificationListItem
+                key={notification.id}
+                notification={notification}
+                onClick={() => void handleNotificationClick(notification)}
+                compact
+              />
+            ))}
+          </div>
         ) : (
-          <div className="p-12 text-center">
-            <div className="w-16 h-16 bg-bg-secondary rounded-xl flex items-center justify-center mx-auto mb-4 border border-border">
-              <FiBell className="w-8 h-8 text-text-secondary" />
-            </div>
-            <p className="text-text-primary text-[13px] font-medium tracking-[0.1em] uppercase">
-              All caught up!
-            </p>
-            <p className="text-text-secondary text-xs mt-1">
-              No new notifications.
-            </p>
+          <div className="flex flex-col items-center px-6 py-9 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-bg-secondary text-primary">
+              <Bell className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <h3 className="mt-3 text-sm font-semibold text-text-primary">You are all caught up</h3>
+            <p className="mt-1 max-w-[19rem] text-xs leading-5 text-text-secondary">New invitations and review updates will appear here.</p>
           </div>
         )}
       </div>
 
-      {/* Footer */}
-      <div className="p-3 border-t border-border bg-bg-secondary text-center">
-        <button className="text-[10px] font-medium text-text-secondary hover:text-text-primary transition-colors uppercase tracking-[0.2em]">
-          See All Activity
+      <footer className="border-t border-border bg-bg-secondary/50 p-2">
+        <button
+          type="button"
+          onClick={() => {
+            navigate(activityPath);
+            onClose?.();
+          }}
+          className="group flex min-h-10 w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+        >
+          <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
+          See all activity
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </button>
-      </div>
-    </div>
+      </footer>
+    </section>
   );
-};
-
-export default NotificationDropdown;
+}

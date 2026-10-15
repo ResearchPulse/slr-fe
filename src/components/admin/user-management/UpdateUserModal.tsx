@@ -145,19 +145,14 @@ const UpdateUserModal: React.FC<UpdateUserModalProps> = ({
           required
         />
 
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-50">
-          <button
-            type="button"
-            onClick={onClose}
-            className="px-6 py-2.5 text-sm font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-50 rounded-xl transition-all"
-            disabled={isLoading}
-          >
+        <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
+          <Button type="button" variant="ghost" onClick={onClose} disabled={isLoading}>
             Cancel
-          </button>
+          </Button>
           <Button
             type="submit"
             isLoading={isLoading}
-            className="bg-accent hover:bg-indigo-700 shadow-lg shadow-indigo-100 min-w-[140px]"
+            className="min-w-[140px]"
           >
             Save Changes
           </Button>

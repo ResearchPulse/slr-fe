@@ -37,7 +37,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       iconBg: "bg-warning/10",
       iconColor: "text-warning",
       confirmVariant: "primary" as const,
-      confirmClassName: "bg-warning hover:bg-warning/90 focus:ring-warning/20",
+      confirmClassName: "bg-warning hover:bg-warning/90 focus-visible:ring-warning/20",
     },
     info: {
       iconBg: "bg-primary-light",

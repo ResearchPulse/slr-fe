@@ -1,59 +1,70 @@
 import api from "../config/axios";
 import type {
-  ApiResponse,
-  PaginatedData,
-  NotificationItem,
   GetNotificationsParams,
+  NotificationApiItem,
+  NotificationApiResponse,
+  NotificationEntityType,
+  NotificationItem,
 } from "../types/notification";
+
+type NotificationListPayload =
+  | NotificationApiItem[]
+  | { items: NotificationApiItem[] };
+
+const normalizeNotification = (item: NotificationApiItem): NotificationItem => {
+  const rawType = String(item.type);
+  const normalizedType = rawType.toUpperCase();
+  const entityType = item.entityType ?? (
+    item.relatedEntityId
+      ? normalizedType.includes("INVITATION") ? 1 : 2
+      : item.projectId
+        ? 2
+        : null
+  );
+
+  return {
+    id: item.id,
+    title: item.title,
+    message: item.message,
+    type: item.type,
+    relatedEntityId: item.relatedEntityId ?? item.projectId ?? null,
+    entityType: entityType as NotificationEntityType | null,
+    actionUrl: item.actionUrl ?? null,
+    isRead: item.isRead ?? item.read ?? false,
+    createdAt: item.createdAt,
+  };
+};
 
 class NotificationService {
   private readonly endpoint = "/notifications";
 
-  /**
-   * Get paginated notifications
-   * GET /api/notifications
-   */
+  /** The current API returns the latest notifications as a plain array. */
   getNotifications = async (
-    params: GetNotificationsParams = { pageNumber: 1, pageSize: 10 }
-  ): Promise<ApiResponse<PaginatedData<NotificationItem>>> => {
-    const response = await api.get<ApiResponse<PaginatedData<NotificationItem>>>(
+    params: GetNotificationsParams = { pageNumber: 1, pageSize: 50 },
+  ): Promise<NotificationItem[]> => {
+    const response = await api.get<NotificationApiResponse<NotificationListPayload>>(
       this.endpoint,
-      { params }
+      { params },
     );
-    return response.data;
+    const payload = response.data.data;
+    const items = Array.isArray(payload) ? payload : payload.items;
+    return items.map(normalizeNotification);
   };
 
-  /**
-   * Get unread notifications count
-   * GET /api/notifications/unread-count
-   */
-  getUnreadCount = async (): Promise<ApiResponse<number>> => {
-    const response = await api.get<ApiResponse<number>>(
-      `${this.endpoint}/unread-count`
+  getUnreadCount = async (): Promise<number> => {
+    const response = await api.get<NotificationApiResponse<number>>(
+      `${this.endpoint}/unread-count`,
     );
-    return response.data;
+    return Number(response.data.data) || 0;
   };
 
-  /**
-   * Mark a notification as read
-   * PUT /api/notifications/{id}/read
-   */
-  markAsRead = async (id: string): Promise<ApiResponse<null>> => {
-    const response = await api.put<ApiResponse<null>>(
-      `${this.endpoint}/${id}/read`
-    );
-    return response.data;
+  markAsRead = async (id: string): Promise<void> => {
+    // The API exposes PATCH /notifications/:id/read.
+    await api.patch(`${this.endpoint}/${encodeURIComponent(id)}/read`);
   };
 
-  /**
-   * Mark all notifications as read
-   * PUT /api/notifications/read-all
-   */
-  markAllAsRead = async (): Promise<ApiResponse<null>> => {
-    const response = await api.put<ApiResponse<null>>(
-      `${this.endpoint}/read-all`
-    );
-    return response.data;
+  markAllAsRead = async (): Promise<void> => {
+    await api.patch(`${this.endpoint}/read-all`);
   };
 }
 

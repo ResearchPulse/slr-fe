@@ -89,6 +89,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openPdfAfterMobileMenu, setOpenPdfAfterMobileMenu] = useState(false);
   const [sampleAnswerData, setSampleAnswerData] =
     useState<SampleAnswerData | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
@@ -123,10 +124,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
   // --- PDF panel state ---
   const [isPdfPanelOpen, setIsPdfPanelOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    window.matchMedia("(max-width: 1023px)").matches,
+  );
   const [activePdfCoordinate, setActivePdfCoordinate] =
     useState<HighlightArea | null>(null);
   const [pdfWidth, setPdfWidth] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateViewport = () => setIsMobileViewport(mediaQuery.matches);
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!openPdfAfterMobileMenu || isMobileMenuOpen) return;
+
+    const timeout = window.setTimeout(() => {
+      setIsPdfPanelOpen(true);
+      setOpenPdfAfterMobileMenu(false);
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [isMobileMenuOpen, openPdfAfterMobileMenu]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -582,6 +604,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           onClick={() => navigate(-1)}
           className="p-2"
           title="Go back"
+          aria-label="Go back"
         >
           <FiChevronLeft className="w-6 h-6 text-text-secondary" />
         </Button>
@@ -657,6 +680,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           size="sm"
           onClick={() => setIsMobileMenuOpen(true)}
           className="md:hidden p-2"
+          aria-label="Open actions"
         >
           <FiMenu className="w-6 h-6 text-text-secondary" />
         </Button>
@@ -682,6 +706,19 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             <FiUpload className="w-4 h-4 mr-2" />
             {isAutoFillInProgress ? "Processing…" : "Auto-Fill from PDF"}
           </Button>
+          {checklist.pdfUrl && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setOpenPdfAfterMobileMenu(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full justify-center"
+            >
+              <FiFileText className="w-4 h-4 mr-2" />
+              View source PDF
+            </Button>
+          )}
           <Button
             variant="secondary"
             onClick={() => {
@@ -953,7 +990,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           <div
             style={{ width: pdfWidth ? `${pdfWidth}px` : undefined }}
             className={cn(
-              "shrink-0 flex",
+              "hidden lg:flex shrink-0",
               !isDragging && "transition-all duration-300",
               !pdfWidth && "w-[55%]",
             )}
@@ -992,6 +1029,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           </div>
         )}
       </div>
+
+      <Drawer
+        isOpen={isPdfPanelOpen && isMobileViewport && Boolean(checklist.pdfUrl)}
+        onClose={() => {
+          setIsPdfPanelOpen(false);
+          setActivePdfCoordinate(null);
+        }}
+        title="Source PDF"
+        side="right"
+        maxWidth="max-w-5xl"
+        className="lg:hidden"
+        contentClassName="min-h-0 overflow-hidden p-0"
+      >
+        {checklist.pdfUrl && (
+          <ChecklistPdfPanel
+            pdfUrl={checklist.pdfUrl}
+            activeCoordinate={activePdfCoordinate}
+            onClose={() => {
+              setIsPdfPanelOpen(false);
+              setActivePdfCoordinate(null);
+            }}
+            showHeader={false}
+          />
+        )}
+      </Drawer>
 
       {/* Sample Answer Modal */}
       <SampleAnswerModal

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Modal from "../../../../components/ui/Modal";
+import Button from "../../../../components/ui/Button";
 import { FiSearch, FiUserPlus, FiUsers } from "react-icons/fi";
 import { cn } from "../../../../utils/cn";
 import type { ProjectMember } from "../../../../types/project";
@@ -69,19 +70,19 @@ export function QAAssignModal({
       closeOnOutsideClick={true}
     >
       <div className="space-y-6">
-        <div className="flex justify-between items-center bg-bg-secondary/80 rounded-xl w-full border border-border/50 p-1">
-          <button className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300 bg-surface-white text-accent shadow-sm shadow-slate-200 border border-border">
-            <FiUsers size={14} />
-            Members List
-          </button>
+        <div className="flex items-center justify-between gap-3 rounded-xl border border-border bg-bg-secondary px-4 py-3">
+          <h3 className="flex items-center gap-2 text-sm font-semibold text-text-primary">
+            <FiUsers size={16} aria-hidden="true" />
+            Members
+          </h3>
 
           <div className="px-4 text-xs font-semibold text-text-secondary">
             <span
-              className={cn(
+              className={
                 assignedUserIds.length + selectedUserIds.length >= 2
-                  ? "text-red-500"
-                  : "",
-              )}
+                  ? "text-error"
+                  : "text-text-primary"
+              }
             >
               {assignedUserIds.length + selectedUserIds.length} / 2
             </span>{" "}
@@ -90,15 +91,15 @@ export function QAAssignModal({
         </div>
 
         {hasResolution && (
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl animate-in fade-in slide-in-from-top-2 duration-300">
-            <p className="text-xs font-bold text-amber-700 tracking-wider text-center">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-medium text-center text-amber-800">
               This paper has already been resolved. You cannot change reviewer
               assignments.
             </p>
           </div>
         )}
 
-        <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+        <div className="space-y-4">
           {/* Member Search */}
           <div className="relative group max-w-md">
             <FiSearch
@@ -106,15 +107,16 @@ export function QAAssignModal({
               size={16}
             />
             <input
-              type="text"
-              placeholder="Search active team members..."
+              type="search"
+              aria-label="Search team members"
+              placeholder="Search team members..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-11 pr-4 py-3.5 bg-bg-secondary border border-border rounded-xl text-xs font-bold text-text-primary outline-none focus:ring-4 focus:ring-accent/5 focus:border-accent/30 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent focus:ring-2 focus:ring-accent/20"
             />
           </div>
 
-          <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+          <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => {
                 const isAlreadyAssigned = assignedUserIds.includes(
@@ -127,83 +129,83 @@ export function QAAssignModal({
                   isAlreadyAssigned ||
                   (isMaxReached && !isSelected) ||
                   hasResolution;
-                const displayName = member.fullName || member.userName;
+                const displayName =
+                  member.fullName || member.userName || member.email || "Team member";
                 const initials = (displayName || "?")
                   .substring(0, 2)
                   .toUpperCase();
 
                 return (
-                  <div
+                  <label
                     key={member.userId}
-                    onClick={() => {
-                      if (!isDisabled) {
-                        toggleUserSelection(member.userId);
-                      }
-                    }}
                     className={cn(
-                      "group relative flex items-center gap-4 p-4 border rounded-xl transition-all duration-300",
+                      "group relative flex min-h-16 items-center gap-3 rounded-xl border px-3 py-3 transition-colors",
                       isDisabled
-                        ? "opacity-50 cursor-not-allowed bg-bg-secondary border-border"
-                        : "cursor-pointer hover:border-accent/30 hover:shadow-xl hover:shadow-primary/10",
+                        ? "cursor-not-allowed border-border bg-bg-secondary opacity-70"
+                        : "cursor-pointer border-border bg-surface-white hover:border-accent/50 hover:bg-bg-selected",
                       isSelected && !isAlreadyAssigned
-                        ? "bg-bg-secondary/50 border-accent/30 shadow-sm shadow-primary/10"
-                        : !isDisabled
-                          ? "bg-surface-white border-border"
-                          : "",
+                        ? "border-accent bg-bg-selected"
+                        : "",
                     )}
                   >
                     <div
                       className={cn(
-                        "w-12 h-12 rounded-xl flex items-center justify-center text-sm font-black shrink-0 transition-transform",
+                        "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-semibold",
                         isSelected || isAlreadyAssigned
-                          ? "bg-accent text-white shadow-lg shadow-primary/10"
-                          : "bg-bg-secondary text-text-secondary group-hover:scale-105",
+                          ? "bg-primary text-white"
+                          : "bg-bg-secondary text-text-secondary",
                       )}
                     >
                       {initials}
                     </div>
 
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <h4 className="font-black text-slate-800 tracking-tight truncate">
+                      <div className="mb-0.5 flex min-w-0 items-center gap-2">
+                        <span className="truncate text-sm font-semibold text-text-primary">
                           {displayName}
-                        </h4>
+                        </span>
                         {isAlreadyAssigned && (
-                          <span className="px-2 py-0.5 rounded-[4px] text-[9px] font-black uppercase tracking-widest bg-bg-secondary text-accent border border-accent/30">
+                          <span className="shrink-0 rounded-md border border-border bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-secondary">
                             Assigned
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-text-secondary font-medium truncate">
+                      <div className="truncate text-xs text-text-secondary">
                         {member.email}
                       </div>
                     </div>
 
-                    <div className="pl-4 border-l border-border ml-2">
+                    <div className="ml-2 flex min-h-11 min-w-11 items-center justify-center border-l border-border pl-3">
                       <input
                         type="checkbox"
                         checked={isSelected || isAlreadyAssigned}
                         disabled={isDisabled}
-                        readOnly
-                        className="w-5 h-5 rounded-[4px] border-2 border-slate-300 text-accent focus:ring-accent/30 transition-all checked:border-accent cursor-pointer pointer-events-none"
+                        onChange={() => toggleUserSelection(member.userId)}
+                        aria-label={`Assign ${displayName}`}
+                        className="h-5 w-5 cursor-pointer rounded border-border text-accent focus:ring-accent/30 disabled:cursor-not-allowed"
                       />
                     </div>
-                  </div>
+                  </label>
                 );
               })
             ) : (
-              <div className="py-20 flex flex-col items-center justify-center text-center opacity-30 grayscale">
-                <FiUserPlus size={48} className="text-slate-300 mb-4" />
-                <p className="text-sm font-black text-text-primary uppercase">
-                  {searchTerm ? "No Match Found" : "No Members Available"}
+              <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border px-4 py-10 text-center">
+                <FiUserPlus size={28} aria-hidden="true" className="mb-3 text-text-secondary" />
+                <p className="text-sm font-semibold text-text-primary">
+                  {searchTerm ? "No matches found" : "No members available"}
                 </p>
+                {searchTerm && (
+                  <p className="mt-1 text-sm text-text-secondary">
+                    Try another name or user ID.
+                  </p>
+                )}
               </div>
             )}
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="flex items-center justify-between pt-6 border-t border-slate-50">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
           <div className="flex items-center gap-3">
             {selectedUserIds.length > 0 && (
               <div className="flex items-center gap-2 px-4 py-2 bg-bg-secondary rounded-xl border border-accent/30">
@@ -214,31 +216,25 @@ export function QAAssignModal({
             )}
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleCloseModal}
-              className="px-8 py-3.5 text-[11px] font-black text-text-secondary hover:text-text-secondary transition-all uppercase tracking-widest active:scale-95"
-            >
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="secondary" size="md" onClick={handleCloseModal}>
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={handleAssign}
               disabled={
                 selectedUserIds.length === 0 || isAssigning || hasResolution
               }
-              className={cn(
-                "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-xl transition-all active:scale-95 uppercase tracking-widest shadow-lg min-w-[180px] justify-center",
-                selectedUserIds.length > 0 && !isAssigning
-                  ? "bg-slate-900 text-white hover:bg-accent hover:shadow-primary/10"
-                  : "bg-bg-secondary text-slate-300 cursor-not-allowed shadow-none",
-              )}
+              aria-busy={isAssigning || undefined}
+              variant="primary"
+              size="md"
             >
               {isAssigning
                 ? "Assigning..."
                 : hasResolution
                   ? "Paper Resolved"
                   : "Assign Members"}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

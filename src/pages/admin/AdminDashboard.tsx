@@ -14,6 +14,7 @@ import {
   FiUser,
   FiCpu,
   FiClipboard,
+  FiBell,
 } from "react-icons/fi";
 import { SiTask } from "react-icons/si";
 import { MdChecklist } from "react-icons/md";
@@ -61,6 +62,7 @@ const AdminDashboard: React.FC = () => {
       group: "Management",
     },
     { icon: FiFileText, label: "Audit Logs", path: "/admin/audit-logs", group: "System" },
+    { icon: FiBell, label: "Notifications", path: "/admin/notifications", group: "System" },
     { icon: FiSettings, label: "System Settings", path: "/admin/settings", group: "System" },
   ];
 
@@ -86,7 +88,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <SectionGuard section="admin">
-      <div className="relative flex h-screen overflow-hidden bg-bg-primary">
+      <div className="relative flex h-dvh overflow-hidden bg-bg-primary">
         {/* Mobile Sidebar (Drawer) */}
         <Drawer
           isOpen={isMobileMenuOpen}
@@ -107,7 +109,8 @@ const AdminDashboard: React.FC = () => {
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary"
+                    type="button"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     <Icon className="h-[18px] w-[18px] opacity-70" />
                     {item.label}

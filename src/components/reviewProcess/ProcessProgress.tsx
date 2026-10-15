@@ -43,7 +43,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
   };
 
   return (
-    <div className="bg-gradient-to-br from-primary-light to-primary-light border border-primary/20 rounded-xl p-6 mb-6">
+    <div className="mb-6 rounded-xl border border-border bg-surface-white p-4 sm:p-6">
       {/* Current Phase Info */}
       <div className="mb-6">
         <h3 className="text-sm font-medium text-text-secondary mb-2">
@@ -71,8 +71,8 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
           </div>
         ) : completed === total && total > 0 ? (
           <div className="flex items-center gap-2">
-            <FiCheckCircle className="w-5 h-5 text-green-600" />
-            <span className="text-lg font-semibold text-green-600">
+            <FiCheckCircle className="w-5 h-5 text-success" />
+            <span className="text-lg font-semibold text-success">
               All processes completed!
             </span>
           </div>
@@ -94,7 +94,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
           </div>
           <div className="w-full bg-bg-secondary rounded-full h-3 overflow-hidden">
             <div
-              className="bg-gradient-to-r from-primary to-primary h-3 rounded-full transition-all duration-500"
+              className="h-3 rounded-full bg-primary transition-all duration-500"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -102,10 +102,10 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
       )}
 
       {/* Statistics */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-x-3 gap-y-5 sm:grid-cols-4 sm:gap-4">
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
-            <FiCheckCircle className="w-4 h-4 text-green-600" />
+            <FiCheckCircle className="w-4 h-4 text-success" />
             <span className="text-2xl font-bold text-text-primary">
               {completed}
             </span>

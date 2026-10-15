@@ -94,8 +94,8 @@ export default function ChecklistDashboardPageWrapper() {
           : "Không thể tải danh sách checklist từ máy chủ";
 
     return (
-      <div className="min-h-screen bg-surface-white">
-        <div className="max-w-4xl mx-auto px-6 py-16 flex flex-col items-center justify-center text-center">
+      <div className="min-h-screen bg-bg-primary px-4 py-8 sm:px-6 sm:py-12">
+        <div role="alert" className="mx-auto flex min-h-[50vh] max-w-4xl flex-col items-center justify-center text-center">
           <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4 ring-8 ring-red-50">
             <FiAlertTriangle className="h-7 w-7" />
           </div>
@@ -105,11 +105,11 @@ export default function ChecklistDashboardPageWrapper() {
           <p className="text-sm text-text-secondary max-w-md mb-6 leading-relaxed">
             {errorMessage}
           </p>
-          <div className="flex items-center gap-3">
+          <div className="flex w-full max-w-sm flex-col-reverse gap-3 sm:w-auto sm:max-w-none sm:flex-row sm:items-center">
             <Button
               variant="secondary"
               onClick={() => navigate(`/projects/${reviewId}`)}
-              className="inline-flex items-center gap-2"
+              className="inline-flex w-full items-center justify-center gap-2 sm:w-auto"
             >
               <FiArrowLeft className="w-4 h-4" />
               Quay lại dự án
@@ -119,7 +119,7 @@ export default function ChecklistDashboardPageWrapper() {
                 checklistQuery.refetch();
                 templatesQuery.refetch();
               }}
-              className="inline-flex items-center gap-2"
+              className="inline-flex w-full items-center justify-center gap-2 sm:w-auto"
             >
               <FiRefreshCw className="w-4 h-4" />
               Thử lại

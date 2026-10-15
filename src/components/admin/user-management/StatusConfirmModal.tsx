@@ -37,12 +37,12 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
     >
       <div className="space-y-6">
         <div
-          className={`p-4 rounded-xl flex items-center gap-3 ${isActivating ? "bg-emerald-50 text-emerald-800 border border-emerald-100" : "bg-rose-50 text-rose-800 border border-rose-100"}`}
+          className={`flex items-center gap-3 rounded-xl border p-4 ${isActivating ? "border-success/20 bg-success/10 text-success" : "border-error/20 bg-error/10 text-error"}`}
         >
           {isActivating ? (
-            <FiCheckCircle size={24} className="text-emerald-500" />
+            <FiCheckCircle size={24} />
           ) : (
-            <FiXCircle size={24} className="text-rose-500" />
+            <FiXCircle size={24} />
           )}
           <div>
             <p className="text-sm font-black">
@@ -53,7 +53,7 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
         </div>
 
         <div className="bg-bg-primary p-4 rounded-xl border border-border flex gap-3 text-text-secondary">
-          <FiAlertCircle size={20} className="shrink-0 text-amber-500" />
+          <FiAlertCircle size={20} className="shrink-0 text-warning" />
           <p className="text-xs leading-relaxed font-medium">
             {isActivating
               ? "Activating this account will enable all standard permissions associated with their role."
@@ -73,7 +73,7 @@ const StatusConfirmModal: React.FC<StatusConfirmModalProps> = ({
             onClick={onConfirm}
             isLoading={isLoading}
             variant={isActivating ? "success" : "danger"}
-            className={`min-w-[140px] ${isActivating ? "bg-emerald-600 hover:bg-emerald-700 hover:shadow-emerald-100 shadow-lg transition-transform active:scale-95" : "bg-rose-600 hover:bg-rose-700 hover:shadow-rose-100 shadow-lg transition-transform active:scale-95"}`}
+            className="min-w-[140px]"
           >
             {isActivating ? "Confirm Activation" : "Confirm Deactivation"}
           </Button>

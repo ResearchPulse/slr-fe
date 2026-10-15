@@ -100,6 +100,12 @@ function computeSummaryStats(report: PrismaReportResponse): PrismaSummaryStats {
   };
 }
 
+function isNotFoundError(error: unknown): boolean {
+  if (!error || typeof error !== "object" || !("response" in error)) return false;
+  const response = (error as { response?: { status?: number } }).response;
+  return response?.status === 404;
+}
+
 export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): UsePrismaReportReturn {
   const queryClient = useQueryClient();
 
@@ -273,7 +279,7 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
     isDownloading: downloadMutation.isPending,
     isLoadingSelected: selectedQuery.isLoading,
 
-    latestError: latestQuery.error
+    latestError: latestQuery.error && !isNotFoundError(latestQuery.error)
       ? getErrorMessage(latestQuery.error, "Failed to load latest PRISMA report.")
       : null,
     historyError: historyQuery.error

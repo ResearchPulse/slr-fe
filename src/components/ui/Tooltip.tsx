@@ -178,7 +178,7 @@ const Tooltip: React.FC<TooltipProps> = ({
               id={tooltipId}
               role="tooltip"
               className={cn(
-                "absolute px-4 py-2 bg-surface-white text-text-primary text-[11px] font-bold rounded-xl shadow-[0_12px_40px_-10px_rgba(0,0,0,0.15)] border border-border whitespace-nowrap select-none",
+                "absolute px-4 py-2 bg-surface-white text-text-primary text-[11px] font-bold rounded-xl shadow-[0_8px_16px_rgba(18,35,49,0.12)] whitespace-nowrap select-none",
                 interactive ? "pointer-events-auto" : "pointer-events-none",
                 positionStyles[position],
                 className,

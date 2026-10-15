@@ -219,7 +219,7 @@ export default function UploadFullTextPdfModal({
 
           <div
             className={cn(
-              "overflow-hidden rounded-xl border border-accent/30 bg-linear-to-br from-primary-light via-white to-primary-light transition-all",
+              "overflow-hidden rounded-xl border border-accent/30 bg-primary-light transition-colors",
               isMetadataSectionExpanded
                 ? "max-h-[420px] p-5"
                 : "max-h-0 p-0 border-transparent",
