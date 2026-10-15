@@ -5,6 +5,7 @@ import {
   useMemo,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { createPortal } from "react-dom";
@@ -13,8 +14,11 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  CheckCircle2,
+  Clock3,
   Download,
   Eye,
+  FileCheck2,
   FileSpreadsheet,
   FileText,
   Package,
@@ -22,6 +26,7 @@ import {
   Search,
   ArrowLeft,
   UserPlus,
+  UsersRound,
 } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Checkbox from "../../../../components/ui/Checkbox";
@@ -645,6 +650,9 @@ export default function DataExtractionDashboard({
           (ws.summary.completed / ws.summary.totalIncluded) * 100,
         )
       : 0;
+  const isExtractionComplete =
+    ws.summary.totalIncluded > 0 &&
+    ws.summary.completed >= ws.summary.totalIncluded;
   const extractionStatusLabel =
     ws.extractionProcessStatus === "InProgress"
       ? "Active"
@@ -653,8 +661,8 @@ export default function DataExtractionDashboard({
         : ws.extractionProcessStatus;
 
   return (
-    <div className="min-h-full bg-[#F7F9FC]">
-      <header className="border-b border-border bg-white">
+    <div className="min-h-full bg-bg-primary">
+      <header className="border-b border-border bg-surface-white">
         <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
@@ -740,7 +748,7 @@ export default function DataExtractionDashboard({
 
         {ws.isCurrentUserLeader && (
           <div className="mb-5 space-y-4">
-            <section className="flex flex-col gap-2 rounded-xl border border-border bg-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+            <section className="flex flex-col gap-2 rounded-xl border border-border bg-surface-white px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-5">
               <div className="min-w-0">
                 <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-text-secondary">
                   Extraction form
@@ -767,46 +775,63 @@ export default function DataExtractionDashboard({
               </Button>
             </section>
 
-            <section className="rounded-xl border border-border bg-white px-4 py-4 sm:px-5">
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="space-y-3">
+              <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 xl:grid-cols-4">
                 <MetricCard
                   title="Included"
                   value={ws.summary.totalIncluded}
-                  className="border-b border-border sm:border-r sm:pr-5 xl:border-b-0"
+                  icon={<FileCheck2 className="h-[18px] w-[18px]" aria-hidden="true" />}
+                  tone="blue"
                 />
                 <MetricCard
                   title="In progress"
                   value={ws.summary.inProgress}
-                  className="border-b border-border sm:pl-5 xl:border-r xl:border-b-0 xl:pr-5"
+                  icon={<Clock3 className="h-[18px] w-[18px]" aria-hidden="true" />}
+                  tone="amber"
                 />
                 <MetricCard
                   title="Awaiting consensus"
                   value={ws.summary.awaitingConsensus}
-                  status="warning"
-                  className="border-b border-border sm:border-r sm:border-b-0 sm:pr-5"
+                  icon={<UsersRound className="h-[18px] w-[18px]" aria-hidden="true" />}
+                  tone="purple"
                 />
                 <MetricCard
                   title="Completed"
                   value={ws.summary.completed}
-                  status="success"
-                  className="sm:pl-5"
+                  icon={<CheckCircle2 className="h-[18px] w-[18px]" aria-hidden="true" />}
+                  tone="emerald"
                 />
               </div>
-              <div className="mt-4 border-t border-border pt-3">
-                <div className="mb-2 flex items-center justify-between gap-4 text-xs">
-                  <span className="font-medium text-text-secondary">
-                    Extraction progress
-                  </span>
-                  <span className="text-text-secondary">
-                    <span className="font-semibold text-text-primary">
-                      {ws.summary.completed} of {ws.summary.totalIncluded}
-                    </span>{" "}
-                    completed <span className="mx-1 text-text-muted">|</span>
-                    {Math.round(completedPercent)}%
-                  </span>
+
+              <section className="rounded-xl border border-border bg-surface-white px-4 py-4 sm:px-5">
+                <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="text-sm font-semibold text-text-primary" role="heading" aria-level={3}>
+                    Extraction Progress
+                  </div>
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+                    <span className="text-text-secondary">
+                      <span className="font-semibold tabular-nums text-text-primary">
+                        {ws.summary.completed} / {ws.summary.totalIncluded}
+                      </span>{" "}
+                      completed
+                    </span>
+                    <span
+                      className={`font-bold tabular-nums ${
+                        isExtractionComplete ? "text-success" : "text-primary"
+                      }`}
+                    >
+                      {Math.round(completedPercent)}%
+                    </span>
+                    {isExtractionComplete && (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
+                        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden="true" />
+                        Complete
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div
-                  className="h-1.5 overflow-hidden rounded-full bg-bg-secondary"
+                  className="h-2.5 w-full overflow-hidden rounded-full bg-bg-secondary"
                   role="progressbar"
                   aria-label="Extraction progress"
                   aria-valuemin={0}
@@ -814,12 +839,14 @@ export default function DataExtractionDashboard({
                   aria-valuenow={Math.round(completedPercent)}
                 >
                   <div
-                    className="h-full rounded-full bg-primary transition-[width] duration-150"
+                    className={`h-full rounded-full transition-[width] duration-500 ease-out ${
+                      isExtractionComplete ? "bg-success" : "bg-primary"
+                    }`}
                     style={{ width: `${completedPercent}%` }}
                   />
                 </div>
-              </div>
-            </section>
+              </section>
+            </div>
           </div>
         )}
 
@@ -869,7 +896,7 @@ export default function DataExtractionDashboard({
 
           {activeViewTab === "queue" ? (
             <>
-              <section className="overflow-hidden rounded-xl border border-border bg-white">
+              <section className="overflow-hidden rounded-xl border border-border bg-surface-white">
                 <div className="border-b border-border px-4 py-3 sm:px-5">
                   <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
                   <div className="relative flex-1">
@@ -1013,11 +1040,18 @@ export default function DataExtractionDashboard({
                 </div>
 
                 <div className="overflow-x-auto">
-                  <Table className="min-w-[1060px]">
+                  <Table className="min-w-[1060px] table-fixed">
+                    <colgroup>
+                      {ws.isCurrentUserLeader && <col style={{ width: 52 }} />}
+                      <col />
+                      <col style={{ width: 208 }} />
+                      <col style={{ width: 160 }} />
+                      <col style={{ width: 256 }} />
+                    </colgroup>
                     <TableHeader className="bg-bg-secondary/70">
                       <tr>
                         {ws.isCurrentUserLeader && (
-                          <TableHead>
+                          <TableHead className="px-2 py-3.5 text-center">
                             <Checkbox
                               aria-label="Select all unassigned papers on page"
                               disabled={
@@ -1034,10 +1068,10 @@ export default function DataExtractionDashboard({
                             />
                           </TableHead>
                         )}
-                        <TableHead className="px-5 py-3.5">Study</TableHead>
-                        <TableHead className="px-5 py-3.5">Reviewers</TableHead>
-                        <TableHead className="px-5 py-3.5">Status</TableHead>
-                        <TableHead className="px-5 py-3.5 text-right">Action</TableHead>
+                        <TableHead className="px-4 py-3.5 text-left">Study</TableHead>
+                        <TableHead className="whitespace-nowrap px-4 py-3.5 text-left">Reviewers</TableHead>
+                        <TableHead className="whitespace-nowrap px-4 py-3.5 text-center">Status</TableHead>
+                        <TableHead className="whitespace-nowrap px-4 py-3.5 text-center">Action</TableHead>
                       </tr>
                     </TableHeader>
 
@@ -1100,7 +1134,7 @@ export default function DataExtractionDashboard({
                               }}
                             >
                               {ws.isCurrentUserLeader && (
-                              <TableCell className="w-12 px-4 py-3">
+                              <TableCell className="px-2 py-3 text-center">
                                   <Checkbox
                                     aria-label={`Select paper ${task.title}`}
                                     checked={selectedPaperIds.includes(
@@ -1124,7 +1158,7 @@ export default function DataExtractionDashboard({
                                 </TableCell>
                               )}
 
-                              <TableCell className="min-w-[320px] px-4 py-3">
+                              <TableCell className="px-4 py-3 text-left">
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
                                     {hasSubmittedExtraction ? (
@@ -1154,7 +1188,7 @@ export default function DataExtractionDashboard({
                                 </div>
                               </TableCell>
 
-                              <TableCell className="min-w-[260px] px-4 py-3">
+                              <TableCell className="whitespace-nowrap px-4 py-3 text-left">
                                 {assignedReviewerIds.length > 0 ? (
                                   <div className="flex flex-wrap gap-2">
                                     {[
@@ -1241,12 +1275,12 @@ export default function DataExtractionDashboard({
                                 )}
                               </TableCell>
 
-                              <TableCell className="px-4 py-3">
+                              <TableCell className="whitespace-nowrap px-4 py-3 text-center">
                                 <ExtractionStatusBadge status={task.status} />
                               </TableCell>
 
-                              <TableCell className="px-4 py-3 text-right">
-                                <div className="relative flex items-center justify-end gap-2">
+                              <TableCell className="whitespace-nowrap px-4 py-3 text-center">
+                                <div className="relative flex items-center justify-center gap-2">
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -1613,8 +1647,10 @@ export default function DataExtractionDashboard({
         title="Define Data Extraction Template"
         description="Build the template that reviewers will use to extract data for this process."
         size="xl"
+        className="!h-[90vh] !max-h-[90vh] !max-w-[1200px]"
+        bodyClassName="!min-h-0 !overflow-hidden !p-0"
       >
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="flex h-full min-h-0 flex-col">
           {ws.projectId ? (
             <TemplateWizard
               projectId={ws.projectId}
@@ -1633,24 +1669,49 @@ export default function DataExtractionDashboard({
 interface MetricCardProps {
   title: string;
   value: number;
-  status?: "warning" | "success";
-  className?: string;
+  icon: ReactNode;
+  tone: "blue" | "amber" | "purple" | "emerald";
 }
 
-function MetricCard({ title, value, status, className }: MetricCardProps) {
-  const statusColor =
-    status === "warning" && value > 0
-      ? "text-amber-700"
-      : status === "success"
-        ? "text-green-700"
-        : "text-text-primary";
+function MetricCard({ title, value, icon, tone }: MetricCardProps) {
+  const toneStyles = {
+    blue: {
+      card: "border-border bg-surface-white",
+      icon: "bg-primary-light text-primary",
+      value: "text-primary",
+    },
+    amber: {
+      card: "border-border bg-surface-white",
+      icon: "bg-warning/10 text-warning",
+      value: "text-warning",
+    },
+    purple: {
+      card: "border-border bg-surface-white",
+      icon: "bg-primary-light text-primary",
+      value: "text-primary",
+    },
+    emerald: {
+      card: "border-border bg-surface-white",
+      icon: "bg-success/10 text-success",
+      value: "text-success",
+    },
+  }[tone];
 
   return (
-    <div className={`py-2 ${className ?? ""}`}>
-      <p className="text-xs font-medium text-text-secondary">{title}</p>
-      <p className={`mt-1 text-[28px] font-semibold leading-none tracking-tight ${statusColor}`}>
+    <div
+      className={`flex min-h-[112px] flex-col justify-between rounded-xl border p-4 shadow-[0_1px_2px_rgba(18,35,49,0.04)] ${toneStyles.card}`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="pt-1 text-xs font-semibold text-text-secondary">{title}</div>
+        <span
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ${toneStyles.icon}`}
+        >
+          {icon}
+        </span>
+      </div>
+      <div className={`text-3xl font-semibold leading-none tracking-tight tabular-nums ${toneStyles.value}`}>
         {value}
-      </p>
+      </div>
     </div>
   );
 }

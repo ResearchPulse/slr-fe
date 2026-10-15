@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiArrowLeft, FiCheck, FiLock, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiArrowLeft, FiCheck, FiEdit2, FiLock, FiPlus, FiTrash2 } from "react-icons/fi";
 import type { ResearchQuestion } from "../../../../../types/coreAndGovernance";
 import type {
   DataItemDefinitionExtended,
@@ -12,13 +12,16 @@ import { generateId } from "../../../../../utils/uuid";
 import Button from "../../../../ui/Button";
 import Input from "../../../../ui/Input";
 import Label from "../../../../ui/Label";
+import Select from "../../../../ui/Select";
 import Textarea from "../../../../ui/Textarea";
+import TemplateSectionNavigator from "./TemplateSectionNavigator";
 
 interface Step2_FlatSetupProps {
   section: WizardSection | undefined;
+  sections: WizardSection[];
+  sectionFieldCounts: Record<string, number>;
   initialItems?: DataItemDefinitionExtended[];
-  onComplete: (items: DataItemDefinitionExtended[]) => void;
-  onBack: () => void;
+  onComplete: (items: DataItemDefinitionExtended[], nextSectionId?: string) => void;
   researchQuestions?: ResearchQuestion[];
 }
 
@@ -29,6 +32,7 @@ interface FieldEditorState {
   required: boolean;
   description: string;
   options: Array<{ id: string; value: string }>;
+  subItems: DataItemDefinitionExtended[];
 }
 
 
@@ -90,21 +94,24 @@ function mapInitialItemsToEditableFields(
         id: opt.option_id,
         value: opt.option_value,
       })),
+      subItems: item.subItems ?? [],
     }));
 }
 
 
 export default function Step2_FlatSetup({
   section,
+  sections,
+  sectionFieldCounts,
   initialItems = [],
   onComplete,
-  onBack,
   researchQuestions = [],
 }: Step2_FlatSetupProps) {
   const [customFields, setCustomFields] = useState<FieldEditorState[]>(
     mapInitialItemsToEditableFields(initialItems),
   );
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [editingFieldId, setEditingFieldId] = useState<string | null>(null);
   const [formState, setFormState] = useState<FieldEditorState>({
     id: "",
     name: "",
@@ -112,6 +119,7 @@ export default function Step2_FlatSetup({
     required: false,
     description: "",
     options: [],
+    subItems: [],
   });
 
   const sectionResearchQuestion = section?.linkedResearchQuestionId
@@ -142,13 +150,10 @@ export default function Step2_FlatSetup({
       return;
     }
 
-    setCustomFields((prev) => [
-      ...prev,
-      {
-        ...formState,
-        id: `temp_${generateId()}`,
-      },
-    ]);
+    const savedField = { ...formState, id: editingFieldId ?? `temp_${generateId()}` };
+    setCustomFields((prev) => editingFieldId
+      ? prev.map((field) => field.id === editingFieldId ? savedField : field)
+      : [...prev, savedField]);
 
     setFormState({
       id: "",
@@ -157,17 +162,28 @@ export default function Step2_FlatSetup({
       required: false,
       description: "",
       options: [],
+      subItems: [],
     });
+    setEditingFieldId(null);
     setShowCustomForm(false);
+  };
+
+  const handleEditField = (field: FieldEditorState) => {
+    setEditingFieldId(field.id);
+    setFormState({ ...field, options: field.options.map((option) => ({ ...option })) });
+    setShowCustomForm(true);
   };
 
   const handleRemoveCustomField = (fieldId: string) => {
     setCustomFields((prev) => prev.filter((field) => field.id !== fieldId));
+    if (editingFieldId === fieldId) {
+      setShowCustomForm(false);
+      setEditingFieldId(null);
+    }
   };
 
 
-  const handleSave = () => {
-    const items: DataItemDefinitionExtended[] = customFields.map(
+  const buildItems = (): DataItemDefinitionExtended[] => customFields.map(
       (field, idx) => {
         const options: FieldOption[] = (field.options || []).map(
           (opt, optionIdx) => ({
@@ -187,48 +203,74 @@ export default function Step2_FlatSetup({
           is_required: field.required,
           display_order: idx + 1,
           options,
-          subItems: [],
+          subItems: field.subItems,
         };
       },
     );
 
-    onComplete(items);
+  const handleSave = () => {
+    if (showCustomForm) {
+      toastWarning("Finish field editing", "Save or cancel the field form before leaving this section.");
+      return;
+    }
+
+    onComplete(buildItems());
+  };
+
+  const handleBackToSections = () => {
+    handleSave();
+  };
+
+  const handleSelectSection = (sectionId: string) => {
+    if (sectionId === section.id) return;
+    if (showCustomForm) {
+      toastWarning("Finish field editing", "Save or cancel the field form before switching sections.");
+      return;
+    }
+    onComplete(buildItems(), sectionId);
   };
 
   const hasOptionType = formState.fieldType === 4 || formState.fieldType === 5;
 
   return (
-    <div className="space-y-6">
+    <div className="grid min-w-0 gap-4 lg:grid-cols-[250px_minmax(0,1fr)]">
+      <TemplateSectionNavigator
+        sections={sections}
+        activeSectionId={section.id}
+        sectionFieldCounts={sectionFieldCounts}
+        onSelect={handleSelectSection}
+      />
+      <div className="min-w-0 space-y-4">
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={onBack}
+          onClick={handleBackToSections}
           className="p-2 hover:bg-bg-secondary rounded-xl transition"
         >
           <FiArrowLeft className="w-5 h-5" />
         </button>
         <div>
           <div className="flex items-center gap-2 flex-wrap">
-            <h2 className="text-2xl font-bold text-text-primary">
-              {section.name}
+            <h2 className="text-lg font-semibold text-text-primary sm:text-xl">
+              {section.name.replace(/^(RQ\d+\s*:\s*)+/i, "$1")}
             </h2>
             {section.isPicoc ? (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-sky-100 text-sky-700 font-medium">
+              <span className="rounded-full bg-primary-light px-2 py-0.5 text-xs font-medium text-primary">
                 Context
               </span>
             ) : section.linkedResearchQuestionId ? (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700 font-medium">
+              <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-xs font-medium text-text-secondary">
                 RQ Linked
               </span>
             ) : section.isLegacy ? (
-              <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 font-medium">
-                Legacy Section
+              <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-xs font-medium text-text-secondary" title="Retained for compatibility">
+                Compatible section
               </span>
             ) : null}
             {section.isLockedName && (
               <FiLock className="w-4 h-4 text-text-secondary" />
             )}
           </div>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="mt-1 line-clamp-2 text-sm text-text-secondary">
             {sectionResearchQuestion
               ? `This section is linked to: ${sectionResearchQuestion.questionText}`
               : section.isPicoc
@@ -238,25 +280,35 @@ export default function Step2_FlatSetup({
         </div>
       </div>
 
-      <div className="bg-surface-white rounded-xl border border-border p-6">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-text-primary">Fields</h3>
+      <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
+        <div className="mb-0 flex items-center justify-between gap-3 border-b border-border px-4 py-3 sm:px-5">
+          <div>
+            <h3 className="text-sm font-semibold text-text-primary">Extraction fields</h3>
+            <p className="mt-0.5 text-xs text-text-secondary">{customFields.length} fields configured</p>
+          </div>
           <div className="flex flex-wrap items-center gap-2">
 
             {!showCustomForm && (
-              <button
-                onClick={() => setShowCustomForm(true)}
-                className="flex items-center gap-2 px-3 py-2 bg-primary text-white rounded-xl hover:bg-primary-hover transition text-sm font-medium"
+              <Button
+                size="sm"
+                onClick={() => {
+                  setEditingFieldId(null);
+                  setFormState({ id: "", name: "", fieldType: 0, required: false, description: "", options: [], subItems: [] });
+                  setShowCustomForm(true);
+                }}
               >
-                <FiPlus className="w-4 h-4" />
-                Add Field
-              </button>
+                <FiPlus className="mr-2 h-4 w-4" /> Add field
+              </Button>
             )}
           </div>
         </div>
 
         {showCustomForm && (
-          <div className="border-t border-border pt-4 mb-4 space-y-4">
+          <div className="m-3 space-y-3 rounded-lg border border-border bg-bg-primary p-3 sm:m-4 sm:p-4">
+            <div className="flex items-center justify-between gap-3">
+              <h4 className="text-sm font-semibold text-text-primary">{editingFieldId ? "Edit field" : "New field"}</h4>
+              <span className="text-xs text-text-secondary">Configure the field reviewers will see</span>
+            </div>
             <div>
               <Label htmlFor="custom_name">Field Name *</Label>
               <Input
@@ -269,36 +321,29 @@ export default function Step2_FlatSetup({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-end">
               <div>
                 <Label htmlFor="custom_type">Field Type</Label>
-                <select
+                <Select
                   id="custom_type"
-                  value={formState.fieldType}
+                  value={String(formState.fieldType)}
                   onChange={(e) =>
                     setFormState((prev) => ({
                       ...prev,
-                      fieldType: Number(e.target.value) as
-                        | 0
-                        | 1
-                        | 2
-                        | 3
-                        | 4
-                        | 5,
+                      fieldType: Number(e.target.value) as 0 | 1 | 2 | 3 | 4 | 5,
                     }))
                   }
-                  className="w-full px-3 py-2 border border-border rounded-xl focus:ring-2 focus:ring-accent"
-                >
-                  {FIELD_TYPES.map((type) => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </select>
+                  options={FIELD_TYPES.map((type) => ({
+                    value: String(type.value),
+                    label: type.label,
+                  }))}
+                  containerClassName="w-full"
+                  className="h-10 rounded-lg px-3.5 pr-5"
+                />
               </div>
 
               <div className="flex items-end">
-                <label className="flex items-center gap-2">
+                <label className="flex min-h-10 items-center gap-2 text-sm text-text-primary">
                   <input
                     type="checkbox"
                     checked={formState.required}
@@ -308,9 +353,9 @@ export default function Step2_FlatSetup({
                         required: e.target.checked,
                       }))
                     }
-                    className="w-4 h-4 text-accent rounded"
+                    className="h-4 w-4 rounded accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
                   />
-                  <span className="text-sm text-text-primary">Required</span>
+                  <span>Required</span>
                 </label>
               </div>
             </div>
@@ -374,7 +419,7 @@ export default function Step2_FlatSetup({
                             options: prev.options.filter((_, i) => i !== idx),
                           }));
                         }}
-                        className="p-2 text-red-600 hover:bg-surface-white rounded"
+                        className="rounded-lg p-2 text-text-muted transition-colors hover:bg-error/5 hover:text-error"
                       >
                         <FiTrash2 className="w-4 h-4" />
                       </button>
@@ -388,14 +433,18 @@ export default function Step2_FlatSetup({
               <Button
                 variant="primary"
                 onClick={handleAddCustomField}
-                className="flex-1"
+                className="sm:flex-1"
               >
-                Add Field
+                {editingFieldId ? "Save changes" : "Add field"}
               </Button>
               <Button
                 variant="secondary"
-                onClick={() => setShowCustomForm(false)}
-                className="flex-1"
+                onClick={() => {
+                  setShowCustomForm(false);
+                  setEditingFieldId(null);
+                  setFormState({ id: "", name: "", fieldType: 0, required: false, description: "", options: [], subItems: [] });
+                }}
+                className="sm:flex-1"
               >
                 Cancel
               </Button>
@@ -404,51 +453,61 @@ export default function Step2_FlatSetup({
         )}
 
         {customFields.length > 0 && (
-          <div className="space-y-3">
-            {customFields.map((field) => (
+          <div className="divide-y divide-border px-4 sm:px-5">
+            {customFields.map((field, index) => (
               <div
                 key={field.id}
-                className="flex items-center justify-between p-3 bg-bg-primary rounded-xl border border-border"
+                className="flex min-h-16 flex-wrap items-center gap-x-3 gap-y-2 py-3 transition-colors hover:bg-bg-primary/60"
               >
-                <div className="flex-1">
-                  <p className="font-medium text-text-primary">{field.name}</p>
-                  <div className="flex gap-2 mt-1 flex-wrap">
-                    <span className="inline-block px-2 py-1 bg-bg-secondary text-text-primary text-xs rounded">
-                      {mapFieldTypeToDataType(field.fieldType)}
-                    </span>
-                    {field.required && (
-                      <span className="inline-block px-2 py-1 bg-red-100 text-red-700 text-xs rounded">
-                        Required
-                      </span>
-                    )}
-                  </div>
+                <span className="w-6 shrink-0 text-xs tabular-nums text-text-muted">{index + 1}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-text-primary">{field.name}</p>
+                  {field.description && <p className="mt-0.5 line-clamp-1 text-xs text-text-secondary">{field.description}</p>}
                 </div>
-                <button
-                  onClick={() => handleRemoveCustomField(field.id)}
-                  className="p-2 text-red-600 hover:bg-surface-white rounded-xl transition"
-                >
-                  <FiTrash2 className="w-4 h-4" />
-                </button>
+                <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5">
+                  <span className="rounded-md border border-border px-2 py-1 text-[11px] text-text-secondary">
+                    {FIELD_TYPES.find((type) => type.value === field.fieldType)?.label ?? mapFieldTypeToDataType(field.fieldType)}
+                  </span>
+                  <span className={`rounded-md px-2 py-1 text-[11px] ${field.required ? "bg-primary-light text-primary" : "bg-bg-secondary text-text-secondary"}`}>
+                    {field.required ? "Required" : "Optional"}
+                  </span>
+                </div>
+                <div className="flex shrink-0 items-center gap-1">
+                  <button type="button" aria-label={`Edit ${field.name}`} onClick={() => handleEditField(field)} className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+                    <FiEdit2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                  <button type="button" aria-label={`Delete ${field.name}`} onClick={() => handleRemoveCustomField(field.id)} className="rounded-lg p-2 text-text-muted transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/25">
+                    <FiTrash2 className="h-4 w-4" aria-hidden="true" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         )}
+        {customFields.length === 0 && !showCustomForm && (
+          <div className="px-5 py-8 text-center">
+            <p className="text-sm font-medium text-text-primary">No fields in this section yet</p>
+            <p className="mt-1 text-xs text-text-secondary">Add a field to capture evidence for this section.</p>
+          </div>
+        )}
       </div>
 
-      <div className="flex gap-3 justify-between">
+      <div className="sticky bottom-0 flex gap-3 justify-between border-t border-border bg-surface-white/95 px-3 py-3 backdrop-blur-sm sm:px-4">
         <button
-          onClick={onBack}
-          className="px-6 py-3 bg-bg-secondary text-text-primary rounded-xl hover:bg-bg-secondary font-medium transition"
+          onClick={handleBackToSections}
+          className="min-h-10 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-bg-secondary"
         >
-          Back
+          Back to sections
         </button>
         <button
           onClick={handleSave}
-          className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white rounded-xl hover:bg-green-700 font-medium transition"
+          disabled={showCustomForm}
+          className="flex min-h-10 items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FiCheck className="w-4 h-4" />
-          Save & Continue
+          Save section
         </button>
+      </div>
       </div>
     </div>
   );

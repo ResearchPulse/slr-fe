@@ -270,6 +270,28 @@ export function useTemplateWizard({ projectId, existingTemplate }: UseTemplateWi
     });
   }, []);
 
+  const removeSection = useCallback((sectionId: string) => {
+    setState((prev) => {
+      const sections = prev.sections
+        .filter((section) => section.id !== sectionId)
+        .map((section, index) => ({ ...section, orderIndex: index + 1 }));
+      const sectionData = new Map(prev.sectionData);
+      const matrixData = new Map(prev.matrixData);
+      sectionData.delete(sectionId);
+      matrixData.delete(sectionId);
+      const removedActiveSection = prev.sectionInProgress === sectionId;
+
+      return {
+        ...prev,
+        sections,
+        sectionData,
+        matrixData,
+        sectionInProgress: removedActiveSection ? null : prev.sectionInProgress,
+        currentStep: removedActiveSection ? 1 : prev.currentStep,
+      };
+    });
+  }, []);
+
   const updateSectionData = useCallback((sectionId: string, items: DataItemDefinitionExtended[]) => {
     setState((prev) => {
       const next = new Map(prev.sectionData);
@@ -394,6 +416,7 @@ export function useTemplateWizard({ projectId, existingTemplate }: UseTemplateWi
     goToStep,
     initializeSectionsForNewTemplate,
     startSectionSetup,
+    removeSection,
     updateSectionData,
     updateMatrixData,
     updateTemplateMeta,

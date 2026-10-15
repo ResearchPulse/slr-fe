@@ -8,6 +8,7 @@ import {
 } from "react-icons/fi";
 import type { ResearchQuestion } from "../../../../../types/coreAndGovernance";
 import type {
+  DataItemDefinitionExtended,
   ExtractionTemplateDto,
   ExtractionTemplateResponseDto,
 } from "../../../../../types/dataExtraction";
@@ -67,7 +68,7 @@ interface Step4_PreviewProps {
   existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
   state: WizardState;
   onPublish: (savedTemplate: ExtractionTemplateResponseDto) => void;
-  onBack: () => void;
+  onBack: (name?: string, description?: string) => void;
   getCompletedTemplate: (
     name?: string,
     description?: string,
@@ -85,6 +86,7 @@ export default function Step4_Preview({
   onBack,
   getCompletedTemplate,
   isViewOnly = false,
+  researchQuestions = [],
 }: Step4_PreviewProps) {
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
@@ -93,14 +95,18 @@ export default function Step4_Preview({
     state.templateMeta.description,
   );
 
-  const totalFields = useMemo(
-    () =>
-      Array.from(state.sectionData.values()).reduce(
-        (sum, items) => sum + items.length,
-        0,
-      ),
-    [state.sectionData],
-  );
+  const totalFields = useMemo(() => {
+    const countItems = (items: DataItemDefinitionExtended[]): number =>
+      items.reduce((sum, item) => sum + 1 + (item.subItems?.length ? countItems(item.subItems) : 0), 0);
+    const flatFieldCount = Array.from(state.sectionData.values()).reduce((sum, items) => sum + countItems(items), 0);
+    const matrixRowCount = Array.from(state.matrixData.values()).reduce((sum, matrix) => sum + matrix.rows.length, 0);
+    return flatFieldCount + matrixRowCount;
+  }, [state.matrixData, state.sectionData]);
+  const requiredFields = useMemo(() => {
+    const countRequired = (items: DataItemDefinitionExtended[]): number =>
+      items.reduce((sum, item) => sum + (item.is_required ? 1 : 0) + (item.subItems?.length ? countRequired(item.subItems) : 0), 0);
+    return Array.from(state.sectionData.values()).reduce((sum, items) => sum + countRequired(items), 0);
+  }, [state.sectionData]);
 
   const completedSections = useMemo(() => {
     const configured = state.sections.filter((section) => {
@@ -110,6 +116,11 @@ export default function Step4_Preview({
     });
     return configured.length;
   }, [state.matrixData, state.sectionData, state.sections]);
+
+  const hasMatrixConfiguration = Array.from(state.matrixData.values()).some(
+    (matrix) => matrix.rows.length > 0 || matrix.columns.length > 0,
+  );
+  const isReadyToPublish = Boolean(templateName.trim()) && (totalFields > 0 || hasMatrixConfiguration);
 
   const handlePublish = async () => {
     if (isViewOnly) {
@@ -178,22 +189,43 @@ export default function Step4_Preview({
     }
   };
 
+  const coveredResearchQuestions = new Set(
+    state.sections
+      .filter((section) => (state.sectionData.get(section.id)?.length ?? 0) > 0 || (state.matrixData.get(section.id)?.rows.length ?? 0) > 0)
+      .map((section) => section.linkedResearchQuestionId)
+      .filter((id): id is string => Boolean(id)),
+  ).size;
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
-        <h2 className="text-2xl font-bold text-text-primary mb-2">
-          Template Preview
-        </h2>
-        <p className="text-text-secondary">
-          Review your RQ-driven sections and fields before publishing.
+        <h2 className="text-xl font-semibold tracking-tight text-text-primary">Preview &amp; publish</h2>
+        <p className="mt-1 text-sm text-text-secondary">
+          Review the form as reviewers will see it, then publish the template.
         </p>
       </div>
 
-      <div className="bg-surface-white rounded-xl border border-border p-6">
-        <h3 className="text-lg font-semibold text-text-primary mb-4">
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
+        {[
+          { label: "Sections", value: state.sections.length },
+          { label: "Fields", value: totalFields },
+          { label: "Required", value: requiredFields },
+          { label: "RQ coverage", value: `${coveredResearchQuestions}/${researchQuestions.length}` },
+          { label: "Not configured", value: Math.max(state.sections.length - completedSections, 0) },
+          { label: "Readiness", value: isReadyToPublish ? "Ready" : "Needs setup" },
+        ].map((item) => (
+          <div key={item.label} className="rounded-lg border border-border bg-surface-white px-3 py-2.5">
+            <p className="text-[11px] font-medium text-text-secondary">{item.label}</p>
+            <p className="mt-0.5 text-lg font-semibold tabular-nums text-text-primary">{item.value}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface-white p-4 sm:p-5">
+        <h3 className="mb-3 text-sm font-semibold text-text-primary">
           Template Information
         </h3>
-        <div className="space-y-4">
+        <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label htmlFor="template_name">
               Template Name <span className="text-red-600">*</span>
@@ -228,14 +260,14 @@ export default function Step4_Preview({
       </div>
 
       {publishError && (
-        <div className="bg-surface-white border border-border rounded-xl p-4">
+        <div className="rounded-lg border border-error/25 bg-surface-white p-3">
           <p className="text-sm text-red-700 whitespace-pre-wrap">
             {publishError}
           </p>
         </div>
       )}
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {state.sections.map((section) => {
           const flatItems = state.sectionData.get(section.id) || [];
           const matrixData = state.matrixData.get(section.id);
@@ -249,38 +281,38 @@ export default function Step4_Preview({
           return (
             <div
               key={section.id}
-              className="bg-surface-white rounded-xl border border-border overflow-hidden"
+              className="overflow-hidden rounded-xl border border-border bg-surface-white"
             >
-              <div className="bg-bg-secondary px-6 py-4 border-b border-border">
+              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border bg-surface-white px-4 py-3 sm:px-5">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-lg font-semibold text-text-primary">
-                    {section.name}
+                  <h3 className="break-words text-sm font-semibold text-text-primary">
+                    {section.name.replace(/^(RQ\d+\s*:\s*)+/i, "$1")}
                   </h3>
                   {section.isPicoc ? (
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-sky-100 text-sky-700 font-medium inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-primary-light px-2 py-0.5 text-[11px] font-medium text-primary">
                       <FiFileText className="w-3 h-3" />
                       Context
                     </span>
                   ) : section.linkedResearchQuestionId ? (
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-700 font-medium inline-flex items-center gap-1">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-secondary">
                       <FiTarget className="w-3 h-3" />
                       RQ Linked
                     </span>
                   ) : section.isLegacy ? (
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 text-amber-700 font-medium">
-                      Legacy
+                    <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-secondary" title="Retained for compatibility">
+                      Compatible
                     </span>
                   ) : null}
                 </div>
               </div>
 
-              <div className="p-6">
+              <div className="p-4 sm:p-5">
                 {flatItems.length > 0 && (
                   <div className="space-y-4">
                     {flatItems.map((item, idx) => (
                       <div
                         key={item.data_item_id}
-                        className="pb-4 border-b border-border last:border-b-0"
+                        className="pb-3 border-b border-border last:border-b-0"
                       >
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <label className="font-medium text-text-primary">{`${idx + 1}. ${item.name}`}</label>
@@ -298,7 +330,7 @@ export default function Step4_Preview({
                           </p>
                         )}
 
-                        <div className="bg-bg-primary p-3 rounded-xl border border-border">
+                        <div className="rounded-lg border border-border bg-bg-primary p-3">
                           {item.data_type === "Text" && (
                             <input
                               type="text"
@@ -407,7 +439,7 @@ export default function Step4_Preview({
         })}
       </div>
 
-      <div className="bg-bg-primary rounded-xl p-4 border border-border">
+      <div className="rounded-xl border border-border bg-surface-white p-4">
         <h4 className="font-semibold text-text-primary mb-2">Summary</h4>
         <ul className="space-y-1 text-sm text-text-primary">
           <li>
@@ -425,11 +457,11 @@ export default function Step4_Preview({
         </ul>
       </div>
 
-      <div className="flex gap-3 justify-between">
+      <div className="sticky bottom-0 -mx-4 flex gap-3 justify-between border-t border-border bg-surface-white/95 px-4 py-3 backdrop-blur-sm sm:-mx-6 sm:px-6">
         <button
-          onClick={onBack}
+          onClick={() => onBack(templateName, templateDescription)}
           disabled={isPublishing}
-          className="flex items-center gap-2 px-6 py-3 bg-bg-secondary text-text-primary rounded-xl hover:bg-bg-secondary font-medium transition disabled:opacity-50"
+          className="flex min-h-10 items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-semibold text-text-secondary transition-colors hover:bg-bg-secondary disabled:opacity-50"
         >
           <FiArrowLeft className="w-4 h-4" />
           Back to Overview
@@ -437,10 +469,10 @@ export default function Step4_Preview({
         <button
           onClick={handlePublish}
           disabled={isPublishing || !templateName.trim()}
-          className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition ${
+          className={`flex min-h-10 items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
             isPublishing || !templateName.trim()
-              ? "bg-border text-text-secondary cursor-not-allowed"
-              : "bg-green-600 text-white hover:bg-green-700"
+              ? "cursor-not-allowed bg-border text-text-secondary"
+              : "bg-primary text-white hover:bg-primary-hover"
           }`}
         >
           {isPublishing ? (

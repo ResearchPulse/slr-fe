@@ -120,6 +120,7 @@ const LoginForm: React.FC = () => {
   useEffect(() => {
     if (!isGoogleSignInConfigured) return;
 
+    let resizeObserver: ResizeObserver | undefined;
     let script = document.querySelector(
       'script[src="https://accounts.google.com/gsi/client"]',
     ) as HTMLScriptElement;
@@ -134,16 +135,28 @@ const LoginForm: React.FC = () => {
           cancel_on_tap_outside: true,
         });
 
-        google.accounts.id.renderButton(
-          document.getElementById("google-signin-btn"),
-          {
+        const buttonHost = document.getElementById("google-signin-btn");
+        if (!buttonHost) return;
+
+        let renderedWidth = 0;
+        const renderGoogleButton = () => {
+          const width = Math.min(400, Math.floor(buttonHost.clientWidth));
+          if (!width || width === renderedWidth) return;
+
+          renderedWidth = width;
+          buttonHost.replaceChildren();
+          google.accounts.id.renderButton(buttonHost, {
             theme: "outline",
             size: "large",
-            width: 320,
+            width,
             text: "continue_with",
             shape: "rectangular",
-          },
-        );
+          });
+        };
+
+        resizeObserver = new ResizeObserver(renderGoogleButton);
+        resizeObserver.observe(buttonHost);
+        renderGoogleButton();
       }
     };
 
@@ -157,6 +170,8 @@ const LoginForm: React.FC = () => {
     } else {
       initializeGoogleSignIn();
     }
+
+    return () => resizeObserver?.disconnect();
   }, [handleGoogleCredentialResponse]);
 
   const validateEmail = (email: string) => {
@@ -276,10 +291,10 @@ const LoginForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full flex flex-col items-center">
+    <div className="flex w-full flex-col items-center">
       {/* Heading */}
-      <div className="w-full text-center mb-9">
-        <h2 className="text-[28px] sm:text-[32px] font-semibold text-text-primary leading-tight mb-3 tracking-[-0.01em]">
+      <div className="mb-7 w-full text-center">
+        <h2 className="mb-3 text-[28px] font-semibold leading-tight tracking-[-0.01em] text-text-primary sm:text-[32px]">
           Welcome back
         </h2>
         <p className="text-text-secondary text-base leading-relaxed">
@@ -288,9 +303,9 @@ const LoginForm: React.FC = () => {
       </div>
 
       {/* Sign-in Card */}
-      <div className="w-full bg-surface-white border border-border rounded-[16px] shadow-[0_1px_3px_rgba(18,35,49,0.06)] px-6 py-9 sm:px-9 sm:py-10">
+      <div className="w-full rounded-2xl border border-border bg-surface-white p-5 shadow-[0_1px_3px_rgba(18,35,49,0.06)] sm:p-8">
         {/* Login Form */}
-        <form className="space-y-5" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit}>
           <FormField
             id="keyLogin"
             label="Email / Username"
@@ -303,7 +318,7 @@ const LoginForm: React.FC = () => {
             }
             errorMessage={errors.keyLogin}
             disabled={isLoading}
-            className="h-[52px]"
+            className="h-12"
           />
 
           {/* Password Field */}
@@ -317,17 +332,17 @@ const LoginForm: React.FC = () => {
             onChange={(e) => setPassword(e.target.value.replace(/\s/g, ""))}
             errorMessage={errors.password}
             disabled={isLoading}
-            className="h-[52px]"
+            className="h-12"
           />
 
           {/* Forgot password hint (no reset flow exists yet) */}
-          <div className="flex justify-end -mt-1">
+          <div className="-mt-1 flex justify-end">
             <span className="text-[13px] text-text-secondary">
               Forgot password?
             </span>
           </div>
 
-          <div className="pt-2">
+          <div className="pt-1">
             <Button
               type="submit"
               variant="primary"
@@ -341,15 +356,16 @@ const LoginForm: React.FC = () => {
         </form>
 
         {showQuickLogin && (
-          <div className="mt-5">
-            <p className="mb-3 text-center text-[11px] uppercase tracking-wider text-text-secondary">
+          <div className="mt-6">
+            <p className="mb-3 text-center text-[11px] font-medium uppercase tracking-[0.12em] text-text-secondary">
               Quick login (development)
             </p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2.5">
               <Button
                 type="button"
-                variant="outline"
-                className="w-full"
+                variant="secondary"
+                size="md"
+                className="!min-h-11 w-full !px-1 text-[10px] sm:!px-3 sm:text-[11px]"
                 disabled={isLoading}
                 onClick={() => void handleQuickLogin("admin")}
               >
@@ -357,8 +373,9 @@ const LoginForm: React.FC = () => {
               </Button>
               <Button
                 type="button"
-                variant="outline"
-                className="w-full"
+                variant="secondary"
+                size="md"
+                className="!min-h-11 w-full !px-1 text-[10px] sm:!px-3 sm:text-[11px]"
                 disabled={isLoading}
                 onClick={() => void handleQuickLogin("leader")}
               >
@@ -366,8 +383,9 @@ const LoginForm: React.FC = () => {
               </Button>
               <Button
                 type="button"
-                variant="outline"
-                className="w-full"
+                variant="secondary"
+                size="md"
+                className="!min-h-11 w-full !px-1 text-[10px] sm:!px-3 sm:text-[11px]"
                 disabled={isLoading}
                 onClick={() => void handleQuickLogin("reviewer")}
               >
@@ -378,27 +396,26 @@ const LoginForm: React.FC = () => {
         )}
 
         {/* OR Divider & Google Login */}
-        <div className="relative my-6">
-          <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-[11px] uppercase tracking-wider">
-            <span className="bg-surface-white px-3 text-text-secondary">Or</span>
-          </div>
+        <div className="my-6 flex items-center gap-3" role="separator" aria-label="Or">
+          <div className="min-w-0 flex-1 border-t border-border" />
+          <span className="bg-surface-white px-1 text-[11px] font-medium uppercase tracking-[0.12em] leading-none text-text-secondary">
+            Or
+          </span>
+          <div className="min-w-0 flex-1 border-t border-border" />
         </div>
 
-        <div className="w-full flex justify-center">
+        <div className="flex w-full justify-center">
           {isGoogleSignInConfigured ? (
             <div
               id="google-signin-btn"
-              className="w-full max-w-[320px] flex justify-center"
+              className="google-signin-button w-full max-w-[400px]"
             ></div>
           ) : (
             <Button
               type="button"
-              variant="outline"
-              size="lg"
-              className="w-full max-w-[320px]"
+              variant="secondary"
+              size="md"
+              className="w-full !min-h-11"
               disabled
             >
               Continue with Google
