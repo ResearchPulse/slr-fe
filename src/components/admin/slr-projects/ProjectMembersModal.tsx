@@ -12,6 +12,7 @@ import {
   FiCalendar,
   FiChevronLeft,
   FiChevronRight,
+  FiRepeat,
 } from "react-icons/fi";
 import { cn } from "../../../utils/cn";
 import { formatDate } from "../../../utils/dateFormat";
@@ -121,7 +122,6 @@ export default function ProjectMembersModal({
 
   const {
     invitations,
-    isLoading: isLoadingInvitations,
     refetch: refetchInvitations,
   } = useProjectInvitations(projectId, undefined, { enabled: isOpen });
 
@@ -133,31 +133,29 @@ export default function ProjectMembersModal({
       activeTab === "add" && debouncedInviteSearch.length >= 2,
     );
 
-  // Admin List API Hook (New requirement)
+  // Load a candidate pool while the invite tab is idle. Leaders see only eligible
+  // suggestions; admins retain their browsable directory and pagination.
   const {
     users: adminListUsers,
     data: adminListData,
     isLoading: isLoadingAdminList,
   } = useUsers(
-    isGlobalAdmin && activeTab === "add" && !debouncedInviteSearch
+    activeTab === "add" && !debouncedInviteSearch
       ? {
           isActive: true,
           pageNumber: addMemberPageNumber,
-          pageSize: addMemberPageSize,
+          pageSize: isGlobalAdmin ? addMemberPageSize : 50,
         }
       : undefined,
-    isGlobalAdmin && activeTab === "add" && !debouncedInviteSearch,
+    activeTab === "add" && !debouncedInviteSearch,
   );
 
   const isSearching = isSearchingByKeyword || isLoadingAdminList;
 
   // 2. Invitation Flow State
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
-  const [assignedRoles, setAssignedRoles] = useState<
-    Record<string, "Lecturer" | "Reviewer">
-  >({});
+  const [assignedRoles, setAssignedRoles] = useState<Record<string, "Reviewer">>({});
   const [userCache, setUserCache] = useState<Record<string, User>>({});
-  const [previewRole, setPreviewRole] = useState<"Lecturer" | "Reviewer">("Lecturer");
   const [showReplaceConfirm, setShowReplaceConfirm] = useState(false);
   const [pendingLeader, setPendingLeader] = useState<{ userId: string; fullName: string } | null>(null);
   const [memberToRemove, setMemberToRemove] = useState<{ userId: string; fullName: string } | null>(null);
@@ -171,10 +169,10 @@ export default function ProjectMembersModal({
 
   // 3. Derived State
   const users = useMemo(() => {
-    // If it's an admin and they aren't searching, show the full user list
-    if (isGlobalAdmin && !debouncedInviteSearch) {
-      return adminListUsers
-        .filter((u) => u.role !== "Admin") // Hide other admins from the list
+    // Show a few active, eligible people by default for project leaders.
+    if (!debouncedInviteSearch) {
+      const candidates = adminListUsers
+        .filter((u) => String(u.role).toUpperCase() !== "ADMIN" && u.isActive !== false)
         .map((u) => {
           const isMember = members.some((m) => m.userId === u.id);
           const hasPendingInvite = invitations?.some(
@@ -194,21 +192,25 @@ export default function ProjectMembersModal({
                 : "available",
           } as User;
         });
+
+      return isGlobalAdmin
+        ? candidates
+        : candidates.filter((user) => user.status === "available").slice(0, 6);
     }
 
     // Otherwise use the search results
-    // Note: UserSearchResult doesn't explicitly have a 'role' field in its type,
-    // but if it exists in the response, we should filter it.
     return searchResults
-      .filter((result) => result.role !== "Admin")
+      .filter((result) => String(result.role).toUpperCase() !== "ADMIN" && result.isActive !== false)
       .map((result) => {
         const user = mapSearchResultToUser(result);
+        const isMember = members.some((member) => member.userId === result.id);
         const hasPendingInvite = invitations?.some(
           (inv) =>
             inv.invitedUserId === result.id &&
             inv.status === InvitationStatus.Pending,
         );
-        if (hasPendingInvite) user.status = "invited";
+        if (isMember) user.status = "added";
+        else if (hasPendingInvite) user.status = "invited";
         return user;
       });
   }, [
@@ -245,13 +247,6 @@ export default function ProjectMembersModal({
     return resolveProjectLeader(members, invitations);
   }, [members, invitations]);
 
-  const isLeaderResolved = !isLoadingMembers && !isLoadingInvitations;
-
-  const canAssignLeaderRole = useMemo(() => {
-    if (!isLeaderResolved) return false;
-    if (currentLeader) return false;
-    return true;
-  }, [isLeaderResolved, currentLeader]);
   const effectivelyHideLeaderRole = hideLeaderRole;
 
   const selectedUser = useMemo(
@@ -276,11 +271,8 @@ export default function ProjectMembersModal({
     if (user.status !== "available") return;
     setSelectedUserId(user.id);
     if (!assignedRoles[user.id]) {
-      const role = "Lecturer";
+      const role = "Reviewer";
       setAssignedRoles((prev) => ({ ...prev, [user.id]: role }));
-      setPreviewRole(role);
-    } else {
-      setPreviewRole(assignedRoles[user.id]);
     }
   };
 
@@ -295,18 +287,11 @@ export default function ProjectMembersModal({
 
   const handleSelectFromWaitlist = (userId: string) => {
     setSelectedUserId(userId);
-    if (assignedRoles[userId]) setPreviewRole(assignedRoles[userId]);
-  };
-
-  const handleRoleChange = (role: "Lecturer" | "Reviewer") => {
-    if (!selectedUserId) return;
-    setPreviewRole(role);
-    setAssignedRoles((prev) => ({ ...prev, [selectedUserId]: role }));
   };
 
   const handleExistingMemberRoleChange = async (
     userId: string,
-    role: "OWNER" | "LECTURER" | "REVIEWER",
+    role: "OWNER" | "REVIEWER",
   ) => {
     if (role === "OWNER") {
       const target = members.find((member) => member.userId === userId);
@@ -317,7 +302,7 @@ export default function ProjectMembersModal({
 
     try {
       await updateMemberRole({ userId, role });
-      toastSuccess(`Role updated to ${role === "LECTURER" ? "Lecturer" : "Reviewer"}.`);
+      toastSuccess("Role updated to Reviewer.");
     } catch (error) {
       toastError(
         error instanceof Error
@@ -329,37 +314,17 @@ export default function ProjectMembersModal({
 
   const handleSendInvitations = async () => {
     if (!projectId || waitlistUsers.length === 0) return;
-    const lecturerIds = waitlistUsers
-      .filter((u) => u.role === "Lecturer")
-      .map((u) => u.id);
-    const reviewerIds = waitlistUsers
-      .filter((u) => u.role === "Reviewer")
-      .map((u) => u.id);
+    const reviewerIds = waitlistUsers.map((u) => u.id);
     const expiredAt = new Date();
     expiredAt.setDate(expiredAt.getDate() + 7);
     const expiredAtStr = expiredAt.toISOString();
 
     try {
-      const requests = [];
-      if (lecturerIds.length > 0) {
-        requests.push(
-          sendInvitations({
-            userIds: lecturerIds,
-            role: ProjectRole.Lecturer,
-            expiredAt: expiredAtStr,
-          }),
-        );
-      }
-      if (reviewerIds.length > 0) {
-        requests.push(
-          sendInvitations({
-            userIds: reviewerIds,
-            role: ProjectRole.Reviewer,
-            expiredAt: expiredAtStr,
-          }),
-        );
-      }
-      await Promise.all(requests);
+      await sendInvitations({
+        userIds: reviewerIds,
+        role: ProjectRole.Reviewer,
+        expiredAt: expiredAtStr,
+      });
       toastSuccess(`Đã gửi thành công ${waitlistUsers.length} lời mời tham gia!`);
       setAssignedRoles({});
       setSelectedUserId(null);
@@ -584,35 +549,36 @@ export default function ProjectMembersModal({
                               <h4 className="font-black text-slate-800 tracking-tight truncate">
                                 {member.fullName}
                               </h4>
-                              {canManageMembers && member.role !== ProjectRole.Owner ? (
-                                <select
-                                  aria-label={`Role for ${member.fullName}`}
-                                  value={member.role === ProjectRole.Lecturer ? "LECTURER" : "REVIEWER"}
-                                  disabled={isUpdatingMemberRole}
-                                  onChange={(event) =>
-                                    void handleExistingMemberRoleChange(
-                                      member.userId,
-                                      event.target.value as "OWNER" | "LECTURER" | "REVIEWER",
-                                    )
-                                  }
-                                  className="h-8 min-w-[132px] rounded-lg border border-border bg-white px-2.5 text-[11px] font-semibold text-text-secondary shadow-sm hover:border-text-muted focus:border-primary focus:ring-2 focus:ring-primary/15"
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span
+                                  className={cn(
+                                    "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                    member.role === ProjectRole.Owner
+                                      ? "bg-bg-secondary text-accent border-indigo-100"
+                                      : "bg-slate-50 text-slate-500 border-slate-100",
+                                  )}
                                 >
-                                  {!hideLeaderRole && <option value="OWNER">Project Leader</option>}
-                                  <option value="LECTURER">Lecturer</option>
-                                  <option value="REVIEWER">Reviewer</option>
-                                </select>
-                              ) : <span
-                                className={cn(
-                                  "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
-                                  member.role === ProjectRole.Owner
-                                    ? "bg-bg-secondary text-accent border-indigo-100"
-                                    : "bg-slate-50 text-slate-500 border-slate-100",
-                                )}
-                              >
-                                {member.role === ProjectRole.Owner
-                                  ? "Project Leader"
-                                  : getProjectRoleLabel(member.role)}
-                              </span>}
+                                  {member.role === ProjectRole.Owner
+                                    ? "Project Leader"
+                                    : getProjectRoleLabel(member.role)}
+                                </span>
+                                {canManageMembers &&
+                                  !hideLeaderRole &&
+                                  member.role !== ProjectRole.Owner && (
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        void handleExistingMemberRoleChange(member.userId, "OWNER")
+                                      }
+                                      disabled={isUpdatingMemberRole}
+                                      className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-indigo-100 bg-indigo-50 px-2.5 text-[10px] font-bold text-accent transition-colors hover:border-indigo-200 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                      aria-label={`Transfer Project Leader role to ${member.fullName}`}
+                                    >
+                                      <FiRepeat size={12} />
+                                      Chuyển Project Leader
+                                    </button>
+                                  )}
+                              </div>
                             </div>
                             <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-400">
                               <span className="text-accent/80 lowercase italic font-medium">
@@ -741,6 +707,7 @@ export default function ProjectMembersModal({
                     onSelectUser={handleSelectUser}
                     assignedRoles={assignedRoles}
                     getInitials={getInitials}
+                    showSuggestions={!isGlobalAdmin && !debouncedInviteSearch}
                     currentPage={
                       isGlobalAdmin && !debouncedInviteSearch
                         ? addMemberPageNumber
@@ -758,17 +725,8 @@ export default function ProjectMembersModal({
                 <div className="lg:col-span-5 space-y-6">
                   <RoleAssignmentPanel
                     selectedUser={selectedUser}
-                    previewRole={previewRole}
-                    canAssignLeaderRole={
-                      canAssignLeaderRole && !effectivelyHideLeaderRole
-                    }
-                    isLeaderResolved={isLeaderResolved}
-                    currentLeader={currentLeader}
-                    onRoleChange={handleRoleChange}
                     onRemoveFromWaitlist={handleRemoveFromWaitlist}
                     getInitials={getInitials}
-                    hideLeaderRole={effectivelyHideLeaderRole}
-                    disableMemberRole={isGlobalAdmin}
                   />
 
                   <InvitationWaitlist

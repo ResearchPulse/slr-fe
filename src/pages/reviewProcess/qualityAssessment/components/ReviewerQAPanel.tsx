@@ -3,13 +3,11 @@ import {
   FiCheck,
   FiX,
   FiHelpCircle,
-  FiZap,
   FiMessageSquare,
 } from "react-icons/fi";
 import type {
   QAPaperResponse,
   QualityAssessmentStrategy,
-  AutomateQualityAssessmentResponse,
 } from "../../../../types/qualityAssessment";
 import type { HighlightArea } from "@react-pdf-viewer/highlight";
 
@@ -35,7 +33,6 @@ interface ReviewerQAPanelProps {
   paper: QAPaperResponse;
   strategies: QualityAssessmentStrategy[];
   onSave: (notes: string | null, decisions: ReviewerDecisionPayload[]) => void;
-  onAiAnalyze?: (paperId: string) => Promise<AutomateQualityAssessmentResponse>;
   isSaving?: boolean;
   activeCriterionId?: string | null;
   onSelectCriterion?: (id: string | null) => void;
@@ -47,7 +44,6 @@ export default function ReviewerQAPanel({
   paper,
   strategies,
   onSave,
-  onAiAnalyze,
   isSaving,
   activeCriterionId,
   onSelectCriterion,
@@ -66,7 +62,6 @@ export default function ReviewerQAPanel({
     >
   >({});
   const [notes, setNotes] = useState<string>("");
-  const [isAiLoading, setIsAiLoading] = useState(false);
 
   // Pre-fill existing decisions
   useEffect(() => {
@@ -97,53 +92,6 @@ export default function ReviewerQAPanel({
     setAnswers(initialAnswers);
     setNotes(""); // Reset notes since they are missing from QAPaper response currently
   }, [paper]);
-
-  const handleAiAnalyze = async () => {
-    if (!onAiAnalyze || !paper) return;
-    try {
-      setIsAiLoading(true);
-      const aiResponse = await onAiAnalyze(paper.paperId);
-      const { pageWidth, pageHeight, decisionItems } = aiResponse;
-
-      if (decisionItems && decisionItems.length > 0) {
-        setAnswers((prev) => {
-          const newAnswers = { ...prev };
-          decisionItems.forEach((item) => {
-            // Normalize pdfHighlightCoordinates using pageWidth/pageHeight
-            let normalizedCoords = item.pdfHighlightCoordinates;
-            if (normalizedCoords && pageWidth && pageHeight) {
-              normalizedCoords = normalizedCoords
-                .split(";")
-                .filter(Boolean)
-                .map((segment) => {
-                  // Grobid gave coords in pdf units and started page index at 1, reactpdfviewer using 0-based page index and persentages
-                  const [page, x, y, h, w] = segment.split(",").map(Number);
-                  const normPage = page - 1; // Convert to 0-based page index
-                  const normX = (x / pageWidth) * 100;
-                  const normY = (y / pageHeight) * 100;
-                  const normH = (h / pageHeight) * 100;
-                  const normW = (w / pageWidth) * 100;
-                  return `${normPage},${normX},${normY},${normH},${normW}`;
-                })
-                .join(";");
-            }
-
-            newAnswers[item.qualityCriterionId] = {
-              ...newAnswers[item.qualityCriterionId],
-              value: item.value,
-              comment: item.comment,
-              pdfHighlightCoordinates: normalizedCoords,
-            };
-          });
-          return newAnswers;
-        });
-      }
-    } catch (error) {
-      console.error("AI analysis failed:", error);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   const handleSelect = (criterionId: string, val: number) => {
     setAnswers((prev) => ({
@@ -200,29 +148,6 @@ export default function ReviewerQAPanel({
   return (
     <div className="relative flex h-full flex-col bg-surface-white">
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4 pb-24">
-        {/* AI Advertisement Banner */}
-        <div className="flex items-start gap-3 rounded-xl border border-primary/15 bg-primary-light/70 p-4">
-          <div className="mt-0.5 rounded-xl bg-surface-white p-2 text-primary shadow-sm">
-            <FiZap className="h-4 w-4" />
-          </div>
-          <div className="flex-1">
-            <h3 className="mb-1 text-sm font-semibold text-text-primary">
-              Stuck on a tricky paper?
-            </h3>
-            <p className="mb-3 text-xs leading-5 text-text-secondary">
-              Use our AI Assistant to evaluate this paper against established
-              criteria automatically.
-            </p>
-            <button
-              onClick={handleAiAnalyze}
-              disabled={isAiLoading || hasResolution}
-              className="rounded-xl border border-primary/20 bg-surface-white px-3 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isAiLoading ? "Analyzing..." : "Analyze with AI Helper"}
-            </button>
-          </div>
-        </div>
-
         {/* Criteria List */}
         <div className="space-y-6 pb-20">
           {criteriaList.map((crit, idx) => {

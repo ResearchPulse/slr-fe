@@ -88,23 +88,94 @@ export interface ExtractionSectionDto {
 
 export interface ExtractionTemplateDto {
   templateId?: string | null;
-  dataExtractionProcessId: string;
+  projectId?: string;
   name: string;
   description?: string | null;
   sections?: ExtractionSectionDto[];
-  // Backward-compatible optional shape for older callers.
+  fields?: ExtractionFieldDto[];
+  version?: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+/** Template persisted by the canonical project-scoped extraction API. */
+export interface ExtractionTemplateResponseDto {
+  templateId: string;
+  projectId: string;
+  name: string;
+  description?: string | null;
+  sections: ExtractionSectionDto[];
+  fields?: ExtractionFieldDto[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExtractionTemplateInputDto {
+  name: string;
+  description?: string | null;
+  sections?: ExtractionSectionDto[];
   fields?: ExtractionFieldDto[];
 }
 
-/** Response type after a successful upsert — templateId is always present */
-export interface ExtractionTemplateResponseDto {
-  templateId: string;
-  dataExtractionProcessId: string;
-  name: string;
-  description?: string | null;
-  sections?: ExtractionSectionDto[];
-  fields?: ExtractionFieldDto[];
+export interface ExtractionTemplatePresetDto extends ExtractionTemplateInputDto {
+  presetId: string;
 }
+
+export interface ExtractionApiResponse<T> {
+  success: boolean;
+  data: T;
+}
+
+export interface ExtractionWorkflowMutationDto {
+  templateVersion: number;
+  values: Record<string, unknown>;
+  expectedVersion: number;
+}
+
+export interface ExtractionAssignmentRequestDto {
+  reviewerIds: [string, string];
+  templateId: string;
+}
+
+export interface ExtractionConsensusDraftDto {
+  expectedVersion: number;
+  values: Record<string, unknown>;
+  findings: ExtractionFindingDto[];
+}
+
+export interface ExtractionFindingDto {
+  findingId: string;
+  fieldId: string;
+  kind: "VALUE_DISAGREEMENT" | "MISSING_REQUIRED" | "AI_SUGGESTION";
+  status: "PENDING" | "RESOLVED" | "DISMISSED";
+  reviewer1Value?: unknown;
+  reviewer2Value?: unknown;
+  proposedValue?: unknown;
+  resolution?: unknown;
+  reason?: string;
+}
+
+export interface ExtractionExportProjectionDto {
+  schema: "slr-extraction-json-v1";
+  projectId: string;
+  items: Array<{
+    paperId: string;
+    citation: ExtractionCitationDto;
+    templateId: string;
+    templateVersion: number;
+    templateSnapshot: ExtractionTemplateResponseDto;
+    values: Record<string, unknown>;
+  }>;
+}
+
+export interface ExtractionPhaseStateDto {
+  phaseStatus?: "NotStarted" | "InProgress" | "Completed";
+  status?: number | string;
+  statusText?: string;
+  version: number;
+}
+
 
 export interface CreateFieldOptionInput {
   field_id: string;
@@ -117,6 +188,7 @@ export interface CreateFieldOptionInput {
 // ============================================
 
 export interface ExtractionDashboardFilterDto {
+  search?: string;
   searchQuery?: string;
   statusFilter?: string;
   pageNumber: number;
@@ -128,20 +200,37 @@ export interface ExtractionDashboardSummaryDto {
   inProgress: number;
   awaitingConsensus: number;
   completed: number;
+  notStarted: number;
+}
+
+export interface ExtractionDashboardMetadataDto {
+  startedAt?: string | null;
+  lastUpdatedAt?: string | null;
+}
+
+export interface ExtractionCitationDto {
+  title: string;
+  authors: Array<string | { name: string; affiliation?: string }>;
+  doi?: string;
+  year?: number;
+  journal?: string;
+  abstract?: string;
 }
 
 export interface ExtractionDashboardTaskDto {
-  taskId: string;
+  taskId?: string;
   paperId: string;
   title: string;
-  authors?: string;
-  publicationYear?: number;
+  citation: ExtractionCitationDto;
+  authors?: string | null;
+  publicationYear?: number | null;
   pdfUrl?: string | null;
+  status: string;
+  ownStatus?: string;
   reviewer1Id?: string | null;
   reviewer1Status?: string | null;
   reviewer2Id?: string | null;
   reviewer2Status?: string | null;
-  status: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -153,6 +242,7 @@ export interface PaginatedResponse<T> {
 }
 
 export interface ExtractionDashboardResponseDto {
+  metadata?: ExtractionDashboardMetadataDto;
   summary: ExtractionDashboardSummaryDto;
   tasks: PaginatedResponse<ExtractionDashboardTaskDto>;
 }
@@ -217,40 +307,46 @@ export interface ExtractionEditableGridDto {
 export interface UpdateGridCellRequestDto {
   paperId: string;
   fieldId: string;
-  matrixColumnId: string | null;
-  matrixRowIndex: number | null;
-  newValue: string | null;
-  isNotReported?: boolean;
+  columnId?: string;
+  row?: number;
+  value: unknown;
+  expectedVersion: number;
 }
 
-export interface ExtractedDataAuditLogDto {
+export interface ExtractionAuditEntryDto {
   id: string;
+  projectId: string;
   paperId: string;
-  fieldId: string;
-  userId: string;
-  userName: string;
-  oldValue: string;
-  newValue: string;
+  actorId: string;
+  action: string;
+  fieldIds: string[];
+  version: number;
   createdAt: string;
 }
 
-export interface AssignReviewersDto {
-  reviewer1Id?: string | null;
-  reviewer2Id?: string | null;
+export interface ExtractionAuditLogsResponseDto {
+  items: ExtractionAuditEntryDto[];
 }
 
+export interface ExtractionCommentRequestDto {
+  text: string;
+  expectedVersion: number;
+}
+
+export type AssignReviewersDto = ExtractionAssignmentRequestDto;
+
 export const TargetReviewer = {
-  Reviewer1: 0,
-  Reviewer2: 1,
-  Both: 2,
-  Direct: 3,
+  Reviewer1: "reviewer1",
+  Reviewer2: "reviewer2",
+  Both: "both",
 } as const;
 
-export type TargetReviewer =
-  (typeof TargetReviewer)[keyof typeof TargetReviewer];
+export type TargetReviewer = (typeof TargetReviewer)[keyof typeof TargetReviewer];
 
 export interface ReopenExtractionRequestDto {
   target: TargetReviewer;
+  reason: string;
+  expectedVersion: number;
 }
 
 export interface ExtractedValueDto {
@@ -270,15 +366,14 @@ export interface SubmitExtractionRequestDto {
   values: ExtractedValueDto[];
 }
 
-export interface AskAiFieldRequestDto {
-  paperId: string;
-  fieldId: string;
-  fieldName: string;
-  instruction: string;
-  fieldType: string;
-  matrixColumnId: string | null;
-  matrixRowIndex: number | null;
-  optionsJson: string;
+export interface ExtractionAiDraftRequestDto {
+  fieldIds?: string[];
+}
+
+export interface ExtractionAiDraftResponseDto {
+  values: Record<string, unknown>;
+  evidenceRefs: Array<{ fieldId: string; quote: string }>;
+  templateVersion: number;
 }
 
 export interface ExtractionCommentDto {

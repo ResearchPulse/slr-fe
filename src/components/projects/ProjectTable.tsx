@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { FiArrowDown, FiArrowUp, FiCheckSquare, FiEye } from "react-icons/fi";
 import type { Project } from "../../types/project";
+import { getProjectRoleLabel } from "../../types/project";
 import { cn } from "../../utils/cn";
 import Button from "../ui/Button";
 import {
@@ -112,7 +113,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   </span>
                 </TableCell>
                 <TableCell className="px-4 py-4 text-sm text-text-primary">
-                  {project.roleText || "Member"}
+                  {getProjectRoleLabel(project.role ?? project.roleText)}
                 </TableCell>
                 <TableCell className="px-4 py-4">
                   <span className="block truncate text-sm text-text-primary" title={project.leader?.fullName}>
@@ -169,7 +170,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             </button>
             <div className="flex flex-wrap items-center gap-2">
               <span className={cn("inline-flex rounded-md border px-2 py-1 text-xs font-medium", statusClass(project.statusText))}>{project.statusText}</span>
-              <span className="rounded-md border border-border px-2 py-1 text-xs text-text-secondary">{project.roleText || "Member"}</span>
+              <span className="rounded-md border border-border px-2 py-1 text-xs text-text-secondary">{getProjectRoleLabel(project.role ?? project.roleText)}</span>
             </div>
             <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
               <div><span className="block text-text-secondary">Leader</span><span className="mt-1 block truncate text-text-primary">{project.leader?.fullName || "—"}</span></div>

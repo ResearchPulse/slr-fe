@@ -1,4 +1,5 @@
 import { FiChevronRight, FiLock, FiFileText } from "react-icons/fi";
+import { Fragment } from "react";
 import PhaseCard from "./PhaseCard";
 import { WORKFLOW_PHASES } from "./constants";
 import type { WorkflowPhase, ProcessPaperStats } from "./types";
@@ -161,8 +162,9 @@ export default function WorkflowTimeline({
       </div>
 
       <div className="min-w-0">
-        <div className="flex items-stretch gap-3 overflow-x-auto pb-3">
-          {activePhases.map((phase, index) => {
+        <div className="overflow-x-auto pb-3">
+          <div className="grid w-full grid-cols-[minmax(240px,1fr)_2rem_minmax(240px,1fr)_2rem_minmax(240px,1fr)_2rem_minmax(240px,1fr)] items-stretch gap-3">
+            {activePhases.map((phase, index) => {
             const definition = WORKFLOW_PHASES.find((item) => item.key === phase.key);
             if (!definition) return null;
 
@@ -170,7 +172,7 @@ export default function WorkflowTimeline({
             const nextPhase = !isLast ? activePhases[index + 1] : null;
 
             return (
-              <div key={phase.key} className="flex shrink-0 items-stretch gap-3">
+              <Fragment key={phase.key}>
                 <PhaseCard
                   phase={phase}
                   icon={definition.icon}
@@ -203,15 +205,16 @@ export default function WorkflowTimeline({
                 />
 
                 {!isLast && nextPhase && (
-                  <div className="flex shrink-0 items-center" aria-hidden="true">
+                  <div className="flex items-center justify-center" aria-hidden="true">
                     <div className={`flex h-8 w-8 items-center justify-center rounded-full bg-bg-primary ${getConnectorColor(phase.status, nextPhase.status)}`}>
                       <FiChevronRight className="h-4 w-4" />
                     </div>
                   </div>
                 )}
-              </div>
+              </Fragment>
             );
-          })}
+            })}
+          </div>
         </div>
       </div>
     </section>

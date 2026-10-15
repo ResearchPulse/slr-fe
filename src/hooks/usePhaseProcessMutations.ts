@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { identificationProcessService } from "../services/identificationProcessService";
 import { studySelectionService } from "../services/studySelectionService";
 import { qualityAssessmentService } from "../services/qualityAssessmentService";
-import { dataExtractionProcessService } from "../services/dataExtractionProcessService";
+import { dataExtractionConductingService } from "../services/dataExtractionConductingService";
 import synthesisExecutionService from "../services/synthesisExecutionService";
 import { QUERY_KEYS } from "../constants/queryKeys";
-import { getErrorMessage } from "../utils/errorUtils";
+import { getErrorCode, getErrorMessage } from "../utils/errorUtils";
 import { toastError } from "../utils/toast";
 
 /**
@@ -73,6 +73,7 @@ export const useStudySelectionProcessMutations = (reviewProcessId?: string) => {
     queryClient.invalidateQueries({ queryKey: ["full-text-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-title-abstract-assignment-papers"] });
     queryClient.invalidateQueries({ queryKey: ["infinite-full-text-assignment-papers"] });
+    queryClient.invalidateQueries({ queryKey: ["data-extraction-conducting", "dashboard"] });
   };
 
   const startMutation = useMutation({
@@ -130,9 +131,12 @@ export const useQualityAssessmentProcessMutations = (reviewProcessId?: string) =
   });
 
   const completeMutation = useMutation({
-    mutationFn: (id: string) => qualityAssessmentService.complete(id),
+    mutationFn: ({ id, force }: { id: string; force?: boolean }) =>
+      qualityAssessmentService.complete(id, { force }),
     onSuccess: () => invalidate(),
     onError: (error) => {
+      // The caller asks the leader whether to complete anyway, so no error toast for this case.
+      if (getErrorCode(error) === "QA_UNRESOLVED_PAPERS") return;
       toastError("Complete Failed", getErrorMessage(error, "Failed to complete quality assessment"));
     },
   });
@@ -155,14 +159,12 @@ export const useQualityAssessmentProcessMutations = (reviewProcessId?: string) =
 /**
  * Mutations for Data Extraction subprocess lifecycle (start / complete)
  */
-export const useDataExtractionProcessMutations = (reviewProcessId?: string) => {
+export const useDataExtractionProcessMutations = (projectId?: string) => {
   const queryClient = useQueryClient();
 
   const invalidate = () => {
-    if (reviewProcessId) {
-      queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.reviewProcesses.detail(reviewProcessId),
-      });
+    queryClient.invalidateQueries({ queryKey: QUERY_KEYS.reviewProcesses.all });
+    if (projectId) {
       queryClient.invalidateQueries({
         queryKey: ["data-extraction-conducting", "dashboard"],
       });
@@ -170,7 +172,10 @@ export const useDataExtractionProcessMutations = (reviewProcessId?: string) => {
   };
 
   const startMutation = useMutation({
-    mutationFn: (id: string) => dataExtractionProcessService.start(id),
+    mutationFn: (expectedVersion?: number) => {
+      if (!projectId) throw new Error("Project ID is required");
+      return dataExtractionConductingService.startPhase(projectId, expectedVersion);
+    },
     onSuccess: () => invalidate(),
     onError: (error) => {
       toastError("Start Failed", getErrorMessage(error, "Failed to start data extraction"));
@@ -178,7 +183,10 @@ export const useDataExtractionProcessMutations = (reviewProcessId?: string) => {
   });
 
   const completeMutation = useMutation({
-    mutationFn: (id: string) => dataExtractionProcessService.completeProcess(id),
+    mutationFn: (expectedVersion?: number) => {
+      if (!projectId) throw new Error("Project ID is required");
+      return dataExtractionConductingService.completePhase(projectId, expectedVersion);
+    },
     onSuccess: () => invalidate(),
     onError: (error) => {
       toastError("Complete Failed", getErrorMessage(error, "Failed to complete data extraction"));
@@ -186,13 +194,13 @@ export const useDataExtractionProcessMutations = (reviewProcessId?: string) => {
   });
 
   return {
-    startDataExtraction: startMutation.mutateAsync,
+    startDataExtraction: (expectedVersion?: number) => startMutation.mutateAsync(expectedVersion),
     isStartingDataExtraction: startMutation.isPending,
     startDataExtractionError: startMutation.error
       ? getErrorMessage(startMutation.error, "Failed to start data extraction")
       : null,
 
-    completeDataExtraction: completeMutation.mutateAsync,
+    completeDataExtraction: (expectedVersion?: number) => completeMutation.mutateAsync(expectedVersion),
     isCompletingDataExtraction: completeMutation.isPending,
     completeDataExtractionError: completeMutation.error
       ? getErrorMessage(completeMutation.error, "Failed to complete data extraction")

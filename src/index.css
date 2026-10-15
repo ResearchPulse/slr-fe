@@ -221,6 +221,22 @@ body {
   letter-spacing: -0.025em !important;
 }
 
+/* Keep review-process workspace titles consistent across phase headers. */
+.review-process-header-title,
+.standard-content h1.review-process-header-title {
+  font-size: 28px !important;
+  line-height: 1.2 !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.025em !important;
+}
+
+@media (max-width: 639px) {
+  .review-process-header-title,
+  .standard-content h1.review-process-header-title {
+    font-size: 22px !important;
+  }
+}
+
 .standard-content h2 {
   font-size: 24px !important;
   line-height: 1.25 !important;
@@ -357,6 +373,44 @@ select:focus {
 .CustomScrollbar::-webkit-scrollbar-thumb:hover,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
+}
+
+.compact-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.compact-scrollbar::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.selection-action-tabs {
+  container-name: selection-action-tabs;
+  container-type: inline-size;
+}
+
+.tab-label-compact {
+  display: none;
+}
+
+@container selection-action-tabs (max-width: 300px) {
+  .tab-label-full {
+    display: none;
+  }
+
+  .tab-label-compact {
+    display: inline;
+  }
 }
 
 /* =====================================================

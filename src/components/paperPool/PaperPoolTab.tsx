@@ -81,6 +81,9 @@ function mapPaperFromApi(paper: PaperPoolApiResponse): PaperPoolItem {
     pdfUrl: paper.pdfUrl || null,
     fullTextRetrievalStatus: paper.fullTextRetrievalStatus ?? null,
     fullTextRetrievalStatusText: paper.fullTextRetrievalStatusText || null,
+    pdfProcessingStatus: paper.pdfProcessingStatus ?? null,
+    pdfFullTextStatus: paper.pdfFullTextStatus ?? null,
+    pdfProcessingError: paper.pdfProcessingError ?? null,
   };
 }
 
@@ -212,7 +215,7 @@ export default function PaperPoolTab({
 
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
-  const canUploadPdf = isLeader || member?.role === 2;
+  const canUploadPdf = isLeader;
 
   // Reviewers are restricted from setup steps (1-4) and automatically land on step 5 (Select & Assign)
   useEffect(() => {
@@ -249,7 +252,10 @@ export default function PaperPoolTab({
     papersPage,
     isLoading: isLoadingPapers,
     isFetching: isFetchingPapers,
-  } = usePaperPool(projectId, activePaperQuery, { enabled: isYearRangeValid });
+  } = usePaperPool(projectId, activePaperQuery, {
+    enabled: isYearRangeValid,
+    pollWhileProcessing: true,
+  });
   const isStepCompleted = useCallback(
     (stepId: number) => {
       switch (stepId) {

@@ -218,7 +218,7 @@ export default function SynthesisPhaseWorkspace() {
               <Layers3 className="h-5 w-5" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+              <h1 className="review-process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
                 {reviewProcess?.name || reviewProcess?.processName || "Systematic Literature Review"}
               </h1>
               <div className="mt-1 flex flex-wrap items-center gap-2">

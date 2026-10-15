@@ -32,6 +32,7 @@ import type {
 } from "../components/reviewProcess/workflow/types";
 import { WORKFLOW_PHASES } from "../components/reviewProcess/workflow/constants";
 import { toastWarning, toastSuccess } from "../utils/toast";
+import { getErrorCode } from "../utils/errorUtils";
 
 
 interface UseReviewProcessWorkspaceParams {
@@ -311,7 +312,7 @@ function buildPhaseStats(phaseKey: string, phaseStats: PhaseStats): PhaseStatIte
         { label: "Total Papers", value: phaseStats.screening.totalPapers },
         { label: "Included", value: phaseStats.screening.included, variant: "success" },
         { label: "Excluded", value: phaseStats.screening.excluded },
-        { label: "Pending", value: phaseStats.screening.pendingCount, variant: "warning" },
+        { label: "Awaiting decision", value: phaseStats.screening.pendingCount, variant: "warning" },
       ];
     case "quality":
       return [
@@ -457,12 +458,11 @@ export const useReviewProcessWorkspace = ({
     isStartingDataExtraction,
     completeDataExtraction,
     isCompletingDataExtraction,
-  } = useDataExtractionProcessMutations(processId);
+  } = useDataExtractionProcessMutations(projectId);
 
   const { startSynthesis, isStartingSynthesis, completeSynthesis, isCompletingSynthesis } =
     useSynthesisProcessMutations(processId);
 
-  const extractionProcessId = process?.dataExtractionProcess?.id;
   const synthesisProcessId = process?.synthesisProcess?.id;
 
   const synthesisStrategiesQuery = useQuery({
@@ -541,61 +541,10 @@ export const useReviewProcessWorkspace = ({
       } else if (phaseName === "prisma") {
         navigate(`/projects/${projectId}/processes/${processId}/prisma-report`);
       } else if (phaseName === "extraction") {
-        if (extractionProcessId) {
-          await Promise.allSettled([
-            queryClient.fetchQuery({
-              queryKey: [
-                "data-extraction-conducting",
-                "dashboard",
-                extractionProcessId,
-                "",
-                "all",
-                1,
-                10,
-              ],
-              queryFn: async () => {
-                const response = await dataExtractionConductingService.getDashboard(
-                  extractionProcessId,
-                  {
-                    pageNumber: 1,
-                    pageSize: 10,
-                  },
-                );
-
-                if (!response.isSuccess || !response.data) {
-                  throw new Error(response.message || "Failed to load extraction dashboard");
-                }
-
-                return response.data;
-              },
-              staleTime: 0,
-            }),
-            queryClient.fetchQuery({
-              queryKey: [
-                "data-extraction-conducting",
-                "workload-summary",
-                extractionProcessId,
-              ],
-              queryFn: async () => {
-                const response = await dataExtractionConductingService.getWorkloadSummary(
-                  extractionProcessId,
-                );
-
-                if (!response.isSuccess || !response.data) {
-                  throw new Error(response.message || "Failed to load workload summary");
-                }
-
-                return response.data;
-              },
-              staleTime: 0,
-            }),
-          ]);
-        }
-
-        navigate(`/projects/${projectId}/processes/${processId}/extraction`);
+        navigate(`/projects/${projectId}/extraction`);
       }
     },
-    [currentProjectMember, extractionProcessId, navigate, process, processId, projectId, queryClient],
+    [currentProjectMember, navigate, process, processId, projectId, queryClient],
   );
 
   // Process-level action handlers
@@ -645,9 +594,8 @@ export const useReviewProcessWorkspace = ({
           return;
         }
         if (phaseKey === "extraction") {
-          const extractionId = process.dataExtractionProcess?.id;
-          if (extractionId) {
-            await startDataExtraction(extractionId);
+          if (projectId) {
+            await startDataExtraction();
           }
           return;
         }
@@ -669,6 +617,7 @@ export const useReviewProcessWorkspace = ({
       process,
       processId,
       hasSynthesisStrategy,
+      projectId,
       startIdentification,
       startStudySelection,
       startQualityAssessment,
@@ -698,14 +647,24 @@ export const useReviewProcessWorkspace = ({
         if (phaseKey === "quality") {
           const qualityId = process.qualityAssessmentProcess?.id;
           if (qualityId) {
-            await completeQualityAssessment(qualityId);
+            try {
+              await completeQualityAssessment({ id: qualityId });
+            } catch (error) {
+              if (getErrorCode(error) !== "QA_UNRESOLVED_PAPERS") throw error;
+              if (
+                window.confirm(
+                  "Some included papers have no final quality verdict yet.\n\nComplete Quality Assessment anyway? Those papers will stay unresolved.",
+                )
+              ) {
+                await completeQualityAssessment({ id: qualityId, force: true });
+              }
+            }
           }
           return;
         }
         if (phaseKey === "extraction") {
-          const extractionId = process.dataExtractionProcess?.id;
-          if (extractionId) {
-            await completeDataExtraction(extractionId);
+          if (projectId) {
+            await completeDataExtraction();
           }
           return;
         }
@@ -722,6 +681,7 @@ export const useReviewProcessWorkspace = ({
     [
       process,
       processId,
+      projectId,
       completeIdentification,
       completeStudySelection,
       completeQualityAssessment,
@@ -750,26 +710,20 @@ export const useReviewProcessWorkspace = ({
   const prismaStats = process?.identificationProcess?.prismaStatistics;
   const selectionStats = process?.studySelectionProcess?.selectionStatistics;
   const qualityStats = process?.qualityAssessmentProcess?.qualityStatistics;
-  // Fetch extraction dashboard data for real-time statistics
+  // Fetch extraction dashboard data by canonical project ID for real-time statistics.
   const extractionDashboardQuery = useQuery({
-    queryKey: ["data-extraction-conducting", "dashboard", extractionProcessId],
-    queryFn: async () => {
-      if (!extractionProcessId) {
-        throw new Error("Data extraction process ID is required");
+    queryKey: ["data-extraction-conducting", "dashboard", projectId],
+    queryFn: () => {
+      if (!projectId) {
+        throw new Error("Project ID is required");
       }
 
-      const response = await dataExtractionConductingService.getDashboard(extractionProcessId, {
+      return dataExtractionConductingService.getDashboard(projectId, {
         pageNumber: 1,
         pageSize: 1,
       });
-
-      if (!response.isSuccess || !response.data) {
-        throw new Error(response.message || "Failed to load extraction dashboard");
-      }
-
-      return response.data;
     },
-    enabled: !!extractionProcessId,
+    enabled: !!projectId,
     staleTime: 30_000,
   });
 
@@ -790,7 +744,10 @@ export const useReviewProcessWorkspace = ({
             excluded: selectionStats.excludedCount,
             inScreeningCount: selectionStats.inScreeningCount ?? 0,
             conflictCount: selectionStats.conflictCount,
-            pendingCount: selectionStats.pendingCount,
+            pendingCount:
+              (selectionStats.pendingCount ?? 0) +
+              (selectionStats.inScreeningCount ?? 0) +
+              (selectionStats.conflictCount ?? 0),
           }
         : EMPTY_PHASE_STATS.screening,
       quality: qualityStats
@@ -859,8 +816,7 @@ export const useReviewProcessWorkspace = ({
       // Determine subprocess id
       let subprocessId: string | undefined;
       if (def.key === "screening") subprocessId = process.studySelectionProcess?.id;
-      if (def.key === "extraction") subprocessId = process.dataExtractionProcess?.id;
-      if (def.key === "quality") subprocessId = process.qualityAssessmentProcess?.id;
+      // Extraction phases are keyed by project and do not have a subprocess identifier.
       if (def.key === "synthesis") subprocessId = process.synthesisProcess?.id;
 
       const phase: WorkflowPhase = {
@@ -920,7 +876,7 @@ export const useReviewProcessWorkspace = ({
     const excluded = stats?.excludedCount ?? process?.totalExcludedPapers ?? 0;
     const pending = stats?.pendingCount ?? 0;
 
-    const inScreening = stats?.inScreeningCount ?? 0;
+    const inScreening = (stats?.inScreeningCount ?? 0) + (stats?.conflictCount ?? 0);
     const notScreened = pending;
 
     return {

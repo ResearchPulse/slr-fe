@@ -20,7 +20,6 @@ import {
   Package,
   RefreshCw,
   Search,
-  Zap,
   ArrowLeft,
   UserPlus,
 } from "lucide-react";
@@ -34,6 +33,8 @@ import Select from "../../../../components/ui/Select";
 import BulkAssignmentPanelDataExtraction from "../../../../components/reviewProcess/leader/BulkAssignmentPanelDataExtraction";
 import { getErrorMessage } from "../../../../utils/errorUtils";
 import { toastError } from "../../../../utils/toast";
+import { formatAuthorPreview, formatAuthors } from "../../../../utils/formatAuthors";
+import { formatDate } from "../../../../utils/dateFormat";
 import {
   Table,
   TableBody,
@@ -46,13 +47,12 @@ import type {
   ExtractionPaperStatus,
   UseDataExtractionWorkspaceReturn,
 } from "../types";
+import { normalizeExtractionStatus } from "../status";
 import type { PaperResponse } from "../../../../types/paper";
 import {
   TargetReviewer,
   type ExtractionTemplateResponseDto,
 } from "../../../../types/dataExtraction";
-import { useReviewProcess } from "../../../../hooks/useReviewProcesses";
-import { formatDate } from "../../../../utils/dateFormat";
 import { dataExtractionConductingService } from "../../../../services/dataExtractionConductingService";
 import ExtractionStatusBadge from "./ExtractionStatusBadge";
 import AssignReviewersModal from "./AssignReviewersModal";
@@ -68,11 +68,13 @@ interface DashboardTask {
   paperId: string;
   title: string;
   authors: string | null;
+  authorPreview: string | null;
   publicationYear: number | null;
   reviewer1Id: string | null;
   reviewer1Status?: string | null;
   reviewer2Id: string | null;
   reviewer2Status?: string | null;
+  ownStatus?: string | null;
   status: ExtractionPaperStatus;
 }
 
@@ -94,27 +96,6 @@ const STATUS_FILTER_OPTIONS: Array<{
   { value: "awaiting-consensus", label: "Consensus" },
   { value: "completed", label: "Completed" },
 ];
-
-function normalizeStatus(status: string): ExtractionPaperStatus {
-  const normalized = status.trim().toLowerCase();
-
-  if (normalized === "in-progress" || normalized === "inprogress") {
-    return "in-progress";
-  }
-
-  if (
-    normalized === "awaiting-consensus" ||
-    normalized === "awaitingconsensus"
-  ) {
-    return "awaiting-consensus";
-  }
-
-  if (normalized === "completed") {
-    return "completed";
-  }
-
-  return "todo";
-}
 
 function mapStudyToPaperResponse(
   study: UseDataExtractionWorkspaceReturn["studies"][number],
@@ -171,8 +152,6 @@ export default function DataExtractionDashboard({
   dashboardPath,
 }: DataExtractionDashboardProps) {
   const navigate = useNavigate();
-  const { process } = useReviewProcess(ws.processId);
-  const extractionProcessId = process?.dataExtractionProcess?.id;
 
   const reviewerOptions = useMemo<ReviewerOption[]>(
     () => [
@@ -189,18 +168,25 @@ export default function DataExtractionDashboard({
 
   const tasks = useMemo<DashboardTask[]>(
     () =>
-      ws.dashboardTasks.map((task) => ({
-        taskId: task.taskId,
-        paperId: task.paperId,
-        title: task.title,
-        authors: task.authors ?? null,
-        publicationYear: task.publicationYear ?? null,
-        reviewer1Id: task.reviewer1Id ?? null,
-        reviewer1Status: task.reviewer1Status ?? null,
-        reviewer2Id: task.reviewer2Id ?? null,
-        reviewer2Status: task.reviewer2Status ?? null,
-        status: normalizeStatus(task.status),
-      })),
+      ws.dashboardTasks.map((task) => {
+        const citationAuthors = formatAuthors(task.citation?.authors);
+        const authors = task.authors?.trim() || citationAuthors || null;
+
+        return {
+          taskId: task.taskId ?? task.paperId,
+          paperId: task.paperId,
+          title: task.title || task.citation?.title || "Untitled paper",
+          authors,
+          authorPreview: formatAuthorPreview(task.citation?.authors) || formatAuthorPreview(authors),
+          publicationYear: task.publicationYear ?? task.citation?.year ?? null,
+          reviewer1Id: task.reviewer1Id ?? null,
+          reviewer1Status: task.reviewer1Status ?? null,
+          reviewer2Id: task.reviewer2Id ?? null,
+          reviewer2Status: task.reviewer2Status ?? null,
+          ownStatus: task.ownStatus ?? null,
+          status: normalizeExtractionStatus(task.status),
+        };
+      }),
     [ws.dashboardTasks],
   );
   const [selectedPaper, setSelectedPaper] = useState<PaperResponse | null>(
@@ -210,6 +196,7 @@ export default function DataExtractionDashboard({
   const [isPaperDetailsOpen, setIsPaperDetailsOpen] = useState(false);
   const [reopenModalPaper, setReopenModalPaper] =
     useState<DashboardTask | null>(null);
+  const [reopenReason, setReopenReason] = useState("");
   const [assignModalTask, setAssignModalTask] = useState<DashboardTask | null>(
     null,
   );
@@ -287,7 +274,10 @@ export default function DataExtractionDashboard({
         return;
       }
 
-      ws.assignPaper(paperId, { reviewer1Id, reviewer2Id });
+      void ws.assignPaper(paperId, {
+        reviewerIds: [reviewer1Id, reviewer2Id],
+        templateId: ws.selectedTemplateId,
+      });
       setAssignModalTask(null);
     },
     [isProcessCompleted, ws],
@@ -319,13 +309,9 @@ export default function DataExtractionDashboard({
 
   const handleOpenWorkspace = useCallback(
     (paperId: string) => {
-      if (isProcessCompleted) {
-        return;
-      }
-
       navigate(`${dashboardPath}/workspace/${paperId}`);
     },
-    [dashboardPath, isProcessCompleted, navigate],
+    [dashboardPath, navigate],
   );
 
   const handleOpenConsensusWorkspace = useCallback(
@@ -369,8 +355,38 @@ export default function DataExtractionDashboard({
     setSelectedPaper(null);
   }, []);
 
-  const handleDownloadExcel = useCallback(async () => {
-    if (!extractionProcessId || isProcessCompleted) {
+  const handleOpenTask = useCallback(
+    (task: DashboardTask) => {
+      if (isProcessCompleted) {
+        return;
+      }
+
+      if (ws.isCurrentUserLeader && (task.status === "awaiting-consensus" || task.status === "completed")) {
+        void handleOpenConsensusWorkspace(task.paperId);
+        return;
+      }
+
+      if (
+        !ws.isCurrentUserLeader &&
+        (ws.hasCurrentUserSubmitted(task.paperId) || ws.canCurrentUserExtractPaper(task.paperId))
+      ) {
+        handleOpenWorkspace(task.paperId);
+        return;
+      }
+
+      handleOpenPaperDetails(task.paperId);
+    },
+    [
+      handleOpenConsensusWorkspace,
+      handleOpenPaperDetails,
+      handleOpenWorkspace,
+      isProcessCompleted,
+      ws,
+    ],
+  );
+
+  const handleDownloadJson = useCallback(async () => {
+    if (!ws.projectId || isProcessCompleted) {
       return;
     }
 
@@ -378,14 +394,14 @@ export default function DataExtractionDashboard({
     setIsExportMenuOpen(false);
 
     try {
-      const blob =
-        await dataExtractionConductingService.exportExtractedData(
-          extractionProcessId,
-        );
+      const blob = await dataExtractionConductingService.exportExtractedData(
+        ws.projectId,
+        "json",
+      );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
       anchor.href = url;
-      anchor.download = "Extraction_Data.xlsx";
+      anchor.download = "Extraction_Data.json";
       document.body.appendChild(anchor);
       anchor.click();
       document.body.removeChild(anchor);
@@ -393,15 +409,14 @@ export default function DataExtractionDashboard({
     } catch (error) {
       toastError(
         "Download failed",
-        getErrorMessage(error, "Unable to download the Excel file right now."),
+        getErrorMessage(error, "Unable to download the JSON file right now."),
       );
     } finally {
       setIsExportingExcel(false);
     }
-  }, [extractionProcessId, isProcessCompleted]);
-
+  }, [isProcessCompleted, ws.projectId]);
   const handleDownloadCsv = useCallback(async () => {
-    if (!extractionProcessId || isProcessCompleted) {
+    if (!ws.projectId || isProcessCompleted) {
       return;
     }
 
@@ -411,7 +426,7 @@ export default function DataExtractionDashboard({
     try {
       const blob =
         await dataExtractionConductingService.exportExtractedDataCsv(
-          extractionProcessId,
+          ws.projectId,
         );
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement("a");
@@ -429,7 +444,36 @@ export default function DataExtractionDashboard({
     } finally {
       setIsExportingCsv(false);
     }
-  }, [extractionProcessId, isProcessCompleted]);
+  }, [isProcessCompleted, ws.projectId]);
+  const handleReopenExtraction = useCallback(
+    async (target: TargetReviewer) => {
+      const reason = reopenReason.trim();
+      if (
+        isProcessCompleted ||
+        !reopenModalPaper ||
+        reason.length === 0
+      ) {
+        return;
+      }
+
+      const expectedVersion = await ws.fetchPaperVersion(
+        reopenModalPaper.paperId,
+      );
+      if (expectedVersion === null) {
+        return;
+      }
+
+      await ws.reopenExtraction(reopenModalPaper.paperId, {
+        target,
+        reason,
+        expectedVersion,
+      });
+      setReopenModalPaper(null);
+      setReopenReason("");
+    },
+    [isProcessCompleted, reopenModalPaper, reopenReason, ws],
+  );
+
 
   const isExporting = isExportingExcel || isExportingCsv;
 
@@ -504,24 +548,9 @@ export default function DataExtractionDashboard({
     navigate(`${dashboardPath}/grid`);
   }, [dashboardPath, isProcessCompleted, navigate]);
 
-  const handleReopenExtraction = useCallback(
-    (paperId: string, target: TargetReviewer) => {
-      if (isProcessCompleted) {
-        return;
-      }
-
-      ws.reopenExtraction(paperId, target);
-      setReopenModalPaper(null);
-    },
-    [isProcessCompleted, ws],
-  );
-
-  const isDirectExtraction =
-    !!reopenModalPaper &&
-    !reopenModalPaper.reviewer1Id &&
-    !reopenModalPaper.reviewer2Id;
 
   const tableColSpan = ws.isCurrentUserLeader ? 5 : 4;
+
 
   const queryClient = useQueryClient();
 
@@ -568,12 +597,12 @@ export default function DataExtractionDashboard({
   }, [eligiblePaperIds, isProcessCompleted]);
 
   const handleOpenCreateTemplate = useCallback(() => {
-    if (isProcessCompleted) {
+    if (isProcessCompleted || !ws.projectId) {
       return;
     }
 
     setIsTemplateWizardOpen(true);
-  }, [isProcessCompleted]);
+  }, [isProcessCompleted, ws.projectId]);
 
   useEffect(() => {
     if (isProcessCompleted) {
@@ -637,8 +666,8 @@ export default function DataExtractionDashboard({
               <Package className="h-6 w-6" />
             </div>
             <div className="min-w-0">
-              <h1 className="line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
-                {process?.name || process?.processName || "Study extraction"}
+              <h1 className="review-process-header-title line-clamp-2 text-base font-semibold leading-5 text-text-primary sm:text-lg">
+                {ws.selectedTemplate?.name || "Study extraction"}
               </h1>
               <div className="mt-1.5 flex flex-wrap items-center gap-2">
                 <span className="text-xs text-text-secondary">
@@ -671,18 +700,14 @@ export default function DataExtractionDashboard({
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Started</div>
               <div className="mt-0.5 font-medium text-text-primary">
-                {formatDate(process?.dataExtractionProcess?.startedAt ?? "")}
+                {formatDate(ws.extractionProcessStartedAt)}
               </div>
             </div>
             <div className="hidden h-8 w-px bg-border sm:block" aria-hidden="true" />
             <div className="text-xs text-text-secondary">
               <div className="text-[10px] font-medium text-text-muted">Last updated</div>
               <div className="mt-0.5 font-medium text-text-primary">
-                {formatDate(
-                  process?.dataExtractionProcess?.modifiedAt ??
-                    process?.dataExtractionProcess?.createdAt ??
-                    "",
-                )}
+                {formatDate(ws.extractionProcessLastUpdatedAt)}
               </div>
             </div>
             {ws.isCurrentUserLeader && (
@@ -893,7 +918,7 @@ export default function DataExtractionDashboard({
                           disabled={
                             isProcessCompleted ||
                             isExporting ||
-                            !extractionProcessId
+                            !ws.projectId
                           }
                           className="w-full lg:w-auto"
                         >
@@ -919,14 +944,12 @@ export default function DataExtractionDashboard({
                               >
                                 <button
                                   type="button"
-                                  onClick={handleDownloadExcel}
+                                  onClick={handleDownloadJson}
                                   disabled={isExporting}
                                   className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                   <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
-                                  <span className="truncate">
-                                    Excel (.xlsx)
-                                  </span>
+                                  <span className="truncate">JSON (.json)</span>
                                 </button>
                                 <button
                                   type="button"
@@ -1051,15 +1074,27 @@ export default function DataExtractionDashboard({
                             task.reviewer1Id,
                             task.reviewer2Id,
                           ].filter((id): id is string => Boolean(id));
+                          const isAssignedToCurrentUser =
+                            !ws.isCurrentUserLeader && task.ownStatus != null;
 
                           const canExtractTask = ws.canCurrentUserExtractPaper(
                             task.paperId,
                           );
+                          const hasSubmittedExtraction =
+                            !ws.isCurrentUserLeader &&
+                            ws.hasCurrentUserSubmitted(task.paperId);
 
                           return (
                             <TableRow
                               key={task.taskId || task.paperId}
-                              className="cursor-default hover:bg-primary-light/60"
+                              className="group cursor-pointer transition-colors hover:bg-primary-light/60"
+                              onClick={(event) => {
+                                const target = event.target as HTMLElement | null;
+                                if (target?.closest("button, input, select, textarea, a, [role='button']")) {
+                                  return;
+                                }
+                                handleOpenTask(task);
+                              }}
                             >
                               {ws.isCurrentUserLeader && (
                               <TableCell className="w-12 px-4 py-3">
@@ -1089,17 +1124,28 @@ export default function DataExtractionDashboard({
                               <TableCell className="min-w-[320px] px-4 py-3">
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <p className="text-sm font-semibold leading-5 text-text-primary">
-                                      {task.title}
-                                    </p>
-                                    {canExtractTask && (
-                                      <span className="inline-flex items-center rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-bold text-accent ring-1 ring-inset ring-accent/20 shrink-0">
-                                        Assigned to you
-                                      </span>
+                                    {hasSubmittedExtraction ? (
+                                      <button
+                                        type="button"
+                                        onClick={() =>
+                                          handleOpenWorkspace(task.paperId)
+                                        }
+                                        className="text-left text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                        aria-label={`Review submitted extraction: ${task.title}`}
+                                      >
+                                        {task.title}
+                                      </button>
+                                    ) : (
+                                      <p className="text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary">
+                                        {task.title}
+                                      </p>
                                     )}
                                   </div>
-                                  <p className="mt-1 text-xs text-text-secondary">
-                                    {task.authors ?? "Unknown authors"} •{" "}
+                                  <p
+                                    className="mt-1 block max-w-full truncate text-xs text-text-secondary"
+                                    title={task.authors ?? undefined}
+                                  >
+                                    {task.authorPreview ?? task.authors ?? "Unknown authors"} •{" "}
                                     {task.publicationYear ?? "-"}
                                   </p>
                                 </div>
@@ -1168,6 +1214,10 @@ export default function DataExtractionDashboard({
                                         );
                                       })}
                                   </div>
+                                ) : isAssignedToCurrentUser ? (
+                                  <span className="inline-flex items-center rounded-full border border-accent/30 bg-primary-light px-2.5 py-1 text-xs font-semibold text-accent">
+                                    Assigned to you
+                                  </span>
                                 ) : (
                                   ws.isCurrentUserLeader ? (
                                     <button
@@ -1207,24 +1257,12 @@ export default function DataExtractionDashboard({
                                     <Eye className="h-4 w-4" />
                                   </Button>
 
-                                  {task.status === "todo" ? (
-                                    ws.isCurrentUserLeader ? (
-                                      <Button
-                                        size="sm"
-                                        variant="primary"
-                                        onClick={() =>
-                                          ws.handleOpenDirectWorkspace(
-                                            task.paperId,
-                                          )
-                                        }
-                                        disabled={isProcessCompleted}
-                                        title="Directly Extract Data (Bypass Reviewers)"
-                                        className="!rounded-xl"
-                                      >
-                                        <Zap className="mr-1 h-4 w-4" />
-                                        Direct
-                                      </Button>
-                                    ) : canExtractTask ? (
+                                  {hasSubmittedExtraction ? (
+                                    <span className="inline-flex items-center rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-xs font-semibold text-text-secondary">
+                                      Submitted (Locked)
+                                    </span>
+                                  ) : task.status === "todo" ? (
+                                    canExtractTask ? (
                                       <Button
                                         size="sm"
                                         variant="primary"
@@ -1244,46 +1282,21 @@ export default function DataExtractionDashboard({
                                       </span>
                                     )
                                   ) : task.status === "in-progress" ? (
-                                    canExtractTask &&
-                                    ws.hasCurrentUserSubmitted(task.paperId) ? (
+                                    ws.isCurrentUserLeader ? (
                                       <Button
                                         size="sm"
                                         variant="outline"
-                                        disabled
-                                        className="border-slate-300 bg-bg-secondary text-text-secondary"
+                                        onClick={() => {
+                                          setReopenReason("");
+                                          setReopenModalPaper(task);
+                                        }}
+                                        disabled={
+                                          isProcessCompleted ||
+                                          ws.isReopeningExtraction
+                                        }
                                       >
-                                        Submitted (Locked)
+                                        Reopen
                                       </Button>
-                                    ) : ws.isCurrentUserLeader ? (
-                                      <>
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          onClick={() =>
-                                            setReopenModalPaper(task)
-                                          }
-                                          disabled={
-                                            isProcessCompleted ||
-                                            ws.isReopeningExtraction
-                                          }
-                                        >
-                                          Reopen
-                                        </Button>
-                                        <Button
-                                          size="sm"
-                                          variant="outline"
-                                          onClick={() =>
-                                            ws.handleOpenDirectWorkspace(
-                                              task.paperId,
-                                            )
-                                          }
-                                          disabled={isProcessCompleted}
-                                          title="Directly Extract Data"
-                                        >
-                                          <Zap className="mr-1 h-4 w-4" />
-                                          Direct
-                                        </Button>
-                                      </>
                                     ) : (
                                       <Button
                                         size="sm"
@@ -1443,6 +1456,7 @@ export default function DataExtractionDashboard({
         paper={selectedPaper}
         isOpen={isPaperDetailsOpen}
         onClose={handleClosePaperDetails}
+        hideActions
       />
 
       <AssignReviewersModal
@@ -1511,112 +1525,66 @@ export default function DataExtractionDashboard({
             consensus decisions for this study.
           </div>
 
+          <Input
+            aria-label="Reason for reopening"
+            placeholder="Reason for reopening"
+            value={reopenReason}
+            onChange={(event) => setReopenReason(event.target.value)}
+            disabled={ws.isReopeningExtraction}
+          />
+
           <div className="space-y-2">
-            {isDirectExtraction ? (
-              <Button
-                className="w-full"
-                // NOTE: `ws.reopenExtraction(paperId, target)` is the place to call
-                // backend logic that resets reviewer completion flags (e.g., isCompleted)
-                // so the UI will pick up the updated reviewer status after refresh.
-                onClick={() =>
-                  reopenModalPaper
-                    ? handleReopenExtraction(
-                        reopenModalPaper.paperId,
-                        TargetReviewer.Direct,
-                      )
-                    : undefined
-                }
-                disabled={
-                  isProcessCompleted ||
-                  !reopenModalPaper ||
-                  ws.isReopeningExtraction
-                }
-                isLoading={ws.isReopeningExtraction}
-              >
-                Reopen Direct Extraction
-              </Button>
-            ) : (
-              <>
-                <Button
-                  className="w-full"
-                  // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer1)` should
-                  // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer1
-                  // as not completed (e.g., isCompleted = false) so the dashboard tags
-                  // will update to the pending state after refresh.
-                  onClick={() =>
-                    reopenModalPaper
-                      ? handleReopenExtraction(
-                          reopenModalPaper.paperId,
-                          TargetReviewer.Reviewer1,
-                        )
-                      : undefined
-                  }
-                  disabled={
-                    isProcessCompleted ||
-                    !reopenModalPaper ||
-                    ws.isReopeningExtraction
-                  }
-                  isLoading={ws.isReopeningExtraction}
-                >
-                  Reopen Reviewer 1
-                </Button>
-
-                <Button
-                  className="w-full"
-                  // Calling `handleReopenExtraction(..., TargetReviewer.Reviewer2)` should
-                  // invoke backend logic (via `ws.reopenExtraction`) that marks reviewer2
-                  // as not completed (e.g., isCompleted = false) so the dashboard tags
-                  // will update to the pending state after refresh.
-                  onClick={() =>
-                    reopenModalPaper
-                      ? handleReopenExtraction(
-                          reopenModalPaper.paperId,
-                          TargetReviewer.Reviewer2,
-                        )
-                      : undefined
-                  }
-                  disabled={
-                    isProcessCompleted ||
-                    !reopenModalPaper ||
-                    ws.isReopeningExtraction
-                  }
-                  isLoading={ws.isReopeningExtraction}
-                >
-                  Reopen Reviewer 2
-                </Button>
-
-                <Button
-                  className="w-full"
-                  // Calling `handleReopenExtraction(..., TargetReviewer.Both)` should
-                  // invoke backend logic (via `ws.reopenExtraction`) that marks both
-                  // reviewers as not completed so the dashboard tags will update to
-                  // pending state after refresh.
-                  onClick={() =>
-                    reopenModalPaper
-                      ? handleReopenExtraction(
-                          reopenModalPaper.paperId,
-                          TargetReviewer.Both,
-                        )
-                      : undefined
-                  }
-                  disabled={
-                    isProcessCompleted ||
-                    !reopenModalPaper ||
-                    ws.isReopeningExtraction
-                  }
-                  isLoading={ws.isReopeningExtraction}
-                >
-                  Reopen Both
-                </Button>
-              </>
-            )}
+            <Button
+              className="w-full"
+              onClick={() =>
+                void handleReopenExtraction(TargetReviewer.Reviewer1)
+              }
+              disabled={
+                isProcessCompleted ||
+                !reopenModalPaper ||
+                !reopenReason.trim() ||
+                ws.isReopeningExtraction
+              }
+              isLoading={ws.isReopeningExtraction}
+            >
+              Reopen Reviewer 1
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() =>
+                void handleReopenExtraction(TargetReviewer.Reviewer2)
+              }
+              disabled={
+                isProcessCompleted ||
+                !reopenModalPaper ||
+                !reopenReason.trim() ||
+                ws.isReopeningExtraction
+              }
+              isLoading={ws.isReopeningExtraction}
+            >
+              Reopen Reviewer 2
+            </Button>
+            <Button
+              className="w-full"
+              onClick={() => void handleReopenExtraction(TargetReviewer.Both)}
+              disabled={
+                isProcessCompleted ||
+                !reopenModalPaper ||
+                !reopenReason.trim() ||
+                ws.isReopeningExtraction
+              }
+              isLoading={ws.isReopeningExtraction}
+            >
+              Reopen Both
+            </Button>
           </div>
-
           <div className="flex justify-end pt-1">
             <Button
               variant="outline"
-              onClick={() => setReopenModalPaper(null)}
-              disabled={isProcessCompleted || ws.isReopeningExtraction}
+              onClick={() => {
+                setReopenModalPaper(null);
+                setReopenReason("");
+              }}
             >
               Cancel
             </Button>
@@ -1632,15 +1600,15 @@ export default function DataExtractionDashboard({
         size="xl"
       >
         <div className="max-h-[80vh] overflow-y-auto">
-          <TemplateWizard
-            dataExtractionProcessId={extractionProcessId}
-            projectId={ws.projectId}
-            onComplete={(savedTemplate) => {
-              void handleTemplateWizardComplete(savedTemplate);
-            }}
-            isViewOnly={!ws.isCurrentUserLeader || isProcessCompleted}
-            existingTemplate={ws.selectedTemplate}
-          />
+          {ws.projectId ? (
+            <TemplateWizard
+              projectId={ws.projectId}
+              existingTemplate={ws.selectedTemplate}
+              onComplete={(savedTemplate) => {
+                void handleTemplateWizardComplete(savedTemplate);
+              }}
+            />
+          ) : null}
         </div>
       </Modal>
     </div>

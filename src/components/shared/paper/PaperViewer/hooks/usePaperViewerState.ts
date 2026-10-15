@@ -10,7 +10,10 @@ import { useStudySelectionExclusionReasons } from "../../../../../hooks/useStudy
 import type { RootState } from "../../../../../redux/store";
 import { PaperPhase } from "../../../../../types/studySelection";
 
-export const usePaperViewerState = (paper: ScreeningPaper | null) => {
+export const usePaperViewerState = (
+  paper: ScreeningPaper | null,
+  phase: PaperPhase = PaperPhase.TitleAbstract,
+) => {
   const { screeningProcessId } = useParams<{ screeningProcessId: string }>();
   const [activeTab, setActiveTab] = useState<PaperViewerTab>("abstract");
   const [openGraph, setOpenGraph] = useState(false);
@@ -19,6 +22,8 @@ export const usePaperViewerState = (paper: ScreeningPaper | null) => {
   const {
     includePaper,
     excludePaper,
+    aiAnalysis,
+    isAnalyzing,
     uploadPaperPdf,
     applyMetadataSuggestion,
     retryMetadataExtraction,
@@ -34,7 +39,7 @@ export const usePaperViewerState = (paper: ScreeningPaper | null) => {
     setGraphDepth,
     minConfidence,
     setMinConfidence,
-  } = useStudySelection(PaperPhase.TitleAbstract, paper?.id ?? null);
+  } = useStudySelection(phase, paper?.id ?? null);
 
   const { data: exclusionReasons = [], isLoading: isLoadingReasons } =
     useStudySelectionExclusionReasons(screeningProcessId, {
@@ -86,6 +91,8 @@ export const usePaperViewerState = (paper: ScreeningPaper | null) => {
     setReasonPageSize,
     includePaper,
     excludePaper,
+    aiAnalysis,
+    isAnalyzing,
     uploadPaperPdf,
     applyMetadataSuggestion,
     retryMetadataExtraction,

@@ -96,10 +96,12 @@ function MainRoutes() {
               {/* Canonical Project-Centric Routes (FR-G0-01) */}
               <Route path=":projectId/identification" element={<IdentificationPhaseWorkspace />} />
               <Route path=":projectId/screening" element={<ScreeningPhaseRouter />} />
-              <Route path=":projectId/screening/dashboard" element={<ManageStudySelectionPage />} />
+              <Route path=":projectId/screening/dashboard" element={<ScreeningPhaseRouter />} />
+              <Route path=":projectId/screening/assignment-management" element={<ManageStudySelectionPage />} />
               <Route path=":projectId/screening/full-text" element={<FullTextScreeningWorkspace />} />
               <Route path=":projectId/quality-assessment" element={<QualityAssessmentWorkspace />} />
               <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
+              <Route path=":projectId/extraction/workspace/:studyId" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/grid" element={<ExtractionGridWorkspace />} />
               <Route path=":projectId/synthesis/*" element={<SynthesisPhaseWorkspace />} />
               <Route path=":projectId/prisma-report" element={<PrismaReportWorkspace />} />
@@ -136,7 +138,9 @@ function MainRoutes() {
                 }
               >
                 <Route index element={<ScreeningPhaseRouter />} />
-                <Route path="dashboard" element={<ManageStudySelectionPage />} />
+                <Route path="papers/:paperId" element={<ScreeningPhaseRouter />} />
+                <Route path="dashboard" element={<ScreeningPhaseRouter />} />
+                <Route path="assignment-management" element={<ManageStudySelectionPage />} />
               </Route>
 
               <Route
@@ -155,22 +159,14 @@ function MainRoutes() {
                 path=":projectId/processes/:processId/full-text-screening/:screeningProcessId"
                 element={<FullTextScreeningWorkspace />}
               />
+              <Route
+                path=":projectId/processes/:processId/full-text-screening/:screeningProcessId/papers/:paperId"
+                element={<FullTextScreeningWorkspace />}
+              />
               {/* Quality Assessment Workspace */}
               <Route
                 path=":projectId/processes/:processId/quality-assessment/:qualityAssessmentId"
                 element={<QualityAssessmentWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction"
-                element={<DataExtractionPhaseWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction/workspace/:studyId"
-                element={<DataExtractionPhaseWorkspace />}
-              />
-              <Route
-                path=":projectId/processes/:processId/extraction/grid"
-                element={<ExtractionGridWorkspace />}
               />
               <Route
                 path=":projectId/processes/:processId/synthesis/*"

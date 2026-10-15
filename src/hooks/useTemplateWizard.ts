@@ -2,6 +2,7 @@ import { useCallback, useState } from "react";
 import type { ResearchQuestion } from "../types/coreAndGovernance";
 import type {
   DataItemDefinitionExtended,
+  ExtractionMatrixColumnDto,
   ExtractionTemplateDto,
   ExtractionTemplateResponseDto,
   SectionTypeEnum,
@@ -17,7 +18,7 @@ import { dataItemsToTemplate } from "../services/dataExtractionService";
 import { generateId } from "../utils/uuid";
 
 interface UseTemplateWizardProps {
-  dataExtractionProcessId: string;
+  projectId: string;
   existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
 }
 
@@ -49,12 +50,16 @@ function mapTemplateFieldsToSectionData(
   const sectionData = new Map<string, DataItemDefinitionExtended[]>();
 
   for (const section of template.sections || []) {
-    const wizardSection = sections.find((s) => s.name === section.name && s.orderIndex === section.orderIndex);
-    if (!wizardSection) {
-      continue;
-    }
+    const wizardSection = sections.find((item) =>
+      section.sectionId ? item.id === section.sectionId
+        : item.name === section.name && item.orderIndex === section.orderIndex
+    );
+    if (!wizardSection) continue;
 
-    const items: DataItemDefinitionExtended[] = (section.fields || []).map((field, index) => ({
+    const mapField = (
+      field: (typeof section.fields)[number],
+      index: number,
+    ): DataItemDefinitionExtended => ({
       data_item_id: field.fieldId || `temp_${generateId()}`,
       form_id: wizardSection.id,
       parent_field_id: field.parentFieldId ?? undefined,
@@ -62,28 +67,54 @@ function mapTemplateFieldsToSectionData(
       data_type: field.fieldType === 1 || field.fieldType === 2
         ? "Number"
         : field.fieldType === 3
-        ? "Boolean"
-        : field.fieldType === 4
-        ? "SingleSelect"
-        : field.fieldType === 5
-        ? "MultiSelect"
-        : "Text",
+          ? "Boolean"
+          : field.fieldType === 4
+            ? "SingleSelect"
+            : field.fieldType === 5
+              ? "MultiSelect"
+              : "Text",
       description: field.instruction || "",
       is_required: field.isRequired,
       display_order: field.orderIndex || index + 1,
-      options: (field.options || []).map((opt, optIdx) => ({
-        option_id: opt.optionId || `opt_${generateId()}`,
+      options: (field.options || []).map((option, optionIndex) => ({
+        option_id: option.optionId || `opt_${generateId()}`,
         field_id: field.fieldId || `temp_${generateId()}`,
-        option_value: opt.value,
-        display_order: opt.displayOrder || optIdx + 1,
+        option_value: option.value,
+        display_order: option.displayOrder || optionIndex + 1,
       })),
-      subItems: [],
-    }));
+      subItems: (field.subFields || []).map(mapField),
+    });
 
-    sectionData.set(wizardSection.id, items);
+    sectionData.set(wizardSection.id, (section.fields || []).map(mapField));
   }
 
   return sectionData;
+}
+
+function mapTemplateMatrixData(
+  template: ExtractionTemplateDto | ExtractionTemplateResponseDto,
+  sections: WizardSection[],
+): Map<string, MatrixSectionData> {
+  const matrixData = new Map<string, MatrixSectionData>();
+  for (const section of template.sections || []) {
+    if (section.sectionType !== SectionType.MatrixGrid) continue;
+    const wizardSection = sections.find((item) =>
+      section.sectionId ? item.id === section.sectionId
+        : item.name === section.name && item.orderIndex === section.orderIndex
+    );
+    if (!wizardSection) continue;
+    matrixData.set(wizardSection.id, {
+      rows: (section.fields || [])
+        .slice()
+        .sort((left, right) => left.orderIndex - right.orderIndex)
+        .map((field) => field.name),
+      columns: (section.matrixColumns || [])
+        .slice()
+        .sort((left, right) => left.orderIndex - right.orderIndex)
+        .map((column) => column.name),
+    });
+  }
+  return matrixData;
 }
 
 function createSuggestedPicocFields(sectionId: string): DataItemDefinitionExtended[] {
@@ -91,10 +122,10 @@ function createSuggestedPicocFields(sectionId: string): DataItemDefinitionExtend
     {
       data_item_id: `temp_${generateId()}`,
       form_id: sectionId,
-      name: "Study Title",
+      name: "Tiêu đề nghiên cứu",
       data_type: "Text",
-      description: "Title of the study.",
-      is_required: false,
+      description: "Tiêu đề nghiên cứu",
+      is_required: true,
       display_order: 1,
       options: [],
       subItems: [],
@@ -102,9 +133,9 @@ function createSuggestedPicocFields(sectionId: string): DataItemDefinitionExtend
     {
       data_item_id: `temp_${generateId()}`,
       form_id: sectionId,
-      name: "Author",
+      name: "Tác giả",
       data_type: "Text",
-      description: "Author of the study.",
+      description: "Tác giả của nghiên cứu",
       is_required: false,
       display_order: 2,
       options: [],
@@ -113,10 +144,10 @@ function createSuggestedPicocFields(sectionId: string): DataItemDefinitionExtend
     {
       data_item_id: `temp_${generateId()}`,
       form_id: sectionId,
-      name: "Publication Venue (e.g., icse, tse, fse)",
-      data_type: "Text",
-      description: "Journal in which the study was published.",
-      is_required: false,
+      name: "Năm xuất bản",
+      data_type: "Number",
+      description: "Năm xuất bản",
+      is_required: true,
       display_order: 3,
       options: [],
       subItems: [],
@@ -124,76 +155,31 @@ function createSuggestedPicocFields(sectionId: string): DataItemDefinitionExtend
     {
       data_item_id: `temp_${generateId()}`,
       form_id: sectionId,
-      name: "Year",
-      data_type: "Number",
-      description: "Year of publication.",
-      is_required: false,
+      name: "Phát hiện chính",
+      data_type: "Text",
+      description: "Phát hiện chính của nghiên cứu",
+      is_required: true,
       display_order: 4,
       options: [],
       subItems: [],
     },
-
     {
       data_item_id: `temp_${generateId()}`,
       form_id: sectionId,
-      name: "Population",
+      name: "Kết luận",
       data_type: "Text",
-      description: "Study population or participant group.",
+      description: "Kết luận của nghiên cứu",
       is_required: false,
       display_order: 5,
-      options: [],
-      subItems: [],
-    },
-    {
-      data_item_id: `temp_${generateId()}`,
-      form_id: sectionId,
-      name: "Context",
-      data_type: "Text",
-      description: "Setting, environment, or problem context.",
-      is_required: false,
-      display_order: 6,
-      options: [],
-      subItems: [],
-    },
-    {
-      data_item_id: `temp_${generateId()}`,
-      form_id: sectionId,
-      name: "Intervention",
-      data_type: "Text",
-      description: "Intervention, treatment, or approach under study.",
-      is_required: false,
-      display_order: 7,
-      options: [],
-      subItems: [],
-    },
-    {
-      data_item_id: `temp_${generateId()}`,
-      form_id: sectionId,
-      name: "Comparison",
-      data_type: "Text",
-      description: "Comparator, baseline, or alternative approach.",
-      is_required: false,
-      display_order: 8,
-      options: [],
-      subItems: [],
-    },
-    {
-      data_item_id: `temp_${generateId()}`,
-      form_id: sectionId,
-      name: "Outcome",
-      data_type: "Text",
-      description: "Outcome, effect, or result to extract.",
-      is_required: false,
-      display_order: 9,
       options: [],
       subItems: [],
     },
   ];
 }
 
-export function useTemplateWizard({ dataExtractionProcessId, existingTemplate }: UseTemplateWizardProps) {
+export function useTemplateWizard({ projectId, existingTemplate }: UseTemplateWizardProps) {
   const [state, setState] = useState<WizardState>(() => {
-    if (existingTemplate && existingTemplate.sections && existingTemplate.sections.length > 0) {
+    if (existingTemplate) {
       const sections = mapTemplateSectionsToWizardSections(existingTemplate);
       const sectionData = mapTemplateFieldsToSectionData(existingTemplate, sections);
 
@@ -206,7 +192,7 @@ export function useTemplateWizard({ dataExtractionProcessId, existingTemplate }:
           name: existingTemplate.name || "",
           description: existingTemplate.description || "",
         },
-        matrixData: new Map(),
+        matrixData: mapTemplateMatrixData(existingTemplate, sections),
       };
     }
 
@@ -317,10 +303,29 @@ export function useTemplateWizard({ dataExtractionProcessId, existingTemplate }:
       }
 
       const allItems = state.sections.flatMap((section) => {
-        const items = state.sectionData.get(section.id) || [];
+        const sectionItems = state.sectionData.get(section.id) || [];
+        const matrix = state.matrixData.get(section.id);
+        const items =
+          section.sectionType === SectionType.MatrixGrid && matrix
+            ? matrix.rows.map((rowName, index) => {
+                const existingItem = sectionItems.find((item) => item.name === rowName);
+                return {
+                  ...existingItem,
+                  data_item_id: existingItem?.data_item_id || `temp_${generateId()}`,
+                  form_id: section.id,
+                  name: rowName,
+                  data_type: existingItem?.data_type || "Text",
+                  description: existingItem?.description || "",
+                  is_required: existingItem?.is_required || false,
+                  display_order: index + 1,
+                  options: existingItem?.options || [],
+                  subItems: existingItem?.subItems || [],
+                };
+              })
+            : sectionItems;
         return items
           .slice()
-          .sort((a, b) => a.display_order - b.display_order)
+          .sort((left, right) => left.display_order - right.display_order)
           .map((item, index) => ({
             ...item,
             form_id: section.id,
@@ -328,21 +333,46 @@ export function useTemplateWizard({ dataExtractionProcessId, existingTemplate }:
           }));
       });
 
-      if (allItems.length === 0) {
+      const hasMatrixData = Array.from(state.matrixData.values()).some(
+        (matrix) => matrix.rows.length > 0 || matrix.columns.length > 0,
+      );
+      if (allItems.length === 0 && !hasMatrixData) {
         return null;
+      }
+      const matrixColumnsBySection = new Map<string, ExtractionMatrixColumnDto[]>();
+      for (const section of state.sections) {
+        if (section.sectionType !== SectionType.MatrixGrid) continue;
+        const matrix = state.matrixData.get(section.id);
+        if (!matrix) continue;
+        const existingSection = existingTemplate?.sections?.find(
+          (candidate) => candidate.sectionId === section.id,
+        );
+        const existingColumns = existingSection?.matrixColumns || [];
+        matrixColumnsBySection.set(
+          section.id,
+          matrix.columns.map((name, index) => ({
+            columnId: (
+              existingColumns.find((column) => column.name === name) ??
+              existingColumns.find((column) => column.orderIndex === index + 1)
+            )?.columnId,
+            name,
+            orderIndex: index + 1,
+          })),
+        );
       }
 
       return dataItemsToTemplate(
         allItems,
-        dataExtractionProcessId,
+        projectId,
         templateName,
         templateDescription,
         existingTemplate?.templateId || undefined,
         state.matrixData,
-        state.sections
+        state.sections,
+        matrixColumnsBySection,
       );
     },
-    [dataExtractionProcessId, existingTemplate?.templateId, state]
+    [projectId, existingTemplate, state]
   );
 
   const resetWizard = useCallback(() => {

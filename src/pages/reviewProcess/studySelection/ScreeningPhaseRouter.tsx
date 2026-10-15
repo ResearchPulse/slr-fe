@@ -4,6 +4,7 @@ import { useProjectMember } from "../../../hooks/useProjectMember";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import TitleAbstractScreeningWorkspace from "./titleAbstractScreening/TitleAbstractScreeningWorkspace";
 import ManageStudySelectionPage from "../../manage-study-selection/ManageStudySelectionPage";
+import LeaderStudySelectionListPage from "./LeaderStudySelectionListPage";
 
 /**
  * Routes based on roles for the Screening Phase.
@@ -14,7 +15,7 @@ import ManageStudySelectionPage from "../../manage-study-selection/ManageStudySe
  * This avoids duplicate paths and handles redirect loops in a centralized way.
  */
 const ScreeningPhaseRouter: React.FC = () => {
-  const { projectId } = useParams<{ projectId: string }>();
+  const { projectId, paperId } = useParams<{ projectId: string; paperId?: string }>();
 
   // Use the same centralized hook as ProtectedRouteForProject
   const { member, isLoading, error } = useProjectMember(projectId);
@@ -35,7 +36,7 @@ const ScreeningPhaseRouter: React.FC = () => {
   // Role: Leader (1)
   // Renders the Dashboard layout which contains an <Outlet /> for nested routes (Overview, Assignments, etc.)
   if (member.role === 1) {
-    return <ManageStudySelectionPage />;
+    return paperId ? <ManageStudySelectionPage /> : <LeaderStudySelectionListPage />;
   }
 
   if (member.role === 3) {

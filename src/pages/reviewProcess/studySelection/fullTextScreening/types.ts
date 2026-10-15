@@ -37,6 +37,7 @@ export interface ReviewerDecision {
   exclusionReasonCode: number | null;
   exclusionReasonName: string | null;
   decidedAt: string;
+  phase?: number;
 }
 
 export interface FullTextPaper {
@@ -67,6 +68,8 @@ export interface FullTextPaper {
   finalDecision: ScreeningDecision | null;
   finalDecisionText: string | null;
   decisions: ReviewerDecision[];
+  myDecision?: ReviewerDecision | null;
+  assignedReviewers?: Array<{ reviewerId: string; reviewerName: string }>;
   extraction: ExtractionStatusResponse | null;
   metadataSources: MetadataSourcesResponse | null;
   extractionResult: ExtractionResultResponse | null;
@@ -169,6 +172,7 @@ export interface UseFullTextScreeningReturn {
   pagination: PaginationInfo;
   isLoading: boolean;
   error: string | null;
+  canReview: boolean;
 
   // Paper selection
   selectPaper: (paperId: string) => void;
@@ -260,6 +264,7 @@ function mapDecisionResponse(d: ScreeningDecisionResponse): ReviewerDecision {
     exclusionReasonCode: d.exclusionReasonCode,
     exclusionReasonName: d.exclusionReasonName,
     decidedAt: d.decidedAt,
+    phase: d.phase,
   };
 }
 
@@ -290,6 +295,8 @@ export function adaptPaperWithDecisions(paper: PaperWithDecisionsResponse): Full
     finalDecision: paper.finalDecision !== null ? mapDecisionType(paper.finalDecision) : null,
     finalDecisionText: paper.finalDecisionText,
     decisions: paper.decisions.map(mapDecisionResponse),
+    myDecision: paper.myDecision ? mapDecisionResponse(paper.myDecision) : null,
+    assignedReviewers: paper.assignedReviewers?.map((reviewer) => ({ reviewerId: reviewer.reviewerId, reviewerName: reviewer.reviewerName })),
     extraction: paper.extraction,
     metadataSources: paper.metadataSources,
     extractionResult: paper.extractionResult,
@@ -338,6 +345,7 @@ export function adaptAssignedPaper(paper: AssignedPaperResponse): FullTextPaper 
     finalDecision: null,
     finalDecisionText: null,
     decisions: paper.decisions.map(mapDecisionResponse),
+    assignedReviewers: paper.assignedReviewers?.map((reviewer) => ({ reviewerId: reviewer.reviewerId, reviewerName: reviewer.reviewerName })),
     extraction: null,
     metadataSources: null,
     extractionResult: null,

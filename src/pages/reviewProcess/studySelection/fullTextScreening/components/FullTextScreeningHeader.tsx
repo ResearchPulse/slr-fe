@@ -37,7 +37,7 @@ export default function FullTextScreeningHeader({
                 <FiFileText className="w-4.5 h-4.5 text-accent" />
               </div>
               <div className="flex flex-col">
-                <h1 className="text-sm font-bold text-text-primary leading-tight">
+                <h1 className="review-process-header-title text-sm font-bold text-text-primary leading-tight">
                   Study Selection
                 </h1>
                 <p className="text-[10px] text-text-secondary font-medium truncate max-w-[150px]">

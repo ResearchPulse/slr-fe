@@ -85,6 +85,30 @@ export interface RisImportResultDto {
 export type RisImportResponse = ApiResponse<RisImportResultDto>;
 
 /**
+ * PDF Batch Import Request
+ * POST /api/papers/import/pdf/batch (max 10 files, 10MB each)
+ */
+export interface PdfFilesImportRequest {
+  files: File[];
+  projectId: string;
+  searchSourceId?: string;
+}
+
+export interface PdfBatchImportItemDto {
+  fileName: string;
+  status: "IMPORTED" | "FAILED";
+  paperId?: string;
+  error?: string;
+  errorCode?: string;
+}
+
+export interface PdfBatchImportResultDto extends RisImportResultDto {
+  items: PdfBatchImportItemDto[];
+}
+
+export type PdfBatchImportResponse = ApiResponse<PdfBatchImportResultDto>;
+
+/**
  * File validation result
  */
 export interface FileValidationResult {
@@ -330,17 +354,6 @@ export interface AddPapersToSnapshotRequest {
   paperIds: string[];
 }
 
-/**
- * Query parameters for data extraction unique papers endpoint
- * GET /api/data-extraction-processes/{dataExtractionProcessId}/unique-papers
- */
-export interface GetDataExtractionUniquePapersParams {
-  dataExtractionProcessId: string; // UUID (path param)
-  search?: string; // Search in Title, DOI, or Authors
-  year?: number; // Filter by exact publication year
-  pageNumber?: number; // Default: 1
-  pageSize?: number; // Default: 20, max: 100
-}
 
 /**
  * API Response for Get Project Papers
@@ -395,10 +408,6 @@ export type AssignPapersResponse = ApiResponse<null>;
  */
 export type GetUniquePapersResponse = ApiResponse<PaginatedPaperResponse>;
 
-/**
- * API Response for Get Data Extraction Unique Papers
- */
-export type GetDataExtractionUniquePapersResponse = ApiResponse<PaginatedPaperResponse>;
 
 // Deduplication types moved to src/types/deduplication.ts
 
@@ -542,6 +551,22 @@ export interface PaperDetailsResponse {
   fullTextRetrievalStatusText?: string | null;
   fullTextAvailable?: boolean | null;
   fullTextSections?: ParsedSectionDto[] | null;
+  /** The project paper document stores the publication year as `year`. */
+  year?: number | null;
+  pdfFileName?: string | null;
+  updatedAt?: string | null;
+  pdf?: {
+    fileName?: string;
+    sizeBytes?: number;
+    processingStatus?: "PENDING" | "PROCESSING" | "COMPLETED" | "FAILED";
+    processingError?: { message?: string } | null;
+    fullText?: {
+      status?: string;
+      sectionCount?: number;
+      referenceCount?: number;
+      figureCount?: number;
+    } | null;
+  } | null;
   createdAt: string;
   modifiedAt: string;
 }

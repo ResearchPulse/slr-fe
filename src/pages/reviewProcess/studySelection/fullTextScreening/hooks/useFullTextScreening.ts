@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useSelector } from "react-redux";
 import { useProjectMember } from "../../../../../hooks/useProjectMember";
@@ -14,7 +14,10 @@ import {
   PaperSelectionStatus,
   PaperPhase,
 } from "../../../../../types/studySelection";
-import type { AssignedPapersParams } from "../../../../../types/studySelection";
+import type {
+  AssignedPapersParams,
+  GetPaperDetailsResponse,
+} from "../../../../../types/studySelection";
 import type {
   FullTextPaper,
   ScreeningStats,
@@ -27,6 +30,7 @@ import type {
 import { adaptAssignedPaper, adaptStatistics, adaptPaperWithDecisions } from "../types";
 import { SCREENING_SHORTCUTS } from "../constants";
 import type { UploadPdfOptions } from "../../uploadTypes";
+import { readWorkspaceFilters, saveWorkspaceFilters, workspaceFilterKey } from "../../workspaceState";
 
 // ============================================
 // Helpers
@@ -64,12 +68,16 @@ function mapStatusFilter(status: StatusFilter): PaperSelectionStatus | undefined
 
 export function useFullTextScreening(): UseFullTextScreeningReturn {
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
-  const { projectId, processId, screeningProcessId } = useParams<{
+  const { projectId, processId, screeningProcessId, paperId: routePaperId } = useParams<{
     projectId: string;
     processId: string;
     screeningProcessId: string;
+    paperId: string;
   }>();
+  const filterKey = workspaceFilterKey(screeningProcessId, "full-text");
+  const hasListContext = Boolean((location.state as { listPath?: string } | null)?.listPath);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const { member } = useProjectMember(projectId);
@@ -78,7 +86,8 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
   // ---- Local UI State ----
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
 
-  const [filters, setFilters] = useState<PaperFilters>({
+  const [filters, setFilters] = useState<PaperFilters>(() => {
+    const defaults: PaperFilters = {
     search: "",
     status: "all",
     sortBy: PaperSortBy.TitleAsc,
@@ -87,7 +96,11 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
     hasFullText: false,
     hasConflict: false,
     decidedByMe: false,
+    };
+    return routePaperId && !hasListContext ? defaults : readWorkspaceFilters(filterKey, defaults);
   });
+
+  useEffect(() => saveWorkspaceFilters(filterKey, filters), [filterKey, filters]);
 
   const debouncedSearch = useDebounce(filters.search, 400);
 
@@ -173,6 +186,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
   // Resolve selection from current page without mutating local state in an effect.
   const resolvedSelectedId = useMemo(() => {
+    if (routePaperId) return routePaperId;
     if (papers.length === 0) {
       return null;
     }
@@ -180,7 +194,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       return selectedPaperId;
     }
     return papers[0].id;
-  }, [papers, selectedPaperId]);
+  }, [routePaperId, papers, selectedPaperId]);
 
   // ---- React Query: Fetch Paper Details ----
   const paperDetailsQuery = useQuery({
@@ -194,8 +208,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       resolvedSelectedId!,
       PaperPhase.FullText,
     ),
-    enabled: !!screeningProcessId && !!resolvedSelectedId && isLeader,
+    enabled: !!screeningProcessId && !!resolvedSelectedId && (isLeader || !!routePaperId),
     staleTime: 30_000,
+    refetchOnMount: "always",
   });
 
   const detailedPaper = useMemo(
@@ -302,7 +317,30 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         exclusionReasonId: vars.exclusionReasonId ?? null,
       });
     },
-    onSuccess: (_, variables) => {
+    onSuccess: (response, variables) => {
+      const detailsKey = QUERY_KEYS.studySelection.paperDetails(
+        screeningProcessId!,
+        variables.paperId,
+        PaperPhase.FullText,
+      );
+      const submittedDecision = response.data;
+      if (submittedDecision) {
+        queryClient.setQueryData<GetPaperDetailsResponse>(detailsKey, (current) => {
+          if (!current?.data) return current;
+          const decisions = current.data.decisions.filter((decision) =>
+            !(decision.reviewerId === submittedDecision.reviewerId
+              && Number(decision.phase) === PaperPhase.FullText),
+          );
+          return {
+            ...current,
+            data: {
+              ...current.data,
+              decisions: [...decisions, submittedDecision],
+              myDecision: submittedDecision,
+            },
+          };
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: ["study-selection", screeningProcessId!, "papers"],
       });
@@ -310,10 +348,7 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
         queryKey: ["study-selection", screeningProcessId!, "statistics"],
       });
       queryClient.invalidateQueries({
-        queryKey: QUERY_KEYS.studySelection.paperDetails(
-          screeningProcessId!,
-          variables.paperId,
-        ),
+        queryKey: detailsKey,
       });
       queryClient.invalidateQueries({
         queryKey: ["reviewer-decisions", screeningProcessId, variables.paperId],
@@ -330,6 +365,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       queryClient.invalidateQueries({
         queryKey: QUERY_KEYS.reviewProcesses.all,
       });
+      queryClient.invalidateQueries({
+        queryKey: ["data-extraction-conducting", "dashboard"],
+      });
     },
     onError: (error) => {
       toastError(getErrorMessage(error, "Failed to submit screening decision"));
@@ -344,13 +382,17 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           onSuccess: () => {
             const idx = papers.findIndex((p) => p.id === paperId);
             const nextPending = papers.slice(idx + 1).find((p) => p.screeningStatus === "pending");
-            if (nextPending) setSelectedPaperId(nextPending.id);
+            if (nextPending) {
+              if (routePaperId && projectId && processId && screeningProcessId) {
+                navigate(`/projects/${projectId}/processes/${processId}/full-text-screening/${screeningProcessId}/papers/${nextPending.id}`, { state: location.state });
+              } else setSelectedPaperId(nextPending.id);
+            }
             toastSuccess("Paper included");
           },
         },
       );
     },
-    [decisionMutation, papers],
+    [decisionMutation, papers, navigate, projectId, processId, screeningProcessId, location.state, routePaperId],
   );
 
   const excludePaper = useCallback(
@@ -361,13 +403,17 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           onSuccess: () => {
             const idx = papers.findIndex((p) => p.id === paperId);
             const nextPending = papers.slice(idx + 1).find((p) => p.screeningStatus === "pending");
-            if (nextPending) setSelectedPaperId(nextPending.id);
+            if (nextPending) {
+              if (routePaperId && projectId && processId && screeningProcessId) {
+                navigate(`/projects/${projectId}/processes/${processId}/full-text-screening/${screeningProcessId}/papers/${nextPending.id}`, { state: location.state });
+              } else setSelectedPaperId(nextPending.id);
+            }
             toastSuccess("Paper excluded");
           },
         },
       );
     },
-    [decisionMutation, papers],
+    [decisionMutation, papers, navigate, projectId, processId, screeningProcessId, location.state, routePaperId],
   );
 
   // ---- Filter Actions ----
@@ -556,7 +602,9 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
 
   const hasMyDecision = useMemo(() => {
     if (!currentUser || !selectedPaper) return false;
-    return selectedPaper.decisions.some((d) => d.reviewerId === currentUser.id);
+    return Boolean(selectedPaper.myDecision) || selectedPaper.decisions.some(
+      (d) => String(d.reviewerId) === String(currentUser.id) && Number(d.phase) === PaperPhase.FullText,
+    );
   }, [selectedPaper, currentUser]);
 
   const canReview = useMemo(() => {
@@ -608,16 +656,17 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
       papersQuery.isLoading ||
       taStatsQuery.isLoading ||
       ftStatsQuery.isLoading ||
-      (isLeader && paperDetailsQuery.isLoading),
+      ((isLeader || !!routePaperId) && paperDetailsQuery.isLoading),
     error: papersQuery.error
       ? getErrorMessage(papersQuery.error, "Failed to load papers")
       : taStatsQuery.error
         ? getErrorMessage(taStatsQuery.error, "Failed to load title/abstract statistics")
         : ftStatsQuery.error
           ? getErrorMessage(ftStatsQuery.error, "Failed to load full-text statistics")
-          : isLeader && paperDetailsQuery.error
+          : (isLeader || !!routePaperId) && paperDetailsQuery.error
             ? getErrorMessage(paperDetailsQuery.error, "Failed to load paper details")
             : null,
+    canReview,
     selectPaper,
     selectNextPaper,
     selectPreviousPaper,

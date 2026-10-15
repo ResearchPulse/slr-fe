@@ -6,7 +6,6 @@ import { toastError } from "../../../../utils/toast";
 import {
   FieldTypeEnum,
   SectionTypeEnum,
-  type AnswerDetailDto,
   type ExtractionCommentDto,
   type ExtractedValueDto,
   type ExtractionFieldDto,
@@ -181,17 +180,25 @@ export default function DataExtractionReviewerWorkspace({
   >({});
   const [matrixNotReportedFields, setMatrixNotReportedFields] =
     useState<MatrixFieldNotReportedState>({});
-  const [localCommentsByKey, setLocalCommentsByKey] = useState<
+  const [commentsByFieldId, setCommentsByFieldId] = useState<
     Record<string, ExtractionCommentDto[]>
   >({});
+  const [localCommentsByKey, setLocalCommentsByKey] = useState<Record<string, ExtractionCommentDto[]>>({});
+  const commentMap = useMemo(
+    () => new Map(Object.entries(commentsByFieldId)),
+    [commentsByFieldId],
+  );
   const [activeEvidenceTarget, setActiveEvidenceTarget] =
     useState<EvidenceTargetState | null>(null);
   const hasAutoFilledPaperRef = useRef<string | null>(null);
   const hasHydratedReviewerWorkspaceRef = useRef<string | null>(null);
 
   const sections = useMemo<ExtractionSectionDto[]>(
-    () => ws.selectedTemplate?.sections ?? [],
-    [ws.selectedTemplate],
+    () =>
+      ws.reviewerWorkspace?.templateSnapshot?.sections ??
+      ws.selectedTemplate?.sections ??
+      [],
+    [ws.reviewerWorkspace?.templateSnapshot, ws.selectedTemplate],
   );
 
   const sectionById = useMemo(() => {
@@ -207,31 +214,51 @@ export default function DataExtractionReviewerWorkspace({
     return map;
   }, [sections]);
 
-  const commentMap = useMemo(() => {
-    const map = new Map<string, ExtractionCommentDto[]>();
-    const reviewerWorkspace = ws.reviewerWorkspace;
-
-    if (!reviewerWorkspace) {
-      return map;
+  useEffect(() => {
+    if (!selectedPaperId) {
+      setCommentsByFieldId({});
+      return;
     }
 
-    reviewerWorkspace.sections.forEach((section) => {
-      section.fields.forEach((field) => {
-        (field.answers ?? []).forEach((answerGroup) => {
-          const key = buildCommentKey(
-            section.sectionId,
-            field.fieldId,
-            answerGroup.matrixColumnId ?? null,
-            answerGroup.matrixRowIndex ?? null,
-          );
-
-          map.set(key, answerGroup.answer?.comments ?? []);
-        });
+    let isCurrent = true;
+    const fieldIds = new Set<string>();
+    const collectFieldIds = (fields: ExtractionFieldDto[]) => {
+      fields.forEach((field) => {
+        if (field.fieldId) {
+          fieldIds.add(field.fieldId);
+        }
+        if (field.subFields?.length) {
+          collectFieldIds(field.subFields);
+        }
       });
-    });
+    };
 
-    return map;
-  }, [ws.reviewerWorkspace]);
+    sections.forEach((section) => collectFieldIds(section.fields ?? []));
+
+    void Promise.all(
+      [...fieldIds].map(async (fieldId) => [
+        fieldId,
+        await ws.fetchFieldComments(selectedPaperId, fieldId),
+      ] as const),
+    )
+      .then((entries) => {
+        if (isCurrent) {
+          setCommentsByFieldId(Object.fromEntries(entries));
+        }
+      })
+      .catch((error: unknown) => {
+        if (isCurrent) {
+          toastError(
+            "Unable to load comments",
+            error instanceof Error ? error.message : "Please try again.",
+          );
+        }
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [selectedPaperId, sections, ws.fetchFieldComments]);
 
   const fieldContextById = useMemo(() => {
     const map = new Map<
@@ -414,220 +441,204 @@ export default function DataExtractionReviewerWorkspace({
 
   useEffect(() => {
     const reviewerWorkspace = ws.reviewerWorkspace;
-
     if (!selectedPaperId || !reviewerWorkspace) {
       return;
     }
 
-    const hydrationKey = `${selectedPaperId}:${reviewerWorkspace.reviewerId ?? "reviewer"}`;
+    const ownDraft = reviewerWorkspace.ownDraft as
+      | { values?: Record<string, unknown>; version?: number }
+      | undefined;
+    const ownSubmission = reviewerWorkspace.ownSubmission as
+      | { values?: Record<string, unknown>; version?: number }
+      | undefined;
+    const workspaceVersion =
+      reviewerWorkspace.version ??
+      ownDraft?.version ??
+      ownSubmission?.version ??
+      0;
+    const hydrationKey = `${selectedPaperId}:${reviewerWorkspace.reviewerId ?? "reviewer"}:${workspaceVersion}`;
     if (hasHydratedReviewerWorkspaceRef.current === hydrationKey) {
       return;
     }
 
-    const timeoutId = window.setTimeout(() => {
-      const flatFormUpdates: Record<string, FormFieldState> = {};
-      const matrixUpdatesBySection: Record<
-        string,
-        Record<number, Record<string, FormFieldState>>
-      > = {};
-      const nextNotReportedFields: FieldNotReportedState = {};
-      const nextMatrixNotReportedFields: MatrixFieldNotReportedState = {};
+    const canonicalValues = ownDraft?.values ?? ownSubmission?.values ?? {};
+    const flatFormUpdates: Record<string, FormFieldState> = {};
+    const matrixUpdatesBySection: Record<
+      string,
+      Record<number, Record<string, FormFieldState>>
+    > = {};
+    const nextNotReportedFields: FieldNotReportedState = {};
+    const nextMatrixNotReportedFields: MatrixFieldNotReportedState = {};
 
-      const toExtractedValue = (
-        field: ExtractionFieldDto,
-        answer: AnswerDetailDto,
-        matrixColumnId: string | null,
-        matrixRowIndex: number | null,
-      ): ExtractedValueDto => ({
-        fieldId: field.fieldId as string,
-        optionId: answer.optionId ?? null,
-        stringValue: answer.stringValue ?? null,
-        numericValue: answer.numericValue ?? null,
-        booleanValue: answer.booleanValue ?? null,
-        matrixColumnId,
-        matrixRowIndex,
-        isNotReported: answer.isNotReported,
-        evidenceCoordinates: answer.evidenceCoordinates ?? null,
-      });
+    const readAnswer = (
+      rawValue: unknown,
+    ): {
+      value: FormFieldValue;
+      isNotReported: boolean;
+      evidenceCoordinates: string | null;
+    } => {
+      const answer =
+        typeof rawValue === "object" &&
+        rawValue !== null &&
+        !Array.isArray(rawValue)
+          ? (rawValue as Record<string, unknown>)
+          : null;
+      const value =
+        answer?.value ??
+        answer?.numericValue ??
+        answer?.booleanValue ??
+        answer?.stringValue ??
+        answer?.optionId ??
+        rawValue;
+      const normalizedValue =
+        typeof value === "string" ||
+        typeof value === "number" ||
+        typeof value === "boolean" ||
+        value === null
+          ? value
+          : Array.isArray(value)
+            ? value.filter((item): item is string => typeof item === "string")
+            : null;
 
-      reviewerWorkspace.sections.forEach((section) => {
-        section.fields.forEach((field) => {
-          (field.answers ?? []).forEach((answerGroup) => {
-            const answer = answerGroup.answer;
-            if (!field.fieldId || !answer) {
-              return;
-            }
+      return {
+        value: normalizedValue,
+        isNotReported: Boolean(answer?.isNotReported),
+        evidenceCoordinates:
+          typeof answer?.evidenceCoordinates === "string"
+            ? answer.evidenceCoordinates
+            : null,
+      };
+    };
 
-            const parsedValue = mapExtractedValueToFormValue(
-              field as unknown as ExtractionFieldDto,
-              toExtractedValue(
-                field as unknown as ExtractionFieldDto,
-                answer,
-                answerGroup.matrixColumnId ?? null,
-                answerGroup.matrixRowIndex ?? null,
-              ),
-            );
+    sections.forEach((section) => {
+      const sectionId = getSectionId(section);
+      const hydrateField = (field: ExtractionFieldDto) => {
+        if (field.fieldId) {
+          const fieldId = field.fieldId;
+          const rawValue = canonicalValues[fieldId];
+          if (section.sectionType === SectionTypeEnum.MatrixGrid) {
+            const matrixAnswers = Array.isArray(rawValue) ? rawValue : [];
+            matrixAnswers.forEach((matrixAnswer, answerIndex) => {
+              const answer: Record<string, unknown> =
+                typeof matrixAnswer === "object" &&
+                matrixAnswer !== null &&
+                !Array.isArray(matrixAnswer)
+                  ? matrixAnswer as Record<string, unknown>
+                  : { value: matrixAnswer };
+              const rowIndex =
+                typeof answer.matrixRowIndex === "number"
+                  ? answer.matrixRowIndex
+                  : answerIndex;
+              const parsedAnswer = readAnswer(answer);
+              const matrixColumnId =
+                typeof answer.matrixColumnId === "string"
+                  ? answer.matrixColumnId
+                  : null;
 
-            if (
-              answerGroup.matrixRowIndex === null ||
-              answerGroup.matrixRowIndex === undefined
-            ) {
-              flatFormUpdates[field.fieldId] = createFieldState(
-                parsedValue,
-                answer.evidenceCoordinates ?? null,
-              );
-              nextNotReportedFields[field.fieldId] = Boolean(
-                answer.isNotReported,
-              );
-              return;
-            }
-
-            const rowIndex = answerGroup.matrixRowIndex;
-            if (!matrixUpdatesBySection[section.sectionId]) {
-              matrixUpdatesBySection[section.sectionId] = {};
-            }
-
-            if (!matrixUpdatesBySection[section.sectionId][rowIndex]) {
-              matrixUpdatesBySection[section.sectionId][rowIndex] = {};
-            }
-
-            const targetRow =
-              matrixUpdatesBySection[section.sectionId][rowIndex];
-            targetRow[field.fieldId] = createFieldState(
-              parsedValue,
-              answer.evidenceCoordinates ?? null,
-            );
-
-            if (!nextMatrixNotReportedFields[section.sectionId]) {
-              nextMatrixNotReportedFields[section.sectionId] = {};
-            }
-
-            if (!nextMatrixNotReportedFields[section.sectionId][rowIndex]) {
-              nextMatrixNotReportedFields[section.sectionId][rowIndex] = {};
-            }
-
-            nextMatrixNotReportedFields[section.sectionId][rowIndex][
-              field.fieldId
-            ] = Boolean(answer.isNotReported);
-
-            if (answerGroup.matrixColumnId) {
-              targetRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
-                answerGroup.matrixColumnId,
-              );
-
-              if (!targetRow[MATRIX_ITEM_NAME_KEY]?.value) {
-                const matchedColumn = (section.matrixColumns ?? []).find(
-                  (column) => column.columnId === answerGroup.matrixColumnId,
+              matrixUpdatesBySection[sectionId] ??= {};
+              matrixUpdatesBySection[sectionId][rowIndex] ??= {};
+              matrixUpdatesBySection[sectionId][rowIndex][fieldId] =
+                createFieldState(
+                  parsedAnswer.isNotReported ? null : parsedAnswer.value,
+                  parsedAnswer.evidenceCoordinates,
                 );
+              nextMatrixNotReportedFields[sectionId] ??= {};
+              nextMatrixNotReportedFields[sectionId][rowIndex] ??= {};
+              nextMatrixNotReportedFields[sectionId][rowIndex][fieldId] =
+                parsedAnswer.isNotReported;
 
+              if (matrixColumnId) {
+                const targetRow =
+                  matrixUpdatesBySection[sectionId][rowIndex];
+                targetRow[MATRIX_COLUMN_ID_KEY] =
+                  createFieldState(matrixColumnId);
+                const matchedColumn = (section.matrixColumns ?? []).find(
+                  (column) => column.columnId === matrixColumnId,
+                );
                 if (matchedColumn?.name) {
                   targetRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
                     matchedColumn.name,
                   );
                 }
               }
-            }
-          });
-        });
-      });
+            });
+          } else {
+            const parsedAnswer = readAnswer(rawValue);
+            flatFormUpdates[field.fieldId] = createFieldState(
+              parsedAnswer.isNotReported ? null : parsedAnswer.value,
+              parsedAnswer.evidenceCoordinates,
+            );
+            nextNotReportedFields[field.fieldId] =
+              parsedAnswer.isNotReported;
+          }
+        }
 
-      if (Object.keys(flatFormUpdates).length > 0) {
-        setFormValues((previous) => ({
-          ...previous,
-          ...flatFormUpdates,
-        }));
-      }
+        field.subFields?.forEach(hydrateField);
+      };
 
-      if (Object.keys(nextNotReportedFields).length > 0) {
-        setNotReportedFields((previous) => ({
-          ...previous,
-          ...nextNotReportedFields,
-        }));
-      }
+      section.fields?.forEach(hydrateField);
+    });
 
-      if (Object.keys(matrixUpdatesBySection).length > 0) {
-        setMatrixValues((previous) => {
-          const nextMatrixValues = { ...previous };
-
-          Object.entries(matrixUpdatesBySection).forEach(
-            ([sectionId, rowUpdates]) => {
-              const section = sectionById[sectionId];
-              const existingRows = [...(nextMatrixValues[sectionId] ?? [])];
-
-              Object.entries(rowUpdates)
-                .map(
-                  ([rowIndex, values]) => [Number(rowIndex), values] as const,
-                )
-                .sort((left, right) => left[0] - right[0])
-                .forEach(([rowIndex, values]) => {
-                  while (existingRows.length <= rowIndex) {
-                    const fallbackColumn =
-                      section?.matrixColumns?.[existingRows.length];
-
-                    existingRows.push({
-                      ...(fallbackColumn?.name
-                        ? {
-                            [MATRIX_ITEM_NAME_KEY]: createFieldState(
-                              fallbackColumn.name,
-                            ),
-                          }
-                        : {}),
-                      ...(fallbackColumn?.columnId
-                        ? {
-                            [MATRIX_COLUMN_ID_KEY]: createFieldState(
-                              fallbackColumn.columnId,
-                            ),
-                          }
-                        : {}),
-                    });
-                  }
-
-                  existingRows[rowIndex] = {
-                    ...(existingRows[rowIndex] ?? {}),
-                    ...values,
-                  };
-
-                  const mergedRow = existingRows[rowIndex];
-                  if (!mergedRow[MATRIX_COLUMN_ID_KEY]?.value) {
-                    const fallbackColumn = section?.matrixColumns?.[rowIndex];
-
-                    if (fallbackColumn?.columnId) {
-                      mergedRow[MATRIX_COLUMN_ID_KEY] = createFieldState(
-                        fallbackColumn.columnId,
-                      );
-                    }
-
-                    if (
-                      !mergedRow[MATRIX_ITEM_NAME_KEY]?.value &&
-                      fallbackColumn?.name
-                    ) {
-                      mergedRow[MATRIX_ITEM_NAME_KEY] = createFieldState(
-                        fallbackColumn.name,
-                      );
-                    }
-                  }
+    if (Object.keys(flatFormUpdates).length > 0) {
+      setFormValues((previous) => ({
+        ...previous,
+        ...flatFormUpdates,
+      }));
+    }
+    if (Object.keys(nextNotReportedFields).length > 0) {
+      setNotReportedFields((previous) => ({
+        ...previous,
+        ...nextNotReportedFields,
+      }));
+    }
+    if (Object.keys(matrixUpdatesBySection).length > 0) {
+      setMatrixValues((previous) => {
+        const next = { ...previous };
+        Object.entries(matrixUpdatesBySection).forEach(
+          ([sectionId, rowUpdates]) => {
+            const rows = [...(next[sectionId] ?? [])];
+            Object.entries(rowUpdates).forEach(([rowIndex, values]) => {
+              const numericRowIndex = Number(rowIndex);
+              while (rows.length <= numericRowIndex) {
+                const fallbackColumn =
+                  sectionById[sectionId]?.matrixColumns?.[rows.length];
+                rows.push({
+                  ...(fallbackColumn?.name
+                    ? {
+                        [MATRIX_ITEM_NAME_KEY]: createFieldState(
+                          fallbackColumn.name,
+                        ),
+                      }
+                    : {}),
+                  ...(fallbackColumn?.columnId
+                    ? {
+                        [MATRIX_COLUMN_ID_KEY]: createFieldState(
+                          fallbackColumn.columnId,
+                        ),
+                      }
+                    : {}),
                 });
+              }
+              rows[numericRowIndex] = {
+                ...(rows[numericRowIndex] ?? {}),
+                ...values,
+              };
+            });
+            next[sectionId] = rows;
+          },
+        );
+        return next;
+      });
+    }
+    if (Object.keys(nextMatrixNotReportedFields).length > 0) {
+      setMatrixNotReportedFields((previous) => ({
+        ...previous,
+        ...nextMatrixNotReportedFields,
+      }));
+    }
 
-              nextMatrixValues[sectionId] = existingRows;
-            },
-          );
-
-          return nextMatrixValues;
-        });
-      }
-
-      if (Object.keys(nextMatrixNotReportedFields).length > 0) {
-        setMatrixNotReportedFields((previous) => ({
-          ...previous,
-          ...nextMatrixNotReportedFields,
-        }));
-      }
-
-      hasHydratedReviewerWorkspaceRef.current = hydrationKey;
-    }, 0);
-
-    return () => window.clearTimeout(timeoutId);
-  }, [selectedPaperId, sectionById, ws.reviewerWorkspace]);
+    hasHydratedReviewerWorkspaceRef.current = hydrationKey;
+  }, [sectionById, sections, selectedPaperId, ws.reviewerWorkspace]);
 
   const setFieldState = useCallback(
     (
@@ -1160,7 +1171,7 @@ export default function DataExtractionReviewerWorkspace({
     notReportedFields,
   ]);
 
-  const handleSubmitExtraction = useCallback(() => {
+  const handleSubmitExtraction = useCallback(async () => {
     if (!selectedPaperId) {
       return;
     }
@@ -1215,12 +1226,31 @@ export default function DataExtractionReviewerWorkspace({
       toastError(
         "Validation Failed",
         `Please fill in all required fields:\n${uniqueMissingFields.join("\n")}`,
+        { duration: 8000 },
       );
       return;
     }
 
     const payload = buildSubmissionPayload();
-    submitExtraction(selectedPaperId, payload);
+    try {
+      await submitExtraction(selectedPaperId, payload);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to submit extraction.";
+
+      // submitMutation already reports transport/API errors. This branch is
+      // still needed for canonical validation failures thrown before the
+      // mutation starts, otherwise they become an unhandled promise rejection.
+      if (message.startsWith("Complete required fields before submitting:")) {
+        toastError(
+          "Validation Failed",
+          `Please fill in all required fields:\n${message.replace(
+            "Complete required fields before submitting: ",
+            "",
+          )}`,
+          { duration: 8000 },
+        );
+      }
+    }
   }, [
     buildSubmissionPayload,
     formValues,
@@ -1596,7 +1626,7 @@ export default function DataExtractionReviewerWorkspace({
       );
       const scopedLocalKey = `${selectedPaperId ?? "paper"}::${key}`;
 
-      const serverComments = commentMap.get(key) ?? [];
+      const serverComments = commentMap.get(params.field.fieldId) ?? [];
       const localComments = localCommentsByKey[scopedLocalKey] ?? [];
       const comments =
         serverComments.length > 0 ? serverComments : localComments;
@@ -1696,12 +1726,6 @@ export default function DataExtractionReviewerWorkspace({
 
   return (
     <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] flex-col overflow-hidden bg-[#F4F7FA]">
-      {ws.isDirectMode ? (
-        <div className="shrink-0 border-b border-accent/30 bg-primary-light px-5 py-2.5 text-sm font-medium text-accent">
-          ⚡️ Direct Extraction Mode (Leader). Submitting this will finalize the
-          data and skip the consensus phase.
-        </div>
-      ) : null}
 
       {isWorkspaceLocked ? (
         <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-5 py-2.5 text-sm font-medium text-amber-800">
@@ -1743,9 +1767,7 @@ export default function DataExtractionReviewerWorkspace({
           onSectionChange={setActiveSectionIdState}
           onBack={() => navigate(dashboardPath)}
           onSubmitExtraction={handleSubmitExtraction}
-          submitButtonLabel={
-            ws.isDirectMode ? "Save & Complete Final Data" : "Submit Extraction"
-          }
+          submitButtonLabel="Submit Extraction"
         />
 
         <ReviewerFormPane

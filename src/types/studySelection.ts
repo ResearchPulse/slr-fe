@@ -398,6 +398,8 @@ export interface PaperWithDecisionsResponse {
   fullTextRetrievalStatusText: string;
   finalDecision: ScreeningDecisionType | null;
   finalDecisionText: string | null;
+  aiReviewSubmitted?: boolean;
+  myDecision?: ScreeningDecisionResponse | null;
   citationCount: number;
   referenceCount: number;
   decisions: ScreeningDecisionResponse[];

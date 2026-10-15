@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import type { ReactNode } from "react";
 import {
   FiCpu,
   FiFileText,
@@ -13,8 +14,7 @@ import {
   FiZoomOut,
   FiBookOpen,
 } from "react-icons/fi";
-import type { FullTextPaper, AiHighlight } from "../types";
-import { PAPER_SECTIONS } from "../constants";
+import type { FullTextPaper } from "../types";
 import { cn } from "../../../../../utils/cn";
 import UploadFullTextPdfModal from "../../components/UploadFullTextPdfModal";
 import MetadataSuggestionModal from "../../components/MetadataSuggestionModal";
@@ -26,7 +26,7 @@ import "@react-pdf-viewer/core/lib/styles/index.css";
 
 interface FullTextReaderProps {
   paper: FullTextPaper | null;
-  aiHighlights: AiHighlight[];
+  decisionBar?: ReactNode;
   onUploadPdf?: (
     paperId: string,
     file: File,
@@ -45,7 +45,7 @@ interface FullTextReaderProps {
 
 export default function FullTextReader({
   paper,
-  aiHighlights,
+  decisionBar,
   onUploadPdf,
   onApplyMetadataSuggestion,
   onRetryExtraction,
@@ -55,7 +55,6 @@ export default function FullTextReader({
 }: FullTextReaderProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearch, setShowSearch] = useState(false);
-  const [showSectionNav, setShowSectionNav] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(100);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
@@ -147,7 +146,7 @@ export default function FullTextReader({
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col h-full bg-surface-white">
+    <div ref={containerRef} className="flex h-full min-h-0 flex-col overflow-hidden bg-surface-white">
       {isUploadModalOpen && (
         <UploadFullTextPdfModal
           isOpen={isUploadModalOpen}
@@ -212,20 +211,6 @@ export default function FullTextReader({
             title="Search within paper"
           >
             <FiSearch className="w-4 h-4" />
-          </button>
-
-          {/* Section nav toggle */}
-          <button
-            onClick={() => setShowSectionNav(!showSectionNav)}
-            className={cn(
-              "p-1.5 rounded-xl transition-colors",
-              showSectionNav
-                ? "bg-primary-light text-accent"
-                : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
-            )}
-            title="Toggle section navigation"
-          >
-            <FiBookOpen className="w-4 h-4" />
           </button>
 
           <div className="w-px h-5 bg-bg-secondary mx-1" />
@@ -299,47 +284,7 @@ export default function FullTextReader({
       )}
 
       {/* Main Content Area */}
-      <div className="flex flex-1 min-h-0">
-        {/* Section Navigation Sidebar */}
-        {showSectionNav && (
-          <div className="w-48 shrink-0 border-r border-border overflow-y-auto bg-bg-primary">
-            <div className="py-3">
-              <p className="px-4 text-[10px] font-semibold text-text-secondary uppercase tracking-wider mb-2">
-                Sections
-              </p>
-              {PAPER_SECTIONS.map((section) => (
-                <button
-                  key={section.id}
-                  className="w-full text-left px-4 py-2 text-xs text-text-secondary hover:bg-bg-secondary hover:text-text-primary transition-colors"
-                >
-                  {section.label}
-                </button>
-              ))}
-            </div>
-
-            {/* AI Highlights */}
-            {aiHighlights.length > 0 && (
-              <div className="border-t border-border py-3">
-                <p className="px-4 text-[10px] font-semibold text-accent uppercase tracking-wider mb-2">
-                  AI Highlights
-                </p>
-                {aiHighlights.map((hl, i) => (
-                  <button
-                    key={i}
-                    className="w-full text-left px-4 py-2 text-xs text-accent hover:bg-primary-light transition-colors"
-                    title={hl.text}
-                  >
-                    <span className="font-medium">{hl.section}</span>
-                    <span className="text-text-secondary ml-1">
-                      p.{hl.page}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
+      <div className="flex min-h-0 flex-1 overflow-hidden">
         {/* PDF / Full Text Content */}
         <div className="flex-1 min-w-0 overflow-auto bg-bg-secondary">
           {paper.extraction?.status === "failed" &&
@@ -531,6 +476,7 @@ export default function FullTextReader({
           )}
         </div>
       </div>
+      {decisionBar}
     </div>
   );
 }

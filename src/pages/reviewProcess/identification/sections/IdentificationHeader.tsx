@@ -55,7 +55,7 @@ export default function IdentificationHeader({
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
               <FiDatabase className="w-7 h-7 text-accent" />
-              <h1 className="text-2xl font-bold text-text-primary">
+              <h1 className="review-process-header-title text-2xl font-bold text-text-primary">
                 Identification Phase
               </h1>
               <span

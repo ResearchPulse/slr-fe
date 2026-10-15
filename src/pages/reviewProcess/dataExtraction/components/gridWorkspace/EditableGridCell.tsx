@@ -9,7 +9,7 @@ import CellAuditHistoryModal from "./CellAuditHistoryModal";
 import MultiSelectDropdown from "./MultiSelectDropdown";
 
 interface EditableGridCellProps {
-  extractionProcessId?: string;
+  projectId?: string;
   cell: ExtractionGridCellDto;
   columnMeta: ExtractionGridColumnMetaDto;
   rowHeight: number;
@@ -30,7 +30,7 @@ function formatCellValue(value: string | null): string {
 }
 
 export default function EditableGridCell({
-  extractionProcessId,
+  projectId,
   cell,
   columnMeta,
   rowHeight,
@@ -145,7 +145,7 @@ export default function EditableGridCell({
 
   const displayedValue = formatCellValue(cell.value);
   const canViewHistory = Boolean(
-    extractionProcessId && cell.paperId && cell.fieldId,
+    projectId && cell.paperId && cell.fieldId,
   );
 
   const handleEditorBlur = useCallback(
@@ -369,11 +369,9 @@ export default function EditableGridCell({
         <CellAuditHistoryModal
           isOpen={isHistoryOpen}
           onClose={() => setIsHistoryOpen(false)}
-          extractionProcessId={extractionProcessId}
+          projectId={projectId}
           paperId={cell.paperId}
           fieldId={cell.fieldId}
-          matrixColumnId={cell.matrixColumnId}
-          matrixRowIndex={cell.matrixRowIndex}
           fieldLabel={columnMeta.headerName}
         />
       ) : null}

@@ -1,5 +1,4 @@
-import { FiUser, FiShield, FiCheck } from "react-icons/fi";
-import { cn } from "../../../../utils/cn";
+import { FiShield } from "react-icons/fi";
 import Tooltip from "../../../ui/Tooltip";
 
 interface User {
@@ -11,21 +10,12 @@ interface User {
 
 interface RoleAssignmentPanelProps {
   selectedUser: User | null | undefined;
-  previewRole: "Lecturer" | "Reviewer";
-  canAssignLeaderRole?: boolean;
-  isLeaderResolved?: boolean;
-  currentLeader?: unknown;
-  onRoleChange: (role: "Lecturer" | "Reviewer") => void;
   onRemoveFromWaitlist: (userId: string) => void;
   getInitials: (name: string) => string;
-  hideLeaderRole?: boolean;
-  disableMemberRole?: boolean;
 }
 
 export default function RoleAssignmentPanel({
   selectedUser,
-  previewRole,
-  onRoleChange,
   onRemoveFromWaitlist,
   getInitials,
 }: RoleAssignmentPanelProps) {
@@ -36,11 +26,6 @@ export default function RoleAssignmentPanel({
       </div>
     );
   }
-
-  const choices = [
-    { role: "Lecturer" as const, description: "Searches literature and imports research papers.", icon: FiUser },
-    { role: "Reviewer" as const, description: "Reviews papers and submits accept or reject decisions.", icon: FiShield },
-  ];
 
   return (
     <div className="bg-surface-white border border-slate-100 rounded-xl p-5 space-y-5">
@@ -61,25 +46,13 @@ export default function RoleAssignmentPanel({
 
       <div className="space-y-2">
         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project role</p>
-        {choices.map(({ role, description, icon: Icon }) => (
-          <button
-            key={role}
-            onClick={() => onRoleChange(role)}
-            className={cn(
-              "w-full flex items-center justify-between p-3 rounded-xl border text-left",
-              previewRole === role ? "bg-indigo-50 border-indigo-200" : "bg-white border-slate-100",
-            )}
-          >
-            <span className="flex items-center gap-3">
-              <Icon size={16} />
-              <span>
-                <span className="block text-xs font-bold text-slate-700">{role}</span>
-                <span className="block text-[10px] text-slate-400">{description}</span>
-              </span>
-            </span>
-            {previewRole === role && <FiCheck className="text-indigo-600" />}
-          </button>
-        ))}
+        <div className="w-full flex items-center gap-3 p-3 rounded-xl border bg-indigo-50 border-indigo-200">
+          <FiShield size={16} className="text-indigo-600" />
+          <span>
+            <span className="block text-xs font-bold text-slate-700">Reviewer</span>
+            <span className="block text-[10px] text-slate-400">Reviews papers and submits decisions.</span>
+          </span>
+        </div>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { cn } from "../../../utils/cn";
 import Input from "../../../components/ui/Input";
+import Select from "../../../components/ui/Select";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import {
   useInfiniteTitleAbstractAssignmentPapers,
@@ -361,7 +362,7 @@ export const PaperList: React.FC<PaperListProps> = ({
             </button>
             {isAssignmentMode && selectedIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black text-accent bg-bg-secondary px-2 py-0.5 rounded-full uppercase tracking-widest animate-in fade-in slide-in-from-right-4">
+                <span className="inline-flex shrink-0 whitespace-nowrap items-center rounded-full bg-bg-secondary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-accent animate-in fade-in slide-in-from-right-4">
                   {selectedIds.length} Selected
                 </span>
               </div>
@@ -380,53 +381,55 @@ export const PaperList: React.FC<PaperListProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <select
-            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          <Select
+            aria-label="Filter by publication year"
+            className="h-10 rounded-xl px-3 text-xs font-medium"
             value={yearFilter}
             onChange={(e) => handleFilterChange(setYearFilter, e.target.value)}
-          >
-            <option value="all">Years</option>
-            {Array.from(
-              { length: new Date().getFullYear() - 1900 + 1 },
-              (_, i) => new Date().getFullYear() - i,
-            ).map((y) => (
-              <option key={y} value={y.toString()}>
-                {y}
-              </option>
-            ))}
-          </select>
+            options={[
+              { value: "all", label: "Years" },
+              ...Array.from(
+                { length: new Date().getFullYear() - 1900 + 1 },
+                (_, i) => new Date().getFullYear() - i,
+              ).map((year) => ({ value: year.toString(), label: year.toString() })),
+            ]}
+          />
 
-          <select
-            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          <Select
+            aria-label="Filter by decision"
+            className="h-10 rounded-xl px-3 text-xs font-medium"
             value={decisionFilter}
             onChange={(e) =>
               handleFilterChange(setDecisionFilter, e.target.value)
             }
-          >
-            <option value="all">All Decisions</option>
-            <option value="0">Pending</option>
-            <option value="1">Included</option>
-            <option value="2">Excluded</option>
-            <option value="3">Conflict</option>
-          </select>
+            options={[
+              { value: "all", label: "All Decisions" },
+              { value: "0", label: "Pending" },
+              { value: "1", label: "Included" },
+              { value: "2", label: "Excluded" },
+              { value: "3", label: "Conflict" },
+            ]}
+          />
 
-          <select
-            className="rounded-xl border border-border bg-white px-3 py-2.5 text-xs font-medium text-slate-700 outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+          <Select
+            aria-label="Filter by assignment"
+            className="h-10 rounded-xl px-3 text-xs font-medium"
             value={assignmentFilter}
             onChange={(e) =>
               handleFilterChange(setAssignmentFilter, e.target.value)
             }
-          >
-            <option value="all">All Assignment</option>
-            <option value="assigned">Assigned</option>
-            <option value="not_assigned">Not Assigned</option>
-          </select>
+            options={[
+              { value: "all", label: "All Assignment" },
+              { value: "assigned", label: "Assigned" },
+              { value: "not_assigned", label: "Not Assigned" },
+            ]}
+          />
         </div>
       </div>
 
       {/* List */}
       <div
-        className="min-h-0 flex-1 touch-pan-y space-y-2 overflow-y-auto overscroll-contain bg-bg-primary p-3 custom-scrollbar"
+        className="min-h-0 flex-1 touch-pan-y space-y-2 overflow-y-auto overscroll-contain bg-bg-primary p-3 custom-scrollbar compact-scrollbar"
         onScroll={handleScroll}
       >
         {isLoading ? (

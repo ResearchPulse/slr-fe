@@ -43,12 +43,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
     () =>
       members.filter((m) => {
         const role = String(m.roleText ?? m.role).trim().toUpperCase();
-        return (
-          m.role === ProjectRole.Reviewer ||
-          m.role === ProjectRole.Lecturer ||
-          m.role === ProjectRole.Owner ||
-          ["REVIEWER", "LECTURER", "OWNER", "LEADER", "MEMBER", "3", "2", "1"].includes(role)
-        );
+        return m.role === ProjectRole.Reviewer || ["REVIEWER", "3"].includes(role);
       }),
     [members],
   );
@@ -120,8 +115,8 @@ const BulkAssignmentPanelDataExtraction: React.FC<
       const results = await Promise.allSettled(
         selectedPaperIds.map((paperId) =>
           ws.assignPaper(paperId, {
-            reviewer1Id: reviewerIds[0],
-            reviewer2Id: reviewerIds[1],
+            reviewerIds: [reviewerIds[0], reviewerIds[1]],
+            templateId: ws.selectedTemplateId,
           }),
         ),
       );

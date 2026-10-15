@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { useNavigate, useParams } from "react-router";
+import { useParams } from "react-router";
 import gsap from "gsap";
 import {
   Users,
@@ -9,7 +9,6 @@ import {
   X,
   ChevronDown,
   Loader2,
-  Bot,
 } from "lucide-react";
 import Button from "../../ui/Button";
 import { Dropdown } from "../../ui/Dropdown";
@@ -18,13 +17,6 @@ import { useAssignPapers } from "../../../hooks/useProjectPapers";
 import { useDebounce } from "../../../hooks/useDebounce";
 import { ProjectRole, type ProjectMember } from "../../../types/project";
 import { toastSuccess, toastError } from "../../../utils/toast";
-import api from "../../../config/axios";
-import { useQueryClient } from "@tanstack/react-query";
-
-interface ConnectedAgent {
-  agent: { id: string; name: string; isActive: boolean };
-  access: { isActive: boolean } | null;
-}
 
 interface BulkAssignmentPanelProps {
   selectedPaperIds: string[];
@@ -46,14 +38,6 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
     projectId: string;
     screeningProcessId: string;
   }>();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-
-  const [assignmentTarget, setAssignmentTarget] = useState<"reviewers" | "agents">("reviewers");
-  const [connectedAgents, setConnectedAgents] = useState<ConnectedAgent[]>([]);
-  const [isLoadingAgents, setIsLoadingAgents] = useState(false);
-  const [isAssigningAgents, setIsAssigningAgents] = useState(false);
-  const [selectedAgents, setSelectedAgents] = useState<Map<string, string>>(new Map());
 
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebounce(searchQuery, 300);
@@ -81,58 +65,6 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
 
   // 4. Mutation for assigning papers
   const { mutate: assignPapers, isPending } = useAssignPapers();
-
-  useEffect(() => {
-    if (!projectId) return;
-    let cancelled = false;
-    setIsLoadingAgents(true);
-    api.get<{ data: ConnectedAgent[] }>(`/projects/${projectId}/agents`)
-      .then(({ data }) => {
-        if (!cancelled) setConnectedAgents(data.data.filter(({ agent, access }) => agent.isActive && access?.isActive));
-      })
-      .catch(() => {
-        if (!cancelled) setConnectedAgents([]);
-      })
-      .finally(() => {
-        if (!cancelled) setIsLoadingAgents(false);
-      });
-    return () => { cancelled = true; };
-  }, [projectId]);
-
-  const handleAssignAgents = async () => {
-    if (!projectId || selectedPaperIds.length === 0 || selectedAgents.size === 0) return;
-    setIsAssigningAgents(true);
-    const assignments = Array.from(selectedAgents.keys()).flatMap((agentId) =>
-      selectedPaperIds.map((paperId) => ({ agentId, paperId })),
-    );
-    let successful = 0;
-    try {
-      for (let index = 0; index < assignments.length; index += 8) {
-        const batch = assignments.slice(index, index + 8);
-        const results = await Promise.allSettled(batch.map(({ agentId, paperId }) =>
-          api.post(`/projects/${projectId}/agents/${agentId}/tasks`, {
-            paperId,
-            instructions: "Review this paper against the project's review criteria and return a decision with evidence-based reasoning.",
-          }),
-        ));
-        successful += results.filter((result) => result.status === "fulfilled").length;
-      }
-      const failed = assignments.length - successful;
-      if (successful === 0) {
-        toastError("Assignment Failed", "Could not assign papers to the selected AI agents.");
-        return;
-      }
-      toastSuccess(
-        failed ? "Partial AI Assignment" : "AI Tasks Assigned",
-        `${successful} AI review task(s) created${failed ? `; ${failed} failed` : ""}.`,
-      );
-      setSelectedAgents(new Map());
-      await queryClient.invalidateQueries({ queryKey: ["project-agent-tasks", projectId] });
-      onAssignmentComplete();
-    } finally {
-      setIsAssigningAgents(false);
-    }
-  };
 
   const handleAssign = () => {
     const reviewerIds = Array.from(selectedReviewers.keys());
@@ -236,48 +168,39 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-5 left-1/2 -translate-x-1/2 w-full max-w-4xl px-3 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
+      className="fixed bottom-5 left-1/2 z-(--z-index-dropdown) w-full max-w-5xl -translate-x-1/2 px-3 sm:px-4 opacity-0 translate-y-[100px]"
     >
-      <div className="bg-surface-white border border-border rounded-xl shadow-2xl p-3 text-text-primary overflow-visible relative">
+      <div className="relative overflow-visible rounded-2xl border border-border bg-surface-white/95 p-3 text-text-primary shadow-[0_12px_36px_rgba(15,23,42,0.14)] backdrop-blur-md sm:p-4">
         {/* Background Accent */}
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/5 blur-3xl"></div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-3 relative">
+        <div className="relative flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
           {/* Section 1: Bulk Action Stats */}
-          <div className="flex items-center gap-3 flex-shrink-0">
-            <div className="w-10 h-10 flex items-center justify-center bg-primary rounded-xl shadow-inner ring-4 ring-accent/20">
-              <CheckCircle2 className="w-4 h-4" />
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm ring-4 ring-primary/10">
+              <CheckCircle2 className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[9px] text-accent font-bold uppercase tracking-widest mb-0.5">
+              <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
                 Bulk Action
               </div>
-              <div className="text-base font-black flex items-center gap-1.5 tabular-nums">
+              <div className="flex items-center gap-1.5 text-base font-semibold tabular-nums">
                 <span>{selectedCount}</span>
-                <span className="text-text-secondary text-[11px] font-medium uppercase">
+                <span className="text-[11px] font-medium uppercase text-text-secondary">
                   Papers
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="h-12 w-px bg-border hidden lg:block"></div>
+          <div className="hidden h-12 w-px bg-border md:block"></div>
 
-          {/* Section 2: Human or AI assignment */}
-          <div className="flex-1 w-full min-w-0">
-            <div className="mb-1.5 inline-flex rounded-lg border border-border bg-bg-secondary p-0.5">
-              <button type="button" onClick={() => setAssignmentTarget("reviewers")} className={`rounded-md px-2.5 py-1 text-xs font-semibold ${assignmentTarget === "reviewers" ? "bg-primary text-white" : "text-text-secondary hover:text-text-primary"}`}>
-                Human reviewers
-              </button>
-              <button type="button" onClick={() => setAssignmentTarget("agents")} className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold ${assignmentTarget === "agents" ? "bg-primary text-white" : "text-text-secondary hover:text-text-primary"}`}>
-                <Bot className="h-3.5 w-3.5" /> AI agents
-              </button>
-            </div>
-            {assignmentTarget === "reviewers" ? <>
-            <label className="text-[9px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 block flex items-center justify-between">
+          {/* Section 2: Human reviewer assignment */}
+          <div className="w-full min-w-0 flex-1">
+            <label className="mb-1 flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-text-secondary">
               <span>Assign reviewers</span>
               <span
-                className={`text-[9px] px-1.5 py-0.5 rounded ${selectedReviewers.size === 2 ? "text-accent bg-primary-light" : "text-amber-600 bg-amber-500/10"}`}
+                className={`rounded-full px-2 py-1 text-[9px] tracking-normal ${selectedReviewers.size === 2 ? "bg-primary-light text-accent" : "bg-amber-500/10 text-amber-600"}`}
               >
                 2 reviewers required
               </span>
@@ -414,58 +337,23 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                 </div>
               </div>
             </div>
-            </> : <>
-              <label className="text-[9px] font-bold text-text-secondary uppercase tracking-widest mb-0.5 block">
-                Assign to AI agents
-              </label>
-              <Dropdown
-                trigger={<button type="button" className="flex items-center gap-1.5 rounded-lg border border-border bg-bg-secondary px-2.5 py-1.5 text-xs font-semibold text-text-primary hover:border-primary">
-                  <Bot className="h-3.5 w-3.5" />
-                  {selectedAgents.size ? `${selectedAgents.size} agent(s) selected` : "Select AI agents"}
-                  <ChevronDown className="ml-1 h-3.5 w-3.5 text-text-secondary" />
-                </button>}
-                position="top"
-                contentClassName="w-80 bg-transparent p-0 shadow-none ring-0"
-              >
-                <div className="w-80 overflow-hidden rounded border border-border bg-surface-white shadow-2xl">
-                  <div className="max-h-56 overflow-y-auto p-2">
-                    {isLoadingAgents ? <div className="p-4 text-center text-xs text-text-secondary">Loading project agents…</div>
-                      : connectedAgents.length ? connectedAgents.map(({ agent }) => (
-                        <label key={agent.id} className="flex cursor-pointer items-center gap-3 rounded p-2.5 text-sm text-text-primary hover:bg-bg-secondary">
-                          <input type="checkbox" checked={selectedAgents.has(agent.id)} onChange={() => setSelectedAgents((current) => {
-                            const next = new Map(current);
-                            if (next.has(agent.id)) next.delete(agent.id); else next.set(agent.id, agent.name);
-                            return next;
-                          })} className="h-4 w-4 rounded border-border bg-surface-white text-primary" />
-                          <Bot className="h-4 w-4 text-accent" />
-                          {agent.name}
-                        </label>
-                        )) : <div className="p-4 text-center text-xs text-text-secondary">No active agents connected to this project.</div>}
-                  </div>
-                  {!connectedAgents.length && !isLoadingAgents && <button type="button" onClick={() => navigate(`/projects/${projectId}/settings`)} className="w-full border-t border-border p-3 text-left text-xs font-semibold text-accent hover:bg-bg-secondary">
-                    Connect an agent in Project Settings → AI Agents
-                  </button>}
-                  {selectedAgents.size > 0 && <button type="button" onClick={() => setSelectedAgents(new Map())} className="w-full border-t border-border p-3 text-left text-xs font-semibold text-accent hover:bg-bg-secondary">Clear selection</button>}
-                </div>
-              </Dropdown>
-            </>}
           </div>
 
           {/* Section 3: Action Button */}
-          <div className="flex flex-col items-center lg:items-end flex-shrink-0">
+          <div className="flex shrink-0 flex-col items-stretch md:items-end">
             <Button
-              onClick={() => !isDisabled && (assignmentTarget === "reviewers" ? handleAssign() : void handleAssignAgents())}
-              disabled={(assignmentTarget === "reviewers" ? selectedReviewers.size !== 2 || isPending : selectedAgents.size === 0 || isAssigningAgents) || isDisabled}
-              className="bg-primary hover:bg-primary-hover disabled:bg-bg-secondary disabled:text-text-secondary disabled:border-border text-white font-bold py-2 px-4 rounded-lg shadow-none shadow-primary/10 border-none transition-all active:scale-95 flex items-center gap-1.5 group whitespace-nowrap text-xs"
+              onClick={() => !isDisabled && handleAssign()}
+              disabled={selectedReviewers.size !== 2 || isPending || isDisabled}
+              className="min-h-11 w-full rounded-xl border-none px-4 py-2.5 text-xs font-semibold normal-case tracking-normal shadow-none transition-all active:scale-[0.98] disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary sm:w-auto"
             >
-              {(isPending || isAssigningAgents) ? (
+              {isPending ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <CheckCircle2
                   className={`w-4 h-4 transition-transform ${selectedReviewers.size > 0 ? "scale-100" : "scale-0"}`}
                 />
               )}
-              {isPending || isAssigningAgents ? "Assigning..." : assignmentTarget === "agents" ? "Assign to Agents" : "Assign Selected"}
+              {isPending ? "Assigning..." : "Assign Selected"}
             </Button>
           </div>
         </div>

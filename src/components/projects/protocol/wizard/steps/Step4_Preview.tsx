@@ -14,7 +14,7 @@ import type {
 import type { WizardState } from "../../../../../types/templateWizard";
 import {
   dataExtractionTemplateService,
-  sanitizeTemplatePayloadForUpsert,
+  sanitizeExtractionTemplateInput,
 } from "../../../../../services/dataExtractionService";
 import {
   dismissToast,
@@ -27,7 +27,44 @@ import Input from "../../../../ui/Input";
 import Label from "../../../../ui/Label";
 import Textarea from "../../../../ui/Textarea";
 
+function preserveMatrixColumnIds(
+  template: ExtractionTemplateDto,
+  existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null,
+): ExtractionTemplateDto {
+  if (!existingTemplate) return template;
+
+  return {
+    ...template,
+    sections: (template.sections || []).map((section) => {
+      const existingSection = existingTemplate.sections?.find(
+        (candidate) => candidate.sectionId === section.sectionId,
+      );
+      if (!section.matrixColumns?.length || !existingSection?.matrixColumns?.length) {
+        return section;
+      }
+
+      return {
+        ...section,
+        matrixColumns: section.matrixColumns.map((column) => ({
+          ...column,
+          columnId: (
+            existingSection.matrixColumns?.find(
+              (candidate) => candidate.name === column.name,
+            ) ??
+            existingSection.matrixColumns?.find(
+              (candidate) => candidate.orderIndex === column.orderIndex,
+            )
+          )?.columnId,
+        })),
+      };
+    }),
+  };
+}
+
 interface Step4_PreviewProps {
+  projectId: string;
+  expectedVersion?: number;
+  existingTemplate?: ExtractionTemplateDto | ExtractionTemplateResponseDto | null;
   state: WizardState;
   onPublish: (savedTemplate: ExtractionTemplateResponseDto) => void;
   onBack: () => void;
@@ -40,6 +77,9 @@ interface Step4_PreviewProps {
 }
 
 export default function Step4_Preview({
+  projectId,
+  expectedVersion,
+  existingTemplate,
   state,
   onPublish,
   onBack,
@@ -66,7 +106,7 @@ export default function Step4_Preview({
     const configured = state.sections.filter((section) => {
       const flatItems = state.sectionData.get(section.id) || [];
       const matrix = state.matrixData.get(section.id);
-      return flatItems.length > 0 || Boolean(matrix?.rows.length);
+      return flatItems.length > 0 || Boolean(matrix?.rows.length || matrix?.columns.length);
     });
     return configured.length;
   }, [state.matrixData, state.sectionData, state.sections]);
@@ -93,18 +133,33 @@ export default function Step4_Preview({
     );
 
     try {
-      const template = getCompletedTemplate(templateName, templateDescription);
+      const completedTemplate = getCompletedTemplate(templateName, templateDescription);
+      const template = completedTemplate && existingTemplate?.templateId
+        ? { ...completedTemplate, templateId: existingTemplate.templateId }
+        : completedTemplate;
       const isUpdateAction = Boolean(template?.templateId);
-
       if (!template) {
         throw new Error(
-          "Please add at least one field before publishing the template.",
+          "Please add at least one field or configure a matrix before publishing the template.",
         );
       }
 
-      const sanitizedPayload = sanitizeTemplatePayloadForUpsert(template);
-      const savedTemplate =
-        await dataExtractionTemplateService.upsert(sanitizedPayload);
+      const sanitizedPayload = sanitizeExtractionTemplateInput(
+        preserveMatrixColumnIds(template, existingTemplate),
+      );
+      let savedTemplate: ExtractionTemplateResponseDto;
+      if (template.templateId) {
+        if (expectedVersion === undefined) {
+          throw new Error("Template version is required to update an existing template.");
+        }
+        savedTemplate = await dataExtractionTemplateService.update(
+          projectId,
+          template.templateId,
+          { ...sanitizedPayload, expectedVersion },
+        );
+      } else {
+        savedTemplate = await dataExtractionTemplateService.create(projectId, sanitizedPayload);
+      }
 
       toastSuccess(
         isUpdateAction ? "Template Updated" : "Template Created",

@@ -4,6 +4,7 @@ import { cn } from "../../utils/cn";
 export interface TabItem {
   id: string;
   label: string;
+  compactLabel?: string;
   icon?: React.ElementType;
   badge?: string | number;
 }
@@ -80,7 +81,14 @@ const Tabs: React.FC<TabsProps> = ({
                   )}
                 />
               )}
-              {item.label}
+              {item.compactLabel ? (
+                <>
+                  <span className="tab-label-full">{item.label}</span>
+                  <span className="tab-label-compact">{item.compactLabel}</span>
+                </>
+              ) : (
+                item.label
+              )}
               {item.badge !== undefined && (
                 <span
                   className={cn(

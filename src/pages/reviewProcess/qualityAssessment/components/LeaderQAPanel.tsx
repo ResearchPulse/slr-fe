@@ -1,10 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
-import { FiCheckCircle, FiXCircle, FiHelpCircle, FiZap } from "react-icons/fi";
+import { FiCheckCircle, FiXCircle, FiHelpCircle } from "react-icons/fi";
 import type {
   LeaderQAPaperResponse,
   QualityAssessmentStrategy,
   QualityAssessmentResolutionRequest,
-  AutomateQualityAssessmentResponse,
   QualityAssessmentDecisionItemResponse,
 } from "../../../../types/qualityAssessment";
 import { useSelector } from "react-redux";
@@ -22,7 +21,6 @@ interface LeaderQAPanelProps {
     >,
     decisionData?: { notes: string | null; items: ReviewerDecisionPayload[] },
   ) => void;
-  onAiAnalyze?: (paperId: string) => Promise<AutomateQualityAssessmentResponse>;
   isResolving?: boolean;
   activeCriterionId?: string | null;
   onSelectCriterion?: (id: string | null) => void;
@@ -36,7 +34,6 @@ export default function LeaderQAPanel({
   paper,
   strategies,
   onResolve,
-  onAiAnalyze,
   isResolving,
   activeCriterionId,
   onSelectCriterion,
@@ -76,48 +73,6 @@ export default function LeaderQAPanel({
     >
   >({});
   const [notes, setNotes] = useState<string>("");
-  const [isAiLoading, setIsAiLoading] = useState(false);
-
-  const handleAiAnalyze = async () => {
-    if (!onAiAnalyze || !paper.paperId) return;
-    setIsAiLoading(true);
-    try {
-      const aiResponse = await onAiAnalyze(paper.paperId);
-      const { pageWidth, pageHeight, decisionItems } = aiResponse;
-      const newAnswers = { ...answers };
-      decisionItems.forEach((item) => {
-        // Normalize pdfHighlightCoordinates using pageWidth/pageHeight
-        let normalizedCoords = item.pdfHighlightCoordinates;
-        if (normalizedCoords && pageWidth && pageHeight) {
-          normalizedCoords = normalizedCoords
-            .split(";")
-            .filter(Boolean)
-            .map((segment) => {
-              // Grobid gave coords in pdf units and started page index at 1, reactpdfviewer using 0-based page index and persentages
-              const [page, x, y, h, w] = segment.split(",").map(Number);
-              const normPage = page - 1; // Convert to 0-based page index
-              const normX = (x / pageWidth) * 100;
-              const normY = (y / pageHeight) * 100;
-              const normH = (h / pageHeight) * 100;
-              const normW = (w / pageWidth) * 100;
-              return `${normPage},${normX},${normY},${normH},${normW}`;
-            })
-            .join(";");
-        }
-
-        newAnswers[item.qualityCriterionId] = {
-          value: item.value,
-          comment: `${item.comment}`,
-          id: answers[item.qualityCriterionId]?.id,
-          pdfHighlightCoordinates: normalizedCoords,
-        };
-        console.log("AI Analysis Result:", newAnswers[item.qualityCriterionId]);
-      });
-      setAnswers(newAnswers);
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!paper || !currentUser) return;
@@ -443,18 +398,6 @@ export default function LeaderQAPanel({
           </>
         ) : (
           <div className="space-y-4 pb-4">
-            {onAiAnalyze && canEdit && (
-              <button
-                onClick={handleAiAnalyze}
-                disabled={isAiLoading}
-                className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:opacity-50"
-              >
-                <FiZap className={isAiLoading ? "animate-pulse" : ""} />
-                {isAiLoading
-                  ? "AI is analyzing..."
-                  : "Ask AI to assist with Assessment"}
-              </button>
-            )}
             {criteriaList.map((crit, idx) => {
               const currentAns = answers[crit.criterionId];
               const isSelected = !!currentAns;

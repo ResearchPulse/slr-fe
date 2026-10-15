@@ -169,6 +169,9 @@ export default function PaperTable({
               <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Full Text
               </th>
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+                Status
+              </th>
               <th className="whitespace-nowrap px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Actions
               </th>
@@ -198,7 +201,7 @@ export default function PaperTable({
             {papers.length === 0 && !isLoading && (
               <tr>
                 <td
-                  colSpan={isLeader ? 8 : 7}
+                  colSpan={isLeader ? 9 : 8}
                   className="px-5 py-8 sm:py-10"
                 >
                   <div className="flex flex-col items-center justify-center text-center">

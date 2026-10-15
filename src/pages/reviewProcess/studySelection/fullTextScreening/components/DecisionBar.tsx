@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { FiCheck, FiX, FiAlertTriangle } from "react-icons/fi";
+import { FiCheck, FiChevronDown, FiChevronUp, FiX, FiAlertTriangle } from "react-icons/fi";
 import { type RootState } from "../../../../../redux/store";
 import { cn } from "../../../../../utils/cn";
 import { useStudySelectionExclusionReasons } from "../../../../../hooks/useStudySelection";
 import ExcludeMenu from "../../components/ExcludeMenu";
 import ReviewCommentField from "../../components/ReviewCommentField";
 import type { FullTextPaper } from "../types";
+import { PaperPhase } from "../../../../../types/studySelection";
 
 interface DecisionBarProps {
   paper: FullTextPaper;
@@ -19,6 +21,53 @@ interface DecisionBarProps {
   ) => void;
   isSubmitting: boolean;
   canReview: boolean;
+}
+
+function StickyVoteFooter({
+  isCollapsed,
+  setIsCollapsed,
+  label,
+  children,
+}: {
+  isCollapsed: boolean;
+  setIsCollapsed: (collapsed: boolean) => void;
+  label: "vote status" | "vote controls";
+  children: ReactNode;
+}) {
+  return (
+    <div className="sticky bottom-0 z-20 shrink-0 border-t border-border bg-white/95 shadow-[0_-3px_12px_rgba(15,23,42,0.08)] backdrop-blur-md">
+      {isCollapsed ? (
+        <div className="flex items-center justify-end px-3 py-1.5 sm:px-4">
+          <button
+            type="button"
+            onClick={() => setIsCollapsed(false)}
+            aria-expanded={false}
+            aria-label="Show vote bar"
+            title="Show vote bar"
+            className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+          >
+            Show vote bar <FiChevronUp className="h-4 w-4" />
+          </button>
+        </div>
+      ) : (
+        <>
+          <div className="flex justify-end px-3 pt-1 sm:px-4">
+            <button
+              type="button"
+              onClick={() => setIsCollapsed(true)}
+              aria-expanded={true}
+              aria-label={`Hide ${label}`}
+              title={`Hide ${label}`}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+            >
+              <FiChevronDown className="h-4 w-4" />
+            </button>
+          </div>
+          {children}
+        </>
+      )}
+    </div>
+  );
 }
 
 export default function DecisionBar({
@@ -35,6 +84,7 @@ export default function DecisionBar({
 
   const [reasonPageSize, setReasonPageSize] = useState(5);
   const [reviewComment, setReviewComment] = useState("");
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const { data: exclusionReasons = [] } = useStudySelectionExclusionReasons(
     screeningProcessId,
     { onlyActive: true, pageSize: reasonPageSize },
@@ -43,15 +93,19 @@ export default function DecisionBar({
   const hasMoreReasons = exclusionReasons.length >= reasonPageSize;
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
-  const myDecision = currentUser
-    ? paper.decisions.find((d) => d.reviewerId === currentUser.id)
-    : null;
+  const myDecision = paper.myDecision ?? (currentUser
+    ? paper.decisions.find(
+        (d) => String(d.reviewerId) === String(currentUser.id) && Number(d.phase) === PaperPhase.FullText,
+      )
+    : null);
 
   useEffect(() => {
     setReviewComment("");
+    setIsCollapsed(false);
   }, [paper.id]);
 
-  if (!canReview) {
+  // A submitted Full Text vote always takes precedence over a stale canReview prop.
+  if (!canReview || myDecision) {
     if (
       myDecision &&
       (paper.screeningStatus === "pending" ||
@@ -60,7 +114,8 @@ export default function DecisionBar({
       const isInclude =
         String(myDecision.decision).toLowerCase() === "included";
       return (
-        <div className="border-t border-border bg-surface-white px-4 py-3 shrink-0">
+        <StickyVoteFooter isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} label="vote status">
+          <div className="px-4 pb-3">
           <div
             className={cn(
               "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium",
@@ -84,12 +139,14 @@ export default function DecisionBar({
                 : "(Pending others)"}
             </span>
           </div>
-        </div>
+          </div>
+        </StickyVoteFooter>
       );
     }
 
     return (
-      <div className="border-t border-border bg-surface-white px-4 py-3 shrink-0">
+      <StickyVoteFooter isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} label="vote status">
+        <div className="px-4 pb-3">
         <div
           className={cn(
             "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium",
@@ -115,28 +172,30 @@ export default function DecisionBar({
             </>
           )}
         </div>
-      </div>
+        </div>
+      </StickyVoteFooter>
     );
   }
 
   return (
-    <div className="border-t border-border bg-surface-white px-4 py-3 shrink-0">
-      <div className="flex flex-col gap-3">
+    <StickyVoteFooter isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} label="vote controls">
+      <div className="px-3 pb-2.5 sm:px-4">
+      <div className="flex flex-wrap items-center gap-2">
         <ReviewCommentField
           value={reviewComment}
           onChange={setReviewComment}
           disabled={isSubmitting}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
         {/* Include */}
         <button
           onClick={() => onInclude(paper.id, reviewComment.trim() || null)}
           disabled={isSubmitting}
-          className="inline-flex h-11 flex-1 items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 transition-colors hover:border-emerald-300 hover:bg-emerald-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-200 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FiCheck className="w-4 h-4" />
+          <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
           Include
-          <kbd className="ml-1 rounded-md border border-emerald-200 bg-white/80 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700">
+          <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
             1
           </kbd>
         </button>
@@ -153,6 +212,7 @@ export default function DecisionBar({
         />
         </div>
       </div>
-    </div>
+      </div>
+    </StickyVoteFooter>
   );
 }

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Modal from "../../ui/Modal";
 import PaperViewer from "./PaperViewer";
+import type { SystemMetadataExtras } from "./PaperViewer/components";
 import MetadataSuggestionModal from "../../../pages/reviewProcess/studySelection/components/MetadataSuggestionModal";
 import type { PaperPoolItem } from "../../paperPool/types";
 import type { ScreeningPaper } from "../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
@@ -87,7 +88,9 @@ function adaptPaperDetailsToScreening(
     doi: paper.doi || null,
     publicationYear:
       paper.publicationYearInt ||
-      (paper.publicationYear ? parseInt(paper.publicationYear) : null),
+      (paper.publicationYear ? parseInt(paper.publicationYear) : null) ||
+      paper.year ||
+      null,
     publicationDate: paper.publicationDate || null,
     abstract: paper.abstract || null,
     journal: paper.journal || null,
@@ -152,6 +155,21 @@ export default function PaperViewerModal({
 
   const suggestion = detailedPaper?.extractionSuggestion;
 
+  const infoSummary: SystemMetadataExtras = {
+    importedAt: detailedPaper?.importedAt ?? null,
+    createdAt: detailedPaper?.createdAt ?? null,
+    modifiedAt: detailedPaper?.modifiedAt ?? detailedPaper?.updatedAt ?? null,
+    pdfFileName: detailedPaper?.pdfFileName ?? detailedPaper?.pdf?.fileName ?? null,
+    pdfSizeBytes: detailedPaper?.pdf?.sizeBytes ?? null,
+    pdfUrl: detailedPaper?.pdfUrl ?? null,
+    pdfProcessingStatus: detailedPaper?.pdf?.processingStatus ?? null,
+    fullTextStatus: detailedPaper?.pdf?.fullText?.status ?? null,
+    extractionError: detailedPaper?.pdf?.processingError?.message ?? null,
+    sectionCount: detailedPaper?.pdf?.fullText?.sectionCount ?? null,
+    referenceCount: detailedPaper?.pdf?.fullText?.referenceCount ?? null,
+    figureCount: detailedPaper?.pdf?.fullText?.figureCount ?? null,
+  };
+
   const handleApplySuggestion = async (selectedFields: string[]) => {
     if (!onApplyMetadataSuggestion || !suggestion || !paper) return;
     try {
@@ -214,6 +232,7 @@ export default function PaperViewerModal({
               paper={adaptedPaper}
               isLeaderView={true}
               hideActions={true}
+              infoSummary={infoSummary}
             />
           </div>
         </div>

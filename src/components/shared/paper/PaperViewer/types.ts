@@ -1,6 +1,7 @@
 import type { ScreeningPaper } from "../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type { UploadPdfOptions } from "../../../../pages/reviewProcess/studySelection/uploadTypes";
-import type { PaperWithDecisionsResponse } from "../../../../types/studySelection";
+import type { PaperPhase, PaperWithDecisionsResponse } from "../../../../types/studySelection";
+import type { SystemMetadataExtras } from "./components/SystemMetadataCollapse";
 
 export interface PaperViewerProps {
   paper: ScreeningPaper | null;
@@ -22,8 +23,13 @@ export interface PaperViewerProps {
   isApplyingMetadataSuggestion?: boolean;
   isRetryingExtraction?: boolean;
   hideActions?: boolean;
+  /**
+   * When set, the Overview tab shows an always-visible "Paper Information" block and the
+   * System Metadata section expands to the full system record.
+   */
+  infoSummary?: SystemMetadataExtras | null;
   isLeaderView?: boolean;
-  phase?: number;
+  phase?: PaperPhase;
   isDisabled?: boolean;
 }
 
