@@ -48,9 +48,12 @@ export default function DataExtractionPhaseWorkspace() {
   }
 
   const selectedStudyStatus = studyId ? ws.getPaperStatus(studyId) : null;
-  const isConsensusRouteTarget =
-    selectedStudyStatus === "awaiting-consensus" ||
-    selectedStudyStatus === "completed";
+  const isConsensusRouteTarget = ws.isCurrentUserLeader
+    ? selectedStudyStatus === "in-progress" ||
+      selectedStudyStatus === "awaiting-consensus" ||
+      selectedStudyStatus === "completed"
+    : selectedStudyStatus === "awaiting-consensus" ||
+      selectedStudyStatus === "completed";
 
   return (
     <div className="min-h-full bg-bg-secondary flex flex-col">

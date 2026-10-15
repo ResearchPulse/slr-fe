@@ -10,6 +10,13 @@ export interface ReviewerWorkspaceState<TValues = Record<string, unknown>> {
   otherReviewerRecord: null;
 }
 
+export function getEffectiveReviewerRecordValues<TValues>(
+  ownDraft: { values?: TValues | null } | null | undefined,
+  ownSubmission: { values?: TValues | null } | null | undefined,
+): TValues | null {
+  return ownSubmission?.values ?? ownDraft?.values ?? null;
+}
+
 export interface RequiredField {
   fieldId?: string | null;
   name: string;
@@ -26,6 +33,12 @@ export function getReviewerWorkspaceState<TValues>(
     ownSubmission: ownSubmission?.reviewerId === reviewerId ? ownSubmission : null,
     otherReviewerRecord: null,
   };
+}
+
+export function getEffectiveReviewerValues<TValues>(
+  state: ReviewerWorkspaceState<TValues>,
+): TValues | null {
+  return getEffectiveReviewerRecordValues(state.ownDraft, state.ownSubmission);
 }
 
 function isRequiredValueMissing(value: unknown): boolean {

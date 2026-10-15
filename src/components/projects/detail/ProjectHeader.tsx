@@ -77,15 +77,17 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
             )}
           </div>
 
-          {isLeader && (
+          {(isLeader || onSettings) && (
             <div className="flex shrink-0 items-center gap-2">
-              <button
-                type="button"
-                onClick={onEdit}
-                className="inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
-              >
-                <FiEdit3 size={15} /> Edit project
-              </button>
+              {isLeader && (
+                <button
+                  type="button"
+                  onClick={onEdit}
+                  className="inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
+                >
+                  <FiEdit3 size={15} /> Edit project
+                </button>
+              )}
               {onSettings && (
                 <button
                   type="button"

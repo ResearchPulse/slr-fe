@@ -453,6 +453,9 @@ export interface ConsensusWorkspaceDto {
   reviewer2Id?: string;
   reviewer1Username?: string;
   reviewer2Username?: string;
+  reviewer1Status?: "DRAFT" | "SUBMITTED" | "REOPENED";
+  reviewer2Status?: "DRAFT" | "SUBMITTED" | "REOPENED";
+  consensusReady?: boolean;
   sections: ConsensusSectionDto[];
 }
 
