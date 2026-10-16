@@ -193,7 +193,7 @@ export default function ProjectListPage() {
                 Projects couldn’t be loaded
               </h3>
               <p className="mb-5 max-w-sm text-sm leading-relaxed text-text-secondary">
-                Check your connection and try again.
+                {error || "Check your connection and try again."}
               </p>
               <Button variant="outline" onClick={() => void refetch()}>
                 Try again

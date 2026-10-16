@@ -51,7 +51,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
 
       <nav
         aria-label="Project preparation steps"
-        className="grid grid-cols-1 gap-2 sm:grid-cols-3 sm:gap-4"
+        className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
       >
         {steps.map((step, index) => {
           const isCompleted = step.status === "completed";

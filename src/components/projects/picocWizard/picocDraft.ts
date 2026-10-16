@@ -3,6 +3,7 @@ import type {
   PicocComponent,
   PicocItem,
   PicocSuggestion,
+  PicocSuggestionContext,
   PicocSuggestionRequest,
   PicocWizardDraft,
   WizardStep,
@@ -35,7 +36,7 @@ export const COMPONENT_QUESTIONS: Record<PicocComponent, string> = {
   comparison: "What is the intervention compared against?",
 };
 
-export const ORIGIN_LABELS = { openalex: "OpenAlex", ai: "AI", user: "You added" } as const;
+export const ORIGIN_LABELS = { openalex: "OpenAlex", ai: "AI", storage: "Saved suggestion", default: "Starter term", user: "You added" } as const;
 
 /** Steps that precede each component in wizard order (C→P→I→O→C). */
 const UPSTREAM: Record<PicocComponent, PicocComponent[]> = {
@@ -151,7 +152,7 @@ export function buildSuggestionRequest(
       description: draft.intent.description,
       reviewType: draft.reviewType,
       researchField: field
-        ? { topic: field.topic.label, subfield: field.subfield?.label, field: field.field?.label, domain: field.domain?.label }
+        ? { topic: field.topic.label, topicId: field.topic.id, subfield: field.subfield?.label, field: field.field?.label, domain: field.domain?.label }
         : null,
       keywords: draft.keywords.filter((keyword) => keyword.kept).map(({ label, origin }) => ({ label, origin })),
       confirmed: {
@@ -164,5 +165,26 @@ export function buildSuggestionRequest(
     },
     exclude: mode === "more" ? shownLabels.slice(0, 200) : [],
     currentSelections: draft.picoc[component].map(({ id, label, synonyms, origin }) => ({ id, label, synonyms, origin })),
+  };
+}
+
+/** Shared input for one compact request that seeds every PICOC component. */
+export function buildBatchSuggestionContext(draft: PicocWizardDraft): PicocSuggestionContext {
+  const field = draft.researchField;
+  return {
+    topic: draft.intent.topic.trim(),
+    description: draft.intent.description,
+    reviewType: draft.reviewType,
+    researchField: field
+      ? { topic: field.topic.label, topicId: field.topic.id, subfield: field.subfield?.label, field: field.field?.label, domain: field.domain?.label }
+      : null,
+    keywords: draft.keywords.filter((keyword) => keyword.kept).map(({ label, origin }) => ({ label, origin })),
+    confirmed: {
+      population: selectedLabels(draft, "population"),
+      intervention: selectedLabels(draft, "intervention"),
+      comparison: selectedLabels(draft, "comparison"),
+      outcome: selectedLabels(draft, "outcome"),
+      context: selectedLabels(draft, "context"),
+    },
   };
 }
