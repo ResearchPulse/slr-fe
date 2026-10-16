@@ -215,7 +215,8 @@ export default function ThematicWorkspace({
     const { active, over } = event;
     setActiveDragEvidence(null);
 
-    if (!over) {
+    // Only the leader, and only while the phase runs, links evidence.
+    if (isReadOnly || !over) {
       return;
     }
 

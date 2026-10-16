@@ -515,17 +515,6 @@ export type GetCitationGraphResponse = ApiResponse<CitationGraphDto>;
 export type GetTopCitedPapersResponse = ApiResponse<PaperNodeDto[]>;
 export type GetSuggestedPapersResponse = ApiResponse<PaperNodeDto[]>;
 
-export interface StudySelectionPhaseStatus {
-  currentPhase: number;
-  currentPhaseText: string;
-  titleAbstractStarted: boolean;
-  titleAbstractCompleted: boolean;
-  fullTextStarted: boolean;
-  fullTextCompleted: boolean;
-}
-
-export type GetPhaseStatusResponse = ApiResponse<StudySelectionPhaseStatus>;
-
 export interface AssignedMember {
   projectMemberId: string;
   reviewerId: string;

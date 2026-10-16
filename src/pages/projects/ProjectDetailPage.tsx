@@ -474,7 +474,10 @@ export default function ProjectDetailPage() {
               }
             />
             <Route path="workspace" element={<WorkspaceRedirect />} />
-            <Route path="*" element={<Navigate to="overview" replace />} />
+            <Route
+              path="*"
+              element={<Navigate to={`/projects/${id}/overview`} replace />}
+            />
           </Routes>
         </div>
       );

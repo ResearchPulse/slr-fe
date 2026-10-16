@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, BarChart3, Layers3, NotebookText } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import { useProjectMember } from "../../../hooks/useProjectMember";
 import { useReviewProcess } from "../../../hooks/useReviewProcesses";
 import { formatDate } from "../../../utils/dateFormat";
 import { useSynthesisWorkspace } from "./hooks/useSynthesisWorkspace";
@@ -52,6 +53,9 @@ export default function SynthesisPhaseWorkspace() {
   }>();
   const workspace = useSynthesisWorkspace();
   const { process: reviewProcess } = useReviewProcess(processId);
+  const { member } = useProjectMember(projectId);
+  // Only the project leader runs Synthesis; reviewers read it.
+  const isLeader = member?.isLeader ?? false;
   const [filterHighQualityOnly, setFilterHighQualityOnly] =
     useState<boolean>(false);
   const [thematicViewMode, setThematicViewMode] = useState<
@@ -95,7 +99,7 @@ export default function SynthesisPhaseWorkspace() {
     await workspace.startSynthesis();
   };
 
-  const isReadOnly = workspace.processStatus === "Completed";
+  const isReadOnly = workspace.processStatus === "Completed" || !isLeader;
 
   const tabs = useMemo(
     () => [
@@ -157,6 +161,17 @@ export default function SynthesisPhaseWorkspace() {
     );
   }
 
+  const strategyModal =
+    isLeader && projectId && workspace.workspace.process.id && isStrategyModalOpen ? (
+      <SynthesisStrategyModal
+        isOpen={isStrategyModalOpen}
+        projectId={projectId}
+        synthesisProcessId={workspace.workspace.process.id}
+        onClose={() => setIsStrategyModalOpen(false)}
+        onStartSynthesis={handleStart}
+      />
+    ) : null;
+
   if (workspace.processStatus === "NotStarted") {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-10">
@@ -177,25 +192,28 @@ export default function SynthesisPhaseWorkspace() {
 
           <div className="mt-6 rounded-xl border border-border bg-bg-primary p-6">
             <p className="text-sm leading-6 text-text-secondary">
-              The synthesis phase is not started yet. Once activated, the
-              workspace will unlock thematic analysis and research question
-              reporting.
+              {isLeader
+                ? "The synthesis phase is not started yet. Once activated, the workspace will unlock thematic analysis and research question reporting."
+                : "The synthesis phase has not been started by the project leader yet."}
             </p>
           </div>
 
           <div className="mt-8 flex flex-wrap gap-3">
-            <Button
-              onClick={() => setIsStrategyModalOpen(true)}
-              isLoading={workspace.isStarting}
-            >
-              Start Synthesis Phase
-            </Button>
+            {isLeader && (
+              <Button
+                onClick={() => setIsStrategyModalOpen(true)}
+                isLoading={workspace.isStarting}
+              >
+                Start Synthesis Phase
+              </Button>
+            )}
             <Button variant="outline" onClick={handleBack}>
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to Process
             </Button>
           </div>
         </div>
+        {strategyModal}
       </div>
     );
   }
@@ -268,7 +286,7 @@ export default function SynthesisPhaseWorkspace() {
                 {formatDate(reviewProcess?.modifiedAt ?? workspace.workspace?.process.completedAt ?? workspace.workspace?.process.startedAt ?? "")}
               </div>
             </div>
-            {Boolean(workspace.processStatus) && (
+            {Boolean(workspace.processStatus) && isLeader && (
               <Button
                 variant={
                   workspace.processStatus === "InProgress" &&
@@ -412,15 +430,7 @@ export default function SynthesisPhaseWorkspace() {
         />
       ) : null}
 
-      {projectId && workspace.workspace?.process.id && isStrategyModalOpen ? (
-        <SynthesisStrategyModal
-          isOpen={isStrategyModalOpen}
-          projectId={projectId}
-          synthesisProcessId={workspace.workspace.process.id}
-          onClose={() => setIsStrategyModalOpen(false)}
-          onStartSynthesis={handleStart}
-        />
-      ) : null}
+      {strategyModal}
     </div>
   );
 }

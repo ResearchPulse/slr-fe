@@ -26,6 +26,8 @@ interface ChecklistItemProps {
   isSubItem?: boolean;
   hasUnsavedChanges?: boolean;
   isLoading?: boolean;
+  /** The response can be read but not changed */
+  isReadOnly?: boolean;
 }
 
 /**
@@ -41,6 +43,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
   isSubItem = false,
   hasUnsavedChanges = false,
   isLoading = false,
+  isReadOnly = false,
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const locationFieldId = useId();
@@ -184,7 +187,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
           {isEditableLeaf ? (
             <button
               onClick={handleSaveClick}
-              disabled={!hasUnsavedChanges || isLoading}
+              disabled={isReadOnly || !hasUnsavedChanges || isLoading}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-xl bg-accent text-white hover:bg-primary-hover disabled:bg-accent/40 disabled:text-white disabled:cursor-not-allowed focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent transition-colors"
             >
               <FiSave className="w-4 h-4" />
@@ -238,7 +241,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
                   placeholder="e.g., Section 4, Page 5 or Line 120-135"
                   value={locationValue}
                   onChange={(e) => handleLocationChange(e.target.value)}
-                  disabled={isLoading}
+                  disabled={isLoading || isReadOnly}
                   className="text-sm"
                 />
                 <p className="text-xs text-text-secondary mt-1">
@@ -264,7 +267,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
                   <button
                     type="button"
                     onClick={() => handleReportStatusChange(true)}
-                    disabled={isLoading}
+                    disabled={isLoading || isReadOnly}
                     className={cn(
                       "px-3 py-1.5 text-sm font-medium rounded-xl border transition-colors",
                       response?.isReported === true
@@ -277,7 +280,7 @@ const ChecklistItem: React.FC<ChecklistItemProps> = ({
                   <button
                     type="button"
                     onClick={() => handleReportStatusChange(false)}
-                    disabled={isLoading}
+                    disabled={isLoading || isReadOnly}
                     className={cn(
                       "px-3 py-1.5 text-sm font-medium rounded-xl border transition-colors",
                       response?.isReported === false
