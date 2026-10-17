@@ -36,7 +36,12 @@ export const Modal: React.FC<ModalProps> = ({
   const descriptionId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
   const [isEntered, setIsEntered] = useState(false);
+
+  // Callbacks passed inline by modal consumers change identity on every render.
+  // Keep the latest callback without restarting the focus/scroll lifecycle.
+  onCloseRef.current = onClose;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -63,14 +68,14 @@ export const Modal: React.FC<ModalProps> = ({
       if (activeElement instanceof HTMLElement && modalRef.current?.contains(activeElement)) return;
       modalRef.current
         ?.querySelector<HTMLElement>(
-          'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])',
+          '[autofocus], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled), a[href], [tabindex]:not([tabindex="-1"])',
         )
         ?.focus({ preventScroll: true });
     });
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (closeOnEsc && event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -104,7 +109,7 @@ export const Modal: React.FC<ModalProps> = ({
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus({ preventScroll: true });
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, closeOnEsc]);
 
   // Handle outside click
   const handleBackdropClick = (e: React.MouseEvent) => {

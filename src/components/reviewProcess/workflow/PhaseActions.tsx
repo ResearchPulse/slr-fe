@@ -62,16 +62,16 @@ export default function PhaseActions({
   const showReopen = canManageActions && status === "Completed" && onReopen;
 
   return (
-    <div className="mt-auto pt-2">
-      <div className="flex flex-col gap-2 border-t border-border pt-4">
+    <div className="mt-auto w-full pt-4">
+      <div className="flex w-full flex-col items-stretch gap-2">
       {canManageActions && status === "NotStarted" && onStart && (
         <button
           onClick={onStart}
           disabled={startLoading || disabled}
-          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:bg-primary-hover hover:border-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors hover:bg-primary-hover hover:border-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FiPlay className="w-3.5 h-3.5" />
-          {startLoading ? "Starting..." : "Start Phase"}
+          {startLoading ? "Starting..." : "Start module"}
         </button>
       )}
 
@@ -81,7 +81,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary bg-primary px-3 py-2 text-sm font-semibold text-text-on-primary shadow-sm transition-colors hover:border-primary-hover hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors hover:border-primary-hover hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiExternalLink className="w-3.5 h-3.5" />
               Open Workspace
@@ -91,10 +91,10 @@ export default function PhaseActions({
             <button
               onClick={handleCompleteClick}
               disabled={completeLoading || disabled}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-success/35 bg-success/10 px-3 py-2 text-sm font-semibold text-success transition-colors hover:border-success/50 hover:bg-success/15 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-success/30 hover:bg-success/5 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiCheckCircle className="w-3.5 h-3.5" />
-              {completeLoading ? "Completing..." : "Complete Phase"}
+              {completeLoading ? "Completing..." : "Mark complete"}
             </button>
           )}
         </>
@@ -106,7 +106,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-surface-white px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-text-muted hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiEye className="w-3.5 h-3.5" />
               View Results
@@ -117,10 +117,10 @@ export default function PhaseActions({
             <button
               onClick={handleReopenClick}
               disabled={reopenLoading || disabled}
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-warning/40 bg-warning/15 px-3 py-2 text-sm font-semibold text-text-primary transition-colors hover:border-warning/60 hover:bg-warning/25 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-warning/30 hover:bg-warning/5 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiRotateCcw className="w-3.5 h-3.5" />
-              {reopenLoading ? "Reopening..." : "Reopen Phase"}
+              {reopenLoading ? "Reopening..." : "Reopen module"}
             </button>
           )}
         </>
@@ -132,8 +132,8 @@ export default function PhaseActions({
         isOpen={confirmAction === "complete"}
         onClose={() => setConfirmAction(null)}
         onConfirm={handleCompleteConfirm}
-        title="Complete Phase?"
-        message="Are you sure you want to mark this phase as complete? You can reopen it later if needed."
+        title="Mark module complete?"
+        message="Are you sure you want to mark this module as complete? You can reopen it later if needed."
         confirmText="Complete"
         cancelText="Cancel"
         isLoading={completeLoading}
@@ -144,8 +144,8 @@ export default function PhaseActions({
         isOpen={confirmAction === "reopen"}
         onClose={() => setConfirmAction(null)}
         onConfirm={handleReopenConfirm}
-        title="Reopen Phase?"
-        message="Are you sure you want to reopen this phase? This will mark it as in-progress again."
+        title="Reopen module?"
+        message="Are you sure you want to reopen this module? This will mark it as in progress again."
         confirmText="Reopen"
         cancelText="Cancel"
         isLoading={reopenLoading}

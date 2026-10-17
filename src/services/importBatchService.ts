@@ -110,12 +110,17 @@ export const importBatchService = {
 
   /**
    * Get all papers for a specific import batch
-   * GET /api/import-batches/{id}/papers
+   * GET /api/identification-processes/{processId}/import-batches/{id}/papers
    *
    * Returns all papers that were imported in this batch
    */
-  async getPapersByImportBatch(id: string): Promise<GetPapersByImportBatchResponse> {
-    const response = await api.get<GetPapersByImportBatchResponse>(`/import-batches/${id}/papers`);
+  async getPapersByImportBatch(
+    processId: string,
+    id: string,
+  ): Promise<GetPapersByImportBatchResponse> {
+    const response = await api.get<GetPapersByImportBatchResponse>(
+      `/identification-processes/${processId}/import-batches/${id}/papers`,
+    );
     return response.data;
   },
 };

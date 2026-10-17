@@ -501,6 +501,7 @@ export const useReviewProcessWorkspace = ({
 
   const handleOpenPhase = useCallback(
     async (phaseName: string) => {
+      if (!projectId || !processId || processId === "undefined" || processId === "null") return;
       if (!process || process.statusText === "NotStarted") return;
 
       if (phaseName === "identification" && process.identificationProcess?.id) {
@@ -848,11 +849,15 @@ export const useReviewProcessWorkspace = ({
     }
 
     const uncompletedPhases = workflowPhases.filter((p) => p.status !== "Completed");
-    if (uncompletedPhases.length > 0) {
-      const names = uncompletedPhases.map((p) => p.name).join(", ");
+    const incompleteNames = [
+      ...(process.identificationProcess?.statusText === "Completed" ? [] : ["Identification"]),
+      ...uncompletedPhases.map((phase) => phase.name),
+    ];
+    if (incompleteNames.length > 0) {
+      const names = incompleteNames.join(", ");
       toastWarning(
-        "Phases Incomplete",
-        `Cannot complete review process yet. Please complete all phases first: ${names}.`,
+        "Review modules incomplete",
+        `Cannot complete the review process yet. Complete the remaining modules first: ${names}.`,
       );
       return;
     }

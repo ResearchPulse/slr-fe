@@ -9,6 +9,7 @@ import {
   FiCheck,
 } from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
+import Select from "../../../../components/ui/Select";
 
 import type { SearchExecutionResponse } from "../../../../types/searchExecution";
 import { SearchExecutionType } from "../../../../types/identification";
@@ -71,17 +72,18 @@ export default function SearchesTabContent({
               className="min-h-11 w-full rounded-xl border border-border py-2 pl-10 pr-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:w-[300px]"
             />
           </div>
-          <select
+          <Select
             aria-label="Filter by search source"
             value={source}
             onChange={(event) => setSource(event.target.value)}
-            className="min-h-11 rounded-xl border border-border bg-surface-white px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <option value="">All sources</option>
-            {[...new Set(searchExecutions.map((item) => item.searchSource))]
-              .sort((a, b) => a.localeCompare(b))
-              .map((item) => <option key={item} value={item}>{item}</option>)}
-          </select>
+            options={[
+              { value: "", label: "All sources" },
+              ...[...new Set(searchExecutions.map((item) => item.searchSource))]
+                .sort((a, b) => a.localeCompare(b))
+                .map((item) => ({ value: item, label: item })),
+            ]}
+            className="w-[220px]"
+          />
         </div>
         <Button
           variant="secondary"

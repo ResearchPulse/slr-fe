@@ -182,7 +182,7 @@ export default function SynthesisPhaseWorkspace() {
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-text-secondary">
-                Synthesis Phase
+                Phase B · Conducting
               </p>
               <h1 className="text-2xl font-semibold text-text-primary">
                 Start the synthesis workspace
@@ -193,8 +193,8 @@ export default function SynthesisPhaseWorkspace() {
           <div className="mt-6 rounded-xl border border-border bg-bg-primary p-6">
             <p className="text-sm leading-6 text-text-secondary">
               {isLeader
-                ? "The synthesis phase is not started yet. Once activated, the workspace will unlock thematic analysis and research question reporting."
-                : "The synthesis phase has not been started by the project leader yet."}
+                ? "The synthesis module is not started yet. Once activated, this workspace will unlock thematic analysis and research question reporting."
+                : "The synthesis module has not been started by the project leader yet."}
             </p>
           </div>
 
@@ -204,7 +204,7 @@ export default function SynthesisPhaseWorkspace() {
                 onClick={() => setIsStrategyModalOpen(true)}
                 isLoading={workspace.isStarting}
               >
-                Start Synthesis Phase
+                Start synthesis module
               </Button>
             )}
             <Button variant="outline" onClick={handleBack}>
@@ -306,7 +306,7 @@ export default function SynthesisPhaseWorkspace() {
                 size="sm"
                 className="normal-case tracking-normal disabled:border-border disabled:bg-bg-secondary disabled:text-text-muted disabled:opacity-100"
               >
-                Complete phase
+                Mark module complete
               </Button>
             )}
           </div>

@@ -378,14 +378,14 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
       ? dataExtractionConductingService.startPhase(projectId, projectPhaseQuery.data?.version)
       : Promise.reject(new Error("Project ID required")),
     onSuccess: refreshRecords,
-    onError: (error) => toastError("Start phase failed", getErrorMessage(error, "Unable to start extraction phase.")),
+    onError: (error) => toastError("Start module failed", getErrorMessage(error, "Unable to start the extraction module.")),
   });
   const completePhaseMutation = useMutation({
     mutationFn: () => projectId
       ? dataExtractionConductingService.completePhase(projectId, projectPhaseQuery.data?.version)
       : Promise.reject(new Error("Project ID required")),
-    onSuccess: async () => { await refreshRecords(); toastSuccess("Data extraction phase completed"); },
-    onError: (error) => toastError("Complete phase failed", getErrorMessage(error, "Unable to complete extraction phase.")),
+    onSuccess: async () => { await refreshRecords(); toastSuccess("Data extraction module completed"); },
+    onError: (error) => toastError("Complete module failed", getErrorMessage(error, "Unable to complete the extraction module.")),
   });
   const assignMutation = useMutation({
     mutationFn: ({ paperId, payload }: { paperId: string; payload: ExtractionAssignmentRequestDto }) => projectId

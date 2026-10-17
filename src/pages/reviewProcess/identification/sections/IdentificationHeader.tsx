@@ -2,6 +2,7 @@
 
 import { FiDatabase, FiCheck, FiRefreshCw, FiFileText } from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
+import PhaseStatusBadge from "../../../../components/reviewProcess/workflow/PhaseStatusBadge";
 import type { PhaseStatus } from "../types";
 
 interface IdentificationHeaderProps {
@@ -58,29 +59,15 @@ export default function IdentificationHeader({
               <h1 className="review-process-header-title text-2xl font-bold text-text-primary">
                 Identification Phase
               </h1>
-              <span
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-semibold ${
+              <PhaseStatusBadge
+                status={
                   phaseStatus === "in-progress"
-                    ? "bg-primary-light text-accent"
+                    ? "InProgress"
                     : phaseStatus === "completed"
-                      ? "bg-green-100 text-green-700"
-                      : "bg-bg-secondary text-text-primary"
-                }`}
-              >
-                {phaseStatus === "in-progress" && (
-                  <>
-                    <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                    In Progress
-                  </>
-                )}
-                {phaseStatus === "completed" && (
-                  <>
-                    <FiCheck className="w-4 h-4" />
-                    Completed
-                  </>
-                )}
-                {phaseStatus === "not-started" && "Not Started"}
-              </span>
+                      ? "Completed"
+                      : "NotStarted"
+                }
+              />
             </div>
 
             <p className="text-text-secondary mb-4">
@@ -107,7 +94,7 @@ export default function IdentificationHeader({
                 onClick={onStartPhase}
               >
                 <FiFileText className="w-4 h-4" />
-                Start Phase
+                Start module
               </Button>
             )}
             {phaseStatus === "in-progress" && (
@@ -116,7 +103,7 @@ export default function IdentificationHeader({
                 onClick={onCompletePhase}
               >
                 <FiCheck className="w-4 h-4" />
-                Complete Phase
+                Complete module
               </Button>
             )}
             {phaseStatus === "completed" && (
@@ -126,7 +113,7 @@ export default function IdentificationHeader({
                 onClick={onReopenPhase}
               >
                 <FiRefreshCw className="w-4 h-4" />
-                Reopen Phase
+                Reopen module
               </Button>
             )}
           </div>

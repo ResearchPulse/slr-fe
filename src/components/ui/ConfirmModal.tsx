@@ -59,7 +59,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </div>
 
         <div className="space-y-2">
-          <p className="text-text-secondary font-medium leading-relaxed">
+          <p
+            className="text-text-secondary font-medium leading-relaxed"
+            role={isLoading ? "status" : undefined}
+            aria-live="polite"
+          >
             {message}
           </p>
         </div>

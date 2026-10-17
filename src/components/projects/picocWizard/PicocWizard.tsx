@@ -15,6 +15,7 @@ interface PicocWizardProps {
   projectId: string;
   /** Only the project OWNER edits; other members see the canvas and gate read-only. */
   canEdit: boolean;
+  onScopeCompletionChange?: (complete: boolean) => void;
 }
 
 const SAVE_TEXT: Record<SaveStatus, string> = {
@@ -35,7 +36,7 @@ async function download(projectId: string, format: "json" | "md") {
   URL.revokeObjectURL(url);
 }
 
-const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
+const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCompletionChange }) => {
   const { record, draft, loadError, saveStatus, update, saveNow, reload, runSemanticCheck } = usePicocWizard(projectId, canEdit);
   const [semanticState, setSemanticState] = useState<"idle" | "running" | "failed">("idle");
   // Mutable per-session cache shared by the component steps; never rendered directly.
@@ -45,6 +46,14 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit }) => {
   const startedTracked = useRef(false);
   const activeStep = draft?.currentStep;
   const revision = record?.revision;
+
+  useEffect(() => {
+    const requiredGates = record?.qualityGate.filter((gate) => gate.gateId === "G1" || gate.gateId === "G2") ?? [];
+    const scopeComplete = record?.currentStep === "review"
+      && requiredGates.length === 2
+      && requiredGates.every((gate) => gate.status === "passed");
+    onScopeCompletionChange?.(scopeComplete);
+  }, [record, onScopeCompletionChange]);
 
   useEffect(() => {
     if (canEdit && revision === 0 && !startedTracked.current) {

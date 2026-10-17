@@ -318,6 +318,9 @@ export const paperImportService = {
     if (request.searchSourceId) {
       formData.append("searchSourceId", request.searchSourceId);
     }
+    if (request.searchExecutionId) {
+      formData.append("searchExecutionId", request.searchExecutionId);
+    }
 
     // Upload with progress tracking
     const response = await api.post<RisImportResponse>("/papers/import/ris", formData, {
@@ -366,6 +369,9 @@ export const paperImportService = {
     if (request.searchSourceId) {
       formData.append("searchSourceId", request.searchSourceId);
     }
+    if (request.searchExecutionId) {
+      formData.append("searchExecutionId", request.searchExecutionId);
+    }
 
     // Upload with progress tracking
     const response = await api.post<RisImportResponse>("/papers/import/bibtex", formData, {
@@ -396,6 +402,7 @@ export const paperImportService = {
     projectId: string,
     searchSourceId?: string,
     onProgress?: ProgressCallback,
+    searchExecutionId?: string,
   ): Promise<RisImportResponse> {
     const fileName = file.name.toLowerCase();
     if (fileName.endsWith(".bib")) {
@@ -404,6 +411,7 @@ export const paperImportService = {
           file,
           projectId,
           searchSourceId,
+          searchExecutionId,
         },
         onProgress,
       );
@@ -414,6 +422,7 @@ export const paperImportService = {
         file,
         projectId,
         searchSourceId,
+        searchExecutionId,
       },
       onProgress,
     );

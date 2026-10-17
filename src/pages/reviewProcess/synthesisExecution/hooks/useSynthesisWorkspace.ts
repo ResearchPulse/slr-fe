@@ -113,7 +113,7 @@ export function useSynthesisWorkspace(): UseSynthesisWorkspaceReturn {
     mutationFn: (id: string) => synthesisExecutionService.complete(id),
     onSuccess: () => {
       invalidateWorkspace();
-      toastSuccess("Synthesis completed", "The synthesis phase has been finalized.");
+      toastSuccess("Synthesis completed", "The synthesis module has been finalized.");
     },
     onError: (error) => {
       toastError("Complete Failed", getErrorMessage(error, "Failed to complete synthesis"));

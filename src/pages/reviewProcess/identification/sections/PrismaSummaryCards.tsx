@@ -22,72 +22,72 @@ export default function PrismaSummaryCards({
   onTabChange,
 }: PrismaSummaryCardsProps) {
   return (
-    <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-3 md:gap-6">
+    <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
       {/* Records Imported */}
       <button
         onClick={() => onTabChange("imports")}
-        className="rounded-xl border border-border bg-surface-white p-5 text-left transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="group min-h-28 rounded-xl border border-border bg-surface-white p-4 text-left transition-colors hover:border-primary/50 hover:bg-primary-light/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
-          <FiDatabase className="w-6 h-6 text-accent" />
+          <FiDatabase className="h-5 w-5 text-accent" />
           {statsLoading && (
             <LoadingSpinner size="sm" />
           )}
         </div>
-        <div className="text-3xl font-bold text-text-primary mb-1">
+        <div className="mb-0.5 text-2xl font-bold leading-tight text-text-primary">
           {statsLoading ? (
             <span className="text-text-secondary">--</span>
           ) : (
             prismaStats.totalRecordsImported.toLocaleString()
           )}
         </div>
-        <div className="text-sm text-text-primary font-medium">
+        <div className="text-sm font-semibold text-text-primary">
           Records Imported
         </div>
-        <div className="text-xs text-text-secondary mt-1">From all batches</div>
+          <div className="mt-1 text-xs text-text-secondary">From all batches</div>
       </button>
 
       {/* Pending Selections */}
       <button
         onClick={() => onTabChange("library")}
-        className="rounded-xl border border-border bg-surface-white p-5 text-left transition-colors hover:border-warning/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="group min-h-28 rounded-xl border border-border bg-surface-white p-4 text-left transition-colors hover:border-warning/50 hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
-          <FiSearch className="h-6 w-6 text-warning" />
+          <FiSearch className="h-5 w-5 text-warning" />
           {prismaStats.pendingSelectionCount > 0 && (
             <div className="h-2 w-2 rounded-full bg-warning" />
           )}
         </div>
-        <div className="text-3xl font-bold text-text-primary mb-1">
+        <div className="mb-0.5 text-2xl font-bold leading-tight text-text-primary">
           {prismaStats.pendingSelectionCount}
         </div>
-        <div className="text-sm text-text-primary font-medium">
+        <div className="text-sm font-semibold text-text-primary">
           Pending Selections
         </div>
-        <div className="text-xs text-text-secondary mt-1">Ready for select</div>
+          <div className="mt-1 text-xs text-text-secondary">Awaiting screening decisions</div>
       </button>
 
       {/* After Deduplication - Key Success Metric */}
       <button
         onClick={() => onTabChange("dataset")}
-        className="rounded-xl border border-success/30 bg-success/5 p-5 text-left transition-colors hover:border-success/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+        className="group min-h-28 rounded-xl border border-success/25 bg-surface-white p-4 text-left transition-colors hover:border-success/50 hover:bg-success/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
       >
         <div className="flex items-center justify-between mb-3">
-          <FiFilter className="h-6 w-6 text-success" />
-          <FiCheck className="h-5 w-5 text-success" />
+          <FiFilter className="h-5 w-5 text-success" />
+          <FiCheck className="h-4 w-4 text-success" />
         </div>
-        <div className="text-3xl font-bold text-text-primary mb-1">
+        <div className="mb-0.5 text-2xl font-bold leading-tight text-text-primary">
           {statsLoading ? (
             <span className="text-text-secondary">--</span>
           ) : (
             prismaStats.uniqueRecords.toLocaleString()
           )}
         </div>
-        <div className="text-sm font-semibold text-success">
+        <div className="text-sm font-semibold text-text-primary">
           After Deduplication
         </div>
         <div className="mt-1 text-xs text-text-secondary">
-          Records using for screening phase
+          Records available for screening
         </div>
       </button>
     </div>

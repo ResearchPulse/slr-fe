@@ -1,4 +1,5 @@
 import { FiSearch } from "react-icons/fi";
+import Select from "../../../../components/ui/Select";
 
 type FilterTone = "blue" | "emerald";
 
@@ -77,35 +78,37 @@ export default function IdentificationFilterBar({
       </button>
 
       <input
-        type="number"
+        type="text"
+        inputMode="numeric"
+        pattern="[0-9]*"
+        maxLength={4}
+        aria-label="Filter by year"
         placeholder="Year"
         value={yearInput}
         onChange={(e) => {
-          onYearInputChange(e.target.value);
-          const parsedValue = e.target.value
-            ? parseInt(e.target.value, 10)
-            : undefined;
-          if (
-            !e.target.value ||
-            (parsedValue && parsedValue >= 1900 && parsedValue < 2100)
-          ) {
-            onYearFilter(parsedValue);
-          }
+          const digits = e.target.value.replace(/\D/g, "").slice(0, 4);
+          onYearInputChange(digits);
+          const parsedYear = digits.length === 4 ? Number(digits) : undefined;
+          onYearFilter(
+            parsedYear !== undefined && parsedYear >= 1900 && parsedYear < 2100
+              ? parsedYear
+              : undefined,
+          );
         }}
         className={`w-24 px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
       />
 
-      <select
+      <Select
+        aria-label="Filter by source"
         value={searchSourceInput}
         onChange={(e) => {
           const nextValue = e.target.value;
           onSearchSourceInputChange(nextValue);
           onSearchSourceFilter(nextValue || undefined);
         }}
-        className={`min-w-[190px] max-w-[280px] px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
-      >
-        <option value="">All sources</option>
-      </select>
+        options={[{ value: "", label: "All sources" }]}
+        className="min-w-[190px] max-w-[280px]"
+      />
 
       {hasFilters && (
         <button

@@ -53,7 +53,7 @@ export default function TabNavigation({
   };
 
   return (
-    <div className="max-w-full overflow-x-auto border-b border-border bg-bg-primary">
+    <div className="max-w-full overflow-x-auto border-b border-border bg-bg-secondary/60">
       <nav
         className="flex min-w-max"
         role="tablist"
@@ -81,13 +81,16 @@ export default function TabNavigation({
               tabIndex={isSelected ? 0 : -1}
               onKeyDown={(event) => handleTabKeyDown(event, id)}
               onClick={() => onTabChange(id)}
-              className={`flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors sm:px-6 sm:py-4 ${
+              className={`flex min-h-12 shrink-0 items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-sm font-medium transition-colors sm:px-5 ${
                 isSelected
-                  ? "border-accent bg-surface-white text-accent"
-                  : "border-transparent text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                  ? "border-accent bg-surface-white text-text-primary"
+                  : "border-transparent text-text-secondary hover:bg-surface-white/70 hover:text-text-primary"
               }`}
             >
-              <Icon className="h-4 w-4" aria-hidden="true" />
+              <Icon
+                className={`h-4 w-4 ${isSelected ? "text-accent" : "text-text-secondary"}`}
+                aria-hidden="true"
+              />
               {label}
               {count !== null && (
                 <span

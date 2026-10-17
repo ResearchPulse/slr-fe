@@ -7,6 +7,7 @@ export interface WorkflowStep {
   key: string;
   label: string;
   status: StepStatus;
+  lockedReason?: string;
 }
 
 interface StepProgressNavProps {
@@ -23,15 +24,16 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
   onAction,
 }) => {
   const completedCount = steps.filter((step) => step.status === "completed").length;
+  const currentIndex = steps.findIndex((step) => step.status === "current");
   const progressPercent = steps.length
-    ? Math.round((completedCount / steps.length) * 100)
+    ? Math.round(((completedCount + (currentIndex >= 0 ? 0.45 : 0)) / steps.length) * 100)
     : 0;
 
   return (
     <section className="mb-7 border-b border-border pb-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-text-primary">
-          Project preparation
+          Phase A · Planning the Review
         </h2>
         <div className="flex items-center gap-4">
           <span className="text-sm text-text-secondary">
@@ -50,7 +52,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
       </div>
 
       <nav
-        aria-label="Project preparation steps"
+        aria-label="Phase A planning setup steps"
         className="grid grid-cols-1 gap-2 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
       >
         {steps.map((step, index) => {
@@ -67,7 +69,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
               disabled={isLocked}
               aria-current={isCurrent ? "step" : undefined}
               className="flex min-w-0 items-center gap-3 py-2 text-left disabled:cursor-not-allowed"
-              title={isLocked ? "Complete the previous step to continue" : step.label}
+              title={isLocked ? step.lockedReason ?? "Complete the previous step first" : step.label}
             >
               <span
                 className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border text-xs ${
@@ -89,7 +91,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
                   {step.label}
                 </span>
                 <span className="mt-0.5 block text-xs text-text-secondary">
-                  {isCompleted ? "Completed" : isCurrent ? "In progress" : "Not started"}
+                  {isCompleted ? "Completed" : isCurrent ? "In progress" : isLocked ? step.lockedReason ?? "Complete the previous step first" : "Not started"}
                 </span>
               </span>
             </button>
@@ -98,17 +100,20 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
       </nav>
 
       <div
-        className="mt-4 h-1 overflow-hidden rounded-full bg-bg-secondary"
+        className="mt-4 grid h-1 grid-cols-4 gap-1"
         role="progressbar"
         aria-label="Project preparation progress"
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={progressPercent}
       >
-        <div
-          className="h-full rounded-full bg-accent transition-[width] duration-300"
-          style={{ width: `${progressPercent}%` }}
-        />
+        {steps.map((step) => (
+          <span key={step.key} className="h-full overflow-hidden rounded-full bg-bg-secondary">
+            <span
+              className={`block h-full rounded-full bg-accent transition-[width] duration-300 ${step.status === "completed" ? "w-full" : step.status === "current" ? "w-[45%]" : "w-0"}`}
+            />
+          </span>
+        ))}
       </div>
     </section>
   );

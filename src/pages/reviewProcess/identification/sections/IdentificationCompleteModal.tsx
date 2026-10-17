@@ -19,11 +19,12 @@ interface IdentificationCompleteModalProps {
   onConfirm: () => void;
   isCompleting: boolean;
   identificationPhaseId: string | undefined;
+  canComplete: boolean;
 }
 
 const IdentificationCompleteModal: React.FC<
   IdentificationCompleteModalProps
-> = ({ isOpen, onClose, onConfirm, isCompleting, identificationPhaseId }) => {
+> = ({ isOpen, onClose, onConfirm, isCompleting, identificationPhaseId, canComplete }) => {
   const ds = useSnapshotDataset({
     identificationProcessId: identificationPhaseId,
     pageSize: 5, // Smaller page size for modal
@@ -67,6 +68,12 @@ const IdentificationCompleteModal: React.FC<
             </p>
           </div>
         </div>
+
+        {!canComplete && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+            Add a search strategy or import at least one paper before completing this phase.
+          </div>
+        )}
 
         {/* Papers Summary Header */}
         <div className="bg-bg-secondary border border-border rounded-xl p-6 space-y-4">
@@ -173,9 +180,10 @@ const IdentificationCompleteModal: React.FC<
             onClick={onConfirm}
             isLoading={isCompleting}
             variant="primary"
+            disabled={!canComplete || isCompleting}
             className="min-w-[160px] bg-accent hover:bg-primary-hover shadow-lg shadow-primary/10 transition-transform active:scale-95"
           >
-            Complete Phase
+            Complete module
           </Button>
         </div>
       </div>

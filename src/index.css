@@ -268,6 +268,7 @@
   --animate-blink: blink 1.5s ease-in-out infinite;
   --animate-spin-slow: spin 3s linear infinite;
   --animate-shimmer: shimmer 2s infinite;
+  --animate-ris-progress-indeterminate: ris-progress-indeterminate 1.4s cubic-bezier(0.25, 1, 0.5, 1) infinite;
 
   @keyframes shimmer {
     from {
@@ -276,6 +277,16 @@
 
     to {
       transform: translateX(100%);
+    }
+  }
+
+  @keyframes ris-progress-indeterminate {
+    from {
+      transform: translateX(-100%);
+    }
+
+    to {
+      transform: translateX(300%);
     }
   }
 

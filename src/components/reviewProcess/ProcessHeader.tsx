@@ -104,13 +104,13 @@ export default function ProcessHeader({
             {process.statusText === "InProgress" && canManageActions && (
               <Button
                 onClick={onCompleteProcess}
-                disabled={completeLoading || disabled}
+                disabled={completeLoading || disabled || !isReadyToComplete}
                 variant="success"
                 title={
                   disabled
                     ? "Select a protocol first"
                     : isReadyToComplete === false
-                      ? "Complete all 4 workflow phases first"
+                      ? "Complete the required review modules first"
                       : "Complete review process"
                 }
               >

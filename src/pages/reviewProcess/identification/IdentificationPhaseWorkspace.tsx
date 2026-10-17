@@ -186,6 +186,9 @@ export default function IdentificationPhaseWorkspace() {
         onConfirm={ws.handleConfirmComplete}
         isCompleting={ws.isCompleting}
         identificationPhaseId={ws.identificationPhaseId}
+        canComplete={
+          ws.searchExecutions.length > 0 || ws.prismaStats.totalRecordsImported > 0
+        }
       />
 
       <ManualDeduplicationModal
@@ -206,11 +209,16 @@ export default function IdentificationPhaseWorkspace() {
             : "Delete search strategy"
         }
         message={
-          ws.pendingDelete?.kind === "importBatch"
-            ? "Are you sure you want to delete this import batch? This may remove all associated papers."
-            : "Are you sure you want to delete this search strategy?"
+          ws.isDeletingStrategy
+            ? "Deleting the strategy, its import batches, and their imported papers. Please wait..."
+            : ws.isDeletingImportBatch
+              ? "Deleting the import batch and its associated papers. Please wait..."
+              : ws.pendingDelete?.kind === "importBatch"
+                ? "Are you sure you want to delete this import batch? This may remove all associated papers."
+                : "Are you sure you want to delete this search strategy, its import batches, and the papers imported in those batches? This action cannot be undone."
         }
-        confirmText="Delete"
+        confirmText={ws.isDeletingStrategy || ws.isDeletingImportBatch ? "Deleting..." : "Delete"}
+        isLoading={ws.isDeletingStrategy || ws.isDeletingImportBatch}
         variant="danger"
       />
 

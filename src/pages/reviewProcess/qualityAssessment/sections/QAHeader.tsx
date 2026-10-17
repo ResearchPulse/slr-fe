@@ -54,7 +54,7 @@ export function QAHeader({
               Quality Assessment
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
-              <span className="text-xs text-text-secondary">Phase 3</span>
+              <span className="text-xs text-text-secondary">Phase B · Conducting</span>
               <span className="h-1 w-1 rounded-full bg-slate-400" />
               <span className="text-xs text-text-secondary">
                 Methodological quality and bias risk
