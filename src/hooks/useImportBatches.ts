@@ -174,8 +174,8 @@ export const useImportBatchMutations = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ id }: { id: string; processId?: string; searchExecutionId?: string }) =>
-      importBatchService.deleteImportBatch(id),
+    mutationFn: ({ id, processId }: { id: string; processId: string; searchExecutionId?: string }) =>
+      importBatchService.deleteImportBatch(processId, id),
     onSuccess: (_, variables) => {
       toastSuccess("Import batch deleted successfully");
       invalidate(variables.processId, variables.searchExecutionId);

@@ -1,6 +1,10 @@
 import type { ScreeningPaper } from "../../../../pages/reviewProcess/studySelection/titleAbstractScreening/types";
 import type { UploadPdfOptions } from "../../../../pages/reviewProcess/studySelection/uploadTypes";
-import type { PaperPhase, PaperWithDecisionsResponse } from "../../../../types/studySelection";
+import type {
+  PaperNodeDto,
+  PaperPhase,
+  PaperWithDecisionsResponse,
+} from "../../../../types/studySelection";
 import type { SystemMetadataExtras } from "./components/SystemMetadataCollapse";
 
 export interface PaperViewerProps {
@@ -28,6 +32,10 @@ export interface PaperViewerProps {
    * System Metadata section expands to the full system record.
    */
   infoSummary?: SystemMetadataExtras | null;
+  /** Optional reference list for contexts that store extracted references outside the repository graph. */
+  referencesOverride?: PaperNodeDto[];
+  referencesLoadingOverride?: boolean;
+  referencesCountOverride?: number;
   isLeaderView?: boolean;
   phase?: PaperPhase;
   isDisabled?: boolean;

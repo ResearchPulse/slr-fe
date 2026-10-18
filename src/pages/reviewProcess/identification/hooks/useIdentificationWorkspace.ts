@@ -127,6 +127,7 @@ export const useIdentificationWorkspace = () => {
   const {
     statistics,
     isLoading: statsLoading,
+    error: statsError,
     refetch: refetchStatistics,
   } = usePrismaStatistics(identificationPhaseId);
 
@@ -601,6 +602,7 @@ export const useIdentificationWorkspace = () => {
     listError,
     prismaStats,
     statsLoading: statsLoading || identificationProcessLoading,
+    statsError,
     identificationProcess,
 
     // Import batches data

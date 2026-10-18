@@ -1,5 +1,5 @@
 import React from "react";
-import { FiGitBranch } from "react-icons/fi";
+import { FiGitBranch, FiShare2 } from "react-icons/fi";
 import LoadingSpinner from "../../../../ui/LoadingSpinner";
 
 interface GraphSectionProps {
@@ -19,47 +19,69 @@ export const GraphSection: React.FC<GraphSectionProps> = ({
   setOpenGraph,
 }) => {
   return (
-    <div className="space-y-4">
-      <div className="aspect-video bg-slate-900 rounded-xl flex flex-col items-center justify-center relative overflow-hidden group border border-slate-800 shadow-2xl">
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff08_1px,transparent_1px)] [background-size:32px_32px]" />
-
+    <div className="rounded-xl border border-border bg-bg-secondary p-4 sm:p-6">
+      <div className="flex min-h-[280px] flex-col items-center justify-center rounded-lg border border-border bg-white px-5 py-8 text-center sm:min-h-[320px]">
         {isDiscoveryLoading ? (
-          <div className="flex flex-col items-center gap-4 animate-pulse">
-            <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center">
+          <div
+            className="flex flex-col items-center gap-3 text-text-secondary"
+            role="status"
+          >
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent">
               <LoadingSpinner size="md" />
             </div>
-            <div className="text-white/40 text-[10px] font-black uppercase tracking-[0.3em]">
-              Building Neural Network...
-            </div>
+            <p className="text-sm font-medium">Loading citation network…</p>
           </div>
         ) : citationGraph ? (
-          <div className="z-10 text-center px-8 space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-black uppercase tracking-[0.25em] mb-2 backdrop-blur-sm">
-              <FiGitBranch className="w-3.5 h-3.5" /> Intelligence Visualizer
-              Active
+          <div className="flex max-w-lg flex-col items-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-accent">
+              <FiShare2 className="h-5 w-5" aria-hidden="true" />
             </div>
-            <div>
-              <h3 className="text-white text-3xl font-black mb-2 tracking-tight">
-                {citationGraph.nodes.length} Nodes &{" "}
-                {citationGraph.edges.length} Edges
-              </h3>
-              <p className="text-white/50 text-xs max-w-sm mx-auto leading-relaxed font-medium">
-                Analysis complete. Explore the full citation universe at depth{" "}
-                {graphDepth}. Interact with nodes to see specific paper
-                relationships.
-              </p>
+            <h2 className="text-lg font-semibold tracking-tight text-text-primary">
+              Citation network
+            </h2>
+            <p className="mt-1.5 text-sm leading-6 text-text-secondary">
+              Explore papers connected to this study and inspect their citation
+              relationships.
+            </p>
+
+            <div
+              className="mt-5 flex flex-wrap items-center justify-center gap-2"
+              aria-label="Citation network size"
+            >
+              <span className="rounded-lg border border-border bg-bg-secondary px-3 py-1.5 text-sm text-text-secondary">
+                <strong className="font-semibold text-text-primary">
+                  {citationGraph.nodes.length}
+                </strong>{" "}
+                papers
+              </span>
+              <span className="rounded-lg border border-border bg-bg-secondary px-3 py-1.5 text-sm text-text-secondary">
+                <strong className="font-semibold text-text-primary">
+                  {citationGraph.edges.length}
+                </strong>{" "}
+                connections
+              </span>
+              <span className="rounded-lg border border-border bg-bg-secondary px-3 py-1.5 text-sm text-text-secondary">
+                Depth {graphDepth}
+              </span>
             </div>
 
             <button
               onClick={() => setOpenGraph(true)}
-              className="px-8 py-3.5 bg-primary hover:bg-primary-hover text-white text-[11px] font-black uppercase tracking-[0.2em] rounded-xl transition-all shadow-none active:scale-95"
+              className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
             >
-              Launch Visualizer
+              <FiGitBranch className="h-4 w-4" aria-hidden="true" />
+              Open interactive graph
             </button>
           </div>
         ) : (
-          <div className="text-white/20 text-[10px] font-black uppercase tracking-widest">
-            Network unavailable
+          <div className="flex flex-col items-center text-text-secondary">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary">
+              <FiShare2 className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <p className="text-sm font-medium text-text-primary">
+              Citation network unavailable
+            </p>
+            <p className="mt-1 text-sm">There is no network data to display yet.</p>
           </div>
         )}
       </div>

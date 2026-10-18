@@ -8,7 +8,7 @@ import {
   usePapersWithCandidates,
 } from "../../../hooks/useSnowballCandidates";
 import type { PaperWithCandidateDto } from "../../../types/paper";
-import { FileText, Loader2 } from "lucide-react";
+import { ArrowLeft, FileText, Loader2 } from "lucide-react";
 import { FiAlertCircle } from "react-icons/fi";
 import { toastSuccess, toastError } from "../../../utils/toast";
 import { useProjectMember } from "../../../hooks/useProjectMember";
@@ -93,23 +93,33 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
   return (
     <div className="flex flex-col h-full overflow-hidden bg-surface-white rounded-xl shadow-none border border-border relative">
       {/* Dynamic Header based on view */}
-      <div className="bg-surface-white border-b border-slate-50 p-8 shadow-none relative z-20">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 max-w-7xl mx-auto w-full">
-          <div>
-            <div className="flex items-center gap-3 mb-1">
-              <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center border border-accent shadow-none">
-                <FileText className="w-5 h-5 text-white" />
-              </div>
-              <h2 className="text-xl font-black text-text-primary tracking-tight">
-                Snowballing Candidates
-              </h2>
+      <div className="relative z-20 border-b border-border bg-surface-white px-4 py-3 sm:px-6">
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light text-accent">
+              <FileText className="h-4.5 w-4.5" />
             </div>
-            <p className="text-xs text-text-secondary font-bold uppercase tracking-[0.2em] pl-14">
-              {view === "list"
-                ? "Select a source paper to review references"
-                : "Focused Paper Workspace"}
-            </p>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-text-primary sm:text-xl">
+                Snowballing candidates
+              </h2>
+              <p className="mt-0.5 text-sm text-text-secondary">
+                {view === "list"
+                  ? "Choose a source paper to review its references."
+                  : "Review references extracted from this source paper."}
+              </p>
+            </div>
           </div>
+          {view === "workspace" && (
+            <button
+              type="button"
+              onClick={handleBack}
+              className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            >
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              <span className="hidden sm:inline">Back to papers</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -124,7 +134,6 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
           <SnowballingPaperWorkspace
             projectId={projectId}
             paper={activePaper}
-            onBack={handleBack}
             onSelectCandidate={setSelectedCandidate}
             selectedCandidateId={selectedCandidate?.candidateId}
             selectedCandidate={selectedCandidate}

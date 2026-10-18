@@ -9,6 +9,8 @@ import { usePaperDetails } from "../../../hooks/usePaperDetails";
 import type { PaperDetailsResponse } from "../../../types/paper";
 import { Sparkles } from "lucide-react";
 import LoadingSpinner from "../../ui/LoadingSpinner";
+import { usePaperSpecificCandidates } from "../../../hooks/useSnowballCandidates";
+import type { PaperNodeDto } from "../../../types/studySelection";
 
 interface PaperViewerModalProps {
   paper: PaperPoolItem | null;
@@ -147,6 +149,26 @@ export default function PaperViewerModal({
   const { data: detailedPaper, isLoading } = usePaperDetails(
     isOpen ? paper?.id : undefined,
   );
+  const {
+    data: candidateResponse,
+    isLoading: isLoadingCandidates,
+  } = usePaperSpecificCandidates(isOpen ? paper?.id ?? "" : "", {
+    pageNumber: 1,
+    pageSize: 100,
+  });
+
+  const snowballingReferences: PaperNodeDto[] = (
+    candidateResponse?.items ?? []
+  ).map((candidate) => ({
+      id: candidate.candidateId,
+      title: candidate.title || candidate.rawReference || "Untitled reference",
+      year: candidate.publicationYear
+        ? Number.parseInt(candidate.publicationYear, 10) || null
+        : null,
+      authors: candidate.authors || null,
+      doi: candidate.doi || null,
+      citationCount: 0,
+    }));
 
   // Use detailed data if available, otherwise fall back to the list item data
   const adaptedPaper = detailedPaper
@@ -192,11 +214,12 @@ export default function PaperViewerModal({
         title="Paper Details"
         description={paper?.title || "Viewing detailed information"}
         size="xl"
+        bodyClassName="!p-0 !overflow-hidden flex min-h-0"
       >
-        <div className="relative -mx-8 -mb-8 -mt-2 w-[calc(100%+4rem)] overflow-hidden rounded-b-[2rem]">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-secondary">
           {/* Suggestion Alert Bar */}
           {suggestion && (
-            <div className="flex items-center justify-between border-b border-accent/20 bg-bg-secondary px-6 py-3">
+            <div className="flex shrink-0 items-center justify-between border-b border-accent/20 bg-bg-secondary px-6 py-3">
               <div className="flex items-center gap-2">
                 <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary-light text-accent shadow-sm">
                   <Sparkles className="h-4 w-4" />
@@ -214,7 +237,7 @@ export default function PaperViewerModal({
             </div>
           )}
 
-          <div className="h-[80vh] overflow-hidden bg-bg-secondary">
+          <div className="relative min-h-0 flex-1 overflow-hidden bg-bg-secondary">
             {isLoading && (
               <div className="absolute inset-0 z-50 flex items-center justify-center bg-surface-white/60 backdrop-blur-md">
                 <div className="flex flex-col items-center gap-4">
@@ -233,6 +256,11 @@ export default function PaperViewerModal({
               isLeaderView={true}
               hideActions={true}
               infoSummary={infoSummary}
+              referencesOverride={snowballingReferences}
+              referencesLoadingOverride={isLoadingCandidates}
+              referencesCountOverride={
+                candidateResponse?.totalCount ?? snowballingReferences.length
+              }
             />
           </div>
         </div>

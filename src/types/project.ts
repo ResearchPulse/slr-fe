@@ -28,6 +28,8 @@ export interface Project {
   endDate?: string;
   createdAt: string;
   modifiedAt: string;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
   totalProcesses?: number;
   completedProcesses?: number;
   role?: number;

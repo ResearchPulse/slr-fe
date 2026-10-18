@@ -25,6 +25,7 @@ export interface PaperPoolFilters {
   keyword: string;
   yearFrom: number | null;
   yearTo: number | null;
+  paperSource: string;
   searchSourceId: string;
   importBatchId: string;
   doiState: "all" | "has" | "missing";
@@ -41,6 +42,7 @@ export interface PaperPoolFilterOption {
 export interface PaperPoolFilterMetadata {
   searchSources: PaperPoolFilterOption[];
   importBatches: PaperPoolFilterOption[];
+  paperSources: string[];
 }
 
 export interface PaperPoolFilterSetting {
@@ -73,6 +75,7 @@ export interface PaperPoolQueryParams {
   keyword?: string;
   yearFrom?: number;
   yearTo?: number;
+  paperSource?: string;
   searchSourceId?: string;
   importBatchId?: string;
   doiState?: PaperPoolFilters["doiState"];
@@ -110,6 +113,7 @@ export interface FilterSettingRequest {
     keyword?: string;
     yearFrom?: number;
     yearTo?: number;
+    paperSource: string;
     searchSourceId: string;
     importBatchId: string;
     doiState: PaperPoolFilters["doiState"];

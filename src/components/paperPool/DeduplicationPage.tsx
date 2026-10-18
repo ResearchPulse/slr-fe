@@ -1,4 +1,4 @@
-import { FiShield, FiAlertTriangle } from "react-icons/fi";
+import { AlertTriangle, RefreshCw, ScanSearch, ShieldCheck } from "lucide-react";
 import Button from "../ui/Button";
 import DeduplicationTabContent from "./deduplication/DeduplicationTabContent";
 import type { DuplicateResolution } from "../../types/deduplication";
@@ -41,31 +41,30 @@ export default function DeduplicationPage({
     }
   };
   return (
-    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-      {/* Page Header */}
-      <div className="flex items-center justify-between bg-surface-white p-6 rounded-xl border border-border shadow-none">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-bg-secondary rounded-xl flex items-center justify-center text-accent">
-              <FiShield className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-text-primary uppercase tracking-tight">
-                Project Deduplication
-              </h2>
-              <p className="text-xs font-black text-text-secondary uppercase tracking-widest mt-0.5">
-                Maintain Data Integrity
-              </p>
-            </div>
+    <div className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-accent">
+            <ShieldCheck className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base font-semibold text-text-primary sm:text-lg">
+              Deduplication
+            </h2>
+            <p className="mt-0.5 text-sm text-text-secondary">
+              Find matching records and review duplicate pairs.
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 items-center gap-2 rounded-xl border border-red-200 bg-red-50/30 px-4">
-            <FiAlertTriangle className="h-4 w-4 text-red-500" />
-            <span className="text-xs font-bold uppercase tracking-wide text-red-700">
-              {pendingDuplicates.length} Pending Conflicts
-            </span>
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+          <div
+            role="status"
+            aria-label={`${pendingDuplicates.length} pending duplicate pairs`}
+            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-warning/25 bg-warning/5 px-3 text-sm font-medium text-warning"
+          >
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+            <span>{pendingDuplicates.length} pending</span>
           </div>
           {isLeader && (
             <Button
@@ -73,24 +72,29 @@ export default function DeduplicationPage({
               onClick={runDeduplication}
               disabled={isLoading || isRunningDeduplication}
               isLoading={isRunningDeduplication}
-              className="rounded-xl font-bold uppercase tracking-wider text-xs"
+              className="normal-case tracking-normal"
             >
-              Run Deduplication
+              <ScanSearch className="h-4 w-4" aria-hidden="true" />
+              Run duplicate check
             </Button>
           )}
           <Button
-            variant="outline"
+            variant="secondary"
+            size="md"
             onClick={onRefetch}
             disabled={isLoading || isRunningDeduplication}
-            className="rounded-xl font-bold uppercase tracking-wider text-xs"
+            aria-label="Refresh duplicate queue"
+            className="normal-case tracking-normal"
           >
-            Refresh Queue
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+            <span className="sm:hidden">Refresh</span>
+            <span className="hidden sm:inline">Refresh queue</span>
           </Button>
         </div>
-      </div>
+      </section>
 
       {/* Main Content */}
-      <div className="bg-surface-white rounded-xl border border-border shadow-none overflow-hidden min-h-[600px]">
+      <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
         <DeduplicationTabContent
           duplicatePairs={duplicatePairs}
           pendingDuplicates={pendingDuplicates}

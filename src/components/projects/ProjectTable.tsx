@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FiArrowDown, FiArrowUp, FiCheckSquare, FiEye } from "react-icons/fi";
+import { FiArrowDown, FiArrowUp, FiCheckSquare, FiEye, FiRotateCcw, FiTrash2 } from "react-icons/fi";
 import type { Project } from "../../types/project";
 import { getProjectRoleLabel } from "../../types/project";
 import { cn } from "../../utils/cn";
@@ -17,6 +17,10 @@ interface ProjectTableProps {
   projects: Project[];
   onView: (id: string) => void;
   onChecklistClick?: (projectId: string) => void;
+  onDelete?: (project: Project) => void;
+  onRestore?: (project: Project) => void;
+  isDeletedView?: boolean;
+  busyProjectId?: string | null;
 }
 
 type SortField = "title" | "domain" | "status" | "createdAt" | "modifiedAt";
@@ -35,6 +39,10 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
   projects,
   onView,
   onChecklistClick,
+  onDelete,
+  onRestore,
+  isDeletedView = false,
+  busyProjectId = null,
 }) => {
   const [sortField, setSortField] = useState<SortField>("title");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
@@ -94,8 +102,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             {sortedProjects.map((project) => (
               <TableRow
                 key={project.id}
-                onClick={() => onView(project.id)}
-                className="group cursor-pointer bg-surface-white transition-colors hover:bg-bg-primary/60"
+                onClick={() => { if (!isDeletedView) onView(project.id); }}
+                className={`group bg-surface-white transition-colors hover:bg-bg-primary/60 ${isDeletedView ? "cursor-default" : "cursor-pointer"}`}
               >
                 <TableCell className="px-5 py-4">
                   <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
@@ -121,12 +129,29 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                   </span>
                 </TableCell>
                 <TableCell className="px-4 py-4 text-xs leading-5 text-text-secondary">
-                  <div>Created {formatDate(project.createdAt)}</div>
-                  <div>Updated {formatDate(project.modifiedAt)}</div>
+                  {isDeletedView ? (
+                    <div>Deleted {formatDate(project.deletedAt || "")}</div>
+                  ) : (
+                    <>
+                      <div>Created {formatDate(project.createdAt)}</div>
+                      <div>Updated {formatDate(project.modifiedAt)}</div>
+                    </>
+                  )}
                 </TableCell>
                 <TableCell className="px-4 py-4">
                   <div className="flex items-center justify-end gap-1.5">
-                    {onChecklistClick && (
+                    {isDeletedView && onRestore ? (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        disabled={busyProjectId === project.id}
+                        onClick={(event) => { event.stopPropagation(); onRestore(project); }}
+                        className="gap-1.5 normal-case tracking-normal"
+                      >
+                        <FiRotateCcw size={14} /> Restore
+                      </Button>
+                    ) : !isDeletedView && onChecklistClick ? (
                       <button
                         type="button"
                         onClick={(event) => handleChecklist(event, project.id)}
@@ -136,14 +161,30 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       >
                         <FiCheckSquare size={16} />
                       </button>
+                    ) : null}
+                    {!isDeletedView && (
+                      <>
+                        {onDelete && getProjectRoleLabel(project.role ?? project.roleText) === "Project Leader" && (
+                          <button
+                            type="button"
+                            disabled={busyProjectId === project.id}
+                            onClick={(event) => { event.stopPropagation(); onDelete(project); }}
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50"
+                            title="Move project to deleted projects"
+                            aria-label={`Delete project ${project.title}`}
+                          >
+                            <FiTrash2 size={15} />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={(event) => { event.stopPropagation(); onView(project.id); }}
+                          className="inline-flex h-8 items-center gap-1 rounded-xl px-2 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
+                        >
+                          <FiEye size={15} /> View
+                        </button>
+                      </>
                     )}
-                    <button
-                      type="button"
-                      onClick={(event) => { event.stopPropagation(); onView(project.id); }}
-                      className="inline-flex h-8 items-center gap-1 rounded-xl px-2 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
-                    >
-                      <FiEye size={15} /> View
-                    </button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -162,7 +203,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
       <div className="divide-y divide-border lg:hidden">
         {sortedProjects.map((project) => (
           <article key={project.id} className="space-y-4 bg-surface-white p-4 sm:p-5">
-            <button type="button" onClick={() => onView(project.id)} className="block w-full text-left">
+            <button type="button" onClick={() => { if (!isDeletedView) onView(project.id); }} className="block w-full text-left" disabled={isDeletedView}>
               <div className="text-sm font-semibold text-text-primary">{project.title}</div>
               <div className="mt-1 text-xs text-text-secondary">
                 <span className="font-mono text-accent">{project.code}</span> · {project.domain}
@@ -174,17 +215,30 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
             </div>
             <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
               <div><span className="block text-text-secondary">Leader</span><span className="mt-1 block truncate text-text-primary">{project.leader?.fullName || "—"}</span></div>
-              <div><span className="block text-text-secondary">Updated</span><span className="mt-1 block text-text-primary">{formatDate(project.modifiedAt)}</span></div>
+              <div><span className="block text-text-secondary">{isDeletedView ? "Deleted" : "Updated"}</span><span className="mt-1 block text-text-primary">{formatDate(isDeletedView ? project.deletedAt || "" : project.modifiedAt)}</span></div>
             </div>
             <div className="flex gap-2">
-              {onChecklistClick && (
+              {isDeletedView && onRestore ? (
+                <Button type="button" variant="secondary" size="sm" disabled={busyProjectId === project.id} onClick={() => onRestore(project)} className="gap-2 normal-case tracking-normal">
+                  <FiRotateCcw size={15} /> Restore project
+                </Button>
+              ) : !isDeletedView && onChecklistClick ? (
                 <Button type="button" variant="secondary" size="sm" onClick={(event) => handleChecklist(event, project.id)} className="gap-2">
                   <FiCheckSquare size={15} /> Checklists
                 </Button>
+              ) : null}
+              {!isDeletedView && (
+                <>
+                  {onDelete && getProjectRoleLabel(project.role ?? project.roleText) === "Project Leader" && (
+                    <Button type="button" variant="ghost" size="sm" disabled={busyProjectId === project.id} onClick={() => onDelete(project)} className="gap-2 text-error hover:bg-error/10 hover:text-error">
+                      <FiTrash2 size={15} /> Delete
+                    </Button>
+                  )}
+                  <Button type="button" variant="primary" size="sm" onClick={() => onView(project.id)} className="gap-2">
+                    <FiEye size={15} /> View project
+                  </Button>
+                </>
               )}
-              <Button type="button" variant="primary" size="sm" onClick={() => onView(project.id)} className="gap-2">
-                <FiEye size={15} /> View project
-              </Button>
             </div>
           </article>
         ))}

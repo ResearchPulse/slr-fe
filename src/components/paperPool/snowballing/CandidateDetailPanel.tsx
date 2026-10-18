@@ -1,18 +1,17 @@
-import Button from "../../ui/Button";
 import React from "react";
 import {
-  X,
-  ExternalLink,
-  FileText,
-  Quote,
-  Loader2,
   AlertCircle,
   BookmarkCheck,
+  ExternalLink,
+  FileText,
+  Loader2,
+  Plus,
   ShieldCheck,
   ShieldAlert,
-  Plus,
+  X,
   XCircle,
 } from "lucide-react";
+import Button from "../../ui/Button";
 import type { CandidatePaperDto } from "../../../types/paper";
 import { cn } from "../../../utils/cn";
 
@@ -24,6 +23,68 @@ interface CandidateDetailPanelProps {
   isModal?: boolean;
 }
 
+interface CandidateDetailActionsProps {
+  candidate: CandidatePaperDto | null;
+  onAction: (id: string, action: "select" | "reject") => Promise<void>;
+  isProcessing: boolean;
+  layout?: "inline" | "stacked";
+}
+
+export const CandidateDetailActions: React.FC<CandidateDetailActionsProps> = ({
+  candidate,
+  onAction,
+  isProcessing,
+  layout = "inline",
+}) => {
+  if (!candidate) return null;
+
+  const isStacked = layout === "stacked";
+  const buttonLayout = isStacked ? "w-full" : "min-w-32";
+
+  if (candidate.isSelectedInProjectRepository || candidate.statusText === "Rejected") {
+    const isInRepository = candidate.isSelectedInProjectRepository;
+    return (
+      <Button
+        disabled
+        variant="secondary"
+        size="md"
+        className={cn(buttonLayout, "normal-case tracking-normal")}
+      >
+        {isInRepository ? <BookmarkCheck className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+        {isInRepository ? "Already in repository" : "Candidate rejected"}
+      </Button>
+    );
+  }
+
+  return (
+    <div className={cn("flex gap-3", isStacked ? "flex-col" : "flex-row-reverse")}>
+      <Button
+        onClick={() => onAction(candidate.candidateId, "select")}
+        disabled={isProcessing}
+        size="md"
+        className={cn(buttonLayout, "normal-case tracking-normal")}
+      >
+        {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        Add to repository
+      </Button>
+      <Button
+        onClick={() => onAction(candidate.candidateId, "reject")}
+        disabled={isProcessing}
+        variant="secondary"
+        size="md"
+        className={cn(
+          buttonLayout,
+          "normal-case tracking-normal",
+          "text-text-secondary hover:border-error/40 hover:bg-error/5 hover:text-error",
+        )}
+      >
+        {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+        Reject candidate
+      </Button>
+    </div>
+  );
+};
+
 const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
   candidate,
   onClose,
@@ -34,7 +95,6 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
   if (!candidate) return null;
 
   const {
-    candidateId,
     title,
     authors,
     publicationYear,
@@ -48,271 +108,173 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
     validationNote,
   } = candidate;
 
-  const isLowQuality = validationNote
-    ?.toLowerCase()
-    .includes("low extraction quality");
+  const qualityScore = Math.max(0, Math.min(1, extractionQualityScore || 0));
+  const matchScore = Math.max(0, Math.min(1, matchConfidenceScore || 0));
+  const isLowQuality = validationNote?.toLowerCase().includes("low extraction quality");
 
-  const getQualityColor = (score: number) => {
-    if (score < 0.4) return "bg-red-500";
-    if (score <= 0.7) return "bg-amber-500";
-    return "bg-emerald-500";
-  };
+  const content = (
+    <div className={cn("space-y-6", isModal ? "p-5 sm:p-6" : "p-5")}>
+      <section aria-labelledby="candidate-paper-title">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="font-medium text-text-secondary">Candidate paper</span>
+          {isSelectedInProjectRepository && (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-secondary px-2.5 py-1 font-medium text-text-primary">
+              <BookmarkCheck className="h-3.5 w-3.5" /> In repository
+            </span>
+          )}
+          {!isSelectedInProjectRepository && statusText === "Matched" && (
+            <span className="rounded-full bg-primary-light px-2.5 py-1 font-medium text-accent">Matched</span>
+          )}
+        </div>
+        <h2 id="candidate-paper-title" className="mt-2 text-xl font-semibold leading-snug text-text-primary text-pretty">
+          {title || "Untitled candidate"}
+        </h2>
+        {doi && (
+          <a
+            href={`https://doi.org/${doi}`}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 inline-flex max-w-full items-center gap-1.5 rounded-md text-sm text-accent underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+          >
+            <span className="truncate">doi:{doi}</span>
+            <ExternalLink className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span className="sr-only">Open DOI in a new tab</span>
+          </a>
+        )}
+      </section>
 
-  const getMatchColor = (score: number) => {
-    if (score === 0) return "bg-slate-300";
-    if (score < 0.6) return "bg-blue-400";
-    return "bg-accent";
-  };
+      {validationNote && (
+        <div
+          role="note"
+          className={cn(
+            "flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm leading-relaxed",
+            isLowQuality
+              ? "border-amber-200 bg-amber-50 text-amber-900"
+              : "border-border bg-bg-secondary text-text-secondary",
+          )}
+        >
+          {isLowQuality && <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />}
+          <span>{validationNote}</span>
+        </div>
+      )}
+
+      <dl className="grid grid-cols-1 gap-x-8 gap-y-4 border-y border-border py-4 sm:grid-cols-2">
+        <div className="min-w-0">
+          <dt className="text-xs font-medium text-text-secondary">Authors</dt>
+          <dd className="mt-1.5 break-words text-sm font-medium leading-relaxed text-text-primary">
+            {authors || "Author information unavailable"}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-xs font-medium text-text-secondary">Publication year</dt>
+          <dd className="mt-1.5 text-sm font-medium text-text-primary">{publicationYear || "Not provided"}</dd>
+        </div>
+        <div className="min-w-0 sm:col-span-2">
+          <dt className="text-xs font-medium text-text-secondary">Extracted from</dt>
+          <dd className="mt-1.5 flex items-start gap-2 text-sm leading-relaxed text-text-primary">
+            <FileText className="mt-0.5 h-4 w-4 shrink-0 text-text-secondary" aria-hidden="true" />
+            <span className="break-words">{originPaperTitle || "Origin paper unavailable"}</span>
+          </dd>
+        </div>
+      </dl>
+
+      <section aria-label="Candidate assessment" className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <div>
+          <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+            <span className="inline-flex items-center gap-2 font-medium text-text-primary">
+              <ShieldCheck className="h-4 w-4 text-success" aria-hidden="true" /> Data quality
+            </span>
+            <span className="font-semibold tabular-nums text-text-primary">{Math.round(qualityScore * 100)}%</span>
+          </div>
+          <div
+            className="h-1.5 overflow-hidden rounded-full bg-bg-secondary"
+            role="meter"
+            aria-label="Data quality"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(qualityScore * 100)}
+          >
+            <div
+              className={cn(
+                "h-full rounded-full",
+                qualityScore < 0.4 ? "bg-error" : qualityScore <= 0.7 ? "bg-amber-600" : "bg-success",
+              )}
+              style={{ width: `${qualityScore * 100}%` }}
+            />
+          </div>
+        </div>
+        <div>
+          <div className="mb-2 flex items-center justify-between gap-3 text-sm">
+            <span className="inline-flex items-center gap-2 font-medium text-text-primary">
+              <ShieldAlert className="h-4 w-4 text-accent" aria-hidden="true" /> Identity match
+            </span>
+            <span className="font-semibold text-text-primary">
+              {matchScore === 0 ? "New entry" : `${Math.round(matchScore * 100)}%`}
+            </span>
+          </div>
+          {matchScore > 0 ? (
+            <div
+              className="h-1.5 overflow-hidden rounded-full bg-bg-secondary"
+              role="meter"
+              aria-label="Identity match"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(matchScore * 100)}
+            >
+              <div className="h-full rounded-full bg-accent" style={{ width: `${matchScore * 100}%` }} />
+            </div>
+          ) : (
+            <p className="text-xs leading-relaxed text-text-secondary">No existing repository match was found.</p>
+          )}
+        </div>
+      </section>
+
+      <details className="group border-t border-border pt-4">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-3 text-sm font-medium text-text-primary outline-none marker:hidden focus-visible:ring-2 focus-visible:ring-accent [&::-webkit-details-marker]:hidden">
+          <span>Original extracted reference</span>
+          <span className="text-xs font-normal text-text-secondary group-open:hidden">Show</span>
+          <span className="hidden text-xs font-normal text-text-secondary group-open:inline">Hide</span>
+        </summary>
+        <p className="mt-3 whitespace-pre-wrap break-words rounded-lg bg-bg-secondary px-4 py-3 text-sm leading-relaxed text-text-secondary">
+          {rawReference || "No raw reference text available."}
+        </p>
+      </details>
+    </div>
+  );
 
   return (
-    <div
-      className={cn(
-        "flex flex-col bg-surface-white overflow-hidden",
-        !isModal &&
-          "h-full border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 w-full lg:w-[450px]",
-      )}
-    >
+    <div className={cn("flex flex-col bg-surface-white", !isModal && "h-full overflow-hidden border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 w-full lg:w-[450px]")}>
       {!isModal && (
-        <div className="px-6 py-5 border-b border-border flex items-center justify-between bg-bg-secondary/50">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-primary-light flex items-center justify-center">
-              <FileText className="w-4 h-4 text-accent" />
-            </div>
-            <h3 className="font-black text-text-primary uppercase tracking-widest text-[11px]">
-              Candidate Details
-            </h3>
+        <div className="flex shrink-0 items-center justify-between border-b border-border bg-bg-secondary/50 px-5 py-4">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light text-accent">
+              <FileText className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <h3 className="text-sm font-semibold text-text-primary">Candidate details</h3>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-2 hover:bg-slate-200 rounded-xl transition-all text-text-secondary hover:text-text-secondary"
+            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-label="Close candidate details"
           >
-            <X className="w-5 h-5" />
+            <X className="h-5 w-5" />
           </button>
         </div>
       )}
 
-      <div className={cn("flex-1 overflow-y-auto", isModal && "max-h-[70vh]")}>
-        <div className="p-8 space-y-8">
-          {/* Main Title Section */}
-          <section>
-            <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
-              Paper Title
-            </label>
-            <h2 className="text-lg font-bold text-accent mt-2 leading-tight">
-              {title}
-            </h2>
-            <div className="mt-4 flex flex-wrap gap-2">
-              {isSelectedInProjectRepository && (
-                <>
-                  <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-amber-50 text-amber-700 border-amber-200">
-                    Duplicate
-                  </span>
-                  <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-bg-secondary text-text-primary border-border">
-                    Already in repository
-                  </span>
-                </>
-              )}
-              {!isSelectedInProjectRepository && statusText === "Matched" && (
-                <span className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border bg-purple-50 text-purple-700 border-purple-200">
-                  Matched
-                </span>
-              )}
-              {doi && (
-                <a
-                  href={`https://doi.org/${doi}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-3 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-full border border-border bg-surface-white text-text-secondary hover:bg-bg-secondary flex items-center gap-2 transition-all"
-                >
-                  DOI: {doi}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              )}
-            </div>
+      {isModal ? content : <div className="min-h-0 flex-1 overflow-y-auto">{content}</div>}
 
-            {validationNote && (
-              <div
-                className={cn(
-                  "mt-4 p-3 rounded-xl flex items-start gap-2 text-xs",
-                  isLowQuality
-                    ? "bg-amber-50 text-amber-700 italic border border-amber-100"
-                    : "bg-bg-secondary text-text-secondary border border-border",
-                )}
-              >
-                {isLowQuality && (
-                  <AlertCircle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                )}
-                <span>{validationNote}</span>
-              </div>
-            )}
-          </section>
-
-          {/* Authors & Year */}
-          <section className="grid grid-cols-2 gap-4">
-            <div className="bg-bg-secondary p-4 rounded-xl border border-border">
-              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
-                Authors
-              </label>
-              <p className="text-sm mt-2 text-text-primary font-bold leading-relaxed line-clamp-3">
-                {authors || "Unknown Authors"}
-              </p>
-            </div>
-            <div className="bg-bg-secondary p-4 rounded-xl border border-border">
-              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
-                Year
-              </label>
-              <p className="text-xl mt-1 text-text-primary font-black">
-                {publicationYear || "N/A"}
-              </p>
-            </div>
-          </section>
-
-          {/* Double Progress Bars */}
-          <section className="space-y-6">
-            <div className="p-5 bg-surface-white border border-border rounded-xl shadow-none space-y-5">
-              {/* Extraction Quality */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck
-                      className={cn(
-                        "w-4 h-4",
-                        extractionQualityScore > 0.7
-                          ? "text-emerald-500"
-                          : "text-amber-500",
-                      )}
-                    />
-                    <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                      Data Quality
-                    </span>
-                  </div>
-                  <span className="text-sm font-black text-text-primary">
-                    {Math.round(extractionQualityScore * 100)}%
-                  </span>
-                </div>
-                <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-1000",
-                      getQualityColor(extractionQualityScore),
-                    )}
-                    style={{ width: `${extractionQualityScore * 100}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Identity Match */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShieldAlert
-                      className={cn(
-                        "w-4 h-4",
-                        matchConfidenceScore > 0.6
-                          ? "text-accent"
-                          : "text-accent",
-                      )}
-                    />
-                    <span className="text-xs font-bold text-text-primary uppercase tracking-wider">
-                      Identity Match
-                    </span>
-                  </div>
-                  <span className="text-sm font-black text-text-primary">
-                    {matchConfidenceScore === 0
-                      ? "New Entry"
-                      : `${Math.round(matchConfidenceScore * 100)}%`}
-                  </span>
-                </div>
-                <div className="w-full h-2.5 bg-bg-secondary rounded-full overflow-hidden">
-                  <div
-                    className={cn(
-                      "h-full rounded-full transition-all duration-1000",
-                      getMatchColor(matchConfidenceScore),
-                    )}
-                    style={{
-                      width:
-                        matchConfidenceScore === 0
-                          ? "100%"
-                          : `${matchConfidenceScore * 100}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Origin Paper Context */}
-          <section>
-            <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
-              Extracted From (Origin)
-            </label>
-            <div className="mt-4 p-5 bg-primary-light/50 border border-accent/20 rounded-xl">
-              <h4 className="text-sm font-bold text-text-primary leading-tight">
-                {originPaperTitle}
-              </h4>
-              <div className="mt-3 inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-surface-white border border-accent/20 text-[10px] font-bold text-accent uppercase">
-                <FileText className="w-3 h-3" />
-                Origin Paper
-              </div>
-            </div>
-          </section>
-
-          {/* Raw Reference */}
-          <section>
-            <div className="flex items-center justify-between">
-              <label className="text-[10px] font-black uppercase text-text-secondary tracking-[0.2em]">
-                Raw Extracted Text
-              </label>
-              <Quote className="w-4 h-4 text-slate-200" />
-            </div>
-            <div className="mt-4 p-5 bg-amber-50/30 border border-amber-100 rounded-xl text-[13px] text-amber-900 italic leading-relaxed font-serif shadow-inner">
-              {rawReference || "No raw reference text available."}
-            </div>
-          </section>
+      {!isModal && (
+        <div className="shrink-0 border-t border-border bg-bg-secondary/50 p-4">
+          <CandidateDetailActions
+            candidate={candidate}
+            onAction={onAction}
+            isProcessing={isProcessing}
+            layout="stacked"
+          />
         </div>
-      </div>
-
-      {/* Footer Actions */}
-      <div className="p-6 border-t border-border bg-bg-secondary/50 space-y-3">
-        {isSelectedInProjectRepository ? (
-          <button
-            disabled
-            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-xl border border-border flex justify-center items-center gap-2 cursor-not-allowed"
-          >
-            <BookmarkCheck className="w-4 h-4" />
-            Already in repository
-          </button>
-        ) : statusText === "Rejected" ? (
-          <button
-            disabled
-            className="w-full px-6 py-4 bg-bg-secondary text-text-secondary font-bold text-sm uppercase tracking-widest rounded-xl border border-border flex justify-center items-center gap-2 cursor-not-allowed"
-          >
-            <XCircle className="w-4 h-4" />
-            Rejected Candidate
-          </button>
-        ) : (
-          <>
-            <Button
-              onClick={() => onAction(candidateId, "select")}
-              disabled={isProcessing}
-              size="lg"
-              className="w-full gap-2"
-            >
-              {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
-              {!isProcessing && <Plus className="w-4 h-4" />}
-              Add to repository
-            </Button>
-            <button
-              onClick={() => onAction(candidateId, "reject")}
-              disabled={isProcessing}
-              className="w-full px-6 py-3.5 bg-surface-white border-2 border-border text-rose-600 font-bold text-sm uppercase tracking-widest rounded-xl hover:bg-rose-50 hover:border-rose-200 transition flex justify-center items-center gap-2 disabled:opacity-70"
-            >
-              {isProcessing && <Loader2 className="w-4 h-4 animate-spin" />}
-              Reject Candidate
-            </button>
-          </>
-        )}
-      </div>
+      )}
     </div>
   );
 };

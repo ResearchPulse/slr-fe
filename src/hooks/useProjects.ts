@@ -64,6 +64,24 @@ export const useMyProjects = (params?: GetProjectsParams) => {
   };
 };
 
+export const useDeletedProjects = (params?: GetProjectsParams, enabled = true) => {
+  const userId = useSelector((state: RootState) => state.auth.user?.id || "anonymous");
+  const query = useQuery({
+    queryKey: QUERY_KEYS.projects.deleted(userId, params),
+    queryFn: () => projectService.getDeletedProjects(params),
+    enabled,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  return {
+    data: query.data?.data,
+    projects: query.data?.data?.items || EMPTY_ARRAY,
+    isLoading: query.isLoading,
+    error: query.error ? getErrorMessage(query.error, "Failed to get deleted projects") : null,
+    refetch: query.refetch,
+  };
+};
+
 /**
  * Custom hook for fetching a single project by ID
  * @param id The project ID
@@ -153,6 +171,16 @@ export const useProjectMutations = () => {
     onSuccess: () => invalidateProjects(),
   });
 
+  const softDeleteMutation = useMutation({
+    mutationFn: projectService.softDeleteProject,
+    onSuccess: (_, id) => invalidateProjects(id),
+  });
+
+  const restoreMutation = useMutation({
+    mutationFn: projectService.restoreProject,
+    onSuccess: (_, id) => invalidateProjects(id),
+  });
+
   return {
     // Create
     createProject: createMutation.mutateAsync,
@@ -189,6 +217,16 @@ export const useProjectMutations = () => {
     // Delete
     deleteProject: deleteMutation.mutateAsync,
     isDeleting: deleteMutation.isPending,
+    softDeleteProject: softDeleteMutation.mutateAsync,
+    isSoftDeleting: softDeleteMutation.isPending,
+    softDeleteError: softDeleteMutation.error
+      ? getErrorMessage(softDeleteMutation.error, "Failed to delete project")
+      : null,
+    restoreProject: restoreMutation.mutateAsync,
+    isRestoring: restoreMutation.isPending,
+    restoreError: restoreMutation.error
+      ? getErrorMessage(restoreMutation.error, "Failed to restore project")
+      : null,
   };
 };
 /**

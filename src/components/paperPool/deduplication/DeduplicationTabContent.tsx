@@ -12,7 +12,6 @@ import {
 } from "react-icons/fi";
 import { Check } from "lucide-react";
 import Button from "../../ui/Button";
-import EmptyState from "../../ui/EmptyState";
 import Switch from "../../ui/Switch";
 import DeduplicationProgressBanner from "./DeduplicationProgressBanner";
 import DuplicateQueuePanel from "./DuplicateQueuePanel";
@@ -222,7 +221,7 @@ export default function DeduplicationTabContent({
 
   // --- Render ---
   return (
-    <div ref={containerRef} className="space-y-4">
+    <div ref={containerRef} className="flex min-h-[460px] flex-col">
       {/* Loading state */}
       {isLoading && duplicatePairs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16">
@@ -258,29 +257,29 @@ export default function DeduplicationTabContent({
       {/* Main content (only when not loading initial and no error) */}
       {!isLoading && !error && (
         <>
-          <div className="rounded-xl border border-border bg-surface-white p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-bold text-text-primary">
-                  Deduplication Workspace
-                </h2>
-                <p className="text-sm text-text-secondary mt-1">
-                  Review flagged pairs, compare metadata side by side, and
-                  resolve confidently.
-                </p>
-              </div>
-              <div className="flex items-center gap-2 text-xs">
-                <span className="rounded-full bg-bg-secondary px-3 py-1 font-medium text-text-primary">
-                  Total: {totalCount}
-                </span>
-                <span className="rounded-full bg-amber-100 px-3 py-1 font-medium text-amber-700">
-                  Pending: {unresolvedCount}
-                </span>
-                <span className="rounded-full bg-emerald-100 px-3 py-1 font-medium text-emerald-700">
-                  Resolved: {resolvedCount}
-                </span>
-              </div>
+          <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+            <div>
+              <h2 className="text-base font-semibold text-text-primary sm:text-lg">
+                Duplicate review queue
+              </h2>
+              <p className="mt-1 text-sm text-text-secondary">
+                Compare flagged papers and record a decision for each pair.
+              </p>
             </div>
+            <dl className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="inline-flex items-center gap-2 rounded-lg bg-bg-secondary px-3 py-2">
+                <dt className="text-text-secondary">Total</dt>
+                <dd className="font-semibold tabular-nums text-text-primary">{totalCount}</dd>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2">
+                <dt className="text-warning">Pending</dt>
+                <dd className="font-semibold tabular-nums text-warning">{unresolvedCount}</dd>
+              </div>
+              <div className="inline-flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2">
+                <dt className="text-success">Resolved</dt>
+                <dd className="font-semibold tabular-nums text-success">{resolvedCount}</dd>
+              </div>
+            </dl>
           </div>
 
           {/* Progress Banner (always visible when pairs exist) */}
@@ -501,7 +500,7 @@ export default function DeduplicationTabContent({
                 </div>
               ) : (
                 // No pair selected placeholder
-                <div className="lg:col-span-2 flex items-center justify-center bg-bg-primary border-2 border-dashed border-border rounded-xl p-12">
+              <div className="lg:col-span-2 flex min-h-[420px] items-center justify-center rounded-lg bg-bg-primary px-6 py-10 sm:px-10">
                   <div className="text-center">
                     <FiLayers className="w-12 h-12 text-text-secondary mx-auto mb-3" />
                     <p className="text-text-secondary font-medium">
@@ -516,38 +515,33 @@ export default function DeduplicationTabContent({
             </div>
           ) : (
             // Empty state: no duplicates at all
-            <EmptyState
-              icon={
-                <div className="my-2 flex items-center justify-center">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full border border-success/20 bg-success/10 text-success">
-                    <Check size={28} strokeWidth={2.5} aria-hidden="true" />
-                  </div>
-                </div>
-              }
-              title="No Duplicates Detected"
-              description={
-                canEdit
-                  ? "All imported records appear to be unique. If you've added new batches, run the deduplication algorithm to check for matches."
-                  : "All imported records appear to be unique. No duplicate pairs are currently pending resolution."
-              }
-              actionLabel={
-                canEdit
-                  ? isRunningDeduplication
-                    ? "Running Deduplication..."
-                    : "Run Deduplication"
-                  : ""
-              }
-              isLoading={isRunningDeduplication}
-              onAction={() => {
-                if (canEdit && !isRunningDeduplication) {
-                  if (onRunDeduplication) {
-                    onRunDeduplication();
-                  } else {
-                    onRefetch?.();
-                  }
-                }
-              }}
-            />
+            <div className="flex min-h-[420px] flex-col items-center justify-center px-5 py-12 text-center sm:px-8">
+              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary-light text-accent">
+                <Check size={25} strokeWidth={2.25} aria-hidden="true" />
+              </div>
+              <h3 className="text-lg font-semibold text-text-primary sm:text-xl">
+                No duplicate pairs to review
+              </h3>
+              <p className="mt-2 max-w-md text-sm leading-6 text-text-secondary">
+                {canEdit
+                  ? "Run a duplicate check to compare imported papers. Any matching pairs will appear here."
+                  : "There are no duplicate pairs in the review queue right now."}
+              </p>
+              {canEdit && onRunDeduplication && (
+                <Button
+                  onClick={onRunDeduplication}
+                  isLoading={isRunningDeduplication}
+                  className="mt-6 normal-case tracking-normal"
+                >
+                  <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
+                  Run duplicate check
+                </Button>
+              )}
+              <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-border pt-4 text-xs text-text-secondary">
+                <span>Matches by DOI</span>
+                <span>Matches by normalized title</span>
+              </div>
+            </div>
           )}
         </>
       )}

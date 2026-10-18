@@ -23,6 +23,7 @@ interface ImportBatchesTabContentProps {
   importBatchesError: string | null;
   isDragging: boolean;
   onRetry: () => void;
+  onDeleteImportBatch: (importBatchId: string) => void | Promise<void>;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onDrop: (e: React.DragEvent) => void;
@@ -34,6 +35,7 @@ export default function ImportBatchesTabContent({
   importBatchesError,
   isDragging,
   onRetry,
+  onDeleteImportBatch,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -225,7 +227,10 @@ export default function ImportBatchesTabContent({
                         <FiDownload className="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
+                        onClick={() => onDeleteImportBatch(batch.id)}
                         className="p-2 text-red-600 hover:text-red-700 hover:bg-surface-white rounded transition-colors"
+                        aria-label={`Delete import batch ${batch.fileName}`}
                         title="Delete"
                       >
                         <FiTrash2 className="w-4 h-4" />

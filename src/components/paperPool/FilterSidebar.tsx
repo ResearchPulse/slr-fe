@@ -16,6 +16,7 @@ import type { PaperPoolFilterOption, PaperPoolFilters } from "./types";
 
 interface FilterSidebarProps {
   filters: PaperPoolFilters;
+  availablePaperSources: string[];
   availableSources: PaperPoolFilterOption[];
   availableBatches: PaperPoolFilterOption[];
   isCollapsed: boolean;
@@ -29,6 +30,7 @@ interface FilterSidebarProps {
 
 export default function FilterSidebar({
   filters,
+  availablePaperSources,
   availableSources,
   availableBatches,
   isCollapsed,
@@ -197,6 +199,25 @@ export default function FilterSidebar({
 
         {/* Source & Batch */}
         <div className="space-y-3">
+          <div className="space-y-1.5">
+            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              Paper Source
+            </label>
+            <select
+              value={filters.paperSource}
+              onChange={(e) =>
+                onChange({ ...filters, paperSource: e.target.value })
+              }
+              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+            >
+              <option value="all">All Paper Sources</option>
+              {availablePaperSources.map((source) => (
+                <option key={source} value={source}>
+                  {source}
+                </option>
+              ))}
+            </select>
+          </div>
           <div className="space-y-1.5">
             <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
               Search Source

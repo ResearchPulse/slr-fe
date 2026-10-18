@@ -474,7 +474,7 @@ export type BulkAddToDatasetResponse = ApiResponse<null>;
 // ============================================
 
 export interface PaperNodeDto {
-  id: string; // Guid
+  id: string; // Local paper ID for the graph root; OpenAlex ID for external works.
   title: string;
   year: number | null;
   authors: string | null;

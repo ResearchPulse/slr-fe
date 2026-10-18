@@ -35,8 +35,8 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               {paper.abstract}
             </div>
           ) : (
-            <div className="py-8 text-center text-text-secondary italic font-medium border-2 border-dashed border-border rounded-xl">
-              Abstract unavailable for this record.
+            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-6 text-center text-sm font-medium text-amber-800">
+              Missing abstract. Review this record with caution or add metadata when available.
             </div>
           )}
         </div>

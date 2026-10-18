@@ -17,6 +17,7 @@ import type { PaperWithCandidateDto } from "../../../types/paper";
 import ReferenceExtractionButton from "../../papers/ReferenceExtractionButton";
 import Pagination from "../../ui/Pagination";
 import Select from "../../ui/Select";
+import { formatAuthors } from "./formatAuthors";
 
 interface SnowballingPaperListProps {
   projectId: string;
@@ -203,7 +204,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                           </h4>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-xs text-text-secondary font-medium truncate max-w-[200px]">
-                              {paper.authors}
+                              {formatAuthors(paper.authors)}
                             </span>
                           </div>
                         </div>
@@ -215,9 +216,18 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                       </span>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-bg-secondary text-text-primary text-xs font-black">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onPaperClick(paper.id);
+                        }}
+                        aria-label={`Show ${paper.candidateCount} detected references for ${paper.title}`}
+                        className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-bg-secondary px-3 text-xs font-semibold tabular-nums text-text-primary transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                      >
                         {paper.candidateCount}
-                      </span>
+                        <span className="font-medium">Detected</span>
+                      </button>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <div className="flex items-center justify-center gap-1.5">

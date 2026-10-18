@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiAlertCircle, FiCheckCircle, FiEye, FiLink, FiLoader, FiMinus, FiTrash2 } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle, FiEye, FiLink, FiLoader, FiTrash2 } from "react-icons/fi";
 import ConfirmModal from "../ui/ConfirmModal";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
@@ -21,6 +21,14 @@ type ApplyMetadataSuggestionHandler = (
 function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
   const status = paper.pdfProcessingStatus;
   const base = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider whitespace-nowrap";
+
+  if (!paper.hasFullText) {
+    return (
+      <span className={`${base} bg-bg-secondary text-text-secondary`} title="No PDF is attached to this paper">
+        NOT PDF
+      </span>
+    );
+  }
 
   // A queued job that already failed once is waiting to be retried (e.g. GROBID is offline).
   if (status === "PENDING" && paper.pdfProcessingError) {
@@ -50,20 +58,18 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
       </span>
     );
   }
-  if (status === "COMPLETED") {
-    const partial = paper.pdfFullTextStatus === "PARTIAL";
+  if (paper.pdfFullTextStatus === "PARTIAL") {
     return (
       <span
-        className={`${base} ${partial ? "bg-amber-50 text-amber-700" : "bg-green-50 text-green-700"}`}
-        title={partial ? "Only metadata and references could be extracted" : "Full text extracted"}
+        className={`${base} bg-amber-50 text-amber-700`}
+        title="Only metadata and references could be extracted from the PDF"
       >
-        <FiCheckCircle className="h-3 w-3" />
-        {partial ? "Partial" : "Loaded"}
+        <FiAlertCircle className="h-3 w-3" />
+        PARTIAL
       </span>
     );
   }
-  // Legacy papers have a PDF but no processing record.
-  if (paper.hasFullText) {
+  if (paper.pdfFullTextStatus === "COMPLETED" || status === "COMPLETED") {
     return (
       <span className={`${base} bg-green-50 text-green-700`} title="PDF uploaded">
         <FiCheckCircle className="h-3 w-3" />
@@ -72,8 +78,8 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
     );
   }
   return (
-    <span className="inline-flex items-center text-text-secondary" title="No PDF uploaded">
-      <FiMinus className="h-4 w-4" />
+    <span className={`${base} bg-amber-50 text-amber-800`} title="A PDF is attached, but full text has not been extracted">
+      NOT FULL TEXT
     </span>
   );
 }
@@ -148,16 +154,22 @@ export default function PaperRow({
           {paper.id.slice(0, 8)}...
         </span>
       </td>
-      <td className="px-3 py-4 align-top min-w-[320px]">
+      <td className="w-[360px] max-w-[360px] overflow-hidden px-3 py-4 align-top">
         <div className="flex flex-col">
           <button
             onClick={() => onViewDetails(paper)}
-            className="text-left group/title focus:outline-none"
+            className="block min-w-0 max-w-full text-left group/title focus:outline-none"
+            title={paper.title}
           >
-            <span className="text-sm font-bold text-text-primary line-clamp-2 leading-snug group-hover/title:text-accent transition-colors">
+            <span className="block truncate whitespace-nowrap text-sm font-bold text-text-primary leading-snug group-hover/title:text-accent transition-colors">
               {paper.title}
             </span>
           </button>
+          {!paper.abstract?.trim() && (
+            <span className="mt-1.5 w-fit rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+              Missing abstract
+            </span>
+          )}
           <div className="text-xs font-medium text-text-secondary mt-1.5 flex items-center gap-1.5">
             <span className="truncate max-w-[280px]">{paper.authors}</span>
           </div>

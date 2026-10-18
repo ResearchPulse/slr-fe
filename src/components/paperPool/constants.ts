@@ -6,6 +6,7 @@ export const DEFAULT_FILTERS: PaperPoolFilters = {
   keyword: "",
   yearFrom: null,
   yearTo: null,
+  paperSource: "all",
   searchSourceId: "all",
   importBatchId: "all",
   doiState: "all",

@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { FiSearch, FiFolder, FiPlus, FiRefreshCw } from "react-icons/fi";
-import { useMyProjects } from "../../hooks/useProjects";
+import { FiSearch, FiFolder, FiPlus, FiRefreshCw, FiArchive } from "react-icons/fi";
+import { useDeletedProjects, useMyProjects, useProjectMutations } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
 import Input from "../../components/ui/Input";
@@ -14,6 +14,7 @@ import {
 } from "../../redux/slices/projectSlice";
 import { getProjectRoleLabel } from "../../types/project";
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 type RoleFilter = "All" | "Project Leader" | "Reviewer";
 
@@ -28,18 +29,52 @@ export default function ProjectListPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [showDeletedProjects, setShowDeletedProjects] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
+  const [busyProjectId, setBusyProjectId] = useState<string | null>(null);
   const pageSize = 10;
 
-  const { data, projects, isLoading, error, refetch } = useMyProjects({
+  const {
+    data: activeData,
+    projects: activeProjects,
+    isLoading: activeLoading,
+    error: activeError,
+    refetch: refetchActive,
+  } = useMyProjects({
     pageNumber: currentPage,
     pageSize,
     status: statusFilter,
   });
 
+  const {
+    data: deletedData,
+    projects: deletedProjects,
+    isLoading: deletedLoading,
+    error: deletedError,
+    refetch: refetchDeleted,
+  } = useDeletedProjects({
+    pageNumber: currentPage,
+    pageSize,
+    search: searchQuery.trim() || undefined,
+  }, showDeletedProjects);
+
   const { data: allProjectsData } = useMyProjects({
     pageNumber: 1,
     pageSize: 100,
   });
+
+  const {
+    softDeleteProject,
+    isSoftDeleting,
+    softDeleteError,
+    restoreProject,
+    restoreError,
+  } = useProjectMutations();
+
+  const data = showDeletedProjects ? deletedData : activeData;
+  const isLoading = showDeletedProjects ? deletedLoading : activeLoading;
+  const error = showDeletedProjects ? deletedError : activeError;
+  const refetch = showDeletedProjects ? refetchDeleted : refetchActive;
 
   const allList = allProjectsData?.items || [];
   const roleProjects = useMemo(
@@ -63,17 +98,20 @@ export default function ProjectListPage() {
     return list;
   }, [roleProjects, statusFilter, searchQuery]);
 
-  const totalPages = roleFilter === "All"
-    ? data?.totalPages || 1
-    : Math.max(1, Math.ceil(roleFilteredResults.length / pageSize));
+  const totalPages = showDeletedProjects
+    ? Math.max(1, deletedData?.totalPages || 1)
+    : roleFilter === "All"
+      ? activeData?.totalPages || 1
+      : Math.max(1, Math.ceil(roleFilteredResults.length / pageSize));
 
   const filteredProjects = useMemo(() => {
+    if (showDeletedProjects) return deletedProjects;
     if (roleFilter !== "All") {
       const start = (currentPage - 1) * pageSize;
       return roleFilteredResults.slice(start, start + pageSize);
     }
 
-    let list = projects || [];
+    let list = activeProjects || [];
     if (statusFilter) {
       list = list.filter((project: Project) =>
         project.statusText?.toLowerCase() === statusFilter.toLowerCase(),
@@ -85,7 +123,30 @@ export default function ProjectListPage() {
       );
     }
     return list;
-  }, [projects, roleFilter, roleFilteredResults, currentPage, pageSize, statusFilter, searchQuery]);
+  }, [activeProjects, deletedProjects, showDeletedProjects, roleFilter, roleFilteredResults, currentPage, pageSize, statusFilter, searchQuery]);
+
+  const handleConfirmSoftDelete = async () => {
+    if (!projectToDelete) return;
+    try {
+      await softDeleteProject(projectToDelete.id);
+      setProjectToDelete(null);
+      setCurrentPage(1);
+    } catch {
+      // The mutation error is shown in the confirmation dialog.
+    }
+  };
+
+  const handleRestoreProject = async (project: Project) => {
+    setBusyProjectId(project.id);
+    try {
+      await restoreProject(project.id);
+      setCurrentPage(1);
+    } catch {
+      // The mutation error is shown above the deleted-project table.
+    } finally {
+      setBusyProjectId(null);
+    }
+  };
 
   const handleChecklistClick = (projectId: string) => {
     navigate(`/projects/${projectId}/checklists`);
@@ -99,47 +160,75 @@ export default function ProjectListPage() {
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
             <h1 className="mb-1 text-[28px] font-semibold leading-tight tracking-tight text-text-primary sm:text-[32px]">
-              {roleFilter === "All" ? "Research Projects" : `${roleFilter} Projects`}
+              {showDeletedProjects ? "Deleted projects" : roleFilter === "All" ? "Research Projects" : `${roleFilter} Projects`}
             </h1>
             <p className="max-w-3xl text-sm leading-relaxed text-text-secondary">
-              {roleFilter === "Reviewer"
+              {showDeletedProjects
+                ? "Projects you deleted are kept here until you restore them. Project data remains available after restoration."
+                : roleFilter === "Reviewer"
                 ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
                 : roleFilter === "Project Leader"
                   ? "Projects you lead, with setup, team coordination, and review process controls."
                   : "Your research workspace, organized around the role you hold in each project."}
             </p>
           </div>
-          <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2">
-            <FiPlus size={16} /> Create project
-          </Button>
+          {!showDeletedProjects && (
+            <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2">
+              <FiPlus size={16} /> Create project
+            </Button>
+          )}
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label="Filter projects by role">
-          {([
-            { value: "All", label: "All roles" },
-            { value: "Project Leader", label: "Project Leader" },
-            { value: "Reviewer", label: "Reviewer" },
-          ] as const).map(({ value, label }) => {
-            const count = value === "All"
-              ? allList.length
-              : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === value).length;
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
-                aria-pressed={roleFilter === value}
-                className={`inline-flex min-h-9 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
-                  roleFilter === value
-                    ? "border-accent bg-bg-secondary font-medium text-accent"
-                    : "border-border bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
-                }`}
-              >
-                {label}
-                <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-surface-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
-              </button>
-            );
-          })}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          {!showDeletedProjects && (
+            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects by role">
+              {([
+                { value: "All", label: "All roles" },
+                { value: "Project Leader", label: "Project Leader" },
+                { value: "Reviewer", label: "Reviewer" },
+              ] as const).map(({ value, label }) => {
+                const count = value === "All"
+                  ? allList.length
+                  : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === value).length;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
+                    aria-pressed={roleFilter === value}
+                    className={`inline-flex min-h-9 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
+                      roleFilter === value
+                        ? "border-accent bg-bg-secondary font-medium text-accent"
+                        : "border-border bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
+                    }`}
+                  >
+                    {label}
+                    <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-surface-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+
+          <div className="inline-flex items-center rounded-xl border border-border bg-surface-white p-1" role="group" aria-label="Project view">
+            <button
+              type="button"
+              aria-pressed={!showDeletedProjects}
+              onClick={() => { setShowDeletedProjects(false); setCurrentPage(1); }}
+              className={`inline-flex min-h-8 items-center gap-2 rounded-lg px-3 text-sm transition-colors ${!showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
+            >
+              Active
+            </button>
+            <button
+              type="button"
+              aria-pressed={showDeletedProjects}
+              onClick={() => { setShowDeletedProjects(true); setCurrentPage(1); }}
+              className={`inline-flex min-h-8 items-center gap-2 rounded-lg px-3 text-sm transition-colors ${showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
+            >
+              <FiArchive size={14} /> Deleted
+              {deletedData?.totalCount ? <span className="rounded-md bg-surface-white px-1.5 py-0.5 text-xs">{deletedData.totalCount}</span> : null}
+            </button>
+          </div>
         </div>
 
         <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
@@ -151,6 +240,7 @@ export default function ProjectListPage() {
             <Input
               aria-label="Search projects"
               placeholder="Search projects..."
+              value={searchQuery}
               className="h-10 rounded-xl border-border bg-surface-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -159,7 +249,7 @@ export default function ProjectListPage() {
             />
           </div>
 
-          <div className="flex flex-wrap items-center gap-1 rounded-xl bg-bg-primary p-1">
+          {!showDeletedProjects && <div className="flex flex-wrap items-center gap-1 rounded-xl bg-bg-primary p-1">
             {([undefined, "Draft", "Active", "Completed"] as (ProjectStatus | undefined)[]).map((status) => (
               <button
                 key={status ?? "All"}
@@ -171,8 +261,14 @@ export default function ProjectListPage() {
                 {status ?? "All"}
               </button>
             ))}
-          </div>
+          </div>}
         </div>
+
+        {(softDeleteError || restoreError) && (
+          <div role="alert" className="mb-4 rounded-lg border border-error/25 bg-error/5 px-4 py-3 text-sm text-error">
+            {softDeleteError || restoreError}
+          </div>
+        )}
 
         {error && data && (
           <div role="status" className="mb-4 rounded-lg border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
@@ -205,10 +301,14 @@ export default function ProjectListPage() {
                 <FiFolder className="w-5 h-5" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-text-primary">
-                {searchQuery || statusFilter ? "No matching projects" : "No projects yet"}
+                {showDeletedProjects
+                  ? searchQuery ? "No deleted projects match your search" : "No deleted projects"
+                  : searchQuery || statusFilter ? "No matching projects" : "No projects yet"}
               </h3>
               <p className="max-w-sm text-sm leading-relaxed text-text-secondary">
-                {searchQuery || statusFilter
+                {showDeletedProjects
+                  ? "Projects you move to Deleted will appear here, where you can restore them at any time."
+                  : searchQuery || statusFilter
                   ? "No projects match your search or filter. Try different keywords or clear the filters."
                   : "You haven't created or joined any projects yet. Ask a project leader to invite you, or set up your first review."}
               </p>
@@ -228,6 +328,10 @@ export default function ProjectListPage() {
                 navigate(`/projects/${id}`);
               }}
               onChecklistClick={handleChecklistClick}
+              onDelete={(project) => setProjectToDelete(project)}
+              onRestore={handleRestoreProject}
+              isDeletedView={showDeletedProjects}
+              busyProjectId={busyProjectId}
             />
           )}
         </div>
@@ -305,6 +409,20 @@ export default function ProjectListPage() {
           dispatch(clearProjectMember());
           navigate(`/projects/${project.id}`);
         }}
+      />
+      <ConfirmModal
+        isOpen={Boolean(projectToDelete)}
+        onClose={() => { if (!isSoftDeleting) setProjectToDelete(null); }}
+        onConfirm={() => void handleConfirmSoftDelete()}
+        title="Move project to Deleted?"
+        message={softDeleteError
+          ? `${softDeleteError} Please try again.`
+          : projectToDelete
+            ? `“${projectToDelete.title}” will disappear from your active project list. Its review data will be kept, and you can restore it from the Deleted tab.`
+            : "This project will be moved to Deleted."}
+        confirmText="Move to Deleted"
+        isLoading={isSoftDeleting}
+        variant="danger"
       />
     </div>
   );
