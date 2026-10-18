@@ -157,12 +157,6 @@ export default function AssessmentPaperViewer({
                 <h3 className="text-sm font-semibold text-text-primary">
                   Full Text PDF
                 </h3>
-                {!isLeader && (
-                  <p className="mt-1 text-xs leading-5 text-text-secondary">
-                    Select text to add highlight to the selected criterion.
-                    Click a highlight to remove it.
-                  </p>
-                )}
               </div>
               <div className="relative w-full flex-1 overflow-hidden bg-bg-secondary">
                 <Worker
