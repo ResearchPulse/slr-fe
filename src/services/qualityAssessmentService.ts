@@ -84,6 +84,19 @@ export const qualityAssessmentService = {
     return response.data;
   },
 
+  async reopenPaper(processId: string, paperId: string): Promise<ApiResponse<{
+    paperId: string;
+    status: "OPEN";
+    phaseReopened: boolean;
+  }>> {
+    const response = await api.post<ApiResponse<{
+      paperId: string;
+      status: "OPEN";
+      phaseReopened: boolean;
+    }>>(`/quality-assessment/${processId}/papers/${paperId}/reopen`);
+    return response.data;
+  },
+
   async upsertStrategy(data: QualityAssessmentStrategy): Promise<ApiResponse<QualityAssessmentStrategy>> {
     const response = await api.post<ApiResponse<QualityAssessmentStrategy>>(`/quality-assessment/strategies/upsert`, data);
     return response.data;

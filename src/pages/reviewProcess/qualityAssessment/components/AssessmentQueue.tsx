@@ -78,12 +78,11 @@ export default function AssessmentQueue({
           const isSelected = selectedPaperId === paper.paperId;
 
           let resolutionLabel: string | undefined;
-          if (
-            paper.resolution &&
-            typeof paper.resolution.finalDecision === "number"
-          ) {
+          const rawFinalDecision = paper.resolution?.finalDecision;
+          const finalDecision = rawFinalDecision == null ? null : Number(rawFinalDecision);
+          if (finalDecision === 0 || finalDecision === 1) {
             resolutionLabel =
-              paper.resolution.finalDecision === 1
+              finalDecision === 1
                 ? "HighQuality"
                 : "LowQuality";
           }
