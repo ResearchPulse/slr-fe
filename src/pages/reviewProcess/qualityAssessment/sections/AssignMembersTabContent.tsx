@@ -6,6 +6,7 @@ import {
   FileText,
   CheckCircle2,
   Clock,
+  RotateCcw,
 } from "lucide-react";
 import Card from "../../../../components/ui/Card";
 import {
@@ -23,6 +24,7 @@ interface AssignMembersTabContentProps {
   isLeader?: boolean;
   onPaperClick: (paperId: string) => void;
   onAssignClick: (e: React.MouseEvent, paperId: string) => void;
+  onReopenPaper?: (paperId: string) => void;
   onSearchChange?: (query: string) => void;
   searchQuery?: string;
   currentPage: number;
@@ -32,8 +34,10 @@ interface AssignMembersTabContentProps {
 }
 
 function getPaperStatus(paper: WorkspaceQAPaper, isLeader: boolean = false) {
-  if (paper.resolution && typeof paper.resolution.finalDecision === "number") {
-    return paper.resolution.finalDecision === 1
+  const rawFinalDecision = paper.resolution?.finalDecision;
+  const finalDecision = rawFinalDecision == null ? null : Number(rawFinalDecision);
+  if (finalDecision === 0 || finalDecision === 1) {
+    return finalDecision === 1
       ? "high-quality"
       : "low-quality";
   }
@@ -54,6 +58,7 @@ export function AssignMembersTabContent({
   isLeader,
   onPaperClick,
   onAssignClick,
+  onReopenPaper,
   onSearchChange,
   searchQuery = "",
   currentPage,
@@ -146,6 +151,11 @@ export function AssignMembersTabContent({
               <TableHead className="w-40 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Status
               </TableHead>
+              {isLeader && (
+                <TableHead className="w-28 text-right text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  Action
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -314,6 +324,22 @@ export function AssignMembersTabContent({
                     );
                   })()}
                 </TableCell>
+                {isLeader && (
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                    {paper.resolution && (
+                      <button
+                        type="button"
+                        onClick={() => onReopenPaper?.(paper.paperId)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+                        aria-label={`Reopen ${paper.title}`}
+                        title="Reopen this paper for reviewer corrections"
+                      >
+                        <RotateCcw size={13} aria-hidden="true" />
+                        Reopen
+                      </button>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
