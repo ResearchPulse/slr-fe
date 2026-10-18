@@ -50,6 +50,9 @@ export default function PaperViewer({
   isRetryingExtraction = false,
   hideActions = false,
   infoSummary = null,
+  referencesOverride,
+  referencesLoadingOverride,
+  referencesCountOverride,
   isLeaderView = false,
   phase = PaperPhase.TitleAbstract,
   isDisabled = false,
@@ -82,6 +85,12 @@ export default function PaperViewer({
     canReview,
     isFieldUpdated,
   } = usePaperViewerState(paper, phase);
+
+  const displayedReferences = referencesOverride ?? references;
+  const displayedReferencesLoading =
+    referencesLoadingOverride ?? isDiscoveryLoading;
+  const displayedReferencesCount =
+    referencesCountOverride ?? displayedReferences.length;
 
   const { id, projectId } = useParams<{ id: string; projectId: string }>();
   const activeProjectId = projectId || id;
@@ -166,7 +175,7 @@ export default function PaperViewer({
               onClick={() =>
                 navigate(`/projects/${activeProjectId}/papers/${paper.id}`)
               }
-              className="absolute top-6 right-6 z-20 flex items-center gap-2 px-4 py-2 bg-bg-secondary/80 backdrop-blur-md border border-border rounded-xl text-text-secondary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white hover:border-accent transition-all shadow-none opacity-0 group-hover/hero:opacity-100 transform translate-y-2 group-hover/hero:translate-y-0"
+              className="absolute top-6 right-6 z-20 flex items-center gap-2 rounded-xl border border-border bg-bg-secondary/80 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-text-secondary opacity-0 shadow-none transition-[opacity,color,background-color,border-color] hover:border-accent hover:bg-primary hover:text-white group-hover/hero:opacity-100"
             >
               Full Details
               <FiExternalLink className="w-3.5 h-3.5" />
@@ -191,7 +200,7 @@ export default function PaperViewer({
               onClick={() => setActiveTab("references")}
               icon={<FiList className="w-4 h-4" />}
               label="References"
-              count={references.length}
+              count={displayedReferencesCount}
             />
             <TabButton
               active={activeTab === "citations"}
@@ -285,8 +294,8 @@ export default function PaperViewer({
                   Cited References
                 </h2>
                 <PaperNodeList
-                  nodes={references}
-                  isLoading={isDiscoveryLoading}
+                  nodes={displayedReferences}
+                  isLoading={displayedReferencesLoading}
                   emptyLabel="No references found."
                 />
               </div>

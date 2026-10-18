@@ -7,7 +7,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
+  LabelList,
 } from "recharts";
 
 interface BarChartComponentProps {
@@ -17,16 +17,6 @@ interface BarChartComponentProps {
   horizontal?: boolean;
   color?: string;
 }
-
-const COLORS = [
-  "#3b82f6",
-  "#6366f1",
-  "#8b5cf6",
-  "#a855f7",
-  "#d946ef",
-  "#ec4899",
-  "#f43f5e",
-];
 
 function wrapLabel(value: string, maxLength = 22) {
   const words = value.trim().split(/\s+/);
@@ -70,7 +60,7 @@ function CategoryTick({
       x={textX}
       y={textY}
       textAnchor="end"
-      fill="#64748b"
+      fill="#647381"
       fontSize={11}
       fontWeight={500}
     >
@@ -92,20 +82,20 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
   xKey,
   yKey,
   horizontal = false,
-  color = "#3b82f6",
+  color = "var(--color-accent)",
 }) => {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <BarChart
         data={data}
         layout={horizontal ? "vertical" : "horizontal"}
-        margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+        margin={{ top: 5, right: 44, left: 20, bottom: 5 }}
       >
         <CartesianGrid
           strokeDasharray="3 3"
           vertical={!horizontal}
           horizontal={horizontal}
-          stroke="#f1f5f9"
+          stroke="#DCE4E9"
         />
         {horizontal ? (
           <>
@@ -123,7 +113,7 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
           <>
             <XAxis
               dataKey={xKey}
-              tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
+              tick={{ fontSize: 12, fontWeight: 600, fill: "#647381" }}
               axisLine={false}
               tickLine={false}
             />
@@ -131,12 +121,18 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
           </>
         )}
         <Tooltip
+          formatter={(value) => [
+            `${Number(value ?? 0).toLocaleString()} papers`,
+            "Records",
+          ]}
           contentStyle={{
-            borderRadius: "12px",
-            border: "none",
-            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+            borderRadius: "8px",
+            border: "1px solid #DCE4E9",
+            boxShadow: "0 4px 8px rgb(18 35 49 / 0.08)",
           }}
-          cursor={{ fill: "#f8fafc" }}
+          labelStyle={{ color: "#122331", fontWeight: 600, marginBottom: 4 }}
+          itemStyle={{ color: "#647381", fontSize: 12 }}
+          cursor={{ fill: "#F7F9FA" }}
         />
         <Bar
           dataKey={xKey}
@@ -144,9 +140,16 @@ const BarChartComponent: React.FC<BarChartComponentProps> = ({
           radius={horizontal ? [0, 4, 4, 0] : [4, 4, 0, 0]}
           barSize={18}
         >
-          {data.map((_, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
+          {horizontal && (
+            <LabelList
+              dataKey={xKey}
+              position="right"
+              formatter={(value) => Number(value ?? 0).toLocaleString()}
+              fill="#122331"
+              fontSize={11}
+              fontWeight={600}
+            />
+          )}
         </Bar>
       </BarChart>
     </ResponsiveContainer>

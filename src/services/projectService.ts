@@ -141,6 +141,30 @@ class ProjectService {
     return response.data;
   };
 
+  getDeletedProjects = async (
+    params?: GetProjectsParams,
+  ): Promise<ApiResponse<PaginatedResponse<Project>>> => {
+    const response = await api.get<ApiResponse<PaginatedResponse<Project>>>(
+      `${this.endpoint}/deleted`,
+      { params },
+    );
+    return response.data;
+  };
+
+  softDeleteProject = async (id: string): Promise<ApiResponse<null>> => {
+    const response = await api.post<ApiResponse<null>>(
+      `${this.endpoint}/${id}/soft-delete`,
+    );
+    return response.data;
+  };
+
+  restoreProject = async (id: string): Promise<ApiResponse<null>> => {
+    const response = await api.post<ApiResponse<null>>(
+      `${this.endpoint}/${id}/restore`,
+    );
+    return response.data;
+  };
+
   /**
    * Update project
    * PUT /api/projects/{id}

@@ -23,26 +23,37 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
 }) => {
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
 
+  const selectedNode = data.nodes.find((node) => node.id === selectedPaperId);
+  const selectedNodeIsExternal = selectedPaperId?.startsWith("openalex:") ?? false;
   const { data: paperData, isLoading: isLoadingDetails } = usePaperDetails(
-    selectedPaperId || undefined,
+    selectedPaperId && !selectedNodeIsExternal ? selectedPaperId : undefined,
   );
 
   const paperDetails = useMemo(() => {
-    if (!paperData) return null;
-
+    if (paperData) {
+      return {
+        id: paperData.id,
+        title: paperData.title,
+        authors: paperData.authors ?? undefined,
+        year:
+          paperData.publicationYearInt ||
+          (paperData.publicationYear
+            ? Number(paperData.publicationYear)
+            : undefined),
+        doi: paperData.doi ?? undefined,
+        abstract: paperData.abstract ?? undefined,
+      };
+    }
+    if (!selectedNode) return null;
     return {
-      id: paperData.id,
-      title: paperData.title,
-      authors: paperData.authors ?? undefined,
-      year:
-        paperData.publicationYearInt ||
-        (paperData.publicationYear
-          ? Number(paperData.publicationYear)
-          : undefined),
-      doi: paperData.doi ?? undefined,
-      abstract: paperData.abstract ?? undefined,
+      id: selectedNode.id,
+      title: selectedNode.title,
+      authors: selectedNode.authors ?? undefined,
+      year: selectedNode.year ?? undefined,
+      doi: selectedNode.doi ?? undefined,
+      citationCount: selectedNode.citationCount,
     };
-  }, [paperData]);
+  }, [paperData, selectedNode]);
 
   if (!isOpen) return null;
 

@@ -288,7 +288,7 @@ export default function ManageFiltersModal({
                       <div className="flex items-center gap-3">
                         <FiDatabase className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
-                          Source
+                          Search Source
                         </span>
                       </div>
                       <select
@@ -304,10 +304,39 @@ export default function ManageFiltersModal({
                         }
                         className="bg-transparent text-xs font-bold text-accent focus:outline-none"
                       >
-                        <option value="all">All Sources</option>
+                        <option value="all">All Search Sources</option>
                         {metadata?.searchSources.map((s) => (
                           <option key={s.id} value={s.id}>
                             {s.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <FiDatabase className="text-text-secondary" />
+                        <span className="text-xs font-bold text-text-secondary">
+                          Paper Source
+                        </span>
+                      </div>
+                      <select
+                        value={draft.filters.paperSource ?? "all"}
+                        onChange={(e) =>
+                          setDraft({
+                            ...draft,
+                            filters: {
+                              ...draft.filters,
+                              paperSource: e.target.value,
+                            },
+                          })
+                        }
+                        className="bg-transparent text-xs font-bold text-accent focus:outline-none"
+                      >
+                        <option value="all">All Paper Sources</option>
+                        {metadata?.paperSources?.map((source) => (
+                          <option key={source} value={source}>
+                            {source}
                           </option>
                         ))}
                       </select>

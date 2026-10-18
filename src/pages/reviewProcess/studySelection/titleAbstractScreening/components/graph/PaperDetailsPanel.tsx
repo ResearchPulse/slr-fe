@@ -4,7 +4,7 @@ import { FiExternalLink, FiFileText } from "react-icons/fi";
 export interface PaperDetails {
   id: string;
   title: string;
-  authors?: string;
+  authors?: unknown;
   year?: number;
   doi?: string;
   abstract?: string;
@@ -17,13 +17,29 @@ interface PaperDetailsPanelProps {
 }
 
 const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
-  // Split authors by comma or semicolon and clean up
-  const authorList = paper.authors
+  const authorList = Array.isArray(paper.authors)
     ? paper.authors
-        .split(/[;,]/)
-        .map((a) => a.trim())
+        .map((author: unknown) => {
+          if (typeof author === "string") return author.trim();
+          if (!author || typeof author !== "object") return "";
+
+          const item = author as {
+            name?: unknown;
+            display_name?: unknown;
+            given?: unknown;
+            family?: unknown;
+            author?: { display_name?: unknown };
+          };
+          const name = item.name ?? item.display_name ?? item.author?.display_name;
+          if (typeof name === "string" && name.trim()) return name.trim();
+          return [item.given, item.family]
+            .filter((part): part is string => typeof part === "string" && Boolean(part.trim()))
+            .join(" ");
+        })
         .filter(Boolean)
-    : [];
+    : typeof paper.authors === "string"
+      ? paper.authors.split(/[;,]/).map((author) => author.trim()).filter(Boolean)
+      : [];
 
   return (
     <div className="flex flex-col h-full bg-surface-white text-text-primary border-l border-border shadow-none animate-in slide-in-from-right duration-300">

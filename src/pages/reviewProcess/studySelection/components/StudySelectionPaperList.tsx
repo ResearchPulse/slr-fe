@@ -17,6 +17,7 @@ import Select from "../../../../components/ui/Select";
 export interface StudySelectionListPaper {
   id: string;
   title: string;
+  abstract?: string | null;
   authors: string | null;
   publicationYear: number | null;
   journal?: string | null;
@@ -206,7 +207,7 @@ export default function StudySelectionPaperList(props: Props) {
                       ? "Passed to Full Text"
                       : STATUS_CONFIG[state as keyof typeof STATUS_CONFIG]?.label ?? state;
                   return <tr key={paper.id} tabIndex={0} role="link" onClick={() => onOpenPaper(paper.id)} onKeyDown={(event) => { if (event.key === "Enter") onOpenPaper(paper.id); }} className="cursor-pointer transition hover:bg-bg-primary/70 focus-visible:outline focus-visible:outline-2 focus-visible:outline-accent">
-                    <td className="min-w-0 overflow-hidden px-2 py-4 lg:px-3"><div className="line-clamp-2 text-sm font-semibold text-text-primary">{paper.title || "Untitled paper"}</div><div className="mt-1 truncate text-xs text-text-secondary">{paper.authors || "Authors unavailable"}{paper.journal || paper.source ? ` · ${paper.journal || paper.source}` : ""}</div></td>
+                    <td className="min-w-0 overflow-hidden px-2 py-4 lg:px-3"><div className="line-clamp-2 text-sm font-semibold text-text-primary">{paper.title || "Untitled paper"}</div>{!paper.abstract?.trim() && <span className="mt-1 inline-flex rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">Missing abstract</span>}<div className="mt-1 truncate text-xs text-text-secondary">{paper.authors || "Authors unavailable"}{paper.journal || paper.source ? ` · ${paper.journal || paper.source}` : ""}</div></td>
                     <td className="px-2 py-4 text-sm tabular-nums">{paper.publicationYear ?? "—"}</td>
                     <td className="max-w-0 truncate px-2 py-4 text-sm text-text-secondary">{paper.journal || paper.source || "—"}</td>
                     <td className="min-w-0 max-w-0 overflow-hidden px-1 py-4 lg:px-2">{paper.doi ? <a href={`https://doi.org/${paper.doi.replace(/^https?:\/\/(dx\.)?doi\.org\//, "")}`} target="_blank" rel="noreferrer" onClick={(event) => event.stopPropagation()} className="flex min-w-0 max-w-full items-center gap-1 text-xs text-accent hover:underline"><span className="min-w-0 truncate">{paper.doi}</span><FiExternalLink className="shrink-0"/></a> : <span className="text-sm text-text-secondary">—</span>}</td>

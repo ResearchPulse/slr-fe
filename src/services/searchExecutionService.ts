@@ -108,11 +108,8 @@ export const searchExecutionService = {
    * Get PRISMA statistics for identification process
    * GET /api/identification-processes/{id}/statistics
    *
-   * Returns aggregated metrics:
-   * - totalRecordsImported: Sum of all imported papers
-   * - importBatchCount: Total number of import batches
-   * - duplicateRecords: Currently 0 (deduplication feature pending)
-   * - uniqueRecords: Equals totalRecordsImported until deduplication
+   * Returns aggregated metrics for imported batches, deduplicated papers, and
+   * papers still awaiting selection.
    */
   async getPrismaStatistics(identificationProcessId: string): Promise<GetPrismaStatisticsResponse> {
     const response = await api.get<GetPrismaStatisticsResponse>(

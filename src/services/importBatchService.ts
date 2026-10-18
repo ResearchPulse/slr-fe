@@ -103,8 +103,13 @@ export const importBatchService = {
    *
    * ⚠️ WARNING: May cascade delete linked papers (check database constraints)
    */
-  async deleteImportBatch(id: string): Promise<DeleteImportBatchResponse> {
-    const response = await api.delete<DeleteImportBatchResponse>(`/import-batches/${id}`);
+  async deleteImportBatch(
+    processId: string,
+    id: string,
+  ): Promise<DeleteImportBatchResponse> {
+    const response = await api.delete<DeleteImportBatchResponse>(
+      `/identification-processes/${processId}/import-batches/${id}`,
+    );
     return response.data;
   },
 

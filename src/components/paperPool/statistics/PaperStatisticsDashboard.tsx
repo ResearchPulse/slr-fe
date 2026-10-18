@@ -10,7 +10,7 @@ import {
 import StatCard from "./StatCard";
 import ChartCard from "./ChartCard";
 import BarChartComponent from "./BarChartComponent";
-import PieChartComponent from "./PieChartComponent";
+import DistributionDonutChart from "./DistributionDonutChart";
 import LineChartComponent from "./LineChartComponent";
 import FilterPanel from "./FilterPanel";
 
@@ -92,7 +92,7 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
   });
 
   return (
-    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-4 duration-500 bg-bg-secondary/30 p-1 rounded-xl">
+    <div className="flex flex-col gap-4 animate-in fade-in slide-in-from-bottom-4 duration-500 sm:gap-5">
       {/* Filters Area */}
       <FilterPanel
         filters={filters}
@@ -102,19 +102,19 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
       />
 
       {/* KPI Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5 sm:gap-5">
         <StatCard
           title="Total Papers"
           value={overview?.totalPapers ?? 0}
           icon={FiFileText}
-          color="#3b82f6"
+          color="var(--color-accent)"
           loading={isLoadingOverview}
         />
         <StatCard
           title="Fulltext Papers"
           value={overview?.totalPapersWithFulltext ?? 0}
           icon={FiCheckCircle}
-          color="#10b981"
+          color="var(--color-success)"
           loading={isLoadingOverview}
         />
         <StatCard
@@ -126,33 +126,35 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
           }
           suffix="%"
           icon={FiActivity}
-          color="#8b5cf6"
+          color="var(--color-info)"
           loading={isLoadingOverview}
         />
         <StatCard
           title="Missing DOI"
           value={overview?.totalMissingDoi ?? 0}
           icon={FiAlertTriangle}
-          color="#f59e0b"
+          color="var(--color-warning)"
           loading={isLoadingOverview}
         />
         <StatCard
           title="Missing Abstract"
           value={overview?.totalMissingAbstract ?? 0}
           icon={FiAlertTriangle}
-          color="#ef4444"
+          color="var(--color-error)"
           loading={isLoadingOverview}
         />
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-12 sm:gap-5">
         {/* Trend */}
         <div className="lg:col-span-8">
           <ChartCard
             title="Papers by Year (Trend)"
+            description="Paper count by publication year."
             loading={isLoadingByYear}
             isEmpty={!byYear?.length}
+            emptyDescription="No publication-year values match the current filters."
           >
             <LineChartComponent data={byYear ?? []} xKey="year" yKey="count" />
           </ChartCard>
@@ -162,13 +164,15 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-4">
           <ChartCard
             title="Publication Types"
+            description="Share and paper count by publication type."
             loading={isLoadingPubTypes}
-            isEmpty={!pubTypes?.length}
+            isEmpty={!pubTypes?.some((item) => item.count > 0)}
+            emptyDescription="No publication-type records match the current filters."
           >
-            <PieChartComponent
+            <DistributionDonutChart
               data={pubTypes ?? []}
-              nameKey="label"
-              valueKey="count"
+              totalLabel="Total publications"
+              itemLabel="publication"
             />
           </ChartCard>
         </div>
@@ -177,8 +181,10 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-6">
           <ChartCard
             title="Top 10 Journals"
+            description="Paper count grouped by journal title."
             loading={isLoadingJournals}
             isEmpty={!journals?.length}
+            emptyDescription="No journal titles are stored for the current records."
           >
             <BarChartComponent
               data={journals ?? []}
@@ -193,8 +199,10 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-6">
           <ChartCard
             title="Top 10 Conferences"
+            description="Paper count grouped by conference or proceedings."
             loading={isLoadingConferences}
             isEmpty={!conferences?.length}
+            emptyDescription="Conference and proceedings details are not available in these records."
           >
             <BarChartComponent
               data={conferences ?? []}
@@ -209,14 +217,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-6">
           <ChartCard
             title="Language Distribution"
+            description="Paper count grouped by language."
             loading={isLoadingLanguages}
-            isEmpty={!languages?.length}
+            isEmpty={!languages?.some((item) => item.count > 0)}
+            emptyDescription="No language data matches the current filters."
           >
-            <PieChartComponent
-              data={languages ?? []}
-              nameKey="label"
-              valueKey="count"
-            />
+            <DistributionDonutChart data={languages ?? []} />
           </ChartCard>
         </div>
 
@@ -224,14 +230,12 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-6">
           <ChartCard
             title="Fulltext Status"
+            description="Records with a PDF or full text available."
             loading={isLoadingFulltextStatus}
-            isEmpty={!fulltextStatus?.length}
+            isEmpty={!fulltextStatus?.some((item) => item.count > 0)}
+            emptyDescription="No papers with full-text status match the current filters."
           >
-            <PieChartComponent
-              data={fulltextStatus ?? []}
-              nameKey="label"
-              valueKey="count"
-            />
+            <DistributionDonutChart data={fulltextStatus ?? []} />
           </ChartCard>
         </div>
 
@@ -239,8 +243,10 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-8">
           <ChartCard
             title="Top 20 Keywords"
+            description="Most frequent keywords across the filtered papers."
             loading={isLoadingKeywords}
             isEmpty={!keywords?.length}
+            emptyDescription="No keyword metadata is stored for the current records."
           >
             <BarChartComponent
               data={keywords ?? []}
@@ -255,39 +261,43 @@ const PaperStatisticsDashboard: React.FC<PaperStatisticsDashboardProps> = ({
         <div className="lg:col-span-4">
           <ChartCard
             title="Data Quality Issues"
+            description="Missing bibliographic fields in the filtered papers."
             loading={isLoadingDataQuality}
             isEmpty={!dataQuality}
+            emptyDescription="Data quality information is not available for the current filters."
           >
-            <div className="space-y-4">
+            <div className="flex h-full min-h-[260px] flex-col divide-y divide-border">
               <QualityIssue
                 label="Missing DOI"
                 count={dataQuality?.missingDoiCount ?? 0}
-                color="#f59e0b"
+                color="var(--color-warning)"
               />
               <QualityIssue
                 label="Missing Abstract"
                 count={dataQuality?.missingAbstractCount ?? 0}
-                color="#ef4444"
+                color="var(--color-error)"
               />
               <QualityIssue
                 label="Missing Authors"
                 count={dataQuality?.missingAuthorsCount ?? 0}
-                color="#3b82f6"
+                color="var(--color-accent)"
               />
               <QualityIssue
                 label="Missing Year"
                 count={dataQuality?.missingYearCount ?? 0}
-                color="#6366f1"
+                color="var(--color-info)"
               />
             </div>
           </ChartCard>
         </div>
         {/* Top Publishers */}
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-12">
           <ChartCard
             title="Top 10 Publishers"
+            description="Paper count grouped by publisher."
             loading={isLoadingPublishers}
             isEmpty={!publishers?.length}
+            emptyDescription="Publisher metadata is not available in these records."
           >
             <BarChartComponent
               data={publishers ?? []}
@@ -307,17 +317,17 @@ const QualityIssue: React.FC<{
   count: number;
   color: string;
 }> = ({ label, count, color }) => (
-  <div className="flex items-center justify-between p-3.5 bg-bg-secondary/50 rounded-xl border border-border hover:bg-bg-secondary transition-colors">
-  <div className="flex items-center gap-3">
+  <div className="flex flex-1 items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+    <div className="flex items-center gap-3">
       <div
-        className="w-2.5 h-2.5 rounded-full shadow-none"
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
         style={{ backgroundColor: color }}
       />
-      <span className="font-semibold text-text-secondary uppercase tracking-[0.1em] text-[10px]">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-secondary">
         {label}
       </span>
     </div>
-    <span className="text-lg font-bold text-text-primary">{count}</span>
+    <span className="text-lg font-bold tabular-nums text-text-primary">{count}</span>
   </div>
 );
 

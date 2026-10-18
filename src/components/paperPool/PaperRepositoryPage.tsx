@@ -298,9 +298,10 @@ export default function PaperRepositoryPage({
       )}
 
       {/* Main Content: Sidebar + Table */}
-      <div className="flex flex-col items-stretch gap-4 lg:min-h-[calc(100vh-15rem)] lg:flex-row lg:items-stretch lg:gap-5">
+      <div className="flex flex-col items-stretch gap-4 lg:min-h-[calc(100dvh-7rem)] lg:flex-row lg:items-stretch lg:gap-5">
         <FilterSidebar
           filters={filters}
+          availablePaperSources={metadata?.paperSources ?? []}
           availableSources={metadata?.searchSources ?? []}
           availableBatches={metadata?.importBatches ?? []}
           isCollapsed={isFilterPanelCollapsed}

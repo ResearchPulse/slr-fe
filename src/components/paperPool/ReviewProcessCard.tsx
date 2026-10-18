@@ -50,9 +50,9 @@ export default function ReviewProcessCard({
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-3 mb-3">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <div
-            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-colors shadow-sm ${
+            className={`h-10 w-10 shrink-0 rounded-xl flex items-center justify-center transition-colors shadow-sm ${
               isSelected
                 ? "bg-accent text-surface-white"
                 : "bg-surface-white border border-border text-accent"
@@ -60,7 +60,7 @@ export default function ReviewProcessCard({
           >
             <FiUsers className="w-5 h-5" />
           </div>
-          <div className="text-left">
+          <div className="min-w-0 flex-1 text-left">
             <p className="text-sm font-serif font-bold text-text-primary line-clamp-1">
               {process.processName}
             </p>
@@ -72,7 +72,7 @@ export default function ReviewProcessCard({
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1">
+        <div className="flex shrink-0 flex-col items-end gap-1">
           <span className="px-2 py-0.5 bg-surface-white text-text-primary rounded-xl text-[8px] font-bold uppercase tracking-widest border border-border shadow-sm">
             Independent
           </span>

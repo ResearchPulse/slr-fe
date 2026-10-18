@@ -19,50 +19,50 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableSources,
 }) => {
   return (
-    <div className="bg-surface-white p-5 rounded-xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-5">
-      <div className="flex items-center gap-4">
-        <div className="h-11 w-11 bg-slate-900 text-white rounded-xl flex items-center justify-center">
-          <FiFilter className="h-5 w-5" />
+    <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface-white p-4 shadow-sm sm:p-5 lg:flex-row lg:items-center lg:gap-6">
+      <div className="flex min-w-0 items-center gap-3 lg:w-[min(36%,20rem)] lg:shrink-0">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-accent">
+          <FiFilter className="h-4.5 w-4.5" aria-hidden="true" />
         </div>
-        <div>
-          <h2 className="text-lg font-bold text-text-primary uppercase tracking-tight">
-            Dashboard <span className="text-accent">Filters</span>
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold text-text-primary sm:text-base">
+            Dashboard filters
           </h2>
-          <p className="text-[10px] font-semibold text-text-secondary uppercase tracking-[0.12em] mt-0.5">
+          <p className="mt-0.5 text-xs text-text-secondary">
             Refine data across all visualizations
           </p>
         </div>
       </div>
 
-      <div className="flex flex-wrap items-end gap-4">
-        <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
+      <div className="flex flex-1 flex-wrap items-end gap-x-3 gap-y-3 p-3 sm:justify-end lg:ml-auto lg:flex-none lg:justify-end">
+        <div className="flex min-w-[150px] flex-1 flex-col gap-1.5 sm:max-w-48">
+          <label htmlFor="paper-statistics-source" className="text-[10px] font-semibold text-text-secondary uppercase tracking-[0.12em]">
             Source
           </label>
-          <div className="w-56">
-            <Select
-              value={filters.source || ""}
-              onChange={(e) =>
-                onFilterChange({
-                  ...filters,
-                  source: e.target.value || undefined,
-                })
-              }
-              options={[
-                { label: "All Sources", value: "" },
-                ...availableSources.map((s) => ({ label: s, value: s })),
-              ]}
-              className="rounded-xl border border-border focus:border-accent transition-all text-sm"
-            />
-          </div>
+          <Select
+            id="paper-statistics-source"
+            value={filters.source || ""}
+            onChange={(e) =>
+              onFilterChange({
+                ...filters,
+                source: e.target.value || undefined,
+              })
+            }
+            options={[
+              { label: "All Sources", value: "" },
+              ...availableSources.map((s) => ({ label: s, value: s })),
+            ]}
+            className="w-full rounded-lg border border-border text-sm focus:border-accent"
+          />
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
+        <fieldset className="flex min-w-0 flex-col gap-1.5">
+          <legend className="text-[10px] font-semibold text-text-secondary uppercase tracking-[0.12em]">
             Year Range
-          </label>
+          </legend>
           <div className="flex items-center gap-2">
             <Input
+              aria-label="Start year"
               type="number"
               placeholder="From"
               min={1900}
@@ -77,10 +77,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   yearFrom: value ? parseInt(value, 10) : undefined,
                 });
               }}
-              className="w-24 rounded-xl border border-border focus:border-accent text-sm"
+              className="w-[4.5rem] rounded-lg border border-border text-sm focus:border-accent"
             />
-            <span className="text-slate-300 font-bold">-</span>
+            <span aria-hidden="true" className="text-xs text-text-muted">to</span>
             <Input
+              aria-label="End year"
               type="number"
               placeholder="To"
               min={1900}
@@ -95,21 +96,22 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                   yearTo: value ? parseInt(value, 10) : undefined,
                 });
               }}
-              className="w-24 rounded-xl border border-border focus:border-accent text-sm"
+              className="w-[4.5rem] rounded-lg border border-border text-sm focus:border-accent"
             />
           </div>
-        </div>
+        </fieldset>
 
         <Button
           variant="ghost"
+          size="md"
           onClick={onReset}
-          className="rounded-xl text-text-secondary hover:text-primary-hover hover:bg-primary-light h-10 px-3 font-semibold uppercase tracking-[0.1em] text-[10px]"
+          className="h-10 px-3 normal-case tracking-normal text-text-secondary hover:bg-surface-white hover:text-primary-hover"
         >
-          <FiRefreshCw className="mr-2" />
+          <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
           Reset
         </Button>
       </div>
-    </div>
+    </section>
   );
 };
 

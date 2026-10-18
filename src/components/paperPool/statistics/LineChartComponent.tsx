@@ -28,38 +28,45 @@ const LineChartComponent: React.FC<LineChartComponentProps> = ({
       >
         <defs>
           <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.1} />
-            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+            <stop offset="5%" stopColor="#0071BC" stopOpacity={0.1} />
+            <stop offset="95%" stopColor="#0071BC" stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid
           strokeDasharray="3 3"
           vertical={false}
-          stroke="#f1f5f9"
+          stroke="#DCE4E9"
         />
         <XAxis
           dataKey={xKey}
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
+          tick={{ fontSize: 12, fontWeight: 500, fill: "#647381" }}
           dy={10}
         />
         <YAxis
           axisLine={false}
           tickLine={false}
-          tick={{ fontSize: 12, fontWeight: 600, fill: "#64748b" }}
+          tick={{ fontSize: 12, fontWeight: 500, fill: "#647381" }}
         />
         <Tooltip
+          formatter={(value) => [
+            `${Number(value ?? 0).toLocaleString()} papers`,
+            "Records",
+          ]}
+          labelFormatter={(label) => `Year ${label}`}
           contentStyle={{
-            borderRadius: "12px",
-            border: "none",
-            boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+            borderRadius: "8px",
+            border: "1px solid #DCE4E9",
+            boxShadow: "0 4px 8px rgb(18 35 49 / 0.08)",
           }}
+          labelStyle={{ color: "#122331", fontWeight: 600, marginBottom: 4 }}
+          itemStyle={{ color: "#647381", fontSize: 12 }}
         />
         <Area
           type="monotone"
           dataKey={yKey}
-          stroke="#3b82f6"
+          stroke="#0071BC"
           strokeWidth={3}
           fillOpacity={1}
           fill="url(#colorCount)"

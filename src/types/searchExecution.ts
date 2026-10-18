@@ -76,8 +76,9 @@ export interface SearchExecutionResponse {
  * Backend: SRSS.IAM.Services.DTOs.Identification.PrismaStatisticsResponse
  *
  * @remarks
- * - duplicateRecords is currently 0 (deduplication not yet implemented)
- * - uniqueRecords equals totalRecordsImported until deduplication is added
+ * - duplicateRecords includes import-time and project deduplication matches
+ * - uniqueRecords counts non-duplicate papers advanced beyond the imported state
+ * - pendingSelectionCount counts unique papers not yet assigned to a review dataset
  * - importBatchCount is the total across all search executions
  */
 export interface PrismaStatisticsResponse {

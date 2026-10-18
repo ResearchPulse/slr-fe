@@ -127,11 +127,10 @@ export default function PaperTable({
       <div
         className="flex-1 overflow-auto custom-scrollbar"
         style={{
-          maxHeight: "calc(100vh - 400px)",
           minHeight: papers.length === 0 ? "180px" : "0",
         }}
       >
-        <table className="w-full border-collapse">
+        <table className="w-full table-fixed border-collapse">
           <thead className="sticky top-0 z-10 border-b border-border bg-white">
             <tr className="text-left">
               {isLeader && (
@@ -154,7 +153,7 @@ export default function PaperTable({
               >
                 Paper ID
               </th>
-              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="w-[360px] max-w-[360px] whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Title & Authors
               </th>
               <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">

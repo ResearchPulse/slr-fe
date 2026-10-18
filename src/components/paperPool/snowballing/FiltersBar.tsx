@@ -1,5 +1,6 @@
 import React from "react";
 import { Search } from "lucide-react";
+import Select from "../../ui/Select";
 
 interface FiltersBarProps {
   searchTerm: string;
@@ -21,46 +22,47 @@ const FiltersBar: React.FC<FiltersBarProps> = ({
   years,
 }) => {
   return (
-    <div className="p-4 border-b border-border bg-surface-white sticky top-0 z-20">
-      <div className="flex flex-col md:flex-row gap-4 justify-between items-start md:items-center max-w-7xl mx-auto">
-        <div className="relative flex-1 w-full max-w-md">
-          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-            <Search className="h-4 w-4 text-text-secondary" />
+    <div className="sticky top-0 z-20 border-b border-border bg-surface-white p-3 sm:p-4">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative min-w-0 flex-1">
+          <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+            <Search className="h-4 w-4 text-text-muted" />
           </div>
           <input
             type="text"
+            aria-label="Search references"
             placeholder="Search title, authors, or origin paper..."
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none block w-full pl-10 pr-4"
+            className="block h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-10 pr-4 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 placeholder:text-text-tertiary"
           />
         </div>
 
-        <div className="flex flex-wrap gap-3 w-full md:w-auto">
-          <select
+        <div className="grid w-full grid-cols-2 gap-2 sm:w-auto sm:min-w-[260px] sm:gap-3">
+          <Select
             value={status}
-            onChange={(e) => onStatusChange(e.target.value)}
-            className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none flex-1 md:flex-initial pl-3 pr-8 cursor-pointer"
-          >
-            <option value="all">All Statuses</option>
-            <option value="0">Detected</option>
-            <option value="1">Matched</option>
-            <option value="2">Rejected</option>
-            <option value="3">Suggested</option>
-          </select>
+            onChange={(event) => onStatusChange(event.target.value)}
+            aria-label="Filter by status"
+            className="h-11 text-sm"
+            options={[
+              { value: "all", label: "All statuses" },
+              { value: "0", label: "Detected" },
+              { value: "1", label: "Matched" },
+              { value: "2", label: "Rejected" },
+              { value: "3", label: "Suggested" },
+            ]}
+          />
 
-          <select
+          <Select
             value={year}
-            onChange={(e) => onYearChange(e.target.value)}
-            className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none flex-1 md:flex-initial pl-3 pr-8 cursor-pointer"
-          >
-            <option value="all">All Years</option>
-            {years.map((y) => (
-              <option key={y} value={y}>
-                {y}
-              </option>
-            ))}
-          </select>
+            onChange={(event) => onYearChange(event.target.value)}
+            aria-label="Filter by year"
+            className="h-11 text-sm"
+            options={[
+              { value: "all", label: "All years" },
+              ...years.map((value) => ({ value, label: value })),
+            ]}
+          />
         </div>
       </div>
     </div>

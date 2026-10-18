@@ -20,7 +20,7 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
   return (
     <div className="group relative overflow-hidden rounded-xl border border-border bg-white p-5 shadow-sm lg:p-6">
       {/* Background Decor */}
-      <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary-light/70 transition-transform duration-700 group-hover:scale-110" />
+      <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary-light/70" />
 
       <div className="relative">
         <div className="flex flex-wrap items-center gap-2 mb-4">

@@ -42,6 +42,7 @@ export default function IdentificationPhaseWorkspace() {
         <PrismaSummaryCards
           prismaStats={ws.prismaStats}
           statsLoading={ws.statsLoading}
+          statsError={ws.statsError}
           onTabChange={ws.setActiveTab}
         />
 
@@ -91,6 +92,7 @@ export default function IdentificationPhaseWorkspace() {
                 importBatchesError={ws.importBatchesError}
                 isDragging={ws.isDragging}
                 onRetry={ws.handleRetryLoadImportBatches}
+                onDeleteImportBatch={ws.handleDeleteImportBatch}
                 onDragOver={(e) => {
                   e.preventDefault();
                   ws.setIsDragging(true);

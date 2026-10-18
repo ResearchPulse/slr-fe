@@ -10,6 +10,7 @@ export const QUERY_KEYS = {
     all: ["projects"] as const,
     list: (userId: string, params?: object) => ["projects", "list", { userId, ...params }] as const,
     myList: (userId: string, params?: object) => ["projects", "my", { userId, ...params }] as const,
+    deleted: (userId: string, params?: object) => ["projects", "deleted", { userId, ...params }] as const,
     detail: (id: string, userId: string) => ["projects", "detail", id, { userId }] as const,
     members: (projectId: string, params?: object) =>
       ["projects", projectId, "members", { ...params }] as const,
