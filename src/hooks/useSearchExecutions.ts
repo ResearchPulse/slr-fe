@@ -10,6 +10,7 @@ import { getErrorMessage } from "../utils/errorUtils";
 import type {
   CreateSearchExecutionRequest,
   UpdateSearchExecutionRequest,
+  GetSearchExecutionsResponse,
   SearchExecutionResponse,
   PrismaStatisticsResponse,
 } from "../types/searchExecution";
@@ -133,11 +134,31 @@ export const useSearchExecutionMutations = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: ({ id }: { id: string; processId?: string }) =>
-      searchExecutionService.deleteSearchExecution(id),
-    onSuccess: (_, variables) => {
-      toastSuccess("Search execution deleted successfully");
+    mutationFn: ({ id, processId }: { id: string; processId?: string }) => {
+      if (!processId) {
+        throw new Error("An identification process is required to delete a search strategy");
+      }
+      return searchExecutionService.deleteSearchExecution(processId, id);
+    },
+    onSuccess: (response, variables) => {
+      if (!response.isSuccess) {
+        toastError(response.message || "Failed to delete search strategy");
+        return;
+      }
+      toastSuccess("Strategy and related imported data deleted successfully");
+      if (variables.processId) {
+        queryClient.setQueryData<GetSearchExecutionsResponse>(
+          QUERY_KEYS.identification.searchExecutions(variables.processId),
+          (current) => current
+            ? { ...current, data: current.data.filter((strategy) => strategy.id !== variables.id) }
+            : current,
+        );
+      }
       invalidate(variables.processId);
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.importBatches.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.papers.all });
+      queryClient.invalidateQueries({ queryKey: ["paper-pool"] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.identification.all });
     },
     onError: (error) => {
       toastError(getErrorMessage(error, "Failed to delete search execution"));

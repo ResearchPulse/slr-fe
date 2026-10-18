@@ -220,7 +220,7 @@ export default function ReviewerPdfPanel({
             </span>
           ) : null}
         </div>
-        <div className="relative min-h-0 flex-1 overflow-hidden bg-[#F8FAFC]">
+        <div className="relative min-h-0 flex-1 overflow-hidden bg-bg-secondary">
           {effectiveDocumentUrl ? (
             <Worker workerUrl={PDF_WORKER_URL}>
               <Viewer

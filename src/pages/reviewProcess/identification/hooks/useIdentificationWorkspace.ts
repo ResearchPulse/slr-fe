@@ -130,7 +130,14 @@ export const useIdentificationWorkspace = () => {
     refetch: refetchStatistics,
   } = usePrismaStatistics(identificationPhaseId);
 
-  const { createSearchExecution, updateSearchExecution, deleteSearchExecution, isCreating, isUpdating } = useSearchExecutionMutations();
+  const {
+    createSearchExecution,
+    updateSearchExecution,
+    deleteSearchExecution,
+    isCreating,
+    isUpdating,
+    isDeleting: isDeletingStrategy,
+  } = useSearchExecutionMutations();
 
   const {
     importBatches,
@@ -145,9 +152,12 @@ export const useIdentificationWorkspace = () => {
     isLoading: importBatchPapersLoading,
     error: importBatchPapersError,
     refetch: refetchImportBatchPapers,
-  } = useImportBatchPapers(viewingBatchId);
+  } = useImportBatchPapers(identificationPhaseId, viewingBatchId);
 
-  const { deleteImportBatch } = useImportBatchMutations();
+  const {
+    deleteImportBatch,
+    isDeleting: isDeletingImportBatch,
+  } = useImportBatchMutations();
 
   const {
     papers: readyPapers,
@@ -178,6 +188,7 @@ export const useIdentificationWorkspace = () => {
     handleQuickImport,
     handleImportSubmit: importSubmit,
   } = useFileImport({
+    projectId,
     identificationPhaseId,
     onImportSuccess: () => {
       if (identificationPhaseId) {
@@ -210,7 +221,7 @@ export const useIdentificationWorkspace = () => {
   const handleCreateStrategy = useCallback(
     async (data: CreateSearchExecutionRequest) => {
       if (!identificationPhaseId) {
-        toastError("Identification phase ID is required");
+        toastError("Identification module is unavailable");
         return;
       }
 
@@ -271,55 +282,49 @@ export const useIdentificationWorkspace = () => {
   }, []);
 
   const handleImportSubmit = useCallback(
-    async (file: File, source?: string, strategyId?: string) => {
-      const success = await importSubmit(file, source, strategyId);
+    async (file: File, source?: string, searchExecutionId?: string) => {
+      const linkedRun = searchExecutions.find((run) => run.id === searchExecutionId);
+      const success = await importSubmit(
+        file,
+        linkedRun?.searchSource || source || "",
+        searchExecutionId,
+      );
       if (success) {
         setIsImportModalOpen(false);
       }
     },
-    [importSubmit],
+    [importSubmit, searchExecutions],
   );
 
   const handleDeleteStrategy = useCallback(
     async (strategyId: string) => {
       if (!identificationPhaseId) return;
 
-      const strategy = searchExecutions.find((s) => s.id === strategyId);
-      const batchCount = strategy?.importBatchCount || 0;
-
-      if (batchCount > 0) {
-        toastError(
-          `Cannot delete: ${batchCount} import batch${batchCount > 1 ? "es" : ""} exist. Delete them first.`,
-        );
-        return;
-      }
-
       setPendingDelete({ kind: "strategy", id: strategyId });
     },
-    [identificationPhaseId, searchExecutions],
+    [identificationPhaseId],
   );
 
   const performDeleteStrategy = useCallback(
     async (strategyId: string) => {
-      if (!identificationPhaseId) return;
+      if (!identificationPhaseId) return false;
 
       try {
         const response = await deleteSearchExecution({
           id: strategyId,
           processId: identificationPhaseId,
         });
-        if (response?.isSuccess) {
-          console.log("Strategy deleted successfully");
-        }
+        return Boolean(response?.isSuccess);
       } catch (error) {
         console.error("Failed to delete search strategy:", error);
+        return false;
       }
     },
     [identificationPhaseId, deleteSearchExecution],
   );
 
   const handleViewImportPapers = useCallback((importBatchId: string) => {
-    // Just set the batch ID — useImportBatchPapers(viewingBatchId) fetches automatically
+    // Setting the batch ID triggers the batch papers query automatically.
     setViewingBatchId(importBatchId);
     setIsPapersDrawerOpen(true);
   }, []);
@@ -335,41 +340,46 @@ export const useIdentificationWorkspace = () => {
 
   const performDeleteImportBatch = useCallback(
     async (importBatchId: string) => {
-      if (!identificationPhaseId) return;
+      if (!identificationPhaseId) return false;
 
       try {
         const response = await deleteImportBatch({
           id: importBatchId,
           processId: identificationPhaseId,
         });
-        if (response?.isSuccess) {
-          console.log("Import batch deleted successfully");
-          // Statistics invalidation is handled automatically by the mutation's onSuccess
-        }
+        return Boolean(response?.isSuccess);
       } catch (error) {
         console.error("Failed to delete import batch:", error);
+        return false;
       }
     },
     [identificationPhaseId, deleteImportBatch],
   );
 
   const handleCancelPendingDelete = useCallback(() => {
+    if (isDeletingStrategy || isDeletingImportBatch) return;
     setPendingDelete(null);
-  }, []);
+  }, [isDeletingStrategy, isDeletingImportBatch]);
 
   const handleConfirmPendingDelete = useCallback(async () => {
     if (!pendingDelete) return;
     const { kind, id } = pendingDelete;
-    setPendingDelete(null);
+    let deleted = false;
     if (kind === "strategy") {
-      await performDeleteStrategy(id);
+      deleted = await performDeleteStrategy(id);
     } else {
-      await performDeleteImportBatch(id);
+      deleted = await performDeleteImportBatch(id);
     }
+    if (deleted) setPendingDelete(null);
   }, [pendingDelete, performDeleteStrategy, performDeleteImportBatch]);
 
   const handleBack = useCallback(() => {
-    navigate(`/projects/${projectId}/processes/${processId}`);
+    if (projectId && processId && processId !== "undefined" && processId !== "null") {
+      navigate(`/projects/${projectId}/processes/${processId}`);
+      return;
+    }
+
+    navigate(projectId ? `/projects/${projectId}/overview` : "/projects");
   }, [navigate, projectId, processId]);
 
   const handleRefreshData = useCallback(() => {
@@ -389,13 +399,13 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.start(identificationPhaseId);
       if (response.isSuccess) {
-        toastSuccess("Identification phase started!");
+        toastSuccess("Identification module started");
         refetchIdentificationProcess();
         handleRefreshData();
       }
     } catch (error) {
       console.error("Failed to start phase:", error);
-      toastError(error instanceof Error ? error.message : "Failed to start phase");
+      toastError(error instanceof Error ? error.message : "Failed to start identification module");
     }
   }, [identificationPhaseId, refetchIdentificationProcess, handleRefreshData]);
 
@@ -404,13 +414,13 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.reopen(identificationPhaseId);
       if (response.isSuccess) {
-        toastSuccess("Identification phase reopened!");
+        toastSuccess("Identification module reopened");
         refetchIdentificationProcess();
         handleRefreshData();
       }
     } catch (error) {
       console.error("Failed to reopen phase:", error);
-      toastError(error instanceof Error ? error.message : "Failed to reopen phase");
+      toastError(error instanceof Error ? error.message : "Failed to reopen identification module");
     }
   }, [identificationPhaseId, refetchIdentificationProcess, handleRefreshData]);
 
@@ -478,7 +488,7 @@ export const useIdentificationWorkspace = () => {
     try {
       const response = await identificationProcessService.complete(identificationPhaseId);
       if (response.isSuccess) {
-        toastSuccess("Identification phase completed successfully!");
+        toastSuccess("Identification module completed successfully");
         setIsCompleteModalOpen(false);
         // Invalidate queries to refresh status
         refetchIdentificationProcess();
@@ -486,7 +496,7 @@ export const useIdentificationWorkspace = () => {
       }
     } catch (error) {
       console.error("Failed to complete identification phase:", error);
-      toastError(error instanceof Error ? error.message : "Failed to complete phase");
+      toastError(error instanceof Error ? error.message : "Failed to complete identification module");
     } finally {
       setIsCompleting(false);
     }
@@ -553,6 +563,8 @@ export const useIdentificationWorkspace = () => {
     setEditingStrategy,
     isUpdating,
     isCreating,
+    isDeletingStrategy,
+    isDeletingImportBatch,
     isImportModalOpen,
     setIsImportModalOpen,
     importModalMode,

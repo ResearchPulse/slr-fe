@@ -27,8 +27,10 @@ import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMemb
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 import { aiProjectSetupService } from "../../services/aiProjectSetupService";
 import OverviewTabContent from "../../components/projects/detail/OverviewTabContent";
+import SLRWorkflowOverview from "../../components/projects/detail/SLRWorkflowOverview";
 import ProjectSetupSection from "../../components/projects/detail/ProjectSetupSection";
 import PicocWizard from "../../components/projects/picocWizard/PicocWizard";
+import { picocWizardStateService } from "../../services/picocWizardStateService";
 import BusinessJustificationSection from "../../components/projects/detail/BusinessJustificationSection";
 import PaperPoolTab from "../../components/paperPool/PaperPoolTab";
 import { useSelector } from "react-redux";
@@ -40,6 +42,27 @@ type WorkflowStepKey =
   | "business-justification"
   | "project-setup"
   | "activate-project";
+
+interface PhaseAProgress {
+  reviewProtocolPassed: boolean;
+  reviewJustificationPassed: boolean;
+}
+
+function readPhaseAProgress(projectId?: string): PhaseAProgress {
+  const empty: PhaseAProgress = { reviewProtocolPassed: false, reviewJustificationPassed: false };
+  if (!projectId) return empty;
+  try {
+    const stored = localStorage.getItem(`slr-phase-a-progress:${projectId}`);
+    if (!stored) return empty;
+    const parsed = JSON.parse(stored) as Partial<PhaseAProgress>;
+    return {
+      reviewProtocolPassed: parsed.reviewProtocolPassed === true,
+      reviewJustificationPassed: parsed.reviewJustificationPassed === true,
+    };
+  } catch {
+    return empty;
+  }
+}
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -78,20 +101,38 @@ export default function ProjectDetailPage() {
     isUpdatingDates,
   } = useProjectMutations();
 
-  const { processes } = useReviewProcessesByProject(id);
+  const {
+    processes,
+    isLoading: processesLoading,
+    isError: processesError,
+    refetch: refetchProcesses,
+  } = useReviewProcessesByProject(id);
 
   const {
     needs: reviewNeeds,
+    isLoading: isReviewNeedsLoading,
     addNeed,
     isSubmitting: isNeedSubmitting,
   } = useReviewNeeds(id);
   const {
     documents,
+    isLoading: isDocumentsLoading,
     addDocument,
     isSubmitting: isDocSubmitting,
   } = useDocuments(id);
 
   const [isProjectSetupReady, setIsProjectSetupReady] = useState(false);
+  const [isProjectSetupChecking, setIsProjectSetupChecking] = useState(true);
+  const [isPicocScopeComplete, setIsPicocScopeComplete] = useState(false);
+  const [isPicocScopeChecking, setIsPicocScopeChecking] = useState(true);
+  const [hasPassedReviewProtocol, setHasPassedReviewProtocol] = useState(
+    () => readPhaseAProgress(id).reviewProtocolPassed,
+  );
+  const [hasPassedReviewJustification, setHasPassedReviewJustification] = useState(
+    () => readPhaseAProgress(id).reviewJustificationPassed,
+  );
+  const [businessJustificationInitialTab, setBusinessJustificationInitialTab] =
+    useState<"needs" | "documents" | "dates">("needs");
 
   const isLeader = useMemo(() => {
     if (!projectForHeader) return false;
@@ -122,9 +163,11 @@ export default function ProjectDetailPage() {
   const checkProjectSetupReady = useCallback(async () => {
     if (!id) {
       setIsProjectSetupReady(false);
+      setIsProjectSetupChecking(false);
       return;
     }
 
+    setIsProjectSetupChecking(true);
     try {
       const response = await aiProjectSetupService.getSetupDetails(id);
       if (!response.isSuccess || !response.data) {
@@ -147,6 +190,8 @@ export default function ProjectDetailPage() {
       setIsProjectSetupReady(hasSetup);
     } catch {
       setIsProjectSetupReady(false);
+    } finally {
+      setIsProjectSetupChecking(false);
     }
   }, [id]);
 
@@ -160,29 +205,75 @@ export default function ProjectDetailPage() {
     };
   }, [checkProjectSetupReady]);
 
+  const isReviewProtocolComplete = isPicocScopeComplete
+    && isProjectSetupReady
+    && hasPassedReviewProtocol;
+
+  useEffect(() => {
+    if (!id) return;
+    try {
+      localStorage.setItem(`slr-phase-a-progress:${id}`, JSON.stringify({
+        reviewProtocolPassed: hasPassedReviewProtocol,
+        reviewJustificationPassed: hasPassedReviewJustification,
+      } satisfies PhaseAProgress));
+    } catch {
+      // Browser storage can be disabled; step completion still persists while this page stays open.
+    }
+  }, [id, hasPassedReviewProtocol, hasPassedReviewJustification]);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (projectLoading) return () => { cancelled = true; };
+    if (!id || project?.statusText !== "Draft") {
+      setIsPicocScopeComplete(false);
+      setIsPicocScopeChecking(false);
+      return () => { cancelled = true; };
+    }
+
+    setIsPicocScopeChecking(true);
+    void picocWizardStateService.getState(id)
+      .then((record) => {
+        if (cancelled) return;
+        const requiredGates = record.qualityGate.filter((gate) => gate.gateId === "G1" || gate.gateId === "G2");
+        setIsPicocScopeComplete(
+          record.currentStep === "review"
+          && requiredGates.length === 2
+          && requiredGates.every((gate) => gate.status === "passed"),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setIsPicocScopeComplete(false);
+      })
+      .finally(() => {
+        if (!cancelled) setIsPicocScopeChecking(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [id, project?.statusText, projectLoading]);
+
   const workflowSteps: WorkflowStep[] = useMemo(() => {
     const getStatus = (stepKey: WorkflowStepKey): StepStatus => {
       if (isProjectActive) return "completed";
 
-      // PICOC can be skipped and completed later, so it never locks the other steps.
       if (stepKey === "picoc-scope") {
-        return selectedStep === "picoc-scope" ? "current" : "upcoming";
+        if (isPicocScopeChecking) return selectedStep === "picoc-scope" ? "current" : "upcoming";
+        return isPicocScopeComplete ? "completed" : selectedStep === "picoc-scope" ? "current" : "upcoming";
       }
 
       if (stepKey === "project-setup") {
-        if (!isProjectSetupReady) return selectedStep === "project-setup" ? "current" : "upcoming";
-        return selectedStep === "project-setup" ? "current" : "completed";
+        if (isPicocScopeChecking || !isPicocScopeComplete) return "locked";
+        if (isReviewProtocolComplete) return "completed";
+        return selectedStep === "project-setup" ? "current" : "upcoming";
       }
 
       if (stepKey === "business-justification") {
-        if (!isProjectSetupReady) return "locked";
+        if (isPicocScopeChecking || !isReviewProtocolComplete) return "locked";
         if (selectedStep === "business-justification") return "current";
-        if (selectedStep === "activate-project") return "completed";
-        return reviewNeeds.length > 0 || documents.length > 0 ? "completed" : "upcoming";
+        return hasPassedReviewJustification ? "completed" : "upcoming";
       }
 
       if (stepKey === "activate-project") {
-        if (!isProjectSetupReady) return "locked";
+        if (isPicocScopeChecking || !isReviewProtocolComplete) return "locked";
         return selectedStep === "activate-project" ? "current" : "upcoming";
       }
 
@@ -199,20 +290,27 @@ export default function ProjectDetailPage() {
         key: "project-setup",
         label: "Review Protocol",
         status: getStatus("project-setup"),
+        lockedReason: "Complete PICOC Scope first",
       },
       {
         key: "business-justification",
         label: "Review Justification",
         status: getStatus("business-justification"),
+        lockedReason: "Complete Review Protocol first",
       },
       {
         key: "activate-project",
         label: "Activate Review",
         status: getStatus("activate-project"),
+        lockedReason: "Complete Review Protocol first",
       },
     ];
   }, [
     isProjectActive,
+    isPicocScopeComplete,
+    isPicocScopeChecking,
+    isReviewProtocolComplete,
+    hasPassedReviewJustification,
     isProjectSetupReady,
     selectedStep,
     reviewNeeds.length,
@@ -223,8 +321,25 @@ export default function ProjectDetailPage() {
   const handleStepClick = (key: string) => {
     const step = workflowSteps.find((s) => s.key === key);
     if (!step || step.status === "locked") return;
+    if (key === "business-justification") setBusinessJustificationInitialTab("needs");
+    if (key === "activate-project") setHasPassedReviewJustification(true);
     setSelectedStep(key as WorkflowStepKey);
   };
+
+  useEffect(() => {
+    if (projectLoading || project?.statusText !== "Draft" || isPicocScopeChecking || isProjectSetupChecking) return;
+    if (!isPicocScopeComplete && selectedStep !== "picoc-scope") {
+      setSelectedStep("picoc-scope");
+      return;
+    }
+    if (
+      isPicocScopeComplete
+      && !isReviewProtocolComplete
+      && (selectedStep === "business-justification" || selectedStep === "activate-project")
+    ) {
+      setSelectedStep("project-setup");
+    }
+  }, [projectLoading, project?.statusText, isPicocScopeChecking, isProjectSetupChecking, isPicocScopeComplete, isReviewProtocolComplete, selectedStep]);
 
   // ── Modal states ─────────────────────────────────────────────────────────
   const [isNeedModalOpen, setIsNeedModalOpen] = useState(false);
@@ -372,24 +487,39 @@ export default function ProjectDetailPage() {
   // ── Activation checklist ─────────────────────────────────────────────────
   const activationChecklist = [
     {
+      id: "project-setup",
       label: "Project setup defined (Required)",
+      description: "Save the review topic, research field and scope details.",
       completed: isProjectSetupReady,
       required: true,
+      onConfigure: () => setSelectedStep("project-setup"),
     },
     {
+      id: "review-needs",
       label: "Review needs identified (Optional)",
+      description: "Record the reason and intended value of this review.",
       completed: reviewNeeds.length > 0,
       required: false,
+      onConfigure: () => setIsNeedModalOpen(true),
     },
     {
+      id: "commissioning-documents",
       label: "Commissioning documents added (Optional)",
+      description: "Attach supporting or commissioning documents for the project.",
       completed: documents.length > 0,
       required: false,
+      onConfigure: () => setIsDocModalOpen(true),
     },
     {
+      id: "project-dates",
       label: "Project dates set (Optional)",
+      description: "Set the planned start date and, if known, the end date.",
       completed: Boolean(project.startDate),
       required: false,
+      onConfigure: () => {
+        setBusinessJustificationInitialTab("dates");
+        setSelectedStep("business-justification");
+      },
     },
   ];
 
@@ -450,9 +580,13 @@ export default function ProjectDetailPage() {
                     isLeader={isLeader}
                     isProjectActive={isProjectActive}
                     isProjectSetupReady={isProjectSetupReady}
+                    isProjectSetupChecking={isProjectSetupChecking}
                     reviewNeeds={reviewNeeds}
                     documents={documents}
                     processes={processes}
+                    isProcessesLoading={processesLoading}
+                    processesError={processesError}
+                    onRetryProcesses={() => void refetchProcesses()}
                     isUpdatingDates={isUpdatingDates}
                     handleSaveProjectDates={handleSaveProjectDates}
                     setIsNeedModalOpen={setIsNeedModalOpen}
@@ -474,7 +608,10 @@ export default function ProjectDetailPage() {
               }
             />
             <Route path="workspace" element={<WorkspaceRedirect />} />
-            <Route path="*" element={<Navigate to="overview" replace />} />
+            <Route
+              path="*"
+              element={<Navigate to={`/projects/${id}/overview`} replace />}
+            />
           </Routes>
         </div>
       );
@@ -483,7 +620,7 @@ export default function ProjectDetailPage() {
     // ── Draft project workflow steps ───────────────────────────────────
     switch (selectedStep) {
       case "picoc-scope":
-        return <PicocWizard projectId={id || ""} canEdit={isLeader} />;
+        return <PicocWizard projectId={id || ""} canEdit={isLeader} onScopeCompletionChange={setIsPicocScopeComplete} />;
 
       case "business-justification":
         return (
@@ -498,7 +635,11 @@ export default function ProjectDetailPage() {
             handleSaveProjectDates={handleSaveProjectDates}
             setIsNeedModalOpen={setIsNeedModalOpen}
             setIsDocModalOpen={setIsDocModalOpen}
-            onSkip={() => setSelectedStep("activate-project")}
+            initialTab={businessJustificationInitialTab}
+            onSkip={() => {
+              setHasPassedReviewJustification(true);
+              setSelectedStep("activate-project");
+            }}
           />
         );
 
@@ -511,6 +652,7 @@ export default function ProjectDetailPage() {
             isProjectSetupReady={isProjectSetupReady}
             onSetupSaved={() => {
               setIsProjectSetupReady(true);
+              setHasPassedReviewProtocol(true);
               setSelectedStep("business-justification");
             }}
             embedded={true}
@@ -526,6 +668,7 @@ export default function ProjectDetailPage() {
             checklist={activationChecklist}
             onActivate={handleActivate}
             isActivating={activateLoading}
+            isCheckingReadiness={isProjectSetupChecking || isReviewNeedsLoading || isDocumentsLoading}
           />
         ) : (
           <div className="border border-border bg-surface-white p-6 text-sm text-text-secondary">
@@ -549,6 +692,19 @@ export default function ProjectDetailPage() {
         onSettings={() => navigate(`/projects/${id}/settings`)}
       />
 
+      {project.statusText === "Draft" && (
+        <SLRWorkflowOverview
+          projectId={id || ""}
+          isDraft
+          protocolReady={isProjectSetupReady}
+          isProtocolLoading={isProjectSetupChecking}
+          processes={processes}
+          isProcessesLoading={processesLoading}
+          processesError={processesError}
+          onRetryProcesses={() => void refetchProcesses()}
+        />
+      )}
+
       {/* ── Middle Area: Step Progress Navigation ─────────────────────────── */}
       {project.statusText === "Draft" && (
         <StepProgressNav
@@ -565,8 +721,10 @@ export default function ProjectDetailPage() {
           }
           onAction={() => {
             if (selectedStep === "project-setup") {
+              setHasPassedReviewProtocol(true);
               setSelectedStep("business-justification");
             } else if (selectedStep === "business-justification") {
+              setHasPassedReviewJustification(true);
               setSelectedStep("activate-project");
             }
           }}

@@ -91,13 +91,16 @@ export const searchExecutionService = {
 
   /**
    * Delete a search execution
-   * DELETE /api/search-executions/{id}
-   *
-   * ✅ Server-side validation: Returns 400 error if import batches exist
-   * 💡 Optional: Client can pre-validate importBatchCount for better UX
+   * DELETE /api/identification-processes/{identificationProcessId}/search-executions/{id}
+   * Deletes the strategy, its import batches, and papers imported by those batches.
    */
-  async deleteSearchExecution(id: string): Promise<DeleteSearchExecutionResponse> {
-    const response = await api.delete<DeleteSearchExecutionResponse>(`/search-executions/${id}`);
+  async deleteSearchExecution(
+    identificationProcessId: string,
+    id: string,
+  ): Promise<DeleteSearchExecutionResponse> {
+    const response = await api.delete<DeleteSearchExecutionResponse>(
+      `/identification-processes/${identificationProcessId}/search-executions/${id}`,
+    );
     return response.data;
   },
 

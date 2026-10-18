@@ -3,7 +3,6 @@ import React, {
   useCallback,
   useMemo,
   useEffect,
-  useRef,
 } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -12,8 +11,6 @@ import {
   FiEye,
   FiDownload,
   FiMenu,
-  FiUpload,
-  FiRefreshCw,
   FiFileText,
 } from "react-icons/fi";
 import Button from "../ui/Button";
@@ -29,12 +26,8 @@ import {
   useChecklistData,
   useChecklistEditorState,
 } from "../../hooks/useChecklistData";
-import { useSignalRSubscription } from "../../hooks/useSignalR";
-import { checklistApi } from "../../services/checklistService";
 import { cn } from "../../utils/cn";
 import type { HighlightArea } from "@react-pdf-viewer/highlight";
-import { AutoFillStatus } from "../../types/signalr";
-import type { ChecklistAutoFillStatusPayload } from "../../types/signalr";
 import type {
   ChecklistItemResponse,
   ReviewChecklist,
@@ -47,33 +40,13 @@ interface ChecklistDraftChange {
   isReported?: boolean;
 }
 
-/** Status labels displayed in the UI for each auto-fill stage */
-const AUTO_FILL_STAGE_LABELS: Record<string, string> = {
-  [AutoFillStatus.Queued]: "Queued — waiting to start…",
-  [AutoFillStatus.ExtractingText]: "Extracting text from PDF…",
-  [AutoFillStatus.TextExtracted]: "Text extracted successfully",
-  [AutoFillStatus.AnalyzingWithAI]: "Analyzing with AI…",
-  [AutoFillStatus.SavingResults]: "Saving results…",
-  [AutoFillStatus.Completed]: "Auto-fill complete!",
-  [AutoFillStatus.Failed]: "Auto-fill failed",
-};
-
-interface AutoFillState {
-  isActive: boolean;
-  status: string | null;
-  message: string | null;
-  completionPercentage?: number | null;
-  totalItems?: number | null;
-  mappedItems?: number | null;
-}
-
 interface ChecklistEditorProps {
   checklist: ReviewChecklist | null;
   isLoading?: boolean;
   onSave?: (changes: ChecklistDraftChange[]) => Promise<void>;
   onGenerateReport?: (format: "word" | "pdf") => Promise<void>;
-  /** Called when AI auto-fill completes so the parent can re-fetch checklist data */
-  onAutoFillCompleted?: () => void;
+  /** Members who are not the project leader can read the checklist but not change it */
+  isReadOnly?: boolean;
 }
 
 /**
@@ -85,16 +58,16 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   isLoading = false,
   onSave,
   onGenerateReport,
-  onAutoFillCompleted,
+  isReadOnly = false,
 }) => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [openPdfAfterMobileMenu, setOpenPdfAfterMobileMenu] = useState(false);
   const [sampleAnswerData, setSampleAnswerData] =
     useState<SampleAnswerData | null>(null);
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [savingItemId, setSavingItemId] = useState<string | null>(null);
   const [lastSavedAt, setLastSavedAt] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     sectionProgress,
@@ -123,10 +96,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
   // --- PDF panel state ---
   const [isPdfPanelOpen, setIsPdfPanelOpen] = useState(false);
+  const [isMobileViewport, setIsMobileViewport] = useState(() =>
+    window.matchMedia("(max-width: 1023px)").matches,
+  );
   const [activePdfCoordinate, setActivePdfCoordinate] =
     useState<HighlightArea | null>(null);
   const [pdfWidth, setPdfWidth] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    const updateViewport = () => setIsMobileViewport(mediaQuery.matches);
+    updateViewport();
+    mediaQuery.addEventListener("change", updateViewport);
+    return () => mediaQuery.removeEventListener("change", updateViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!openPdfAfterMobileMenu || isMobileMenuOpen) return;
+
+    const timeout = window.setTimeout(() => {
+      setIsPdfPanelOpen(true);
+      setOpenPdfAfterMobileMenu(false);
+    }, 300);
+    return () => window.clearTimeout(timeout);
+  }, [isMobileMenuOpen, openPdfAfterMobileMenu]);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -186,132 +180,6 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
       document.body.style.userSelect = "";
     };
   }, [isDragging]);
-
-  // --- Auto-fill state ---
-  const [autoFillState, setAutoFillState] = useState<AutoFillState>({
-    isActive: false,
-    status: null,
-    message: null,
-  });
-
-  // ─── SignalR subscription for auto-fill status updates ────────────────────
-  useSignalRSubscription(
-    "OnChecklistAutoFillStatus",
-    useCallback(
-      (payload: ChecklistAutoFillStatusPayload) => {
-        // Only process events for the current checklist
-        if (!checklist || payload.reviewChecklistId !== checklist.id) return;
-
-        const isTerminal =
-          payload.status === AutoFillStatus.Completed ||
-          payload.status === AutoFillStatus.Failed;
-
-        setAutoFillState({
-          isActive: !isTerminal,
-          status: payload.status,
-          message: payload.message,
-          completionPercentage: payload.completionPercentage,
-          totalItems: payload.totalItems,
-          mappedItems: payload.mappedItems,
-        });
-
-        // When completed, notify parent to re-fetch data
-        if (payload.status === AutoFillStatus.Completed) {
-          onAutoFillCompleted?.();
-        }
-      },
-      [checklist?.id, onAutoFillCompleted],
-    ),
-  );
-
-  // Auto-dismiss the status banner after terminal states
-  useEffect(() => {
-    if (
-      autoFillState.status === AutoFillStatus.Completed ||
-      autoFillState.status === AutoFillStatus.Failed
-    ) {
-      const timeout = setTimeout(
-        () => {
-          setAutoFillState((prev) => ({ ...prev, isActive: false }));
-        },
-        autoFillState.status === AutoFillStatus.Completed ? 5000 : 10000,
-      );
-      return () => clearTimeout(timeout);
-    }
-  }, [autoFillState.status]);
-
-  // ─── Auto-fill handler ───────────────────────────────────────────────────
-  const handleAutoFill = useCallback(
-    async (file: File) => {
-      if (!checklist) return;
-
-      // Validate file
-      if (file.type !== "application/pdf") {
-        setError("Please upload a PDF file.");
-        return;
-      }
-
-      if (file.size > 50 * 1024 * 1024) {
-        setError("File size must be less than 50MB.");
-        return;
-      }
-
-      try {
-        setError(null);
-        setAutoFillState({
-          isActive: true,
-          status: AutoFillStatus.Queued,
-          message: "Uploading PDF…",
-        });
-
-        // POST the PDF — backend returns 202 Accepted immediately
-        const initialStatus = await checklistApi.autoFillChecklist(
-          checklist.id,
-          file,
-        );
-
-        // Update with the server-confirmed initial status
-        setAutoFillState({
-          isActive: true,
-          status: initialStatus.status,
-          message: initialStatus.message,
-        });
-
-        // From here, SignalR takes over with real-time updates
-      } catch (error) {
-        setAutoFillState({
-          isActive: false,
-          status: AutoFillStatus.Failed,
-          message:
-            error instanceof Error
-              ? error.message
-              : "Failed to start auto-fill",
-        });
-        setError(
-          error instanceof Error
-            ? error.message
-            : "Failed to start auto-fill. Please try again.",
-        );
-      }
-    },
-    [checklist, setError],
-  );
-
-  const handleFileInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        handleAutoFill(file);
-      }
-      // Reset input so re-selecting the same file works
-      e.target.value = "";
-    },
-    [handleAutoFill],
-  );
-
-  const triggerFileUpload = useCallback(() => {
-    fileInputRef.current?.click();
-  }, []);
 
   const handleSave = useCallback(async () => {
     if (!onSave || !hasDraftChanges) return;
@@ -550,6 +418,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
               isSubItem={isSubItem}
               hasUnsavedChanges={hasDraftChange(itemId)}
               isLoading={isSaving && savingItemId === itemId}
+              isReadOnly={isReadOnly}
             />
           </div>
 
@@ -559,21 +428,8 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
     });
   };
 
-  const isAutoFillInProgress =
-    autoFillState.isActive && autoFillState.status !== null;
-
   return (
     <div className="flex h-screen flex-col bg-surface-white">
-      {/* Hidden file input for PDF upload */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="application/pdf"
-        onChange={handleFileInputChange}
-        className="hidden"
-        aria-label="Upload PDF for auto-fill"
-      />
-
       {/* Header */}
       <div className="fixed z-40 w-full bg-surface-white border-b border-border h-16 flex items-center px-4 sm:px-6 gap-4">
         <Button
@@ -582,6 +438,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           onClick={() => navigate(-1)}
           className="p-2"
           title="Go back"
+          aria-label="Go back"
         >
           <FiChevronLeft className="w-6 h-6 text-text-secondary" />
         </Button>
@@ -598,17 +455,6 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={triggerFileUpload}
-            disabled={isSaving || isAutoFillInProgress}
-            className="inline-flex items-center gap-2"
-            title="Upload a PDF to auto-fill checklist items using AI"
-          >
-            <FiUpload className="w-4 h-4" />
-            {isAutoFillInProgress ? "Processing…" : "Auto-Fill"}
-          </Button>
           {checklist.pdfUrl && (
             <Button
               variant="secondary"
@@ -643,7 +489,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           <Button
             size="sm"
             onClick={handleSave}
-            disabled={isSaving || !hasDraftChanges}
+            disabled={isReadOnly || isSaving || !hasDraftChanges}
             className="inline-flex items-center gap-2"
           >
             <FiSave className="w-4 h-4" />
@@ -657,6 +503,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           size="sm"
           onClick={() => setIsMobileMenuOpen(true)}
           className="md:hidden p-2"
+          aria-label="Open actions"
         >
           <FiMenu className="w-6 h-6 text-text-secondary" />
         </Button>
@@ -670,18 +517,19 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         title="Actions"
       >
         <div className="space-y-2 p-4">
-          <Button
-            variant="secondary"
-            onClick={() => {
-              triggerFileUpload();
-              setIsMobileMenuOpen(false);
-            }}
-            disabled={isSaving || isAutoFillInProgress}
-            className="w-full justify-center"
-          >
-            <FiUpload className="w-4 h-4 mr-2" />
-            {isAutoFillInProgress ? "Processing…" : "Auto-Fill from PDF"}
-          </Button>
+          {checklist.pdfUrl && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setOpenPdfAfterMobileMenu(true);
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full justify-center"
+            >
+              <FiFileText className="w-4 h-4 mr-2" />
+              View source PDF
+            </Button>
+          )}
           <Button
             variant="secondary"
             onClick={() => {
@@ -710,7 +558,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
               handleSave();
               setIsMobileMenuOpen(false);
             }}
-            disabled={isSaving || !hasDraftChanges}
+            disabled={isReadOnly || isSaving || !hasDraftChanges}
             className="w-full justify-center"
           >
             <FiSave className="w-4 h-4 mr-2" />
@@ -739,112 +587,6 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             !isDragging && "transition-all duration-300",
           )}
         >
-          {/* Auto-Fill Status Banner */}
-          {autoFillState.status && (
-            <div
-              className={cn(
-                "shrink-0 border-b px-4 sm:px-6 py-3 flex items-center gap-3 transition-all duration-300",
-                autoFillState.status === AutoFillStatus.Failed
-                  ? "bg-surface-white border-border text-red-700"
-                  : autoFillState.status === AutoFillStatus.Completed
-                    ? "bg-surface-white border-border text-green-700"
-                    : "bg-bg-secondary border-accent/20 text-accent",
-              )}
-            >
-              {autoFillState.isActive &&
-                autoFillState.status !== AutoFillStatus.Completed && (
-                  <LoadingSpinner size="sm" />
-                )}
-              {autoFillState.status === AutoFillStatus.Completed && (
-                <svg
-                  className="w-5 h-5 text-green-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-              {autoFillState.status === AutoFillStatus.Failed && (
-                <svg
-                  className="w-5 h-5 text-red-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {AUTO_FILL_STAGE_LABELS[autoFillState.status] ??
-                    autoFillState.status}
-                </p>
-                {autoFillState.message && (
-                  <p className="text-xs opacity-75 truncate">
-                    {autoFillState.message}
-                  </p>
-                )}
-              </div>
-              {autoFillState.mappedItems != null &&
-                autoFillState.totalItems != null && (
-                  <span className="text-xs font-mono whitespace-nowrap">
-                    {autoFillState.mappedItems}/{autoFillState.totalItems} items
-                  </span>
-                )}
-              {autoFillState.status === AutoFillStatus.Completed &&
-                onAutoFillCompleted && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={onAutoFillCompleted}
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs border-green-300 text-green-700 hover:bg-surface-white whitespace-nowrap"
-                    title="Refresh checklist data"
-                  >
-                    <FiRefreshCw className="w-3.5 h-3.5" />
-                    Refresh
-                  </Button>
-                )}
-              {/* Dismiss button for terminal states */}
-              {(autoFillState.status === AutoFillStatus.Completed ||
-                autoFillState.status === AutoFillStatus.Failed) && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() =>
-                    setAutoFillState((prev) => ({ ...prev, status: null }))
-                  }
-                  className="p-1 h-auto min-h-0 min-w-0"
-                  title="Dismiss"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </Button>
-              )}
-            </div>
-          )}
-
           {/* Progress Bar */}
           <div className="shrink-0 bg-linear-to-r from-primary-light to-white border-b border-border p-4 sm:p-6">
             <CompletionProgress
@@ -953,7 +695,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           <div
             style={{ width: pdfWidth ? `${pdfWidth}px` : undefined }}
             className={cn(
-              "shrink-0 flex",
+              "hidden lg:flex shrink-0",
               !isDragging && "transition-all duration-300",
               !pdfWidth && "w-[55%]",
             )}
@@ -992,6 +734,31 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           </div>
         )}
       </div>
+
+      <Drawer
+        isOpen={isPdfPanelOpen && isMobileViewport && Boolean(checklist.pdfUrl)}
+        onClose={() => {
+          setIsPdfPanelOpen(false);
+          setActivePdfCoordinate(null);
+        }}
+        title="Source PDF"
+        side="right"
+        maxWidth="max-w-5xl"
+        className="lg:hidden"
+        contentClassName="min-h-0 overflow-hidden p-0"
+      >
+        {checklist.pdfUrl && (
+          <ChecklistPdfPanel
+            pdfUrl={checklist.pdfUrl}
+            activeCoordinate={activePdfCoordinate}
+            onClose={() => {
+              setIsPdfPanelOpen(false);
+              setActivePdfCoordinate(null);
+            }}
+            showHeader={false}
+          />
+        )}
+      </Drawer>
 
       {/* Sample Answer Modal */}
       <SampleAnswerModal

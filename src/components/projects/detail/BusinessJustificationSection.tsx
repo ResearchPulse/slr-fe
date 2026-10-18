@@ -20,6 +20,7 @@ interface BusinessJustificationSectionProps {
   setIsNeedModalOpen: (open: boolean) => void;
   setIsDocModalOpen: (open: boolean) => void;
   onSkip?: () => void;
+  initialTab?: "needs" | "documents" | "dates";
 }
 
 const BusinessJustificationSection: React.FC<
@@ -36,10 +37,9 @@ const BusinessJustificationSection: React.FC<
   setIsNeedModalOpen,
   setIsDocModalOpen,
   onSkip,
+  initialTab = "needs",
 }) => {
-  const [activeTab, setActiveTab] = useState<"needs" | "documents" | "dates">(
-    "needs",
-  );
+  const [activeTab, setActiveTab] = useState<"needs" | "documents" | "dates">(initialTab);
 
   const bjTabs = [
     { key: "needs", label: "Review needs", count: reviewNeeds.length },
@@ -67,7 +67,7 @@ const BusinessJustificationSection: React.FC<
 
       {/* Sub-tabs */}
       <div className="mb-5 border-b border-border">
-        <nav aria-label="Review justification sections" className="flex gap-6 overflow-x-auto">
+        <nav aria-label="Review justification sections" className="flex gap-6 overflow-x-auto overflow-y-hidden">
           {bjTabs.map((tab) => (
             <button
               key={tab.key}

@@ -12,6 +12,7 @@ import {
   FiTrash2,
 } from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
+import Select from "../../../../components/ui/Select";
 import type { ImportBatch } from "../../../../types/identification";
 import { formatRelativeTime } from "../../../../utils/dateFormat";
 import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
@@ -108,18 +109,28 @@ export default function ImportBatchesTabContent({
       ) : (
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <select className="px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent">
-              <option>All Sources</option>
-              <option>PubMed</option>
-              <option>IEEE Xplore</option>
-              <option>ACM Digital Library</option>
-            </select>
-            <select className="px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 focus:ring-accent">
-              <option>All Statuses</option>
-              <option>Completed</option>
-              <option>Processing</option>
-              <option>Failed</option>
-            </select>
+            <Select
+              aria-label="Filter import batches by source"
+              defaultValue="all"
+              options={[
+                { value: "all", label: "All sources" },
+                { value: "PUBMED", label: "PubMed" },
+                { value: "IEEE", label: "IEEE Xplore" },
+                { value: "ACM", label: "ACM Digital Library" },
+              ]}
+              className="w-[190px]"
+            />
+            <Select
+              aria-label="Filter import batches by status"
+              defaultValue="all"
+              options={[
+                { value: "all", label: "All statuses" },
+                { value: "completed", label: "Completed" },
+                { value: "processing", label: "Processing" },
+                { value: "failed", label: "Failed" },
+              ]}
+              className="w-[170px]"
+            />
           </div>
         </div>
       )}

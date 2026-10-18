@@ -38,11 +38,13 @@ const Pagination: React.FC<PaginationProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-1">
+    <nav aria-label="Pagination" className="flex items-center gap-1">
       <button
+        type="button"
+        aria-label="Go to previous page"
         onClick={handlePrevious}
         disabled={disabled || currentPage === 1}
-        className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+        className="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
       >
         <ChevronLeft className="w-4 h-4" />
       </button>
@@ -51,9 +53,12 @@ const Pagination: React.FC<PaginationProps> = ({
         {pages.map((page) => (
           <button
             key={page}
+            type="button"
+            aria-label={`Go to page ${page}`}
+            aria-current={currentPage === page ? "page" : undefined}
             onClick={() => onPageChange(page)}
             disabled={disabled}
-            className={`min-w-[34px] h-8 rounded-xl text-[11px] font-medium uppercase tracking-[0.05em] transition-colors ${
+            className={`min-w-10 h-10 rounded-lg text-[12px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
               currentPage === page
                 ? "bg-text-primary text-bg-primary shadow-sm"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
@@ -65,13 +70,15 @@ const Pagination: React.FC<PaginationProps> = ({
       </div>
 
       <button
+        type="button"
+        aria-label="Go to next page"
         onClick={handleNext}
         disabled={disabled || currentPage === totalPages}
-        className="p-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+        className="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent"
       >
         <ChevronRight className="w-4 h-4" />
       </button>
-    </div>
+    </nav>
   );
 };
 

@@ -149,7 +149,7 @@ const AdminOverview: React.FC = () => {
           <button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(8,123,193,0.16)] transition-colors hover:bg-primary-hover"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(0,113,188,0.16)] transition-colors hover:bg-primary-hover"
           >
             <FiFolder size={15} />
             Manage projects
@@ -173,7 +173,7 @@ const AdminOverview: React.FC = () => {
               type="button"
               key={stat.label}
               onClick={() => navigate(stat.path)}
-              className="group rounded-xl border border-border bg-white p-5 text-left shadow-[0_2px_8px_rgba(23,50,71,0.025)] transition duration-200 hover:-translate-y-0.5 hover:border-text-muted hover:shadow-[0_8px_22px_rgba(23,50,71,0.06)]"
+              className="group rounded-xl border border-border bg-white p-5 text-left transition-[border-color,background-color] duration-150 hover:border-primary/50 hover:bg-primary-light/20"
             >
               <div className="flex items-start justify-between">
                 <div>

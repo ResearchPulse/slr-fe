@@ -15,6 +15,7 @@ interface ChecklistPdfPanelProps {
   pdfUrl: string;
   activeCoordinate: HighlightArea | null;
   onClose: () => void;
+  showHeader?: boolean;
 }
 
 /**
@@ -26,6 +27,7 @@ export default function ChecklistPdfPanel({
   pdfUrl,
   activeCoordinate,
   onClose,
+  showHeader = true,
 }: ChecklistPdfPanelProps) {
   const renderHighlights = useCallback(
     (renderProps: RenderHighlightsProps) => {
@@ -63,7 +65,7 @@ export default function ChecklistPdfPanel({
   return (
     <section className="flex h-full flex-col overflow-hidden border-l border-border bg-surface-white">
       {/* Panel Header */}
-      <div className="flex items-center justify-between gap-3 border-b border-border bg-bg-secondary px-4 py-2 shrink-0">
+      {showHeader && <div className="flex items-center justify-between gap-3 border-b border-border bg-bg-secondary px-4 py-2 shrink-0">
         <div className="flex items-center gap-2 min-w-0">
           <FiFileText className="w-4 h-4 text-accent shrink-0" />
           <p className="text-xs font-medium text-text-secondary truncate">
@@ -71,13 +73,15 @@ export default function ChecklistPdfPanel({
           </p>
         </div>
         <button
+          type="button"
           onClick={onClose}
           className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
           title="Close PDF panel"
+          aria-label="Close PDF panel"
         >
           <FiX className="w-4 h-4" />
         </button>
-      </div>
+      </div>}
 
       {activeCoordinate && (
         <div className="shrink-0 border-b border-accent/20 bg-bg-secondary/80 px-4 py-1.5">

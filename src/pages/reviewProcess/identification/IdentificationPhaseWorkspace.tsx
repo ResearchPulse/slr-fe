@@ -38,7 +38,7 @@ export default function IdentificationPhaseWorkspace() {
       />
 
       {/* PRISMA Summary Cards + Tab Content Area */}
-      <div className="max-w-7xl mx-auto px-6 py-6">
+      <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
         <PrismaSummaryCards
           prismaStats={ws.prismaStats}
           statsLoading={ws.statsLoading}
@@ -56,7 +56,13 @@ export default function IdentificationPhaseWorkspace() {
           />
 
           {/* Tab Content */}
-          <div className="p-6">
+          <div
+            id="identification-panel"
+            role="tabpanel"
+            aria-labelledby={`identification-tab-${ws.activeTab}`}
+            tabIndex={0}
+            className="p-4 sm:p-6"
+          >
             {ws.activeTab === "strategies" && (
               <StrategiesTabContent
                 identificationPhaseId={ws.identificationPhaseId || ""}
@@ -99,7 +105,10 @@ export default function IdentificationPhaseWorkspace() {
             )}
 
             {ws.activeTab === "searches" && (
-              <SearchesTabContent searchExecutions={ws.searchExecutions} />
+              <SearchesTabContent
+                searchExecutions={ws.searchExecutions}
+                onCreateStrategy={() => ws.setIsCreateStrategyModalOpen(true)}
+              />
             )}
 
             {ws.activeTab === "library" && (
@@ -177,6 +186,9 @@ export default function IdentificationPhaseWorkspace() {
         onConfirm={ws.handleConfirmComplete}
         isCompleting={ws.isCompleting}
         identificationPhaseId={ws.identificationPhaseId}
+        canComplete={
+          ws.searchExecutions.length > 0 || ws.prismaStats.totalRecordsImported > 0
+        }
       />
 
       <ManualDeduplicationModal
@@ -197,11 +209,16 @@ export default function IdentificationPhaseWorkspace() {
             : "Delete search strategy"
         }
         message={
-          ws.pendingDelete?.kind === "importBatch"
-            ? "Are you sure you want to delete this import batch? This may remove all associated papers."
-            : "Are you sure you want to delete this search strategy?"
+          ws.isDeletingStrategy
+            ? "Deleting the strategy, its import batches, and their imported papers. Please wait..."
+            : ws.isDeletingImportBatch
+              ? "Deleting the import batch and its associated papers. Please wait..."
+              : ws.pendingDelete?.kind === "importBatch"
+                ? "Are you sure you want to delete this import batch? This may remove all associated papers."
+                : "Are you sure you want to delete this search strategy, its import batches, and the papers imported in those batches? This action cannot be undone."
         }
-        confirmText="Delete"
+        confirmText={ws.isDeletingStrategy || ws.isDeletingImportBatch ? "Deleting..." : "Delete"}
+        isLoading={ws.isDeletingStrategy || ws.isDeletingImportBatch}
         variant="danger"
       />
 

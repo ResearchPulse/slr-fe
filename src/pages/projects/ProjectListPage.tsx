@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { FiSearch, FiFolder, FiPlus } from "react-icons/fi";
+import { FiSearch, FiFolder, FiPlus, FiRefreshCw } from "react-icons/fi";
 import { useMyProjects } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
@@ -30,7 +30,7 @@ export default function ProjectListPage() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const pageSize = 10;
 
-  const { data, projects, isLoading, error } = useMyProjects({
+  const { data, projects, isLoading, error, refetch } = useMyProjects({
     pageNumber: currentPage,
     pageSize,
     status: statusFilter,
@@ -91,7 +91,7 @@ export default function ProjectListPage() {
     navigate(`/projects/${projectId}/checklists`);
   };
 
-  const hasNoResults = !isLoading && filteredProjects.length === 0;
+  const hasNoResults = !isLoading && !error && filteredProjects.length === 0;
 
   return (
     <div className="min-h-[calc(100vh-72px)] bg-bg-primary">
@@ -114,7 +114,7 @@ export default function ProjectListPage() {
           </Button>
         </div>
 
-        <div className="mb-4 flex flex-wrap gap-2" aria-label="Filter projects by role">
+        <div className="mb-4 flex flex-wrap gap-2" role="group" aria-label="Filter projects by role">
           {([
             { value: "All", label: "All roles" },
             { value: "Project Leader", label: "Project Leader" },
@@ -149,6 +149,7 @@ export default function ProjectListPage() {
               size={14}
             />
             <Input
+              aria-label="Search projects"
               placeholder="Search projects..."
               className="h-10 rounded-xl border-border bg-surface-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
               onChange={(e) => {
@@ -173,8 +174,8 @@ export default function ProjectListPage() {
           </div>
         </div>
 
-        {error && (
-          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+        {error && data && (
+          <div role="status" className="mb-4 rounded-lg border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
             {error}
           </div>
         )}
@@ -183,13 +184,28 @@ export default function ProjectListPage() {
         <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
+          ) : error && !data ? (
+            <div role="alert" className="flex flex-col items-center justify-center px-4 py-16 text-center">
+              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-error/10 text-error">
+                <FiRefreshCw className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <h3 className="mb-2 text-lg font-semibold text-text-primary">
+                Projects couldn’t be loaded
+              </h3>
+              <p className="mb-5 max-w-sm text-sm leading-relaxed text-text-secondary">
+                {error || "Check your connection and try again."}
+              </p>
+              <Button variant="outline" onClick={() => void refetch()}>
+                Try again
+              </Button>
+            </div>
           ) : hasNoResults ? (
             <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
               <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-bg-primary text-text-secondary">
                 <FiFolder className="w-5 h-5" />
               </div>
               <h3 className="mb-2 text-lg font-semibold text-text-primary">
-                No projects yet
+                {searchQuery || statusFilter ? "No matching projects" : "No projects yet"}
               </h3>
               <p className="max-w-sm text-sm leading-relaxed text-text-secondary">
                 {searchQuery || statusFilter

@@ -101,9 +101,9 @@ export default function AssessmentPaperViewer({
     return (
       <div
         style={{
-          background: "rgba(0, 0, 0, 0.8)",
+          background: "rgba(18, 35, 49, 0.96)",
           border: "1px solid rgba(255, 255, 255, 0.2)",
-          borderRadius: "4px",
+          borderRadius: "8px",
           color: "#fff",
           cursor: "pointer",
           padding: "4px 8px",
@@ -157,12 +157,6 @@ export default function AssessmentPaperViewer({
                 <h3 className="text-sm font-semibold text-text-primary">
                   Full Text PDF
                 </h3>
-                {!isLeader && (
-                  <p className="mt-1 text-xs leading-5 text-text-secondary">
-                    Select text to add highlight to the selected criterion.
-                    Click a highlight to remove it.
-                  </p>
-                )}
               </div>
               <div className="relative w-full flex-1 overflow-hidden bg-bg-secondary">
                 <Worker

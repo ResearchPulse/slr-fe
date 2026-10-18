@@ -88,15 +88,20 @@ export const useImportBatch = (id: string | undefined, options: { enabled?: bool
 
 /**
  * Fetch all papers for a specific import batch
- * GET /api/import-batches/{id}/papers
+ * GET /api/identification-processes/{processId}/import-batches/{batchId}/papers
  * Enabled only when batchId is truthy (on-demand pattern)
  */
-export const useImportBatchPapers = (batchId: string | null | undefined) => {
+export const useImportBatchPapers = (
+  processId: string | undefined,
+  batchId: string | null | undefined,
+) => {
   const query = useQuery({
     queryKey: QUERY_KEYS.importBatches.papers(batchId || ""),
     queryFn: () =>
-      batchId ? importBatchService.getPapersByImportBatch(batchId) : Promise.reject("No batch ID"),
-    enabled: !!batchId,
+      processId && batchId
+        ? importBatchService.getPapersByImportBatch(processId, batchId)
+        : Promise.reject("No process ID or batch ID"),
+    enabled: !!processId && !!batchId,
     staleTime: 2 * 60 * 1000,
   });
 

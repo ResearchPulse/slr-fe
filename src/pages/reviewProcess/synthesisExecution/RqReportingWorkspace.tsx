@@ -178,9 +178,13 @@ function FindingEditor({
         <div className="flex flex-wrap items-center gap-4 text-sm text-text-secondary">
           <span className="inline-flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            Created: {new Date(finding.createdAt).toLocaleString()}
+            {finding.createdAt
+              ? `Created: ${new Date(finding.createdAt).toLocaleString()}`
+              : "Not saved yet"}
           </span>
-          <span>Modified: {new Date(finding.modifiedAt).toLocaleString()}</span>
+          {finding.modifiedAt && (
+            <span>Modified: {new Date(finding.modifiedAt).toLocaleString()}</span>
+          )}
         </div>
       </div>
     </div>
@@ -331,7 +335,7 @@ export default function RqReportingWorkspace({
                   <div className="flex items-center gap-2">
                     <span
                       className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: theme.colorCode ?? "#94a3b8" }}
+                      style={{ backgroundColor: theme.colorCode ?? "var(--color-text-muted)" }}
                     />
                     <p className="text-sm font-semibold text-text-primary">
                       {theme.name}

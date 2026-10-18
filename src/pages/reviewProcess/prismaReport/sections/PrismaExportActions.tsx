@@ -19,6 +19,8 @@ interface PrismaExportActionsProps {
   isGenerating: boolean;
   /** Whether report download is in progress */
   isDownloading?: boolean;
+  /** Whether the user may save a new snapshot (project leader) */
+  canGenerate?: boolean;
   /** Trigger report generation */
   onGenerate: () => void;
   /** Trigger PRISMA diagram download (.docx) */
@@ -42,6 +44,7 @@ export default function PrismaExportActions({
   isGenerating,
   isDownloading,
   cooldown = 0,
+  canGenerate = true,
   onGenerate,
   onDownloadDiagram,
   onExportPNG,
@@ -117,22 +120,24 @@ export default function PrismaExportActions({
   return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Generate / Regenerate button */}
-      <Button
-        onClick={onGenerate}
-        disabled={isGenerating || cooldown > 0}
-        className="inline-flex gap-2"
-      >
-        <FiRefreshCw
-          className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`}
-        />
-        {isGenerating
-          ? "Generating…"
-          : cooldown > 0
-            ? `Wait ${cooldown}s`
-            : hasReport
-              ? "Regenerate Diagram"
-              : "Generate Diagram"}
-      </Button>
+      {canGenerate && (
+        <Button
+          onClick={onGenerate}
+          disabled={isGenerating || cooldown > 0}
+          className="inline-flex gap-2"
+        >
+          <FiRefreshCw
+            className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`}
+          />
+          {isGenerating
+            ? "Generating…"
+            : cooldown > 0
+              ? `Wait ${cooldown}s`
+              : hasReport
+                ? "Regenerate Diagram"
+                : "Generate Diagram"}
+        </Button>
+      )}
 
       {/* Export buttons — only enabled when a report exists */}
       <div className="inline-flex items-center border border-border/70 rounded-xl overflow-hidden shadow-sm">

@@ -26,7 +26,6 @@ import type {
   RetryExtractionResponse,
   ApplyMetadataRequest,
   ApplyMetadataResponse,
-  GetPhaseStatusResponse,
   GetAssignmentPapersParams,
   GetAssignmentPapersResponse,
   ScreeningPhaseQuery,
@@ -77,14 +76,6 @@ export const studySelectionService = {
     const response = await api.post<CreateStudySelectionResponse>(
       `/review-processes/${reviewProcessId}/study-selection`,
       request ?? {},
-    );
-    return response.data;
-  },
-
-  // 1.1 Get Phase Status
-  async getPhaseStatus(studySelectionProcessId: string): Promise<GetPhaseStatusResponse> {
-    const response = await api.get<GetPhaseStatusResponse>(
-      `/study-selection/${studySelectionProcessId}/phase-status`,
     );
     return response.data;
   },

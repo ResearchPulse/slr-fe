@@ -31,9 +31,9 @@ interface ReviewerAssignmentModalProps {
 const PhaseBadge: React.FC<{ status: string }> = ({ status }) => {
   if (status === "Not Assigned" || !status) {
     return (
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-secondary border border-border text-text-secondary">
+      <div className="inline-flex items-center gap-2 rounded-lg border border-border bg-bg-secondary px-3 py-1.5 text-text-secondary">
         <Minus size={12} strokeWidth={3} />
-        <span className="text-[10px] font-black uppercase tracking-widest leading-none">
+        <span className="text-[10px] font-semibold uppercase tracking-wide leading-none">
           Not Assigned
         </span>
       </div>
@@ -46,12 +46,12 @@ const PhaseBadge: React.FC<{ status: string }> = ({ status }) => {
 
   const getColors = (d: string) => {
     if (d === "Include")
-      return "bg-emerald-50 text-emerald-700 border-emerald-100 dot-emerald-500";
+      return "bg-success/10 text-success border-success/20 dot-success";
     if (d === "Exclude")
-      return "bg-rose-50 text-rose-700 border-rose-100 dot-rose-500";
+      return "bg-error/10 text-error border-error/20 dot-error";
     if (d === "Pending")
-      return "bg-amber-50 text-amber-700 border-amber-100 dot-amber-500";
-    return "bg-bg-secondary text-text-primary border-border dot-slate-400";
+      return "bg-warning/10 text-warning border-warning/20 dot-warning";
+    return "bg-bg-secondary text-text-primary border-border dot-text-secondary";
   };
 
   const colorClass = getColors(decision);
@@ -63,14 +63,14 @@ const PhaseBadge: React.FC<{ status: string }> = ({ status }) => {
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-start gap-1 px-3 py-2 rounded-xl border shadow-sm mix-blend-multiply",
+        "inline-flex flex-col items-start gap-1 rounded-lg border px-3 py-2",
         bgColor,
         borderColor,
       )}
     >
       <div
         className={cn(
-          "flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest leading-none",
+          "flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide leading-none",
           textColor,
         )}
       >
@@ -91,11 +91,11 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   const getStyle = (s: string) => {
     switch (s) {
       case "Completed":
-        return "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-emerald-100";
+        return "border border-success/20 bg-success/10 text-success";
       case "In Progress":
-        return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-amber-100";
+        return "border border-primary/20 bg-primary-light text-primary-hover";
       default:
-        return "bg-bg-secondary text-text-secondary shadow-slate-50";
+        return "border border-border bg-bg-secondary text-text-secondary";
     }
   };
 
@@ -113,7 +113,7 @@ const StatusBadge: React.FC<{ status: string }> = ({ status }) => {
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest shadow-lg transition-transform hover:scale-105 cursor-default",
+        "inline-flex cursor-default items-center gap-2 rounded-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide",
         getStyle(status),
       )}
     >
@@ -142,7 +142,7 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
       onClose={onClose}
       title={
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-violet-700 flex items-center justify-center text-white text-xl font-black shadow-xl shadow-primary/10">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-xl font-bold text-white">
             {reviewer.reviewerName.charAt(0)}
           </div>
           <div>

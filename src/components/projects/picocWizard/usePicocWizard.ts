@@ -4,6 +4,7 @@ import { picocWizardStateService } from "../../../services/picocWizardStateServi
 import type { PicocWizardDraft, PicocWizardRecord } from "./types";
 
 export type SaveStatus = "idle" | "saving" | "saved" | "error" | "conflict";
+export type SaveResult = "saved" | "error" | "conflict" | "skipped";
 
 const AUTOSAVE_DELAY_MS = 1200;
 
@@ -53,10 +54,11 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
 
   const saveNow = useCallback(async (explicit = false) => {
     window.clearTimeout(timerRef.current);
-    if (!canEdit || !draftRef.current || conflictRef.current || savingRef.current) return;
+    if (!canEdit || !draftRef.current || conflictRef.current || savingRef.current) return "skipped" as const;
     savingRef.current = true;
     dirtyRef.current = false;
     setSaveStatus("saving");
+    let result: SaveResult = "saved";
     try {
       const saved = await picocWizardStateService.saveState(projectId, revisionRef.current, draftRef.current);
       revisionRef.current = saved.revision;
@@ -69,8 +71,10 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         conflictRef.current = true;
         setSaveStatus("conflict");
+        result = "conflict";
       } else {
         setSaveStatus("error");
+        result = "error";
       }
     } finally {
       savingRef.current = false;
@@ -79,6 +83,7 @@ export function usePicocWizard(projectId: string, canEdit: boolean) {
     if (dirtyRef.current && !conflictRef.current && draftRef.current) {
       timerRef.current = window.setTimeout(() => void saveNow(), AUTOSAVE_DELAY_MS);
     }
+    return result;
   }, [canEdit, projectId]);
 
   const update = useCallback((change: (current: PicocWizardDraft) => PicocWizardDraft) => {

@@ -12,7 +12,6 @@ import {
   FiChevronRight,
   FiFile,
   FiX,
-  FiLoader,
 } from "react-icons/fi";
 import Button from "../../ui/Button";
 import type {
@@ -85,34 +84,46 @@ export default function SearchStrategiesPanel({
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-12">
-        <FiLoader className="h-8 w-8 animate-spin text-accent" />
+      <div role="status" aria-label="Loading search strategies" className="space-y-4">
+        {[0, 1].map((item) => (
+          <div key={item} className="rounded-xl border border-border bg-surface-white p-4">
+            <div className="flex items-start gap-3">
+              <div className="h-7 w-7 shrink-0 rounded-lg bg-bg-secondary" />
+              <div className="min-w-0 flex-1 space-y-3">
+                <div className="h-3 w-24 rounded bg-bg-secondary" />
+                <div className="h-4 w-40 max-w-full rounded bg-bg-secondary" />
+                <div className="h-3 w-full max-w-lg rounded bg-bg-secondary" />
+                <div className="h-3 w-28 rounded bg-bg-secondary" />
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header with Primary CTA */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-xl font-bold text-text-primary">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h2 className="text-lg font-bold text-text-primary">
             Search Strategies
           </h2>
-          <p className="text-sm text-text-secondary mt-1">
+          <p className="mt-1 text-sm text-text-secondary">
             Define search strategies and import papers into them
           </p>
         </div>
         <Button
           onClick={onCreateStrategy}
-          className="gap-2"
-          size="lg"
+          className="w-full gap-2 sm:w-auto"
+          size="md"
           disabled={!canEdit}
         >
-          <FiPlus className="w-5 h-5" />
+          <FiPlus className="h-4 w-4" />
           Create Search Strategy
           {canEdit && (
-            <span className="ml-1 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full font-semibold">
+            <span className="ml-1 rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-primary">
               Recommended
             </span>
           )}
@@ -130,17 +141,18 @@ export default function SearchStrategiesPanel({
             return (
               <div
                 key={strategy.id}
-                className="bg-surface-white border border-border rounded-xl shadow-none overflow-hidden"
+                className="overflow-hidden rounded-xl border border-border bg-surface-white"
               >
                 {/* SearchExecution Header (Always Visible) */}
-                <div className="p-4 hover:bg-bg-primary transition-colors">
-                  <div className="flex items-center justify-between">
+                <div className="p-4 transition-colors hover:bg-bg-primary">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     {/* Left: Expand Toggle + Strategy Info */}
-                    <div className="flex items-center gap-3 flex-1">
+                    <div className="flex min-w-0 flex-1 items-start gap-3">
                       <button
                         onClick={() => toggleExpand(strategy.id)}
-                        className="p-1 hover:bg-bg-secondary rounded transition-colors"
+                        className="mt-0.5 rounded-lg p-1 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         aria-label={isExpanded ? "Collapse" : "Expand"}
+                        aria-expanded={isExpanded}
                       >
                         {isExpanded ? (
                           <FiChevronDown className="w-5 h-5 text-text-secondary" />
@@ -149,20 +161,20 @@ export default function SearchStrategiesPanel({
                         )}
                       </button>
 
-                      <div className="flex-1">
-                        <span className="text-xs text-text-secondary font-bold">
-                          ID: {strategy.id}
+                      <div className="min-w-0 flex-1">
+                        <span className="break-all text-xs font-medium text-text-secondary">
+                          {strategy.id}
                         </span>
-                        <div className="flex items-center gap-3 mb-1">
-                          <FiDatabase className="w-5 h-5 text-accent" />
+                        <div className="mb-1 mt-1 flex flex-wrap items-center gap-2">
+                          <FiDatabase className="h-4 w-4 shrink-0 text-accent" />
                           <h3 className="font-semibold text-text-primary">
                             {strategy.searchSource}
                           </h3>
-                          <span className="px-2 py-0.5 bg-bg-secondary text-text-primary text-xs rounded-full">
-                            {formatDate(strategy.executedAt)}
+                          <span className="rounded-full bg-bg-secondary px-2.5 py-1 text-xs text-text-secondary">
+                            {strategy.executedAt ? formatDate(strategy.executedAt) : "Date unavailable"}
                           </span>
                           {strategy.resultCount > 0 && (
-                            <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium">
+                            <span className="rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
                               {strategy.resultCount.toLocaleString()} results
                             </span>
                           )}
@@ -176,7 +188,7 @@ export default function SearchStrategiesPanel({
                                 Query:
                               </span>
                               <span
-                                className="flex-1 truncate"
+                                className="min-w-0 flex-1 truncate"
                                 title={strategy.searchQuery}
                               >
                                 {strategy.searchQuery}
@@ -190,8 +202,8 @@ export default function SearchStrategiesPanel({
                         </div>
 
                         {/* Import Batch Count Badge */}
-                        <div className="flex items-center gap-2 mt-2">
-                          <FiFileText className="w-4 h-4 text-text-secondary" />
+                        <div className="mt-2 flex items-center gap-2">
+                          <FiFileText className="h-4 w-4 text-text-secondary" />
                           <span className="text-xs text-text-secondary">
                             {strategy.importBatchCount}{" "}
                             {strategy.importBatchCount === 1
@@ -203,7 +215,7 @@ export default function SearchStrategiesPanel({
                     </div>
 
                     {/* Right: Action Buttons */}
-                    <div className="flex items-center gap-2">
+                    <div className="flex shrink-0 items-center gap-1 self-end sm:self-center">
                       <Button
                         onClick={() => onImportToStrategy(strategy.id)}
                         variant="secondary"
@@ -216,7 +228,8 @@ export default function SearchStrategiesPanel({
                       </Button>
                       <button
                         onClick={() => onEditStrategy(strategy.id)}
-                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Edit search strategy"
                         title="Edit Strategy"
                         disabled={!canEdit}
                       >
@@ -224,9 +237,10 @@ export default function SearchStrategiesPanel({
                       </button>
                       <button
                         onClick={() => onDeleteStrategy(strategy.id)}
-                        className="p-2 text-red-600 hover:text-red-700 hover:bg-surface-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded-lg p-2 text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
+                        aria-label="Delete search strategy"
                         title="Delete Strategy"
-                        disabled={hasImports || !canEdit}
+                        disabled={!canEdit}
                       >
                         <FiTrash2 className="w-4 h-4" />
                       </button>
@@ -246,7 +260,7 @@ export default function SearchStrategiesPanel({
                           {strategyBatches.map((batch) => (
                             <div
                               key={batch.id}
-                              className="bg-surface-white border border-border rounded-xl p-3 hover:border-accent/50 transition-colors"
+                              className="rounded-lg border border-border bg-surface-white p-3 transition-colors hover:border-accent/50"
                             >
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3 flex-1">
@@ -257,12 +271,12 @@ export default function SearchStrategiesPanel({
                                         {batch.fileName}
                                       </span>
                                       {batch.fileType && (
-                                        <span className="px-2 py-0.5 bg-blue-100 text-accent text-xs rounded">
+                                        <span className="rounded bg-primary-light px-2 py-0.5 text-xs text-primary">
                                           {batch.fileType.toUpperCase()}
                                         </span>
                                       )}
                                     </div>
-                                    <div className="flex items-center gap-4 mt-1 text-xs text-text-secondary">
+                                    <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
                                       <span>
                                         {batch.totalRecords.toLocaleString()}{" "}
                                         records
@@ -271,7 +285,7 @@ export default function SearchStrategiesPanel({
                                         Imported: {formatDate(batch.importedAt)}{" "}
                                         at {formatTime(batch.importedAt)}
                                       </span>
-                                      <span>By: {batch.importedBy}</span>
+                                      {batch.importedBy && <span>By: {batch.importedBy}</span>}
                                     </div>
                                   </div>
                                 </div>
@@ -290,7 +304,8 @@ export default function SearchStrategiesPanel({
                                       onClick={() =>
                                         onDeleteImportBatch(batch.id)
                                       }
-                                      className="p-1.5 text-red-600 hover:text-red-700 hover:bg-surface-white rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="rounded-lg p-1.5 text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
+                                      aria-label="Delete import batch"
                                       title="Delete Import Batch"
                                       disabled={!canEdit}
                                     >
@@ -345,33 +360,25 @@ function EmptyStrategiesState({
   canEdit: boolean;
 }) {
   return (
-    <div className="bg-surface-white border-2 border-dashed border-border rounded-xl p-12">
-      <div className="text-center max-w-lg mx-auto">
-        <FiDatabase className="w-16 h-16 text-text-secondary mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-text-primary mb-2">
+    <div className="rounded-xl border border-dashed border-border bg-bg-primary/50 px-5 py-10 sm:px-8 sm:py-12">
+      <div className="mx-auto max-w-lg text-center">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-primary">
+          <FiDatabase aria-hidden="true" className="h-6 w-6" />
+        </div>
+        <h3 className="mb-2 text-lg font-semibold text-text-primary">
           Create Your First Search Strategy
         </h3>
-        <p className="text-text-secondary mb-6">
-          Search strategies document your literature search process. Define your
-          sources and queries before importing papers to maintain a clear audit
-          trail for your systematic review.
+        <p className="mb-6 text-sm leading-relaxed text-text-secondary">
+          Record the database, query, and search date before importing papers. This keeps your review process clear and reproducible.
         </p>
         <Button
           onClick={onCreateStrategy}
-          size="lg"
+          size="md"
           disabled={!canEdit}
         >
-          <FiPlus className="w-5 h-5 mr-2" />
+          <FiPlus className="h-4 w-4" />
           Create Search Strategy
         </Button>
-
-        <p className="text-sm text-text-secondary mt-4">
-          Or use{" "}
-          <a href="#quick-import" className="text-accent hover:underline">
-            Quick Import
-          </a>{" "}
-          below to import papers without a predefined strategy
-        </p>
       </div>
     </div>
   );

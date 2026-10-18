@@ -5,6 +5,7 @@ export const getErrorMessage = (error: unknown, defaultMessage: string): string 
   if (error && typeof error === "object" && "response" in error) {
     const axiosError = error as { 
       response?: { 
+        status?: number;
         data?: { 
           message?: string;
           error?: { message?: string };
@@ -25,6 +26,15 @@ export const getErrorMessage = (error: unknown, defaultMessage: string): string 
     // 2. Try first error in errors array
     if (axiosError.response?.data?.errors?.[0]?.message) {
       return axiosError.response.data.errors[0].message;
+    }
+
+    if (axiosError.response?.status) {
+      return `The request failed (HTTP ${axiosError.response.status}).`;
+    }
+
+    const networkMessage = (error as { message?: unknown }).message;
+    if (typeof networkMessage === "string" && networkMessage.trim()) {
+      return networkMessage;
     }
 
     return defaultMessage;

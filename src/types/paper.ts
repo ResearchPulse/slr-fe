@@ -10,7 +10,8 @@ import type { ApiResponse } from "./project";
 export interface RisFileImportRequest {
   file: File; // .ris file, max 10MB
   projectId: string; // UUID format (required)
-  searchSourceId?: string; // UUID format (optional)
+  searchSourceId?: string;
+  searchExecutionId?: string;
 }
 
 /**
@@ -20,7 +21,8 @@ export interface RisFileImportRequest {
 export interface BibTexFileImportRequest {
   file: File; // .bib file, max 10MB
   projectId: string; // UUID format (required)
-  searchSourceId?: string; // UUID format (optional)
+  searchSourceId?: string;
+  searchExecutionId?: string;
 }
 
 export interface PdfFileImportRequest {

@@ -4,13 +4,13 @@ import ProcessHeader from "../../components/reviewProcess/ProcessHeader";
 import WorkflowTimeline from "../../components/reviewProcess/workflow/WorkflowTimeline";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import PrismaReportCard from "../../components/reviewProcess/PrismaReportCard";
 import { useState } from "react";
 import PaperPoolSelectorModal from "../../components/reviewProcess/modals/PaperPoolSelectorModal";
 import StudySelectionCriteriaModal from "../../components/reviewProcess/leader/StudySelectionCriteriaModal";
 import QualityAssessmentCriteriaModal from "../../components/reviewProcess/leader/QualityAssessmentCriteriaModal";
 import SynthesisStrategyModal from "./synthesisExecution/components/SynthesisStrategyModal";
 import { SelectionProcessStatus } from "../../types/studySelection";
+import SLRPhaseWorkspace from "../../components/reviewProcess/workflow/SLRPhaseWorkspace";
 
 export default function ReviewProcessWorkspace() {
   const { projectId, processId } = useParams<{
@@ -90,36 +90,35 @@ export default function ReviewProcessWorkspace() {
         startLoading={startLoading}
         completeLoading={completeLoading}
         canManageActions={canManagePhaseActions}
-        isReadyToComplete={completedPhases.length === workflowPhases.length && workflowPhases.length > 0}
+        isReadyToComplete={
+          process.identificationProcess?.statusText === "Completed" &&
+          completedPhases.length === workflowPhases.length &&
+          workflowPhases.length > 0
+        }
       />
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 print:px-4">
-        {/* PRISMA Report Access */}
-        <PrismaReportCard
-          projectId={projectId || ""}
-          processId={processId || ""}
-        />
-
-        {/* Workflow Timeline */}
-        <WorkflowTimeline
-          phases={workflowPhases}
-          paperStats={paperStats}
-          onStartPhase={handleStartPhase}
-          onCompletePhase={handleCompletePhase}
-          onOpenPhase={handleOpenPhase}
-          onReopenPhase={handleReopenPhase}
-          onAddPapers={() => setIsAddPapersModalOpen(true)}
-          canManageActions={canManagePhaseActions}
-          startLoadingMap={phaseStartLoadingMap}
-          completeLoadingMap={phaseCompleteLoadingMap}
-          reopenLoadingMap={phaseReopenLoadingMap}
-          disabled={process.statusText === "NotStarted"}
-          isStudySelectionCompleted={
-            process.studySelectionProcess?.status ===
-            SelectionProcessStatus.Completed
-          }
-        />
+        <SLRPhaseWorkspace projectId={projectId || ""} processId={processId || ""} process={process}>
+          <WorkflowTimeline
+            phases={workflowPhases}
+            paperStats={paperStats}
+            onStartPhase={handleStartPhase}
+            onCompletePhase={handleCompletePhase}
+            onOpenPhase={handleOpenPhase}
+            onReopenPhase={handleReopenPhase}
+            onAddPapers={() => setIsAddPapersModalOpen(true)}
+            canManageActions={canManagePhaseActions}
+            startLoadingMap={phaseStartLoadingMap}
+            completeLoadingMap={phaseCompleteLoadingMap}
+            reopenLoadingMap={phaseReopenLoadingMap}
+            disabled={process.statusText === "NotStarted"}
+            isStudySelectionCompleted={
+              process.studySelectionProcess?.status ===
+              SelectionProcessStatus.Completed
+            }
+          />
+        </SLRPhaseWorkspace>
 
         {/* Paper Pool Selector Modal */}
         {projectId && processId && (
@@ -142,13 +141,16 @@ export default function ReviewProcessWorkspace() {
           studySelectionProcessId={process.studySelectionProcess?.id || ""}
         />
 
-        <QualityAssessmentCriteriaModal
-          isOpen={isQualityCriteriaModalOpen}
-          onClose={() => setIsQualityCriteriaModalOpen(false)}
-          qualityAssessmentProcessId={
-            process.qualityAssessmentProcess?.id || ""
-          }
-        />
+        {/* Leader-only: it loads the leader's QA dashboard, which other members may not read. */}
+        {canManagePhaseActions && (
+          <QualityAssessmentCriteriaModal
+            isOpen={isQualityCriteriaModalOpen}
+            onClose={() => setIsQualityCriteriaModalOpen(false)}
+            qualityAssessmentProcessId={
+              process.qualityAssessmentProcess?.id || ""
+            }
+          />
+        )}
 
         {projectId && process.synthesisProcess?.id ? (
           <SynthesisStrategyModal

@@ -4,11 +4,12 @@ import { toastSuccess, toastError, toastWarning } from "../../../../utils/toast"
 import { AxiosError } from "axios";
 
 interface UseFileImportOptions {
+  projectId: string | undefined;
   identificationPhaseId: string | undefined;
   onImportSuccess?: () => Promise<void> | void;
 }
 
-export const useFileImport = ({ identificationPhaseId, onImportSuccess }: UseFileImportOptions) => {
+export const useFileImport = ({ projectId, identificationPhaseId, onImportSuccess }: UseFileImportOptions) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
 
@@ -17,11 +18,11 @@ export const useFileImport = ({ identificationPhaseId, onImportSuccess }: UseFil
    */
   const executeImport = async (
     file: File,
-    _source: string,
-    strategyId?: string,
+    searchSourceId: string,
+    searchExecutionId?: string,
   ): Promise<boolean> => {
-    if (!identificationPhaseId) {
-      toastError("Error", "Identification phase ID not found");
+    if (!projectId || !identificationPhaseId) {
+      toastError("Error", "Project or Identification module not found");
       return false;
     }
 
@@ -31,9 +32,10 @@ export const useFileImport = ({ identificationPhaseId, onImportSuccess }: UseFil
 
       const result = await paperImportService.quickImport(
         file,
-        identificationPhaseId,
-        strategyId,
+        projectId,
+        searchSourceId || undefined,
         (progress) => setUploadProgress(progress),
+        searchExecutionId,
       );
 
       if (result.data) {
@@ -94,8 +96,8 @@ export const useFileImport = ({ identificationPhaseId, onImportSuccess }: UseFil
   /**
    * Quick import (from strategies tab card)
    */
-  const handleQuickImport = async (file: File, source: string, strategyId?: string) => {
-    await executeImport(file, source, strategyId);
+  const handleQuickImport = async (file: File, source: string, searchExecutionId?: string) => {
+    await executeImport(file, source, searchExecutionId);
   };
 
   /**
@@ -104,9 +106,9 @@ export const useFileImport = ({ identificationPhaseId, onImportSuccess }: UseFil
   const handleImportSubmit = async (
     file: File,
     source?: string,
-    strategyId?: string,
+    searchExecutionId?: string,
   ): Promise<boolean> => {
-    return executeImport(file, source || "Manual Import", strategyId);
+    return executeImport(file, source || "", searchExecutionId);
   };
 
   return {

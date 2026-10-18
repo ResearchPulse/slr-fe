@@ -192,11 +192,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           onKeyDown={handleKeyDown}
           className={cn(
             "flex h-11 w-full items-center justify-between gap-3 rounded-xl border bg-surface-white px-3.5 text-left font-sans text-sm text-text-primary",
-            "transition-colors duration-150 focus:outline-none focus:ring-2",
+            "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2",
             "hover:border-text-secondary disabled:cursor-not-allowed disabled:opacity-60",
             error
-              ? "border-error focus:border-error focus:ring-error/20"
-              : "border-border focus:border-accent focus:ring-accent/20",
+              ? "border-error focus-visible:border-error focus-visible:ring-error/20"
+              : "border-border focus-visible:border-accent focus-visible:ring-accent/20",
             className,
           )}
         >
@@ -218,7 +218,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               onClick={(event) => event.stopPropagation()}
               className={cn(
-                "fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl border border-border bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                "fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
                 menuClassName,
               )}
               style={menuStyle}

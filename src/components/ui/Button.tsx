@@ -29,22 +29,22 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ) => {
     const variants = {
       primary:
-        "bg-primary text-text-on-primary border border-transparent hover:bg-primary-hover hover:shadow-[0_6px_16px_rgba(0,113,188,0.18)] focus:ring-primary/25",
+        "bg-primary text-text-on-primary border border-transparent hover:bg-primary-hover hover:shadow-[0_4px_8px_rgba(0,113,188,0.18)] focus-visible:ring-primary/25",
       secondary:
-        "bg-transparent border border-border text-text-primary hover:border-text-muted hover:bg-bg-secondary focus:ring-border",
+        "bg-transparent border border-border text-text-primary hover:border-text-muted hover:bg-bg-secondary focus-visible:ring-border",
       danger:
-        "bg-error text-white border border-transparent hover:bg-error/90 focus:ring-error/20",
+        "bg-error text-white border border-transparent hover:bg-error/90 focus-visible:ring-error/20",
       success:
-        "bg-success text-white border border-transparent hover:bg-success/90 focus:ring-success/20",
+        "bg-success text-white border border-transparent hover:bg-success/90 focus-visible:ring-success/20",
       outline:
-        "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus:ring-text-primary/25",
+        "bg-transparent border border-text-primary text-text-primary hover:bg-text-primary hover:text-text-on-primary focus-visible:ring-text-primary/25",
       ghost:
-        "bg-transparent text-text-secondary hover:text-text-primary focus:ring-border border border-transparent",
+        "bg-transparent text-text-secondary hover:text-text-primary focus-visible:ring-border border border-transparent",
     };
 
     const sizes = {
-      sm: "px-4 py-1.5 text-[11px] min-h-[36px] md:min-h-0",
-      md: "px-5 py-2.5 text-[12px] min-h-[44px] md:min-h-0",
+      sm: "px-4 py-1.5 text-[11px] min-h-9",
+      md: "px-5 py-2.5 text-[12px] min-h-11",
       lg: "px-8 py-3.5 text-[13px] min-h-[52px]",
     };
 
@@ -53,14 +53,15 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         type={type}
         disabled={disabled || isLoading}
+        aria-busy={isLoading || undefined}
         className={cn(
           // Base Layout & Typography
-          "rounded-xl uppercase tracking-[0.1em] font-medium flex items-center justify-center whitespace-nowrap",
+          "inline-flex items-center justify-center gap-2 rounded-xl uppercase tracking-[0.1em] font-medium whitespace-nowrap",
           // Motion — explicit properties only, never `all`
           "transition-[color,background-color,border-color,box-shadow,transform,opacity] duration-200",
-          "hover:-translate-y-[1px] active:translate-y-0",
-          "focus:outline-none focus:ring-2",
-          "disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:translate-y-0",
+          "hover:-translate-y-px active:translate-y-0",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none",
 
           variants[variant],
           sizes[size],
@@ -72,7 +73,8 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {isLoading ? (
           <>
             <svg
-              className="animate-spin -ml-1 mr-2 h-4 w-4 text-currentColor"
+              className="animate-spin h-4 w-4 text-current"
+              aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

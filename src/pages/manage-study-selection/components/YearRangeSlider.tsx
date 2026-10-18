@@ -148,7 +148,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         .slider__range {
           position: absolute;
           height: 6px;
-          border-radius: 3px;
+          border-radius: 999px;
         }
 
         .slider__track {
@@ -191,9 +191,9 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         /* For Chrome browsers */
         .thumb::-webkit-slider-thumb {
           background-color: #ffffff;
-          border: 2px solid #6366f1;
+          border: 2px solid var(--color-primary);
           border-radius: 50%;
-          box-shadow-none: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 3px rgba(18, 35, 49, 0.16);
           cursor: pointer;
           height: 18px;
           width: 18px;
@@ -205,9 +205,9 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         /* For Firefox browsers */
         .thumb::-moz-range-thumb {
           background-color: #ffffff;
-          border: 2px solid #6366f1;
+          border: 2px solid var(--color-primary);
           border-radius: 50%;
-          box-shadow-none: 0 1px 3px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 1px 3px rgba(18, 35, 49, 0.16);
           cursor: pointer;
           height: 18px;
           width: 18px;

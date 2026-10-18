@@ -131,11 +131,6 @@ export function QAPapersTabContent({
           const reviewer = lPaper.reviewers?.find(
             (r) => r.id === decision.reviewerId,
           );
-          console.log(
-            "Processing decision for reviewer:",
-            reviewer?.fullname || reviewer?.username,
-            currentUser,
-          );
           const isCurrentUser = decision?.reviewerId === currentUser?.id;
           const initials = isCurrentUser
             ? "YOU"
@@ -233,7 +228,7 @@ export function QAPapersTabContent({
 
   return (
     <div className="min-h-0 w-full flex-1 overflow-auto bg-bg-primary p-3 sm:p-4">
-      <div className="grid min-h-full grid-cols-1 overflow-hidden rounded-2xl border border-border bg-surface-white shadow-[0_2px_10px_rgba(18,35,49,0.05)] xl:h-full xl:min-h-0 xl:grid-cols-[270px_minmax(0,1fr)_350px]">
+      <div className="grid min-h-full grid-cols-1 overflow-hidden rounded-xl border border-border bg-surface-white xl:h-full xl:min-h-0 xl:grid-cols-[270px_minmax(0,1fr)_350px]">
       {/* Paper queue */}
       <div className="flex min-h-[300px] min-w-0 flex-col overflow-hidden border-b border-border bg-bg-primary xl:h-full xl:min-h-0 xl:border-b-0 xl:border-r">
         <AssessmentQueue
@@ -264,9 +259,9 @@ export function QAPapersTabContent({
           </div>
         ) : (
           <div className="flex min-h-[520px] flex-1 items-center justify-center bg-bg-primary/60 px-6 text-center text-text-secondary xl:min-h-0">
-            <div className="max-w-sm rounded-2xl border border-border bg-surface-white p-8 shadow-sm">
+            <div className="max-w-sm">
               <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent">
-                <span className="text-lg font-semibold">1</span>
+                <span className="text-lg font-semibold" aria-hidden="true">1</span>
               </div>
               <p className="text-sm font-semibold text-text-primary">Choose a study to review</p>
               <p className="mt-1 text-sm leading-6 text-text-secondary">Paper details and assessment activity will appear here.</p>
@@ -283,10 +278,10 @@ export function QAPapersTabContent({
               <div>
                 <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted">Quality review</p>
                 <p className="mt-0.5 text-sm font-semibold text-text-primary">
-                {isLeader ? "Conflict Resolution" : "Assessment Criteria"}
+                  {isLeader ? "Conflict Resolution" : "Assessment Criteria"}
                 </p>
               </div>
-              <span className="rounded-full border border-primary/15 bg-primary-light px-2.5 py-1 text-[11px] font-medium text-primary">{isLeader ? "Leader" : "Reviewer"}</span>
+              <span className="rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-[11px] font-medium text-text-secondary">{isLeader ? "Leader" : "Reviewer"}</span>
             </div>
             <div className="flex-1 overflow-hidden">
               {isLeader ? (

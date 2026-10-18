@@ -37,7 +37,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
       iconBg: "bg-warning/10",
       iconColor: "text-warning",
       confirmVariant: "primary" as const,
-      confirmClassName: "bg-warning hover:bg-warning/90 focus:ring-warning/20",
+      confirmClassName: "bg-warning hover:bg-warning/90 focus-visible:ring-warning/20",
     },
     info: {
       iconBg: "bg-primary-light",
@@ -59,7 +59,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
         </div>
 
         <div className="space-y-2">
-          <p className="text-text-secondary font-medium leading-relaxed">
+          <p
+            className="text-text-secondary font-medium leading-relaxed"
+            role={isLoading ? "status" : undefined}
+            aria-live="polite"
+          >
             {message}
           </p>
         </div>

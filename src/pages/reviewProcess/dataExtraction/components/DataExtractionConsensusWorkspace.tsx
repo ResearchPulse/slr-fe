@@ -15,6 +15,7 @@ import type {
   ConsensusValueDto,
   AnswerDetailDto,
   ExtractionCommentDto,
+  ExtractionConsensusAnalysisDto,
   SubmitConsensusRequestDto,
 } from "../../../../types/dataExtraction";
 import {
@@ -60,6 +61,97 @@ interface DataExtractionConsensusWorkspaceProps {
 
 function normalizeDisplayValue(value: string | null | undefined): string {
   return (value ?? "").trim() || "Not provided";
+}
+
+function formatConsensusValue(value: unknown): string {
+  if (value === undefined || value === null) return "Not provided";
+  if (typeof value === "string") return value;
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function AgentConsensusAnalysisPanel({
+  analysis,
+}: {
+  analysis: ExtractionConsensusAnalysisDto;
+}) {
+  const evidenceRows = analysis.fields.flatMap((field) => [
+    ...(field.reviewer1Evidence ?? []).map((evidence) => ({ field, reviewer: "R1", evidence })),
+    ...(field.reviewer2Evidence ?? []).map((evidence) => ({ field, reviewer: "R2", evidence })),
+  ]);
+
+  return (
+    <Card className="mb-4 overflow-hidden rounded-xl border border-sky-200 bg-sky-50/40 p-0 shadow-xs">
+      <div className="border-b border-sky-200 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="text-sm font-semibold text-text-primary">MCP leader consensus analysis</h3>
+            <p className="mt-1 text-xs text-text-secondary">{analysis.summary}</p>
+          </div>
+          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${analysis.status === "CONFLICT" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>
+            {analysis.status}
+          </span>
+        </div>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="min-w-[1180px] w-full border-collapse text-left text-xs">
+          <thead className="bg-white/70 text-text-secondary">
+            <tr>
+              {[
+                "Field / section", "Required", "Status", "R1 value", "R2 value", "Recommended",
+                "Evidence", "Value/evidence checks", "Reason",
+              ].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {analysis.fields.map((field) => (
+              <tr key={field.fieldId} className="border-b border-sky-100 align-top last:border-0">
+                <td className="px-3 py-2"><div className="font-semibold text-text-primary">{field.fieldName ?? field.fieldId}</div><div className="text-text-muted">{field.sectionName ?? ""} · {field.fieldId}</div></td>
+                <td className="px-3 py-2">{field.isRequired ? "Yes" : "No"}</td>
+                <td className="px-3 py-2 font-semibold">{field.status}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.reviewer1Value)}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.reviewer2Value)}</td>
+                <td className="max-w-[220px] whitespace-pre-wrap break-words px-3 py-2">{formatConsensusValue(field.recommendedValue)}</td>
+                <td className="px-3 py-2">R1: {field.reviewer1Evidence?.length ?? 0}<br />R2: {field.reviewer2Evidence?.length ?? 0}</td>
+                <td className="max-w-[260px] whitespace-pre-wrap break-words px-3 py-2">{field.checks.join(" · ")}</td>
+                <td className="max-w-[280px] whitespace-pre-wrap break-words px-3 py-2">{field.reason}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="border-t border-sky-200 px-4 py-3">
+        <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Evidence details</h4>
+        <div className="overflow-x-auto">
+          <table className="min-w-[980px] w-full border-collapse text-left text-xs">
+            <thead className="bg-white/70 text-text-secondary"><tr>
+              {['Field', 'Reviewer', 'Quote', 'Start offset', 'End offset', 'Source asset', 'Source revision', 'Source hash', 'Quote hash', 'Section', 'Paragraph', 'PDF page'].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+            </tr></thead>
+            <tbody>
+              {evidenceRows.length ? evidenceRows.map(({ field, reviewer, evidence }, index) => (
+                <tr key={`${field.fieldId}-${reviewer}-${index}`} className="border-b border-sky-100 align-top last:border-0">
+                  <td className="px-3 py-2">{field.fieldName ?? field.fieldId}</td><td className="px-3 py-2">{reviewer}</td>
+                  <td className="max-w-[360px] whitespace-pre-wrap break-words px-3 py-2">{evidence.quote}</td>
+                  <td className="px-3 py-2">{evidence.startOffset}</td><td className="px-3 py-2">{evidence.endOffset}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceAssetId}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceRevision}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.sourceHash}</td>
+                  <td className="max-w-[220px] break-all px-3 py-2">{evidence.quoteHash}</td>
+                  <td className="px-3 py-2">{evidence.section ?? "—"}</td>
+                  <td className="px-3 py-2">{evidence.paragraph ?? "—"}</td><td className="px-3 py-2">{evidence.pdfPage ?? "—"}</td>
+                </tr>
+              )) : <tr><td colSpan={12} className="px-3 py-3 text-text-secondary">No evidence rows were submitted for these fields.</td></tr>}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Card>
+  );
 }
 
 function getReviewerDisplayName(
@@ -1286,6 +1378,10 @@ export default function DataExtractionConsensusWorkspace({
                   : "This paper's extraction is completed. You are viewing the consensus in read-only mode."}
               </p>
             </div>
+          )}
+
+          {consensusWorkspace.leaderDraft?.agentAnalysis && (
+            <AgentConsensusAnalysisPanel analysis={consensusWorkspace.leaderDraft.agentAnalysis} />
           )}
 
           {/* Section Header matching Template Wizard */}

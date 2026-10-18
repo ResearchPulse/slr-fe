@@ -1,5 +1,5 @@
 import React from "react";
-import { FiAlertTriangle, FiHelpCircle } from "react-icons/fi";
+import { FiAlertTriangle, FiCheck, FiHelpCircle, FiLayers } from "react-icons/fi";
 import { COMPONENT_LABELS, ORIGIN_LABELS } from "./picocDraft";
 import { PICOC_COMPONENTS, type PicocComponent, type PicocWizardDraft, type WizardStep } from "./types";
 
@@ -19,68 +19,80 @@ const PicocCanvas: React.FC<PicocCanvasProps> = ({ draft, onSelectStep }) => {
     <button
       type="button"
       onClick={() => onSelectStep(step)}
-      className="text-left text-[11px] uppercase tracking-[0.2em] text-text-secondary underline-offset-4 hover:text-text-primary hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-text-primary"
+      className="rounded-sm text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
     >
       {label}
     </button>
   ) : (
-    <p className="text-[11px] uppercase tracking-[0.2em] text-text-secondary">{label}</p>
+    <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-text-secondary">{label}</p>
   );
 
   const renderComponent = (component: PicocComponent) => {
     const items = draft.picoc[component];
+    const selectedCount = items.filter((item) => item.status === "selected").length;
     const notApplicable = component === "comparison" ? draft.comparisonNotApplicable : null;
     return (
       <li key={component} className="border-b border-border px-4 py-3 last:border-b-0" data-testid={`canvas-${component}`}>
-        {heading(component, COMPONENT_LABELS[component])}
+        <div className="flex items-center justify-between gap-2">
+          {heading(component, COMPONENT_LABELS[component])}
+          {selectedCount > 0 ? <span className="shrink-0 rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-medium text-primary">{selectedCount} selected</span> : null}
+        </div>
         {notApplicable ? (
-          <p className="mt-1.5 text-sm text-text-primary">N/A — <span className="text-text-secondary">{notApplicable.reason}</span></p>
+          <p className="mt-2 rounded-lg bg-bg-secondary px-2.5 py-2 text-xs leading-5 text-text-primary">N/A — <span className="text-text-secondary">{notApplicable.reason}</span></p>
         ) : null}
         {items.length > 0 ? (
-          <ul className="mt-1.5 flex flex-wrap gap-1.5">
+          <ul className="mt-2 space-y-1.5">
             {items.map((item) => (
               <li
                 key={item.id}
-                className={`inline-flex items-center gap-1 border px-2 py-0.5 text-xs ${
-                  item.status === "selected" ? "border-text-primary text-text-primary" : "border-dashed border-border text-text-secondary"
+                className={`flex min-w-0 items-start gap-2 rounded-lg border px-2.5 py-2 text-xs leading-5 ${
+                  item.status === "selected" ? "border-primary/20 bg-primary-light/60 text-text-primary" : "border-border bg-surface-white text-text-secondary"
                 }`}
               >
-                {item.status === "unsure" ? <FiHelpCircle aria-hidden className="h-3 w-3" /> : null}
-                {item.needsReview ? <FiAlertTriangle aria-hidden className="h-3 w-3" /> : null}
-                <span>{item.label}</span>
-                <span className="text-[10px] text-text-muted">· {ORIGIN_LABELS[item.origin]}</span>
+                <span className="mt-0.5 shrink-0 text-primary" aria-hidden="true">
+                  {item.status === "unsure" ? <FiHelpCircle className="h-3.5 w-3.5 text-text-secondary" /> : <FiCheck className="h-3.5 w-3.5" />}
+                </span>
+                {item.needsReview ? <FiAlertTriangle aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" /> : null}
+                <span className="min-w-0 flex-1 break-words">{item.label}</span>
+                <span className="shrink-0 text-[10px] text-text-secondary">· {ORIGIN_LABELS[item.origin]}</span>
                 {item.status === "unsure" ? <span className="sr-only">(not sure)</span> : null}
-                {item.needsReview ? <span className="text-[10px] text-text-secondary">· needs review</span> : null}
+                {item.needsReview ? <span className="shrink-0 text-[10px] font-medium text-warning">· needs review</span> : null}
               </li>
             ))}
           </ul>
         ) : !notApplicable ? (
-          <p className="mt-1.5 text-xs italic text-text-muted">Not set</p>
+          <p className="mt-1.5 text-xs italic text-text-secondary">Not set</p>
         ) : null}
       </li>
     );
   };
 
   return (
-    <aside aria-label="PICOC canvas" className="border border-border bg-surface-white">
-      <div className="border-b border-border bg-bg-primary px-4 py-3">
-        <p className="text-[11px] uppercase tracking-[0.25em] text-text-secondary">PICOC canvas · Draft</p>
+    <aside aria-label="PICOC canvas" className="overflow-hidden rounded-xl border border-border bg-surface-white lg:sticky lg:top-4">
+      <div className="flex items-center justify-between border-b border-border bg-bg-primary px-4 py-3">
+        <div className="flex items-center gap-2 text-primary">
+          <FiLayers aria-hidden className="h-4 w-4" />
+          <p className="text-xs font-semibold text-text-primary">PICOC canvas</p>
+        </div>
+        <span className="rounded-full border border-border bg-surface-white px-2 py-0.5 text-[10px] font-medium text-text-secondary">Draft</span>
       </div>
-      <div className="border-b border-border px-4 py-3">
-        {heading("field", "Research field")}
-        {field ? (
-          <div className="mt-1.5">
-            <p className="text-sm font-medium text-text-primary">{field.topic.label}</p>
-            {fieldPath ? <p className="text-xs text-text-secondary">{fieldPath}</p> : null}
-            <p className="mt-0.5 text-[10px] text-text-muted">
-              {field.source === "openalex_suggestion" ? `OpenAlex suggestion · classifier v${field.classifierVersion}` : "Chosen manually from OpenAlex taxonomy"}
-            </p>
-          </div>
-        ) : (
-          <p className="mt-1.5 text-xs italic text-text-muted">Not confirmed</p>
-        )}
+      <div className="max-h-[min(70vh,680px)] overflow-y-auto">
+        <div className="border-b border-border px-4 py-3">
+          {heading("field", "Research field")}
+          {field ? (
+            <div className="mt-2">
+              <p className="text-sm font-semibold leading-5 text-text-primary">{field.topic.label}</p>
+              {fieldPath ? <p className="mt-0.5 text-xs leading-5 text-text-secondary">{fieldPath}</p> : null}
+              <p className="mt-1 text-[10px] text-text-secondary">
+                {field.source === "openalex_suggestion" ? `OpenAlex suggestion · classifier v${field.classifierVersion}` : "Chosen manually from OpenAlex taxonomy"}
+              </p>
+            </div>
+          ) : (
+            <p className="mt-1.5 text-xs italic text-text-secondary">Not confirmed</p>
+          )}
+        </div>
+        <ul>{PICOC_COMPONENTS.map(renderComponent)}</ul>
       </div>
-      <ul>{PICOC_COMPONENTS.map(renderComponent)}</ul>
     </aside>
   );
 };

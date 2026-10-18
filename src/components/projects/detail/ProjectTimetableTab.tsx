@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Button from "../../ui/Button";
 import { toDateInputValue } from "../../../utils/dateUtils";
+import CalendarDatePicker from "./CalendarDatePicker";
 
 interface ProjectTimetableTabProps {
   projectId: string;
@@ -78,23 +79,11 @@ export default function ProjectTimetableTab({
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm text-text-secondary">
           Start date
-          <input
-            type="date"
-            value={formStartDate}
-            onChange={(event) => setFormStartDate(event.target.value)}
-            disabled={!isLeader || isSaving}
-            className="mt-2 w-full rounded-xl border border-border bg-surface-white px-3 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:bg-bg-primary disabled:text-text-muted"
-          />
+          <CalendarDatePicker label="Start date" value={formStartDate} onChange={setFormStartDate} disabled={!isLeader || isSaving} />
         </label>
         <label className="block text-sm text-text-secondary">
           End date
-          <input
-            type="date"
-            value={formEndDate}
-            onChange={(event) => setFormEndDate(event.target.value)}
-            disabled={!isLeader || isSaving}
-            className="mt-2 w-full rounded-xl border border-border bg-surface-white px-3 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-accent focus:ring-2 focus:ring-accent/10 disabled:bg-bg-primary disabled:text-text-muted"
-          />
+          <CalendarDatePicker label="End date" value={formEndDate} onChange={setFormEndDate} disabled={!isLeader || isSaving} />
         </label>
       </div>
 

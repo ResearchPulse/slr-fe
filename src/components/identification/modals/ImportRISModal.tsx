@@ -1,6 +1,6 @@
 // Import RIS Modal - Dual Mode (from-strategy OR quick-import)
 import { useState } from "react";
-import { FiX, FiUpload, FiLock } from "react-icons/fi";
+import { FiX, FiUpload, FiLock, FiLoader } from "react-icons/fi";
 import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import type { SearchExecution } from "../../../types/identification";
@@ -58,6 +58,8 @@ export default function ImportRISModal({
   const preselectedStrategy = availableStrategies.find(
     (s) => s.id === preselectedStrategyId,
   );
+  const isProcessing = isUploading && uploadProgress >= 100;
+  const isIndeterminate = uploadProgress === 0 || isProcessing;
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
@@ -95,7 +97,7 @@ export default function ImportRISModal({
     await onSubmit(
       selectedFile,
       selectedSource,
-      selectedStrategyId || undefined,
+      (mode === "from-strategy" ? preselectedStrategyId : selectedStrategyId) || undefined,
     );
 
     // Reset form
@@ -278,22 +280,50 @@ export default function ImportRISModal({
           </div>
         )}
 
-        {/* Upload Progress Bar */}
-        {isUploading && uploadProgress > 0 && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-sm font-medium text-text-primary">
-                Uploading...
+        {/* Upload and server-processing progress */}
+        {isUploading && (
+          <div className="mt-4" role="status" aria-live="polite">
+            <div className="mb-2 flex items-center justify-between text-sm">
+              <span className="flex items-center gap-2 font-medium text-text-primary">
+                <FiLoader
+                  aria-hidden="true"
+                  className="h-4 w-4 text-primary motion-safe:animate-spin motion-reduce:animate-none"
+                />
+                {isProcessing
+                  ? "Upload complete · importing RIS records..."
+                  : uploadProgress > 0
+                    ? "Uploading RIS file..."
+                    : "Preparing upload..."}
               </span>
-              <span className="text-sm font-medium text-text-primary">
-                {uploadProgress}%
-              </span>
+              {!isProcessing && uploadProgress > 0 && (
+                <span className="tabular-nums text-text-secondary">
+                  {uploadProgress}%
+                </span>
+              )}
             </div>
-            <div className="w-full bg-bg-secondary rounded-full h-2.5">
+            <div
+              className="h-2.5 w-full overflow-hidden rounded-full bg-bg-secondary"
+              role="progressbar"
+              aria-label="RIS import progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={isIndeterminate ? undefined : uploadProgress}
+            >
               <div
-                className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
+                className={`relative h-full rounded-full bg-primary ${
+                  isIndeterminate
+                    ? "w-1/3 motion-safe:animate-ris-progress-indeterminate motion-reduce:animate-none"
+                    : "transition-[width] duration-200"
+                }`}
+                style={isIndeterminate ? undefined : { width: `${uploadProgress}%` }}
+              >
+                {!isIndeterminate && (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-y-0 left-0 w-1/3 bg-white/20 motion-safe:animate-shimmer motion-reduce:hidden"
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}
@@ -309,8 +339,14 @@ export default function ImportRISModal({
             Cancel
           </Button>
           <Button type="submit" disabled={!canSubmit}>
-            <FiUpload className="w-4 h-4 mr-2" />
-            {isUploading ? "Importing..." : "Import RIS File"}
+            {isUploading ? (
+              <FiLoader className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
+            ) : (
+              <FiUpload className="h-4 w-4" />
+            )}
+            {isUploading
+              ? isProcessing ? "Processing..." : "Uploading..."
+              : "Import RIS File"}
           </Button>
         </div>
       </form>

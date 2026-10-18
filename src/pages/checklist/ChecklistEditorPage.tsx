@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import ChecklistEditor from "../../components/checklist/ChecklistEditor";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import { useProjectMember } from "../../hooks/useProjectMember";
 import {
   checklistApi,
   downloadChecklistReport,
@@ -259,6 +260,10 @@ export default function ChecklistEditorPage() {
     return mapChecklist(checklistQuery.data, templateQuery.data);
   }, [checklistQuery.data, templateQuery.data]);
 
+  // Filling in the checklist is the project leader's job; the other members can read it.
+  const { member } = useProjectMember(checklistQuery.data?.reviewId);
+  const isReadOnly = !(member?.isLeader ?? false);
+
   const saveItemMutation = useMutation({
     mutationFn: async (payload: {
       itemId: string;
@@ -402,11 +407,7 @@ export default function ChecklistEditorPage() {
       isLoading={checklistQuery.isLoading}
       onSave={handleSave}
       onGenerateReport={(format) => reportMutation.mutateAsync(format)}
-      onAutoFillCompleted={() => {
-        queryClient.invalidateQueries({
-          queryKey: ["review-checklist", activeChecklistId],
-        });
-      }}
+      isReadOnly={isReadOnly}
     />
   );
 }

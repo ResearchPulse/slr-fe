@@ -338,7 +338,7 @@ export default function SynthesisStrategyModal({
       }
     >
       <form id="synthesis-strategy-form" onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-primary/20 bg-gradient-to-br from-primary-light to-white p-5 shadow-sm">
+        <div className="rounded-xl border border-primary/20 bg-primary-light p-5">
           <div className="flex items-start gap-4">
             <div className="rounded-xl bg-surface-white p-3 text-accent shadow-sm ring-1 ring-primary/20">
               <BookOpen className="h-6 w-6" />

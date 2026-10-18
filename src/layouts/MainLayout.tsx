@@ -14,8 +14,6 @@ export default function MainLayout() {
   const isFullTextScreeningWorkspace = /\/full-text-screening(?:\/|$)/.test(
     pathname,
   );
-  const isViewportWorkspace =
-    isScreeningWorkspace || isFullTextScreeningWorkspace;
   const isReviewProcessDashboard =
     /\/projects\/[^/]+\/processes\/[^/]+\/?$/.test(pathname);
   const isDataExtractionWorkspace =
@@ -32,6 +30,12 @@ export default function MainLayout() {
     /\/projects\/[^/]+\/(?:processes\/[^/]+\/)?prisma-report(?:\/|$)/.test(
       pathname,
     );
+  const isChecklistEditorWorkspace =
+    /\/projects\/[^/]+\/checklists\/[^/]+(?:\/|$)/.test(pathname);
+  const isViewportWorkspace =
+    isScreeningWorkspace ||
+    isFullTextScreeningWorkspace ||
+    isChecklistEditorWorkspace;
 
   return (
     <div
@@ -47,7 +51,8 @@ export default function MainLayout() {
         !isDataExtractionWorkspace &&
         !isQualityAssessmentWorkspace &&
         !isSynthesisWorkspace &&
-        !isPrismaReportWorkspace && <Header />}
+        !isPrismaReportWorkspace &&
+        !isChecklistEditorWorkspace && <Header />}
       <main
         className={
           isViewportWorkspace
@@ -62,7 +67,7 @@ export default function MainLayout() {
           {/* </InteractionGuard> */}
         </SectionGuard>
       </main>
-      {!isViewportWorkspace && <Footer />}
+      {!isViewportWorkspace && !isChecklistEditorWorkspace && <Footer />}
     </div>
   );
 }

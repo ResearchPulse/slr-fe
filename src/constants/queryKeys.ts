@@ -115,10 +115,10 @@ export const QUERY_KEYS = {
   user: {
     reports: (userId: string) => ["reports", { userId }] as const,
     notifications: {
-      all: (userId: string) => ["notifications", { userId }] as const,
+      all: (userId: string) => ["notifications", userId] as const,
       list: (userId: string, params?: object) =>
-        ["notifications", "list", { userId, ...params }] as const,
-      unreadCount: (userId: string) => ["notifications", "unread-count", { userId }] as const,
+        ["notifications", userId, "list", params ?? {}] as const,
+      unreadCount: (userId: string) => ["notifications", userId, "unread-count"] as const,
     },
   },
 

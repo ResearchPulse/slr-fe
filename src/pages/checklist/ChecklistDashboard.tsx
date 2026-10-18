@@ -5,7 +5,6 @@ import {
   FiCheckCircle,
   FiClock,
   FiChevronRight,
-  FiTrash2,
   FiArrowLeft,
 } from "react-icons/fi";
 import Button from "../../components/ui/Button";
@@ -52,20 +51,20 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-surface-white">
-      <div className="bg-linear-to-r from-primary-light to-primary-light/40 border-b border-accent/20 px-6 py-8">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
+    <div className="min-h-screen bg-bg-primary">
+      <div className="border-b border-border bg-bg-secondary px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-5 sm:flex-row sm:items-center">
           <div className="flex items-center gap-4">
             <button
               type="button"
               onClick={() => navigate(projectId ? `/projects/${projectId}` : "/projects")}
-              className="p-2 -ml-2 rounded-xl text-text-secondary hover:text-text-primary hover:bg-white/60 transition-colors"
+              className="-ml-2 rounded-lg p-2 text-text-secondary transition-colors hover:bg-white/60 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
               title="Quay lại dự án"
             >
               <FiArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-3xl font-bold text-text-primary mb-1">
+              <h1 className="mb-1 text-2xl font-bold text-text-primary sm:text-3xl">
                 PRISMA 2020 Checklists
               </h1>
               <p className="text-text-secondary">
@@ -83,7 +82,7 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <LoadingSpinner size="lg" />
@@ -165,13 +164,22 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
 
   return (
     <div
+      role="button"
+      tabIndex={0}
+      aria-label={`Open checklist ${checklist?.title || "Checklist"}`}
       className={cn(
-        "border rounded-xl p-5 hover:shadow-none transition-all cursor-pointer group",
+        "group cursor-pointer rounded-xl border p-5 transition-colors hover:shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
         isComplete
           ? "bg-emerald-50 border-emerald-200 hover:border-emerald-300"
           : "bg-surface-white border-border hover:border-accent",
       )}
       onClick={onOpen}
+      onKeyDown={(event) => {
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          onOpen();
+        }
+      }}
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
@@ -204,8 +212,8 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
             className={cn(
               "h-full transition-all",
               isComplete
-                ? "bg-linear-to-r from-emerald-400 to-emerald-600"
-                : "bg-linear-to-r from-accent/80 to-accent",
+                ? "bg-success"
+                : "bg-primary",
             )}
             style={{ width: `${Math.min(100, Math.max(0, completionPercentage))}%` }}
           />
@@ -228,12 +236,6 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
             </div>
           )}
         </div>
-        <button
-          className="p-1 hover:bg-bg-secondary rounded opacity-0 group-hover:opacity-100 transition-opacity"
-          title="Delete checklist"
-        >
-          <FiTrash2 className="w-4 h-4 text-text-secondary hover:text-red-600" />
-        </button>
       </div>
     </div>
   );

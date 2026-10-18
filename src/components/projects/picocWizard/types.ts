@@ -8,7 +8,7 @@ export const WIZARD_STEPS = ["intent", "field", "context", "population", "interv
 export type WizardStep = (typeof WIZARD_STEPS)[number];
 
 export type ReviewType = "mapping" | "comparative" | "exploratory";
-export type PicocOrigin = "openalex" | "ai" | "user";
+export type PicocOrigin = "openalex" | "ai" | "storage" | "default" | "user";
 
 export interface PicocItem {
   id: string;
@@ -83,7 +83,7 @@ export interface PicocSuggestion {
   component: PicocComponent;
   synonyms: string[];
   rationale: string;
-  sourceType: "ai" | "openalex";
+  sourceType: "ai" | "openalex" | "storage" | "default";
   evidenceRefs: never[];
   selectionStatus: "suggested";
   confidence: "high" | "medium" | "low";
@@ -91,13 +91,20 @@ export interface PicocSuggestion {
 
 export interface PicocSuggestionResponse {
   component: PicocComponent;
-  source: "ai" | "openalex_fallback";
+  source: "ai" | "openalex_fallback" | "storage_fallback" | "default_fallback";
   fallbackReason: string | null;
   suggestions: PicocSuggestion[];
   selectionsToReview: string[];
   model: string | null;
   promptVersion: string;
 }
+
+export interface PicocSuggestionBatchResponse {
+  components: Record<PicocComponent, Omit<PicocSuggestionResponse, "component">>;
+  cached: boolean;
+}
+
+export type PicocSuggestionContext = PicocSuggestionRequest["context"];
 
 export interface PicocSuggestionRequest {
   component: PicocComponent;
@@ -106,7 +113,7 @@ export interface PicocSuggestionRequest {
     topic: string;
     description: string;
     reviewType: ReviewType | null;
-    researchField: { topic: string; subfield?: string; field?: string; domain?: string } | null;
+    researchField: { topic: string; topicId?: string; subfield?: string; field?: string; domain?: string } | null;
     keywords: Array<{ label: string; origin: "openalex" | "user" }>;
     confirmed: Record<PicocComponent, string[]>;
   };

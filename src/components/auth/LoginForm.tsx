@@ -59,6 +59,7 @@ const LoginForm: React.FC = () => {
   const [keyLogin, setKeyLogin] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleButtonReady, setIsGoogleButtonReady] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const dispatch = useDispatch();
@@ -152,6 +153,7 @@ const LoginForm: React.FC = () => {
             text: "continue_with",
             shape: "rectangular",
           });
+          setIsGoogleButtonReady(true);
         };
 
         resizeObserver = new ResizeObserver(renderGoogleButton);
@@ -327,20 +329,13 @@ const LoginForm: React.FC = () => {
             label="Password"
             type="password"
             autoComplete="current-password"
-            placeholder="••••••••"
+            placeholder="Enter your password"
             value={password}
             onChange={(e) => setPassword(e.target.value.replace(/\s/g, ""))}
             errorMessage={errors.password}
             disabled={isLoading}
             className="h-12"
           />
-
-          {/* Forgot password hint (no reset flow exists yet) */}
-          <div className="-mt-1 flex justify-end">
-            <span className="text-[13px] text-text-secondary">
-              Forgot password?
-            </span>
-          </div>
 
           <div className="pt-1">
             <Button
@@ -395,33 +390,23 @@ const LoginForm: React.FC = () => {
           </div>
         )}
 
-        {/* OR Divider & Google Login */}
-        <div className="my-6 flex items-center gap-3" role="separator" aria-label="Or">
-          <div className="min-w-0 flex-1 border-t border-border" />
-          <span className="bg-surface-white px-1 text-[11px] font-medium uppercase tracking-[0.12em] leading-none text-text-secondary">
-            Or
-          </span>
-          <div className="min-w-0 flex-1 border-t border-border" />
-        </div>
-
-        <div className="flex w-full justify-center">
-          {isGoogleSignInConfigured ? (
+        {isGoogleSignInConfigured && (
+          <>
+            {isGoogleButtonReady && (
+              <div className="my-6 flex items-center gap-3" role="separator" aria-label="Or">
+                <div className="min-w-0 flex-1 border-t border-border" />
+                <span className="bg-surface-white px-1 text-[11px] font-medium uppercase tracking-[0.12em] leading-none text-text-secondary">
+                  Or
+                </span>
+                <div className="min-w-0 flex-1 border-t border-border" />
+              </div>
+            )}
             <div
               id="google-signin-btn"
-              className="google-signin-button w-full max-w-[400px]"
-            ></div>
-          ) : (
-            <Button
-              type="button"
-              variant="secondary"
-              size="md"
-              className="w-full !min-h-11"
-              disabled
-            >
-              Continue with Google
-            </Button>
-          )}
-        </div>
+              className={`google-signin-button w-full max-w-[400px] ${isGoogleButtonReady ? "" : "fixed left-[-10000px] top-0 w-[400px]"}`}
+            />
+          </>
+        )}
       </div>
     </div>
   );

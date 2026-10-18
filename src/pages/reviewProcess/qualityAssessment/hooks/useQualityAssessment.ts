@@ -30,12 +30,17 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     queryKey: [...QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? ""), params],
     queryFn: () => qualityAssessmentService.getMyAssignedPapers(id ?? "", params),
     enabled: !!id && isLeader === false, // Wait for the authoritative project role.
+    refetchInterval: isLeader === false ? 10000 : false,
+    refetchOnWindowFocus: true,
   });
 
   const allPapersQuery = useQuery({
     queryKey: [...QUERY_KEYS.qualityAssessment.papers(id ?? ""), params],
     queryFn: () => qualityAssessmentService.getPapers(id!, params),
     enabled: !!id && isLeader === true,
+    // Agent/MCP submissions happen outside this browser tab. Keep the Leader queue in sync.
+    refetchInterval: isLeader === true ? 10000 : false,
+    refetchOnWindowFocus: true,
   });
 
   const allPapers = allPapersQuery.data?.data?.papers?.items ?? [];
@@ -125,6 +130,23 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     }
   });
 
+  const reopenPaperMutation = useMutation({
+    mutationFn: (paperId: string) => qualityAssessmentService.reopenPaper(id!, paperId),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.process(id ?? "") });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.papers(id ?? "") });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.qualityAssessment.myAssignedPapers(id ?? "") });
+      toastSuccess(
+        response.data?.phaseReopened
+          ? "Paper reopened and QA phase returned to In Progress"
+          : "Paper reopened successfully",
+      );
+    },
+    onError: (error) => {
+      toastError(getErrorMessage(error, "Failed to reopen paper"));
+    },
+  });
+
   const startProcessMutation = useMutation({
     mutationFn: () => qualityAssessmentService.start(id!),
     onSuccess: () => toastSuccess("Quality Assessment started"),
@@ -202,6 +224,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     isUpdatingDecisions: updateDecisionsMutation.isPending,
     isSubmittingResolution: submitResolutionMutation.isPending,
     isUpdatingResolution: updateResolutionMutation.isPending,
+    isReopeningPaper: reopenPaperMutation.isPending,
     isAutoResolving: autoResolveMutation.isPending,
     isStartingProcess: startProcessMutation.isPending,
     isCompletingProcess: completeProcessMutation.isPending,
@@ -211,6 +234,7 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     updateDecisions: updateDecisionsMutation.mutateAsync,
     submitResolution: submitResolutionMutation.mutateAsync,
     updateResolution: updateResolutionMutation.mutateAsync,
+    reopenPaper: reopenPaperMutation.mutateAsync,
     autoResolve: autoResolveMutation.mutateAsync,
     startProcess: startProcessMutation.mutateAsync,
     completeProcess: completeProcessMutation.mutateAsync,

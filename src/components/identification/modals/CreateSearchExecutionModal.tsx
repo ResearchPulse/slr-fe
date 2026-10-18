@@ -5,6 +5,7 @@ import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import type { CreateSearchExecutionRequest } from "../../../types/identification";
 import FormField from "../../ui/FormField";
+import CalendarDatePicker from "../../projects/detail/CalendarDatePicker";
 
 interface CreateSearchExecutionModalProps {
   identificationProcessId: string;
@@ -129,6 +130,7 @@ export default function CreateSearchExecutionModal({
           id="searchSource"
           label="Search Source"
           placeholder="e.g., IEEE Xplore, PubMed, etc."
+          autoFocus
           value={formData.searchSource}
           onChange={(e) => {
             setFormData({ ...formData, searchSource: e.target.value });
@@ -169,13 +171,10 @@ export default function CreateSearchExecutionModal({
             <label className="block text-sm font-medium text-text-primary mb-2">
               Executed Date <span className="text-red-500">*</span>
             </label>
-            <input
-              type="date"
+            <CalendarDatePicker
+              label="Executed Date"
               value={formData.executedAt}
-              onChange={(e) =>
-                setFormData({ ...formData, executedAt: e.target.value })
-              }
-              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+              onChange={(executedAt) => setFormData({ ...formData, executedAt })}
               disabled={isSubmitting}
             />
           </div>

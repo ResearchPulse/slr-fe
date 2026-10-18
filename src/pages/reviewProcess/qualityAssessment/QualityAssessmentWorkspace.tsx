@@ -78,6 +78,7 @@ export default function QualityAssessmentWorkspace() {
     updateDecisions,
     submitResolution,
     updateResolution,
+    reopenPaper,
     autoResolve,
     exportCsv,
   } = useQualityAssessment(qualityAssessmentId, isLeader, {
@@ -109,10 +110,9 @@ export default function QualityAssessmentWorkspace() {
         const pct = paper.completionPercentage ?? 0;
 
         // Both leader and reviewer now return the same resolution object
-        if (res && typeof res.finalDecision === "number") {
-          if (res.finalDecision === 1) return 4; // HighQuality
-          if (res.finalDecision === 0) return 5; // LowQuality
-        }
+        const finalDecision = res?.finalDecision == null ? null : Number(res.finalDecision);
+        if (finalDecision === 1) return 4; // HighQuality
+        if (finalDecision === 0) return 5; // LowQuality
 
         if (isLeader) {
           // Leader: completed on top, then ongoing, pending, highQuality, LowQuality
@@ -348,6 +348,16 @@ export default function QualityAssessmentWorkspace() {
     }
   };
 
+  const handleReopenPaper = async (paperId: string) => {
+    const paper = activePapers.find((item) => item.paperId === paperId);
+    if (!paper?.resolution) return;
+    const confirmed = window.confirm(
+      `Reopen “${paper.title}”? The final resolution will be removed and reviewers can edit their assessments again.`,
+    );
+    if (!confirmed) return;
+    await reopenPaper(paperId);
+  };
+
   return (
     <div className="flex h-screen flex-col bg-bg-primary relative">
       <QAHeader
@@ -435,6 +445,7 @@ export default function QualityAssessmentWorkspace() {
                 isLeader={isLeader}
                 onPaperClick={openEditSpace}
                 onAssignClick={handleAssignClick}
+                onReopenPaper={handleReopenPaper}
                 searchQuery={searchQuery}
                 onSearchChange={(q) => {
                   setSearchQuery(q);

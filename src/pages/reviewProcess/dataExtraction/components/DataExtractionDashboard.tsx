@@ -764,7 +764,7 @@ export default function DataExtractionDashboard({
                 size="sm"
                 className="normal-case tracking-normal"
               >
-                Complete phase
+                Mark module complete
               </Button>
             )}
           </div>
@@ -1546,13 +1546,13 @@ export default function DataExtractionDashboard({
       <Modal
         isOpen={isCompletePhaseModalOpen}
         onClose={() => setIsCompletePhaseModalOpen(false)}
-        title="Complete Data Extraction Phase"
-        description="Are you sure you want to complete this phase? All extraction data will be locked and cannot be edited without reopening."
+        title="Complete Data Extraction Module"
+        description="Are you sure you want to complete this module? All extraction data will be locked and cannot be edited without reopening."
         size="md"
       >
         <div className="space-y-4">
           <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-            This action locks extraction submissions for this phase.
+            This action locks extraction submissions for this module.
           </div>
 
           <div className="flex justify-end gap-3 pt-1">

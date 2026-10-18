@@ -505,7 +505,7 @@ export default function ProjectMembersModal({
                     setMemberSearchTerm(e.target.value);
                     setMemberPageNumber(1);
                   }}
-                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl text-xs font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+                  className="h-11 w-full rounded-xl border border-border bg-bg-primary pl-11 pr-4 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15 focus:bg-surface-white"
                 />
               </div>
 
@@ -532,30 +532,30 @@ export default function ProjectMembersModal({
                       members.map((member) => (
                         <div
                           key={member.userId}
-                          className="group relative flex items-center gap-4 p-4 bg-surface-white border border-slate-100 rounded-xl hover:border-indigo-100 hover:shadow-xl hover:shadow-indigo-50/50 transition-all duration-300"
+                          className="group relative flex items-center gap-4 rounded-xl border border-border bg-surface-white p-4 transition-colors hover:border-primary/35"
                         >
                           <div
                             className={cn(
-                              "w-14 h-14 rounded-xl flex items-center justify-center text-lg font-black shrink-0 transition-transform group-hover:scale-105",
+                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-base font-bold",
                               member.role === ProjectRole.Owner
-                                ? "bg-accent text-white shadow-lg shadow-indigo-100"
-                                : "bg-slate-100 text-slate-500 border border-slate-100",
+                                ? "bg-primary text-white"
+                                : "border border-border bg-bg-secondary text-text-secondary",
                             )}
                           >
                             {getInitials(member.fullName)}
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-0.5">
-                              <h4 className="font-black text-slate-800 tracking-tight truncate">
+                              <h4 className="truncate font-semibold text-text-primary">
                                 {member.fullName}
                               </h4>
                               <div className="flex flex-wrap items-center gap-2">
                                 <span
                                   className={cn(
-                                    "px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                                    "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
                                     member.role === ProjectRole.Owner
-                                      ? "bg-bg-secondary text-accent border-indigo-100"
-                                      : "bg-slate-50 text-slate-500 border-slate-100",
+                                      ? "border-primary/20 bg-primary-light text-primary-hover"
+                                      : "border-border bg-bg-secondary text-text-secondary",
                                   )}
                                 >
                                   {member.role === ProjectRole.Owner
@@ -571,7 +571,7 @@ export default function ProjectMembersModal({
                                         void handleExistingMemberRoleChange(member.userId, "OWNER")
                                       }
                                       disabled={isUpdatingMemberRole}
-                                      className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-indigo-100 bg-indigo-50 px-2.5 text-[10px] font-bold text-accent transition-colors hover:border-indigo-200 hover:bg-indigo-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                      className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary-light px-2.5 text-[10px] font-semibold text-primary-hover transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
                                       aria-label={`Transfer Project Leader role to ${member.fullName}`}
                                     >
                                       <FiRepeat size={12} />

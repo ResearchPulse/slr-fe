@@ -1,6 +1,7 @@
 // Strategies Tab Content: Error state, SearchStrategiesPanel, QuickImportCard
 
 import { FiAlertCircle, FiRefreshCw } from "react-icons/fi";
+import Button from "../../../../components/ui/Button";
 import SearchStrategiesPanel from "../../../../components/identification/strategies/SearchStrategiesPanel";
 import type { SearchExecutionResponse } from "../../../../types/searchExecution";
 import type { ImportBatch } from "../../../../types/identification";
@@ -44,23 +45,20 @@ export default function StrategiesTabContent({
   canEdit,
 }: StrategiesTabContentProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-5">
       {/* Error State */}
       {listError && (
-        <div className="bg-surface-white border border-border rounded-xl p-4 flex items-start gap-3">
-          <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+        <div role="alert" className="flex items-start gap-3 rounded-xl border border-error/25 bg-error/5 p-4">
+          <FiAlertCircle aria-hidden="true" className="mt-0.5 h-5 w-5 shrink-0 text-error" />
           <div className="flex-1">
-            <h3 className="text-sm font-semibold text-red-900 mb-1">
+            <h3 className="mb-1 text-sm font-semibold text-text-primary">
               Failed to load search strategies
             </h3>
-            <p className="text-sm text-red-700">{listError}</p>
-            <button
-              onClick={onRetry}
-              className="mt-2 text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
-            >
-              <FiRefreshCw className="w-4 h-4" />
+            <p className="text-sm text-text-secondary">{listError}</p>
+            <Button variant="secondary" size="sm" onClick={onRetry} className="mt-3">
+              <FiRefreshCw aria-hidden="true" className="h-4 w-4" />
               Retry
-            </button>
+            </Button>
           </div>
         </div>
       )}

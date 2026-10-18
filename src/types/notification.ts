@@ -41,11 +41,33 @@ export interface NotificationItem {
   id: string;
   title: string;
   message: string;
-  type: number;
+  type: string | number;
   relatedEntityId: string | null;
   entityType: NotificationEntityType | null;
+  actionUrl?: string | null;
   isRead: boolean;
   createdAt: string;
+}
+
+export interface NotificationApiItem {
+  id: string;
+  title: string;
+  message: string;
+  type: string | number;
+  projectId?: string | null;
+  relatedEntityId?: string | null;
+  entityType?: NotificationEntityType | null;
+  actionUrl?: string | null;
+  read?: boolean;
+  isRead?: boolean;
+  createdAt: string;
+}
+
+export interface NotificationApiResponse<T> {
+  success?: boolean;
+  isSuccess?: boolean;
+  message?: string;
+  data: T;
 }
 
 

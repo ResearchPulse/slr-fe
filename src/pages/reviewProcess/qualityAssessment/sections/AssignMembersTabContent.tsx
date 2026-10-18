@@ -2,12 +2,11 @@ import { useState } from "react";
 import type { WorkspaceQAPaper } from "../QualityAssessmentWorkspace";
 import {
   Search,
-  Filter,
-  MoreHorizontal,
   User,
   FileText,
   CheckCircle2,
   Clock,
+  RotateCcw,
 } from "lucide-react";
 import Card from "../../../../components/ui/Card";
 import {
@@ -18,7 +17,6 @@ import {
   TableHeader,
   TableRow,
 } from "../../../../components/ui/Table";
-import Button from "../../../../components/ui/Button";
 import Pagination from "../../../../components/ui/Pagination";
 
 interface AssignMembersTabContentProps {
@@ -26,6 +24,7 @@ interface AssignMembersTabContentProps {
   isLeader?: boolean;
   onPaperClick: (paperId: string) => void;
   onAssignClick: (e: React.MouseEvent, paperId: string) => void;
+  onReopenPaper?: (paperId: string) => void;
   onSearchChange?: (query: string) => void;
   searchQuery?: string;
   currentPage: number;
@@ -35,8 +34,10 @@ interface AssignMembersTabContentProps {
 }
 
 function getPaperStatus(paper: WorkspaceQAPaper, isLeader: boolean = false) {
-  if (paper.resolution && typeof paper.resolution.finalDecision === "number") {
-    return paper.resolution.finalDecision === 1
+  const rawFinalDecision = paper.resolution?.finalDecision;
+  const finalDecision = rawFinalDecision == null ? null : Number(rawFinalDecision);
+  if (finalDecision === 0 || finalDecision === 1) {
+    return finalDecision === 1
       ? "high-quality"
       : "low-quality";
   }
@@ -57,6 +58,7 @@ export function AssignMembersTabContent({
   isLeader,
   onPaperClick,
   onAssignClick,
+  onReopenPaper,
   onSearchChange,
   searchQuery = "",
   currentPage,
@@ -108,7 +110,8 @@ export function AssignMembersTabContent({
           <div className="relative group">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-text-secondary group-focus-within:text-accent transition-colors" />
             <input
-              type="text"
+              type="search"
+              aria-label="Search papers by title"
               value={searchQuery}
               onChange={(e) => {
                 if (onSearchChange) onSearchChange(e.target.value);
@@ -117,10 +120,6 @@ export function AssignMembersTabContent({
               className="w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-text-secondary/80 focus:border-accent focus:bg-surface-white focus:outline-none focus:ring-2 focus:ring-accent/15 sm:w-72"
             />
           </div>
-          <Button variant="outline" className="flex shrink-0 gap-2 rounded-xl border-border">
-            <Filter size={16} />
-            Filter
-          </Button>
         </div>
       </div>
 
@@ -152,9 +151,11 @@ export function AssignMembersTabContent({
               <TableHead className="w-40 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                 Status
               </TableHead>
-              <TableHead className="w-16">
-                <span></span>
-              </TableHead>
+              {isLeader && (
+                <TableHead className="w-28 text-right text-xs font-semibold uppercase tracking-wider text-text-secondary">
+                  Action
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -182,9 +183,16 @@ export function AssignMembersTabContent({
                       <FileText size={16} />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-sm font-medium text-text-primary group-hover:text-accent transition-colors line-clamp-2">
+                      <button
+                        type="button"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          onPaperClick(paper.paperId);
+                        }}
+                        className="line-clamp-2 text-left text-sm font-medium text-text-primary transition-colors hover:text-accent focus-visible:outline-none focus-visible:underline"
+                      >
                         {paper.title}
-                      </span>
+                      </button>
                       <span className="text-xs text-text-secondary mt-1 line-clamp-1">
                         {paper.authors || "Unknown authors"}
                       </span>
@@ -196,39 +204,46 @@ export function AssignMembersTabContent({
                     <div className="flex items-center gap-2">
                       <div className="flex -space-x-2 overflow-hidden">
                         {getPaperReviewers(paper).length === 0 ? (
-                          <span
+                          <button
+                            type="button"
                             onClick={(e) => onAssignClick(e, paper.paperId)}
-                            className="text-xs text-text-secondary italic cursor-pointer hover:text-accent transition-colors"
+                            className="text-left text-xs italic text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:underline"
+                            aria-label={`Assign reviewers to ${paper.title}`}
                           >
                             Unassigned
-                          </span>
+                          </button>
                         ) : (
                           getPaperReviewers(paper).map((member, idx) => (
-                            <div
+                            <button
                               key={idx}
+                              type="button"
                               className="relative group/member shrink-0 cursor-pointer"
                               onClick={(e) => onAssignClick(e, paper.paperId)}
+                              aria-label={`Edit reviewers for ${paper.title}`}
+                              title={member.fullname || member.username}
                             >
-                              <div className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-light ring-2 ring-white hover:bg-accent/30 transition-colors">
+                              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-primary-light ring-2 ring-white transition-colors hover:bg-accent/30">
                                 <span className="text-xs font-bold text-accent">
                                   {(member.fullname || member.username)
                                     .substring(0, 2)
                                     .toUpperCase()}
                                 </span>
-                              </div>
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/member:block z-10 w-max bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-none">
+                              </span>
+                              <span className="absolute bottom-full left-1/2 z-10 mb-2 hidden w-max -translate-x-1/2 rounded bg-slate-800 px-2 py-1 text-xs text-white group-hover/member:block group-focus-visible/member:block">
                                 {member.fullname || member.username}
-                              </div>
-                            </div>
+                              </span>
+                            </button>
                           ))
                         )}
                       </div>
                       {getPaperReviewers(paper).length < 2 && (
                         <button
+                          type="button"
                           className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 bg-surface-white text-text-secondary hover:text-accent hover:border-accent hover:bg-primary-light ring-2 ring-white shrink-0 transition-all relative group/btn"
                           onClick={(e) => onAssignClick(e, paper.paperId)}
+                          aria-label={`Assign reviewer to ${paper.title}`}
                         >
-                          <User size={14} />
+                          <User size={14} aria-hidden="true" />
                           <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/btn:block z-10 w-max bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-none">
                             Assign Reviewer
                           </div>
@@ -309,11 +324,22 @@ export function AssignMembersTabContent({
                     );
                   })()}
                 </TableCell>
-                <TableCell className="text-right">
-                  <button className="text-text-secondary hover:text-text-primary p-2 rounded-xl hover:bg-bg-secondary transition-colors">
-                    <MoreHorizontal size={18} />
-                  </button>
-                </TableCell>
+                {isLeader && (
+                  <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
+                    {paper.resolution && (
+                      <button
+                        type="button"
+                        onClick={() => onReopenPaper?.(paper.paperId)}
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+                        aria-label={`Reopen ${paper.title}`}
+                        title="Reopen this paper for reviewer corrections"
+                      >
+                        <RotateCcw size={13} aria-hidden="true" />
+                        Reopen
+                      </button>
+                    )}
+                  </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>

@@ -2,6 +2,8 @@ import api from "../config/axios";
 import type {
   FieldClassification,
   PicocSuggestionRequest,
+  PicocSuggestionBatchResponse,
+  PicocSuggestionContext,
   PicocSuggestionResponse,
   PicocWizardDraft,
   PicocWizardRecord,
@@ -31,7 +33,7 @@ export type PicocAnalyticsEvent =
 /** Structured properties only — never research text (the server rejects anything else). */
 export interface PicocAnalyticsProperties {
   component?: "population" | "intervention" | "comparison" | "outcome" | "context";
-  source?: "ai" | "openalex" | "user" | "openalex_fallback";
+  source?: "ai" | "openalex" | "storage" | "default" | "user" | "openalex_fallback" | "storage_fallback" | "default_fallback";
   count?: number;
   gateId?: "G1" | "G2" | "G3" | "G4" | "G5" | "G6" | "G7";
   gateStatus?: "passed" | "needs_review" | "blocked" | "not_run";
@@ -56,6 +58,11 @@ export const picocWizardStateService = {
 
   async suggest(projectId: string, request: PicocSuggestionRequest): Promise<PicocSuggestionResponse> {
     const response = await api.post<ApiResponse<PicocSuggestionResponse>>(`${base(projectId)}/suggestions`, request, { timeout: 60000 });
+    return response.data.data;
+  },
+
+  async suggestBatch(projectId: string, context: PicocSuggestionContext): Promise<PicocSuggestionBatchResponse> {
+    const response = await api.post<ApiResponse<PicocSuggestionBatchResponse>>(`${base(projectId)}/suggestions/batch`, { context }, { timeout: 90000 });
     return response.data.data;
   },
 

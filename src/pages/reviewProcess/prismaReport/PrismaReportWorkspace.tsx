@@ -19,6 +19,7 @@ import PrismaExclusionTable from "./sections/PrismaExclusionTable";
 import PrismaReportHistory from "./sections/PrismaReportHistory";
 import PrismaExportActions from "./sections/PrismaExportActions";
 import Button from "../../../components/ui/Button";
+import { useProjectMember } from "../../../hooks/useProjectMember";
 
 export default function PrismaReportWorkspace() {
   const { projectId, processId } = useParams<{
@@ -34,6 +35,9 @@ export default function PrismaReportWorkspace() {
   }, []);
 
   const effectiveProjectId = projectId || processId || "";
+  // Saving a snapshot is the leader's job; every member can read and export one.
+  const { member } = useProjectMember(effectiveProjectId);
+  const canGenerate = member?.isLeader ?? false;
 
   const {
     latestReport,
@@ -124,6 +128,7 @@ export default function PrismaReportWorkspace() {
           isGenerating={isGenerating}
           isDownloading={isDownloading}
           cooldown={cooldown}
+          canGenerate={canGenerate}
           onGenerate={handleGenerate}
           onDownloadDiagram={downloadPrismaDiagram}
           onExportPNG={handleExportPNG}
@@ -206,14 +211,20 @@ export default function PrismaReportWorkspace() {
               current state of your systematic review pipeline. The report is a
               snapshot calculated from your review data.
             </p>
-            <Button
-              onClick={handleGenerate}
-              disabled={isGenerating}
-              size="lg"
-              className="inline-flex gap-2"
-            >
-              {isGenerating ? "Generating…" : "Generate PRISMA Report"}
-            </Button>
+            {canGenerate ? (
+              <Button
+                onClick={handleGenerate}
+                disabled={isGenerating}
+                size="lg"
+                className="inline-flex gap-2"
+              >
+                {isGenerating ? "Generating…" : "Generate PRISMA Report"}
+              </Button>
+            ) : (
+              <p className="text-sm font-medium text-text-secondary">
+                The project leader has not generated a PRISMA report yet.
+              </p>
+            )}
           </div>
         )}
 

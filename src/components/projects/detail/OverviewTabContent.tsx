@@ -5,6 +5,7 @@ import type { Project } from "../../../types/project";
 import type { ReviewProcess } from "../../../types/reviewProcess";
 import BusinessJustificationSection from "./BusinessJustificationSection";
 import ProjectSetupSection from "./ProjectSetupSection";
+import SLRWorkflowOverview from "./SLRWorkflowOverview";
 
 interface OverviewTabContentProps {
   project: Project;
@@ -12,9 +13,13 @@ interface OverviewTabContentProps {
   isLeader: boolean;
   isProjectActive: boolean;
   isProjectSetupReady: boolean;
+  isProjectSetupChecking: boolean;
   reviewNeeds: any[];
   documents: any[];
   processes: ReviewProcess[];
+  isProcessesLoading: boolean;
+  processesError: boolean;
+  onRetryProcesses: () => void;
   isUpdatingDates: boolean;
   handleSaveProjectDates: (payload: {
     id: string;
@@ -70,9 +75,19 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
     ?.currentPhaseText;
 
   return (
-    <div className="grid items-start gap-8 pb-12 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
+    <div className="pb-12">
+      <SLRWorkflowOverview
+        projectId={props.projectId}
+        protocolReady={props.isProjectSetupReady}
+        isProtocolLoading={props.isProjectSetupChecking}
+        processes={processes}
+        isProcessesLoading={props.isProcessesLoading}
+        processesError={props.processesError}
+        onRetryProcesses={props.onRetryProcesses}
+      />
+      <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-10">
       <div className="min-w-0 space-y-9">
-        <section aria-label="Review protocol">
+        <section id="review-protocol" aria-label="Review protocol">
           <ProjectSetupSection
             projectId={props.projectId}
             projectTitle={props.project.title}
@@ -255,6 +270,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
           </button>
         </section>
       </aside>
+      </div>
     </div>
   );
 };
