@@ -76,7 +76,7 @@ export default function QualityCriteriaTemplates() {
 
       {!isLoadingTemplates && systemTemplates.length === 0 && (
         <div className="rounded-xl border border-dashed border-border bg-surface-white p-10 text-center">
-          <FiBookOpen className="mx-auto h-8 w-8 text-slate-300" />
+          <FiBookOpen className="mx-auto h-8 w-8 text-text-muted" />
           <p className="mt-3 text-sm font-semibold text-text-primary">No system templates yet</p>
           <p className="mt-1 text-sm text-text-secondary">
             Leaders will start from a blank list. Create a template, ideally from a published checklist, and cite its source.
@@ -101,18 +101,18 @@ export default function QualityCriteriaTemplates() {
                     <span className="font-semibold">Source:</span> {template.source}
                   </p>
                 ) : (
-                  <p className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                  <p className="mt-2 inline-flex items-center gap-1.5 rounded-lg bg-warning/10 px-2.5 py-1 text-xs font-medium text-warning">
                     <FiAlertTriangle className="h-3.5 w-3.5" />
                     Source not documented. Add the citation before relying on this template.
                   </p>
                 )}
               </div>
               <div className="flex shrink-0 gap-2">
-                <Button variant="outline" size="sm" onClick={() => openEditor(template)} className="rounded-xl">
+                <Button variant="outline" size="sm" onClick={() => openEditor(template)} className="min-h-11 rounded-xl">
                   <FiEdit2 className="mr-1.5 h-3.5 w-3.5" />
                   Edit
                 </Button>
-                <Button variant="outline" size="sm" onClick={() => setPendingDelete(template)} className="rounded-xl text-rose-600">
+                <Button variant="outline" size="sm" onClick={() => setPendingDelete(template)} className="min-h-11 rounded-xl text-error">
                   <FiTrash2 className="mr-1.5 h-3.5 w-3.5" />
                   Delete
                 </Button>
@@ -120,7 +120,7 @@ export default function QualityCriteriaTemplates() {
             </div>
 
             <details className="mt-4 group">
-              <summary className="cursor-pointer text-xs font-bold uppercase tracking-wider text-accent">
+              <summary className="flex min-h-11 cursor-pointer items-center text-xs font-bold uppercase tracking-wider text-accent">
                 View questions
               </summary>
               <ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-text-primary">

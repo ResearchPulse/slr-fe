@@ -94,9 +94,9 @@ export default function AssignReviewersModal({
       size="lg"
     >
       <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-bg-primary p-4 shadow-sm">
+        <div className="rounded-xl border border-border bg-bg-primary p-4">
           <div className="flex items-start gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent shadow-sm">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-accent">
               <Users2 className="h-5 w-5" />
             </div>
             <div className="min-w-0 flex-1">
@@ -111,7 +111,7 @@ export default function AssignReviewersModal({
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <div className="rounded-xl border border-border bg-surface-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-surface-white p-4">
             <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 1
             </label>
@@ -129,7 +129,7 @@ export default function AssignReviewersModal({
             />
           </div>
 
-          <div className="rounded-xl border border-border bg-surface-white p-4 shadow-sm">
+          <div className="rounded-xl border border-border bg-surface-white p-4">
             <label className="mb-3 block text-sm font-semibold text-text-primary">
               Reviewer 2
             </label>
@@ -166,8 +166,8 @@ export default function AssignReviewersModal({
             ) : null}
 
             {rev2 ? (
-              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-text-primary ring-1 ring-slate-200">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[11px] font-bold text-text-primary">
+              <span className="inline-flex items-center gap-2 rounded-full bg-bg-secondary px-3 py-2 text-sm font-semibold text-text-primary ring-1 ring-border">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-bg-secondary text-[11px] font-bold text-text-primary">
                   {getInitials(
                     reviewerOptions.find((option) => option.value === rev2)
                       ?.label ?? "",

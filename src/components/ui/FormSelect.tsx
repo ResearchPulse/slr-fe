@@ -34,7 +34,10 @@ const FormSelect = React.forwardRef<HTMLSelectElement, FormSelectProps>(
           ref={ref}
           id={id}
           error={hasError}
-          className={className}
+          className={cn(
+            className,
+            "transition-[color,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
+          )}
           aria-invalid={hasError}
           aria-describedby={
             hasError ? `${id}-error` : helperText ? `${id}-helper` : undefined

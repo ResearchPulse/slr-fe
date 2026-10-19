@@ -32,7 +32,7 @@ export default function ReviewerSidebar({
   onSubmitExtraction,
 }: ReviewerSidebarProps) {
   return (
-    <aside className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+    <aside className="flex h-full min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white">
       <div className="min-h-0 flex-1 overflow-y-auto p-3 sm:p-4">
         <div className="mb-4 border-b border-border pb-3">
           <h2 className="text-lg font-semibold text-text-primary">Sections</h2>
@@ -52,9 +52,9 @@ export default function ReviewerSidebar({
                 type="button"
                 aria-pressed={isActive}
                 onClick={() => onSectionChange(sectionId)}
-                className={`group flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-all duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
+                className={`group flex min-h-12 w-full items-center justify-between gap-3 rounded-xl border px-3.5 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
                   isActive
-                    ? "border-primary/25 bg-blue-50/80 text-primary shadow-sm"
+                    ? "border-primary/25 bg-primary-light text-primary shadow-sm"
                     : "border-border bg-surface-white text-text-secondary hover:border-primary/25 hover:bg-bg-secondary hover:text-text-primary"
                 }`}
               >

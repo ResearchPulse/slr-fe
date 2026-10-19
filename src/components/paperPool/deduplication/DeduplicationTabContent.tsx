@@ -225,7 +225,7 @@ export default function DeduplicationTabContent({
       {/* Loading state */}
       {isLoading && duplicatePairs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16">
-          <FiRefreshCw className="w-8 h-8 text-accent animate-spin mb-3" />
+          <FiRefreshCw className="w-8 h-8 text-accent motion-safe:animate-spin motion-reduce:animate-none mb-3" />
           <p className="text-text-secondary font-medium">
             Loading duplicate pairs...
           </p>
@@ -238,15 +238,15 @@ export default function DeduplicationTabContent({
       {/* Error state */}
       {error && !isLoading && (
         <div className="flex flex-col items-center justify-center py-16">
-          <FiAlertTriangle className="w-10 h-10 text-red-400 mb-3" />
+          <FiAlertTriangle className="w-10 h-10 text-error mb-3" />
           <p className="text-text-primary font-medium">
             Failed to load duplicate pairs
           </p>
-          <p className="text-sm text-red-600 mt-1">{error}</p>
+          <p className="mt-1 text-sm text-error">{error}</p>
           {onRefetch && (
             <button
               onClick={onRefetch}
-              className="mt-4 px-4 py-2 text-sm font-medium text-accent bg-primary-light rounded-xl hover:bg-accent/10 transition-colors"
+              className="mt-4 min-h-11 px-4 text-sm font-medium text-accent bg-primary-light rounded-xl hover:bg-accent/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
             >
               Try Again
             </button>
@@ -322,10 +322,10 @@ export default function DeduplicationTabContent({
                               <span
                                 className={
                                   selectedConfidence === "high"
-                                    ? "text-red-600"
+                                    ? "text-error"
                                     : selectedConfidence === "medium"
-                                      ? "text-orange-600"
-                                      : "text-yellow-600"
+                                      ? "text-warning"
+                                      : "text-text-secondary"
                                 }
                               >
                                 {selectedConfidence === "high"
@@ -369,9 +369,9 @@ export default function DeduplicationTabContent({
                     {/* Low-similarity warning */}
                     {selectedDuplicate.similarityScore <
                       SIMILARITY_THRESHOLDS.LOW_WARNING && (
-                      <div className="flex items-start gap-2 p-3 mb-4 bg-amber-50 border border-amber-200 rounded-xl">
-                        <FiAlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                        <p className="text-xs text-amber-700">
+                      <div className="flex items-start gap-2 p-3 mb-4 bg-warning/10 border border-warning/20 rounded-xl">
+                        <FiAlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
+                        <p className="text-xs text-warning">
                           Low similarity score (
                           {selectedDuplicate.similarityScore}%). These papers
                           may not be true duplicates. Review carefully before
@@ -384,12 +384,12 @@ export default function DeduplicationTabContent({
                     {confirmingDecision && (
                       <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-xl">
                         <div className="flex items-start gap-3">
-                          <FiAlertTriangle className="w-5 h-5 text-red-500 mt-0.5 shrink-0" />
+                          <FiAlertTriangle className="w-5 h-5 text-error mt-0.5 shrink-0" />
                           <div className="flex-1">
-                            <p className="text-sm font-medium text-red-800">
+                            <p className="text-sm font-medium text-error">
                               Confirm duplicate removal for low-similarity pair
                             </p>
-                            <p className="text-xs text-red-600 mt-1">
+                            <p className="text-xs text-error mt-1">
                               This pair has a similarity score below{" "}
                               {SIMILARITY_THRESHOLDS.LOW_WARNING}%. Are you sure
                               these papers are duplicates? The flagged paper
@@ -432,7 +432,7 @@ export default function DeduplicationTabContent({
                       />
                       <PaperComparisonCard
                         label="PAPER B (Flagged)"
-                        labelColor="text-purple-600"
+                        labelColor="text-primary-hover"
                         paper={selectedDuplicate.duplicatePaper}
                         otherPaper={selectedDuplicate.originalPaper}
                         isResolved={selectedDuplicate.status === "resolved"}
@@ -485,7 +485,7 @@ export default function DeduplicationTabContent({
                           2
                         </kbd>
                         <span>Cancel</span>
-                        <span className="mx-1 text-gray-300">|</span>
+                        <span className="mx-1 text-text-secondary/50">|</span>
                         <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           ↑↓
                         </kbd>

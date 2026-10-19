@@ -50,7 +50,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
               label: qt.name,
             }))}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -64,7 +64,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
             placeholder="e.g., What is the long-term impact of mindfulness-based cognitive therapy on relapse rates in adults with recurrent depression?"
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -78,7 +78,7 @@ const ResearchQuestionForm: React.FC<ResearchQuestionFormProps> = ({
             placeholder="e.g., Despite the popularity of MBCT, its long-term efficacy (beyond 12 months) remains under-studied compared to traditional therapy..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
       </div>

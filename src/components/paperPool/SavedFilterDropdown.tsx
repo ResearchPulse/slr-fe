@@ -48,14 +48,14 @@ export default function SavedFilterDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 transition-colors ${
+        className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
           isOpen
             ? "border-accent bg-primary-light"
             : "border-border bg-white hover:border-accent/40"
         }`}
       >
         <div
-          className={`flex h-8 w-8 items-center justify-center rounded-xl ${selectedFilter ? "bg-accent text-white" : "bg-slate-100 text-text-secondary"}`}
+          className={`flex h-8 w-8 items-center justify-center rounded-xl ${selectedFilter ? "bg-primary text-white" : "bg-bg-secondary text-text-secondary"}`}
         >
           <FiFilter className="h-4 w-4" />
         </div>
@@ -73,8 +73,8 @@ export default function SavedFilterDropdown({
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 top-full z-(--z-index-dropdown) mt-2 w-72 animate-in fade-in slide-in-from-top-2 overflow-hidden rounded-xl border border-border bg-surface-white shadow-xl duration-200">
-          <div className="border-b border-border bg-slate-50/70 p-2">
+        <div className="absolute right-0 top-full z-(--z-index-dropdown) mt-2 w-72 overflow-hidden rounded-xl border border-border bg-surface-white shadow-xl motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-200 motion-reduce:animate-none">
+          <div className="border-b border-border bg-bg-secondary/70 p-2">
             <button
               type="button"
               onClick={() => {
@@ -82,9 +82,9 @@ export default function SavedFilterDropdown({
                 setIsOpen(false);
               }}
               disabled={isCreating}
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-accent transition-colors hover:bg-primary-light"
+              className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-2.5 text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/10">
                 <FiPlus className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold">
@@ -110,7 +110,7 @@ export default function SavedFilterDropdown({
                     onSelect(filter);
                     setIsOpen(false);
                   }}
-                  className={`flex w-full items-center justify-between rounded-xl px-3 py-3 transition-colors ${
+                  className={`flex min-h-11 w-full items-center justify-between rounded-xl px-3 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
                     selectedFilterId === filter.id
                       ? "bg-primary-light text-accent"
                       : "hover:bg-bg-primary text-text-primary"
@@ -132,16 +132,16 @@ export default function SavedFilterDropdown({
             )}
           </div>
 
-          <div className="border-t border-border bg-slate-50/70 p-2">
+          <div className="border-t border-border bg-bg-secondary/70 p-2">
             <button
               type="button"
               onClick={() => {
                 onManage();
                 setIsOpen(false);
               }}
-              className="flex w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-text-secondary transition-colors hover:border-border hover:bg-white hover:text-text-primary"
+              className="flex min-h-11 w-full items-center gap-3 rounded-xl border border-transparent px-3 py-2.5 text-text-secondary transition-colors hover:border-border hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-100">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-bg-secondary">
                 <FiSettings className="h-4 w-4" />
               </div>
               <span className="text-xs font-semibold">

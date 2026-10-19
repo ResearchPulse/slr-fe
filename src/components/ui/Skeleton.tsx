@@ -9,7 +9,11 @@ type SkeletonProps = React.HTMLAttributes<HTMLDivElement>;
 export const Skeleton: React.FC<SkeletonProps> = ({ className, ...props }) => {
   return (
     <div
-      className={cn("animate-pulse rounded-md bg-border/60", className)}
+      aria-hidden="true"
+      className={cn(
+        "motion-safe:animate-pulse motion-reduce:animate-none rounded-md bg-border/60",
+        className,
+      )}
       {...props}
     />
   );

@@ -66,8 +66,9 @@ export const GraphSection: React.FC<GraphSectionProps> = ({
             </div>
 
             <button
+              type="button"
               onClick={() => setOpenGraph(true)}
-              className="mt-6 inline-flex min-h-10 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 focus-visible:ring-offset-2 motion-reduce:transition-none"
             >
               <FiGitBranch className="h-4 w-4" aria-hidden="true" />
               Open interactive graph

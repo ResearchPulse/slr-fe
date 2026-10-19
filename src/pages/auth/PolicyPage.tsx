@@ -5,39 +5,39 @@ import { FiX } from "react-icons/fi";
 const PolicyPage: React.FC = () => {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen w-full bg-bg-primary py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto border border-border overflow-hidden">
+    <div className="min-h-screen w-full bg-bg-primary px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div className="mx-auto max-w-4xl overflow-hidden rounded-xl border border-border bg-surface-white">
         {/* Header */}
-        <div className="bg-text-primary px-8 py-12 relative">
+        <div className="relative border-b border-border bg-bg-secondary px-5 py-8 sm:px-10 sm:py-9">
           <button
-            onClick={() => navigate("/auth/signup")}
-            className="absolute top-6 right-6 p-2 text-bg-primary/40 hover:text-bg-primary transition-colors border border-bg-primary/10 hover:border-bg-primary/30"
+            onClick={() => navigate("/auth/signin")}
+            className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-surface-white text-text-secondary transition-colors duration-150 hover:bg-bg-primary hover:text-text-primary motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 sm:right-6 sm:top-6"
             aria-label="Close"
           >
             <FiX className="w-4 h-4" />
           </button>
-          <div className="mt-2">
-            <p className="text-[11px] uppercase tracking-[0.3em] text-bg-primary/40 mb-4">
+          <div className="mt-8 sm:mt-2">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-primary">
               Legal Information
             </p>
-            <h1 className="font-cormorant text-[44px] sm:text-[52px] font-normal text-bg-primary leading-tight mb-3">
+            <h1 className="mb-3 text-3xl font-semibold leading-tight tracking-tight text-text-primary sm:text-4xl">
               Privacy Policy &amp; Terms
             </h1>
-            <p className="text-bg-primary/50 text-sm">
+            <p className="text-sm text-text-secondary">
               Last updated: January 11, 2026
             </p>
           </div>
         </div>
 
         {/* Content Body */}
-        <div className="px-8 py-10 sm:px-12 space-y-10 bg-surface-white">
+        <div className="space-y-8 px-5 py-8 sm:space-y-10 sm:px-10 sm:py-10">
           {/* Section 1 */}
           <section className="space-y-4">
             <div className="border-b border-border pb-3 mb-4">
               <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
                 01
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                 Introduction
               </h2>
             </div>
@@ -64,7 +64,7 @@ const PolicyPage: React.FC = () => {
               <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
                 02
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                 Data Collection
               </h2>
             </div>
@@ -116,7 +116,7 @@ const PolicyPage: React.FC = () => {
               <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
                 03
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                 User Responsibilities
               </h2>
             </div>
@@ -158,7 +158,7 @@ const PolicyPage: React.FC = () => {
               <p className="text-[10px] uppercase tracking-[0.25em] text-text-secondary mb-1">
                 04
               </p>
-              <h2 className="font-cormorant text-[28px] font-normal text-text-primary">
+              <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
                 Security Measures
               </h2>
             </div>
@@ -177,9 +177,9 @@ const PolicyPage: React.FC = () => {
         <div className="bg-bg-secondary px-8 py-5 border-t border-border text-center">
           <p className="text-text-secondary text-[12px]">
             For questions about this policy, please contact us at{" "}
-            <span className="text-accent font-medium hover:underline cursor-pointer">
+            <a href="mailto:privacy@slrs.com" className="inline-flex min-h-11 items-center text-accent font-medium hover:underline">
               privacy@slrs.com
-            </span>
+            </a>
           </p>
         </div>
       </div>

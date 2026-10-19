@@ -18,6 +18,7 @@ export const ChecklistTemplateModal: React.FC<ChecklistTemplateModalProps> = ({
       title="Checklist Template"
       size="xl"
       className="p-0"
+      bodyClassName="p-3 sm:p-4"
     >
       <StudySelectionChecklistTemplatePage />
     </Modal>

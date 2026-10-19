@@ -16,51 +16,46 @@ export function MarkdownContent({
 }: MarkdownContentProps) {
   const styles = {
     blue: {
-      text: "text-blue-900/90",
-      strong:
-        "text-blue-950 bg-blue-50 px-1 rounded-sm border border-blue-100/50",
-      em: "text-blue-800/90 italic underline decoration-blue-200 decoration-1 underline-offset-4",
-      marker: "marker:text-blue-400",
-      code: "text-blue-700 bg-blue-50/50 border-blue-100/40",
+      text: "text-accent",
+      strong: "text-text-primary bg-primary-light px-1 rounded-sm border border-primary/15",
+      em: "text-accent italic underline decoration-primary/30 decoration-1 underline-offset-4",
+      marker: "marker:text-accent",
+      code: "text-accent bg-primary-light/60 border-primary/15",
     },
     red: {
-      text: "text-red-900/90",
-      strong:
-        "text-red-950 bg-surface-white px-1 rounded-sm border border-red-100/50",
-      em: "text-red-800 italic decoration-red-200 underline decoration-1",
-      marker: "marker:text-red-400",
-      code: "text-red-700 bg-surface-white/50 border-red-100/40",
+      text: "text-error",
+      strong: "text-error bg-error/5 px-1 rounded-sm border border-error/15",
+      em: "text-error italic underline decoration-error/30 decoration-1",
+      marker: "marker:text-error/70",
+      code: "text-error bg-error/5 border-error/15",
     },
     green: {
-      text: "text-green-900/90",
-      strong:
-        "text-green-950 bg-surface-white px-1 rounded-sm border border-green-100/50",
-      em: "text-green-800 italic underline decoration-green-200 decoration-1",
-      marker: "marker:text-green-400",
-      code: "text-green-700 bg-surface-white/50 border-green-100/40",
+      text: "text-success",
+      strong: "text-success bg-success/5 px-1 rounded-sm border border-success/15",
+      em: "text-success italic underline decoration-success/30 decoration-1",
+      marker: "marker:text-success",
+      code: "text-success bg-success/5 border-success/15",
     },
     amber: {
-      text: "text-amber-900/90",
-      strong:
-        "text-amber-950 bg-amber-50 px-1 rounded-sm border border-amber-100/50",
-      em: "text-amber-800 italic underline decoration-amber-200 decoration-1",
-      marker: "marker:text-amber-400",
-      code: "text-amber-700 bg-amber-50/50 border-amber-100/40",
+      text: "text-warning",
+      strong: "text-warning bg-warning/10 px-1 rounded-sm border border-warning/20",
+      em: "text-warning italic underline decoration-warning/30 decoration-1",
+      marker: "marker:text-warning",
+      code: "text-warning bg-warning/10 border-warning/20",
     },
     slate: {
-      text: "text-slate-700",
-      strong:
-        "text-slate-900 bg-slate-100/80 px-1 rounded-sm border border-slate-200/50",
-      em: "text-slate-800 italic underline decoration-slate-300 decoration-1 underline-offset-4",
-      marker: "marker:text-slate-400",
-      code: "text-slate-700 bg-slate-50 border-slate-200/60",
+      text: "text-text-secondary",
+      strong: "text-text-primary bg-bg-secondary px-1 rounded-sm border border-border/60",
+      em: "text-text-primary italic underline decoration-border decoration-1 underline-offset-4",
+      marker: "marker:text-text-secondary",
+      code: "text-text-secondary bg-bg-primary border-border",
     },
     gray: {
-      text: "text-gray-600",
-      strong: "text-gray-900 bg-gray-100/80 px-1 rounded-sm",
-      em: "text-gray-800 italic underline decoration-gray-200 decoration-1",
-      marker: "marker:text-gray-400",
-      code: "text-gray-600 bg-gray-50 border-gray-100",
+      text: "text-text-secondary",
+      strong: "text-text-primary bg-bg-secondary px-1 rounded-sm border border-border/60",
+      em: "text-text-primary italic underline decoration-border decoration-1",
+      marker: "marker:text-text-secondary",
+      code: "text-text-secondary bg-bg-primary border-border",
     },
   };
 
@@ -132,17 +127,17 @@ export function MarkdownContent({
             </code>
           ),
           h1: ({ children }) => (
-            <h1 className="text-[11px] font-black uppercase tracking-widest mb-3 mt-4 first:mt-0 text-slate-900">
+            <h1 className="text-[11px] font-black uppercase tracking-widest mb-3 mt-4 first:mt-0 text-text-primary">
               {children}
             </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-[10px] font-black uppercase tracking-wider mb-2 mt-3 first:mt-0 text-slate-800/80">
+            <h2 className="text-[10px] font-black uppercase tracking-wider mb-2 mt-3 first:mt-0 text-text-secondary">
               {children}
             </h2>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="pl-3 border-l-2 border-slate-200 italic text-slate-500/80 my-2 text-[10px]">
+            <blockquote className="pl-3 border-l-2 border-border italic text-text-secondary my-2 text-[10px]">
               {children}
             </blockquote>
           ),

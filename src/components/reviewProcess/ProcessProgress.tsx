@@ -94,7 +94,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
           </div>
           <div className="w-full bg-bg-secondary rounded-full h-3 overflow-hidden">
             <div
-              className="h-3 rounded-full bg-primary transition-all duration-500"
+              className="h-3 rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
               style={{ width: `${progressPercentage}%` }}
             />
           </div>
@@ -132,7 +132,7 @@ export default function ProcessProgress({ processes }: ProcessProgressProps) {
         </div>
         <div className="text-center">
           <div className="flex items-center justify-center gap-1 mb-1">
-            <FiXCircle className="w-4 h-4 text-red-600" />
+            <FiXCircle className="w-4 h-4 text-error" />
             <span className="text-2xl font-bold text-text-primary">
               {cancelled}
             </span>

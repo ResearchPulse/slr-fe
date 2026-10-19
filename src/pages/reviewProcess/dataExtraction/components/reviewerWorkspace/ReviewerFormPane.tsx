@@ -94,7 +94,7 @@ export default function ReviewerFormPane({
   renderCommentButton,
 }: ReviewerFormPaneProps) {
   return (
-    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
+    <section className="flex h-full min-h-0 min-w-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white">
       <div className="flex h-full min-h-0 flex-col">
         <div className="shrink-0 border-b border-border bg-surface-white px-4 py-3 sm:px-5">
           <h2 className="line-clamp-2 text-lg font-semibold text-text-primary">
@@ -115,19 +115,19 @@ export default function ReviewerFormPane({
 
         <div className="custom-scrollbar min-h-0 flex-1 overflow-y-auto px-4 py-4 sm:px-5">
           {!activeSection ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+            <p className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
               No section selected.
             </p>
           ) : activeSection.sectionType === SectionTypeEnum.MatrixGrid ? (
             <div className="space-y-4">
               {matrixFields.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+                <p className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
                   No matrix fields in this section yet.
                 </p>
               ) : null}
 
               {currentRows.length === 0 ? (
-                <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+                <p className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
                   No items added yet. Add your first item below.
                 </p>
               ) : null}
@@ -147,7 +147,7 @@ export default function ReviewerFormPane({
                     className="rounded-xl border border-border bg-bg-secondary p-4"
                   >
                     <div className="mb-4 flex items-center justify-between gap-2">
-                      <h3 className="text-sm font-semibold text-slate-800">
+                      <h3 className="text-sm font-semibold text-text-primary">
                         {isPredefinedRow
                           ? `Predefined Item #${rowIndex + 1}`
                           : `Item #${rowIndex + 1}`}
@@ -159,7 +159,8 @@ export default function ReviewerFormPane({
                             onRemoveMatrixRow(activeSectionId, rowIndex)
                           }
                           disabled={isReadOnly}
-                          className="rounded-md px-2 py-1 text-xs font-semibold text-red-600 hover:bg-surface-white hover:text-red-700"
+                          aria-label={`Remove row ${rowIndex + 1}`}
+                          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-error/20 px-3 text-xs font-semibold text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
                         >
                           Remove
                         </button>
@@ -170,7 +171,7 @@ export default function ReviewerFormPane({
                       <div>
                         <label
                           htmlFor={`matrix-item-name-${toDomId(activeSectionId)}-${rowIndex}`}
-                          className="mb-1 block text-sm font-semibold text-slate-800"
+                          className="mb-1 block text-sm font-semibold text-text-primary"
                         >
                           Item/Group Name
                         </label>
@@ -200,7 +201,7 @@ export default function ReviewerFormPane({
                               )
                             }
                             placeholder="e.g. Group A, Baseline Tool"
-                            className="w-full rounded-lg border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-blue-500"
+                            className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                           />
                         )}
                       </div>
@@ -234,11 +235,11 @@ export default function ReviewerFormPane({
                                 <div className="flex items-center gap-2">
                                   <label
                                     htmlFor={controlId}
-                                    className="block text-sm font-semibold text-slate-800"
+                                    className="block text-sm font-semibold text-text-primary"
                                   >
                                     {field.name}
                                     {field.isRequired ? (
-                                      <span className="ml-1 text-red-500">
+                                      <span className="ml-1 text-error">
                                         *
                                       </span>
                                     ) : null}
@@ -256,7 +257,7 @@ export default function ReviewerFormPane({
                                       })
                                     : null}
                                 </div>
-                                <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-text-secondary">
+                                <label className={`mt-1 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-text-secondary ${isReadOnly ? "cursor-not-allowed" : "cursor-pointer"}`}>
                                   <input
                                     type="checkbox"
                                     checked={isNotReported}
@@ -269,7 +270,7 @@ export default function ReviewerFormPane({
                                         event.target.checked,
                                       )
                                     }
-                                    className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
+                                    className="h-5 w-5 rounded border-border text-primary focus:ring-primary/30"
                                   />
                                   Not Reported
                                 </label>
@@ -284,7 +285,7 @@ export default function ReviewerFormPane({
                             ) : null}
 
                             {isNotReported ? (
-                              <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
+                              <p className="mb-2 inline-flex rounded-full bg-bg-secondary px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
                                 NR
                               </p>
                             ) : null}
@@ -328,10 +329,10 @@ export default function ReviewerFormPane({
                                 }
                                 className={
                                   isTargetActive
-                                    ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                                    ? "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary-light text-primary transition-colors motion-reduce:transition-none hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                                     : hasLinkedEvidence
-                                      ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
-                                      : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                                      ? "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-success/20 bg-success/10 text-success transition-colors motion-reduce:transition-none hover:bg-success/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                                      : "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                                 }
                               >
                                 <Crosshair className="h-4 w-4" />
@@ -349,13 +350,13 @@ export default function ReviewerFormPane({
                 type="button"
                 onClick={() => onAddMatrixRow(activeSectionId)}
                 disabled={isReadOnly}
-                className="w-full rounded-xl border-2 border-dashed border-slate-300 bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-accent hover:text-accent"
+                className="min-h-11 w-full rounded-xl border-2 border-dashed border-border bg-surface-white px-4 py-3 text-sm font-semibold text-text-primary transition-colors hover:border-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
               >
                 + Add New {activeSection.name} Item
               </button>
             </div>
           ) : flattenedFields.length === 0 ? (
-            <p className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+            <p className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
               No fields in this section yet.
             </p>
           ) : (
@@ -380,11 +381,11 @@ export default function ReviewerFormPane({
                         <div className="flex items-center gap-2">
                           <label
                             htmlFor={`field-${toDomId(fieldKey)}`}
-                            className="block text-sm font-semibold text-slate-800"
+                            className="block text-sm font-semibold text-text-primary"
                           >
                             {field.name}
                             {field.isRequired ? (
-                              <span className="ml-1 text-red-500">*</span>
+                              <span className="ml-1 text-error">*</span>
                             ) : null}
                           </label>
                           {renderCommentButton && field.fieldId
@@ -396,7 +397,7 @@ export default function ReviewerFormPane({
                               })
                             : null}
                         </div>
-                        <label className="mt-1 inline-flex items-center gap-2 text-xs font-medium text-text-secondary">
+                        <label className={`mt-1 inline-flex min-h-11 items-center gap-2 text-xs font-medium text-text-secondary ${isReadOnly ? "cursor-not-allowed" : "cursor-pointer"}`}>
                           <input
                             type="checkbox"
                             checked={isNotReported}
@@ -407,7 +408,7 @@ export default function ReviewerFormPane({
                                 event.target.checked,
                               )
                             }
-                            className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
+                            className="h-5 w-5 rounded border-border text-primary focus:ring-primary/30"
                           />
                           Not Reported
                         </label>
@@ -422,7 +423,7 @@ export default function ReviewerFormPane({
                     ) : null}
 
                     {isNotReported ? (
-                      <p className="mb-2 inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
+                      <p className="mb-2 inline-flex rounded-full bg-bg-secondary px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
                         NR
                       </p>
                     ) : null}
@@ -450,10 +451,10 @@ export default function ReviewerFormPane({
                         }
                         className={
                           isTargetActive
-                            ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-blue-200 bg-blue-50 text-blue-700 transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+                            ? "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary-light text-primary transition-colors motion-reduce:transition-none hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                             : hasLinkedEvidence
-                              ? "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-emerald-200 bg-emerald-50 text-emerald-700 transition-colors hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
-                              : "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                              ? "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-success/20 bg-success/10 text-success transition-colors motion-reduce:transition-none hover:bg-success/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
+                              : "inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60"
                         }
                       >
                         <Crosshair className="h-4 w-4" />

@@ -1702,7 +1702,7 @@ export default function DataExtractionReviewerWorkspace({
   if (!ws.selectedTemplate) {
     return (
       <div className="h-[calc(100dvh-10.5rem)] min-h-[420px] overflow-hidden bg-[#F4F7FA] p-4">
-        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-2xl border border-border bg-surface-white p-8 shadow-sm">
+        <div className="mx-auto flex h-full max-w-3xl items-center justify-center rounded-2xl border border-border bg-surface-white p-8">
           <div className="text-center">
             <h2 className="text-xl font-semibold text-text-primary">
               {ws.isLoading ? "Loading template..." : "No template found"}
@@ -1759,7 +1759,7 @@ export default function DataExtractionReviewerWorkspace({
     <div className="flex h-[calc(100dvh-10.5rem)] min-h-[420px] min-w-0 flex-col overflow-hidden bg-bg-secondary">
 
       {isWorkspaceLocked ? (
-        <div className="shrink-0 border-b border-amber-200 bg-amber-50 px-5 py-2.5 text-sm font-medium text-amber-800">
+        <div className="shrink-0 border-b border-warning/20 bg-warning/10 px-5 py-2.5 text-sm font-medium text-warning">
           Your submission is locked. Waiting for consensus or leader review.
         </div>
       ) : null}
@@ -1785,7 +1785,7 @@ export default function DataExtractionReviewerWorkspace({
               tabIndex={activeMobilePane === pane ? 0 : -1}
               onClick={() => setActiveMobilePane(pane)}
               onKeyDown={handleMobilePaneKeyDown}
-              className={`min-h-10 rounded-lg px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
+              className={`min-h-11 rounded-lg px-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary ${
                 activeMobilePane === pane
                   ? "bg-primary-light text-primary-hover"
                   : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"

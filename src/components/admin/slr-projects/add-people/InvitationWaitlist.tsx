@@ -27,15 +27,15 @@ export default function InvitationWaitlist({
   if (users.length === 0) return null;
 
   return (
-    <div className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500">
+    <div className="space-y-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+          <div className="w-1.5 h-1.5 rounded-full bg-accent" />
+          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">
             Invitation Waitlist
           </span>
         </div>
-        <span className="px-2 py-0.5 rounded-full bg-slate-100 text-[9px] font-black text-slate-500">
+        <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[9px] font-black text-text-secondary">
           {users.length} {users.length === 1 ? "Person" : "People"}
         </span>
       </div>
@@ -44,20 +44,24 @@ export default function InvitationWaitlist({
         {users.map((user) => (
           <div
             key={user.id}
-            onClick={() => onSelect(user.id)}
             className={cn(
-              "group flex items-center justify-between p-2.5 rounded-xl border transition-all duration-300 cursor-pointer",
+              "flex items-center justify-between gap-2 rounded-xl border p-2.5 transition-colors duration-150 motion-reduce:transition-none",
               selectedUserId === user.id
-                ? "bg-bg-secondary/50 border-indigo-200"
-                : "bg-surface-white border-slate-100 hover:border-slate-200",
+                ? "border-accent/30 bg-primary-light"
+                : "border-border bg-surface-white",
             )}
           >
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-[10px] font-black text-slate-400 group-hover:bg-accent group-hover:text-white transition-colors">
+            <button
+              type="button"
+              aria-pressed={selectedUserId === user.id}
+              onClick={() => onSelect(user.id)}
+              className="group flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-lg text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            >
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-bg-secondary text-[10px] font-black text-text-secondary transition-colors group-hover:bg-accent group-hover:text-white motion-reduce:transition-none">
                 {getInitials(user.fullName)}
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] font-black text-slate-800 truncate leading-none mb-1">
+                <p className="mb-1 truncate text-[11px] font-black leading-none text-text-primary">
                   {user.fullName}
                 </p>
                 <div className="flex items-center gap-1.5">
@@ -69,26 +73,23 @@ export default function InvitationWaitlist({
                   >
                     {user.role}
                   </span>
-                  <span className="text-[9px] font-bold text-slate-300 italic">
+                  <span className="text-[9px] font-bold italic text-text-secondary">
                     @{user.userName}
                   </span>
                 </div>
               </div>
-            </div>
+            </button>
 
-            <div className="flex items-center gap-1">
-              <Tooltip content="Remove from list" position="top">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRemove(user.id);
-                  }}
-                  className="p-1.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-xl transition-all"
-                >
-                  <FiTrash2 size={12} />
-                </button>
-              </Tooltip>
-            </div>
+            <Tooltip content="Remove from list" position="top">
+              <button
+                type="button"
+                aria-label={`Remove ${user.fullName} from invitation list`}
+                onClick={() => onRemove(user.id)}
+                className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-surface-white hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+              >
+                <FiTrash2 size={12} />
+              </button>
+            </Tooltip>
           </div>
         ))}
       </div>

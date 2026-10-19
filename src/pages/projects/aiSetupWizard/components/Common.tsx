@@ -17,7 +17,7 @@ export function StepBadge({
     <div className="flex items-center gap-3">
       <div
         className={[
-          "h-9 w-9 rounded-full border text-sm font-semibold flex items-center justify-center transition-all",
+          "h-9 w-9 rounded-full border text-sm font-semibold flex items-center justify-center transition-colors motion-reduce:transition-none",
           complete
             ? "bg-accent border-accent text-white"
             : isActive
@@ -50,9 +50,9 @@ export function AISkeleton({ title }: { title: string }) {
       </div>
 
       <div className="space-y-3">
-        <div className="h-3 w-11/12 animate-pulse rounded-sm bg-bg-secondary" />
-        <div className="h-3 w-10/12 animate-pulse rounded-sm bg-bg-secondary" />
-        <div className="h-3 w-8/12 animate-pulse rounded-sm bg-bg-secondary" />
+        <div className="h-3 w-11/12 motion-safe:animate-pulse motion-reduce:animate-none rounded-sm bg-bg-secondary" />
+        <div className="h-3 w-10/12 motion-safe:animate-pulse motion-reduce:animate-none rounded-sm bg-bg-secondary" />
+        <div className="h-3 w-8/12 motion-safe:animate-pulse motion-reduce:animate-none rounded-sm bg-bg-secondary" />
       </div>
     </div>
   );

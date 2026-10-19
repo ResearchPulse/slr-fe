@@ -1,5 +1,6 @@
 // Import Batches Tab Content
 
+import { useState } from "react";
 import {
   FiUpload,
   FiRefreshCw,
@@ -7,8 +8,6 @@ import {
   FiFileText,
   FiDatabase,
   FiCheck,
-  FiEye,
-  FiDownload,
   FiTrash2,
 } from "react-icons/fi";
 import Button from "../../../../components/ui/Button";
@@ -40,6 +39,18 @@ export default function ImportBatchesTabContent({
   onDragLeave,
   onDrop,
 }: ImportBatchesTabContentProps) {
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const availableSources = Array.from(
+    new Set(
+      importBatches
+        .map((batch) => batch.source)
+        .filter((source): source is string => Boolean(source)),
+    ),
+  ).sort((left, right) => left.localeCompare(right));
+  const filteredBatches = importBatches.filter(
+    (batch) => sourceFilter === "all" || batch.source === sourceFilter,
+  );
+
   if (importBatchesLoading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -55,16 +66,16 @@ export default function ImportBatchesTabContent({
 
   if (importBatchesError) {
     return (
-      <div className="bg-surface-white border border-border rounded-xl p-4 flex items-start gap-3">
-        <FiAlertCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-3 rounded-xl border border-error/20 bg-error/5 p-4" role="alert">
+        <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-error" />
         <div className="flex-1">
-          <h3 className="text-sm font-semibold text-red-900 mb-1">
+          <h3 className="mb-1 text-sm font-semibold text-error">
             Failed to load import batches
           </h3>
-          <p className="text-sm text-red-700">{importBatchesError}</p>
+          <p className="text-sm text-text-primary">{importBatchesError}</p>
           <button
             onClick={onRetry}
-            className="mt-2 text-sm font-medium text-red-600 hover:text-red-700 flex items-center gap-1"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-sm font-medium text-error hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error motion-reduce:transition-none"
           >
             <FiRefreshCw className="w-4 h-4" />
             Retry
@@ -79,10 +90,10 @@ export default function ImportBatchesTabContent({
       {/* Hero Upload Zone or Filter Bar */}
       {importBatches.length === 0 ? (
         <div
-          className={`relative border-2 border-dashed rounded-xl p-12 mb-6 transition-all ${
+          className={`relative mb-6 rounded-xl border-2 border-dashed p-12 transition-[border-color,background-color] motion-reduce:transition-none ${
             isDragging
               ? "border-accent bg-primary-light"
-              : "border-border bg-bg-primary hover:border-gray-400"
+              : "border-border bg-bg-primary hover:border-primary/40"
           }`}
           onDragOver={onDragOver}
           onDragLeave={onDragLeave}
@@ -109,37 +120,92 @@ export default function ImportBatchesTabContent({
           </div>
         </div>
       ) : (
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-text-secondary">
+            Showing {filteredBatches.length} of {importBatches.length} batches
+          </p>
+          <div className="w-full sm:max-w-[240px]">
             <Select
               aria-label="Filter import batches by source"
-              defaultValue="all"
+              value={sourceFilter}
+              onChange={(event) => setSourceFilter(event.target.value)}
               options={[
                 { value: "all", label: "All sources" },
-                { value: "PUBMED", label: "PubMed" },
-                { value: "IEEE", label: "IEEE Xplore" },
-                { value: "ACM", label: "ACM Digital Library" },
+                ...availableSources.map((source) => ({ value: source, label: source })),
               ]}
-              className="w-[190px]"
-            />
-            <Select
-              aria-label="Filter import batches by status"
-              defaultValue="all"
-              options={[
-                { value: "all", label: "All statuses" },
-                { value: "completed", label: "Completed" },
-                { value: "processing", label: "Processing" },
-                { value: "failed", label: "Failed" },
-              ]}
-              className="w-[170px]"
+              className="w-full"
             />
           </div>
         </div>
       )}
 
       {/* Import Batches Table */}
-      {importBatches.length > 0 && (
-        <div className="overflow-x-auto">
+      {importBatches.length > 0 && filteredBatches.length === 0 && (
+        <div className="rounded-xl border border-border bg-bg-primary px-4 py-8 text-center">
+          <p className="text-sm font-medium text-text-primary">No batches from this source</p>
+          <button
+            type="button"
+            onClick={() => setSourceFilter("all")}
+            className="mt-2 inline-flex min-h-11 items-center rounded-lg px-2 text-xs font-semibold text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            Show all sources
+          </button>
+        </div>
+      )}
+
+      {filteredBatches.length > 0 && (
+        <>
+          <div className="space-y-3 md:hidden">
+            {filteredBatches.map((batch) => (
+              <article key={batch.id} className="rounded-xl border border-border bg-surface-white p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <FiFileText aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-text-secondary" />
+                    <div className="min-w-0">
+                      <h3 className="break-words text-sm font-semibold text-text-primary">
+                        {batch.fileName || "Imported records"}
+                      </h3>
+                      <p className="mt-1 flex items-center gap-1.5 text-xs text-text-secondary">
+                        <FiDatabase aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-accent" />
+                        {batch.source || "Unknown source"}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
+                    <FiCheck aria-hidden="true" className="h-3 w-3" />
+                    Completed
+                  </span>
+                </div>
+                <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 border-t border-border pt-3 text-xs">
+                  <div>
+                    <dt className="text-text-secondary">Imported by</dt>
+                    <dd className="mt-0.5 font-medium text-text-primary">{batch.importedBy || "System"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-text-secondary">Imported</dt>
+                    <dd className="mt-0.5 font-medium text-text-primary">{formatRelativeTime(batch.importedAt)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-text-secondary">Records</dt>
+                    <dd className="mt-0.5 font-semibold text-text-primary">{batch.totalRecords.toLocaleString()}</dd>
+                  </div>
+                  <div className="flex items-end justify-end">
+                    <button
+                      type="button"
+                      onClick={() => onDeleteImportBatch(batch.id)}
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-error/20 px-3 text-xs font-medium text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30"
+                      aria-label={`Delete import batch ${batch.fileName}`}
+                    >
+                      <FiTrash2 aria-hidden="true" className="h-3.5 w-3.5" />
+                      Delete
+                    </button>
+                  </div>
+                </dl>
+              </article>
+            ))}
+          </div>
+
+          <div className="hidden overflow-x-auto md:block">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border">
@@ -167,7 +233,7 @@ export default function ImportBatchesTabContent({
               </tr>
             </thead>
             <tbody>
-              {importBatches.map((batch) => (
+              {filteredBatches.map((batch) => (
                 <tr
                   key={batch.id}
                   className="border-b border-border hover:bg-bg-primary transition-colors"
@@ -206,7 +272,7 @@ export default function ImportBatchesTabContent({
                   </td>
                   <td className="py-4 px-4">
                     <div>
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success">
                         <FiCheck className="w-3 h-3" />
                         Completed
                       </span>
@@ -215,21 +281,9 @@ export default function ImportBatchesTabContent({
                   <td className="py-4 px-4">
                     <div className="flex items-center justify-end gap-2">
                       <button
-                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors"
-                        title="View Details"
-                      >
-                        <FiEye className="w-4 h-4" />
-                      </button>
-                      <button
-                        className="p-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded transition-colors"
-                        title="Download"
-                      >
-                        <FiDownload className="w-4 h-4" />
-                      </button>
-                      <button
                         type="button"
                         onClick={() => onDeleteImportBatch(batch.id)}
-                        className="p-2 text-red-600 hover:text-red-700 hover:bg-surface-white rounded transition-colors"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none"
                         aria-label={`Delete import batch ${batch.fileName}`}
                         title="Delete"
                       >
@@ -241,7 +295,8 @@ export default function ImportBatchesTabContent({
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </>
       )}
     </>
   );

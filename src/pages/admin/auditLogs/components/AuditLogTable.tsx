@@ -37,17 +37,17 @@ interface AuditLogTableProps {
 }
 
 const statusClasses: Record<AuditLogEntry["status"], string> = {
-  Success: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  Failed: "bg-rose-50 text-rose-700 border-rose-100",
+  Success: "bg-success/10 text-success border-success/20",
+  Failed: "bg-error/10 text-error border-error/20",
 };
 
 const actionToneClasses: Record<AuditLogEntry["actionType"], string> = {
-  create: "bg-emerald-50 text-emerald-700 border-emerald-100",
-  update: "bg-bg-secondary text-accent border-border",
-  delete: "bg-rose-50 text-rose-700 border-rose-100",
+  create: "bg-success/10 text-success border-success/20",
+  update: "bg-bg-secondary text-primary border-border",
+  delete: "bg-error/10 text-error border-error/20",
   export: "bg-bg-primary text-text-secondary border-border",
   access: "bg-bg-primary text-text-primary border-border",
-  review: "bg-bg-secondary text-accent border-border",
+  review: "bg-bg-secondary text-primary border-border",
   system: "bg-bg-primary text-text-secondary border-border",
 };
 
@@ -64,7 +64,7 @@ const SortHeader: React.FC<{
     <button
       type="button"
       onClick={() => onSortChange(field)}
-      className="inline-flex items-center gap-1.5 text-inherit font-medium"
+      className="inline-flex min-h-11 items-center gap-1.5 rounded-sm text-inherit font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
     >
       {label}
       {isActive ? (
@@ -74,7 +74,7 @@ const SortHeader: React.FC<{
           <FiArrowDown className="w-3.5 h-3.5" />
         )
       ) : (
-        <span className="text-slate-300">
+        <span className="text-text-muted">
           <FiArrowUp className="w-3 h-3 opacity-50" />
         </span>
       )}
@@ -87,10 +87,10 @@ const SkeletonRows = () => (
     {Array.from({ length: 6 }).map((_, index) => (
       <TableRow
         key={index}
-        className="animate-pulse hover:bg-transparent cursor-default"
+        className="motion-safe:animate-pulse hover:bg-transparent cursor-default"
       >
         <TableCell colSpan={6} className="px-6 py-5">
-          <div className="h-14 rounded-md bg-slate-100/80" />
+          <div className="h-14 rounded-md bg-bg-secondary motion-reduce:animate-none" />
         </TableCell>
       </TableRow>
     ))}
@@ -206,11 +206,19 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
               logs.map((entry) => (
                 <TableRow
                   key={entry.id}
+                  tabIndex={0}
+                  aria-label={`View audit details: ${entry.action} by ${entry.user}`}
                   onClick={() => onRowClick(entry)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onRowClick(entry);
+                    }
+                  }}
                   className={cn(
-                    "group border-b border-border bg-white transition-colors",
+                    "group cursor-pointer border-b border-border bg-surface-white motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
                     entry.importance === "high"
-                      ? "border-l-2 border-l-rose-300 hover:bg-rose-50/40"
+                      ? "bg-error/[0.035] hover:bg-error/[0.07]"
                       : "hover:bg-bg-primary/70",
                   )}
                 >
@@ -283,7 +291,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
             {Array.from({ length: 5 }).map((_, index) => (
               <div
                 key={index}
-                className="rounded-lg bg-bg-primary animate-pulse h-32"
+                className="h-32 rounded-lg bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none"
               />
             ))}
           </div>
@@ -294,7 +302,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
               type="button"
               onClick={() => onRowClick(entry)}
               className={cn(
-                "w-full text-left px-5 py-4 transition-colors",
+                "min-h-11 w-full text-left px-5 py-4 motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40",
                 entry.importance === "high"
                   ? "bg-error/5 hover:bg-error/10"
                   : "bg-surface-white hover:bg-bg-secondary/30",
@@ -330,7 +338,7 @@ const AuditLogTable: React.FC<AuditLogTableProps> = ({
                     {formatAuditDateTime(entry.timestamp)}
                   </div>
                 </div>
-                <FiFileText className="w-5 h-5 text-slate-300 shrink-0 mt-1" />
+                <FiFileText className="mt-1 h-5 w-5 shrink-0 text-text-muted" />
               </div>
             </button>
           ))

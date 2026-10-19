@@ -92,7 +92,7 @@ const SourcePaperSummary: React.FC<{ paper: PaperWithCandidateDto }> = ({ paper 
             type="button"
             onClick={() => setIsAbstractExpanded((expanded) => !expanded)}
             aria-expanded={isAbstractExpanded}
-            className="mt-2 inline-flex min-h-8 items-center gap-1 text-sm font-medium text-accent hover:text-primary-hover focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-accent hover:text-primary-hover focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             {isAbstractExpanded ? (
               <>Show less <ChevronUp className="h-4 w-4" aria-hidden="true" /></>
@@ -216,15 +216,15 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
     return (
       <div className="grid min-h-[560px] flex-1 grid-cols-1 lg:grid-cols-[minmax(280px,0.32fr)_minmax(0,0.68fr)]">
         <div className="order-2 space-y-5 border-t border-border p-5 lg:order-1 lg:border-r lg:border-t-0 lg:p-6">
-          <div className="h-3 w-24 animate-pulse rounded bg-bg-secondary" />
-          <div className="h-7 w-4/5 animate-pulse rounded bg-bg-secondary" />
-          <div className="h-20 animate-pulse rounded-lg bg-bg-secondary" />
-          <div className="h-32 animate-pulse rounded-lg bg-bg-secondary" />
+          <div className="h-3 w-24 rounded bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none" />
+          <div className="h-7 w-4/5 rounded bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none" />
+          <div className="h-20 rounded-lg bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none" />
+          <div className="h-32 rounded-lg bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none" />
         </div>
         <div className="order-1 space-y-3 p-3 lg:order-2 lg:p-4">
-          <div className="h-10 animate-pulse rounded-xl bg-bg-secondary" />
+          <div className="h-10 rounded-xl bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none" />
           {[0, 1, 2, 3].map((item) => (
-            <div key={item} className="h-24 animate-pulse border-b border-border bg-surface-white" />
+            <div key={item} className="h-24 border-b border-border bg-surface-white motion-safe:animate-pulse motion-reduce:animate-none" />
           ))}
         </div>
       </div>
@@ -234,7 +234,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
   if (isError) {
     return (
       <div className="flex min-h-[520px] flex-1 flex-col items-center justify-center bg-surface-white px-6 text-center">
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-error">
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-error/10 text-error">
           <AlertCircle className="h-6 w-6" />
         </div>
         <h3 className="text-lg font-semibold text-text-primary">Failed to load references</h3>
@@ -319,7 +319,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                       setYear("all");
                       setPageNumber(1);
                     }}
-                    className="mt-4 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="mt-4 min-h-11 rounded-lg px-3 py-2 text-sm font-semibold text-accent hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     Clear filters
                   </button>
@@ -425,10 +425,10 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                 type="button"
                 onClick={() => void handleBulkAction("select")}
                 disabled={isMutationPending}
-                className="flex items-center gap-2 rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-50 sm:px-4"
+                className="flex min-h-11 items-center gap-2 rounded-lg bg-accent px-3 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 disabled:opacity-50 sm:px-4"
               >
                 {isMutationPending ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
                 ) : (
                   <UserPlus className="h-4 w-4" />
                 )}
@@ -438,7 +438,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
                 type="button"
                 onClick={() => void handleBulkAction("reject")}
                 disabled={isMutationPending}
-                className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-error transition-colors hover:bg-red-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50 sm:px-4"
+                className="flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm font-semibold text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50 sm:px-4"
               >
                 <XCircle className="h-4 w-4" />
                 <span>Reject</span>
@@ -446,7 +446,7 @@ const SnowballingPaperWorkspace: React.FC<SnowballingPaperWorkspaceProps> = ({
               <button
                 type="button"
                 onClick={() => setBulkSelectedIds(new Set())}
-                className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 title="Clear selection"
                 aria-label="Clear selection"
               >

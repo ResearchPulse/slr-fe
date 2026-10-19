@@ -222,7 +222,12 @@ export function useSynthesisWorkspace(): UseSynthesisWorkspaceReturn {
     isLoading: workspaceQuery.isLoading || sourceDataGroupsQuery.isLoading,
     isFetching: workspaceQuery.isFetching || sourceDataGroupsQuery.isFetching,
     error: workspaceError,
-    refetchWorkspace: workspaceQuery.refetch,
+    refetchWorkspace: async () => {
+      await Promise.all([
+        workspaceQuery.refetch(),
+        sourceDataGroupsQuery.refetch(),
+      ]);
+    },
     startSynthesis: async () => {
       if (!reviewProcessId) {
         return;

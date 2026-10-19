@@ -9,12 +9,14 @@ import {
 import type { TabType } from "../types";
 import type { PrismaStatistics } from "../../../../types/identification";
 import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
+import Button from "../../../../components/ui/Button";
 
 interface PrismaSummaryCardsProps {
   prismaStats: PrismaStatistics;
   statsLoading: boolean;
   statsError: string | null;
   onTabChange: (tab: TabType) => void;
+  onRetry: () => void;
 }
 
 export default function PrismaSummaryCards({
@@ -22,6 +24,7 @@ export default function PrismaSummaryCards({
   statsLoading,
   statsError,
   onTabChange,
+  onRetry,
 }: PrismaSummaryCardsProps) {
   const formatCount = (count: number) => {
     if (statsLoading) return "--";
@@ -32,9 +35,12 @@ export default function PrismaSummaryCards({
   return (
     <div className="mb-6 space-y-3">
       {statsError && (
-        <p role="alert" className="text-sm text-error">
-          Statistics could not be loaded. Refresh the page and try again.
-        </p>
+        <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-error/25 bg-error/5 px-4 py-3">
+          <p className="text-sm text-error">Statistics could not be loaded. Try refreshing the data.</p>
+          <Button type="button" variant="outline" onClick={onRetry} className="min-h-9 px-3 py-1.5 text-sm">
+            Retry
+          </Button>
+        </div>
       )}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
         {/* Records Imported */}

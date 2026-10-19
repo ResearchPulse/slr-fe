@@ -23,19 +23,19 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
             </h2>
             {isFieldUpdated("Abstract") && (
               <div className="group/spark relative flex items-center">
-                <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-accent" />
+                <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                   Suggested fields applied
                 </div>
               </div>
             )}
           </div>
           {paper.abstract ? (
-            <div className="text-[16px] text-slate-800 leading-[1.8] font-medium selection:bg-primary-light">
+            <div className="text-[16px] text-text-primary leading-[1.8] font-medium selection:bg-primary-light">
               {paper.abstract}
             </div>
           ) : (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-6 text-center text-sm font-medium text-amber-800">
+            <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-6 text-center text-sm font-medium text-warning">
               Missing abstract. Review this record with caution or add metadata when available.
             </div>
           )}
@@ -50,8 +50,8 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               </h2>
               {isFieldUpdated("Keywords") && (
                 <div className="group/spark relative flex items-center">
-                  <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <Sparkles className="w-3.5 h-3.5 text-accent" />
+                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested fields applied
                   </div>
                 </div>
@@ -80,8 +80,8 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
               </h2>
               {isFieldUpdated("ConferenceName") && (
                 <div className="group/spark relative flex items-center">
-                  <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <Sparkles className="w-3.5 h-3.5 text-accent" />
+                  <div className="absolute right-0 top-full mt-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested fields applied
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export const ContentSection: React.FC<ContentSectionProps> = ({
                 <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest block mb-1">
                   Conference Name
                 </span>
-                <p className="text-sm font-bold text-slate-800">
+                <p className="text-sm font-bold text-text-primary">
                   {paper.conferenceName}
                 </p>
               </div>

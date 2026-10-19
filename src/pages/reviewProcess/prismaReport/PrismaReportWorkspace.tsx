@@ -18,8 +18,10 @@ import PrismaFlowDiagram, {
 import PrismaExclusionTable from "./sections/PrismaExclusionTable";
 import PrismaReportHistory from "./sections/PrismaReportHistory";
 import PrismaExportActions from "./sections/PrismaExportActions";
+import PrismaSourceClassification from "./sections/PrismaSourceClassification";
 import Button from "../../../components/ui/Button";
 import { useProjectMember } from "../../../hooks/useProjectMember";
+import prismaReportService from "../../../services/prismaReportService";
 
 export default function PrismaReportWorkspace() {
   const { projectId, processId } = useParams<{
@@ -29,12 +31,27 @@ export default function PrismaReportWorkspace() {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
   const diagramRef = useRef<PrismaFlowDiagramRef>(null);
+  const effectiveProjectId = projectId || processId || "";
 
   const handleExportPNG = useCallback(() => {
     diagramRef.current?.exportImage();
   }, []);
 
-  const effectiveProjectId = projectId || processId || "";
+  const handleDownloadWritingExport = useCallback(async () => {
+    try {
+      const blob = await prismaReportService.downloadWritingExport(effectiveProjectId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `prisma-writing-${effectiveProjectId}.json`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      toastSuccess("Writing data downloaded");
+    } catch {
+      toastInfo("Could not download the writing data. Try again.");
+    }
+  }, [effectiveProjectId]);
+
   // Saving a snapshot is the leader's job; every member can read and export one.
   const { member } = useProjectMember(effectiveProjectId);
   const canGenerate = member?.isLeader ?? false;
@@ -49,6 +66,7 @@ export default function PrismaReportWorkspace() {
     hasReport,
     isLoadingLatest,
     isLoadingHistory,
+    historyError,
     isGenerating,
     isDownloading,
     isLoadingSelected,
@@ -60,6 +78,7 @@ export default function PrismaReportWorkspace() {
     generateReport,
     selectReport,
     clearSelection,
+    fetchReportHistory,
     downloadPrismaDiagram,
     refreshAll,
   } = usePrismaReport({ reviewProcessId: effectiveProjectId });
@@ -131,6 +150,7 @@ export default function PrismaReportWorkspace() {
           canGenerate={canGenerate}
           onGenerate={handleGenerate}
           onDownloadDiagram={downloadPrismaDiagram}
+          onDownloadWritingExport={() => void handleDownloadWritingExport()}
           onExportPNG={handleExportPNG}
           nodes={nodes}
           includedNode={includedNode}
@@ -141,20 +161,21 @@ export default function PrismaReportWorkspace() {
 
       {/* ── Main Content ── */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-7 space-y-6">
+        <PrismaSourceClassification projectId={effectiveProjectId} />
         {/* Error banner */}
         {(latestError || generateError || selectedError) && (
           <div
-            className="flex items-start gap-3 p-4 bg-surface-white border border-border/70 rounded-xl shadow-sm"
+            className="flex items-start gap-3 rounded-xl border border-error/20 bg-error/5 p-4"
             role="alert"
           >
-            <FiAlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-error" />
             <div>
-              <p className="text-sm font-medium text-red-800">
+              <p className="text-sm font-medium text-error">
                 {latestError || generateError || selectedError}
               </p>
               <button
                 onClick={refreshAll}
-                className="text-sm text-red-600 hover:text-red-800 underline mt-1"
+                className="mt-1 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-error underline motion-safe:transition-colors motion-reduce:transition-none hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40"
               >
                 Try again
               </button>
@@ -164,13 +185,13 @@ export default function PrismaReportWorkspace() {
 
         {/* Historical version banner */}
         {isViewingHistorical && activeReport && (
-          <div className="flex items-center gap-3 p-4 bg-amber-50/70 border border-amber-200/70 rounded-xl">
-            <FiAlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
-            <div className="flex-1">
-              <p className="text-sm font-medium text-amber-800">
+          <div className="flex flex-wrap items-start gap-3 rounded-xl border border-warning/25 bg-warning/5 p-4">
+            <FiAlertCircle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-medium text-text-primary">
                 Viewing historical report — Version {activeReport.version}
                 {activeReport.generatedAt && (
-                  <span className="font-normal text-amber-600">
+                  <span className="font-normal text-text-secondary">
                     {" "}
                     generated on{" "}
                     {new Date(activeReport.generatedAt).toLocaleDateString(
@@ -189,7 +210,7 @@ export default function PrismaReportWorkspace() {
             </div>
             <button
               onClick={clearSelection}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors"
+              className="inline-flex min-h-11 w-full shrink-0 items-center justify-center gap-1.5 rounded-lg border border-warning/25 bg-surface-white px-3 py-2 text-sm font-medium text-text-primary motion-safe:transition-colors motion-reduce:transition-none hover:bg-warning/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40 sm:w-auto"
             >
               <FiArrowLeft className="w-3.5 h-3.5" />
               Back to latest
@@ -239,7 +260,7 @@ export default function PrismaReportWorkspace() {
             />
 
             {/* Flow diagram — core visual */}
-            <section className="bg-surface-white border border-border/70 rounded-xl p-4 sm:p-6 shadow-sm print:shadow-none print:border-0">
+            <section className="bg-surface-white border border-border/70 rounded-xl p-4 sm:p-6 shadow-none print:shadow-none print:border-0">
               <div className="mb-4">
                 <h2 className="text-lg font-semibold text-text-primary mb-1">
                   PRISMA 2020 Flow Diagram
@@ -258,13 +279,15 @@ export default function PrismaReportWorkspace() {
 
             {/* Bottom grid: Exclusion table + Report history */}
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-5 items-start">
-              <div className="lg:col-span-3 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-sm">
+              <div className="lg:col-span-3 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-none">
                 <PrismaExclusionTable nodes={nodes} isLoading={isLoading} />
               </div>
-              <div className="lg:col-span-2 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-sm">
+              <div className="lg:col-span-2 bg-surface-white border border-border/70 rounded-xl p-4 sm:p-5 shadow-none">
                 <PrismaReportHistory
                   reports={reportHistory}
                   isLoading={isLoadingHistory}
+                  error={historyError}
+                  onRetry={() => void fetchReportHistory()}
                   activeReportId={activeReportId}
                   onSelectReport={handleSelectReport}
                 />

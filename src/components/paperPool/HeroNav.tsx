@@ -52,7 +52,7 @@ export default function HeroNav({
 
   return (
     <nav className="w-full">
-      <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-white/90 px-4 py-3 shadow-[0_8px_30px_rgba(18,35,49,0.05)] backdrop-blur-xl sm:gap-4 sm:px-6 sm:py-4">
+      <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-border bg-surface-white p-1 sm:flex sm:items-center sm:gap-2 sm:p-1.5">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -62,25 +62,22 @@ export default function HeroNav({
               key={item.id}
               onClick={() => onChange(item.id)}
               className={`
-                flex-1 flex items-center justify-center gap-2 rounded-xl px-3 py-3
-                transition-all duration-300 relative group
+                group relative flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2.5
+                transition-colors duration-200 sm:flex-1 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-3
                 ${
                   isActive
-                    ? "bg-surface-white shadow-sm text-accent scale-[1.02]"
-                    : "text-text-secondary hover:text-text-primary hover:bg-surface-white/50"
+                    ? "bg-primary-light text-primary-hover"
+                    : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
                 }
               `}
+              aria-current={isActive ? "page" : undefined}
             >
-              {/* Active Indicator Background (Subtle) */}
-              {isActive && (
-                <div className="absolute inset-0 bg-bg-secondary/30 rounded-xl -z-10 animate-in fade-in zoom-in-95 duration-300" />
-              )}
-
               <Icon
-                className={`w-5 h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}`}
+                aria-hidden="true"
+                className={`h-4 w-4 shrink-0 transition-transform duration-200 sm:h-5 sm:w-5 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
               />
 
-              <span className="text-sm font-medium normal-case tracking-normal">
+              <span className="min-w-0 truncate text-xs font-medium normal-case tracking-normal sm:text-sm">
                 {item.label}
               </span>
 

@@ -23,7 +23,7 @@ function InfoRow({ label, value, wide = false, mono = false }: InfoRowProps) {
       </span>
       {hasValue ? (
         <div
-          className={`break-words text-sm font-bold text-slate-800 ${mono ? "font-mono text-xs" : ""}`}
+          className={`break-words text-sm font-bold text-text-primary ${mono ? "font-mono text-xs" : ""}`}
         >
           {value}
         </div>
@@ -58,7 +58,7 @@ export const PaperInfoSummary: React.FC<PaperInfoSummaryProps> = ({ paper }) => 
                 href={`https://doi.org/${encodeURIComponent(paper.doi)}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-accent hover:underline"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
               >
                 {paper.doi}
                 <FiExternalLink className="h-3.5 w-3.5 shrink-0" />

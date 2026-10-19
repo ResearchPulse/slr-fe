@@ -35,13 +35,13 @@ export const ChecklistTemplateDetailModal: React.FC<
           </p>
         </div>
       ) : error ? (
-        <div className="p-8 text-center bg-surface-white rounded-xl border border-red-100">
-          <p className="text-red-500 font-medium">
+        <div className="p-8 text-center bg-surface-white rounded-xl border border-error/20">
+          <p className="text-error font-medium">
             Failed to load template details.
           </p>
         </div>
       ) : data?.data ? (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-150 motion-reduce:animate-none">
           <PreviewDocument template={data.data} />
         </div>
       ) : (

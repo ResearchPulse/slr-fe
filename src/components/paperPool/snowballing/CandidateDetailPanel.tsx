@@ -64,7 +64,7 @@ export const CandidateDetailActions: React.FC<CandidateDetailActionsProps> = ({
         size="md"
         className={cn(buttonLayout, "normal-case tracking-normal")}
       >
-        {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
+        {isProcessing ? <Loader2 aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" /> : <Plus className="h-4 w-4" />}
         Add to repository
       </Button>
       <Button
@@ -78,7 +78,7 @@ export const CandidateDetailActions: React.FC<CandidateDetailActionsProps> = ({
           "text-text-secondary hover:border-error/40 hover:bg-error/5 hover:text-error",
         )}
       >
-        {isProcessing && <Loader2 className="h-4 w-4 animate-spin" />}
+        {isProcessing && <Loader2 aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />}
         Reject candidate
       </Button>
     </div>
@@ -149,7 +149,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
           className={cn(
             "flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm leading-relaxed",
             isLowQuality
-              ? "border-amber-200 bg-amber-50 text-amber-900"
+              ? "border-warning/20 bg-warning/10 text-warning"
               : "border-border bg-bg-secondary text-text-secondary",
           )}
         >
@@ -197,7 +197,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
             <div
               className={cn(
                 "h-full rounded-full",
-                qualityScore < 0.4 ? "bg-error" : qualityScore <= 0.7 ? "bg-amber-600" : "bg-success",
+                qualityScore < 0.4 ? "bg-error" : qualityScore <= 0.7 ? "bg-warning" : "bg-success",
               )}
               style={{ width: `${qualityScore * 100}%` }}
             />
@@ -243,7 +243,7 @@ const CandidateDetailPanel: React.FC<CandidateDetailPanelProps> = ({
   );
 
   return (
-    <div className={cn("flex flex-col bg-surface-white", !isModal && "h-full overflow-hidden border-l border-border shadow-2xl animate-in slide-in-from-right duration-300 w-full lg:w-[450px]")}>
+    <div className={cn("flex flex-col bg-surface-white", !isModal && "h-full overflow-hidden border-l border-border shadow-2xl motion-safe:animate-in motion-safe:slide-in-from-right motion-safe:duration-200 motion-reduce:animate-none w-full lg:w-[450px]")}>
       {!isModal && (
         <div className="flex shrink-0 items-center justify-between border-b border-border bg-bg-secondary/50 px-5 py-4">
           <div className="flex items-center gap-2.5">

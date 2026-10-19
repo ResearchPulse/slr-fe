@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiPaperclip, FiFileText, FiDownload, FiTrash2 } from "react-icons/fi";
+import { FiPaperclip, FiFileText, FiDownload, FiLoader, FiTrash2 } from "react-icons/fi";
 import { useSignalRSubscription } from "../../../hooks/useSignalR";
 import toast from "react-hot-toast";
 import type { MetadataExtractedPayload } from "../../../types/signalr";
@@ -82,7 +82,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
                 </p>
               </div>
               <div className="mt-1">
-                <p className="text-sm font-bold text-slate-800 leading-tight">
+                <p className="text-sm font-bold text-text-primary leading-tight">
                   Metadata extracted
                 </p>
                 <p className="text-xs text-text-secondary mt-1 line-clamp-2">
@@ -97,7 +97,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
                   setActiveSuggestion(payload.suggestion);
                   toast.dismiss(t.id);
                 }}
-                className="mt-3 w-full rounded-xl bg-slate-900 py-2 text-xs font-bold text-white hover:bg-accent transition-all shadow-none active:scale-[0.98]"
+                className="mt-3 min-h-11 w-full rounded-xl bg-primary py-2 text-xs font-bold text-white shadow-none transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
               >
                 Review & Apply Suggestions
               </button>
@@ -170,10 +170,18 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             setIsUploadModalOpen(true);
           }}
           disabled={!onUploadPdf || isUploadingPdf}
+          aria-label={
+            !paper.pdfUrl && pdfRequired
+              ? "Upload required PDF"
+              : paper.pdfUrl
+                ? "Replace PDF"
+                : "Attach PDF"
+          }
+          aria-busy={isUploadingPdf}
           className={cn(
-            "p-1.5 rounded-xl transition-colors border",
+            "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
             !paper.pdfUrl
-              ? "text-amber-600 bg-amber-50 border-amber-200 hover:bg-amber-100 hover:text-amber-700 shadow-none"
+              ? "text-warning bg-warning/10 border-warning/20 hover:bg-warning/15 shadow-none"
               : "text-text-secondary hover:text-accent hover:bg-primary-light border-transparent hover:border-primary/30",
             (!onUploadPdf || isUploadingPdf) && "opacity-50 cursor-not-allowed",
           )}
@@ -184,7 +192,11 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
           }
         >
           <FiPaperclip
-            className={cn("w-4 h-4", isUploadingPdf && "animate-spin")}
+            aria-hidden="true"
+            className={cn(
+              "w-4 h-4",
+              isUploadingPdf && "motion-safe:animate-spin motion-reduce:animate-none",
+            )}
           />
         </button>
       )}
@@ -196,10 +208,11 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
+            aria-label="Open PDF"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Open PDF"
           >
-            <FiFileText className="w-4 h-4" />
+            <FiFileText aria-hidden="true" className="w-4 h-4" />
           </a>
           <a
             href={paper.pdfUrl}
@@ -207,10 +220,11 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               ? { download: (paper as any).pdfFileName }
               : {})}
             onClick={(e) => e.stopPropagation()}
-            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
+            aria-label="Download PDF"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Download PDF"
           >
-            <FiDownload className="w-4 h-4" />
+            <FiDownload aria-hidden="true" className="w-4 h-4" />
           </a>
         </>
       )}
@@ -220,16 +234,22 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
           <button
             onClick={handleRemovePdf}
             disabled={isActionDisabled}
+            aria-label={isPending ? "Removing PDF" : "Remove PDF"}
+            aria-busy={isPending}
             className={cn(
-              "p-1.5 rounded-xl transition-colors border",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none",
               !hasPdf
                 ? "text-text-secondary bg-bg-secondary border-border"
-                : "text-text-secondary hover:text-red-600 hover:bg-surface-white border-transparent hover:border-red-100",
+                : "text-text-secondary hover:text-error hover:bg-surface-white border-transparent hover:border-error/20",
               isActionDisabled && "opacity-50 cursor-not-allowed",
             )}
             title={hasPdf ? "Remove PDF" : "No PDF to remove"}
           >
-            <FiTrash2 className={cn("w-4 h-4", isPending && "animate-spin")} />
+            {isPending ? (
+              <FiLoader aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
+            ) : (
+              <FiTrash2 aria-hidden="true" className="w-4 h-4" />
+            )}
           </button>
         </div>
       )}
@@ -292,7 +312,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             Title:{" "}
             <span className="font-medium text-text-primary">{paper.title}</span>
           </p>
-          <p className="text-[10px] text-amber-600 bg-amber-50 p-2 rounded-xl border border-amber-100 italic">
+          <p className="rounded-xl border border-warning/20 bg-warning/10 p-2 text-[10px] italic text-warning">
             Note: This will clear the PDF metadata and delete the file from the
             server.
           </p>
@@ -302,7 +322,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               type="button"
               onClick={() => setIsConfirmNotRetrievedOpen(false)}
               disabled={isPending}
-              className="px-4 py-2 rounded-xl border border-border text-text-secondary hover:bg-bg-secondary disabled:opacity-50"
+              className="min-h-11 rounded-xl border border-border px-4 text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-50 motion-reduce:transition-none"
             >
               Cancel
             </button>
@@ -310,7 +330,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               type="button"
               onClick={handleConfirmAction}
               disabled={isPending}
-              className="px-4 py-2 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 disabled:opacity-50"
+              className="min-h-11 rounded-xl bg-error px-4 text-white font-semibold transition-colors hover:bg-error/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40 disabled:opacity-50 motion-reduce:transition-none"
             >
               {isPending ? "Processing..." : "Confirm"}
             </button>

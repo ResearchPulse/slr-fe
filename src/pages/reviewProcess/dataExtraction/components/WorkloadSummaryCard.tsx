@@ -53,10 +53,10 @@ export default function WorkloadSummaryCard({
   if (isLoading) {
     return (
       <Card className="rounded-xl border-border bg-white shadow-none">
-        <div className="animate-pulse space-y-5 p-6">
+        <div className="motion-safe:animate-pulse motion-reduce:animate-none space-y-5 p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-2">
-              <div className="h-4 w-44 rounded-full bg-slate-200" />
+              <div className="h-4 w-44 rounded-full bg-bg-secondary" />
               <div className="h-3 w-80 max-w-full rounded-full bg-bg-secondary" />
             </div>
             <div className="h-10 w-24 rounded-xl bg-bg-secondary" />
@@ -197,10 +197,10 @@ export default function WorkloadSummaryCard({
                         </div>
 
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-medium text-text-secondary">
-                          <span className="text-green-700">
+                          <span className="text-success">
                             Completed {workload.completed}
                           </span>
-                          <span className="text-amber-700">
+                          <span className="text-warning">
                             In Progress {workload.inProgress}
                           </span>
                           <span>
@@ -243,7 +243,7 @@ export default function WorkloadSummaryCard({
 
             <div className="border-y border-border py-4">
               <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
-                <Clock3 className="h-4 w-4 text-amber-600" />
+                <Clock3 className="h-4 w-4 text-warning" />
                 Queue breakdown
               </div>
               <div className="mt-3 space-y-2 text-sm text-text-secondary">

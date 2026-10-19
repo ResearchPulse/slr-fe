@@ -54,14 +54,14 @@ export default function AgentManagement() {
         <h1 className="mt-2 text-3xl font-semibold">AI Agent Catalog</h1>
         <p className="mt-2 text-sm text-text-secondary">Define available agent providers. Project leaders select from this catalog and create project-scoped access.</p>
       </header>
-      {error && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
+      {error && <div role="alert" className="rounded-lg border border-error/20 bg-error/5 p-3 text-sm text-error">{error}</div>}
 
       <section className="rounded-xl border border-border bg-white p-5">
         <h2 className="mb-4 flex items-center gap-2 font-semibold"><FiPlus /> Add catalog agent</h2>
         <form onSubmit={event => { event.preventDefault(); void createAgent(); }} className="grid gap-3 sm:grid-cols-[1fr_2fr_auto]">
           <Input aria-label="Agent name" required maxLength={120} placeholder="Claude, ChatGPT..." value={name} onChange={event => setName(event.target.value)} />
           <Input aria-label="Agent description" maxLength={1000} placeholder="Description or provider notes" value={description} onChange={event => setDescription(event.target.value)} />
-          <button disabled={busy || !name.trim()} className="min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">Add agent</button>
+          <button disabled={busy || !name.trim()} className="min-h-11 rounded-xl bg-primary px-5 text-sm font-semibold text-white transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">Add agent</button>
         </form>
       </section>
 
@@ -76,8 +76,8 @@ export default function AgentManagement() {
             <div key={agent.id} className="grid gap-3 p-4 sm:grid-cols-[1fr_2fr_auto_auto]">
               <Input aria-label="Edit agent name" value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} />
               <Input aria-label="Edit agent description" value={editing.description} onChange={event => setEditing({ ...editing, description: event.target.value })} />
-              <button type="button" disabled={busy || !editing.name.trim()} onClick={() => void saveAgent()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-3 text-sm text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"><FiSave /> Save</button>
-              <button type="button" onClick={() => setEditing(null)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-3 text-sm transition-colors hover:bg-bg-secondary"><FiX /> Cancel</button>
+              <button type="button" disabled={busy || !editing.name.trim()} onClick={() => void saveAgent()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-3 text-sm text-white transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"><FiSave /> Save</button>
+              <button type="button" onClick={() => setEditing(null)} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-border px-3 text-sm transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"><FiX /> Cancel</button>
             </div>
           ) : (
             <div key={agent.id} className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
@@ -87,8 +87,8 @@ export default function AgentManagement() {
                 <p className="mt-1 text-sm text-text-secondary">{agent.description || "No description"}</p>
               </div>
               <div className="flex gap-2">
-                <button type="button" disabled={busy} onClick={() => setEditing(agent)} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-border px-3 text-xs transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"><FiEdit2 /> Edit</button>
-                <button type="button" disabled={busy} onClick={() => void toggleAgent(agent)} className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-border px-3 text-xs transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50">{agent.isActive ? <FiToggleRight /> : <FiToggleLeft />}{agent.isActive ? "Disable" : "Enable"}</button>
+                <button type="button" disabled={busy} onClick={() => setEditing(agent)} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 text-xs transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"><FiEdit2 /> Edit</button>
+                <button type="button" disabled={busy} onClick={() => void toggleAgent(agent)} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-3 text-xs transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">{agent.isActive ? <FiToggleRight /> : <FiToggleLeft />}{agent.isActive ? "Disable" : "Enable"}</button>
               </div>
             </div>
           ))}

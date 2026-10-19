@@ -44,7 +44,7 @@ export default function InvitationDetailPage() {
           label: "Accepted",
           icon: FiCheckCircle,
           color: "text-success",
-          bg: "bg-bg-secondary",
+          bg: "bg-success/10",
           description: "You have already joined this project.",
         };
       case InvitationStatus.Rejected:
@@ -52,7 +52,7 @@ export default function InvitationDetailPage() {
           label: "Rejected",
           icon: FiXCircle,
           color: "text-error",
-          bg: "bg-bg-secondary",
+          bg: "bg-error/5",
           description: "This invitation was declined.",
         };
       case InvitationStatus.Cancelled:
@@ -62,6 +62,14 @@ export default function InvitationDetailPage() {
           color: "text-text-secondary",
           bg: "bg-bg-secondary",
           description: "This invitation was revoked by the sender.",
+        };
+      case InvitationStatus.Expired:
+        return {
+          label: "Expired",
+          icon: FiAlertCircle,
+          color: "text-warning",
+          bg: "bg-warning/10",
+          description: "This invitation has expired.",
         };
       default:
         return {
@@ -101,7 +109,7 @@ export default function InvitationDetailPage() {
     return (
       <div className="mx-auto max-w-2xl bg-bg-primary px-4 py-12 sm:px-6 sm:py-16">
         <Card className="p-6 text-center sm:p-10" role="alert">
-          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-red-50 text-error">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl bg-error/5 text-error">
             <FiAlertCircle size={24} aria-hidden="true" />
           </div>
 
@@ -141,7 +149,7 @@ export default function InvitationDetailPage() {
           variant="ghost"
           size="sm"
           onClick={() => navigate(-1)}
-          className="mb-5 normal-case tracking-normal"
+          className="mb-5 min-h-11 normal-case tracking-normal"
         >
           <FiArrowLeft aria-hidden="true" />
           Back

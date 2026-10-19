@@ -129,7 +129,7 @@ export default function Step2_FlatSetup({
     : null;
 
   if (!section) {
-    return <div className="p-4 text-red-600">Invalid section</div>;
+    return <div role="alert" className="rounded-xl border border-error/20 bg-error/5 p-4 text-error">Invalid section</div>;
   }
 
   const handleAddCustomField = () => {

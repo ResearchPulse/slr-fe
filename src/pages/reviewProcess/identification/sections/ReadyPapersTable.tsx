@@ -100,22 +100,24 @@ export default function ReadyPapersTable({
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-emerald-500" />
+          <div className="h-2 w-2 rounded-full bg-success" />
           <h3 className="text-sm font-semibold text-text-primary">
             Ready Papers
           </h3>
-          <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+          <span className="rounded-full bg-success/10 px-2 py-0.5 text-xs font-medium text-success">
             {totalCount.toLocaleString()}
           </span>
         </div>
         <button
+          type="button"
           onClick={onRefetch}
           disabled={fetching}
-          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-xl transition-colors"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           title="Refresh"
+          aria-label="Refresh ready papers"
         >
           <FiRefreshCw
-            className={`w-3.5 h-3.5 ${fetching ? "animate-spin" : ""}`}
+            className={`w-3.5 h-3.5 ${fetching ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
           />
         </button>
       </div>
@@ -146,7 +148,7 @@ export default function ReadyPapersTable({
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 animate-pulse"
+                className="flex items-center gap-3 p-3 motion-safe:animate-pulse motion-reduce:animate-none"
               >
                 <div className="w-4 h-4 bg-bg-secondary rounded" />
                 <div className="flex-1 space-y-2">
@@ -158,8 +160,8 @@ export default function ReadyPapersTable({
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <FiAlertCircle className="w-10 h-10 text-red-400 mb-2" />
-            <p className="text-red-600 text-sm mb-3">{error}</p>
+            <FiAlertCircle className="mb-2 h-10 w-10 text-error" />
+            <p className="mb-3 text-sm text-error" role="alert">{error}</p>
             <Button variant="secondary" size="sm" onClick={onRefetch}>
               <FiRefreshCw className="w-3.5 h-3.5 mr-1.5" />
               Retry
@@ -169,7 +171,7 @@ export default function ReadyPapersTable({
           <>
             {/* Fetching indicator for subsequent loads */}
             {fetching && (
-              <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600">
+              <div className="mb-2 flex items-center gap-1.5 text-xs text-primary" role="status">
                 <LoadingSpinner size="sm" />
                 Updating...
               </div>
@@ -180,12 +182,13 @@ export default function ReadyPapersTable({
                   <th className="text-left py-2 px-3 w-8">
                     <input
                       type="checkbox"
+                      aria-label="Select all ready papers on this page"
                       checked={allChecked}
                       ref={(el) => {
                         if (el) el.indeterminate = someChecked;
                       }}
                       onChange={() => onToggleAll(pageIds)}
-                      className="rounded border-border text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
+                      className="rounded border-border text-primary focus:ring-primary disabled:opacity-40"
                       disabled={!canEdit}
                     />
                   </th>
@@ -212,7 +215,7 @@ export default function ReadyPapersTable({
                       canEdit ? "cursor-pointer" : "cursor-default"
                     } ${
                       isSelected(paper.id)
-                        ? "bg-emerald-50 hover:bg-emerald-100"
+                        ? "bg-success/5 hover:bg-success/10"
                         : canEdit
                           ? "hover:bg-bg-primary"
                           : ""
@@ -221,11 +224,12 @@ export default function ReadyPapersTable({
                     <td className="py-2.5 px-3">
                       <input
                         type="checkbox"
+                        aria-label={`Select ${paper.title}`}
                         checked={isSelected(paper.id)}
                         onChange={() => onToggle(paper.id)}
                         onClick={(e) => e.stopPropagation()}
                         disabled={!canEdit}
-                        className="rounded border-border text-emerald-600 focus:ring-emerald-500 disabled:opacity-40"
+                        className="rounded border-border text-primary focus:ring-primary disabled:opacity-40"
                       />
                     </td>
                     <td className="py-2.5 px-3">
@@ -261,7 +265,7 @@ export default function ReadyPapersTable({
           </>
         ) : (
           <EmptyState
-            icon={<FiCheckSquare className="w-12 h-12 text-gray-300" />}
+            icon={<FiCheckSquare className="h-12 w-12 text-text-secondary" />}
             title="No Papers Available"
             description={
               hasFilters
@@ -286,9 +290,11 @@ export default function ReadyPapersTable({
             </span>
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
+                aria-label="Previous page"
                 disabled={!hasPrev || fetching}
                 onClick={onPreviousPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="min-h-11 px-3 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               >
                 Prev
               </button>
@@ -296,9 +302,11 @@ export default function ReadyPapersTable({
                 {page}/{totalPages}
               </span>
               <button
+                type="button"
+                aria-label="Next page"
                 disabled={!hasNext || fetching}
                 onClick={onNextPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="min-h-11 px-3 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               >
                 Next
               </button>
@@ -310,7 +318,7 @@ export default function ReadyPapersTable({
             <span className="text-sm text-text-primary font-medium">
               {selectedCount > 0 ? (
                 <>
-                  <span className="text-emerald-600">{selectedCount}</span>{" "}
+                  <span className="text-success">{selectedCount}</span>{" "}
                   paper
                   {selectedCount !== 1 ? "s" : ""} selected
                 </>
@@ -325,7 +333,7 @@ export default function ReadyPapersTable({
               onClick={onAddToSnapshot}
               disabled={selectedCount === 0 || isAdding || !canEdit}
               isLoading={isAdding}
-              className="!py-2 !px-4 !text-sm !bg-emerald-600 hover:!bg-emerald-700 !shadow-emerald-600/20"
+              className="!px-4 !py-2 !text-sm !bg-success hover:!bg-success/90 !shadow-success/20"
             >
               <FiArrowRight className="w-4 h-4 mr-1.5" />
               Add Selected

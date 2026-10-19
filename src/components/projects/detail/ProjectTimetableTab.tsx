@@ -88,7 +88,7 @@ export default function ProjectTimetableTab({
       </div>
 
       {hasInvalidRange && (
-        <p className="mt-3 text-sm text-red-700">
+        <p role="alert" className="mt-3 text-sm text-error">
           End date must be the same as or later than the start date.
         </p>
       )}
@@ -100,7 +100,7 @@ export default function ProjectTimetableTab({
 
       {isLeader && (
         <div className="mt-4 flex justify-end">
-          <Button onClick={() => void handleSave()} disabled={!canSave} size="sm">
+          <Button onClick={() => void handleSave()} disabled={!canSave} size="sm" className="min-h-11">
             {isSaving ? "Saving…" : "Save timeline"}
           </Button>
         </div>

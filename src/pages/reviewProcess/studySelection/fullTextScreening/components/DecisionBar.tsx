@@ -44,7 +44,7 @@ function StickyVoteFooter({
             aria-expanded={false}
             aria-label="Show vote bar"
             title="Show vote bar"
-            className="inline-flex h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             Show vote bar <FiChevronUp className="h-4 w-4" />
           </button>
@@ -58,7 +58,7 @@ function StickyVoteFooter({
               aria-expanded={true}
               aria-label={`Hide ${label}`}
               title={`Hide ${label}`}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
               <FiChevronDown className="h-4 w-4" />
             </button>
@@ -120,8 +120,8 @@ export default function DecisionBar({
             className={cn(
               "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium",
               isInclude
-                ? "bg-surface-white text-green-700"
-                : "bg-surface-white text-red-700",
+                ? "border border-success/20 bg-success/10 text-success"
+                : "border border-error/20 bg-error/10 text-error",
             )}
           >
             {isInclude ? (
@@ -151,10 +151,10 @@ export default function DecisionBar({
           className={cn(
             "flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium",
             paper.screeningStatus === "included"
-              ? "bg-surface-white text-green-700"
+              ? "border border-success/20 bg-success/10 text-success"
               : paper.screeningStatus === "excluded"
-                ? "bg-surface-white text-red-700"
-                : "bg-amber-50 text-amber-700",
+                ? "border border-error/20 bg-error/10 text-error"
+                : "border border-warning/20 bg-warning/10 text-warning",
           )}
         >
           {paper.screeningStatus === "included" ? (
@@ -189,11 +189,12 @@ export default function DecisionBar({
         <div className="flex shrink-0 items-center gap-2">
         {/* Include */}
         <button
+          type="button"
           onClick={() => onInclude(paper.id, reviewComment.trim() || null)}
           disabled={isSubmitting}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-success/20 bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-success/40 hover:bg-success/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
+          <FiCheck aria-hidden="true" className="h-3.5 w-3.5 text-success" />
           Include
           <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
             1

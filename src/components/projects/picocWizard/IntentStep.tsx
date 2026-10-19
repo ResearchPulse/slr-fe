@@ -59,7 +59,7 @@ const IntentStep: React.FC<IntentStepProps> = ({ draft, update, onChooseResearch
           <p className="mt-1 text-sm text-text-secondary">Not selected yet. Choose a topic from the OpenAlex research taxonomy.</p>
         )}
       </div>
-      <button type="button" onClick={onChooseResearchField} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-lg border border-primary/25 bg-surface-white px-4 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+      <button type="button" onClick={onChooseResearchField} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg border border-primary/25 bg-surface-white px-4 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
         {draft.researchField ? "Change research field" : "Choose research field"} <FiArrowRight aria-hidden />
       </button>
     </section>

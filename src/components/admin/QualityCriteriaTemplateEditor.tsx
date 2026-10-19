@@ -49,7 +49,7 @@ const toDraft = (template: QualityCriteriaTemplate | null): TemplateDraft =>
     : { name: "", description: "", source: "", criteria: [newCriterion()] };
 
 const inputClass =
-  "w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20";
+  "min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export default function QualityCriteriaTemplateEditor({
   isOpen,
@@ -99,8 +99,18 @@ export default function QualityCriteriaTemplateEditor({
       size="xl"
       title={template ? "Edit system template" : "New system template"}
       description="System templates are offered to every project leader as a starting point for their quality criteria."
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} className="rounded-xl px-6">
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSave} isLoading={isSaving} disabled={isSaving} className="rounded-xl px-8">
+            {template ? "Save changes" : "Create template"}
+          </Button>
+        </>
+      }
     >
-      <div className="flex max-h-[70vh] flex-col gap-4 overflow-y-auto py-2 pr-1">
+      <div className="flex flex-col gap-4 py-2 pr-1">
         <div>
           <label htmlFor="qct-name" className="mb-1 block text-xs font-bold uppercase tracking-wider text-text-secondary">
             Name
@@ -149,16 +159,16 @@ export default function QualityCriteriaTemplateEditor({
         </div>
 
         <div>
-          <div className="mb-2 flex items-center justify-between">
+          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
               Questions ({draft.criteria.length})
             </span>
-            <span className="text-xs text-text-secondary">Weight multiplies the points of a question (Yes = 1, Unclear = 0.5, No = 0)</span>
+            <span className="text-xs leading-4 text-text-secondary">Weight multiplies the points of a question (Yes = 1, Unclear = 0.5, No = 0)</span>
           </div>
 
           <div className="space-y-3">
             {draft.criteria.map((criterion, index) => (
-              <div key={criterion.key} className="flex items-start gap-3 rounded-xl border border-border bg-surface-white p-3">
+              <div key={criterion.key} className="grid grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-xl border border-border bg-surface-white p-3 sm:flex">
                 <span className="mt-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-secondary text-[10px] font-black text-text-secondary">
                   {index + 1}
                 </span>
@@ -169,29 +179,32 @@ export default function QualityCriteriaTemplateEditor({
                   rows={2}
                   onChange={(e) => updateCriterion(criterion.key, { question: e.target.value })}
                   placeholder="Enter assessment question..."
-                  className={`${inputClass} flex-1 resize-none`}
+                  className={`${inputClass} col-start-2 min-w-0 resize-none sm:flex-1`}
                 />
-                <div className="w-20 shrink-0">
-                  <input
-                    type="number"
-                    aria-label={`Weight of question ${index + 1}`}
-                    min={MIN_WEIGHT}
-                    max={MAX_WEIGHT}
-                    step={0.5}
-                    value={criterion.weight}
-                    onChange={(e) => updateCriterion(criterion.key, { weight: Number(e.target.value) })}
-                    className={inputClass}
-                  />
-                  <span className="mt-1 block text-center text-[10px] uppercase tracking-wider text-text-secondary">Weight</span>
+                <div className="col-start-2 flex min-w-0 items-center justify-end gap-3 sm:ml-auto sm:shrink-0">
+                  <div className="flex items-center gap-2 sm:block sm:w-20">
+                    <input
+                      type="number"
+                      aria-label={`Weight of question ${index + 1}`}
+                      min={MIN_WEIGHT}
+                      max={MAX_WEIGHT}
+                      step={0.5}
+                      value={criterion.weight}
+                      onChange={(e) => updateCriterion(criterion.key, { weight: Number(e.target.value) })}
+                      className={`${inputClass} w-20 px-2 text-center`}
+                    />
+                    <span className="text-[10px] uppercase tracking-wider text-text-secondary sm:mt-1 sm:block sm:text-center">Weight</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDraft((prev) => ({ ...prev, criteria: prev.criteria.filter((c) => c.key !== criterion.key) }))}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none"
+                    title="Remove question"
+                    aria-label={`Remove question ${index + 1}`}
+                  >
+                    <FiTrash2 className="h-4 w-4" />
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setDraft((prev) => ({ ...prev, criteria: prev.criteria.filter((c) => c.key !== criterion.key) }))}
-                  className="mt-1 rounded-xl p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error"
-                  title="Remove question"
-                >
-                  <FiTrash2 className="h-4 w-4" />
-                </button>
               </div>
             ))}
           </div>
@@ -199,21 +212,12 @@ export default function QualityCriteriaTemplateEditor({
           <button
             type="button"
             onClick={() => setDraft((prev) => ({ ...prev, criteria: [...prev.criteria, newCriterion()] }))}
-            className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-xs font-black uppercase tracking-widest text-text-secondary transition-all hover:border-primary/30 hover:bg-primary-light/30 hover:text-accent"
+            className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-xs font-black uppercase tracking-widest text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light/30 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             <FiPlus className="h-4 w-4" />
             Add question
           </button>
         </div>
-      </div>
-
-      <div className="mt-4 flex justify-end gap-3 border-t border-border pt-4">
-        <Button variant="secondary" onClick={onClose} className="rounded-xl px-6">
-          Cancel
-        </Button>
-        <Button variant="primary" onClick={handleSave} isLoading={isSaving} disabled={isSaving} className="rounded-xl px-8">
-          {template ? "Save changes" : "Create template"}
-        </Button>
       </div>
     </Modal>
   );

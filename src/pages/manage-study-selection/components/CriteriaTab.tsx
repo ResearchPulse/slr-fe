@@ -49,12 +49,13 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-300 w-full px-1">
+    <div className="w-full space-y-6 px-1 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-150 motion-reduce:animate-none">
       {/* PICOC Section */}
       <div className="space-y-3">
         <button
+          type="button"
           onClick={() => setShowPicoc(!showPicoc)}
-          className="flex items-center justify-between w-full text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em] hover:text-text-secondary transition-colors group"
+          className="group flex min-h-11 w-full items-center justify-between rounded-lg px-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           <span>Project Reference</span>
           {showPicoc ? (
@@ -64,7 +65,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
           )}
         </button>
         {showPicoc && (
-          <div className="animate-in fade-in zoom-in-95 duration-200">
+          <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
             <ProjectPICOCElement picocs={picocs} isCompact={true} />
           </div>
         )}
@@ -73,8 +74,9 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
       {/* RQ Section */}
       <div className="space-y-3">
         <button
+          type="button"
           onClick={() => setShowRq(!showRq)}
-          className="flex items-center justify-between w-full text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em] hover:text-text-secondary transition-colors group"
+          className="group flex min-h-11 w-full items-center justify-between rounded-lg px-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           <span>Scientific Basis</span>
           {showRq ? (
@@ -84,7 +86,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
           )}
         </button>
         {showRq && (
-          <div className="animate-in fade-in zoom-in-95 duration-200">
+          <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
             <ProjectResearchQuestions
               researchQuestions={researchQuestions}
               isCompact={true}
@@ -97,8 +99,9 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
       <div className="space-y-3 pb-4">
         <div className="flex items-center justify-between gap-2">
           <button
+            type="button"
             onClick={() => setShowCriteria(!showCriteria)}
-            className="flex min-w-0 flex-1 items-center justify-between text-[10px] text-text-secondary font-bold uppercase tracking-[0.2em] hover:text-text-secondary transition-colors group"
+            className="group flex min-h-11 min-w-0 flex-1 items-center justify-between rounded-lg px-2 text-[11px] font-bold uppercase tracking-[0.16em] text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             <div className="flex items-center gap-2">
               <span>Selection Criteria</span>
@@ -119,7 +122,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
               variant="secondary"
               size="sm"
               onClick={onEditCriteria}
-              className="shrink-0 px-2.5 py-1 text-[9px]"
+              className="min-h-11 shrink-0 px-3 py-1.5 text-xs"
             >
               <Pencil className="mr-1.5 h-3 w-3" />
               Edit
@@ -128,7 +131,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
         </div>
 
         {showCriteria && (
-          <div className="space-y-4 animate-in fade-in zoom-in-95 duration-200">
+          <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
             {criteria && criteria.length > 0 ? (
               criteria.map((group) => (
                 <div
@@ -138,7 +141,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
                   <div className="p-3 bg-bg-secondary border-b border-border">
                     <div className="flex items-center gap-2 mb-1">
                       <ListChecks className="w-3.5 h-3.5 text-accent" />
-                      <h4 className="text-[11px] font-bold text-slate-800 uppercase tracking-tight line-clamp-1">
+                      <h4 className="line-clamp-1 text-[11px] font-bold uppercase tracking-tight text-text-primary">
                         {group.description || "Criteria Group"}
                       </h4>
                     </div>
@@ -147,7 +150,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
                   <div className="p-3 space-y-4">
                     {/* Inclusion */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase tracking-widest">
+                      <div className="flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-success">
                         <CheckCircle className="w-3 h-3" />
                         Inclusion
                       </div>
@@ -158,7 +161,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
                               key={c.inclusionId}
                               className="text-[11px] text-text-secondary leading-relaxed flex gap-2"
                             >
-                              <span className="w-1 h-1 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                              <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-success/70" />
                               {c.rule}
                             </li>
                           ))
@@ -172,7 +175,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
 
                     {/* Exclusion */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 text-[9px] font-black text-rose-600 uppercase tracking-widest">
+                      <div className="flex items-center gap-1.5 text-[9px] font-black text-error uppercase tracking-widest">
                         <XCircle className="w-3 h-3" />
                         Exclusion
                       </div>
@@ -183,7 +186,7 @@ export const CriteriaTab: React.FC<CriteriaTabProps> = ({
                               key={c.exclusionId}
                               className="text-[11px] text-text-secondary leading-relaxed flex gap-2"
                             >
-                              <span className="w-1 h-1 rounded-full bg-rose-400 mt-1.5 shrink-0" />
+                              <span className="w-1 h-1 rounded-full bg-error mt-1.5 shrink-0" />
                               {c.rule}
                             </li>
                           ))

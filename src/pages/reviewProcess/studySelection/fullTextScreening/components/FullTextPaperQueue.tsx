@@ -93,10 +93,11 @@ export default function FullTextPaperQueue({
           <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-3.5 h-3.5" />
           <input
             type="text"
+            aria-label="Search full-text papers by title, author, or keyword"
             placeholder="Search title, author, keyword..."
             value={filters.search}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none transition-colors"
+            className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-9 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           />
         </div>
 
@@ -104,11 +105,13 @@ export default function FullTextPaperQueue({
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
             <button
+              type="button"
+              aria-expanded={showSortDropdown}
               onClick={() => {
                 setShowSortDropdown(!showSortDropdown);
                 setShowFilterDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
+              className="flex min-h-11 w-full items-center justify-between rounded-xl border border-border px-2.5 text-xs transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
               <span className="text-text-secondary truncate">
                 {currentSort?.label ?? "Sort"}
@@ -132,11 +135,13 @@ export default function FullTextPaperQueue({
 
           <div className="relative flex-1">
             <button
+              type="button"
+              aria-expanded={showFilterDropdown}
               onClick={() => {
                 setShowFilterDropdown(!showFilterDropdown);
                 setShowSortDropdown(false);
               }}
-              className="w-full flex items-center justify-between px-2.5 py-1.5 text-xs border border-border rounded-xl hover:bg-bg-primary transition-colors"
+              className="flex min-h-11 w-full items-center justify-between rounded-xl border border-border px-2.5 text-xs transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
               <span className="text-text-secondary truncate">
                 {STATUS_FILTER_OPTIONS.find((f) => f.value === filters.status)
@@ -163,9 +168,11 @@ export default function FullTextPaperQueue({
         {/* Advanced server-side filters */}
         <div className="mt-2 flex flex-wrap gap-1.5">
           <button
+            type="button"
+            aria-pressed={filters.hasFullText}
             onClick={() => onHasFullTextFilterChange(!filters.hasFullText)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
+              "min-h-11 rounded-xl border px-3 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
               filters.hasFullText
                 ? "bg-bg-secondary text-accent border-accent/30"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
@@ -174,22 +181,26 @@ export default function FullTextPaperQueue({
             Has Full Text
           </button>
           <button
+            type="button"
+            aria-pressed={filters.hasConflict}
             onClick={() => onHasConflictFilterChange(!filters.hasConflict)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
+              "min-h-11 rounded-xl border px-3 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
               filters.hasConflict
-                ? "bg-amber-50 text-amber-700 border-amber-200"
+                ? "bg-warning/10 text-warning border-warning/20"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
             )}
           >
             Has Conflict
           </button>
           <button
+            type="button"
+            aria-pressed={filters.decidedByMe}
             onClick={() => onDecidedByMeFilterChange(!filters.decidedByMe)}
             className={cn(
-              "px-2 py-1 text-[10px] rounded-xl border transition-colors",
+              "min-h-11 rounded-xl border px-3 text-[10px] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
               filters.decidedByMe
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                ? "bg-success/10 text-success border-success/20"
                 : "bg-surface-white text-text-secondary border-border hover:bg-bg-primary",
             )}
           >
@@ -202,7 +213,7 @@ export default function FullTextPaperQueue({
       <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0">
         {papers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-            <FiSearch className="w-8 h-8 text-gray-300 mb-3" />
+            <FiSearch className="mb-3 h-8 w-8 text-text-secondary/50" />
             <p className="text-sm text-text-secondary">
               {hasActiveFilters
                 ? "No papers found"
@@ -231,9 +242,11 @@ export default function FullTextPaperQueue({
       {pagination.totalPages > 1 && (
         <div className="px-4 py-2 border-t border-border flex items-center justify-between">
           <button
+            type="button"
+            aria-label="Previous page"
             disabled={!pagination.hasPreviousPage}
             onClick={() => onPageChange(pagination.pageNumber - 1)}
-            className="p-1.5 rounded text-text-secondary hover:bg-bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-30"
           >
             <FiChevronLeft className="w-4 h-4" />
           </button>
@@ -241,9 +254,11 @@ export default function FullTextPaperQueue({
             Page {pagination.pageNumber} of {pagination.totalPages}
           </span>
           <button
+            type="button"
+            aria-label="Next page"
             disabled={!pagination.hasNextPage}
             onClick={() => onPageChange(pagination.pageNumber + 1)}
-            className="p-1.5 rounded text-text-secondary hover:bg-bg-secondary disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-30"
           >
             <FiChevronRight className="w-4 h-4" />
           </button>
@@ -307,7 +322,7 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
 
             {/* PDF availability indicator */}
             {!hasPdf && (
-              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-amber-600 font-medium">
+              <div className="mt-1.5 flex items-center gap-1 text-[10px] font-medium text-warning">
                 <FiAlertTriangle className="w-3 h-3 shrink-0" />
                 <span className="truncate">Full text missing</span>
               </div>
@@ -321,16 +336,16 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
                     key={d.id}
                     title={`${d.reviewerName}: ${d.decision}`}
                     className={cn(
-                      "inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full border max-w-full font-medium transition-colors",
+                      "inline-flex max-w-full items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium transition-colors motion-reduce:transition-none",
                       d.decision === "included"
-                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                        : "bg-rose-50 text-rose-700 border-rose-200",
+                        ? "bg-success/10 text-success border-success/20"
+                        : "bg-error/10 text-error border-error/20",
                     )}
                   >
                     {d.decision === "included" ? (
-                      <FiCheck className="w-2.5 h-2.5 shrink-0 text-emerald-600" />
+                      <FiCheck className="w-2.5 h-2.5 shrink-0 text-success" />
                     ) : (
-                      <FiX className="w-2.5 h-2.5 shrink-0 text-rose-600" />
+                      <FiX className="w-2.5 h-2.5 shrink-0 text-error" />
                     )}
                     <span className="truncate max-w-[100px]">{d.reviewerName}</span>
                   </span>
@@ -340,7 +355,7 @@ const PaperListItem = forwardRef<HTMLDivElement, PaperListItemProps>(
 
             {/* Conflict badge */}
             {paper.screeningStatus === "conflicted" && (
-              <div className="flex items-center gap-1 mt-1.5 text-[10px] text-amber-600 font-medium">
+              <div className="mt-1.5 flex items-center gap-1 text-[10px] font-medium text-warning">
                 <FiAlertTriangle className="w-3 h-3 shrink-0" />
                 <span className="truncate">Conflict — needs resolution</span>
               </div>
@@ -360,17 +375,17 @@ PaperListItem.displayName = "PaperListItem";
 
 function StatusDot({ status }: { status: string }) {
   const dotColors: Record<string, string> = {
-    pending: "bg-emerald-400",
-    included: "bg-green-500",
-    excluded: "bg-red-500",
-    conflicted: "bg-amber-500",
+    pending: "bg-primary",
+    included: "bg-success",
+    excluded: "bg-error",
+    conflicted: "bg-warning",
   };
 
   return (
     <span
       className={cn(
         "w-2 h-2 rounded-full mt-1.5 shrink-0",
-        dotColors[status] ?? "bg-gray-400",
+        dotColors[status] ?? "bg-text-secondary",
       )}
       title={
         STATUS_CONFIG[status as keyof typeof STATUS_CONFIG]?.label ?? status

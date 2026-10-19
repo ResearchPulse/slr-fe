@@ -44,6 +44,7 @@ export default function IdentificationPhaseWorkspace() {
           statsLoading={ws.statsLoading}
           statsError={ws.statsError}
           onTabChange={ws.setActiveTab}
+          onRetry={ws.handleRefreshData}
         />
 
         {/* Tab Container */}

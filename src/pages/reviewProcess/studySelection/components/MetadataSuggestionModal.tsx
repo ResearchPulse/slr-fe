@@ -5,8 +5,10 @@ import {
   FiSquare,
   FiMinusSquare,
   FiAlertCircle,
+  FiLoader,
 } from "react-icons/fi";
 import Modal from "../../../../components/ui/Modal";
+import Button from "../../../../components/ui/Button";
 import type { ExtractionSuggestionResponse } from "../../../../types/paper";
 import { cn } from "../../../../utils/cn";
 
@@ -187,7 +189,7 @@ export default function MetadataSuggestionModal({
         {rows.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-bg-secondary/50 py-12 text-center">
             <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-surface-white shadow-sm">
-              <FiMinusSquare className="h-6 w-6 text-slate-300" />
+            <FiMinusSquare className="h-6 w-6 text-text-secondary/35" />
             </div>
             <p className="text-sm font-medium text-text-secondary">
               No usable metadata suggestions found in the PDF.
@@ -196,56 +198,75 @@ export default function MetadataSuggestionModal({
         ) : (
           <div className="space-y-4">
             {/* Selection Controls */}
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+              <div className="flex min-w-0 flex-wrap items-center gap-1 sm:gap-2">
+                <span className="text-xs font-semibold tracking-wide text-text-secondary">
                   Bulk Actions
                 </span>
-                <div className="h-px w-8 bg-bg-secondary" />
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={handleSelectAll}
                   disabled={allSelected || isApplying}
-                  className="text-[10px] font-bold uppercase tracking-wider text-accent transition-colors hover:text-accent disabled:text-slate-300"
+                  className="min-h-11 px-2 text-xs normal-case tracking-normal text-accent"
                 >
                   Select All
-                </button>
-                <span className="text-slate-200">|</span>
-                <button
+                </Button>
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="sm"
                   onClick={handleClearAll}
                   disabled={noneSelected || isApplying}
-                  className="text-[10px] font-bold uppercase tracking-wider text-text-secondary transition-colors hover:text-text-primary disabled:text-slate-300"
+                  className="min-h-11 px-2 text-xs normal-case tracking-normal"
                 >
                   Clear All
-                </button>
+                </Button>
               </div>
 
-              <div className="text-[10px] font-bold uppercase tracking-widest text-text-secondary">
-                {selectedFields.length} of {selectableRows.length} Selected
+              <div className="text-xs font-medium text-text-secondary">
+                {selectedFields.length} of {selectableRows.length} selected
               </div>
             </div>
 
             {/* Table */}
-            <div className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
-              <table className="min-w-full divide-y divide-slate-100">
+            <div
+              role="region"
+              aria-label="Suggested metadata comparison"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (
+                  event.target !== event.currentTarget ||
+                  (event.key !== "ArrowLeft" && event.key !== "ArrowRight")
+                ) {
+                  return;
+                }
+
+                event.preventDefault();
+                event.currentTarget.scrollLeft +=
+                  event.key === "ArrowRight" ? 80 : -80;
+              }}
+              className="overflow-x-auto rounded-xl border border-border bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+            >
+              <table className="min-w-[680px] divide-y divide-border text-left">
                 <thead className="bg-bg-secondary/80">
                   <tr>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary sm:px-6 sm:py-4">
                       Field Name
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary sm:px-6 sm:py-4">
                       Current Metadata
                     </th>
-                    <th className="px-6 py-4 text-left text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-text-secondary sm:px-6 sm:py-4">
                       AI Suggestion
                     </th>
-                    <th className="px-6 py-4 text-center text-[10px] font-black uppercase tracking-[0.15em] text-text-secondary">
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-text-secondary sm:px-6 sm:py-4">
                       Action
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-50">
+                <tbody className="divide-y divide-border/60">
                   {rows.map((row) => {
                     const isChecked = selectedFields.includes(row.apiFieldName);
                     const isSelectable = row.isChanged;
@@ -263,11 +284,11 @@ export default function MetadataSuggestionModal({
                       >
                         <td className="px-6 py-4">
                           <div className="flex flex-col gap-0.5">
-                            <span className="text-xs font-bold text-slate-800">
+                            <span className="text-xs font-semibold text-text-primary">
                               {row.label}
                             </span>
                             {!isSelectable && (
-                              <span className="text-[9px] font-black uppercase tracking-tighter text-text-secondary">
+                              <span className="text-[10px] font-medium text-text-secondary">
                                 Unchanged
                               </span>
                             )}
@@ -276,7 +297,7 @@ export default function MetadataSuggestionModal({
                         <td className="px-6 py-4">
                           <span className="text-xs text-text-secondary line-clamp-2 leading-relaxed">
                             {row.currentValue || (
-                              <span className="italic text-slate-300">
+                              <span className="italic text-text-secondary/50">
                                 Empty
                               </span>
                             )}
@@ -295,7 +316,7 @@ export default function MetadataSuggestionModal({
                               {row.suggestedValue}
                             </span>
                             {isRecommended && (
-                              <div className="inline-flex w-fit items-center gap-1 rounded-md bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-tight text-emerald-600 ring-1 ring-emerald-200">
+                              <div className="inline-flex w-fit items-center gap-1 rounded-md bg-success/10 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-tight text-success ring-1 ring-success/20">
                                 <FiCheckSquare className="h-2.5 w-2.5" />
                                 Recommended
                               </div>
@@ -304,28 +325,24 @@ export default function MetadataSuggestionModal({
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center justify-center">
-                            <button
+                            <Button
                               type="button"
+                              variant={isChecked ? "secondary" : "ghost"}
+                              size="sm"
                               disabled={!isSelectable || isApplying}
                               onClick={() => handleToggle(row.apiFieldName)}
-                              className={cn(
-                                "flex items-center gap-2 rounded-xl px-3 py-1.5 transition-all",
-                                !isSelectable
-                                  ? "cursor-not-allowed opacity-20"
-                                  : isChecked
-                                    ? "bg-bg-secondary text-accent ring-1 ring-accent/30 shadow-sm"
-                                    : "text-text-secondary hover:bg-bg-secondary hover:text-text-secondary",
-                              )}
+                              aria-pressed={isChecked}
+                              className="min-h-11 gap-2 rounded-lg px-3 text-xs normal-case tracking-normal"
                             >
                               {isChecked ? (
                                 <FiCheckSquare className="h-4 w-4" />
                               ) : (
                                 <FiSquare className="h-4 w-4" />
                               )}
-                              <span className="text-[10px] font-black uppercase tracking-widest">
-                                {isChecked ? "Applied" : "Apply"}
+                              <span>
+                                {isChecked ? "Selected" : "Select"}
                               </span>
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -339,26 +356,31 @@ export default function MetadataSuggestionModal({
 
         {/* Footer */}
         <div className="flex flex-col-reverse gap-3 pt-2 sm:flex-row sm:items-center sm:justify-end">
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="md"
             onClick={onClose}
             disabled={isApplying}
-            className="rounded-xl border border-border bg-surface-white px-6 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-text-secondary transition-all hover:bg-bg-secondary hover:text-slate-800 disabled:opacity-50"
+            className="w-full normal-case tracking-normal sm:w-auto"
           >
             Discard
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
+            variant="primary"
+            size="md"
             onClick={handleApply}
             disabled={
               selectedFields.length === 0 || isApplying || rows.length === 0
             }
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-8 py-2.5 text-xs font-black uppercase tracking-[0.2em] text-white shadow-lg shadow-slate-900/20 transition-all hover:bg-accent hover:shadow-primary/30 active:scale-95 disabled:scale-100 disabled:bg-slate-200 disabled:text-text-secondary disabled:shadow-none"
+            aria-busy={isApplying || undefined}
+            className="w-full normal-case tracking-normal sm:w-auto"
           >
             {isApplying ? (
               <>
-                <FiSave className="h-4 w-4 animate-spin" />
-                Syncing...
+                <FiLoader className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
+                Applying...
               </>
             ) : (
               <>
@@ -366,7 +388,7 @@ export default function MetadataSuggestionModal({
                 Apply {selectedFields.length} Changes
               </>
             )}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

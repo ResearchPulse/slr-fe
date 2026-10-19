@@ -82,11 +82,11 @@ export default function SnapshotTable({
         <button
           onClick={onRefetch}
           disabled={fetching}
-          className="p-1.5 text-text-secondary hover:text-text-secondary hover:bg-bg-secondary rounded-xl transition-colors"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           title="Refresh"
         >
           <FiRefreshCw
-            className={`w-3.5 h-3.5 ${fetching ? "animate-spin" : ""}`}
+            className={`w-3.5 h-3.5 ${fetching ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
           />
         </button>
       </div>
@@ -116,7 +116,7 @@ export default function SnapshotTable({
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-3 p-3 animate-pulse"
+                className="flex items-center gap-3 p-3 motion-safe:animate-pulse motion-reduce:animate-none"
               >
                 <div className="flex-1 space-y-2">
                   <div className="h-4 bg-bg-secondary rounded w-3/4" />
@@ -127,8 +127,8 @@ export default function SnapshotTable({
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <FiAlertCircle className="w-10 h-10 text-red-400 mb-2" />
-            <p className="text-red-600 text-sm mb-3">{error}</p>
+            <FiAlertCircle className="mb-2 h-10 w-10 text-error" />
+            <p className="mb-3 text-sm text-error" role="alert">{error}</p>
             <Button variant="secondary" size="sm" onClick={onRefetch}>
               <FiRefreshCw className="w-3.5 h-3.5 mr-1.5" />
               Retry
@@ -197,7 +197,7 @@ export default function SnapshotTable({
           </>
         ) : (
           <EmptyState
-            icon={<FiDatabase className="w-12 h-12 text-gray-300" />}
+            icon={<FiDatabase className="h-12 w-12 text-text-secondary" />}
             title="No Papers in Dataset"
             description={
               hasFilters
@@ -223,7 +223,7 @@ export default function SnapshotTable({
               <button
                 disabled={!hasPrev || fetching}
                 onClick={onPreviousPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="min-h-11 px-3 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 Prev
               </button>
@@ -233,7 +233,7 @@ export default function SnapshotTable({
               <button
                 disabled={!hasNext || fetching}
                 onClick={onNextPage}
-                className="px-2.5 py-1 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="min-h-11 px-3 text-xs font-medium text-text-secondary bg-surface-white border border-border rounded-xl hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 Next
               </button>

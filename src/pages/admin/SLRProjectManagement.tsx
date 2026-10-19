@@ -36,9 +36,9 @@ import ErrorBanner from "./components/ErrorBanner";
 
 const StatusBadge: React.FC<{ status: ProjectStatus }> = ({ status }) => {
   const styles = {
-    Draft: "bg-slate-50 text-slate-600 ring-slate-200",
-    Active: "bg-sky-50 text-sky-700 ring-sky-200",
-    Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+    Draft: "bg-bg-secondary text-text-secondary ring-border",
+    Active: "bg-primary-light text-primary ring-primary/20",
+    Completed: "bg-success/10 text-success ring-success/20",
   };
 
   return (
@@ -247,12 +247,80 @@ const SLRProjectManagement: React.FC = () => {
         <ErrorBanner
           message={error}
           fallback="An error occurred while fetching projects. Please try again."
+          onRetry={() => void refetch()}
         />
       )}
 
       {/* Table Container */}
-      <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
-        <div className="overflow-x-auto no-scrollbar">
+      <div className="overflow-hidden lg:rounded-xl lg:border lg:border-border lg:bg-white lg:shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
+        <div className="space-y-3 p-3 lg:hidden">
+          {isLoading ? (
+            Array.from({ length: 3 }, (_, index) => (
+              <div key={index} className="h-44 rounded-xl bg-bg-primary motion-safe:animate-pulse motion-reduce:animate-none" />
+            ))
+          ) : projects.length > 0 ? (
+            projects.map((project) => (
+              <article key={project.id} className="space-y-4 rounded-xl border border-border bg-white p-4">
+                <div className="flex min-w-0 items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="inline-flex rounded-md border border-border bg-bg-primary px-2 py-1 text-[10px] font-bold tracking-[0.04em] text-text-secondary">
+                      {project.code}
+                    </span>
+                    <h2 className="mt-2 line-clamp-2 text-sm font-semibold text-text-primary">
+                      {project.title}
+                    </h2>
+                    {project.domain && (
+                      <p className="mt-1 truncate text-xs text-text-secondary">{project.domain}</p>
+                    )}
+                  </div>
+                  <StatusBadge status={project.statusText} />
+                </div>
+
+                {project.description && (
+                  <p className="line-clamp-2 text-xs leading-5 text-text-secondary">{project.description}</p>
+                )}
+
+                <div className="grid grid-cols-2 gap-3 border-t border-border pt-3 text-xs">
+                  <div className="min-w-0">
+                    <span className="block text-[10px] font-semibold uppercase tracking-wide text-text-muted">Project owner</span>
+                    <span className="mt-1 block truncate font-medium text-text-primary">{project.leader?.fullName || "Owner unavailable"}</span>
+                  </div>
+                  <div>
+                    <span className="block text-[10px] font-semibold uppercase tracking-wide text-text-muted">Workflow</span>
+                    {typeof project.completedProcesses === "number" && typeof project.totalProcesses === "number" ? (
+                      <span className="mt-1 inline-flex items-center rounded-md border border-border bg-bg-primary px-2 py-1 font-semibold text-text-secondary" aria-label={`${project.completedProcesses} of ${project.totalProcesses} review phases completed`}>
+                        <span className="text-accent">{project.completedProcesses}</span><span className="mx-1 text-text-muted">/</span>{project.totalProcesses}
+                      </span>
+                    ) : (
+                      <span className="mt-1 block text-text-muted">Unavailable</span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 border-t border-border pt-3">
+                  <Button type="button" variant="secondary" size="sm" className="gap-2" onClick={() => handleViewProjectClick(project.id)}>
+                    <FiEye size={14} /> Details
+                  </Button>
+                  <Button type="button" variant="secondary" size="sm" className="gap-2" onClick={() => handleMembersClick(project.id, project.title)}>
+                    <FiUsers size={14} /> Members
+                  </Button>
+                  <Button type="button" variant="secondary" size="sm" className="gap-2" onClick={() => handleEditProjectClick(project.id)}>
+                    <FiEdit3 size={14} /> Edit
+                  </Button>
+                  <Button type="button" variant="secondary" size="sm" className="gap-2 text-error hover:text-error/80" onClick={() => setDeleteTargetId(project.id)}>
+                    <FaRegTrashAlt size={13} /> Delete
+                  </Button>
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed border-border px-5 py-10 text-center text-sm text-text-secondary">
+              No projects match these filters.
+            </div>
+          )}
+        </div>
+
+        <div className="hidden overflow-x-auto no-scrollbar lg:block">
           <table className="w-full min-w-[1080px] table-fixed border-collapse text-left">
             <colgroup>
               <col className="w-[11%]" />
@@ -268,7 +336,7 @@ const SLRProjectManagement: React.FC = () => {
                   <Tooltip content="The unique identifier or project code for this workspace.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Code
-                      <FiInfo size={12} className="text-slate-300" />
+                      <FiInfo size={12} className="text-text-muted" />
                     </div>
                   </Tooltip>
                 </th>
@@ -276,7 +344,7 @@ const SLRProjectManagement: React.FC = () => {
                   <Tooltip content="Refers to the project title, domain classification, and brief summary of the systematic literature review.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Description
-                      <FiInfo size={12} className="text-slate-300" />
+                      <FiInfo size={12} className="text-text-muted" />
                     </div>
                   </Tooltip>
                 </th>
@@ -284,7 +352,7 @@ const SLRProjectManagement: React.FC = () => {
                   <Tooltip content="The project owner, who holds the project Leader role.">
                     <div className="flex items-center gap-1.5 cursor-help uppercase">
                       Project owner
-                      <FiInfo size={12} className="text-slate-300" />
+                      <FiInfo size={12} className="text-text-muted" />
                     </div>
                   </Tooltip>
                 </th>
@@ -295,7 +363,7 @@ const SLRProjectManagement: React.FC = () => {
                   <Tooltip content="Completed steps out of total steps in the review workflow">
                     <div className="flex items-center justify-center gap-1.5 cursor-help">
                       Processes
-                      <FiInfo size={12} className="text-slate-300" />
+                      <FiInfo size={12} className="text-text-muted" />
                     </div>
                   </Tooltip>
                 </th>
@@ -309,7 +377,7 @@ const SLRProjectManagement: React.FC = () => {
                 Array(pageSize)
                   .fill(0)
                   .map((_, i) => (
-                    <tr key={i} className="animate-pulse">
+                    <tr key={i} className="motion-safe:animate-pulse motion-reduce:animate-none">
                       <td colSpan={6} className="px-5 py-5">
                         <div className="h-12 w-full rounded-lg bg-bg-primary" />
                       </td>
@@ -478,7 +546,7 @@ const SLRProjectManagement: React.FC = () => {
                 Per page:
               </span>
               <Select
-                className="w-[76px] [&>button]:h-9 [&>button]:rounded-lg [&>button]:px-2.5 [&>button]:text-[11px]"
+                className="w-[76px] [&>button]:min-h-11 [&>button]:rounded-xl [&>button]:px-2.5 [&>button]:text-[11px]"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
@@ -498,7 +566,7 @@ const SLRProjectManagement: React.FC = () => {
               <button
                 type="button"
                 aria-label="Previous page"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition hover:border-text-muted hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition-colors hover:border-text-muted hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-40 motion-reduce:transition-none"
                 disabled={pageNumber === 1 || isLoading}
                 onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
               >
@@ -518,9 +586,10 @@ const SLRProjectManagement: React.FC = () => {
                   <button
                     key={pageToShow}
                     type="button"
+                    aria-current={pageNumber === pageToShow ? "page" : undefined}
                     onClick={() => setPageNumber(pageToShow)}
                     className={cn(
-                      "h-9 min-w-9 rounded-xl border px-2 text-[11px] font-semibold transition-colors",
+                      "h-11 min-w-11 rounded-xl border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
                       pageNumber === pageToShow
                         ? "border-accent bg-primary text-white"
                         : "border-border bg-white text-text-secondary hover:bg-primary-light",
@@ -536,7 +605,7 @@ const SLRProjectManagement: React.FC = () => {
               <button
                 type="button"
                 aria-label="Next page"
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition hover:border-text-muted hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+                className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition-colors hover:border-text-muted hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-40 motion-reduce:transition-none"
                 disabled={
                   pageNumber === totalPages || totalPages === 0 || isLoading
                 }

@@ -179,7 +179,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
         </div>
 
         {errorMessage && (
-          <div className="flex items-center gap-2 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+          <div className="flex items-center gap-2 rounded-lg border border-error/20 bg-error/5 p-3 text-sm text-error">
             <FiAlertTriangle className="w-4 h-4 shrink-0" />
             {errorMessage}
           </div>
@@ -223,7 +223,7 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
             className={cn(
               "inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium transition-colors",
               isExporting || hasInvalidRange
-                ? "bg-slate-200 text-slate-500 cursor-not-allowed"
+                ? "bg-bg-secondary text-text-secondary cursor-not-allowed"
                 : "bg-accent text-white hover:bg-primary-hover",
             )}
           >

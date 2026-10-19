@@ -105,9 +105,9 @@ export default function AIProjectSetupWizard({
               onSaveWizardSetup={() => void state.handleSaveWizardSetup()}
             />
           ) : (
-            <div className="border-l-2 border-accent bg-bg-primary px-4 py-3">
+            <div className="rounded-xl border border-primary/15 bg-primary-light px-4 py-3">
               <div className="flex items-start gap-3">
-                <FiAlertCircle className="mt-0.5 shrink-0 text-text-secondary" />
+                <FiAlertCircle className="mt-0.5 shrink-0 text-primary" />
                 <p className="text-sm leading-6 text-text-secondary">
                   The review protocol has not been completed. A project leader
                   must complete the initial setup.

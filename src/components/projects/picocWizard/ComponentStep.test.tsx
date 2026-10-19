@@ -39,8 +39,9 @@ describe("ComponentStep", () => {
   beforeEach(() => suggest.mockReset());
 
   it("shows suggestion cards with source labels; select / not sure use aria-pressed and update the draft", async () => {
-    suggest.mockResolvedValueOnce(aiResponse(["Robust aggregation", "Staleness weighting", "Krum", "Median", "Trimmed mean"]));
-    render(<Harness initial={emptyDraft()} component="intervention" cache={{}} />);
+    render(<Harness initial={emptyDraft()} component="intervention" cache={{
+      intervention: { signature: "", suggestions: aiResponse(["Robust aggregation", "Staleness weighting", "Krum", "Median", "Trimmed mean"]).suggestions, source: "ai", fallbackReason: null },
+    }} />);
 
     const card = (await screen.findByText("Robust aggregation")).closest("li")!;
     expect(within(card).getByText("AI")).toBeTruthy();
@@ -55,20 +56,16 @@ describe("ComponentStep", () => {
 
     fireEvent.click(within(card).getByRole("button", { name: "Why?" }));
     expect(within(card).getByText("Rationale for Robust aggregation")).toBeTruthy();
-    expect(suggest.mock.calls[0][1]).toMatchObject({ component: "intervention", mode: "refresh" });
-    expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "suggestion_viewed", { component: "intervention", source: "ai", count: 5 });
+    expect(suggest).not.toHaveBeenCalled();
     expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "suggestion_selected", { component: "intervention", source: "ai" });
   });
 
   it("shows the OpenAlex fallback with a retry, and custom terms survive suggestion changes", async () => {
-    suggest.mockResolvedValueOnce({
-      ...aiResponse([]),
-      source: "openalex_fallback",
-      fallbackReason: "AI_TIMEOUT",
-      suggestions: [suggestion("Edge computing", { sourceType: "openalex" })],
-    });
     suggest.mockResolvedValueOnce(aiResponse(["Robust aggregation"]));
-    render(<Harness initial={emptyDraft()} component="intervention" cache={{}} />);
+    const fallback = suggestion("Edge computing", { sourceType: "openalex" });
+    render(<Harness initial={emptyDraft()} component="intervention" cache={{
+      intervention: { signature: "", suggestions: [fallback], source: "openalex_fallback", fallbackReason: "AI_TIMEOUT" },
+    }} />);
 
     expect(await screen.findByText(/AI suggestions are unavailable \(the AI service timed out\)/)).toBeTruthy();
     expect(screen.getByText("OpenAlex")).toBeTruthy();
@@ -78,29 +75,31 @@ describe("ComponentStep", () => {
     expect(probe.draft!.picoc.intervention).toEqual([expect.objectContaining({ label: "My own method", origin: "user" })]);
     expect(picocWizardStateService.track).toHaveBeenCalledWith("p1", "custom_concept_added", { component: "intervention" });
 
-    fireEvent.click(screen.getByRole("button", { name: /Retry AI suggestions/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
     expect(await screen.findByText("Robust aggregation")).toBeTruthy();
     expect(screen.getByText("My own method")).toBeTruthy();
     expect(screen.getByText("You added")).toBeTruthy();
   });
 
   it("reuses cached suggestions, and refreshes + flags selections when an earlier step changed (T-08)", async () => {
-    const cache: Partial<Record<PicocComponent, SuggestionCacheEntry>> = {};
+    const initialCache: Partial<Record<PicocComponent, SuggestionCacheEntry>> = {
+      intervention: { signature: "", suggestions: [suggestion("Gradient clipping")], source: "ai", fallbackReason: null },
+    };
     const initial = emptyDraft();
     initial.picoc.intervention = [item("old", "Gradient clipping")];
-    suggest.mockResolvedValueOnce(aiResponse(["Gradient clipping", "Robust aggregation"]));
-    const view = render(<Harness initial={initial} component="intervention" cache={cache} />);
-    await screen.findByText("Robust aggregation");
+    const view = render(<Harness initial={initial} component="intervention" cache={initialCache} />);
+    expect(screen.getByText("Gradient clipping")).toBeTruthy();
     view.unmount();
 
-    // Revisiting with unchanged earlier steps does not call the AI again.
-    const again = render(<Harness initial={initial} component="intervention" cache={cache} />);
-    await screen.findByText("Robust aggregation");
-    expect(suggest).toHaveBeenCalledTimes(1);
+    // Revisiting uses the batch-generated cache without another AI request.
+    const again = render(<Harness initial={initial} component="intervention" cache={initialCache} />);
+    expect(screen.getByText("Gradient clipping")).toBeTruthy();
+    expect(suggest).not.toHaveBeenCalled();
 
     // Changing Context (an earlier step) refreshes and flags the dropped AI selection.
     suggest.mockResolvedValueOnce(aiResponse(["Staleness-aware aggregation"], ["old"]));
     act(() => probe.setDraft!(addCustomTerm(probe.draft!, "context", "Intermittent connectivity")));
+    fireEvent.click(await screen.findByRole("button", { name: "Refresh this step" }));
     expect(await screen.findByText(/Needs review — no longer suggested/)).toBeTruthy();
     expect(probe.draft!.picoc.intervention).toEqual([expect.objectContaining({ id: "old", needsReview: true })]);
     fireEvent.click(screen.getByRole("button", { name: "Keep" }));
@@ -109,11 +108,13 @@ describe("ComponentStep", () => {
   });
 
   it("requires a reason for Comparison N/A and removes selected baselines when N/A is set (T-10)", async () => {
-    suggest.mockResolvedValueOnce({ ...aiResponse(["FedAvg"]), component: "comparison" });
+    const fedAvg = suggestion("FedAvg");
     const initial = emptyDraft({ reviewType: "comparative" });
     initial.picoc.comparison = [item("b", "Synchronous FL")];
-    render(<Harness initial={initial} component="comparison" cache={{}} />);
-    await screen.findByText("FedAvg");
+    render(<Harness initial={initial} component="comparison" cache={{
+      comparison: { signature: "", suggestions: [fedAvg], source: "ai", fallbackReason: null },
+    }} />);
+    expect(screen.getByText("FedAvg")).toBeTruthy();
 
     fireEvent.click(screen.getByLabelText(/Comparison is not applicable/));
     expect(screen.getByText(/Comparative reviews normally need a comparator/)).toBeTruthy();

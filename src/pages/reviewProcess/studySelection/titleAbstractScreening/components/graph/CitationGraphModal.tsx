@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
-import { createPortal } from "react-dom";
-import { FiX, FiMaximize2, FiInfo, FiRefreshCw } from "react-icons/fi";
+import { FiMaximize2, FiInfo, FiRefreshCw } from "react-icons/fi";
 import type { CitationGraphDto } from "../../../../../../types/studySelection";
 import { usePaperDetails } from "../../../../../../hooks/usePaperDetails";
+import Modal from "../../../../../../components/ui/Modal";
 import CitationGraphCanvas from "./CitationGraphCanvas";
 import PaperDetailsPanel from "./PaperDetailsPanel";
 
@@ -55,57 +55,29 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
     };
   }, [paperData, selectedNode]);
 
-  if (!isOpen) return null;
-
-  return createPortal(
-    <div className="fixed inset-0 z-(--z-index-popover) flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-4 md:p-8">
-      <div className="bg-surface-white w-full h-full rounded-xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-300">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-border flex items-center justify-between bg-surface-white z-10">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary-light rounded-xl text-accent">
-              <FiMaximize2 className="w-5 h-5" />
-            </div>
-            <div>
-              <h2 className="text-lg font-bold text-text-primary leading-tight line-clamp-1">
-                Interactive Citation Network
-              </h2>
-              <p className="text-xs text-text-secondary font-medium truncate max-w-md">
-                Analyzing: {paperTitle}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="hidden md:flex items-center gap-4 mr-4 text-[10px] font-bold uppercase tracking-wider text-text-secondary">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-red-500" />
-                Root Paper
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-primary" />
-                Citations
-              </div>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="p-2 hover:bg-bg-secondary rounded-full transition-colors text-text-secondary"
-              aria-label="Close modal"
-            >
-              <FiX className="w-6 h-6" />
-            </button>
-          </div>
-        </div>
-
-        {/* Split Content Area */}
-        <div className="flex-1 flex overflow-hidden bg-bg-secondary relative">
-          {/* LEFT PANEL: Compact Paper Details Sidebar */}
-          <div className="w-[380px] border-r border-border bg-surface-white flex flex-col shadow-sm z-10 transition-all duration-300">
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="xl"
+      title={
+        <span className="flex min-w-0 items-center gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-accent">
+            <FiMaximize2 className="h-5 w-5" />
+          </span>
+          <span className="min-w-0">Interactive Citation Network</span>
+        </span>
+      }
+      description={`Analyzing: ${paperTitle}`}
+      bodyClassName="flex min-h-0 flex-1 flex-col overflow-hidden bg-bg-secondary p-0"
+      className="h-[calc(100dvh-2rem)] min-h-0 sm:h-[calc(100dvh-3rem)]"
+    >
+        <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden xl:flex-row">
+          <div className="flex max-h-[36%] min-h-28 w-full shrink-0 flex-col overflow-y-auto border-b border-border bg-surface-white shadow-sm xl:max-h-none xl:min-h-0 xl:w-[380px] xl:border-b-0 xl:border-r">
             {selectedPaperId ? (
               isLoadingDetails ? (
-                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-text-secondary">
-                  <FiRefreshCw className="w-8 h-8 animate-spin mb-4 text-accent" />
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-text-secondary" role="status" aria-live="polite" aria-busy="true">
+                  <FiRefreshCw aria-hidden="true" className="w-8 h-8 motion-safe:animate-spin motion-reduce:animate-none mb-4 text-accent" />
                   <p className="text-sm font-medium">Fetching details...</p>
                 </div>
               ) : paperDetails ? (
@@ -120,7 +92,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
               )
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-bg-primary/50">
-                <div className="w-16 h-16 bg-surface-white rounded-xl shadow-sm flex items-center justify-center mb-6 text-gray-300 border border-border">
+                <div className="w-16 h-16 bg-surface-white rounded-xl shadow-sm flex items-center justify-center mb-6 text-text-secondary/35 border border-border">
                   <FiInfo className="w-8 h-8" />
                 </div>
                 <h3 className="text-sm font-bold text-text-primary mb-2">
@@ -135,7 +107,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
           </div>
 
           {/* RIGHT PANEL: Graph Canvas */}
-          <div className="flex-1 relative">
+          <div className="relative min-h-0 min-w-0 flex-1">
             <CitationGraphCanvas
               data={data}
               rootPaperId={rootPaperId}
@@ -144,9 +116,7 @@ const CitationGraphModal: React.FC<CitationGraphModalProps> = ({
             />
           </div>
         </div>
-      </div>
-    </div>,
-    document.body,
+    </Modal>
   );
 };
 

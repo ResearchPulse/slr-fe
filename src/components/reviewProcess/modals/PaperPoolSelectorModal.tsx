@@ -134,7 +134,7 @@ export default function PaperPoolSelectorModal({
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search by title, authors, or DOI..."
-              className="w-full bg-bg-primary border-2 border-transparent focus:bg-surface-white focus:border-accent rounded-xl pl-12 pr-4 py-3 text-sm font-bold text-text-primary transition-all outline-none shadow-sm"
+              className="min-h-11 w-full rounded-xl border-2 border-transparent bg-bg-primary py-3 pl-12 pr-4 text-sm font-bold text-text-primary outline-none shadow-sm transition-[border-color,background-color,box-shadow] focus:border-primary focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
 
@@ -162,8 +162,8 @@ export default function PaperPoolSelectorModal({
         {/* Results Container */}
         <div className="min-h-[500px] flex flex-col">
           {result && (
-            <div className="mb-4 p-4 bg-emerald-50 border border-emerald-100 rounded-xl flex items-center justify-between animate-in fade-in slide-in-from-top-2">
-              <div className="flex items-center gap-3 text-emerald-700">
+            <div className="mb-4 p-4 bg-success/10 border border-success/20 rounded-xl flex items-center justify-between motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-reduce:animate-none">
+              <div className="flex items-center gap-3 text-success">
                 <FiCheckCircle className="w-5 h-5" />
                 <div className="text-sm font-bold">
                   Successfully added {result.inserted} papers.{" "}
@@ -174,7 +174,7 @@ export default function PaperPoolSelectorModal({
               <Button
                 variant="ghost"
                 onClick={onClose}
-                className="text-emerald-700 hover:bg-emerald-100"
+                className="text-success hover:bg-success/10"
               >
                 Done
               </Button>

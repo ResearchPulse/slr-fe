@@ -24,12 +24,12 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
   const [isImportOpen, setIsImportOpen] = useState(false);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50 backdrop-blur-sm sticky top-0 z-10 transition-all">
+    <div className="flex h-full flex-col bg-bg-secondary/30">
+      <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-surface-white/90 p-3 backdrop-blur-sm sm:p-4">
         <div className="flex flex-col">
           <div className="flex items-center gap-2">
-            <Eye className="w-4 h-4 text-gray-500" />
-            <span className="text-xs font-bold uppercase tracking-widest text-gray-400">
+            <Eye aria-hidden="true" className="w-4 h-4 text-text-secondary" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-text-secondary">
               Live Preview
             </span>
           </div>
@@ -37,24 +37,22 @@ export const PreviewPanel: React.FC<PreviewPanelProps> = ({
 
         <div className="flex items-center gap-2">
           <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-accent hover:bg-bg-secondary px-3"
+            variant="secondary"
+            className="text-xs font-semibold uppercase tracking-wider"
             onClick={() => setIsImportOpen(true)}
           >
-            <Upload className="w-3.5 h-3.5 mr-1.5" /> Import
+            <Upload aria-hidden="true" className="w-3.5 h-3.5" /> Import
           </Button>
           <Button
-            size="sm"
-            variant="ghost"
-            className="h-8 text-[10px] font-black uppercase tracking-wider text-accent bg-bg-secondary hover:bg-indigo-100 px-3"
+            variant="primary"
+            className="text-xs font-semibold uppercase tracking-wider"
             onClick={() => setIsExportOpen(true)}
           >
-            <Download className="w-3.5 h-3.5 mr-1.5" /> Export
+            <Download aria-hidden="true" className="w-3.5 h-3.5" /> Export
           </Button>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto bg-gray-50/50 p-8 xl:p-12 scrollbar-hide">
+      <div className="flex-1 overflow-y-auto bg-bg-secondary/50 p-3 scrollbar-hide sm:p-6 lg:p-8">
         <PreviewDocument draft={draft} />
       </div>
 

@@ -8,14 +8,14 @@ import {
   useImperativeHandle,
   useEffect,
 } from "react";
-import { createPortal } from "react-dom";
-import { FiMaximize2, FiDownload, FiX } from "react-icons/fi";
+import { FiMaximize2, FiDownload } from "react-icons/fi";
 import { toPng } from "html-to-image";
 import { saveAs } from "file-saver";
 import { toastError, toastLoading, toastSuccess } from "../../../../utils/toast";
 import type { PrismaNodeResponse, PrismaBreakdownResponse } from "../../../../types/prismaReport";
 import { PRISMA_STAGE_LABELS } from "../../../../types/prismaReport";
 import Button from "../../../../components/ui/Button";
+import Modal from "../../../../components/ui/Modal";
 
 interface PrismaFlowDiagramProps {
   nodes: PrismaNodeResponse[];
@@ -63,9 +63,9 @@ function DiagramNode({
 }) {
   return (
     <div
-      className={`w-full rounded-xl border px-4 py-3 shadow-sm ${
+      className={`w-full rounded-xl border px-4 py-3 shadow-none ${
         included
-          ? "border-green-200 border-l-[3px] bg-green-50/50"
+          ? "border-success/30 border-l-[3px] bg-success/5"
           : muted
             ? "border-border/70 bg-bg-secondary/75 text-text-secondary shadow-none"
             : "border-border/80 bg-surface-white text-text-primary"
@@ -76,7 +76,7 @@ function DiagramNode({
         <p className={`text-sm font-medium leading-snug ${muted ? "text-text-secondary" : "text-text-primary"}`}>
           {label.trim()}
         </p>
-        <p className={`shrink-0 text-sm font-semibold tabular-nums ${included ? "text-green-700" : "text-text-primary"}`}>
+        <p className={`shrink-0 text-sm font-semibold tabular-nums ${included ? "text-success" : "text-text-primary"}`}>
           n = {countLabel(count)}
         </p>
       </div>
@@ -106,20 +106,20 @@ function StageDivider({ children }: { children: string }) {
 function FlowConnector({ direction }: { direction: "horizontal" | "vertical" }) {
   return direction === "horizontal" ? (
     <div className="relative flex w-full items-center" aria-hidden="true">
-      <div className="h-px w-full bg-[#B7C8D4]" />
-      <div className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rounded-full border-2 border-white bg-[#91A8B8] shadow-sm" />
+      <div className="h-px w-full bg-border" />
+      <div className="absolute left-1/2 h-2 w-2 -translate-x-1/2 rounded-full border-2 border-white bg-primary/50 shadow-none" />
     </div>
   ) : (
     <div className="relative flex h-full justify-center" aria-hidden="true">
-      <div className="h-full w-px bg-[#A9C5D7]" />
-      <div className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border-2 border-white bg-[#91A8B8] shadow-sm" />
+      <div className="h-full w-px bg-border" />
+      <div className="absolute top-1/2 h-2 w-2 -translate-y-1/2 rounded-full border-2 border-white bg-primary/50 shadow-none" />
     </div>
   );
 }
 
 function DiagramSkeleton() {
   return (
-    <div className="mx-auto max-w-4xl animate-pulse space-y-3 py-4">
+    <div className="mx-auto max-w-4xl motion-safe:animate-pulse motion-reduce:animate-none space-y-3 py-4">
       {Array.from({ length: 5 }).map((_, index) => (
         <div key={index} className="grid grid-cols-1 md:grid-cols-[1fr_32px_1fr] gap-3">
           <div className="h-[54px] rounded-xl border border-border/70 bg-bg-secondary" />
@@ -278,7 +278,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
         <div className="flex flex-wrap justify-end items-center gap-2 mb-3">
           <button
             onClick={handleExportImage}
-            className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+            className="inline-flex min-h-11 items-center gap-2 px-3 py-2.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
             title="Download diagram as high-quality PNG"
           >
             <FiDownload className="w-4 h-4" />Export PNG
@@ -286,7 +286,7 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
           {!initialIsExpanded && (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="inline-flex items-center gap-2 px-3 py-1.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
+              className="inline-flex min-h-11 items-center gap-2 px-3 py-2.5 bg-surface-white border border-border rounded-xl text-sm font-medium text-text-primary hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30"
               aria-label="View full diagram"
             >
               <FiMaximize2 className="w-4 h-4" />View Full Diagram
@@ -294,24 +294,22 @@ const PrismaFlowDiagram = forwardRef<PrismaFlowDiagramRef, PrismaFlowDiagramProp
           )}
         </div>
         {renderDiagram()}
-        {isModalOpen && createPortal(
-          <div
-            className="fixed inset-0 z-(--z-index-modal) bg-slate-900/40 flex items-center justify-center p-3 sm:p-6"
-            onClick={(event) => { if (event.target === event.currentTarget) setIsModalOpen(false); }}
-          >
-            <div className="bg-surface-white w-full h-full max-w-[1500px] rounded-xl relative flex flex-col overflow-hidden border border-border/70 shadow-xl">
-              <div className="flex items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border/70 bg-bg-primary/50 shrink-0">
-                <h3 className="text-base font-semibold text-text-primary">PRISMA 2020 Flow Diagram</h3>
-                <div className="flex items-center gap-2">
-                  <Button onClick={handleExportImage} size="sm" className="gap-2"><FiDownload className="w-4 h-4" />Export PNG</Button>
-                  <button onClick={() => setIsModalOpen(false)} className="p-2 rounded-xl hover:bg-bg-secondary text-text-secondary focus:outline-none focus:ring-2 focus:ring-primary/30" aria-label="Close full diagram"><FiX className="w-5 h-5" /></button>
-                </div>
-              </div>
-              <div className="flex-1 overflow-auto bg-bg-primary/50">{renderDiagram(true)}</div>
-            </div>
-          </div>,
-          document.body,
-        )}
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="PRISMA 2020 Flow Diagram"
+          size="xl"
+          className="h-[calc(100dvh-2rem)]"
+          bodyClassName="min-h-0 flex-1 overflow-auto bg-bg-primary/50 p-3 sm:p-5"
+          footer={
+            <Button onClick={handleExportImage} size="sm" className="min-h-11 gap-2">
+              <FiDownload className="h-4 w-4" />
+              Export PNG
+            </Button>
+          }
+        >
+          {renderDiagram(true)}
+        </Modal>
       </>
     );
   },

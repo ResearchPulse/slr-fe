@@ -192,6 +192,9 @@ export interface UseStudySelectionReturn {
   pagination: PaginationInfo;
   isLoading: boolean;
   error: string | null;
+  papersError: string | null;
+  statsError: string | null;
+  refetch: () => Promise<void>;
 
   // Paper selection
   selectPaper: (paperId: string) => void;
@@ -409,12 +412,16 @@ export function adaptAssignedPaper(paper: AssignedPaperResponse): ScreeningPaper
 }
 
 export function adaptStatistics(stats: SelectionStatisticsResponse): ScreeningStats {
+  const countOrZero = (value: number) =>
+    Number.isFinite(value) ? Math.max(0, value) : 0;
+  const completionPercentage = countOrZero(stats.completionPercentage);
+
   return {
-    total: stats.totalPapers,
-    included: stats.includedCount,
-    excluded: stats.excludedCount,
-    pending: stats.pendingCount,
-    conflicted: stats.conflictCount,
-    completionPercentage: stats.completionPercentage,
+    total: countOrZero(stats.totalPapers),
+    included: countOrZero(stats.includedCount),
+    excluded: countOrZero(stats.excludedCount),
+    pending: countOrZero(stats.pendingCount),
+    conflicted: countOrZero(stats.conflictCount),
+    completionPercentage: Math.min(100, completionPercentage),
   };
 }

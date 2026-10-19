@@ -1,7 +1,8 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
+import { isTopOverlay, pushOverlay, removeOverlay } from "../../utils/overlayStack";
 
 interface ModalProps {
   isOpen: boolean;
@@ -34,14 +35,17 @@ export const Modal: React.FC<ModalProps> = ({
 }) => {
   const titleId = useId();
   const descriptionId = useId();
+  const modalId = useId();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const onCloseRef = useRef(onClose);
   const [isEntered, setIsEntered] = useState(false);
 
   // Callbacks passed inline by modal consumers change identity on every render.
-  // Keep the latest callback without restarting the focus/scroll lifecycle.
-  onCloseRef.current = onClose;
+  // Update after commit without restarting the focus/scroll lifecycle.
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -62,6 +66,7 @@ export const Modal: React.FC<ModalProps> = ({
       : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    pushOverlay(modalId);
 
     const frame = window.requestAnimationFrame(() => {
       const activeElement = document.activeElement;
@@ -74,6 +79,8 @@ export const Modal: React.FC<ModalProps> = ({
     });
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isTopOverlay(modalId)) return;
+
       if (closeOnEsc && event.key === "Escape") {
         onCloseRef.current();
         return;
@@ -106,6 +113,7 @@ export const Modal: React.FC<ModalProps> = ({
     return () => {
       window.cancelAnimationFrame(frame);
       document.removeEventListener("keydown", handleKeyDown);
+      removeOverlay(modalId);
       document.body.style.overflow = previousOverflow;
       previousFocusRef.current?.focus({ preventScroll: true });
     };
@@ -113,6 +121,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   // Handle outside click
   const handleBackdropClick = (e: React.MouseEvent) => {
+    if (!isTopOverlay(modalId)) return;
     if (
       closeOnOutsideClick &&
       modalRef.current &&
@@ -156,7 +165,7 @@ export const Modal: React.FC<ModalProps> = ({
           "relative z-10 flex w-full flex-col overflow-hidden bg-surface-white shadow-[0_16px_48px_rgba(18,35,49,0.16)] transform-gpu will-change-transform",
           mode === "drawer" 
             ? cn(
-                "h-full max-h-screen rounded-none transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)]",
+                "h-full max-h-screen rounded-none transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
                 isEntered ? "translate-x-0" : "translate-x-full",
               )
             : cn(
@@ -174,9 +183,9 @@ export const Modal: React.FC<ModalProps> = ({
         aria-describedby={description ? descriptionId : undefined}
       >
         {/* Header Section */}
-        <div className="px-6 pt-6 pb-4 flex items-start justify-between border-b border-border shrink-0">
-          <div className="space-y-1">
-            <div id={titleId} className="text-[18px] font-semibold text-text-primary leading-snug">
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 pb-3 pt-4 sm:gap-4 sm:px-6 sm:pb-4 sm:pt-6">
+          <div className="min-w-0 flex-1 space-y-1">
+            <div id={titleId} className="break-words text-[18px] font-semibold leading-snug text-text-primary">
               {title}
             </div>
             {description && (
@@ -186,7 +195,7 @@ export const Modal: React.FC<ModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             aria-label="Close dialog"
           >
             <FiX size={18} />
@@ -195,13 +204,13 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Body Section */}
-        <div className={cn("p-6 overflow-y-auto flex-1", bodyClassName)}>
+        <div className={cn("flex-1 overflow-y-auto p-4 sm:p-6", bodyClassName)}>
           {children}
         </div>
 
         {/* Footer Section */}
         {footer && (
-          <div className="px-6 py-4 flex items-center justify-end gap-3 border-t border-border bg-bg-secondary shrink-0">
+          <div className="flex shrink-0 items-center justify-end gap-3 border-t border-border bg-bg-secondary px-4 py-3 sm:px-6 sm:py-4">
             {footer}
           </div>
         )}

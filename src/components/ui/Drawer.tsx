@@ -1,12 +1,14 @@
-import React, { useEffect, useId, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { FiX } from "react-icons/fi";
 import { createPortal } from "react-dom";
 import { cn } from "../../utils/cn";
+import { isTopOverlay, pushOverlay, removeOverlay } from "../../utils/overlayStack";
 import gsap from "gsap";
 
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
+  onExited?: () => void;
   title?: React.ReactNode;
   description?: React.ReactNode;
   children: React.ReactNode;
@@ -15,11 +17,13 @@ interface DrawerProps {
   side?: "left" | "right";
   className?: string;
   contentClassName?: string;
+  hideHeader?: boolean;
 }
 
 const Drawer: React.FC<DrawerProps> = ({
   isOpen,
   onClose,
+  onExited,
   title,
   description,
   children,
@@ -28,14 +32,23 @@ const Drawer: React.FC<DrawerProps> = ({
   side = "right",
   className,
   contentClassName,
+  hideHeader = false,
 }) => {
   const titleId = useId();
   const descriptionId = useId();
+  const drawerId = useId();
   const [shouldRender, setShouldRender] = useState(isOpen);
   const backdropRef = useRef<HTMLDivElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  const onExitedRef = useRef(onExited);
+
+  useLayoutEffect(() => {
+    onCloseRef.current = onClose;
+    onExitedRef.current = onExited;
+  }, [onClose, onExited]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -46,6 +59,7 @@ const Drawer: React.FC<DrawerProps> = ({
       : null;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    pushOverlay(drawerId);
     const frame = window.requestAnimationFrame(() => {
       const activeElement = document.activeElement;
       if (activeElement instanceof HTMLElement && drawerRef.current?.contains(activeElement)) return;
@@ -57,8 +71,9 @@ const Drawer: React.FC<DrawerProps> = ({
     });
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (!isTopOverlay(drawerId)) return;
       if (event.key === "Escape") {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== "Tab" || !drawerRef.current) return;
@@ -87,9 +102,10 @@ const Drawer: React.FC<DrawerProps> = ({
       window.cancelAnimationFrame(frame);
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
+      removeOverlay(drawerId);
       previousFocusRef.current?.focus({ preventScroll: true });
     };
-  }, [isOpen, onClose]);
+  }, [isOpen, drawerId]);
 
   // Handle Animations
   useEffect(() => {
@@ -113,6 +129,7 @@ const Drawer: React.FC<DrawerProps> = ({
       } else if (shouldRender) {
         gsap.set(containerRef.current, { visibility: "hidden" });
         setShouldRender(false);
+        onExitedRef.current?.();
       }
       return;
     }
@@ -141,6 +158,7 @@ const Drawer: React.FC<DrawerProps> = ({
           if (containerRef.current) {
             gsap.set(containerRef.current, { visibility: "hidden" });
           }
+          onExitedRef.current?.();
         },
       });
 
@@ -173,7 +191,9 @@ const Drawer: React.FC<DrawerProps> = ({
         ref={backdropRef}
         className="absolute inset-0 bg-text-primary/40"
         aria-hidden="true"
-        onClick={onClose}
+        onClick={() => {
+          if (isTopOverlay(drawerId)) onCloseRef.current();
+        }}
       />
 
       {/* Drawer Container */}
@@ -187,36 +207,37 @@ const Drawer: React.FC<DrawerProps> = ({
           ref={drawerRef}
           role="dialog"
           aria-modal="true"
-          aria-labelledby={title ? titleId : undefined}
+          aria-labelledby={title && !hideHeader ? titleId : undefined}
           aria-describedby={description ? descriptionId : undefined}
-          aria-label={title ? undefined : "Side panel"}
+          aria-label={hideHeader ? (typeof title === "string" ? title : "Side panel") : title ? undefined : "Side panel"}
           className={cn(
-            "pointer-events-auto flex h-full w-screen flex-col bg-surface-white shadow-[0_16px_48px_rgba(18,35,49,0.16)] transform-gpu will-change-transform",
+            "pointer-events-auto flex h-full w-[calc(100vw-2.5rem)] flex-col bg-surface-white shadow-[0_16px_48px_rgba(18,35,49,0.16)] transform-gpu will-change-transform",
             side === "left" ? "rounded-r-xl" : "rounded-l-xl",
             maxWidth,
           )}
         >
-          {/* Drawer Header */}
-          <div className="px-6 py-5 border-b border-border flex items-start justify-between sticky top-0 bg-surface-white z-10 shrink-0">
-            <div className="flex-1 space-y-1 pr-4">
-              <div id={titleId} className="text-[18px] font-semibold text-text-primary leading-snug">
-                {title}
-              </div>
-              {description && (
-                <div id={descriptionId} className="text-sm text-text-secondary leading-relaxed">
-                  {description}
+          {!hideHeader && (
+            <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between border-b border-border bg-surface-white px-6 py-5">
+              <div className="flex-1 space-y-1 pr-4">
+                <div id={titleId} className="text-[18px] font-semibold leading-snug text-text-primary">
+                  {title}
                 </div>
-              )}
+                {description && (
+                  <div id={descriptionId} className="text-sm leading-relaxed text-text-secondary">
+                    {description}
+                  </div>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => onCloseRef.current()}
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
+                aria-label="Close"
+              >
+                <FiX size={18} />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="shrink-0 rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-              aria-label="Close"
-            >
-              <FiX size={18} />
-            </button>
-          </div>
+          )}
 
           {/* Drawer Content */}
           <div className={cn("flex-1 p-6 overflow-y-auto bg-surface-white", contentClassName)}>

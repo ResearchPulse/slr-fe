@@ -105,7 +105,7 @@ export default function DeduplicationProgressBanner({
             disabled={isRunningDeduplication}
             isLoading={isRunningDeduplication}
           >
-            <FiRefreshCw className={`w-4 h-4 ${isRunningDeduplication ? "animate-spin" : ""}`} />
+            <FiRefreshCw aria-hidden="true" className="w-4 h-4" />
             Run Deduplication
           </Button>
         )}

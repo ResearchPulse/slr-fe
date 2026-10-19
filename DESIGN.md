@@ -48,7 +48,7 @@ components:
     textColor: "{colors.surface}"
     rounded: "{rounded.md}"
     padding: "10px 20px"
-    typography: "{typography.label}"
+    typography: "{typography.body}"
   button-primary-hover:
     backgroundColor: "{colors.primary-hover}"
   button-secondary:
@@ -56,7 +56,7 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.md}"
     padding: "10px 20px"
-    typography: "{typography.label}"
+    typography: "{typography.body}"
   input:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
@@ -133,7 +133,7 @@ The palette pairs Research Blue with cool, pale blue-gray surfaces and deep blue
 
 ## 4. Elevation
 
-The interface is mostly flat. Thin borders and the shift from the cool canvas to white surfaces do most of the layering; reserve shadows for surfaces that float above the workflow. Cards use a faint edge shadow (`0 1px 2px rgba(18, 35, 49, 0.04)`), primary-button hover may add a blue-tinted shadow (`0 6px 16px rgba(0, 113, 188, 0.18)`), and select menus use a broader popover shadow (`0 8px 24px rgba(18, 35, 49, 0.10)`).
+The interface is mostly flat. Thin borders and the shift from the cool canvas to white surfaces do most of the layering; reserve shadows for surfaces that float above the workflow. Shared content cards use borders without a resting shadow. Primary-button hover may add a compact blue-tinted shadow, while popovers and dialogs use a broader shadow to separate them from the workflow.
 
 **The Floating-Surface Rule.** Use shadow to distinguish an overlay or hover response; never use it as decoration on every panel.
 
@@ -141,15 +141,16 @@ The interface is mostly flat. Thin borders and the shift from the cool canvas to
 
 Components feel soft and approachable while preserving the familiar behavior expected in a research tool. The shared shape is a 12px radius, a thin cool border, and short state transitions.
 
-- **Primary button:** Research Blue with white text, 12px corners, medium weight, and selectively uppercase 11px labels. Hover darkens the blue and lifts the button by 1px; focus has a visible blue ring. Size variants use 36px, 44px, and 52px minimum heights, with the middle size reaching 44px on touch layouts.
-- **Secondary button:** Transparent or white surface with a cool outline and ink text. Hover adds a quiet secondary-surface fill. Keep its geometry and type scale aligned with the primary button.
+- **Primary button:** Research Blue with white text, 12px corners, semibold 14px text, and sentence-case labels by default. Hover darkens the blue and lifts the button by 1px; focus has a visible blue ring. Size variants use 36px, 44px, and 52px minimum heights.
+- **Secondary button:** White surface with a cool outline and ink text. Hover adds a quiet secondary-surface fill. Keep its geometry and type scale aligned with the primary button.
 - **Text input:** White surface, 1px border, 12px corners, and 12px by 16px padding. Focus changes the border to Research Blue and adds a soft ring; error state uses Error Red for both border and ring.
 - **Select:** A 44px trigger with a white surface and the same input focus and error treatment. The option menu is a rounded, bordered floating surface; selected and keyboard-active options use Blue Wash and Research Blue text.
-- **Card:** White surface, 1px cool border, 12px corners, 16px padding (24px at the `sm` breakpoint and above), and only a faint ambient shadow. Hover may strengthen the border slightly.
-- **Tabs:** A horizontal, scrollable row with a bottom divider. The active tab uses ink text and a 2px Research Blue underline; inactive tabs use Slate Text and gain emphasis on hover.
-- **Sidebar navigation:** A collapsible, light blue-gray rail with compact grouped links and a quiet active fill. The admin sidebar currently uses a separate set of hard-coded blue-gray values; keep future navigation aligned to the shared palette when it is consolidated.
+- **Checkbox and switch:** Use Research Blue for the selected state, a visible keyboard focus ring, and a short state transition. Switch thumbs move without bounce or elastic easing.
+- **Card:** White surface, 1px cool border, 12px corners, and 16px padding (24px at the `sm` breakpoint and above). Keep ordinary content cards flat; add hover treatment only when the card itself is interactive.
+- **Tabs:** A horizontal, scrollable row with a bottom divider. Labels use the shared 14px interface scale. The active tab uses ink text and a 2px Research Blue underline; inactive tabs use Slate Text and gain emphasis on hover.
+- **Sidebar navigation:** A collapsible, light blue-gray rail with compact grouped links and a quiet active fill. Use the shared semantic palette tokens for active and hover states across client and admin navigation.
 
-Controls transition color, background, border, and focus state in roughly 150–250ms. Keep motion state-led, support keyboard focus, and honor `prefers-reduced-motion`. The global stylesheet also contains a 720ms overshooting scroll reveal; treat it as an existing exception and do not copy it into new product workflows.
+Controls transition color, background, border, and focus state in roughly 150–200ms. Popovers use a short opacity and vertical-shift entrance to clarify their relationship to the trigger. Keep motion state-led, support keyboard focus, and honor `prefers-reduced-motion` globally.
 
 ## 6. Do's and Don'ts
 

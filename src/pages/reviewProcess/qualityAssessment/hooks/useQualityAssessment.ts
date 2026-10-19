@@ -56,6 +56,13 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
     enabled: !!id,
   });
 
+  const activePapersQuery = isLeader ? allPapersQuery : assignedPapersQuery;
+  const queryError = processQuery.error && !processQuery.data
+    ? processQuery.error
+    : activePapersQuery.error && !activePapersQuery.data
+      ? activePapersQuery.error
+      : null;
+
   // -- Mutations --
   const assignMutation = useMutation({
     mutationFn: (data: QualityAssessmentAssignmentRequest) => qualityAssessmentService.assignReviewers(data),
@@ -211,6 +218,16 @@ export function useQualityAssessment(id?: string, isLeader?: boolean, params?: Q
 
   return {
     phaseStatus: processQuery.data?.data?.statusText,
+    isLoading: processQuery.isLoading || activePapersQuery.isLoading,
+    isError: Boolean(queryError),
+    error: queryError ? getErrorMessage(queryError, "Failed to load assessment data") : null,
+    refetch: async () => {
+      await Promise.all([
+        processQuery.refetch(),
+        activePapersQuery.refetch(),
+        strategiesQuery.refetch(),
+      ]);
+    },
     assignedPapers,
     allPapers,
     totalPagesList,

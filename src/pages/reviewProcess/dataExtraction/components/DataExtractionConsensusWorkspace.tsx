@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AlertTriangle, CheckCircle2, Clock3, Eye, Lock, MessageSquare } from "lucide-react";
 import Button from "../../../../components/ui/Button";
 import Card from "../../../../components/ui/Card";
+import ConfirmModal from "../../../../components/ui/ConfirmModal";
 import Drawer from "../../../../components/ui/Drawer";
 import Input from "../../../../components/ui/Input";
 import Select from "../../../../components/ui/Select";
@@ -84,14 +85,14 @@ function AgentConsensusAnalysisPanel({
   ]);
 
   return (
-    <Card className="mb-4 overflow-hidden rounded-xl border border-sky-200 bg-sky-50/40 p-0 shadow-xs">
-      <div className="border-b border-sky-200 px-4 py-3">
+    <Card className="mb-4 overflow-hidden rounded-xl border border-primary/20 bg-primary-light/40 p-0 shadow-xs">
+      <div className="border-b border-primary/20 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h3 className="text-sm font-semibold text-text-primary">MCP leader consensus analysis</h3>
             <p className="mt-1 text-xs text-text-secondary">{analysis.summary}</p>
           </div>
-          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${analysis.status === "CONFLICT" ? "bg-amber-100 text-amber-800" : "bg-emerald-100 text-emerald-800"}`}>
+          <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${analysis.status === "CONFLICT" ? "bg-warning/10 text-warning" : "bg-success/10 text-success"}`}>
             {analysis.status}
           </span>
         </div>
@@ -99,17 +100,17 @@ function AgentConsensusAnalysisPanel({
 
       <div className="overflow-x-auto">
         <table className="min-w-[1180px] w-full border-collapse text-left text-xs">
-          <thead className="bg-white/70 text-text-secondary">
+          <thead className="bg-surface-white/70 text-text-secondary">
             <tr>
               {[
                 "Field / section", "Required", "Status", "R1 value", "R2 value", "Recommended",
                 "Evidence", "Value/evidence checks", "Reason",
-              ].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+              ].map((header) => <th key={header} className="border-b border-primary/20 px-3 py-2 font-semibold">{header}</th>)}
             </tr>
           </thead>
           <tbody>
             {analysis.fields.map((field) => (
-              <tr key={field.fieldId} className="border-b border-sky-100 align-top last:border-0">
+              <tr key={field.fieldId} className="border-b border-primary/10 align-top last:border-0">
                 <td className="px-3 py-2"><div className="font-semibold text-text-primary">{field.fieldName ?? field.fieldId}</div><div className="text-text-muted">{field.sectionName ?? ""} · {field.fieldId}</div></td>
                 <td className="px-3 py-2">{field.isRequired ? "Yes" : "No"}</td>
                 <td className="px-3 py-2 font-semibold">{field.status}</td>
@@ -125,16 +126,16 @@ function AgentConsensusAnalysisPanel({
         </table>
       </div>
 
-      <div className="border-t border-sky-200 px-4 py-3">
+      <div className="border-t border-primary/20 px-4 py-3">
         <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">Evidence details</h4>
         <div className="overflow-x-auto">
           <table className="min-w-[980px] w-full border-collapse text-left text-xs">
             <thead className="bg-white/70 text-text-secondary"><tr>
-              {['Field', 'Reviewer', 'Quote', 'Start offset', 'End offset', 'Source asset', 'Source revision', 'Source hash', 'Quote hash', 'Section', 'Paragraph', 'PDF page'].map((header) => <th key={header} className="border-b border-sky-200 px-3 py-2 font-semibold">{header}</th>)}
+              {['Field', 'Reviewer', 'Quote', 'Start offset', 'End offset', 'Source asset', 'Source revision', 'Source hash', 'Quote hash', 'Section', 'Paragraph', 'PDF page'].map((header) => <th key={header} className="border-b border-primary/20 px-3 py-2 font-semibold">{header}</th>)}
             </tr></thead>
             <tbody>
               {evidenceRows.length ? evidenceRows.map(({ field, reviewer, evidence }, index) => (
-                <tr key={`${field.fieldId}-${reviewer}-${index}`} className="border-b border-sky-100 align-top last:border-0">
+                <tr key={`${field.fieldId}-${reviewer}-${index}`} className="border-b border-primary/10 align-top last:border-0">
                   <td className="px-3 py-2">{field.fieldName ?? field.fieldId}</td><td className="px-3 py-2">{reviewer}</td>
                   <td className="max-w-[360px] whitespace-pre-wrap break-words px-3 py-2">{evidence.quote}</td>
                   <td className="px-3 py-2">{evidence.startOffset}</td><td className="px-3 py-2">{evidence.endOffset}</td>
@@ -981,7 +982,7 @@ export default function DataExtractionConsensusWorkspace({
                       )
                     }
                     disabled={controlDisabled || optionId.length === 0}
-                    className="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent"
+                    className="h-4 w-4 rounded border-border text-accent focus:ring-primary/40"
                   />
                   <span>{option.value}</span>
                 </label>
@@ -1058,7 +1059,7 @@ export default function DataExtractionConsensusWorkspace({
                 }
                 placeholder="Enter final decision"
                 rows={Math.min(4, Math.max(2, Math.ceil(strVal.length / 40)))}
-                className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/20 resize-y leading-relaxed"
+                className="w-full resize-y rounded-xl border border-border bg-surface-white px-3 py-2 text-sm leading-relaxed text-text-primary placeholder:text-text-muted outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                 disabled={controlDisabled}
               />
             );
@@ -1101,14 +1102,14 @@ export default function DataExtractionConsensusWorkspace({
                     event.target.checked,
                   )
                 }
-                className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
+                className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary/40"
               />
               Not Reported
             </label>
           ) : null}
 
           {isNotReported ? (
-            <p className="inline-flex rounded-full bg-slate-200 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
+            <p className="inline-flex rounded-full bg-bg-secondary px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
               NR
             </p>
           ) : null}
@@ -1349,7 +1350,38 @@ export default function DataExtractionConsensusWorkspace({
         isPartialPreview={partialConsensusPreview}
       />
 
-      <main className="flex flex-1 min-h-0">
+      <main className="flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-surface-white px-3 py-2 lg:hidden">
+          {consensusWorkspace.sections.map((section) => {
+            const conflictCount = getSectionConflictCount(section);
+            const isActive = section.sectionId === activeSection.sectionId;
+
+            return (
+              <button
+                key={section.sectionId}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => setActiveSectionId(section.sectionId)}
+                className={`inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
+                  isActive
+                    ? "bg-primary-light text-primary"
+                    : "text-text-secondary hover:bg-bg-primary"
+                }`}
+              >
+                <span className="max-w-40 truncate">{section.name}</span>
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] ${
+                    conflictCount > 0
+                      ? "bg-warning/10 text-warning"
+                      : "bg-success/10 text-success"
+                  }`}
+                >
+                  {conflictCount > 0 ? conflictCount : "✓"}
+                </span>
+              </button>
+            );
+          })}
+        </div>
         <ConsensusSidebar
           sections={consensusWorkspace.sections}
           activeSectionId={activeSection.sectionId}
@@ -1358,9 +1390,9 @@ export default function DataExtractionConsensusWorkspace({
           onSectionChange={setActiveSectionId}
         />
 
-        <section className="flex-1 min-w-0 overflow-y-auto p-4 sm:p-6">
+        <section className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4 sm:p-6">
           {isCorrectionMode && (
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-emerald-700">
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-success/20 bg-success/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-success">
               <CheckCircle2 className="h-3.5 w-3.5" />
               Correction Mode
             </div>
@@ -1394,7 +1426,7 @@ export default function DataExtractionConsensusWorkspace({
                 Compatible section
               </span>
               {activeConflictCount > 0 && (
-                <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">
+                <span className="rounded-full border border-warning/20 bg-warning/10 px-2.5 py-0.5 text-xs font-medium text-warning">
                   {activeConflictCount} remaining conflicts
                 </span>
               )}
@@ -1416,6 +1448,9 @@ export default function DataExtractionConsensusWorkspace({
                   {activeConflictCount === 0
                     ? "All conflicts resolved"
                     : `${activeConflictCount} conflicts require adjudication`}
+                </p>
+                <p className="mt-1 text-xs text-text-muted lg:hidden">
+                  Swipe horizontally to compare reviewer answers and the final decision.
                 </p>
               </div>
             </div>
@@ -1479,9 +1514,9 @@ export default function DataExtractionConsensusWorkspace({
                           key={field.fieldId}
                           className={
                             rowHasUnresolvedConflict
-                              ? "border-t border-amber-200/80 bg-amber-50/70"
+                              ? "border-t border-warning/30 bg-warning/10"
                               : rowConflictResolved
-                                ? "border-t border-emerald-200/60 bg-emerald-50/30"
+                                ? "border-t border-success/20 bg-success/5"
                                 : "border-t border-border bg-surface-white hover:bg-bg-primary/20 transition-colors"
                           }
                         >
@@ -1493,13 +1528,13 @@ export default function DataExtractionConsensusWorkspace({
                               <div className="min-w-0 flex-1 space-y-1.5">
                                 <div className="flex items-start gap-1.5">
                                   {rowHasUnresolvedConflict ? (
-                                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 text-amber-600 shrink-0" />
+                                    <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
                                   ) : rowConflictResolved ? (
-                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
                                   ) : partialConsensusPreview ? (
                                     <Clock3 className="mt-0.5 h-3.5 w-3.5 text-text-muted shrink-0" />
                                   ) : (
-                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                                    <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-success" />
                                   )}
                                   <p className="text-sm font-semibold text-text-primary break-words">
                                     {field.name}
@@ -1528,15 +1563,15 @@ export default function DataExtractionConsensusWorkspace({
                                       Pending Reviewer 2
                                     </span>
                                   ) : isReadOnly ? (
-                                    <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700">
+                                    <span className="rounded-md bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
                                       Finalized
                                     </span>
                                   ) : rowHasUnresolvedConflict ? (
-                                    <span className="rounded-md bg-amber-100 px-1.5 py-0.5 text-[10px] font-medium text-amber-800">
+                                    <span className="rounded-md bg-warning/10 px-1.5 py-0.5 text-[10px] font-medium text-warning">
                                       Conflict detected
                                     </span>
                                   ) : rowConflictResolved ? (
-                                    <span className="rounded-md bg-emerald-100 px-1.5 py-0.5 text-[10px] font-medium text-emerald-800">
+                                    <span className="rounded-md bg-success/10 px-1.5 py-0.5 text-[10px] font-medium text-success">
                                       Conflict resolved
                                     </span>
                                   ) : (
@@ -1769,7 +1804,7 @@ export default function DataExtractionConsensusWorkspace({
                       key={`${activeSection.sectionId}-matrix-row-${rowIndex}`}
                       className="rounded-xl border border-border bg-bg-secondary/60 p-3"
                     >
-                      <h3 className="mb-3 text-sm font-semibold text-slate-800">
+                      <h3 className="mb-3 text-sm font-semibold text-text-primary">
                         Item #{rowIndex + 1}
                       </h3>
 
@@ -1800,7 +1835,7 @@ export default function DataExtractionConsensusWorkspace({
                                 key={`${field.fieldId}-row-${rowIndex}`}
                                 className="border-t border-border"
                               >
-                                <td className="bg-surface-white px-3 py-3 align-top text-sm font-semibold text-slate-800">
+                                <td className="bg-surface-white px-3 py-3 align-top text-sm font-semibold text-text-primary">
                                   {field.name}
                                 </td>
 
@@ -1844,7 +1879,7 @@ export default function DataExtractionConsensusWorkspace({
                                       key={`${field.fieldId}-${column.columnId ?? `column-${columnIndex}`}`}
                                       className={
                                         unresolved
-                                          ? "bg-amber-50 px-3 py-3 align-top"
+                                          ? "bg-warning/10 px-3 py-3 align-top"
                                           : "bg-surface-white px-3 py-3 align-top"
                                       }
                                     >
@@ -2020,17 +2055,17 @@ export default function DataExtractionConsensusWorkspace({
                                             Pending Reviewer 2
                                           </div>
                                         ) : isReadOnly ? (
-                                          <div className="inline-flex items-center gap-1 rounded-xl bg-emerald-50 px-2 py-1 text-[11px] font-medium text-emerald-700">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                             Finalized
                                           </div>
                                         ) : unresolved ? (
-                                          <div className="inline-flex items-center gap-1 rounded-xl bg-amber-100 px-2 py-1 text-[11px] font-medium text-amber-800">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-warning/10 px-2 py-1 text-[11px] font-medium text-warning">
                                             <AlertTriangle className="h-3.5 w-3.5" />
                                             Conflict detected
                                           </div>
                                         ) : rowConflictResolved ? (
-                                          <div className="inline-flex items-center gap-1 rounded-xl bg-emerald-100 px-2 py-1 text-[11px] font-medium text-emerald-800">
+                                          <div className="inline-flex items-center gap-1 rounded-xl bg-success/10 px-2 py-1 text-[11px] font-medium text-success">
                                             <CheckCircle2 className="h-3.5 w-3.5" />
                                             Conflict resolved
                                           </div>
@@ -2111,7 +2146,7 @@ export default function DataExtractionConsensusWorkspace({
             <p
               className={
                 `min-w-0 ${hasUnresolvedConflicts && !isReadOnly
-                  ? "text-sm font-medium text-amber-700"
+                  ? "text-sm font-medium text-warning"
                   : "text-sm text-text-secondary"}`
               }
             >
@@ -2144,44 +2179,30 @@ export default function DataExtractionConsensusWorkspace({
         </section>
       </main>
 
-      {isConfirmModalOpen ? (
-        <div className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 p-4">
-          <div className="w-full max-w-lg rounded-xl border border-border bg-surface-white p-6 shadow-2xl">
-            <h3 className="text-lg font-semibold text-text-primary">
-              Confirm Save With Unresolved Conflicts
-            </h3>
-            <p className="mt-3 text-sm text-text-secondary">
-              There are still {unresolvedConflictCount} unresolved conflicts. If
-              you proceed, empty values will be submitted for these fields. Are
-              you sure you want to{" "}
-              {isCompletedPaper
-                ? "update the finalized consensus data"
-                : "complete this consensus"}
-              ?
-            </p>
-
-            <div className="mt-6 flex justify-end gap-3">
-              <Button
-                variant="outline"
-                onClick={() => setIsConfirmModalOpen(false)}
-                disabled={ws.isSubmittingConsensus}
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  setIsConfirmModalOpen(false);
-                  submitConsensusNow();
-                }}
-                isLoading={ws.isSubmittingConsensus}
-                disabled={ws.isSubmittingConsensus}
-              >
-                Confirm Save
-              </Button>
-            </div>
-          </div>
-        </div>
-      ) : null}
+      <ConfirmModal
+        isOpen={isConfirmModalOpen}
+        onClose={() => setIsConfirmModalOpen(false)}
+        onConfirm={() => {
+          setIsConfirmModalOpen(false);
+          submitConsensusNow();
+        }}
+        title="Confirm Save With Unresolved Conflicts"
+        message={
+          <>
+            There are still {unresolvedConflictCount} unresolved conflicts. If
+            you proceed, empty values will be submitted for these fields. Are
+            you sure you want to{" "}
+            {isCompletedPaper
+              ? "update the finalized consensus data"
+              : "complete this consensus"}
+            ?
+          </>
+        }
+        confirmText="Confirm Save"
+        isLoading={ws.isSubmittingConsensus}
+        variant="warning"
+        closeOnOutsideClick={false}
+      />
 
       <Drawer
         isOpen={Boolean(activeThread)}

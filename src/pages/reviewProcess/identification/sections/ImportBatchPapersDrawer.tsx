@@ -53,8 +53,8 @@ export default function ImportBatchPapersDrawer({
         </div>
       ) : papersError ? (
         <div className="flex flex-col items-center py-12 px-4">
-          <FiAlertCircle className="w-10 h-10 text-red-500 mb-3" />
-          <p className="text-red-600 text-sm mb-4">{papersError}</p>
+          <FiAlertCircle className="mb-3 h-10 w-10 text-error" />
+          <p className="mb-4 text-sm text-error" role="alert">{papersError}</p>
           <Button variant="secondary" onClick={onRetry}>
             <FiRefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -62,7 +62,7 @@ export default function ImportBatchPapersDrawer({
         </div>
       ) : papers.length === 0 ? (
         <div className="flex flex-col items-center py-12 px-4">
-          <FiFileText className="w-12 h-12 text-gray-300 mb-3" />
+          <FiFileText className="mb-3 h-12 w-12 text-text-secondary" />
           <p className="text-text-secondary text-sm">
             No papers found in this import batch.
           </p>
@@ -105,9 +105,9 @@ export default function ImportBatchPapersDrawer({
                   <span
                     className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                       paper.selectionStatusText === "Included"
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-success/10 text-success"
                         : paper.selectionStatusText === "Excluded"
-                          ? "bg-red-100 text-red-700"
+                          ? "bg-error/10 text-error"
                           : "bg-bg-secondary text-text-secondary"
                     }`}
                   >

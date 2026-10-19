@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useIncludedPapers } from "../../../hooks/useStudySelection";
 import SnapshotDatasetView from "./components/SnapshotDatasetView";
@@ -18,6 +18,7 @@ const BuildDatasetPage: React.FC = () => {
     data: snapshotData,
     isLoading: snapshotLoading,
     isFetching: snapshotFetchingStatus,
+    error: snapshotError,
     refetch: refetchSnapshot,
   } = useIncludedPapers(screeningProcessId, {
     search: snapshotSearchInput,
@@ -34,11 +35,6 @@ const BuildDatasetPage: React.FC = () => {
   const snapshotFetching = snapshotLoading || snapshotFetchingStatus;
 
   const paginatedSnapshotPapers = snapshotPapers;
-
-  const handleRemoveFromSnapshot = useCallback(() => {
-    // TODO: Call API to remove from snapshot
-    // For now, it won't persist after refetch without API implementation
-  }, []);
 
   const handleSnapshotClearFilters = () => {
     setSnapshotSearchInput("");
@@ -61,7 +57,13 @@ const BuildDatasetPage: React.FC = () => {
             totalPages={snapshotTotalPages}
             loading={snapshotLoading}
             fetching={snapshotFetching}
-            error={null}
+            error={
+              snapshotError instanceof Error
+                ? snapshotError.message
+                : snapshotError
+                  ? "Failed to load included papers."
+                  : null
+            }
             pageSize={snapshotPageSize}
             searchInput={snapshotSearchInput}
             yearInput={snapshotYearInput}
@@ -79,8 +81,9 @@ const BuildDatasetPage: React.FC = () => {
             onRefetch={handleRefetch}
             onNextPage={() => setSnapshotPage((p) => p + 1)}
             onPreviousPage={() => setSnapshotPage((p) => p - 1)}
-            onRemoveFromSnapshot={handleRemoveFromSnapshot}
-            canEdit={true}
+            // Inclusion is determined by the screening decision. This view has
+            // no safe remove operation; edits must be made through screening.
+            canEdit={false}
           />
         </div>
       </div>

@@ -29,7 +29,7 @@ const COLOR_MAP: Record<string, { icon: string; value: string }> =
       value: "text-text-primary",
     },
     orange: {
-      icon: "text-amber-600",
+      icon: "text-warning",
       value: "text-text-primary",
     },
     blue: {
@@ -37,14 +37,14 @@ const COLOR_MAP: Record<string, { icon: string; value: string }> =
       value: "text-text-primary",
     },
     green: {
-      icon: "text-green-700",
+      icon: "text-success",
       value: "text-text-primary",
     },
   };
 
 function SkeletonCard() {
   return (
-    <div className="px-5 py-4 animate-pulse">
+    <div className="px-5 py-4 motion-safe:animate-pulse motion-reduce:animate-none">
       <div className="h-7 w-12 bg-bg-secondary rounded mb-2" />
       <div className="h-4 w-28 bg-bg-secondary rounded mb-2" />
       <div className="h-3 w-32 bg-bg-secondary rounded" />
@@ -75,7 +75,7 @@ export default function PrismaSummaryHeader({
         )}
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-border/70 bg-surface-white p-2 shadow-sm">
+      <div className="overflow-hidden rounded-xl border border-border/70 bg-surface-white p-2 shadow-none">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
           {isLoading
             ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)

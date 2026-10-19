@@ -29,13 +29,13 @@ export default function AssessmentContextPanel({
                   {idx + 1}. {crit}
                 </p>
                 <div className="flex gap-2">
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-emerald-50 hover:text-emerald-700 transition">
+                  <button className="min-h-11 flex-1 rounded-xl border border-border py-1 text-xs font-medium transition-colors hover:border-success/30 hover:bg-success/10 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
                     Yes
                   </button>
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-rose-50 hover:text-rose-700 transition">
+                  <button className="min-h-11 flex-1 rounded-xl border border-border py-1 text-xs font-medium transition-colors hover:border-error/30 hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
                     No
                   </button>
-                  <button className="flex-1 py-1 text-xs font-medium border border-border rounded-xl hover:bg-bg-secondary transition">
+                  <button className="min-h-11 flex-1 rounded-xl border border-border py-1 text-xs font-medium transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
                     Partial
                   </button>
                 </div>
@@ -56,7 +56,7 @@ export default function AssessmentContextPanel({
       </div>
 
       <div className="p-4 border-t border-border bg-bg-primary space-y-2">
-        <button className="w-full py-2 bg-purple-600 text-white text-sm font-medium rounded-xl hover:bg-purple-700 transition shadow-none">
+        <button className="min-h-11 w-full rounded-xl bg-primary px-4 py-2 text-sm font-medium text-white shadow-none transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
           Complete Assessment
         </button>
       </div>

@@ -186,10 +186,10 @@ export default function ExcludeMenu({
         onClick={() => !isDisabled && setIsOpen(!isOpen)}
         disabled={isSubmitting || isDisabled}
         className={cn(
-          "inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
           isOpen
             ? "border-border bg-bg-secondary text-text-primary ring-2 ring-accent/10"
-            : "border-border bg-surface-white text-text-primary hover:border-rose-300 hover:bg-rose-50/60 focus-visible:ring-accent/20",
+            : "border-border bg-surface-white text-text-primary hover:border-error/30 hover:bg-error/5 focus-visible:ring-error/20",
           isDisabled && "opacity-50 grayscale-[0.5]",
         )}
       >
@@ -235,7 +235,7 @@ export default function ExcludeMenu({
                 </p>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="p-1 hover:bg-bg-secondary rounded-full text-text-secondary transition-colors"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   <FiX className="w-4 h-4" />
                 </button>
@@ -245,7 +245,7 @@ export default function ExcludeMenu({
                 {/* Reason Code Select */}
                 <div>
                   <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 ml-0.5">
-                    Exclusion Reason <span className="text-red-500">*</span>
+                    Exclusion Reason <span className="text-error">*</span>
                   </label>
                   <div className="space-y-2">
                     {exclusionReasons.length > 0 ? (
@@ -261,12 +261,12 @@ export default function ExcludeMenu({
                         searchable
                         searchPlaceholder="Search exclusion reasons..."
                         containerClassName="w-full"
-                        className="!py-2.5 !text-xs !rounded-lg !bg-bg-primary focus:!bg-surface-white focus:!border-accent focus:!ring-2 focus:!ring-accent/15 transition-all"
+                        className="!min-h-11 !rounded-xl !bg-bg-primary !py-2.5 !text-xs transition-[border-color,box-shadow,background-color] focus:!bg-surface-white focus:!border-primary focus:!ring-2 focus:!ring-primary/20 motion-reduce:transition-none"
                         menuClassName="max-h-40"
                         autoFocus
                       />
                     ) : (
-                      <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-700 italic flex items-center gap-2">
+                      <div className="flex items-center gap-2 rounded-xl border border-warning/20 bg-warning/10 p-3 text-[11px] italic text-warning">
                         <FiAlertTriangle className="w-3.5 h-3.5 shrink-0" />
                         Wait for leader import exclusion reason code
                       </div>
@@ -284,7 +284,7 @@ export default function ExcludeMenu({
                             onResetReasons();
                           }
                         }}
-                        className="text-[10px] font-bold uppercase text-accent hover:text-accent transition-colors flex items-center gap-1.5 px-1 py-0.5"
+                        className="inline-flex min-h-11 items-center gap-1.5 px-1 text-[10px] font-bold uppercase text-accent transition-colors hover:text-accent"
                       >
                         {hasMoreReasons ? (
                           <>
@@ -305,14 +305,14 @@ export default function ExcludeMenu({
                 {/* Justification Textarea */}
                 <div>
                   <label className="block text-[10px] font-bold text-text-secondary uppercase tracking-wider mb-1.5 ml-0.5">
-                    Reason / comment <span className="text-red-500">*</span>
+                    Reason / comment <span className="text-error">*</span>
                   </label>
                   <textarea
                     value={exclusionJustification}
                     onChange={(e) => setExclusionJustification(e.target.value)}
                     placeholder="Explain why this paper should be excluded..."
                     rows={3}
-                    className="w-full px-4 py-3 text-xs border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-red-300 focus:ring-4 focus:ring-red-50/50 outline-none transition-all resize-none shadow-inner"
+                    className="w-full resize-none rounded-xl border border-border bg-bg-primary px-4 py-3 text-xs text-text-primary shadow-inner outline-none transition-[border-color,box-shadow,background-color] focus:border-primary focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                   />
                 </div>
               </div>
@@ -325,13 +325,13 @@ export default function ExcludeMenu({
                     !exclusionJustification.trim() ||
                     isSubmitting
                   }
-                  className="flex-1 px-4 py-2.5 text-xs font-bold bg-red-600 text-white rounded-xl hover:bg-red-700 active:bg-red-800 transition-all shadow-none disabled:opacity-40 disabled:cursor-not-allowed"
+                  className="min-h-11 flex-1 rounded-xl bg-error px-4 text-xs font-bold text-white shadow-none transition-colors hover:bg-error/90 active:bg-error disabled:cursor-not-allowed disabled:opacity-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40 motion-reduce:transition-none"
                 >
                   {isSubmitting ? "Submitting..." : "Confirm Exclusion"}
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2.5 text-xs font-bold text-text-secondary hover:text-text-primary hover:bg-bg-primary rounded-xl transition-all"
+                  className="min-h-11 rounded-xl px-4 text-xs font-bold text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   Cancel
                 </button>

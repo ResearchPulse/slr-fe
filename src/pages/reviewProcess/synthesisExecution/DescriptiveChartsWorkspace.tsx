@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -73,6 +73,17 @@ export default function DescriptiveChartsWorkspace({
 }: DescriptiveChartsWorkspaceProps) {
   const [selectedFieldId, setSelectedFieldId] = useState<string>("");
   const [chartView, setChartView] = useState<ChartView>("bar");
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncMotionPreference = () =>
+      setPrefersReducedMotion(mediaQuery.matches);
+    syncMotionPreference();
+    mediaQuery.addEventListener("change", syncMotionPreference);
+    return () =>
+      mediaQuery.removeEventListener("change", syncMotionPreference);
+  }, []);
 
   const chartableGroups = useMemo(() => {
     const baseGroups = sourceDataGroups.map((g) => ({
@@ -161,7 +172,7 @@ export default function DescriptiveChartsWorkspace({
           active).
         </div>
       ) : null}
-      <section className="rounded-xl border border-border/80 bg-surface-white px-6 py-5 shadow-sm shadow-slate-200/30">
+      <section className="rounded-xl border border-border/80 bg-surface-white px-6 py-5">
         <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-4">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
@@ -193,7 +204,7 @@ export default function DescriptiveChartsWorkspace({
       </section>
 
       <section className="grid items-start gap-5 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30">
+        <aside className="rounded-xl border border-border/80 bg-surface-white p-5">
           <div className="space-y-5">
             <div>
               <div className="mb-3 flex items-center justify-between">
@@ -212,7 +223,7 @@ export default function DescriptiveChartsWorkspace({
                 value={resolvedSelectedFieldId}
                 onChange={(event) => setSelectedFieldId(event.target.value)}
                 disabled={chartableGroups.length === 0}
-                className="w-full rounded-xl border border-border bg-bg-primary/50 px-3.5 py-3 text-sm text-text-primary outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15 disabled:cursor-not-allowed disabled:bg-bg-primary"
+                className="min-h-11 w-full rounded-xl border border-border bg-bg-primary/50 px-3.5 py-3 text-sm text-text-primary outline-none motion-safe:transition-[color,border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/15 focus-visible:ring-2 focus-visible:ring-primary/25 disabled:cursor-not-allowed disabled:bg-bg-primary motion-reduce:transition-none"
               >
                 {chartableGroups.length === 0 ? (
                   <option value="">No chartable fields available</option>
@@ -233,7 +244,8 @@ export default function DescriptiveChartsWorkspace({
                 <button
                   type="button"
                   onClick={() => setChartView("bar")}
-                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  aria-pressed={chartView === "bar"}
+                  className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 motion-reduce:transition-none ${
                     chartView === "bar"
                       ? "bg-surface-white text-primary shadow-sm"
                       : "text-text-secondary hover:text-text-primary"
@@ -245,7 +257,8 @@ export default function DescriptiveChartsWorkspace({
                 <button
                   type="button"
                   onClick={() => setChartView("pie")}
-                  className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+                  aria-pressed={chartView === "pie"}
+                  className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-1 motion-reduce:transition-none ${
                     chartView === "pie"
                       ? "bg-surface-white text-primary shadow-sm"
                       : "text-text-secondary hover:text-text-primary"
@@ -293,7 +306,7 @@ export default function DescriptiveChartsWorkspace({
           </div>
         </aside>
 
-        <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-base font-semibold text-text-primary">
@@ -380,6 +393,7 @@ export default function DescriptiveChartsWorkspace({
                         dataKey="count"
                         name="Studies"
                         fill="#0071BC"
+                        isAnimationActive={!prefersReducedMotion}
                         radius={
                           useHorizontalColumns ? [8, 8, 0, 0] : [0, 8, 8, 0]
                         }
@@ -399,6 +413,7 @@ export default function DescriptiveChartsWorkspace({
                         data={chartData}
                         dataKey="count"
                         nameKey="name"
+                        isAnimationActive={!prefersReducedMotion}
                         cx="50%"
                         cy="50%"
                         innerRadius={70}

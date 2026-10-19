@@ -34,7 +34,7 @@ const ObjectiveForm: React.FC<ObjectiveFormProps> = ({
             placeholder="e.g., To evaluate the comparative effectiveness of metformin versus lifestyle interventions in reducing HbA1c levels in adults with pre-diabetes over a 12-month period..."
             rows={5}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+            className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
       </div>

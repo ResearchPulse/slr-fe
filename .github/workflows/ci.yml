@@ -33,7 +33,9 @@ jobs:
 
       - name: Run ESLint
         run: npm run lint
-        continue-on-error: true
+
+      - name: Run Frontend Tests
+        run: npm test
 
       - name: Run TypeScript & Vite Build
         run: npm run build

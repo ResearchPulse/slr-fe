@@ -125,6 +125,7 @@ export interface UseDataExtractionWorkspaceReturn {
 
   isLoading: boolean;
   error: string | null;
+  refetch: () => Promise<void>;
 
   isMockMode: boolean;
 

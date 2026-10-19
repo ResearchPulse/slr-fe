@@ -386,7 +386,7 @@ export default function TemplateManager() {
               setShowEditor(false);
               setSelectedTemplateId(null);
             }}
-            className="inline-flex items-center gap-2 text-accent hover:text-primary-hover font-medium transition-colors"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             <FiChevronLeft className="w-5 h-5" />
             Back to templates
@@ -428,7 +428,7 @@ export default function TemplateManager() {
             setSelectedTemplateId(null);
             setShowEditor(true);
           }}
-          className="inline-flex items-center gap-2"
+          className="inline-flex min-h-11 items-center gap-2"
         >
           <FiPlus className="w-5 h-5" />
           Create template
@@ -436,7 +436,7 @@ export default function TemplateManager() {
       </div>
 
       <section className="overflow-hidden rounded-xl border border-border bg-surface-white">
-        <div className="flex flex-col gap-1 border-b border-border bg-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+        <div className="flex flex-col gap-1 border-b border-border bg-surface-white px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
           <div>
             <h2 className="text-sm font-semibold text-text-primary">
               Available templates
@@ -501,7 +501,7 @@ interface TemplateCardProps {
 
 const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
   return (
-    <article className="flex flex-col gap-5 px-5 py-5 transition-colors hover:bg-bg-primary/50 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+    <article className="flex flex-col gap-5 px-5 py-5 transition-colors motion-reduce:transition-none hover:bg-bg-primary/50 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0 flex-1">
         <div className="mb-2 flex flex-wrap items-center gap-2">
           <h3 className="mr-1 text-base font-semibold text-text-primary">
@@ -512,7 +512,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
               "rounded-full px-2.5 py-1 text-[11px] font-medium",
               template.isSystem
                 ? "bg-bg-secondary text-accent"
-                : "bg-emerald-50 text-emerald-700",
+                : "bg-bg-secondary text-text-secondary",
             )}
           >
             {template.isSystem ? "System" : "Custom"}
@@ -521,8 +521,8 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
             className={cn(
               "rounded-full px-2.5 py-1 text-[11px] font-medium",
               template.type === ChecklistTypeValue.ABSTRACT
-                ? "bg-amber-50 text-amber-700"
-                : "bg-sky-50 text-sky-700",
+                ? "bg-warning/10 text-warning"
+                : "bg-primary-light text-primary",
             )}
           >
             {template.type === ChecklistTypeValue.ABSTRACT
@@ -544,7 +544,7 @@ const TemplateCard: React.FC<TemplateCardProps> = ({ template, onOpen }) => {
         <button
           type="button"
           onClick={onOpen}
-          className="ml-0 min-h-10 w-full text-left text-sm font-medium text-accent transition-colors hover:text-primary-hover hover:underline sm:ml-2 sm:w-auto sm:text-center"
+          className="ml-0 min-h-11 w-full rounded-lg text-left text-sm font-medium text-accent transition-colors motion-reduce:transition-none hover:text-primary-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 sm:ml-2 sm:w-auto sm:text-center"
           title="Use template"
         >
           {template.isSystem ? "Use as base" : "Edit as copy"} <span aria-hidden="true">→</span>

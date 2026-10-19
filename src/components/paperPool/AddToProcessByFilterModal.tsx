@@ -79,9 +79,9 @@ export default function AddToProcessByFilterModal({
       }
     >
           {insertResult ? (
-            <div className="flex flex-col items-center justify-center py-10 text-center animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
-                <FiCheckCircle className="w-10 h-10 text-emerald-500" />
+            <div className="flex flex-col items-center justify-center py-10 text-center motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-success/10 text-success">
+                <FiCheckCircle className="h-10 w-10" />
               </div>
               <h4 className="text-2xl font-black text-text-primary mb-2">
                 Transfer Successful
@@ -99,7 +99,7 @@ export default function AddToProcessByFilterModal({
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Added
                   </div>
-                  <div className="text-2xl font-black text-emerald-600">
+                  <div className="text-2xl font-black text-success">
                     {insertResult.inserted}
                   </div>
                 </div>
@@ -107,7 +107,7 @@ export default function AddToProcessByFilterModal({
                   <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-1">
                     Skipped
                   </div>
-                  <div className="text-2xl font-black text-amber-500">
+                  <div className="text-2xl font-black text-warning">
                     {insertResult.skippedAsDuplicate}
                   </div>
                 </div>
@@ -152,7 +152,7 @@ export default function AddToProcessByFilterModal({
                 </div>
               </div>
 
-              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-150 motion-reduce:animate-none">
                 <h4 className="text-xs font-black text-text-secondary uppercase tracking-widest">
                   2. Select Saved Filter Collection
                 </h4>
@@ -160,7 +160,7 @@ export default function AddToProcessByFilterModal({
                   <select
                     value={selectedSavedFilterId || ""}
                     onChange={(e) => onSelectFilter(e.target.value)}
-                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary appearance-none cursor-pointer"
+                    className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                   >
                     <option value="" disabled>
                       Choose a filter collection...

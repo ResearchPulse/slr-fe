@@ -77,7 +77,7 @@ export default function FullTextRightPanel({
     return (
       <div className="flex flex-col h-full bg-surface-white border-l border-border">
         <div className="flex flex-col items-center justify-center h-full text-center px-4">
-          <FiCpu className="w-8 h-8 text-gray-300 mb-3" />
+          <FiCpu className="w-8 h-8 text-text-secondary/35 mb-3" />
           <p className="text-sm text-text-secondary">
             Select a paper to view analysis
           </p>
@@ -111,6 +111,10 @@ export default function FullTextRightPanel({
         )}
         {activeTab === "ai" && (
           <div className="w-full h-full min-h-0 overflow-y-auto">
+            {/* Keep disagreement context visible before optional AI analysis. */}
+            {paper.screeningStatus === "conflicted" &&
+              paper.decisions.length > 0 && <ConflictDetails paper={paper} />}
+
             <AiAnalysisPanel
               paper={paper}
               aiAnalysis={aiAnalysis}
@@ -118,10 +122,6 @@ export default function FullTextRightPanel({
               runAiAnalysis={runAiAnalysis}
               isDisabled={isDisabled}
             />
-
-            {/* Conflict Details */}
-            {paper.screeningStatus === "conflicted" &&
-              paper.decisions.length > 0 && <ConflictDetails paper={paper} />}
 
             {/* Resolution Details */}
             {paper.resolution && (
@@ -139,8 +139,8 @@ export default function FullTextRightPanel({
                         className={cn(
                           "font-medium",
                           paper.resolution.finalDecision === "included"
-                            ? "text-green-700"
-                            : "text-red-700",
+                            ? "text-success"
+                            : "text-error",
                         )}
                       >
                         {paper.resolution.finalDecision === "included"

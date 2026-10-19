@@ -14,42 +14,42 @@ export default function ProjectLeaderStatus({
   getInitials,
 }: ProjectLeaderStatusProps) {
   return (
-    <div className="bg-surface-white border border-slate-100 rounded-xl py-3 px-4 shadow-none">
+    <div className="rounded-xl border border-border bg-surface-white px-4 py-3 shadow-none">
       {currentLeader ? (
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           {/* Left: Title & Leader Info in a single line */}
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 flex-1 min-w-0">
             <div className="flex items-center gap-2">
-              <FiShield className="text-accent shrink-0" size={16} />
-              <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-800 whitespace-nowrap">
+              <FiShield className="shrink-0 text-primary" size={16} />
+              <h6 className="whitespace-nowrap text-[10px] font-black uppercase tracking-widest text-text-primary">
                 Project Leadership:
               </h6>
             </div>
             
-            <div className="flex items-center gap-3 bg-slate-50 px-2.5 py-1.5 rounded-md border border-slate-100 flex-1 sm:flex-initial min-w-0">
+            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-md border border-border bg-bg-secondary px-2.5 py-1.5 sm:flex-initial">
               <div className="w-8 h-8 rounded-full bg-accent text-white flex items-center justify-center text-[10px] font-black shrink-0">
                 {getInitials(currentLeader.user.fullName)}
               </div>
               <div className="min-w-0 flex flex-col sm:flex-row sm:items-center sm:gap-3">
                 <div className="flex items-center gap-2 min-w-0">
-                  <p className="text-xs font-extrabold text-slate-900 truncate tracking-tight">
+                  <p className="truncate text-xs font-extrabold tracking-tight text-text-primary">
                     {currentLeader.user.fullName}
                   </p>
                   <span
                     className={cn(
                       "px-1.5 py-0.5 rounded-full text-center text-[7px] font-black uppercase tracking-widest whitespace-nowrap shrink-0",
                       currentLeader.type === "Accepted"
-                        ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                        : "bg-amber-50 text-amber-600 border border-amber-100",
+                        ? "border border-success/20 bg-success/10 text-success"
+                        : "border border-warning/20 bg-warning/10 text-warning",
                     )}
                   >
                     {currentLeader.type === "Accepted" ? "Active" : "Pending"}
                   </span>
                 </div>
-                <div className="hidden sm:block w-1 h-1 rounded-full bg-slate-200" />
-                <div className="flex items-center gap-1.5 text-[10px] font-semibold text-slate-400 min-w-0">
+                <div className="hidden h-1 w-1 rounded-full bg-border sm:block" />
+                <div className="flex min-w-0 items-center gap-1.5 text-[10px] font-semibold text-text-secondary">
                   <span className="truncate max-w-[150px]">@{currentLeader.user.userName}</span>
-                  <span className="text-slate-300 font-normal">|</span>
+                  <span className="font-normal text-text-secondary">|</span>
                   <span className="truncate max-w-[200px]">{currentLeader.user.email}</span>
                 </div>
               </div>
@@ -58,8 +58,9 @@ export default function ProjectLeaderStatus({
 
           {/* Right: Replace Button */}
           <button
+            type="button"
             onClick={onReplaceClick}
-            className="text-[10px] font-black text-accent hover:text-indigo-800 transition-colors uppercase tracking-widest px-3 py-2 bg-bg-secondary hover:bg-slate-100 rounded-xl active:scale-95 shrink-0 text-center sm:text-right"
+            className="min-h-11 shrink-0 rounded-xl bg-bg-secondary px-3 py-2 text-center text-[10px] font-black uppercase tracking-widest text-primary transition-colors hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 sm:text-right"
           >
             Replace
           </button>
@@ -68,15 +69,15 @@ export default function ProjectLeaderStatus({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Left: Title */}
           <div className="flex items-center gap-2">
-            <FiShield className="text-slate-400 shrink-0" size={16} />
-            <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-800">
+            <FiShield className="shrink-0 text-text-secondary" size={16} />
+            <h6 className="text-[10px] font-black uppercase tracking-widest text-text-primary">
               Project Leadership
             </h6>
           </div>
 
           {/* Right: Inline Alert Message */}
-          <div className="flex items-center gap-2 bg-amber-50 border border-amber-200/60 px-3 py-1.5 rounded-xl text-amber-800 shrink-0">
-            <FiAlertTriangle size={14} className="text-amber-600 shrink-0" />
+          <div className="flex shrink-0 items-center gap-2 rounded-xl border border-warning/20 bg-warning/10 px-3 py-1.5 text-warning">
+            <FiAlertTriangle size={14} className="shrink-0 text-warning" />
             <span className="text-[10px] font-black uppercase tracking-wider leading-none">
               Requires leader for oversight
             </span>

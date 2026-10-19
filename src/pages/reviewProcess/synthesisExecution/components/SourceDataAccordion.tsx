@@ -40,14 +40,14 @@ function DraggableEvidenceRow({
     <div
       ref={setNodeRef}
       style={rowStyle}
-      className={`group relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-3 pl-4 shadow-sm shadow-slate-200/20 transition-all duration-200 ${
+      className={`group relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-3 pl-4 transition-[border-color,box-shadow,background-color,transform] duration-200 motion-reduce:transition-none ${
         isDragging
-          ? "cursor-grabbing border-primary/20 bg-primary-light/60 shadow-md shadow-primary/10 scale-[1.01]"
-          : "hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-slate-200/40"
+          ? "cursor-grabbing border-primary/20 bg-primary-light/60 shadow-md shadow-primary/10 motion-safe:scale-[1.01]"
+          : "motion-safe:hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md hover:shadow-slate-200/40"
       } ${disabled ? "opacity-80" : "cursor-grab"}`}
     >
       <div
-        className={`absolute inset-y-0 left-0 w-1.5 ${isDragging ? "bg-primary" : "bg-slate-200 group-hover:bg-primary-hover"}`}
+        className={`absolute inset-y-0 left-0 w-1.5 ${isDragging ? "bg-primary" : "bg-border group-hover:bg-primary-hover"}`}
       />
 
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -56,7 +56,7 @@ function DraggableEvidenceRow({
           {...attributes}
           {...listeners}
           disabled={disabled || !hasThemes}
-          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-bg-secondary text-text-secondary transition hover:border-primary/30 hover:text-accent hover:bg-primary-light disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-bg-secondary text-text-secondary transition-colors hover:border-primary/30 hover:text-accent hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"
           aria-label={`Drag evidence from ${value.paperTitle}`}
           title="Drag to a theme"
         >
@@ -113,12 +113,12 @@ export default function SourceDataAccordion({
         return (
           <div
             key={group.fieldId}
-            className="overflow-hidden rounded-xl border border-border/80 bg-surface-white shadow-sm shadow-slate-200/20"
+            className="overflow-hidden rounded-xl border border-border/80 bg-surface-white"
           >
             <button
               type="button"
               onClick={() => onToggleGroup(group.fieldId)}
-              className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-bg-primary/70"
+              className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left transition-colors hover:bg-bg-primary/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary"
             >
               <div>
                 <p className="text-sm font-semibold text-text-primary">

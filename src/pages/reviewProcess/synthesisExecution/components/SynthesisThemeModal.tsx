@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
-import { X } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 import Button from "../../../../components/ui/Button";
+import Input from "../../../../components/ui/Input";
+import Modal from "../../../../components/ui/Modal";
+import Textarea from "../../../../components/ui/Textarea";
 import type { CreateThemeRequest } from "../../../../types/synthesisExecution";
 
 interface SynthesisThemeModalProps {
@@ -19,6 +21,7 @@ const THEME_COLOR_OPTIONS = [
   "#f97316",
   "#eab308",
   "#22c55e",
+  DEFAULT_COLOR,
   "#3b82f6",
   "#8b5cf6",
   "#ec4899",
@@ -43,11 +46,12 @@ export default function SynthesisThemeModal({
   );
   const [formState, setFormState] = useState<CreateThemeRequest>(baseFormState);
 
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => {
+    if (isOpen) setFormState(baseFormState);
+  }, [baseFormState, isOpen]);
 
   const handleClose = () => {
+    if (isSubmitting) return;
     setFormState(baseFormState);
     onClose();
   };
@@ -72,25 +76,28 @@ export default function SynthesisThemeModal({
   const submitLabel = mode === "edit" ? "Save Changes" : "Create Theme";
 
   return (
-    <div className="fixed inset-0 z-(--z-index-modal) flex items-center justify-center bg-slate-900/40 px-4 py-6">
-      <div className="w-full max-w-lg rounded-xl bg-surface-white shadow-[0_16px_40px_rgba(18,35,49,0.16)]">
-        <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <div>
-            <h3 className="text-lg font-semibold text-text-primary">
-              {modalTitle}
-            </h3>
-            <p className="text-sm text-text-secondary">{modalDescription}</p>
-          </div>
-          <button
-            type="button"
-            onClick={handleClose}
-            className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4 px-6 py-5">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={modalTitle}
+      description={modalDescription}
+      size="sm"
+      className="max-w-lg"
+      bodyClassName="space-y-4 px-5 py-5 sm:p-6"
+      closeOnOutsideClick={!isSubmitting}
+      closeOnEsc={!isSubmitting}
+      footer={
+        <>
+          <Button variant="outline" type="button" onClick={handleClose} disabled={isSubmitting}>
+            Cancel
+          </Button>
+          <Button type="submit" form="synthesis-theme-form" isLoading={isSubmitting}>
+            {submitLabel}
+          </Button>
+        </>
+      }
+    >
+        <form id="synthesis-theme-form" onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label
               className="text-sm font-medium text-text-primary"
@@ -98,7 +105,7 @@ export default function SynthesisThemeModal({
             >
               Name
             </label>
-            <input
+            <Input
               id="theme-name"
               type="text"
               value={formState.name}
@@ -108,7 +115,7 @@ export default function SynthesisThemeModal({
                   name: event.target.value,
                 }))
               }
-              className="w-full rounded-xl border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
+              className="py-3"
               placeholder="e.g. Collaboration barriers"
               maxLength={255}
               required
@@ -122,7 +129,7 @@ export default function SynthesisThemeModal({
             >
               Description
             </label>
-            <textarea
+            <Textarea
               id="theme-description"
               value={formState.description ?? ""}
               onChange={(event) =>
@@ -131,7 +138,7 @@ export default function SynthesisThemeModal({
                   description: event.target.value,
                 }))
               }
-              className="min-h-28 w-full rounded-xl border border-border px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-primary/20"
+              className="min-h-28 py-3"
               placeholder="Summarize the idea captured by this theme"
               rows={4}
             />
@@ -159,15 +166,21 @@ export default function SynthesisThemeModal({
                         colorCode: color,
                       }))
                     }
-                    className={`h-8 w-8 rounded-full ring-offset-2 transition focus:outline-none focus:ring-2 focus:ring-accent ${
-                      isSelected
-                        ? "ring-2 ring-gray-900"
-                        : "ring-1 ring-gray-200"
-                    }`}
-                    style={{ backgroundColor: color }}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform duration-150 hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
                     aria-label={`Select color ${color}`}
+                    aria-pressed={isSelected}
                     title={color}
-                  />
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={`h-8 w-8 rounded-full ring-offset-2 ${
+                        isSelected
+                          ? "ring-2 ring-text-primary"
+                          : "ring-1 ring-border"
+                      }`}
+                      style={{ backgroundColor: color }}
+                    />
+                  </button>
                 );
               })}
             </div>
@@ -176,16 +189,7 @@ export default function SynthesisThemeModal({
             </p>
           </div>
 
-          <div className="flex items-center justify-end gap-3 border-t border-border pt-4">
-            <Button variant="outline" type="button" onClick={handleClose}>
-              Cancel
-            </Button>
-            <Button type="submit" isLoading={isSubmitting}>
-              {submitLabel}
-            </Button>
-          </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 }

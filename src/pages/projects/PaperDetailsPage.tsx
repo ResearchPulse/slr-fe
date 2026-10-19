@@ -180,7 +180,7 @@ export default function PaperDetailsPage() {
   if (paperError || !paper) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50 px-6 text-center">
-        <div className="w-20 h-20 bg-surface-white rounded-xl flex items-center justify-center text-red-500 mb-6 border border-red-100">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-xl border border-error/20 bg-surface-white text-error">
           <FiFileText className="w-10 h-10" />
         </div>
         <h1 className="text-2xl font-black text-text-primary mb-2">
@@ -191,8 +191,9 @@ export default function PaperDetailsPage() {
           have permission to view it.
         </p>
         <button
+          type="button"
           onClick={() => navigate(-1)}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-surface-white border border-border text-text-primary rounded-xl font-bold hover:bg-bg-secondary transition-all active:scale-95"
+          className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-6 py-3 font-bold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           <FiArrowLeft className="w-4 h-4" />
           Go Back
@@ -208,9 +209,11 @@ export default function PaperDetailsPage() {
         <div className=" flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
+              type="button"
               onClick={() => navigate(-1)}
-              className="p-2.5 hover:bg-bg-secondary rounded-xl text-text-secondary transition-colors"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               title="Back"
+              aria-label="Back to previous page"
             >
               <FiArrowLeft className="w-5 h-5" />
             </button>
@@ -230,7 +233,7 @@ export default function PaperDetailsPage() {
                 href={paper.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 bg-surface-white border border-border text-text-primary text-xs font-bold rounded-xl hover:bg-bg-secondary transition-all"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-xs font-bold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               >
                 Source Link
                 <FiExternalLink className="w-3.5 h-3.5" />
@@ -242,7 +245,7 @@ export default function PaperDetailsPage() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
-        <div className={cn("px-6 py-3 space-y-2 transition-all duration-300")}>
+        <div className={cn("space-y-2 px-4 py-3 sm:px-6")}>
           {openGraph && citationGraph && (
             <CitationGraphModal
               isOpen={openGraph}
@@ -263,12 +266,13 @@ export default function PaperDetailsPage() {
           )}
 
           {/* Tab Navigation */}
-          <div className="flex items-center gap-1 bg-surface-white p-1 rounded-xl border border-border shadow-none">
+          <div className="grid grid-cols-2 [grid-template-columns:repeat(2,minmax(0,1fr))] gap-1 rounded-xl border border-border bg-surface-white p-1 shadow-none md:flex md:items-center">
             <TabButton
               active={activeTab === "abstract"}
               onClick={() => setActiveTab("abstract")}
               icon={<FiFileText className="w-4 h-4" />}
               label="Overview"
+              className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
             <TabButton
               active={activeTab === "references"}
@@ -276,6 +280,7 @@ export default function PaperDetailsPage() {
               icon={<FiList className="w-4 h-4" />}
               label="References"
               count={references?.length}
+              className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
             <TabButton
               active={activeTab === "citations"}
@@ -283,23 +288,26 @@ export default function PaperDetailsPage() {
               icon={<FiShare2 className="w-4 h-4" />}
               label="Citations"
               count={citations?.length}
+              className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
             <TabButton
               active={activeTab === "graph"}
               onClick={() => setActiveTab("graph")}
               icon={<FiGitBranch className="w-4 h-4" />}
               label="Network"
+              className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
             <TabButton
               active={activeTab === "fulltext"}
               onClick={() => setActiveTab("fulltext")}
               icon={<FiFileText className="w-4 h-4" />}
               label="Full Text"
+              className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
           </div>
 
           {/* 2. Tab Content */}
-          <div className="space-y-2 animate-in fade-in duration-300">
+          <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 motion-reduce:animate-none">
             {activeTab === "abstract" && (
               <>
                 <ContentSection
@@ -361,7 +369,7 @@ export default function PaperDetailsPage() {
             )}
 
             {activeTab === "fulltext" && (
-              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
                 {!paper.pdfUrl && <div className="flex items-center border-b border-border bg-bg-secondary/50 px-4 py-3">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
                     Full-Text Access

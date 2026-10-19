@@ -36,7 +36,7 @@ export default function ProcessHeader({
         <div className="flex min-w-0 items-center gap-3 lg:flex-1">
           <button
             onClick={onBack}
-            className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Back to project"
             aria-label="Back to project"
           >

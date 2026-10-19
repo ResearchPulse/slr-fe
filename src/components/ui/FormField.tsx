@@ -50,7 +50,11 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             type={isPasswordType ? (showPassword ? "text" : "password") : type}
             required={required}
             error={hasError}
-            className={cn(className, isPasswordType && "pr-10")}
+            className={cn(
+              className,
+              "transition-[color,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none",
+              isPasswordType && "pr-10",
+            )}
             aria-invalid={hasError}
             aria-describedby={
               hasError ? `${id}-error` : helperText ? `${id}-helper` : undefined
@@ -61,7 +65,7 @@ const FormField = React.forwardRef<HTMLInputElement, FormFieldProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 rounded-md p-1 text-text-muted transition-colors duration-200 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:text-text-primary"
+              className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-md text-text-muted transition-colors duration-150 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:text-text-primary motion-reduce:transition-none"
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? (

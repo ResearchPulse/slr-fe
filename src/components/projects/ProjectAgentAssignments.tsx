@@ -4,6 +4,7 @@ import { isAxiosError } from "axios";
 import api from "../../config/axios";
 import { toastError, toastSuccess } from "../../utils/toast";
 import AIReviewResultCard from "./AIReviewResultCard";
+import ConfirmModal from "../ui/ConfirmModal";
 
 type Agent = { id: string; name: string; description: string; isActive: boolean };
 type ProjectAccess = { id: string; agentId: string; projectId: string; projectName: string; isActive: boolean; agentCapabilities?: string[] };
@@ -24,6 +25,7 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
   const [token, setToken] = useState("");
   const [tokenLabel, setTokenLabel] = useState("");
   const [busy, setBusy] = useState(false);
+  const [agentToRotate, setAgentToRotate] = useState<Entry | null>(null);
   const [error, setError] = useState("");
   const selected = entries.find(entry => entry.agent.id === selectedAgentId);
   const connected = useMemo(() => entries.filter(entry => entry.access?.agentCapabilities?.includes("extraction:leader")), [entries]);
@@ -81,12 +83,18 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
   });
 
   const rotateToken = (entry: Entry) => {
-    if (!window.confirm(`Rotate ${entry.agent.name}'s token for this project? The previous token will stop working immediately.`)) return;
-    void run(async () => {
+    setAgentToRotate(entry);
+  };
+
+  const confirmRotateToken = async () => {
+    if (!agentToRotate) return;
+    const entry = agentToRotate;
+    await run(async () => {
       const { data } = await api.post<ApiData<{ accessToken: string }>>(`/projects/${projectId}/agents/${entry.agent.id}/leader-access`);
       showToken(data.data.accessToken, entry.agent.name);
       await loadEntries();
     });
+    setAgentToRotate(null);
   };
 
   const assign = () => run(async () => {
@@ -100,58 +108,58 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
   if (!projectId) return null;
 
   return (
-    <div className="space-y-5">
-      <div className="border border-border bg-surface-white p-5">
+    <div className="min-w-0 space-y-5">
+      <div className="rounded-xl border border-border bg-surface-white p-4 shadow-none sm:p-5">
         <h2 className="flex items-center gap-2 text-base font-semibold text-text-primary"><FiUserPlus /> Connect an extraction agent</h2>
         <p className="mt-1 text-sm text-text-secondary">Choose a provider from the system catalog and issue a project-scoped MCP token for extraction consensus.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <select aria-label="Choose catalog agent" value={connectAgentId} onChange={event => setConnectAgentId(event.target.value)} className="min-w-0 flex-1 rounded-lg border border-border bg-white px-3 py-2 text-sm">
+          <select aria-label="Choose catalog agent" value={connectAgentId} onChange={event => setConnectAgentId(event.target.value)} className="min-h-11 min-w-0 flex-1 rounded-xl border border-border bg-white px-3 py-2 text-sm">
             <option value="">Select an agent</option>
             {available.map(({ agent }) => <option key={agent.id} value={agent.id}>{agent.name}{agent.description ? ` — ${agent.description}` : ""}</option>)}
           </select>
-          <button type="button" disabled={busy || !connectAgentId} onClick={() => void connect()} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">Connect and generate project token</button>
+          <button type="button" disabled={busy || !connectAgentId} onClick={() => void connect()} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">Connect and generate project token</button>
         </div>
         {!available.length && <p className="mt-2 text-xs text-text-secondary">{entries.some(({ agent }) => agent.isActive) ? "All active catalog agents are already connected to this project." : "There are no active agents in the system catalog."}</p>}
       </div>
 
-      {error && <div role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">{error}</div>}
-      {token && <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+      {error && <div role="alert" className="rounded-xl border border-error/20 bg-error/5 p-3 text-sm text-error">{error}</div>}
+      {token && <div className="rounded-xl border border-warning/20 bg-warning/10 p-4">
         <h3 className="font-semibold text-text-primary">{tokenLabel} project token</h3>
-        <p className="mt-1 text-xs text-amber-900">This token scopes API access to this agent's review tasks in this project.</p>
+        <p className="mt-1 text-xs text-warning">This token scopes API access to this agent's review tasks in this project.</p>
         <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-          <input aria-label="Project agent access token" readOnly value={token} className="min-w-0 flex-1 rounded-lg border border-amber-300 bg-white px-3 py-2 font-mono text-xs" />
-          <button type="button" onClick={() => void copyToken()} className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"><FiCopy /> Copy</button>
-          <button type="button" onClick={() => { setToken(""); setTokenLabel(""); }} className="rounded-lg border border-amber-300 px-4 py-2 text-sm">Close</button>
+          <input aria-label="Project agent access token" readOnly value={token} className="min-h-11 min-w-0 flex-1 rounded-xl border border-warning/30 bg-surface-white px-3 py-2 font-mono text-xs text-text-primary" />
+          <button type="button" onClick={() => void copyToken()} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiCopy /> Copy</button>
+          <button type="button" onClick={() => { setToken(""); setTokenLabel(""); }} className="inline-flex min-h-11 items-center rounded-lg border border-warning/30 px-4 py-2 text-sm transition-colors hover:bg-warning/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">Close</button>
         </div>
-        <p className="mt-2 text-xs text-amber-900">Configure this token in the MCP connection and run <code>/slr extract &lt;taskId&gt;</code>.</p>
+        <p className="mt-2 text-xs text-warning">Configure this token in the MCP connection and run <code>/slr extract &lt;taskId&gt;</code>.</p>
       </div>}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.4fr)]">
-        <section className="border border-border bg-surface-white p-5">
-          <h2 className="mb-3 font-semibold text-text-primary">Connected agents</h2>
+      <div className="grid min-w-0 grid-cols-1 gap-5 lg:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.4fr)]">
+        <section className="min-w-0 rounded-xl border border-border bg-surface-white p-4 shadow-none sm:p-5">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-text-primary">Connected agents</h2>
           {!connected.length && <p className="text-sm text-text-secondary">No agents connected to this project.</p>}
           <div className="space-y-2">{connected.map(entry => <div key={entry.agent.id} className={`rounded-lg border p-3 ${selectedAgentId === entry.agent.id ? "border-primary bg-primary-light" : "border-border"}`}>
-            <button type="button" onClick={() => { setToken(""); setSelectedAgentId(entry.agent.id); }} className="w-full text-left">
+            <button type="button" onClick={() => { setToken(""); setSelectedAgentId(entry.agent.id); }} className="min-h-11 w-full rounded-md px-1 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
               <span className="font-medium text-text-primary">{entry.agent.name}</span>
-              <span className={`ml-2 text-xs ${entry.access?.isActive ? "text-emerald-700" : "text-rose-700"}`}>{entry.access?.isActive ? "Connected" : "Access disabled"}</span>
+              <span className={`ml-2 text-xs ${entry.access?.isActive ? "text-success" : "text-error"}`}>{entry.access?.isActive ? "Connected" : "Access disabled"}</span>
               <p className="mt-1 text-xs text-text-secondary">Extraction leader capability</p>
             </button>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" disabled={busy} onClick={() => void viewToken(entry)} className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-xs"><FiEye /> View token</button>
-              <button type="button" disabled={busy} onClick={() => rotateToken(entry)} className="inline-flex items-center gap-1 rounded border border-border px-2 py-1 text-xs"><FiRefreshCw /> Rotate</button>
+            <button type="button" disabled={busy} onClick={() => void viewToken(entry)} className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-border px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiEye /> View token</button>
+              <button type="button" disabled={busy} onClick={() => rotateToken(entry)} className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-border px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiRefreshCw /> Rotate</button>
             </div>
           </div>)}</div>
         </section>
 
-        <section className="border border-border bg-surface-white p-5">
-          <h2 className="mb-3 flex items-center gap-2 font-semibold text-text-primary"><FiKey /> Assign review papers</h2>
+        <section className="min-w-0 rounded-xl border border-border bg-surface-white p-4 shadow-none sm:p-5">
+          <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-text-primary"><FiKey /> Assign review papers</h2>
           {!selected ? <p className="text-sm text-text-secondary">Select a connected agent to assign papers and view its submitted reviews.</p> : <>
             {selected.access?.isActive && <form onSubmit={event => { event.preventDefault(); void assign(); }} className="space-y-3">
-              <select aria-label="Paper to assign" required value={paperId} onChange={event => setPaperId(event.target.value)} className="w-full rounded-lg border border-border bg-white px-3 py-2 text-sm">
+              <select aria-label="Paper to assign" required value={paperId} onChange={event => setPaperId(event.target.value)} className="min-h-11 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm">
                 <option value="">Choose a paper</option>{papers.map(paper => <option key={paper.id} value={paper.id}>{paper.title || paper.id}</option>)}
               </select>
-              <textarea aria-label="Agent review instructions" maxLength={5000} placeholder="Instructions for this review (optional)" value={instructions} onChange={event => setInstructions(event.target.value)} className="min-h-24 w-full rounded-lg border border-border bg-white px-3 py-2 text-sm" />
-              <button disabled={busy || !paperId} className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">Assign to {selected.agent.name}</button>
+              <textarea aria-label="Agent review instructions" maxLength={5000} placeholder="Instructions for this review (optional)" value={instructions} onChange={event => setInstructions(event.target.value)} className="min-h-24 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
+              <button disabled={busy || !paperId} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">Assign to {selected.agent.name}</button>
             </form>}
             <h3 className="mb-3 mt-5 font-semibold text-text-primary">Extraction tasks</h3>
             {!tasks.length && <p className="text-sm text-text-secondary">No tasks assigned to this agent in the project.</p>}
@@ -163,6 +171,17 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
           </>}
         </section>
       </div>
+      <ConfirmModal
+        isOpen={Boolean(agentToRotate)}
+        onClose={() => { if (!busy) setAgentToRotate(null); }}
+        onConfirm={() => void confirmRotateToken()}
+        title="Rotate project token?"
+        message={agentToRotate ? `Rotate ${agentToRotate.agent.name}'s token for this project? The previous token will stop working immediately.` : "The previous token will stop working immediately."}
+        confirmText="Rotate token"
+        cancelText="Keep current token"
+        isLoading={busy}
+        variant="warning"
+      />
     </div>
   );
 }

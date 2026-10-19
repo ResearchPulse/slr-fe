@@ -23,7 +23,7 @@ export const AIAnalysisTab: React.FC<AIAnalysisTabProps> = ({
 }) => {
   if (currentPhase === "TITLE_ABSTRACT") {
     return (
-      <div className="h-full animate-in fade-in duration-300">
+      <div className="h-full motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
         <TitleAbstractAiPanel
           paper={selectedPaper}
           aiAnalysis={aiAnalysis}
@@ -36,7 +36,7 @@ export const AIAnalysisTab: React.FC<AIAnalysisTabProps> = ({
   }
 
   return (
-    <div className="h-full animate-in fade-in duration-300">
+    <div className="h-full motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       <FullTextAiPanel
         paper={selectedPaper}
         aiAnalysis={aiAnalysis}

@@ -173,7 +173,7 @@ export default function ProjectListPage() {
             </p>
           </div>
           {!showDeletedProjects && (
-            <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex items-center gap-2">
+            <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex min-h-11 items-center gap-2">
               <FiPlus size={16} /> Create project
             </Button>
           )}
@@ -196,7 +196,7 @@ export default function ProjectListPage() {
                     type="button"
                     onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
                     aria-pressed={roleFilter === value}
-                    className={`inline-flex min-h-9 items-center gap-2 rounded-xl border px-3 text-sm transition-colors ${
+                    className={`inline-flex min-h-11 items-center gap-2 rounded-xl border px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
                       roleFilter === value
                         ? "border-accent bg-bg-secondary font-medium text-accent"
                         : "border-border bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
@@ -215,7 +215,7 @@ export default function ProjectListPage() {
               type="button"
               aria-pressed={!showDeletedProjects}
               onClick={() => { setShowDeletedProjects(false); setCurrentPage(1); }}
-              className={`inline-flex min-h-8 items-center gap-2 rounded-lg px-3 text-sm transition-colors ${!showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${!showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
             >
               Active
             </button>
@@ -223,7 +223,7 @@ export default function ProjectListPage() {
               type="button"
               aria-pressed={showDeletedProjects}
               onClick={() => { setShowDeletedProjects(true); setCurrentPage(1); }}
-              className={`inline-flex min-h-8 items-center gap-2 rounded-lg px-3 text-sm transition-colors ${showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
+              className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
             >
               <FiArchive size={14} /> Deleted
               {deletedData?.totalCount ? <span className="rounded-md bg-surface-white px-1.5 py-0.5 text-xs">{deletedData.totalCount}</span> : null}
@@ -241,7 +241,7 @@ export default function ProjectListPage() {
               aria-label="Search projects"
               placeholder="Search projects..."
               value={searchQuery}
-              className="h-10 rounded-xl border-border bg-surface-white pl-9 text-sm focus:border-accent focus:ring-1 focus:ring-accent"
+              className="h-11 rounded-xl border-border bg-surface-white pl-9 text-sm transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               onChange={(e) => {
                 setSearchQuery(e.target.value);
                 setCurrentPage(1);
@@ -256,7 +256,7 @@ export default function ProjectListPage() {
                 type="button"
                 aria-pressed={statusFilter === status}
                 onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
-                className={`min-h-8 rounded-md px-3 text-xs font-medium transition-colors ${statusFilter === status ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+                className={`min-h-11 rounded-md px-3 text-xs font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${statusFilter === status ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
               >
                 {status ?? "All"}
               </button>
@@ -342,8 +342,10 @@ export default function ProjectListPage() {
             <Button
               size="sm"
               variant="outline"
+              aria-label="Previous page"
               onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1 || isLoading}
+              className="min-h-11"
             >
               ← Prev
             </Button>
@@ -362,8 +364,10 @@ export default function ProjectListPage() {
                         key={page}
                         size="sm"
                         variant={page === currentPage ? "primary" : "outline"}
+                        aria-current={page === currentPage ? "page" : undefined}
                         onClick={() => setCurrentPage(page)}
                         disabled={isLoading}
+                        className="min-h-11 min-w-11 px-2"
                       >
                         {page}
                       </Button>
@@ -389,8 +393,10 @@ export default function ProjectListPage() {
             <Button
               size="sm"
               variant="outline"
+              aria-label="Next page"
               onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages || isLoading}
+              className="min-h-11"
             >
               Next →
             </Button>

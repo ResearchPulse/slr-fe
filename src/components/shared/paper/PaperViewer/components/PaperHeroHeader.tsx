@@ -39,19 +39,19 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
           )}
         </div>
 
-        <h1 className="mb-3 max-w-5xl text-xl font-bold leading-snug tracking-tight text-slate-900 transition-colors group-hover:text-accent md:text-2xl">
+        <h1 className="mb-3 max-w-5xl text-xl font-bold leading-snug tracking-tight text-text-primary transition-colors group-hover:text-accent motion-reduce:transition-none md:text-2xl">
           {paper.title}
         </h1>
 
         <div className="space-y-4">
           <div className="flex items-start gap-2">
-            <p className="text-sm font-medium leading-relaxed text-slate-600">
+            <p className="text-sm font-medium leading-relaxed text-text-secondary">
               {formatAuthors(paper.authors) ?? "Unknown authors"}
             </p>
             {isFieldUpdated("Authors") && (
               <div className="group/spark relative flex items-center">
-                <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
-                <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                <Sparkles className="w-3.5 h-3.5 text-accent" />
+                <div className="absolute left-full ml-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                   Suggested fields applied
                 </div>
               </div>
@@ -72,7 +72,7 @@ export const PaperHeroHeader: React.FC<PaperHeroHeaderProps> = ({
               href={`https://doi.org/${encodeURIComponent(paper.doi)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex w-fit items-center gap-2 rounded-xl border border-accent/20 bg-primary-light px-3.5 py-2 text-xs font-semibold tracking-wide text-accent transition-colors hover:bg-primary-hover hover:text-white"
+              className="inline-flex min-h-11 w-fit items-center gap-2 rounded-xl border border-accent/20 bg-primary-light px-3.5 py-2 text-xs font-semibold tracking-wide text-accent transition-colors hover:bg-primary-hover hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 motion-reduce:transition-none"
             >
               DOI: {paper.doi}
               <FiExternalLink className="w-3.5 h-3.5" />

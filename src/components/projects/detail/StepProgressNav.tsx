@@ -35,7 +35,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
         <h2 className="text-base font-semibold text-text-primary">
           Phase A · Planning the Review
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="text-sm text-text-secondary">
             {completedCount} of {steps.length} complete
           </span>
@@ -43,7 +43,7 @@ const StepProgressNav: React.FC<StepProgressNavProps> = ({
             <button
               type="button"
               onClick={onAction}
-              className="inline-flex h-9 items-center gap-2 rounded-xl bg-accent px-3.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-xl bg-accent px-3.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
             >
               {actionLabel} <FiArrowRight size={15} />
             </button>

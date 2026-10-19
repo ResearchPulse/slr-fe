@@ -181,7 +181,7 @@ export function QAAutoResolveModal({
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin text-white" />
+              <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none text-white" />
               Resolving...
             </>
           ) : (

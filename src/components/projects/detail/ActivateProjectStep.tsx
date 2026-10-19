@@ -136,7 +136,7 @@ const ActivateProjectStep: React.FC<ActivateProjectStepProps> = ({
                     <button
                       type="button"
                       onClick={item.onConfigure}
-                      className="inline-flex min-h-9 items-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-primary/40 hover:bg-primary-light/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-primary/40 hover:bg-primary-light/60 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     >
                       Configure <FiArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
                     </button>

@@ -54,31 +54,30 @@ export default function AiAnalysisPanel({
 
   useLayoutEffect(() => {
     if (aiAnalysis && resultsRef.current) {
+      if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
       const ctx = gsap.context(() => {
         // Main sections entrance
         gsap.from(".analysis-card", {
-          y: 20,
+          y: 6,
           opacity: 0,
-          duration: 0.5,
-          stagger: 0.08,
+          duration: 0.2,
+          stagger: 0.03,
           ease: "power2.out",
         });
 
         // Score bar animation
         gsap.from(".score-bar-fill", {
           width: 0,
-          duration: 1.5,
-          ease: "elastic.out(1, 0.5)",
-          delay: 0.3,
+          duration: 0.25,
+          ease: "power2.out",
         });
 
-        // Icon pops
+        // Small status cue, kept in step with the result reveal.
         gsap.from(".status-icon", {
-          scale: 0,
-          rotation: -45,
-          duration: 0.6,
-          ease: "back.out(1.7)",
-          stagger: 0.05,
+          opacity: 0,
+          duration: 0.15,
+          stagger: 0.02,
         });
       }, resultsRef);
 
@@ -91,7 +90,7 @@ export default function AiAnalysisPanel({
       <div className="flex flex-col h-full bg-bg-secondary/50">
         <div className="flex flex-col items-center justify-center h-full text-center px-8">
           <div className="w-16 h-16 bg-surface-white rounded-xl shadow-none flex items-center justify-center mb-4 border border-border">
-            <FiCpu className="w-8 h-8 text-slate-300" />
+            <FiCpu className="h-8 w-8 text-text-muted" />
           </div>
           <h3 className="text-text-primary font-semibold mb-2">
             Ready to Analyze
@@ -112,7 +111,7 @@ export default function AiAnalysisPanel({
       <div className="min-h-0 flex-1 space-y-3 overflow-y-auto p-3 custom-scrollbar">
         <ReviewerAiAgentPanel paper={paper} stage="TITLE_ABSTRACT" />
         <details className="overflow-hidden rounded-lg border border-border bg-surface-white">
-          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-xs font-medium text-text-secondary hover:bg-slate-50">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 px-3 py-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none">
             <span>Additional local analysis</span>
             <span className="flex shrink-0 items-center gap-1.5 text-[10px] text-text-tertiary">
               {aiAnalysis ? "Results available" : isAnalyzing ? "Running" : "Optional"}
@@ -134,13 +133,14 @@ export default function AiAnalysisPanel({
               exclusion criteria defined in your protocol.
             </p>
             <button
+              type="button"
               onClick={() => !isDisabled && onRunAnalysis(paper.id)}
               disabled={isDisabled}
               className={cn(
-                "w-full flex items-center justify-center gap-2 px-4 py-3 text-white font-bold text-sm rounded-xl transition-all shadow-none",
+                "flex min-h-11 w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none",
                 !isDisabled
-                  ? "bg-accent hover:bg-primary-hover active:scale-[0.98] shadow-primary/20"
-                  : "bg-slate-300 cursor-not-allowed shadow-none",
+                  ? "bg-primary hover:bg-primary-hover active:scale-[0.98] motion-reduce:active:scale-100"
+                  : "bg-bg-secondary text-text-muted cursor-not-allowed shadow-none",
               )}
             >
               <FiCpu className="w-4 h-4" />
@@ -223,19 +223,19 @@ export default function AiAnalysisPanel({
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 bg-surface-white/50 border border-green-100 rounded-xl">
-                    <p className="text-[9px] font-bold text-green-600 uppercase tracking-widest mb-1">
+                  <div className="rounded-xl border border-success/20 bg-surface-white/50 p-3">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-success">
                       Inclusion Matches
                     </p>
-                    <p className="text-lg font-black text-green-700">
+                    <p className="text-lg font-black text-success">
                       {output.inclusionMatches}
                     </p>
                   </div>
-                  <div className="p-3 bg-surface-white/50 border border-red-100 rounded-xl">
-                    <p className="text-[9px] font-bold text-red-600 uppercase tracking-widest mb-1">
+                  <div className="rounded-xl border border-error/20 bg-surface-white/50 p-3">
+                    <p className="mb-1 text-[9px] font-bold uppercase tracking-widest text-error">
                       Exclusion Matches
                     </p>
-                    <p className="text-lg font-black text-red-700">
+                    <p className="text-lg font-black text-error">
                       {output.exclusionMatches}
                     </p>
                   </div>
@@ -245,8 +245,8 @@ export default function AiAnalysisPanel({
 
             {/* Reasoning Highlights */}
             {output.exclusionHighlights.length > 0 && (
-              <div className="analysis-card bg-rose-50 border border-rose-200 rounded-xl p-5">
-                <div className="flex items-center gap-2 mb-3 text-rose-700">
+              <div className="analysis-card rounded-xl border border-error/20 bg-error/5 p-5">
+                <div className="mb-3 flex items-center gap-2 text-error">
                   <FiAlertTriangle className="w-4 h-4 status-icon" />
                   <h4 className="text-[11px] font-black uppercase tracking-widest">
                     Critical Exclusions Detected
@@ -256,9 +256,9 @@ export default function AiAnalysisPanel({
                   {output.exclusionHighlights.map((h, i) => (
                     <li
                       key={i}
-                      className="flex gap-2 text-xs font-medium text-rose-900 leading-relaxed"
+                      className="flex gap-2 text-xs font-medium leading-relaxed text-error"
                     >
-                      <span className="shrink-0 mt-1.5 w-1.5 h-1.5 bg-rose-400 rounded-full" />
+                      <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-error" />
                       <MarkdownContent content={h} variant="red" inline />
                     </li>
                   ))}
@@ -275,7 +275,7 @@ export default function AiAnalysisPanel({
                     AI Reasoning Analysis
                   </h4>
                 </div>
-                <FiShield className="w-3.5 h-3.5 text-slate-300" />
+                <FiShield className="h-3.5 w-3.5 text-text-muted" />
               </div>
               <div className="p-5">
                 <div className="prose prose-slate max-w-none">
@@ -294,7 +294,7 @@ export default function AiAnalysisPanel({
                 <h4 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">
                   Criteria Breakdown
                 </h4>
-                <div className="h-px flex-1 bg-slate-200" />
+                <div className="h-px flex-1 bg-border" />
               </div>
 
               {output.criteriaGroupResults.map((group, idx) => (
@@ -303,14 +303,16 @@ export default function AiAnalysisPanel({
                   className="analysis-card bg-surface-white rounded-xl border border-border shadow-none overflow-hidden"
                 >
                   <button
+                    type="button"
+                    aria-expanded={Boolean(expandedGroups[idx])}
                     onClick={() => toggleGroup(idx)}
-                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-bg-secondary transition-colors"
+                    className="flex min-h-11 w-full items-center justify-between px-5 py-4 transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 motion-reduce:transition-none"
                   >
                     <div className="flex items-center gap-3 text-left">
                       <div className="w-8 h-8 rounded-xl bg-bg-secondary flex items-center justify-center text-[10px] font-bold text-text-secondary">
                         {String(idx + 1).padStart(2, "0")}
                       </div>
-                      <span className="text-xs font-bold text-slate-800 leading-snug">
+                      <span className="text-xs font-bold leading-snug text-text-primary">
                         {group.description || "Criteria Group"}
                       </span>
                     </div>
@@ -322,11 +324,11 @@ export default function AiAnalysisPanel({
                   </button>
 
                   {expandedGroups[idx] && (
-                    <div className="px-5 pb-5 pt-1 space-y-4 animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="px-5 pb-5 pt-1 space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-200 motion-reduce:animate-none">
                       {/* Inclusion */}
                       {group.inclusionResults.length > 0 && (
                         <div className="space-y-2">
-                          <p className="text-[9px] font-black text-green-600 uppercase tracking-widest ml-1">
+                          <p className="ml-1 text-[9px] font-black uppercase tracking-widest text-success">
                             Inclusion Criteria
                           </p>
                           {group.inclusionResults.map((res, i) => (
@@ -343,7 +345,7 @@ export default function AiAnalysisPanel({
                       {/* Exclusion */}
                       {group.exclusionResults.length > 0 && (
                         <div className="space-y-2">
-                          <p className="text-[9px] font-black text-rose-600 uppercase tracking-widest ml-1">
+                          <p className="ml-1 text-[9px] font-black uppercase tracking-widest text-error">
                             Exclusion Criteria
                           </p>
                           {group.exclusionResults.map((res, i) => (
@@ -392,10 +394,10 @@ function CriteriaRow({
         "p-3 rounded-xl border text-xs",
         type === "inclusion"
           ? isMatch
-            ? "bg-surface-white/30 border-green-100"
+            ? "bg-surface-white/30 border-success/20"
             : "bg-bg-secondary border-border"
           : isMatch
-            ? "bg-rose-50 border-rose-200"
+            ? "bg-error/5 border-error/20"
             : "bg-bg-secondary border-border",
       )}
     >
@@ -405,8 +407,8 @@ function CriteriaRow({
             "font-medium leading-relaxed",
             isMatch
               ? type === "inclusion"
-                ? "text-green-800"
-                : "text-rose-800"
+                ? "text-success"
+                : "text-error"
               : "text-text-secondary",
           )}
         >
@@ -426,8 +428,8 @@ function CriteriaRow({
         </div>
       </div>
       {highlight && (
-        <div className="mt-2 p-2.5 bg-surface-white border border-rose-100 rounded-xl shadow-none">
-          <p className="text-[10px] font-bold text-rose-500 uppercase tracking-widest mb-1 flex items-center gap-1">
+        <div className="mt-2 rounded-xl border border-error/15 bg-surface-white p-2.5">
+          <p className="mb-1 flex items-center gap-1 text-[10px] font-bold uppercase tracking-widest text-error">
             <FiActivity className="w-3 h-3" />
             Evidence Highlight
           </p>
@@ -445,16 +447,16 @@ function CriteriaRow({
 // Helper functions for aesthetics
 function getRecommendationBg(rec: string) {
   const r = rec.toLowerCase();
-  if (r.includes("include")) return "bg-green-500/10 text-green-700";
-  if (r.includes("exclude")) return "bg-rose-500/10 text-rose-700";
-  return "bg-amber-500/10 text-amber-700";
+  if (r.includes("include")) return "bg-success/10 text-success";
+  if (r.includes("exclude")) return "bg-error/5 text-error";
+  return "bg-warning/10 text-warning";
 }
 
 function getRecommendationIconBg(rec: string) {
   const r = rec.toLowerCase();
-  if (r.includes("include")) return "bg-green-500";
-  if (r.includes("exclude")) return "bg-rose-500";
-  return "bg-amber-500";
+  if (r.includes("include")) return "bg-success";
+  if (r.includes("exclude")) return "bg-error";
+  return "bg-warning";
 }
 
 function getRecommendationIcon(rec: string) {
@@ -465,13 +467,13 @@ function getRecommendationIcon(rec: string) {
 }
 
 function getScoreColor(score: number) {
-  if (score >= 0.7) return "text-green-600";
-  if (score < 0.4) return "text-rose-600";
-  return "text-amber-600";
+  if (score >= 0.7) return "text-success";
+  if (score < 0.4) return "text-error";
+  return "text-warning";
 }
 
 function getScoreBg(score: number) {
-  if (score >= 0.7) return "bg-green-500";
-  if (score < 0.4) return "bg-rose-500";
-  return "bg-amber-500";
+  if (score >= 0.7) return "bg-success";
+  if (score < 0.4) return "bg-error";
+  return "bg-warning";
 }

@@ -26,15 +26,15 @@ export default function EmptyState({
   helperText,
 }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-16 px-4">
-      <div className="mb-6 flex items-center justify-center">{icon}</div>
-      <h3 className="font-cormorant text-2xl font-normal text-text-primary mb-3 tracking-tight">
+    <div className="flex flex-col items-center justify-center px-4 py-10 sm:py-16">
+      <div className="mb-5 flex items-center justify-center sm:mb-6">{icon}</div>
+      <h3 className="mb-3 text-center text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
         {title}
       </h3>
-      <p className="text-text-secondary text-[13px] tracking-wide text-center max-w-md mb-8 leading-relaxed">
+      <p className="mb-6 max-w-md text-center text-[13px] leading-relaxed text-text-secondary sm:mb-8">
         {description}
       </p>
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center justify-center gap-3">
         {actionLabel && (
           <Button onClick={onAction} isLoading={isLoading}>
             {actionLabel}

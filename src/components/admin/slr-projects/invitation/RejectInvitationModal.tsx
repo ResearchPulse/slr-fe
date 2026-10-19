@@ -46,7 +46,7 @@ export default function RejectInvitationModal({
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type your message here..."
-          className="w-full h-32 p-4 bg-surface-white border border-border rounded-xl text-sm font-medium focus:ring-4 focus:ring-accent/10 focus:border-accent outline-none transition-all resize-none mb-6 shadow-sm"
+          className="mb-6 h-32 w-full resize-none rounded-xl border border-border bg-surface-white p-4 text-sm font-medium outline-none shadow-sm transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
         />
         <div className="flex gap-3">
           <Button variant="secondary" onClick={onClose} className="flex-1">

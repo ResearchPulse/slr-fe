@@ -16,8 +16,6 @@ export const Card: React.FC<CardProps> = ({
     <div
       className={cn(
         "overflow-hidden rounded-xl border border-border bg-surface-white p-4 sm:p-6",
-        "shadow-[0_1px_2px_rgba(18,35,49,0.04)] transition-[border-color,box-shadow] duration-200",
-        "hover:border-text-muted/60",
         className,
       )}
       {...props}
@@ -29,7 +27,7 @@ export const Card: React.FC<CardProps> = ({
           </h3>
         </div>
       )}
-      <div className={cn(!title && "p-0")}>{children}</div>
+      <div>{children}</div>
     </div>
   );
 };

@@ -123,6 +123,10 @@ interface UseReviewProcessWorkspaceReturn {
   handleStartPhase: (phaseKey: string) => void;
   handleCompletePhase: (phaseKey: string) => void;
   handleReopenPhase: (phaseKey: string) => void;
+  pendingConfirmation: { type: "force-quality"; qualityId: string } | { type: "complete-process" } | null;
+  closePendingConfirmation: () => void;
+  confirmPendingAction: () => Promise<void>;
+  isConfirmingPendingAction: boolean;
 
   // Loading states
   startLoading: boolean;
@@ -418,6 +422,7 @@ export const useReviewProcessWorkspace = ({
   const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
   const [isQualityCriteriaModalOpen, setIsQualityCriteriaModalOpen] = useState(false);
   const [isSynthesisStrategyModalOpen, setIsSynthesisStrategyModalOpen] = useState(false);
+  const [pendingConfirmation, setPendingConfirmation] = useState<UseReviewProcessWorkspaceReturn["pendingConfirmation"]>(null);
 
   // React Query: declarative data fetch — no useEffect needed
   const { process, isLoading, error } = useReviewProcess(processId);
@@ -652,13 +657,7 @@ export const useReviewProcessWorkspace = ({
               await completeQualityAssessment({ id: qualityId });
             } catch (error) {
               if (getErrorCode(error) !== "QA_UNRESOLVED_PAPERS") throw error;
-              if (
-                window.confirm(
-                  "Some included papers have no final quality verdict yet.\n\nComplete Quality Assessment anyway? Those papers will stay unresolved.",
-                )
-              ) {
-                await completeQualityAssessment({ id: qualityId, force: true });
-              }
+              setPendingConfirmation({ type: "force-quality", qualityId });
             }
           }
           return;
@@ -862,15 +861,25 @@ export const useReviewProcessWorkspace = ({
       return;
     }
 
-    if (window.confirm("Are you sure you want to complete this review process? Once completed, the process is finalized.")) {
-      try {
+    setPendingConfirmation({ type: "complete-process" });
+  }, [processId, process, currentProjectMember, workflowPhases]);
+
+  const closePendingConfirmation = useCallback(() => setPendingConfirmation(null), []);
+  const confirmPendingAction = useCallback(async () => {
+    if (!pendingConfirmation) return;
+    try {
+      if (pendingConfirmation.type === "force-quality") {
+        await completeQualityAssessment({ id: pendingConfirmation.qualityId, force: true });
+      } else {
+        if (!processId) return;
         await completeReviewProcess(processId);
         toastSuccess("Process Completed", "The review process has been completed successfully.");
-      } catch {
-        // Error already handled by mutation
       }
+      setPendingConfirmation(null);
+    } catch {
+      // Errors are handled by the mutation hooks; keep the confirmation open for retry.
     }
-  }, [processId, process, currentProjectMember, workflowPhases, completeReviewProcess]);
+  }, [pendingConfirmation, completeQualityAssessment, processId, completeReviewProcess]);
 
   // Derive paper pool stats for the whole process
   const paperStats: ProcessPaperStats = useMemo(() => {
@@ -1001,6 +1010,12 @@ export const useReviewProcessWorkspace = ({
     handleStartPhase,
     handleCompletePhase,
     handleReopenPhase,
+    pendingConfirmation,
+    closePendingConfirmation,
+    confirmPendingAction,
+    isConfirmingPendingAction: pendingConfirmation?.type === "force-quality"
+      ? isCompletingQualityAssessment
+      : pendingConfirmation?.type === "complete-process" && completeLoading,
 
     startLoading,
     completeLoading,

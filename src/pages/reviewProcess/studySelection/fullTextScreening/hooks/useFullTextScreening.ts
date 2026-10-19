@@ -666,6 +666,16 @@ export function useFullTextScreening(): UseFullTextScreeningReturn {
           : (isLeader || !!routePaperId) && paperDetailsQuery.error
             ? getErrorMessage(paperDetailsQuery.error, "Failed to load paper details")
             : null,
+    refetch: async () => {
+      await Promise.all([
+        papersQuery.refetch(),
+        taStatsQuery.refetch(),
+        ftStatsQuery.refetch(),
+        ...((isLeader || !!routePaperId) && resolvedSelectedId
+          ? [paperDetailsQuery.refetch()]
+          : []),
+      ]);
+    },
     canReview,
     selectPaper,
     selectNextPaper,

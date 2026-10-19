@@ -683,6 +683,15 @@ export function useStudySelection(
     return () => window.removeEventListener("keydown", handler);
   }, [selectedPaper, includePaper, excludePaper, selectNextPaper, selectPreviousPaper, canReview]);
 
+  const papersError = papersQuery.error
+    ? getErrorMessage(papersQuery.error, "Failed to load screening papers")
+    : null;
+  const statsError = taStatsQuery.error
+    ? getErrorMessage(taStatsQuery.error, "Failed to load title/abstract statistics")
+    : ftStatsQuery.error
+      ? getErrorMessage(ftStatsQuery.error, "Failed to load full-text statistics")
+      : null;
+
   return {
     papers,
     selectedPaper,
@@ -695,15 +704,19 @@ export function useStudySelection(
       taStatsQuery.isLoading ||
       ftStatsQuery.isLoading ||
       ((isLeader || !!routePaperId) && paperDetailsQuery.isLoading),
-    error: papersQuery.error
-      ? getErrorMessage(papersQuery.error, "Failed to load screening papers")
-      : taStatsQuery.error
-        ? getErrorMessage(taStatsQuery.error, "Failed to load title/abstract statistics")
-        : ftStatsQuery.error
-          ? getErrorMessage(ftStatsQuery.error, "Failed to load full-text statistics")
-          : (isLeader || !!routePaperId) && paperDetailsQuery.error
-            ? getErrorMessage(paperDetailsQuery.error, "Failed to load paper details")
-            : null,
+    error: papersError || statsError || ((isLeader || !!routePaperId) && paperDetailsQuery.error
+      ? getErrorMessage(paperDetailsQuery.error, "Failed to load paper details")
+      : null),
+    papersError,
+    statsError,
+    refetch: async () => {
+      await Promise.all([
+        papersQuery.refetch(),
+        taStatsQuery.refetch(),
+        ftStatsQuery.refetch(),
+        ...((isLeader || !!routePaperId) ? [paperDetailsQuery.refetch()] : []),
+      ]);
+    },
     selectPaper,
     selectNextPaper,
     selectPreviousPaper,

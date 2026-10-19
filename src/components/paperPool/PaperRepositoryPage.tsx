@@ -227,7 +227,7 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-5 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex flex-col gap-5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       {/* Header Area */}
       <div className="flex flex-col gap-5 rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6 xl:flex-row xl:items-center xl:justify-between">
         <div className="flex min-w-0 items-center gap-4 sm:gap-5">
@@ -251,10 +251,11 @@ export default function PaperRepositoryPage({
             <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
             <input
               type="text"
+              aria-label="Search papers by title, DOI, or authors"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search title, DOI, authors..."
-              className="h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 sm:w-[260px]"
+              className="h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none sm:w-[260px]"
             />
           </div>
 
@@ -282,15 +283,15 @@ export default function PaperRepositoryPage({
 
       {/* Read-Only Banner for Non-Leaders */}
       {!isLeader && (
-        <div className="flex items-center gap-3 rounded-xl border border-accent/30 bg-primary-light/60 p-4 text-sm text-blue-900 shadow-sm">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-blue-100 text-accent">
+        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm text-text-primary shadow-sm" role="status">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
             <FiInfo className="h-5 w-5" />
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
-            <span className="font-semibold text-blue-950">
+            <span className="font-semibold text-text-primary">
               View-Only Repository:
             </span>
-            <span className="text-blue-800/90">
+            <span className="text-text-secondary">
               Only Project Leaders can import sources and assign papers to review processes. You can search, inspect papers, or navigate to your review processes below.
             </span>
           </div>

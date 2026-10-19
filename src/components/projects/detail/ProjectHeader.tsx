@@ -34,7 +34,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex items-center gap-2 py-1 text-sm text-text-secondary transition-colors hover:text-accent"
+        className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
       >
         <FiArrowLeft size={16} />
         Back to projects
@@ -76,7 +76,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                 <button
                   type="button"
                   onClick={onEdit}
-                  className="inline-flex h-9 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                 >
                   <FiEdit3 size={15} /> Edit project
                 </button>
@@ -87,7 +87,7 @@ const ProjectHeader: React.FC<ProjectHeaderProps> = ({
                   title="Project settings"
                   aria-label="Project settings"
                   onClick={onSettings}
-                  className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                 >
                   <FiSettings size={16} />
                 </button>

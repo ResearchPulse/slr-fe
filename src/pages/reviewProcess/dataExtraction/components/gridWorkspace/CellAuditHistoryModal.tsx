@@ -62,8 +62,8 @@ export default function CellAuditHistoryModal({
         </div>
 
         {auditLogsQuery.isLoading ? (
-          <div className="flex items-center justify-center rounded-xl border border-border bg-bg-secondary px-4 py-10">
-            <Loader2 className="h-4 w-4 animate-spin text-accent" />
+          <div className="flex items-center justify-center rounded-xl border border-border bg-bg-secondary px-4 py-10" role="status" aria-live="polite" aria-busy="true">
+            <Loader2 aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none text-accent" />
             <span className="ml-2 text-sm text-text-secondary">
               Loading history...
             </span>
@@ -71,7 +71,7 @@ export default function CellAuditHistoryModal({
         ) : null}
 
         {auditLogsQuery.error ? (
-          <div className="rounded-xl border border-border bg-surface-white px-4 py-3 text-sm text-red-700">
+          <div className="rounded-xl border border-border bg-surface-white px-4 py-3 text-sm text-error">
             {getErrorMessage(
               auditLogsQuery.error,
               "Unable to load cell history.",
@@ -100,7 +100,7 @@ export default function CellAuditHistoryModal({
               return (
                 <li
                   key={log.id}
-                  className="relative rounded-xl border border-border bg-surface-white px-4 py-3 shadow-sm"
+                  className="relative rounded-xl border border-border bg-surface-white px-4 py-3"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 items-center gap-2">
@@ -116,7 +116,7 @@ export default function CellAuditHistoryModal({
                     </div>
 
                     {isLatest ? (
-                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+                      <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-semibold text-success">
                         Latest
                       </span>
                     ) : null}

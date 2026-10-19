@@ -266,7 +266,7 @@ export default function ProjectFormModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-xl px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
+            className="inline-flex min-h-11 items-center justify-center rounded-xl px-4 py-2.5 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             Hủy
           </button>
@@ -275,8 +275,8 @@ export default function ProjectFormModal({
             form="project-form"
             disabled={isSubmitting}
             className={cn(
-              "flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:pointer-events-none disabled:opacity-50",
-              isSubmitting && "animate-pulse",
+              "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-50",
+              isSubmitting && "motion-safe:animate-pulse",
             )}
           >
             {isSubmitting ? (
@@ -294,20 +294,20 @@ export default function ProjectFormModal({
       {isInitialLoading && isEditMode ? (
         <div className="flex flex-col justify-center items-center py-20 space-y-4">
           <LoadingSpinner size="lg" />
-          <p className="text-slate-400 font-bold animate-pulse uppercase tracking-[0.2em] text-[10px]">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary">
             Đang tải thông tin...
           </p>
         </div>
       ) : isViewOnly ? (
         /* --- CHẾ ĐỘ 1: XEM CHI TIẾT (VIEW ONLY - CHỈ ĐỌC) --- */
         /* Loại bỏ hoàn toàn nút đóng thừa ở chân trang theo yêu cầu (đóng bằng nút X ở header) */
-        <div className="space-y-6 animate-in fade-in duration-300">
+        <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 motion-reduce:animate-none">
           <div className="space-y-6">
             <div className="grid grid-cols-1 gap-6">
               {/* Mã dự án */}
-              <div className="space-y-1 bg-slate-50 p-4 border border-slate-100 rounded-xl">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  <FiInfo size={12} className="text-indigo-400" />
+              <div className="space-y-1 rounded-xl border border-border bg-bg-secondary p-4">
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                  <FiInfo size={12} className="text-primary" />
                   Mã dự án (Không thể sửa)
                 </div>
                 <div className="text-sm font-black text-accent tracking-wider uppercase mt-1">
@@ -317,34 +317,34 @@ export default function ProjectFormModal({
 
               {/* Tiêu đề nghiên cứu */}
               <div className="space-y-1 px-1">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  <FiFileText size={12} className="text-indigo-400" />
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                  <FiFileText size={12} className="text-primary" />
                   Tiêu đề nghiên cứu
                 </div>
-                <div className="text-sm font-bold text-slate-800 leading-relaxed mt-1">
+                <div className="mt-1 text-sm font-bold leading-relaxed text-text-primary">
                   {formData.title || "N/A"}
                 </div>
               </div>
 
               {/* Lĩnh vực nghiên cứu */}
               <div className="space-y-1 px-1">
-                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                  <FiLayers size={12} className="text-indigo-400" />
+                <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                  <FiLayers size={12} className="text-primary" />
                   Lĩnh vực nghiên cứu
                 </div>
-                <div className="text-sm font-bold text-slate-800 mt-1">
+                <div className="mt-1 text-sm font-bold text-text-primary">
                   {formData.domain || "N/A"}
                 </div>
               </div>
 
               {/* Dòng thời gian (Ngày bắt đầu & Ngày kết thúc) */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50/50 p-4 border border-slate-100/50 rounded-xl">
+              <div className="grid grid-cols-1 gap-4 rounded-xl border border-border bg-bg-secondary/50 p-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    <FiCalendar size={12} className="text-indigo-400" />
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                    <FiCalendar size={12} className="text-primary" />
                     Ngày bắt đầu
                   </div>
-                  <div className="text-sm font-bold text-slate-700 mt-1">
+                  <div className="mt-1 text-sm font-bold text-text-primary">
                     {project?.startDate
                       ? new Date(project.startDate).toLocaleDateString("vi-VN")
                       : "Chưa bắt đầu"}
@@ -352,11 +352,11 @@ export default function ProjectFormModal({
                 </div>
 
                 <div className="space-y-1">
-                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                    <FiCalendar size={12} className="text-indigo-400" />
+                  <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                    <FiCalendar size={12} className="text-primary" />
                     Ngày kết thúc
                   </div>
-                  <div className="text-sm font-bold text-slate-700 mt-1">
+                  <div className="mt-1 text-sm font-bold text-text-primary">
                     {project?.endDate
                       ? new Date(project.endDate).toLocaleDateString("vi-VN")
                       : "Chưa xác định"}
@@ -384,34 +384,36 @@ export default function ProjectFormModal({
           <div className="space-y-5">
             {!isEditMode && (
               <div className="space-y-3">
-                <div className="grid grid-cols-2 gap-2 rounded-xl bg-slate-100 p-1">
+                <div role="group" aria-label="Project creation method" className="grid grid-cols-2 gap-2 rounded-xl bg-bg-secondary p-1">
                   <button
                     type="button"
+                    aria-pressed={creationMode === "manual"}
                     onClick={() => {
                       setCreationMode("manual");
                       setOsfFile(null);
                       setErrors({});
                     }}
                     className={cn(
-                      "rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
+                      "min-h-11 rounded-xl px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
                       creationMode === "manual"
-                        ? "bg-white text-accent shadow-sm"
-                        : "text-slate-500 hover:text-slate-700",
+                        ? "bg-surface-white text-primary shadow-sm"
+                        : "text-text-secondary hover:text-text-primary",
                     )}
                   >
                     Nhập thông tin
                   </button>
                   <button
                     type="button"
+                    aria-pressed={creationMode === "osf"}
                     onClick={() => {
                       setCreationMode("osf");
                       setErrors({});
                     }}
                     className={cn(
-                      "rounded-xl px-3 py-2 text-sm font-semibold transition-colors",
+                      "min-h-11 rounded-xl px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
                       creationMode === "osf"
-                        ? "bg-white text-accent shadow-sm"
-                        : "text-slate-500 hover:text-slate-700",
+                        ? "bg-surface-white text-primary shadow-sm"
+                        : "text-text-secondary hover:text-text-primary",
                     )}
                   >
                     Upload file OSF
@@ -426,10 +428,10 @@ export default function ProjectFormModal({
                     <FiUpload size={18} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm font-semibold text-slate-800">
+                    <p className="text-sm font-semibold text-text-primary">
                       Tạo dự án bằng file OSF
                     </p>
-                    <p className="mt-1 text-xs leading-5 text-slate-500">
+                    <p className="mt-1 text-xs leading-5 text-text-secondary">
                       Chọn file .md, .markdown hoặc .txt đã xuất từ OSF. Hệ thống sẽ tự lấy tiêu đề,
                       lĩnh vực và mô tả để tạo dự án.
                     </p>
@@ -455,12 +457,12 @@ export default function ProjectFormModal({
                       }}
                     />
                     {osfFile && (
-                      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-emerald-700">
+                      <div className="mt-2 flex items-center gap-2 text-xs font-medium text-success">
                         <FiFileText size={14} />
                         <span className="truncate">{osfFile.name}</span>
                         <button
                           type="button"
-                          className="ml-1 text-slate-400 hover:text-red-600"
+                          className="ml-1 text-text-secondary hover:text-error"
                           onClick={() => setOsfFile(null)}
                           aria-label="Xóa file OSF đã chọn"
                         >
@@ -469,7 +471,7 @@ export default function ProjectFormModal({
                       </div>
                     )}
                     {errors.osfFile && (
-                      <p className="mt-2 text-xs font-medium text-red-600">{errors.osfFile}</p>
+                      <p className="mt-2 text-xs font-medium text-error" role="alert">{errors.osfFile}</p>
                     )}
                   </div>
                 </div>
@@ -481,16 +483,16 @@ export default function ProjectFormModal({
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <label htmlFor="title" className="text-sm font-semibold text-text-primary">
-                    Tiêu đề nghiên cứu <span className="text-red-500">*</span>
+                    Tiêu đề nghiên cứu <span className="text-error">*</span>
                   </label>
                   <span
                     className={cn(
                       "text-xs font-mono transition-colors",
                       formData.title.length > 200
-                        ? "text-red-600 font-bold"
+                        ? "text-error font-bold"
                         : formData.title.length > 180
-                          ? "text-amber-600 font-semibold"
-                          : "text-slate-400"
+                          ? "text-warning font-semibold"
+                          : "text-text-secondary"
                     )}
                   >
                     {formData.title.length}/200 ký tự
@@ -508,15 +510,15 @@ export default function ProjectFormModal({
                   containerClassName="space-y-0"
                   className={cn(
                     "rounded-lg border-border bg-white py-3 font-medium text-text-primary placeholder:text-text-secondary/60 focus:bg-white shadow-none",
-                    formData.title.length > 200 && "border-red-500 focus:border-red-500 focus:ring-red-100"
+                    formData.title.length > 200 && "border-error focus:border-error focus:ring-error/15"
                   )}
                   required={isEditMode || creationMode === "manual"}
                 />
 
                 {/* Alert cảnh báo trực quan khi vượt quá 200 ký tự */}
                 {formData.title.length > 200 && (
-                  <div className="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3 text-xs text-red-700 animate-in fade-in duration-200">
-                    <FiAlertCircle className="mt-0.5 shrink-0 text-red-500" size={16} />
+                  <div className="flex items-start gap-2.5 rounded-lg border border-error/20 bg-error/10 p-3 text-xs text-error motion-safe:animate-in motion-safe:fade-in motion-safe:duration-200 motion-reduce:animate-none" role="alert">
+                    <FiAlertCircle className="mt-0.5 shrink-0 text-error" size={16} />
                     <div className="leading-relaxed">
                       <span className="font-bold">Cảnh báo vượt quá 200 chữ: </span>
                       Tiêu đề nghiên cứu đang dài <strong>{formData.title.length} ký tự</strong> (vượt quá giới hạn cho phép là <strong>200 ký tự</strong>). Vui lòng rút gọn tiêu đề để có thể lưu thành công.
@@ -589,18 +591,18 @@ export default function ProjectFormModal({
 
           {/* Huy hiệu Workflow tiêu chuẩn (Chỉ hiển thị khi Tạo mới) */}
           {!isEditMode && (
-            <div className="p-5 bg-bg-secondary/50 border border-indigo-100/50 rounded-xl flex items-start gap-4 shadow-none shrink-0">
-              <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center text-accent shrink-0 border border-indigo-200">
+            <div className="flex shrink-0 items-start gap-4 rounded-xl border border-primary/15 bg-bg-secondary/50 p-5 shadow-none">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
                 <FiLayers size={18} />
               </div>
               <div className="space-y-1 mt-0.5">
-                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest leading-none">
+                <p className="text-[10px] font-black uppercase tracking-widest leading-none text-text-secondary">
                   Quy trình tiêu chuẩn
                 </p>
-                <p className="text-xs text-indigo-900 font-bold leading-tight mt-1">
+                <p className="mt-1 text-xs font-bold leading-tight text-text-primary">
                   Dự án sẽ được bắt đầu dưới dạng <span className="text-accent font-black">Bản nháp (Draft)</span>.
                 </p>
-                <p className="text-[10px] text-indigo-700/60 font-medium mt-1">
+                <p className="mt-1 text-[10px] font-medium text-text-secondary">
                   Bạn có thể tinh chỉnh các tham số trước khi kích hoạt quy trình đánh giá đầy đủ.
                 </p>
               </div>

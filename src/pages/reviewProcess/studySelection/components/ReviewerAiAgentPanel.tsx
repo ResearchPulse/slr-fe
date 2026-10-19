@@ -31,6 +31,7 @@ type AgentTask = {
   error?: { code?: string; message?: string };
   createdAt: string;
 };
+type AgentConfirmation = { agentId: string; agentName: string; action: "rotate" | "disable" };
 
 const normalizeDecision = (value: string) => {
   const normalized = value.trim().toUpperCase();
@@ -62,6 +63,7 @@ export default function ReviewerAiAgentPanel({
   const [activeAgentId, setActiveAgentId] = useState("");
   const [isChoosingAgent, setIsChoosingAgent] = useState(false);
   const [taskToRemove, setTaskToRemove] = useState<AgentTask | null>(null);
+  const [agentConfirmation, setAgentConfirmation] = useState<AgentConfirmation | null>(null);
   const [tokens, setTokens] = useState<Record<string, string>>({});
   const [taskErrors, setTaskErrors] = useState<Record<string, string>>({});
   const agentsKey = ["reviewer-ai-agents", projectId];
@@ -166,9 +168,21 @@ export default function ReviewerAiAgentPanel({
       }
       if (variables.action === "disable") setTokens((previous) => ({ ...previous, [agentId]: "" }));
       await queryClient.invalidateQueries({ queryKey: agentsKey });
+      if (variables.action === "rotate" || variables.action === "disable") setAgentConfirmation(null);
     },
-    onError: () => toastError("Could not update AI agent access"),
+    onError: (_error, variables) => {
+      if (variables.action === "rotate" || variables.action === "disable") setAgentConfirmation(null);
+      toastError("Could not update AI agent access");
+    },
   });
+
+  const requestAgentAction = (entry: AgentEntry) => {
+    if (entry.access?.isActive) {
+      setAgentConfirmation({ agentId: entry.agent.id, agentName: entry.agent.name, action: "disable" });
+      return;
+    }
+    actionMutation.mutate({ agentId: entry.agent.id, action: "enable" });
+  };
 
   const removeMutation = useMutation({
     mutationFn: async ({ agentId, taskId }: { agentId: string; taskId: string }) => {
@@ -218,7 +232,7 @@ export default function ReviewerAiAgentPanel({
   return (
     <section className="w-full min-w-0 overflow-hidden rounded-xl border border-border bg-white" aria-label="AI review workspace">
       <div className="flex min-w-0 items-center gap-2 border-b border-border px-3 pt-3">
-        <FiCpu className="h-4 w-4 shrink-0 text-blue-600" aria-hidden="true" />
+        <FiCpu className="h-4 w-4 shrink-0 text-primary" aria-hidden="true" />
         <div role="tablist" aria-label="AI review agents" className="flex min-w-0 flex-1 gap-1 overflow-x-auto">
           {entries.map(({ agent, access }) => (
             <button
@@ -229,20 +243,20 @@ export default function ReviewerAiAgentPanel({
               aria-selected={activeAgentId === agent.id}
               aria-controls={`ai-agent-panel-${agent.id}`}
               onClick={() => { setActiveAgentId(agent.id); setIsChoosingAgent(false); }}
-              className={`relative flex min-h-9 max-w-40 shrink-0 items-center gap-1.5 rounded-t-md px-2.5 text-xs font-medium transition ${activeAgentId === agent.id ? "bg-blue-50 text-blue-800" : "text-text-secondary hover:bg-slate-50 hover:text-text-primary"}`}
+              className={`relative flex min-h-11 max-w-40 shrink-0 items-center gap-1.5 rounded-t-md px-2.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none ${activeAgentId === agent.id ? "bg-primary-light text-primary" : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"}`}
               title={agent.name}
             >
-              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${access?.isActive ? "bg-emerald-500" : access ? "bg-slate-400" : "bg-slate-300"}`} />
+              <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${access?.isActive ? "bg-success" : access ? "bg-text-muted" : "bg-border"}`} />
               <span className="truncate">{agent.name}</span>
-              {activeAgentId === agent.id && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-blue-600" />}
+              {activeAgentId === agent.id && <span className="absolute inset-x-2 bottom-0 h-0.5 rounded-full bg-primary" />}
             </button>
           ))}
-          {available.length > 0 && <button type="button" onClick={() => setIsChoosingAgent(true)} className="min-h-9 shrink-0 rounded-t-md px-2 text-xs font-medium text-blue-700 hover:bg-blue-50">+ Connect</button>}
+          {available.length > 0 && <button type="button" onClick={() => setIsChoosingAgent(true)} className="min-h-11 shrink-0 rounded-t-md px-2 text-xs font-medium text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none">+ Connect</button>}
         </div>
-        <button type="button" aria-label="Refresh AI agents" title="Refresh agents" onClick={() => void agentsQuery.refetch()} className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><FiRefreshCw className="h-3.5 w-3.5" /></button>
+        <button type="button" aria-label="Refresh AI agents" title="Refresh agents" onClick={() => void agentsQuery.refetch()} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"><FiRefreshCw className="h-3.5 w-3.5" /></button>
       </div>
 
-      {agentsQuery.isError && <div role="alert" className="m-3 flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load your AI workspace.</span><button type="button" onClick={() => void agentsQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
+      {agentsQuery.isError && <div role="alert" className="m-3 flex items-center justify-between gap-3 rounded-lg border border-error/20 bg-error/5 px-3 py-2 text-xs text-error"><span>Could not load your AI workspace.</span><button type="button" onClick={() => void agentsQuery.refetch()} className="min-h-11 shrink-0 rounded-md px-2 font-semibold underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error">Retry</button></div>}
       {!entries.length && !agentsQuery.isLoading && !agentsQuery.isError && <div className="p-3 text-xs text-text-secondary">No AI agents are available in this project.</div>}
 
       {entries.map((entry) => {
@@ -256,54 +270,54 @@ export default function ReviewerAiAgentPanel({
         className="min-w-0 p-3"
       >
         <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700"><FiCpu className="h-3.5 w-3.5" /></span>
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary"><FiCpu className="h-3.5 w-3.5" /></span>
           <h3 className="min-w-0 flex-1 truncate text-sm font-semibold text-text-primary">{entry.agent.name}</h3>
-          <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium ${entry.access?.isActive ? "text-emerald-700" : "text-text-secondary"}`}>
-            <span className={`h-1.5 w-1.5 rounded-full ${entry.access?.isActive ? "bg-emerald-500" : "bg-slate-400"}`} />
+          <span className={`inline-flex items-center gap-1.5 text-[10px] font-medium ${entry.access?.isActive ? "text-success" : "text-text-secondary"}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${entry.access?.isActive ? "bg-success" : "bg-text-muted"}`} />
             {isScreeningConnected(entry) ? "Connected" : "Not connected"}
           </span>
-          {isScreeningConnected(entry) && <div className="ml-auto flex shrink-0 items-center gap-1">
-            <button type="button" aria-label={`Refresh ${entry.agent.name} review`} title="Refresh this agent's results" onClick={() => void tasksQuery.refetch()} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiRefreshCw className="h-3.5 w-3.5" /></button>
-            <button type="button" aria-label={`View ${entry.agent.name} token`} title="View token" onClick={() => actionMutation.mutate({ agentId: entry.agent.id, action: "token" })} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiKey className="h-3.5 w-3.5" /></button>
-            <button type="button" aria-label={`Copy ${entry.agent.name} token`} title="Copy agent token" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ agentId: entry.agent.id, action: "copy" })} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50"><FiCopy className="h-3.5 w-3.5" /></button>
+          {isScreeningConnected(entry) && <div className="ml-auto flex max-w-full flex-wrap justify-end gap-1">
+            <button type="button" aria-label={`Refresh ${entry.agent.name} review`} title="Refresh this agent's results" onClick={() => void tasksQuery.refetch()} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"><FiRefreshCw className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`View ${entry.agent.name} token`} title="View token" onClick={() => actionMutation.mutate({ agentId: entry.agent.id, action: "token" })} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"><FiKey className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`Copy ${entry.agent.name} token`} title="Copy agent token" disabled={actionMutation.isPending} onClick={() => actionMutation.mutate({ agentId: entry.agent.id, action: "copy" })} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-50"><FiCopy className="h-3.5 w-3.5" /></button>
             {isReviewer && <>
-            <button type="button" aria-label={`Rotate ${entry.agent.name} token`} title="Rotate token" onClick={() => { if (window.confirm(`Rotate ${entry.agent.name}'s token? The previous token will stop working.`)) actionMutation.mutate({ agentId: entry.agent.id, action: "rotate" }); }} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiRefreshCw className="h-3.5 w-3.5" /></button>
-            <button type="button" aria-label={`${entry.access?.isActive ? "Disconnect" : "Reconnect"} ${entry.agent.name}`} title={entry.access?.isActive ? "Disconnect agent" : "Reconnect agent"} onClick={() => { const action = entry.access?.isActive ? "disable" : "enable"; if (action === "disable" && !window.confirm(`Disconnect ${entry.agent.name}? Its existing review history will remain available.`)) return; actionMutation.mutate({ agentId: entry.agent.id, action }); }} className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary hover:bg-slate-100 hover:text-blue-700"><FiSettings className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`Rotate ${entry.agent.name} token`} title="Rotate token" onClick={() => setAgentConfirmation({ agentId: entry.agent.id, agentName: entry.agent.name, action: "rotate" })} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"><FiRefreshCw className="h-3.5 w-3.5" /></button>
+            <button type="button" aria-label={`${entry.access?.isActive ? "Disconnect" : "Reconnect"} ${entry.agent.name}`} title={entry.access?.isActive ? "Disconnect agent" : "Reconnect agent"} onClick={() => requestAgentAction(entry)} className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"><FiSettings className="h-3.5 w-3.5" /></button>
             </>}
           </div>}
         </div>
 
-        {(isChoosingAgent && activeAgentId === entry.agent.id || !isScreeningConnected(entry)) && <div className="mt-3 flex min-w-0 items-center gap-2">
-          <Select aria-label="Connect an AI agent" value="" placeholder={available.length ? "Connect another AI agent" : "No additional active agents"} disabled={!available.length || connectMutation.isPending} onChange={(event) => { if (event.target.value) connectMutation.mutate(event.target.value); }} options={available.map(({ agent }) => ({ value: agent.id, label: agent.name, description: agent.description }))} containerClassName="min-w-0 flex-1" menuClassName="max-h-72" className="h-9 rounded-lg px-3 text-xs" />
-          {isChoosingAgent && <button type="button" onClick={() => setIsChoosingAgent(false)} className="shrink-0 px-2 py-1 text-xs text-text-secondary hover:text-text-primary">Cancel</button>}
+        {(isChoosingAgent && activeAgentId === entry.agent.id || !isScreeningConnected(entry)) && <div className="mt-3 flex min-w-0 flex-wrap items-center gap-2">
+          <Select aria-label="Connect an AI agent" value="" placeholder={available.length ? "Connect another AI agent" : "No additional active agents"} disabled={!available.length || connectMutation.isPending} onChange={(event) => { if (event.target.value) connectMutation.mutate(event.target.value); }} options={available.map(({ agent }) => ({ value: agent.id, label: agent.name, description: agent.description }))} containerClassName="min-w-0 flex-1" menuClassName="max-h-72" className="h-11 rounded-xl px-3 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary" />
+          {isChoosingAgent && <button type="button" onClick={() => setIsChoosingAgent(false)} className="min-h-11 shrink-0 rounded-md px-2 text-xs text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none">Cancel</button>}
           {!entry.agent.isActive && <span className="text-[10px] text-text-secondary">This catalog agent is unavailable.</span>}
         </div>}
 
-        {tokens[entry.agent.id] && <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2.5">
-          <label className="text-[10px] font-semibold text-amber-900">AI agent token</label>
-          <input readOnly value={tokens[entry.agent.id]} onFocus={(event) => event.currentTarget.select()} className="mt-1 w-full rounded border border-amber-200 bg-white px-2 py-1.5 font-mono text-[10px]" />
+        {tokens[entry.agent.id] && <div className="mt-3 rounded-lg border border-primary/15 bg-primary-light p-2.5">
+          <label className="text-[10px] font-semibold text-primary">AI agent token</label>
+          <input readOnly value={tokens[entry.agent.id]} onFocus={(event) => event.currentTarget.select()} className="mt-1 min-h-11 w-full rounded-md border border-border bg-surface-white px-2 py-1.5 font-mono text-[10px] text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30" />
         </div>}
 
-        {isScreeningConnected(entry) && <Button type="button" variant="primary" size="sm" disabled={!entry.agent.isActive || (taskMutation.isPending && taskMutation.variables?.agentId === entry.agent.id && taskMutation.variables.paperId === paper.id && taskMutation.variables.taskStage === stage)} onClick={() => taskMutation.mutate({ agentId: entry.agent.id, paperId: paper.id, taskStage: stage })} className="mt-3 h-9 w-full rounded-lg normal-case tracking-normal text-xs font-semibold">
+        {isScreeningConnected(entry) && <Button type="button" variant="primary" size="sm" disabled={!entry.agent.isActive || (taskMutation.isPending && taskMutation.variables?.agentId === entry.agent.id && taskMutation.variables.paperId === paper.id && taskMutation.variables.taskStage === stage)} onClick={() => taskMutation.mutate({ agentId: entry.agent.id, paperId: paper.id, taskStage: stage })} className="mt-3 min-h-11 w-full rounded-lg normal-case tracking-normal text-xs font-semibold">
           {taskMutation.isPending && taskMutation.variables?.agentId === entry.agent.id && taskMutation.variables.paperId === paper.id && taskMutation.variables.taskStage === stage ? "Sending to agent…" : "Send to agent"}
         </Button>}
-        {taskErrors[taskStateKey(entry.agent.id)] && <div role="alert" className="mt-2 break-words rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">Task assignment failed: {taskErrors[taskStateKey(entry.agent.id)]}</div>}
+        {taskErrors[taskStateKey(entry.agent.id)] && <div role="alert" className="mt-2 break-words rounded-lg border border-error/20 bg-error/5 px-3 py-2 text-xs text-error">Task assignment failed: {taskErrors[taskStateKey(entry.agent.id)]}</div>}
 
-        {ownDecision && <div className="mt-3 rounded-lg bg-blue-50 px-3 py-2 text-[11px] text-blue-900">Your human decision: <strong>{ownDecision.decision}</strong>. AI recommendations never change it.</div>}
-        {recommendations.length > 1 && <div className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-900">Agents recommend different outcomes. This is AI only and does not create a human review conflict.</div>}
+        {ownDecision && <div className="mt-3 rounded-lg border border-primary/15 bg-primary-light px-3 py-2 text-[11px] text-primary">Your human decision: <strong>{ownDecision.decision}</strong>. AI recommendations never change it.</div>}
+        {recommendations.length > 1 && <div className="mt-2 rounded-lg border border-warning/20 bg-warning/10 px-3 py-2 text-[11px] text-warning">Agents recommend different outcomes. This is AI only and does not create a human review conflict.</div>}
 
         <div className="mt-4 border-t border-border pt-3">
           <div className="mb-2 flex items-center justify-between gap-2">
             <h4 className="text-[11px] font-semibold text-text-primary">{stage === "FULL_TEXT" ? "Full text" : "Title / abstract"} screening</h4>
             <span className="text-[10px] text-text-tertiary">{entryTasks.length} {entryTasks.length === 1 ? "task" : "tasks"}</span>
           </div>
-          {tasksQuery.isLoading && <p role="status" className="rounded-lg bg-slate-50 px-3 py-2 text-xs text-text-secondary">Loading AI review results…</p>}
-          {tasksQuery.isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-800"><span>Could not load AI task results.</span><button type="button" onClick={() => void tasksQuery.refetch()} className="shrink-0 font-semibold underline">Retry</button></div>}
-          {!tasksQuery.isLoading && !tasksQuery.isError && !entryTasks.length && <p className="rounded-lg bg-slate-50 px-3 py-3 text-xs text-text-secondary">{entry.access?.isActive ? "No review yet for this paper." : "Connect this agent to send papers for review. Past results remain available."}</p>}
+          {tasksQuery.isLoading && <p role="status" className="rounded-lg bg-bg-secondary px-3 py-2 text-xs text-text-secondary">Loading AI review results…</p>}
+          {tasksQuery.isError && <div role="alert" className="flex items-center justify-between gap-3 rounded-lg border border-error/20 bg-error/5 px-3 py-2 text-xs text-error"><span>Could not load AI task results.</span><button type="button" onClick={() => void tasksQuery.refetch()} className="min-h-11 shrink-0 rounded-md px-2 font-semibold underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error">Retry</button></div>}
+          {!tasksQuery.isLoading && !tasksQuery.isError && !entryTasks.length && <p className="rounded-lg bg-bg-secondary px-3 py-3 text-xs text-text-secondary">{entry.access?.isActive ? "No review yet for this paper." : "Connect this agent to send papers for review. Past results remain available."}</p>}
           <div className="space-y-2">
             {entryTasks.map((task) => <div key={task.id} className="relative min-w-0">
               <AIReviewResultCard task={task} humanDecision={ownDecision?.decision} paperInput={{ hasPdf: Boolean(paper.pdfUrl), extractionStatus: paper.extraction?.status, extractionMessage: paper.extraction?.message }} />
-              {(isReviewer || isOwner) && task.status === "ASSIGNED" && !task.result && <div className="mt-1 flex justify-end"><button type="button" aria-label="Remove pending AI review" disabled={removeMutation.isPending && removeMutation.variables?.taskId === task.id} onClick={() => setTaskToRemove(task)} className="inline-flex items-center gap-1 rounded px-2 py-1 text-[10px] text-text-secondary hover:bg-rose-50 hover:text-rose-700 disabled:cursor-not-allowed disabled:opacity-50"><FiTrash2 /> Remove pending task</button></div>}
+              {(isReviewer || isOwner) && task.status === "ASSIGNED" && !task.result && <div className="mt-1 flex justify-end"><button type="button" aria-label="Remove pending AI review" disabled={removeMutation.isPending && removeMutation.variables?.taskId === task.id} onClick={() => setTaskToRemove(task)} className="inline-flex min-h-11 items-center gap-1 rounded-md px-2 text-[10px] text-text-secondary transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"><FiTrash2 /> Remove pending task</button></div>}
             </div>)}
           </div>
         </div>
@@ -323,6 +337,21 @@ export default function ReviewerAiAgentPanel({
         cancelText="Keep task"
         isLoading={removeMutation.isPending}
         variant="danger"
+      />
+      <ConfirmModal
+        isOpen={Boolean(agentConfirmation)}
+        onClose={() => { if (!actionMutation.isPending) setAgentConfirmation(null); }}
+        onConfirm={() => {
+          if (agentConfirmation) actionMutation.mutate({ agentId: agentConfirmation.agentId, action: agentConfirmation.action });
+        }}
+        title={agentConfirmation?.action === "rotate" ? "Rotate AI agent token?" : "Disconnect AI agent?"}
+        message={agentConfirmation?.action === "rotate"
+          ? `Rotate ${agentConfirmation.agentName}'s token? The previous token will stop working.`
+          : `${agentConfirmation?.agentName ?? "This agent"} will stop receiving new review tasks. Its existing review history will remain available.`}
+        confirmText={agentConfirmation?.action === "rotate" ? "Rotate token" : "Disconnect agent"}
+        cancelText="Cancel"
+        isLoading={actionMutation.isPending && (actionMutation.variables?.action === "rotate" || actionMutation.variables?.action === "disable")}
+        variant="warning"
       />
     </section>
   );

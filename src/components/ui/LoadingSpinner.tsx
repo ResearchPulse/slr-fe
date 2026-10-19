@@ -23,7 +23,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
     >
       <div
         className={cn(
-          "border-border border-t-accent rounded-full animate-spin",
+          "border-border border-t-accent rounded-full motion-safe:animate-spin motion-reduce:animate-none",
           sizeStyles[size],
         )}
       />

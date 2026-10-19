@@ -44,15 +44,15 @@ const NotesTabs: React.FC<{
 const CommentEditor: React.FC = () => {
   return (
     <div className="p-4 border-t border-border-default bg-surface-card sticky bottom-0">
-      <div className="border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-accent/20 transition-all">
+      <div className="overflow-hidden rounded-xl border border-border transition-[border-color,box-shadow] focus-within:ring-2 focus-within:ring-primary/20 motion-reduce:transition-none">
         <div className="flex items-center gap-1 p-2 border-b border-border bg-bg-primary">
-          <button className="p-1 hover:bg-white rounded text-xs font-bold w-6 h-6 flex items-center justify-center">
+          <button type="button" aria-label="Bold" className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-xs font-bold text-text-primary transition-colors hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none">
             B
           </button>
-          <button className="p-1 hover:bg-white rounded text-xs italic w-6 h-6 flex items-center justify-center">
+          <button type="button" aria-label="Italic" className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-xs italic text-text-primary transition-colors hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none">
             i
           </button>
-          <button className="p-1 hover:bg-white rounded text-xs underline w-6 h-6 flex items-center justify-center">
+          <button type="button" aria-label="Underline" className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-xs underline text-text-primary transition-colors hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none">
             U
           </button>
           <div className="w-px h-4 bg-border mx-1" />

@@ -74,7 +74,7 @@ export default function QuickImportCard({
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-2">
-          <FiAlertCircle className="w-5 h-5 text-orange-500 mt-0.5" />
+          <FiAlertCircle className="mt-0.5 h-5 w-5 text-warning" />
           <div>
             <h3 className="font-semibold text-text-primary">Quick Import</h3>
             <p className="text-sm text-text-secondary mt-0.5">
@@ -82,20 +82,20 @@ export default function QuickImportCard({
             </p>
           </div>
         </div>
-        <span className="px-2.5 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-semibold">
+        <span className="rounded-full bg-warning/10 px-2.5 py-1 text-xs font-semibold text-warning ring-1 ring-inset ring-warning/20">
           Fallback Option
         </span>
       </div>
 
       {/* Warning Banner */}
-      <div className="bg-orange-50 border border-orange-200 rounded-xl p-3 mb-4">
-        <div className="flex gap-2 text-sm text-orange-800">
+      <div className="mb-4 rounded-xl border border-warning/20 bg-warning/10 p-3">
+        <div className="flex gap-2 text-sm text-text-primary">
           <FiAlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
             <p className="font-medium">
               Not recommended for systematic reviews
             </p>
-            <p className="text-xs text-orange-700 mt-1">
+            <p className="mt-1 text-xs leading-5 text-text-secondary">
               For better organization and audit trails, create a search strategy
               first, then import your RIS files.
             </p>
@@ -107,13 +107,13 @@ export default function QuickImportCard({
         {/* File Upload Zone */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            RIS File <span className="text-red-500">*</span>
+            RIS File <span className="text-error">*</span>
           </label>
           <div
-            className={`relative border-2 border-dashed rounded-xl p-6 transition-all ${
+            className={`relative rounded-xl border-2 border-dashed p-6 transition-colors motion-reduce:transition-none ${
               isDragging
-                ? "border-accent bg-primary-light"
-                : "border-border hover:border-gray-400 bg-surface-white"
+                ? "border-primary bg-primary-light"
+                : "border-border bg-surface-white hover:border-primary/40"
             }`}
             onDragOver={(e) => {
               e.preventDefault();
@@ -125,7 +125,7 @@ export default function QuickImportCard({
             {selectedFile ? (
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <FiUpload className="w-5 h-5 text-green-600" />
+                  <FiUpload className="h-5 w-5 text-success" />
                   <div>
                     <p className="text-sm font-medium text-text-primary">
                       {selectedFile.name}
@@ -168,12 +168,12 @@ export default function QuickImportCard({
         {/* Source Selector */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            Database Source <span className="text-red-500">*</span>
+            Database Source <span className="text-error">*</span>
           </label>
           <select
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
-            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+            className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           >
             <option value="">Select a database source...</option>
             {DATABASE_SOURCES.map((source) => (
@@ -195,7 +195,7 @@ export default function QuickImportCard({
           <select
             value={selectedStrategyId}
             onChange={(e) => setSelectedStrategyId(e.target.value)}
-            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+            className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             disabled={availableStrategies.length === 0}
           >
             <option value="">Don't link to a strategy</option>
@@ -217,10 +217,10 @@ export default function QuickImportCard({
         {willAutoCreateStrategy && selectedFile && (
           <div className="bg-surface-white border border-border rounded-xl p-3">
             <div className="flex gap-2 text-sm">
-              <FiAlertCircle className="w-4 h-4 text-yellow-700 mt-0.5 shrink-0" />
-              <div className="text-yellow-800">
+              <FiAlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
+              <div className="text-text-primary">
                 <p className="font-medium">Auto-strategy will be created</p>
-                <p className="text-xs text-yellow-700 mt-1">
+                <p className="mt-1 text-xs text-text-secondary">
                   A search strategy will be automatically created as: "
                   {selectedSource} Import - {new Date().toLocaleDateString()}"
                 </p>
@@ -240,9 +240,9 @@ export default function QuickImportCard({
                 {uploadProgress}%
               </span>
             </div>
-            <div className="w-full bg-bg-secondary rounded-full h-2.5">
+            <div className="h-2.5 w-full overflow-hidden rounded-full bg-bg-secondary" role="progressbar" aria-label="Upload progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={uploadProgress}>
               <div
-                className="bg-green-600 h-2.5 rounded-full transition-all duration-300"
+                className="h-full rounded-full bg-success transition-[width] duration-300 motion-reduce:transition-none"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>

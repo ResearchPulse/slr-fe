@@ -47,7 +47,7 @@ const CompletionProgress: React.FC<CompletionProgressProps> = ({
             className={cn(
               "font-semibold",
               labelClasses[size],
-              isComplete ? "text-emerald-600" : "text-accent",
+              isComplete ? "text-success" : "text-accent",
             )}
           >
             {percentage}% ({completed}/{total})
@@ -62,7 +62,7 @@ const CompletionProgress: React.FC<CompletionProgressProps> = ({
       >
         <div
           className={cn(
-            "h-full transition-all duration-500 ease-out",
+            "h-full transition-[width] duration-200 ease-out motion-reduce:transition-none",
             isComplete
               ? "bg-success"
               : "bg-primary",

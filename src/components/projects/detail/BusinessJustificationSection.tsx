@@ -8,7 +8,6 @@ interface BusinessJustificationSectionProps {
   project: Project;
   projectId: string;
   isLeader: boolean;
-  isProjectActive: boolean;
   reviewNeeds: any[];
   documents: any[];
   isUpdatingDates: boolean;
@@ -19,7 +18,6 @@ interface BusinessJustificationSectionProps {
   }) => Promise<void>;
   setIsNeedModalOpen: (open: boolean) => void;
   setIsDocModalOpen: (open: boolean) => void;
-  onSkip?: () => void;
   initialTab?: "needs" | "documents" | "dates";
 }
 
@@ -29,14 +27,12 @@ const BusinessJustificationSection: React.FC<
   project,
   projectId,
   isLeader,
-  isProjectActive,
   reviewNeeds,
   documents,
   isUpdatingDates,
   handleSaveProjectDates,
   setIsNeedModalOpen,
   setIsDocModalOpen,
-  onSkip,
   initialTab = "needs",
 }) => {
   const [activeTab, setActiveTab] = useState<"needs" | "documents" | "dates">(initialTab);
@@ -53,18 +49,6 @@ const BusinessJustificationSection: React.FC<
 
   return (
     <div>
-      {!isProjectActive && onSkip && (
-        <div className="mb-3 flex justify-end">
-          <button
-            type="button"
-            onClick={onSkip}
-            className="text-sm text-text-secondary transition-colors hover:text-accent"
-          >
-            Continue to activation →
-          </button>
-        </div>
-      )}
-
       {/* Sub-tabs */}
       <div className="mb-5 border-b border-border">
         <nav aria-label="Review justification sections" className="flex gap-6 overflow-x-auto overflow-y-hidden">
@@ -75,7 +59,7 @@ const BusinessJustificationSection: React.FC<
               aria-pressed={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`
-                -mb-px whitespace-nowrap border-b-2 pb-3 text-sm font-medium
+                -mb-px min-h-11 whitespace-nowrap border-b-2 pb-3 text-sm font-medium
                 transition-colors
                 ${
                   activeTab === tab.key

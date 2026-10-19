@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import {
   CheckCircle2,
   XCircle,
@@ -38,6 +38,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [reasonPageSize, setReasonPageSize] = useState(5);
+  const panelId = useId();
 
   const { data: exclusionReasons = [] } = useStudySelectionExclusionReasons(
     processId,
@@ -48,18 +49,21 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
 
   return (
     <div
-      className={`absolute bottom-0 right-0 w-full bg-surface-white border-t border-border shadow-[0_-20px_50px_-20px_rgba(30,58,138,0.15)] z-20 transition-all duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+      className={`absolute bottom-0 right-0 w-full bg-surface-white border-t border-border shadow-[0_-20px_50px_-20px_rgba(30,58,138,0.15)] z-20 transition-[transform] duration-200 ease-out motion-reduce:transition-none ${
         isExpanded ? "translate-y-0" : "translate-y-[calc(100%-64px)]"
       }`}
     >
       {/* Dynamic Handle/Toggle */}
-      <div
-        onClick={() => setIsExpanded(!isExpanded)}
-        className="h-16 flex items-center justify-between px-6 cursor-pointer hover:bg-bg-secondary transition-colors group"
+      <button
+        type="button"
+        aria-expanded={isExpanded}
+        aria-controls={panelId}
+        onClick={() => setIsExpanded((expanded) => !expanded)}
+        className="group flex h-16 w-full items-center justify-between px-6 text-left transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 motion-reduce:transition-none"
       >
         <div className="flex items-center gap-3">
           <div
-            className={`p-2 rounded-xl transition-all duration-500 ${isExpanded ? "bg-primary text-white rotate-0" : "bg-primary-light text-accent -rotate-12"}`}
+            className={`p-2 rounded-xl transition-[background-color,color,transform] duration-150 motion-reduce:transition-none ${isExpanded ? "bg-primary text-white rotate-0" : "bg-primary-light text-accent -rotate-12"}`}
           >
             <Gavel className="w-4 h-4" />
           </div>
@@ -78,16 +82,16 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
         <div className="flex items-center gap-3">
           {resolution && !isExpanded && (
             <div
-              className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest animate-in fade-in zoom-in duration-300 ${
+              className={`px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in motion-safe:duration-300 motion-reduce:animate-none ${
                 resolution === "Include"
-                  ? "bg-emerald-100 text-emerald-700"
-                  : "bg-rose-100 text-rose-700"
+                  ? "bg-success/10 text-success"
+                  : "bg-error/10 text-error"
               }`}
             >
               {resolution}
             </div>
           )}
-          <div className="p-2 rounded-xl bg-bg-secondary text-text-secondary group-hover:bg-slate-200 group-hover:text-text-secondary transition-all">
+          <div className="rounded-xl bg-bg-secondary p-2 text-text-secondary transition-colors group-hover:bg-border/60 motion-reduce:transition-none">
             {isExpanded ? (
               <ChevronDown className="w-4 h-4" />
             ) : (
@@ -95,32 +99,36 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
             )}
           </div>
         </div>
-      </div>
+      </button>
 
       <div
-        className={`px-6 pb-8 space-y-5 transition-opacity duration-300 ${isExpanded ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        id={panelId}
+        aria-hidden={!isExpanded}
+        inert={!isExpanded}
+        className={`space-y-5 px-6 pb-8 transition-opacity duration-150 motion-reduce:transition-none ${isExpanded ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
         <div className="flex gap-3">
           <button
+            aria-pressed={resolution === "Include"}
             onClick={() => isFinishReview && setResolution("Include")}
             disabled={!isFinishReview}
-            className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-all duration-300 ${
+              className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-[background-color,border-color,transform,box-shadow] duration-150 motion-reduce:transition-none ${
               resolution === "Include"
-                ? "bg-emerald-50 border-emerald-500 scale-[1.02] shadow-none shadow-emerald-100"
+                ? "border-success bg-success/5 scale-[1.02] shadow-none"
                 : "bg-surface-white border-border hover:border-border"
             } ${!isFinishReview ? "opacity-40 cursor-not-allowed" : ""}`}
           >
             <CheckCircle2
-              className={`w-5 h-5 mb-1.5 transition-transform duration-500 ${
+              className={`w-5 h-5 mb-1.5 transition-transform duration-150 motion-reduce:transition-none ${
                 resolution === "Include"
-                  ? "text-emerald-500 scale-110"
-                  : "text-slate-300"
+                  ? "text-success scale-110"
+                  : "text-text-secondary"
               }`}
             />
             <span
               className={`text-[10px] font-black uppercase tracking-[0.1em] ${
                 resolution === "Include"
-                  ? "text-emerald-700"
+                  ? "text-success"
                   : "text-text-secondary"
               }`}
             >
@@ -128,25 +136,26 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
             </span>
           </button>
           <button
+            aria-pressed={resolution === "Exclude"}
             onClick={() => isFinishReview && setResolution("Exclude")}
             disabled={!isFinishReview}
-            className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-all duration-300 ${
+              className={`flex-1 flex flex-col items-center py-4 rounded-xl border-2 transition-[background-color,border-color,transform,box-shadow] duration-150 motion-reduce:transition-none ${
               resolution === "Exclude"
-                ? "bg-rose-50 border-rose-500 scale-[1.02] shadow-none shadow-rose-100"
+                ? "border-error bg-error/5 scale-[1.02] shadow-none"
                 : "bg-surface-white border-border hover:border-border"
             } ${!isFinishReview ? "opacity-40 cursor-not-allowed" : ""}`}
           >
             <XCircle
-              className={`w-5 h-5 mb-1.5 transition-transform duration-500 ${
+              className={`w-5 h-5 mb-1.5 transition-transform duration-150 motion-reduce:transition-none ${
                 resolution === "Exclude"
-                  ? "text-rose-500 scale-110"
-                  : "text-slate-300"
+                  ? "text-error scale-110"
+                  : "text-text-secondary"
               }`}
             />
             <span
               className={`text-[10px] font-black uppercase tracking-[0.1em] ${
                 resolution === "Exclude"
-                  ? "text-rose-700"
+                  ? "text-error"
                   : "text-text-secondary"
               }`}
             >
@@ -156,13 +165,14 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
         </div>
 
         {resolution === "Exclude" && (
-          <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <div className="space-y-3 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-150 motion-reduce:animate-none">
             <div>
-              <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest mb-2 block ml-1">
+              <label htmlFor="resolution-exclusion-reason" className="mb-2 ml-1 block text-[10px] font-black uppercase tracking-widest text-text-secondary">
                 Exclusion Reason
               </label>
               <div className="relative group">
                 <Select
+                  id="resolution-exclusion-reason"
                   value={exclusionReason}
                   onChange={(e) => setExclusionReason(e.target.value)}
                   options={exclusionReasons.map((r) => ({
@@ -170,7 +180,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
                     label: r.name,
                   }))}
                   placeholder="Select a reason..."
-                  className="!py-3.5 !text-xs !font-bold !bg-bg-secondary border-none !rounded-xl transition-all hover:!bg-bg-secondary focus:!ring-4 focus:!ring-accent/5"
+                  className="!min-h-11 !rounded-xl !border-none !bg-bg-secondary !py-3.5 !text-xs !font-bold transition-colors hover:!bg-bg-secondary focus:!ring-2 focus:!ring-primary/20 motion-reduce:transition-none"
                 />
 
                 {/* Show More / Reset Reasons Button */}
@@ -185,7 +195,7 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
                         setReasonPageSize(5);
                       }
                     }}
-                    className="mt-2 text-[10px] font-black uppercase text-accent hover:text-primary-hover transition-colors flex items-center gap-1.5 px-1 py-0.5"
+                    className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-accent transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                   >
                     {hasMoreReasons ? (
                       <>
@@ -206,20 +216,20 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
         )}
 
         <div className="relative group">
-          <StickyNote className="absolute left-4 top-4 w-4 h-4 text-slate-300 group-focus-within:text-accent transition-colors" />
+          <StickyNote className="absolute left-4 top-4 h-4 w-4 text-text-secondary transition-colors group-focus-within:text-primary motion-reduce:transition-none" />
           <textarea
             placeholder="Resolution notes (optional)..."
             value={resolutionNotes}
             onChange={(e) => setResolutionNotes(e.target.value)}
-            className="w-full bg-bg-secondary border-transparent border-2 rounded-xl text-[11px] font-medium pl-12 pr-4 py-4 min-h-[90px] focus:ring-4 focus:ring-accent/5 focus:bg-surface-white focus:border-primary/30 transition-all outline-none resize-none"
+            className="min-h-[90px] w-full resize-none rounded-xl border-2 border-transparent bg-bg-secondary py-4 pl-12 pr-4 text-[11px] font-medium outline-none transition-[border-color,background-color,box-shadow] focus:border-primary/30 focus:bg-surface-white focus:ring-2 focus:ring-primary/15 motion-reduce:transition-none"
           />
         </div>
 
         <div className="space-y-3 pt-2">
           {!isFinishReview && (
-            <div className="flex items-center gap-2 px-4 py-3 bg-amber-50/50 rounded-xl border border-amber-100/50 animate-in fade-in slide-in-from-bottom-2 duration-500">
-              <div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
-              <p className="text-[9px] font-bold text-amber-600 uppercase tracking-wider leading-none">
+            <div className="flex items-center gap-2 rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none" role="status">
+              <div className="h-1.5 w-1.5 rounded-full bg-warning" />
+              <p className="text-[9px] font-bold uppercase tracking-wider leading-none text-warning">
                 Decision locked until all reviewers finish their task assignment
               </p>
             </div>
@@ -231,14 +241,14 @@ const ResolutionFormPanel: React.FC<ResolutionFormPanelProps> = ({
               (resolution === "Exclude" && !exclusionReason) ||
               !isFinishReview
             }
-            className="w-full py-4 bg-primary text-white font-black text-[11px] uppercase tracking-[0.25em] rounded-xl hover:bg-primary-hover transition-all shadow-none shadow-primary/10 disabled:opacity-50 disabled:shadow-none active:scale-[0.98]"
+            className="min-h-11 w-full rounded-xl bg-primary py-4 text-[11px] font-black uppercase tracking-[0.25em] text-white shadow-sm shadow-primary/10 transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:opacity-50 disabled:shadow-none active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none"
           >
             {isFinishReview ? "Resolve Conflict" : "Review in Progress"}
           </Button>
 
           <button
             onClick={onAssignThirdReviewer}
-            className="w-full py-3.5 rounded-xl border-2 border-dashed border-border hover:border-primary/30 hover:bg-primary-light/30 transition-all group flex items-center justify-center gap-2"
+            className="group flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3.5 transition-colors hover:border-primary/30 hover:bg-primary-light/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary group-hover:text-accent transition-colors">
               Assign more Reviewers

@@ -7,9 +7,9 @@ interface PhaseStatisticsProps {
 
 const VARIANT_CLASSES: Record<string, string> = {
   default: "text-text-primary",
-  success: "text-green-700",
-  warning: "text-amber-700",
-  danger: "text-red-700",
+  success: "text-success",
+  warning: "text-warning",
+  danger: "text-error",
 };
 
 export default function PhaseStatistics({

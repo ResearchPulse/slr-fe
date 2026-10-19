@@ -89,7 +89,7 @@ export default function PaperComparisonCard({
 
   const cardBorderClass =
     outcome === "kept"
-      ? "border-green-300 bg-surface-white/50"
+      ? "border-success/30 bg-success/5"
       : outcome === "removed"
         ? "border-border bg-surface-white/30 opacity-60"
         : isResolved
@@ -98,15 +98,15 @@ export default function PaperComparisonCard({
 
   return (
     <div
-      className={`relative border rounded-xl p-4 transition-all ${cardBorderClass}`}
+      className={`relative border rounded-xl p-4 transition-colors motion-reduce:transition-none ${cardBorderClass}`}
     >
       {/* Resolution outcome badge */}
       {outcome && (
         <div
           className={`absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold shadow-none ${
             outcome === "kept"
-              ? "bg-green-100 text-green-700 border border-green-300"
-              : "bg-red-100 text-red-700 border border-red-300"
+              ? "bg-success/10 text-success border border-success/20"
+              : "bg-error/10 text-error border border-error/20"
           }`}
         >
           {outcome === "kept" ? (
@@ -152,7 +152,7 @@ export default function PaperComparisonCard({
             <p
               className={`text-sm mt-1 ${
                 displayDiff && yearDiffers
-                  ? "text-amber-700 font-medium"
+                  ? "text-warning font-medium"
                   : "text-text-primary"
               }`}
             >
@@ -167,7 +167,7 @@ export default function PaperComparisonCard({
             <p
               className={`text-sm mt-1 ${
                 displayDiff && sourceDiffers
-                  ? "text-amber-700 font-medium"
+                  ? "text-warning font-medium"
                   : "text-text-primary"
               }`}
             >
@@ -184,7 +184,7 @@ export default function PaperComparisonCard({
               <p
                 className={`text-sm font-mono flex-1 truncate ${
                   displayDiff && doiDiffers
-                    ? "text-amber-700"
+                    ? "text-warning"
                     : "text-text-primary"
                 }`}
               >
@@ -192,11 +192,12 @@ export default function PaperComparisonCard({
               </p>
               <button
                 onClick={handleCopyDoi}
-                className="p-1 rounded text-text-secondary hover:text-text-secondary hover:bg-bg-secondary transition-colors"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-secondary"
                 title="Copy DOI"
+                aria-label="Copy DOI"
               >
                 {copiedDoi ? (
-                  <FiCheck className="w-3.5 h-3.5 text-green-600" />
+                  <FiCheck className="w-3.5 h-3.5 text-success" />
                 ) : (
                   <FiCopy className="w-3.5 h-3.5" />
                 )}
@@ -274,7 +275,7 @@ function FieldLabel({
       <label className="text-xs font-medium text-text-secondary">{label}</label>
       {isDifferent && (
         <span
-          className="w-1.5 h-1.5 rounded-full bg-amber-400"
+          className="w-1.5 h-1.5 rounded-full bg-warning"
           title="Differs from other paper"
         />
       )}
@@ -332,7 +333,7 @@ function DiffText({
             return (
               <span
                 key={i}
-                className="bg-green-100 text-green-700 rounded px-0.5 font-medium"
+                className="bg-success/10 text-success rounded px-0.5 font-medium"
               >
                 {seg.text}{" "}
               </span>
@@ -342,7 +343,7 @@ function DiffText({
             return (
               <span
                 key={i}
-                className="bg-red-100 text-red-700 rounded px-0.5 line-through"
+                className="bg-error/10 text-error rounded px-0.5 line-through"
               >
                 {seg.text}{" "}
               </span>

@@ -24,14 +24,14 @@ const toneClasses: Record<
   { ring: string; border: string; button: string }
 > = {
   blue: {
-    ring: "focus:ring-accent",
-    border: "focus:border-accent",
+    ring: "focus-visible:ring-primary/20",
+    border: "focus-visible:border-primary",
     button: "bg-primary hover:bg-primary-hover",
   },
   emerald: {
-    ring: "focus:ring-emerald-500",
-    border: "focus:border-emerald-500",
-    button: "bg-emerald-600 hover:bg-emerald-700",
+    ring: "focus-visible:ring-success/20",
+    border: "focus-visible:border-success",
+    button: "bg-success hover:bg-success/90",
   },
 };
 
@@ -58,6 +58,7 @@ export default function IdentificationFilterBar({
         <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
         <input
           type="text"
+          aria-label="Search papers by title, author, or DOI"
           placeholder={searchPlaceholder}
           value={searchInput}
           onChange={(e) => onSearchInputChange(e.target.value)}
@@ -66,13 +67,14 @@ export default function IdentificationFilterBar({
               onSearch(searchInput);
             }
           }}
-          className={`w-full pl-10 pr-4 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+          className={`min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-10 pr-4 text-sm text-text-primary outline-none focus-visible:ring-2 motion-reduce:transition-none ${styles.ring} ${styles.border}`}
         />
       </div>
 
       <button
+        type="button"
         onClick={() => onSearch(searchInput)}
-        className={`px-3 py-2 text-sm text-white rounded-xl transition-colors ${styles.button}`}
+        className={`inline-flex min-h-11 items-center justify-center rounded-xl px-3 py-2 text-sm text-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 motion-reduce:transition-none ${styles.ring} ${styles.button}`}
       >
         Search
       </button>
@@ -95,7 +97,7 @@ export default function IdentificationFilterBar({
               : undefined,
           );
         }}
-        className={`w-24 px-3 py-2 border border-border rounded-xl text-sm focus:ring-2 ${styles.ring} ${styles.border}`}
+        className={`min-h-11 w-24 rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none focus-visible:ring-2 motion-reduce:transition-none ${styles.ring} ${styles.border}`}
       />
 
       <Select
@@ -112,8 +114,9 @@ export default function IdentificationFilterBar({
 
       {hasFilters && (
         <button
+          type="button"
           onClick={onClearFilters}
-          className="px-3 py-2 text-sm text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl px-3 py-2 text-sm text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           Clear filters
         </button>

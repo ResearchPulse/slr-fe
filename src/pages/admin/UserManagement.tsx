@@ -47,9 +47,9 @@ const RoleBadge: React.FC<{ role: string }> = ({ role }) => {
     role.charAt(0).toUpperCase() + role.slice(1).toLowerCase();
 
   const styles: Record<string, string> = {
-    Admin: "bg-sky-50 text-sky-700 ring-sky-200",
-    Teacher: "bg-slate-50 text-slate-700 ring-slate-200",
-    Student: "bg-indigo-50 text-indigo-700 ring-indigo-200",
+    Admin: "bg-primary-light text-primary ring-primary/20",
+    Teacher: "bg-bg-secondary text-text-secondary ring-border",
+    Student: "bg-info/10 text-info ring-info/20",
   };
 
   const icons: Record<string, React.ReactNode> = {
@@ -60,7 +60,7 @@ const RoleBadge: React.FC<{ role: string }> = ({ role }) => {
 
   const style =
     styles[displayRole] ||
-    "bg-slate-50 text-slate-700 border-slate-100 ring-slate-500/10";
+    "bg-bg-secondary text-text-secondary ring-border";
   const icon = icons[displayRole] || <FiUser size={10} />;
 
   return (
@@ -82,16 +82,16 @@ const StatusBadge: React.FC<{ isActive: boolean }> = ({ isActive }) => {
       className={cn(
         "inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset",
         isActive
-          ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-          : "bg-slate-50 text-slate-600 ring-slate-200",
+          ? "bg-success/10 text-success ring-success/20"
+          : "bg-bg-secondary text-text-muted ring-border",
       )}
     >
       <span
         className={cn(
           "h-1.5 w-1.5 rounded-full",
           isActive
-            ? "bg-emerald-500"
-            : "bg-slate-400",
+            ? "bg-success"
+            : "bg-text-muted",
         )}
       />
       {isActive ? "Active" : "Deactivated"}
@@ -186,6 +186,7 @@ const UserManagement: React.FC = () => {
     isLoading,
     isError,
     error,
+    refetch,
   } = useUsers(params);
 
   // Derived values
@@ -214,8 +215,9 @@ const UserManagement: React.FC = () => {
             <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
             <input
               type="text"
+              aria-label="Search users by identity or email"
               placeholder="Search by identity or email..."
-              className="h-11 w-full rounded-xl border border-border bg-white py-2.5 pl-10 pr-4 text-[13px] text-text-secondary outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/[0.08]"
+              className="h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-10 pr-4 text-[13px] text-text-secondary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -264,13 +266,6 @@ const UserManagement: React.FC = () => {
         </div>
       </div>
 
-      {isError && (
-        <ErrorBanner
-          message={error}
-          fallback="An error occurred while fetching users."
-        />
-      )}
-
       {/* 📦 Master Table Container (Desktop) 📦 */}
       <div className="hidden overflow-hidden rounded-xl border border-border bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)] lg:block">
         <div className="overflow-x-auto">
@@ -299,17 +294,23 @@ const UserManagement: React.FC = () => {
                 Array(pageSize)
                   .fill(0)
                   .map((_, i) => (
-                    <TableRow key={i} className="animate-pulse">
+                    <TableRow key={i} className="motion-safe:animate-pulse motion-reduce:animate-none">
                       <TableCell colSpan={5} className="px-5 py-4">
                         <div className="h-12 w-full rounded-lg bg-bg-primary" />
                       </TableCell>
                     </TableRow>
                   ))
+              ) : isError ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="px-6 py-5">
+                    <ErrorBanner message={error} fallback="User list unavailable." onRetry={() => void refetch()} />
+                  </TableCell>
+                </TableRow>
               ) : users.length > 0 ? (
                 users.map((user: User) => (
                   <TableRow
                      key={user.id}
-                     className="group transition-colors hover:bg-bg-primary"
+                     className="group transition-colors hover:bg-bg-primary motion-reduce:transition-none"
                   >
                     {/* User Profile Cell */}
                     <TableCell className="px-5 py-4">
@@ -319,11 +320,11 @@ const UserManagement: React.FC = () => {
                             {user.fullName.charAt(0)}
                           </div>
                           {user.isActive && (
-                            <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500" />
+                            <div className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full border-2 border-white bg-success" />
                           )}
                         </div>
                         <div className="min-w-0 space-y-1">
-                          <div className="truncate text-[13px] font-semibold tracking-tight text-text-secondary transition-colors group-hover:text-accent">
+                          <div className="truncate text-[13px] font-semibold tracking-tight text-text-secondary transition-colors group-hover:text-accent motion-reduce:transition-none">
                             {user.fullName}
                           </div>
                           <div className="flex min-w-0 items-center gap-1.5 text-[11px] text-text-muted">
@@ -374,7 +375,7 @@ const UserManagement: React.FC = () => {
                             icon={FiXCircle}
                             label="Deactivate Access"
                             variant="destructive"
-                            className="hover:bg-rose-50"
+                            className="hover:bg-error/5"
                             onClick={() => handleStatusToggleClick(user)}
                           />
                         ) : (
@@ -393,7 +394,7 @@ const UserManagement: React.FC = () => {
                 <TableRow>
                   <TableCell
                     colSpan={5}
-                    className="px-6 py-10 text-center text-slate-400 font-medium"
+                    className="px-6 py-10 text-center font-medium text-text-muted"
                   >
                     No users found matching your search.
                   </TableCell>
@@ -411,7 +412,7 @@ const UserManagement: React.FC = () => {
                 Total Registry
               </p>
               <p className="text-[11px] font-medium text-text-secondary">
-                Showing {itemsStart}–{itemsEnd} of {totalCount} Accounts
+                {isError ? "Account totals unavailable" : `Showing ${itemsStart}–${itemsEnd} of ${totalCount} Accounts`}
               </p>
             </div>
 
@@ -422,7 +423,7 @@ const UserManagement: React.FC = () => {
                 Per page:
               </span>
               <Select
-                className="w-[76px] [&>button]:h-9 [&>button]:rounded-lg [&>button]:px-2.5 [&>button]:text-[11px]"
+                className="w-[76px] [&>button]:h-11 [&>button]:rounded-lg [&>button]:px-2.5 [&>button]:text-[11px]"
                 value={pageSize}
                 onChange={(e) => {
                   setPageSize(Number(e.target.value));
@@ -441,7 +442,7 @@ const UserManagement: React.FC = () => {
             <button
               type="button"
               aria-label="Previous page"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-40"
               disabled={pageNumber === 1 || isLoading}
               onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
             >
@@ -460,7 +461,7 @@ const UserManagement: React.FC = () => {
                     type="button"
                     onClick={() => setPageNumber(pageToShow)}
                     className={cn(
-                      "h-9 min-w-9 rounded-xl border px-2 text-[11px] font-semibold transition-colors",
+                      "h-11 min-w-11 rounded-xl border px-2 text-[11px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none",
                       pageNumber === pageToShow
                         ? "border-accent bg-primary text-white"
                         : "border-border bg-white text-text-secondary hover:bg-primary-light",
@@ -475,7 +476,7 @@ const UserManagement: React.FC = () => {
             <button
               type="button"
               aria-label="Next page"
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition hover:text-accent disabled:pointer-events-none disabled:opacity-40"
+              className="flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-white text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-40"
               disabled={
                 pageNumber === totalPages || totalPages === 0 || isLoading
               }
@@ -495,11 +496,13 @@ const UserManagement: React.FC = () => {
             .map((_, i) => (
               <div
                 key={i}
-                className="animate-pulse rounded-xl border border-border bg-white p-4"
+                className="motion-safe:animate-pulse motion-reduce:animate-none rounded-xl border border-border bg-white p-4"
               >
                 <div className="h-20 w-full rounded-lg bg-bg-primary" />
               </div>
             ))
+        ) : isError ? (
+          <ErrorBanner message={error} fallback="User list unavailable." onRetry={() => void refetch()} />
         ) : users.length > 0 ? (
           users.map((user: User) => (
             <div
@@ -540,7 +543,7 @@ const UserManagement: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => handleEditClick(user)}
-                    className="inline-flex h-9 items-center gap-2 rounded-xl border border-border bg-white px-3 text-[11px] font-semibold text-accent transition hover:bg-primary-light"
+                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-border bg-white px-3 text-[11px] font-semibold text-accent transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
                   >
                     <FiEdit3 size={16} />
                     Edit
@@ -549,7 +552,7 @@ const UserManagement: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleStatusToggleClick(user)}
-                      className="inline-flex h-9 items-center gap-2 rounded-xl border border-rose-100 bg-white px-3 text-[11px] font-semibold text-rose-600 transition hover:bg-rose-50"
+                      className="inline-flex h-11 items-center gap-2 rounded-xl border border-error/20 bg-white px-3 text-[11px] font-semibold text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40 motion-reduce:transition-none"
                     >
                       <FiXCircle size={16} />
                       Deactivate
@@ -558,7 +561,7 @@ const UserManagement: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => handleStatusToggleClick(user)}
-                      className="inline-flex h-9 items-center gap-2 rounded-xl border border-emerald-100 bg-white px-3 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-50"
+                      className="inline-flex h-11 items-center gap-2 rounded-xl border border-success/20 bg-white px-3 text-[11px] font-semibold text-success transition-colors hover:bg-success/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-success/40 motion-reduce:transition-none"
                     >
                       <FiCheckCircle size={16} />
                       Activate
@@ -579,19 +582,19 @@ const UserManagement: React.FC = () => {
           <button
             type="button"
             aria-label="Previous page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white text-text-secondary disabled:opacity-40"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-white text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none disabled:opacity-40"
             disabled={pageNumber === 1 || isLoading}
             onClick={() => setPageNumber((p) => Math.max(1, p - 1))}
           >
             <FiChevronLeft size={20} />
           </button>
           <span className="text-[11px] font-medium text-text-secondary">
-            Page {pageNumber} of {totalPages || 1}
+            {isError ? "Page unavailable" : `Page ${pageNumber} of ${totalPages || 1}`}
           </span>
           <button
             type="button"
             aria-label="Next page"
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-white text-text-secondary disabled:opacity-40"
+            className="flex h-11 w-11 items-center justify-center rounded-lg border border-border bg-white text-text-secondary transition-colors hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none disabled:opacity-40"
             disabled={
               pageNumber === totalPages || totalPages === 0 || isLoading
             }

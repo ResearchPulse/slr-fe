@@ -5,7 +5,10 @@ import { useFullTextScreening } from "./hooks/useFullTextScreening";
 import FullTextReader from "./components/FullTextReader";
 import FullTextRightPanel from "./components/FullTextRightPanel";
 import DecisionBar from "./components/DecisionBar";
+import Button from "../../../../components/ui/Button";
 import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
+import Modal from "../../../../components/ui/Modal";
+import QueryErrorState from "../../../../components/ui/QueryErrorState";
 import { useStudySelectionDetails } from "../../../../hooks/useStudySelection";
 import { useProject } from "../../../../hooks/useProjects";
 import { PaperPhase, SelectionProcessStatus } from "../../../../types/studySelection";
@@ -84,9 +87,23 @@ export default function FullTextScreeningWorkspace() {
       navigate(`/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}`);
     }
   };
+  const paperPositionLabel =
+    currentIndex >= 0 && ws.pagination.totalCount > 0
+      ? `Paper ${(ws.filters.pageNumber - 1) * ws.pagination.pageSize + currentIndex + 1} of ${ws.pagination.totalCount}`
+      : ws.selectedPaper?.title || (ws.papers.length === 0 ? "No papers" : "Paper details");
 
   if (ws.isLoading) return <div className="flex min-h-screen items-center justify-center"><LoadingSpinner /></div>;
-  if (ws.error) return <div className="flex min-h-screen flex-col items-center justify-center gap-4"><p className="text-sm text-red-600">{ws.error}</p><button onClick={ws.handleBack} className="text-sm text-accent hover:underline">Back to Review Process</button></div>;
+  if (ws.error) return (
+    <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+      <QueryErrorState
+        title="Full-text screening unavailable"
+        message={ws.error}
+        onRetry={() => void ws.refetch()}
+        onBack={ws.handleBack}
+        backLabel="Back to review process"
+      />
+    </div>
+  );
 
   if (!paperId) {
     return <StudySelectionPaperList
@@ -118,16 +135,16 @@ export default function FullTextScreeningWorkspace() {
 
   return <div className="flex h-full min-h-0 flex-col overflow-hidden bg-bg-primary">
     <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b border-border bg-surface-white px-3 sm:px-5">
-      <button onClick={backToList} className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary"><FiArrowLeft /><span className="hidden sm:inline">Back to papers</span></button>
-      <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">Full-Text Screening</div><div className="truncate text-xs font-semibold sm:text-sm">Paper {currentIndex >= 0 ? (ws.filters.pageNumber - 1) * ws.pagination.pageSize + currentIndex + 1 : "—"} of {ws.pagination.totalCount || "—"}</div></div>
+      <button type="button" aria-label="Back to papers" onClick={backToList} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:justify-start"><FiArrowLeft /><span className="hidden sm:inline">Back to papers</span></button>
+      <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">Full-Text Screening</div><div className="truncate text-xs font-semibold sm:text-sm">{paperPositionLabel}</div></div>
       <div className="flex shrink-0 items-center gap-1">
-        <button onClick={() => void navigateAdjacent(-1)} disabled={currentIndex >= 0 ? currentIndex === 0 && !ws.pagination.hasPreviousPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.previous} aria-label="Previous paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronLeft /></button>
-        <button onClick={() => void navigateAdjacent(1)} disabled={currentIndex >= 0 ? currentIndex === ws.papers.length - 1 && !ws.pagination.hasNextPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next} aria-label="Next paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronRight /></button>
-        <button onClick={toggleContextPanel} className="ml-1 inline-flex items-center gap-2 rounded-lg border border-border px-2.5 py-2 text-xs text-text-secondary hover:bg-bg-secondary"><FiList /><span className="hidden lg:inline">Review context</span></button>
+        <button type="button" onClick={() => void navigateAdjacent(-1)} disabled={currentIndex >= 0 ? currentIndex === 0 && !ws.pagination.hasPreviousPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.previous} aria-label="Previous paper" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-40"><FiChevronLeft /></button>
+        <button type="button" onClick={() => void navigateAdjacent(1)} disabled={currentIndex >= 0 ? currentIndex === ws.papers.length - 1 && !ws.pagination.hasNextPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next} aria-label="Next paper" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-40"><FiChevronRight /></button>
+        <button type="button" onClick={toggleContextPanel} aria-label="Toggle review context" className="ml-1 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg border border-border px-2.5 text-xs text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:w-auto"><FiList /><span className="hidden lg:inline">Review context</span></button>
       </div>
     </header>
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
-      {!ws.selectedPaper && ws.papers.length === 0 ? <div className="flex min-h-0 flex-1 flex-col items-center justify-center bg-surface-white p-8 text-center"><FiFileText className="mb-4 h-9 w-9 text-text-secondary/50"/><h2 className="text-lg font-semibold">No papers available</h2><p className="mt-2 max-w-md text-sm text-text-secondary">Included papers from Title &amp; Abstract screening will appear here.</p><button onClick={navigateToTitleAbstract} className="mt-5 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white">Go to Title &amp; Abstract Screening</button></div> : <div className="flex min-h-0 flex-1">
+      {!ws.selectedPaper && ws.papers.length === 0 ? <div className="flex min-h-0 flex-1 flex-col items-center justify-center bg-surface-white p-8 text-center"><FiFileText className="mb-4 h-9 w-9 text-text-secondary/50"/><h2 className="text-lg font-semibold">No papers available</h2><p className="mt-2 max-w-md text-sm text-text-secondary">Included papers from Title &amp; Abstract screening will appear here.</p><Button onClick={navigateToTitleAbstract} className="mt-5">Go to Title &amp; Abstract Screening</Button></div> : <div className="flex min-h-0 flex-1">
         <main className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
           <FullTextReader
             paper={ws.selectedPaper}
@@ -142,7 +159,32 @@ export default function FullTextScreeningWorkspace() {
         </main>
         {contextOpen && <aside className="hidden w-[340px] shrink-0 border-l border-border xl:block"><FullTextRightPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} runAiAnalysis={ws.runAiAnalysis} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} onResolveConflict={ws.resolveConflict} isResolving={ws.isResolving} isDisabled={isCompleted} showDecisionBar={false} /></aside>}
       </div>}
-      {paperId && mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={() => persistContextPanel(false)}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><div className="flex h-full flex-col"><button onClick={() => persistContextPanel(false)} className="self-end px-4 py-3 text-sm text-accent">Close review context</button><FullTextRightPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} runAiAnalysis={ws.runAiAnalysis} onInclude={ws.includePaper} onExclude={ws.excludePaper} isSubmitting={ws.isSubmitting} onResolveConflict={ws.resolveConflict} isResolving={ws.isResolving} isDisabled={isCompleted} /></div></aside></div>}
+      {paperId && mobileContextOpen && (
+        <Modal
+          isOpen={mobileContextOpen}
+          onClose={() => persistContextPanel(false)}
+          title="Review context"
+          description="Screening criteria, AI analysis, and decision context for this paper."
+          mode="drawer"
+          size="sm"
+          className="!w-[min(92vw,380px)] !max-w-[min(92vw,380px)]"
+          bodyClassName="min-h-0 flex-1 overflow-hidden p-0"
+        >
+          <FullTextRightPanel
+            paper={ws.selectedPaper}
+            aiAnalysis={ws.aiAnalysis}
+            isAnalyzing={ws.isAnalyzing}
+            runAiAnalysis={ws.runAiAnalysis}
+            onInclude={ws.includePaper}
+            onExclude={ws.excludePaper}
+            isSubmitting={ws.isSubmitting}
+            onResolveConflict={ws.resolveConflict}
+            isResolving={ws.isResolving}
+            isDisabled={isCompleted}
+            showDecisionBar={false}
+          />
+        </Modal>
+      )}
     </div>
   </div>;
 }

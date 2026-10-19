@@ -68,7 +68,7 @@ export default function PhaseActions({
         <button
           onClick={onStart}
           disabled={startLoading || disabled}
-          className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors hover:bg-primary-hover hover:border-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors motion-reduce:transition-none hover:bg-primary-hover hover:border-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <FiPlay className="w-3.5 h-3.5" />
           {startLoading ? "Starting..." : "Start module"}
@@ -81,7 +81,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors hover:border-primary-hover hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-primary bg-primary px-3 py-1.5 text-xs font-semibold text-text-on-primary transition-colors motion-reduce:transition-none hover:border-primary-hover hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiExternalLink className="w-3.5 h-3.5" />
               Open Workspace
@@ -91,7 +91,7 @@ export default function PhaseActions({
             <button
               onClick={handleCompleteClick}
               disabled={completeLoading || disabled}
-              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-success/30 hover:bg-success/5 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:border-success/30 hover:bg-success/5 hover:text-success focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiCheckCircle className="w-3.5 h-3.5" />
               {completeLoading ? "Completing..." : "Mark complete"}
@@ -106,7 +106,7 @@ export default function PhaseActions({
             <button
               onClick={onOpen}
               disabled={disabled}
-              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-semibold text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiEye className="w-3.5 h-3.5" />
               View Results
@@ -117,7 +117,7 @@ export default function PhaseActions({
             <button
               onClick={handleReopenClick}
               disabled={reopenLoading || disabled}
-              className="inline-flex min-h-9 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:border-warning/30 hover:bg-warning/5 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:border-warning/30 hover:bg-warning/5 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <FiRotateCcw className="w-3.5 h-3.5" />
               {reopenLoading ? "Reopening..." : "Reopen module"}

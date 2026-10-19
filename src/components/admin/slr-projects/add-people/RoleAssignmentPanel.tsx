@@ -21,36 +21,43 @@ export default function RoleAssignmentPanel({
 }: RoleAssignmentPanelProps) {
   if (!selectedUser) {
     return (
-      <div className="h-full flex items-center justify-center border border-dashed border-slate-100 rounded-xl p-10 text-center">
-        <p className="text-xs font-bold text-slate-400">Select a person to assign a project role.</p>
+      <div className="flex h-full items-center justify-center rounded-xl border border-dashed border-border p-10 text-center">
+        <p className="text-xs font-bold text-text-secondary">Select a person to assign a project role.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-surface-white border border-slate-100 rounded-xl p-5 space-y-5">
+    <div className="space-y-5 rounded-xl border border-border bg-surface-white p-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-10 h-10 rounded-xl bg-accent text-white flex items-center justify-center text-xs font-black shrink-0">
             {getInitials(selectedUser.fullName)}
           </div>
           <div className="min-w-0">
-            <h6 className="text-xs font-black text-slate-800 truncate">{selectedUser.fullName}</h6>
-            <p className="text-[10px] text-slate-400 truncate">{selectedUser.email}</p>
+            <h6 className="truncate text-xs font-black text-text-primary">{selectedUser.fullName}</h6>
+            <p className="truncate text-[10px] text-text-secondary">{selectedUser.email}</p>
           </div>
         </div>
         <Tooltip content="Remove from invitation list" position="left">
-          <button onClick={() => onRemoveFromWaitlist(selectedUser.id)} className="p-2 text-slate-400 hover:text-red-500">×</button>
+          <button
+            type="button"
+            aria-label={`Remove ${selectedUser.fullName} from invitation list`}
+            onClick={() => onRemoveFromWaitlist(selectedUser.id)}
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          >
+            ×
+          </button>
         </Tooltip>
       </div>
 
       <div className="space-y-2">
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Project role</p>
-        <div className="w-full flex items-center gap-3 p-3 rounded-xl border bg-indigo-50 border-indigo-200">
-          <FiShield size={16} className="text-indigo-600" />
+        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">Project role</p>
+        <div className="flex w-full items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-3">
+          <FiShield size={16} className="text-primary" />
           <span>
-            <span className="block text-xs font-bold text-slate-700">Reviewer</span>
-            <span className="block text-[10px] text-slate-400">Reviews papers and submits decisions.</span>
+            <span className="block text-xs font-bold text-text-primary">Reviewer</span>
+            <span className="block text-[10px] text-text-secondary">Reviews papers and submits decisions.</span>
           </span>
         </div>
       </div>

@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
     previousGroup = item.group || previousGroup;
 
     const commonClasses = cn(
-      "group relative flex min-h-10 w-full items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
+      "group relative flex min-h-11 w-full items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
       isCollapsed && "justify-center px-2",
       isActive
         ? "bg-primary-light text-accent"
@@ -43,7 +43,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
     const content = (
       <>
         <item.icon className={cn("h-[18px] w-[18px] shrink-0", isActive ? "text-accent" : "text-text-muted group-hover:text-primary-hover")} />
-        <span className={cn("truncate text-[13px] font-semibold transition-all duration-200", isCollapsed ? "invisible w-0 opacity-0" : "visible w-auto opacity-100")}>
+        <span className={cn("truncate text-[13px] font-semibold transition-[opacity,width] duration-200 motion-reduce:transition-none", isCollapsed ? "invisible w-0 opacity-0" : "visible w-auto opacity-100")}>
           {item.label}
         </span>
       </>
@@ -72,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
   return (
     <aside className={cn("relative z-30 flex shrink-0 flex-col border-r border-border bg-bg-secondary transition-[width] duration-200 ease-out motion-reduce:transition-none", isCollapsed ? "w-[76px]" : "w-[252px]", className)}>
       <div className={cn("flex h-[72px] shrink-0 items-center border-b border-border", isCollapsed ? "justify-center px-2" : "px-6")}>
-        <Link to="/admin" className="min-w-0" aria-label="SLRS Admin overview">
+        <Link to="/admin" className="flex min-h-11 min-w-0 flex-col justify-center" aria-label="SLRS Admin overview">
           <span className="block text-[21px] font-extrabold leading-none tracking-[0.05em] text-text-primary">SLR<span className="text-accent">S</span></span>
           {!isCollapsed && <span className="mt-1.5 block whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.1em] text-text-muted">Systematic Literature Review System</span>}
         </Link>
@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
         aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3 top-[60px] z-40 flex h-7 w-7 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+        className="absolute -right-3 top-[60px] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
       >
         {isCollapsed ? <FiChevronRight size={13} /> : <FiChevronLeft size={13} />}
       </button>

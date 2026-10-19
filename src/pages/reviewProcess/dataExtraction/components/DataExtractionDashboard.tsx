@@ -693,8 +693,9 @@ export default function DataExtractionDashboard({
         <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex min-w-0 items-center gap-3">
             <button
+              type="button"
               onClick={ws.handleBack}
-              className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/25"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               title="Back to Process Workspace"
               aria-label="Back to Process Workspace"
             >
@@ -762,7 +763,7 @@ export default function DataExtractionDashboard({
                 }
                 isLoading={ws.isCompleting}
                 size="sm"
-                className="normal-case tracking-normal"
+                className="min-h-11 normal-case tracking-normal"
               >
                 Mark module complete
               </Button>
@@ -795,7 +796,7 @@ export default function DataExtractionDashboard({
                 onClick={handleOpenCreateTemplate}
                 disabled={isProcessCompleted}
                 size="sm"
-                className="normal-case tracking-normal"
+                className="min-h-11 normal-case tracking-normal"
               >
                 {templateActionLabel}
                 <ChevronRight className="ml-1 h-4 w-4" />
@@ -866,7 +867,7 @@ export default function DataExtractionDashboard({
                   aria-valuenow={Math.round(completedPercent)}
                 >
                   <div
-                    className={`h-full rounded-full transition-[width] duration-500 ease-out ${
+                    className={`h-full rounded-full transition-[width] duration-200 ease-out motion-reduce:transition-none ${
                       isExtractionComplete ? "bg-success" : "bg-primary"
                     }`}
                     style={{ width: `${completedPercent}%` }}
@@ -888,7 +889,7 @@ export default function DataExtractionDashboard({
               aria-selected={activeViewTab === "queue"}
               onClick={() => setActiveViewTab("queue")}
               disabled={isProcessCompleted}
-              className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors duration-150 ${
+              className={`inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 ${
                 activeViewTab === "queue"
                   ? "border-primary text-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"
@@ -901,7 +902,7 @@ export default function DataExtractionDashboard({
               role="tab"
               aria-selected={activeViewTab === "workload"}
               onClick={() => setActiveViewTab("workload")}
-              className={`border-b-2 px-1 pb-3 text-sm font-medium transition-colors duration-150 ${
+              className={`inline-flex min-h-11 items-center border-b-2 px-1 text-sm font-medium transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 ${
                 activeViewTab === "workload"
                   ? "border-primary text-primary"
                   : "border-transparent text-text-secondary hover:text-text-primary"
@@ -978,9 +979,10 @@ export default function DataExtractionDashboard({
                             !ws.projectId
                           }
                           className="w-full lg:w-auto"
+                          aria-busy={isExporting}
                         >
                           {isExporting ? (
-                            <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                            <RefreshCw aria-hidden="true" className="mr-2 h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
                           ) : (
                             <Download className="mr-2 h-4 w-4" />
                           )}
@@ -1005,7 +1007,7 @@ export default function DataExtractionDashboard({
                                   disabled={isExporting}
                                   className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
                                 >
-                                  <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                                  <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-success" />
                                   <span className="truncate">JSON (.json)</span>
                                 </button>
                                 <button
@@ -1066,7 +1068,111 @@ export default function DataExtractionDashboard({
                   </p>
                 </div>
 
-                <div className="overflow-x-auto">
+                <div className="space-y-3 p-3 lg:hidden">
+                  {tasks.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-border bg-bg-primary/60 px-5 py-8 text-center">
+                      <h3 className="text-base font-semibold text-text-primary">
+                        No studies match the current filters
+                      </h3>
+                      <p className="mt-2 text-sm text-text-secondary">
+                        Try a different search or status filter.
+                      </p>
+                    </div>
+                  ) : tasks.map((task) => {
+                    const assignedReviewerIds = [task.reviewer1Id, task.reviewer2Id]
+                      .filter((id): id is string => Boolean(id));
+                    const hasSubmittedExtraction = !ws.isCurrentUserLeader
+                      && ws.hasCurrentUserSubmitted(task.paperId);
+                    const canExtractTask = ws.canCurrentUserExtractPaper(task.paperId);
+                    const openLabel = hasSubmittedExtraction
+                      ? "Review submission"
+                      : ws.isCurrentUserLeader && task.status !== "todo" && assignedReviewerIds.length === 2
+                        ? task.status === "awaiting-consensus" ? "Resolve consensus" : "Open consensus"
+                        : !ws.isCurrentUserLeader && canExtractTask
+                          ? "Continue extraction"
+                          : "View study";
+
+                    return (
+                      <article
+                        key={task.taskId || task.paperId}
+                        className="rounded-xl border border-border bg-surface-white p-4 transition-colors duration-150 hover:border-primary/30"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex min-w-0 items-start gap-3">
+                            {ws.isCurrentUserLeader ? (
+                              <Checkbox
+                                aria-label={`Select paper ${task.title}`}
+                                checked={selectedPaperIds.includes(task.paperId)}
+                                onChange={() => handleToggleSelectPaper(task.paperId)}
+                                disabled={isProcessCompleted || Boolean(task.reviewer1Id || task.reviewer2Id)}
+                              />
+                            ) : null}
+                            <div className="min-w-0">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenTask(task)}
+                                className="min-h-11 break-words rounded-md px-1 py-1 text-left text-sm font-semibold leading-5 text-text-primary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                              >
+                                {task.title}
+                              </button>
+                              <p className="mt-1 break-words text-xs leading-5 text-text-secondary">
+                                {task.authorPreview ?? task.authors ?? "Unknown authors"} · {task.publicationYear ?? "-"}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="mt-2">
+                          <ExtractionStatusBadge status={task.status} />
+                        </div>
+
+                        <div className="mt-4 border-t border-border pt-3">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-text-secondary">
+                            Reviewers
+                          </p>
+                          {assignedReviewerIds.length > 0 ? (
+                            <div className="mt-2 flex flex-wrap gap-2">
+                              {assignedReviewerIds.map((reviewerId) => (
+                                <span key={reviewerId} className="inline-flex max-w-full items-center gap-2 rounded-full border border-border bg-bg-primary px-2.5 py-1 text-xs text-text-primary">
+                                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-light text-[10px] font-bold text-accent">
+                                    {getInitials(reviewerLabelById[reviewerId] ?? "Reviewer")}
+                                  </span>
+                                  <span className="truncate">{reviewerLabelById[reviewerId] ?? "Reviewer"}</span>
+                                </span>
+                              ))}
+                            </div>
+                          ) : ws.isCurrentUserLeader ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="mt-2 min-h-11"
+                              onClick={() => setAssignModalTask(task)}
+                              disabled={isProcessCompleted}
+                            >
+                              <UserPlus className="mr-1.5 h-4 w-4" />
+                              Assign reviewers
+                            </Button>
+                          ) : (
+                            <p className="mt-1 text-sm text-text-secondary">Unassigned</p>
+                          )}
+                        </div>
+
+                        <div className="mt-4 flex justify-end border-t border-border pt-3">
+                          <Button
+                            size="sm"
+                            variant={task.status === "awaiting-consensus" ? "primary" : "outline"}
+                            onClick={() => handleOpenTask(task)}
+                            disabled={isProcessCompleted && !ws.isCurrentUserLeader}
+                            className="min-h-11"
+                          >
+                            {openLabel}
+                          </Button>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                <div className="hidden overflow-x-auto lg:block">
                   <Table className="min-w-[1060px] table-fixed">
                     <colgroup>
                       {ws.isCurrentUserLeader && <col style={{ width: 52 }} />}
@@ -1194,7 +1300,7 @@ export default function DataExtractionDashboard({
                                         onClick={() =>
                                           handleOpenWorkspace(task.paperId)
                                         }
-                                        className="text-left text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                                        className="min-h-11 rounded-md px-1 py-1 text-left text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                                         aria-label={`Review submitted extraction: ${task.title}`}
                                       >
                                         {task.title}
@@ -1256,7 +1362,7 @@ export default function DataExtractionDashboard({
                                               isCurrentUser
                                                 ? "bg-primary-light text-accent border-accent/30 font-semibold"
                                                 : isCompleted
-                                                ? "bg-surface-white text-green-700 border border-border"
+                                                ? "bg-success/10 text-success border border-success/20"
                                                 : "bg-bg-secondary text-text-secondary border border-border opacity-60"
                                             }`}
                                           >
@@ -1265,7 +1371,7 @@ export default function DataExtractionDashboard({
                                                 isCurrentUser
                                                   ? "bg-primary text-white"
                                                   : isCompleted
-                                                  ? "bg-green-100 text-green-700"
+                                                  ? "bg-success/10 text-success"
                                                   : "bg-primary-light text-accent"
                                               }`}
                                             >
@@ -1288,7 +1394,7 @@ export default function DataExtractionDashboard({
                                       type="button"
                                       onClick={() => setAssignModalTask(task)}
                                       disabled={isProcessCompleted}
-                                      className="inline-flex items-center gap-1.5 rounded-full border border-dashed border-border px-2.5 py-1 text-xs font-medium text-text-secondary hover:border-accent hover:text-accent transition-colors"
+                                      className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-dashed border-border px-3 text-xs font-medium text-text-secondary transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                                       title="Click to assign reviewers"
                                     >
                                       <UserPlus className="h-3 w-3" />
@@ -1311,7 +1417,7 @@ export default function DataExtractionDashboard({
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="!rounded-xl !px-2"
+                                    className="!min-h-11 !min-w-11 !rounded-xl !px-2"
                                     onClick={() =>
                                       ws.isCurrentUserLeader &&
                                       task.status !== "todo" &&
@@ -1346,7 +1452,7 @@ export default function DataExtractionDashboard({
                                           handleOpenWorkspace(task.paperId)
                                         }
                                         disabled={isProcessCompleted}
-                                        className="!rounded-xl"
+                                        className="!min-h-11 !rounded-xl"
                                       >
                                         Extract
                                       </Button>
@@ -1363,6 +1469,7 @@ export default function DataExtractionDashboard({
                                         size="sm"
                                         variant="outline"
                                         onClick={() => handleInitiateReopen(task)}
+                                        className="min-h-11"
                                         disabled={
                                           isProcessCompleted ||
                                           ws.isReopeningExtraction
@@ -1393,7 +1500,7 @@ export default function DataExtractionDashboard({
                                           )
                                         }
                                         disabled={isProcessCompleted}
-                                        className="!rounded-xl bg-amber-500 text-white shadow-sm hover:bg-amber-600"
+                                        className="!min-h-11 !rounded-xl bg-warning text-white hover:bg-warning/90 hover:shadow-sm"
                                       >
                                         Resolve
                                       </Button>
@@ -1404,6 +1511,7 @@ export default function DataExtractionDashboard({
                                             size="sm"
                                             variant="outline"
                                             onClick={() => handleInitiateReopen(task)}
+                                            className="min-h-11"
                                             disabled={
                                               isProcessCompleted ||
                                               ws.isReopeningExtraction
@@ -1425,6 +1533,7 @@ export default function DataExtractionDashboard({
                                           )
                                         }
                                         disabled={isProcessCompleted}
+                                        className="min-h-11"
                                       >
                                         Final
                                       </Button>
@@ -1435,6 +1544,7 @@ export default function DataExtractionDashboard({
                                             size="sm"
                                             variant="outline"
                                             onClick={() => handleInitiateReopen(task)}
+                                            className="min-h-11"
                                             disabled={
                                               isProcessCompleted ||
                                               ws.isReopeningExtraction
@@ -1475,6 +1585,7 @@ export default function DataExtractionDashboard({
                     <Button
                       variant="outline"
                       size="sm"
+                      className="min-h-11"
                       disabled={isProcessCompleted || safeCurrentPage === 1}
                       onClick={() =>
                         ws.setPageNumber(Math.max(safeCurrentPage - 1, 1))
@@ -1491,7 +1602,7 @@ export default function DataExtractionDashboard({
                           pageNumber === safeCurrentPage ? "primary" : "outline"
                         }
                         size="sm"
-                        className="min-w-10"
+                        className="min-h-11 min-w-11"
                         disabled={isProcessCompleted}
                         onClick={() => ws.setPageNumber(pageNumber)}
                       >
@@ -1502,6 +1613,7 @@ export default function DataExtractionDashboard({
                     <Button
                       variant="outline"
                       size="sm"
+                      className="min-h-11"
                       disabled={
                         isProcessCompleted || safeCurrentPage === totalPages
                       }
@@ -1551,7 +1663,7 @@ export default function DataExtractionDashboard({
         size="md"
       >
         <div className="space-y-4">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-warning">
             This action locks extraction submissions for this module.
           </div>
 
@@ -1604,11 +1716,11 @@ export default function DataExtractionDashboard({
           )}
 
           {/* Destructive Warning Box */}
-          <div className="flex items-start gap-2.5 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs leading-relaxed text-amber-900">
-            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <div className="flex items-start gap-2.5 rounded-xl border border-warning/20 bg-warning/10 p-3 text-xs leading-relaxed text-warning">
+            <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-warning" />
             <div>
               <span className="font-bold">Important Notice:</span> Reopening will unlock the selected extraction workspace and{" "}
-              <strong className="font-bold text-amber-950">
+              <strong className="font-bold text-warning">
                 permanently delete
               </strong>{" "}
               any previously saved consensus decisions for this study.
@@ -1618,15 +1730,16 @@ export default function DataExtractionDashboard({
           {/* Target Reviewer Selector */}
           <div>
             <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-text-secondary">
-              Select Extraction to Reopen <span className="text-rose-500">*</span>
+              Select Extraction to Reopen <span className="text-error">*</span>
             </label>
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
               <button
                 type="button"
+                aria-pressed={reopenTarget === TargetReviewer.Reviewer1}
                 onClick={() => setReopenTarget(TargetReviewer.Reviewer1)}
                 disabled={ws.isReopeningExtraction}
                 className={cn(
-                  "flex flex-col items-start rounded-xl border p-3 text-left transition-all",
+                  "flex min-h-11 flex-col items-start rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
                   reopenTarget === TargetReviewer.Reviewer1
                     ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
                     : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
@@ -1654,10 +1767,11 @@ export default function DataExtractionDashboard({
 
               <button
                 type="button"
+                aria-pressed={reopenTarget === TargetReviewer.Reviewer2}
                 onClick={() => setReopenTarget(TargetReviewer.Reviewer2)}
                 disabled={ws.isReopeningExtraction}
                 className={cn(
-                  "flex flex-col items-start rounded-xl border p-3 text-left transition-all",
+                  "flex min-h-11 flex-col items-start rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
                   reopenTarget === TargetReviewer.Reviewer2
                     ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
                     : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
@@ -1687,10 +1801,11 @@ export default function DataExtractionDashboard({
             {/* Both Reviewers Option */}
             <button
               type="button"
+              aria-pressed={reopenTarget === TargetReviewer.Both}
               onClick={() => setReopenTarget(TargetReviewer.Both)}
               disabled={ws.isReopeningExtraction}
               className={cn(
-                "mt-2.5 flex w-full items-center justify-between rounded-xl border p-3 text-left transition-all",
+                "mt-2.5 flex min-h-11 w-full items-center justify-between rounded-xl border p-3 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
                 reopenTarget === TargetReviewer.Both
                   ? "border-primary bg-primary-light/50 ring-1 ring-primary shadow-xs"
                   : "border-border bg-surface-white hover:border-primary/40 hover:bg-bg-primary/40",
@@ -1724,25 +1839,25 @@ export default function DataExtractionDashboard({
                 htmlFor="reopen-reason-textarea"
                 className="text-xs font-bold uppercase tracking-wider text-text-secondary"
               >
-                Reason for Reopening <span className="text-rose-500">*</span>
+                Reason for Reopening <span className="text-error">*</span>
               </label>
               <span className="text-[11px] text-text-muted">Required for Audit Trail</span>
             </div>
             <textarea
               id="reopen-reason-textarea"
               rows={2}
-              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-all focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary placeholder:text-text-muted transition-[border-color,box-shadow] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none disabled:opacity-50"
               placeholder="Explain why this extraction workspace needs to be reopened..."
               value={reopenReason}
               onChange={(e) => setReopenReason(e.target.value)}
               disabled={ws.isReopeningExtraction}
             />
             {!reopenReason.trim() ? (
-              <p className="mt-2 text-xs font-medium text-amber-800">
+              <p className="mt-2 text-xs font-medium text-warning">
                 Please provide a justification to enable confirmation.
               </p>
             ) : (
-              <p className="mt-2 text-xs font-medium text-emerald-700">
+              <p className="mt-2 text-xs font-medium text-success">
                 ✓ Justification provided ({reopenReason.trim().length} chars)
               </p>
             )}
@@ -1769,7 +1884,7 @@ export default function DataExtractionDashboard({
                 ws.isReopeningExtraction
               }
               isLoading={ws.isReopeningExtraction}
-              className="!rounded-xl bg-amber-600 text-white shadow-xs hover:bg-amber-700 focus-visible:ring-amber-500 disabled:!bg-bg-secondary disabled:!text-text-muted disabled:!border-border disabled:!opacity-100 disabled:!shadow-none"
+              className="!rounded-xl bg-warning text-white shadow-xs hover:bg-warning/90 focus-visible:ring-warning/40 disabled:!bg-bg-secondary disabled:!text-text-muted disabled:!border-border disabled:!opacity-100 disabled:!shadow-none"
             >
               <AlertTriangle className="mr-1.5 h-4 w-4" />
               Confirm Reopen
@@ -1836,7 +1951,7 @@ function MetricCard({ title, value, icon, tone }: MetricCardProps) {
 
   return (
     <div
-      className={`flex min-h-[112px] flex-col justify-between rounded-xl border p-4 shadow-[0_1px_2px_rgba(18,35,49,0.04)] ${toneStyles.card}`}
+      className={`flex min-h-[112px] flex-col justify-between rounded-xl border p-4 ${toneStyles.card}`}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="pt-1 text-xs font-semibold text-text-secondary">{title}</div>

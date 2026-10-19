@@ -96,7 +96,7 @@ export default function ChecklistDashboardPageWrapper() {
     return (
       <div className="min-h-screen bg-bg-primary px-4 py-8 sm:px-6 sm:py-12">
         <div role="alert" className="mx-auto flex min-h-[50vh] max-w-4xl flex-col items-center justify-center text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-red-100 text-red-600 mb-4 ring-8 ring-red-50">
+          <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-error/10 text-error ring-8 ring-error/5">
             <FiAlertTriangle className="h-7 w-7" />
           </div>
           <h2 className="text-2xl font-bold text-text-primary mb-2">

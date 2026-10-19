@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useId, useState } from "react";
 import { cn } from "../../utils/cn";
 
 export interface TabItem {
@@ -32,14 +32,20 @@ const Tabs: React.FC<TabsProps> = ({
   contentClassName,
   children,
 }) => {
+  const tabsId = useId();
   const [internalActiveTabId, setInternalActiveTabId] = useState(
     items.length > 0 ? items[0].id : "",
   );
 
-  const activeTabId =
+  const requestedActiveTabId =
     externalActiveTabId !== undefined
       ? externalActiveTabId
       : internalActiveTabId;
+  const activeTabId = items.some(({ id }) => id === requestedActiveTabId)
+    ? requestedActiveTabId
+    : items[0]?.id ?? "";
+  const activeTabIndex = items.findIndex(({ id }) => id === activeTabId);
+  const tabPanelId = `${tabsId}-panel`;
 
   const handleTabClick = (id: string) => {
     if (externalActiveTabId === undefined) {
@@ -60,16 +66,18 @@ const Tabs: React.FC<TabsProps> = ({
           listClassName,
         )}
       >
-        {items.map((item) => {
+        {items.map((item, index) => {
           const isActive = activeTabId === item.id;
           const Icon = item.icon;
 
           return (
             <button
               key={item.id}
+              id={`${tabsId}-tab-${index}`}
               type="button"
               role="tab"
               aria-selected={isActive}
+              aria-controls={tabPanelId}
               tabIndex={isActive ? 0 : -1}
               onClick={() => handleTabClick(item.id)}
               onKeyDown={(event) => {
@@ -92,7 +100,7 @@ const Tabs: React.FC<TabsProps> = ({
                   ?.focus();
               }}
               className={cn(
-                "flex min-h-11 items-center gap-2 border-b-2 px-4 py-2.5 -mb-px text-[11px] font-medium uppercase tracking-[0.15em] whitespace-nowrap transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
+                "flex min-h-11 items-center gap-2 border-b-2 px-4 py-2.5 -mb-px text-sm font-medium whitespace-nowrap transition-colors duration-150 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
                 isActive
                   ? "text-text-primary border-accent"
                   : "text-text-secondary border-transparent hover:text-text-primary hover:border-border",
@@ -103,7 +111,7 @@ const Tabs: React.FC<TabsProps> = ({
                 <Icon
                   size={14}
                   className={cn(
-                    "transition-opacity duration-200",
+                    "transition-opacity duration-200 motion-reduce:transition-none",
                     isActive ? "opacity-100" : "opacity-50",
                   )}
                 />
@@ -132,7 +140,14 @@ const Tabs: React.FC<TabsProps> = ({
           );
         })}
       </div>
-      <div className={cn("w-full h-full", contentClassName)}>{children}</div>
+      <div
+        id={tabPanelId}
+        role="tabpanel"
+        aria-labelledby={activeTabIndex >= 0 ? `${tabsId}-tab-${activeTabIndex}` : undefined}
+        className={cn("w-full h-full", contentClassName)}
+      >
+        {children}
+      </div>
     </div>
   );
 };

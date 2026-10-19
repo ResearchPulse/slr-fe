@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   FiActivity,
+  FiAlertCircle,
   FiArrowRight,
   FiDatabase,
   FiFileText,
@@ -17,21 +18,22 @@ import { masterSourceService } from "../../services/masterSourceService";
 import type { RootState } from "../../redux/store";
 import type { AuditLogEntry } from "../../types/auditLog";
 import type { Project } from "../../types/project";
+import Button from "../../components/ui/Button";
 
 const actionDotClasses: Record<AuditLogEntry["actionType"], string> = {
-  create: "bg-emerald-500",
+  create: "bg-success",
   update: "bg-accent",
-  delete: "bg-rose-500",
-  export: "bg-slate-500",
-  access: "bg-violet-500",
-  review: "bg-amber-500",
-  system: "bg-sky-500",
+  delete: "bg-error",
+  export: "bg-text-secondary",
+  access: "bg-primary",
+  review: "bg-warning",
+  system: "bg-primary",
 };
 
 const statusClasses: Record<Project["statusText"], string> = {
-  Draft: "bg-slate-50 text-slate-600 ring-slate-200",
-  Active: "bg-sky-50 text-sky-700 ring-sky-200",
-  Completed: "bg-emerald-50 text-emerald-700 ring-emerald-200",
+  Draft: "bg-bg-secondary text-text-secondary ring-border",
+  Active: "bg-primary-light text-primary ring-primary/20",
+  Completed: "bg-success/10 text-success ring-success/20",
 };
 
 const formatDate = (value?: string) => {
@@ -59,11 +61,19 @@ const formatActivityTime = (value: string) => {
   return formatDate(value);
 };
 
+const getQueryErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : typeof error === "string" ? error : undefined;
+
 const AdminOverview: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useSelector((state: RootState) => state.auth);
 
-  const { data: usersData, isLoading: isUsersLoading } = useUsers({
+  const {
+    data: usersData,
+    isLoading: isUsersLoading,
+    isError: isUsersError,
+    error: usersError,
+  } = useUsers({
     pageNumber: 1,
     pageSize: 5,
   });
@@ -71,19 +81,36 @@ const AdminOverview: React.FC = () => {
     projects,
     data: projectsData,
     isLoading: isProjectsLoading,
+    isError: isProjectsError,
+    error: projectsError,
+    refetch: refetchProjects,
   } = useProjects({ pageNumber: 1, pageSize: 5 });
-  const { data: auditLogsResponse, isLoading: isAuditLoading } =
-    useAdminAuditLogs({ pageNumber: 1, pageSize: 5 });
-  const { data: sourcesResponse, isLoading: isSourcesLoading } = useQuery({
+  const {
+    data: auditLogsResponse,
+    isLoading: isAuditLoading,
+    isError: isAuditError,
+    error: auditError,
+    refetch: refetchAuditLogs,
+  } = useAdminAuditLogs({ pageNumber: 1, pageSize: 5 });
+  const {
+    data: sourcesResponse,
+    isLoading: isSourcesLoading,
+    isError: isSourcesError,
+    error: sourcesError,
+  } = useQuery({
     queryKey: ["master-sources", "overview"],
     queryFn: () => masterSourceService.getAll(),
     staleTime: 5 * 60 * 1000,
   });
 
-  const totalUsers = usersData?.totalCount || 0;
-  const totalProjects = projectsData?.totalCount || 0;
-  const totalAuditLogs = auditLogsResponse?.data?.totalCount || 0;
-  const totalSources = sourcesResponse?.data?.length || 0;
+  const usersUnavailable = isUsersError && !usersData;
+  const projectsUnavailable = isProjectsError && !projectsData;
+  const auditUnavailable = isAuditError && !auditLogsResponse;
+  const sourcesUnavailable = isSourcesError && !sourcesResponse;
+  const totalUsers = usersData?.totalCount ?? 0;
+  const totalProjects = projectsData?.totalCount ?? 0;
+  const totalAuditLogs = auditLogsResponse?.data?.totalCount ?? 0;
+  const totalSources = sourcesResponse?.data?.length ?? 0;
   const recentProjects = useMemo(() => projects?.slice(0, 5) || [], [projects]);
   const recentLogs = useMemo(
     () => auditLogsResponse?.data?.items?.slice(0, 5) || [],
@@ -96,36 +123,44 @@ const AdminOverview: React.FC = () => {
       detail: "Registered accounts",
       value: totalUsers,
       loading: isUsersLoading,
+      error: usersUnavailable,
+      errorMessage: getQueryErrorMessage(usersError),
       path: "/admin/users",
       icon: FiUsers,
-      iconClass: "text-sky-700 bg-sky-50",
+      iconClass: "text-primary bg-primary/10",
     },
     {
       label: "SLR projects",
       detail: "All registered projects",
       value: totalProjects,
       loading: isProjectsLoading,
+      error: projectsUnavailable,
+      errorMessage: getQueryErrorMessage(projectsError),
       path: "/admin/projects",
       icon: FiFolder,
-      iconClass: "text-indigo-700 bg-indigo-50",
+      iconClass: "text-primary bg-primary/10",
     },
     {
       label: "Audit events",
       detail: "Recorded system events",
       value: totalAuditLogs,
       loading: isAuditLoading,
+      error: auditUnavailable,
+      errorMessage: getQueryErrorMessage(auditError),
       path: "/admin/audit-logs",
       icon: FiFileText,
-      iconClass: "text-amber-700 bg-amber-50",
+      iconClass: "text-warning bg-warning/10",
     },
     {
       label: "Search sources",
       detail: "Configured sources",
       value: totalSources,
       loading: isSourcesLoading,
+      error: sourcesUnavailable,
+      errorMessage: getQueryErrorMessage(sourcesError),
       path: "/admin/master-sources",
       icon: FiDatabase,
-      iconClass: "text-emerald-700 bg-emerald-50",
+      iconClass: "text-success bg-success/10",
     },
   ];
 
@@ -146,22 +181,26 @@ const AdminOverview: React.FC = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2.5">
-          <button
+          <Button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-[12px] font-semibold text-white shadow-[0_2px_5px_rgba(0,113,188,0.16)] transition-colors hover:bg-primary-hover"
+            size="md"
+            variant="primary"
+            className="min-h-11 px-4"
           >
             <FiFolder size={15} />
             Manage projects
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             onClick={() => navigate("/admin/audit-logs")}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-white px-4 text-[12px] font-semibold text-text-secondary transition-colors hover:border-text-muted hover:bg-bg-primary"
+            size="md"
+            variant="secondary"
+            className="min-h-11 px-4"
           >
             <FiActivity size={15} className="text-accent" />
             View audit logs
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -173,7 +212,7 @@ const AdminOverview: React.FC = () => {
               type="button"
               key={stat.label}
               onClick={() => navigate(stat.path)}
-              className="group rounded-xl border border-border bg-white p-5 text-left transition-[border-color,background-color] duration-150 hover:border-primary/50 hover:bg-primary-light/20"
+              className="group rounded-xl border border-border bg-white p-5 text-left transition-[border-color,background-color] duration-150 motion-reduce:transition-none hover:border-primary/50 hover:bg-primary-light/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
             >
               <div className="flex items-start justify-between">
                 <div>
@@ -185,7 +224,13 @@ const AdminOverview: React.FC = () => {
                 </span>
               </div>
               <p className="mt-5 text-[31px] font-semibold leading-none tracking-[-0.04em] text-text-primary">
-                {stat.loading ? <span className="inline-block h-8 w-12 animate-pulse rounded bg-bg-secondary align-middle" /> : stat.value.toLocaleString()}
+                {stat.loading ? (
+                  <span className="inline-block h-8 w-12 rounded bg-bg-secondary align-middle motion-safe:animate-pulse motion-reduce:animate-none" />
+                ) : stat.error ? (
+                  <span className="text-base font-medium tracking-normal text-text-secondary" title={stat.errorMessage || "Could not load this count"}>Unavailable</span>
+                ) : (
+                  stat.value.toLocaleString()
+                )}
               </p>
             </button>
           );
@@ -202,7 +247,7 @@ const AdminOverview: React.FC = () => {
                 <p className="mt-0.5 text-[12px] text-text-muted">Latest projects registered in SLRS</p>
               </div>
             </div>
-            <button type="button" onClick={() => navigate("/admin/projects")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-accent hover:text-primary-hover">
+            <button type="button" onClick={() => navigate("/admin/projects")} className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-[11px] font-bold text-accent transition-colors motion-reduce:transition-none hover:bg-bg-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
               View all <FiArrowRight size={14} />
             </button>
           </div>
@@ -210,12 +255,19 @@ const AdminOverview: React.FC = () => {
           <div className="px-5 sm:px-6">
             {isProjectsLoading ? (
               <div className="space-y-3 py-5" aria-label="Loading projects">
-                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[62px] animate-pulse rounded-lg bg-bg-primary" />)}
+                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[62px] rounded-lg bg-bg-primary motion-safe:animate-pulse motion-reduce:animate-none" />)}
+              </div>
+            ) : projectsUnavailable ? (
+              <div className="flex min-h-[220px] flex-col items-center justify-center px-5 py-10 text-center" role="alert">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-error/5 text-error"><FiAlertCircle size={19} /></span>
+                <p className="mt-3 text-[13px] font-semibold text-text-primary">Couldn’t load projects</p>
+                <p className="mt-1 max-w-sm text-[12px] leading-5 text-text-secondary">{projectsError || "Project data is temporarily unavailable."}</p>
+                <Button variant="secondary" size="md" className="mt-4 min-h-11" onClick={() => void refetchProjects()}>Try again</Button>
               </div>
             ) : recentProjects.length ? (
               <div className="divide-y divide-border">
                 {recentProjects.map((project) => (
-                  <button key={project.id} type="button" onClick={() => navigate("/admin/projects")} className="group flex w-full items-center justify-between gap-3 py-4 text-left transition-colors hover:bg-bg-primary">
+                  <button key={project.id} type="button" onClick={() => navigate("/admin/projects")} className="group flex w-full items-center justify-between gap-3 py-4 text-left transition-colors motion-reduce:transition-none hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40">
                     <span className="min-w-0">
                       <span className="block truncate text-[13px] font-semibold text-text-secondary transition-colors group-hover:text-accent">{project.title}</span>
                       <span className="mt-1 flex min-w-0 items-center gap-2 text-[11px] text-text-muted">
@@ -224,7 +276,7 @@ const AdminOverview: React.FC = () => {
                         <span className="shrink-0">{formatDate(project.modifiedAt || project.createdAt)}</span>
                       </span>
                     </span>
-                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${statusClasses[project.statusText as Project["statusText"]] || "bg-slate-50 text-slate-600 ring-slate-200"}`}>
+                    <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${statusClasses[project.statusText as Project["statusText"]] || "bg-bg-secondary text-text-secondary ring-border"}`}>
                       {project.statusText || "Unknown"}
                     </span>
                   </button>
@@ -254,7 +306,7 @@ const AdminOverview: React.FC = () => {
                 <p className="mt-0.5 text-[12px] text-text-muted">Latest recorded audit events</p>
               </div>
             </div>
-            <button type="button" onClick={() => navigate("/admin/audit-logs")} className="inline-flex shrink-0 items-center gap-1.5 text-[11px] font-bold text-accent hover:text-primary-hover">
+            <button type="button" onClick={() => navigate("/admin/audit-logs")} className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-[11px] font-bold text-accent transition-colors motion-reduce:transition-none hover:bg-bg-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
               All logs <FiArrowRight size={14} />
             </button>
           </div>
@@ -262,12 +314,19 @@ const AdminOverview: React.FC = () => {
           <div className="px-5 sm:px-6">
             {isAuditLoading ? (
               <div className="space-y-4 py-5" aria-label="Loading activity">
-                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[58px] animate-pulse rounded-lg bg-bg-primary" />)}
+                {Array.from({ length: 4 }).map((_, index) => <div key={index} className="h-[58px] rounded-lg bg-bg-primary motion-safe:animate-pulse motion-reduce:animate-none" />)}
+              </div>
+            ) : auditUnavailable ? (
+              <div className="flex min-h-[220px] flex-col items-center justify-center px-5 py-10 text-center" role="alert">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-error/5 text-error"><FiAlertCircle size={19} /></span>
+                <p className="mt-3 text-[13px] font-semibold text-text-primary">Couldn’t load activity</p>
+                <p className="mt-1 max-w-sm text-[12px] leading-5 text-text-secondary">{auditError || "Audit activity is temporarily unavailable."}</p>
+                <Button variant="secondary" size="md" className="mt-4 min-h-11" onClick={() => void refetchAuditLogs()}>Try again</Button>
               </div>
             ) : recentLogs.length ? (
               <div className="divide-y divide-border">
                 {recentLogs.map((log) => (
-                  <button key={log.id} type="button" onClick={() => navigate("/admin/audit-logs")} className="flex w-full gap-3.5 py-4 text-left transition-colors hover:bg-bg-primary">
+                  <button key={log.id} type="button" onClick={() => navigate("/admin/audit-logs")} className="flex w-full gap-3.5 py-4 text-left transition-colors motion-reduce:transition-none hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40">
                     <span className="relative flex w-3 shrink-0 justify-center pt-1.5">
                       <span className={`relative z-10 h-2 w-2 rounded-full ring-4 ring-white ${actionDotClasses[log.actionType]}`} />
                     </span>

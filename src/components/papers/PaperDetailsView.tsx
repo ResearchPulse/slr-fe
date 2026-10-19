@@ -52,39 +52,39 @@ interface PaperDetailsViewProps {
 
 function PaperDetailsSkeleton() {
   return (
-    <div className="animate-pulse space-y-6">
+    <div className="motion-safe:animate-pulse motion-reduce:animate-none space-y-6">
       {/* Title skeleton */}
       <div className="space-y-2">
-        <div className="h-6 bg-gray-200 rounded w-3/4" />
-        <div className="h-6 bg-gray-200 rounded w-1/2" />
+        <div className="h-6 w-3/4 rounded bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
+        <div className="h-6 w-1/2 rounded bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
       </div>
       {/* Authors */}
-      <div className="h-4 bg-gray-200 rounded w-2/3" />
+      <div className="h-4 w-2/3 rounded bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
       {/* Badges */}
       <div className="flex gap-2">
-        <div className="h-6 w-16 bg-gray-200 rounded-full" />
-        <div className="h-6 w-20 bg-gray-200 rounded-full" />
-        <div className="h-6 w-14 bg-gray-200 rounded-full" />
+        <div className="h-6 w-16 rounded-full bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
+        <div className="h-6 w-20 rounded-full bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
+        <div className="h-6 w-14 rounded-full bg-border/60 motion-safe:animate-pulse motion-reduce:animate-none" />
       </div>
       {/* Abstract */}
       <div className="space-y-2">
-        <div className="h-3 bg-gray-100 rounded w-24" />
-        <div className="h-4 bg-gray-200 rounded w-full" />
-        <div className="h-4 bg-gray-200 rounded w-full" />
-        <div className="h-4 bg-gray-200 rounded w-5/6" />
-        <div className="h-4 bg-gray-200 rounded w-4/6" />
+        <div className="h-3 w-24 rounded bg-border/40" />
+        <div className="h-4 w-full rounded bg-border/60" />
+        <div className="h-4 w-full rounded bg-border/60" />
+        <div className="h-4 w-5/6 rounded bg-border/60" />
+        <div className="h-4 w-4/6 rounded bg-border/60" />
       </div>
       {/* Metadata */}
       <div className="space-y-2">
-        <div className="h-3 bg-gray-100 rounded w-32" />
-        <div className="h-10 bg-gray-200 rounded" />
-        <div className="h-10 bg-gray-200 rounded" />
-        <div className="h-10 bg-gray-200 rounded" />
+        <div className="h-3 w-32 rounded bg-border/40" />
+        <div className="h-10 rounded bg-border/60" />
+        <div className="h-10 rounded bg-border/60" />
+        <div className="h-10 rounded bg-border/60" />
       </div>
       {/* Provenance */}
       <div className="space-y-2">
-        <div className="h-3 bg-gray-100 rounded w-28" />
-        <div className="h-16 bg-gray-200 rounded" />
+        <div className="h-3 w-28 rounded bg-border/40" />
+        <div className="h-16 rounded bg-border/60" />
       </div>
     </div>
   );
@@ -107,7 +107,7 @@ const PaperKeywords = memo(({ keywords }: { keywords?: string | null }) => {
 
   return (
     <section className="mb-6">
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold uppercase tracking-wider text-text-secondary">
         <FiTag className="w-3.5 h-3.5" />
         Keywords
       </h3>
@@ -115,7 +115,7 @@ const PaperKeywords = memo(({ keywords }: { keywords?: string | null }) => {
         {tags.map((tag, i) => (
           <span
             key={`${tag}-${i}`}
-            className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-bg-secondary text-indigo-700 border border-indigo-100"
+            className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary"
           >
             {tag}
           </span>
@@ -141,16 +141,16 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
   }, [paper.doi]);
 
   return (
-    <header className="mb-6 pb-6 border-b border-gray-100">
+    <header className="mb-6 border-b border-border pb-6">
       {/* Title */}
-      <h2 className="text-lg font-bold text-gray-900 leading-snug mb-3 wrap-break-word">
+      <h2 className="mb-3 text-lg font-bold leading-snug text-text-primary wrap-break-word">
         {paper.title}
       </h2>
-      <span className="text-xs text-slate-400 font-bold">ID: {paper.id}</span>
+      <span className="text-xs font-bold text-text-secondary">ID: {paper.id}</span>
       {/* Authors */}
       {paper.authors && (
-        <p className="text-sm text-gray-600 mb-4 flex items-start gap-2">
-          <FiUser className="w-4 h-4 text-gray-400 shrink-0 mt-0.5" />
+        <p className="mb-4 flex items-start gap-2 text-sm text-text-secondary">
+          <FiUser className="mt-0.5 h-4 w-4 shrink-0 text-text-secondary" />
           <span className="wrap-break-word">{paper.authors}</span>
         </p>
       )}
@@ -158,18 +158,18 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
       {/* Badges Row */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         {paper.publicationYear && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+          <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-semibold text-primary">
             <FiCalendar className="w-3 h-3" />
             {paper.publicationYear}
           </span>
         )}
         {paper.publicationType && (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+          <span className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
             {paper.publicationType}
           </span>
         )}
         {paper.source && (
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
+          <span className="inline-flex items-center gap-1 rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-xs font-medium text-text-secondary">
             <FiDatabase className="w-3 h-3" />
             {paper.source}
           </span>
@@ -181,7 +181,7 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
         {paper.doi && (
           <button
             onClick={handleCopyDoi}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-bg-secondary px-3 py-1.5 text-xs font-medium text-text-primary transition-colors hover:bg-border/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title={`Copy DOI: ${paper.doi}`}
           >
             <FiCopy className="w-3.5 h-3.5" />
@@ -193,7 +193,7 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
             href={`https://doi.org/${paper.doi}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open DOI
@@ -204,7 +204,7 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
             href={paper.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary/5 px-3 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open URL
@@ -215,7 +215,7 @@ const PaperHeader = memo(({ paper }: { paper: PaperResponse }) => {
             href={paper.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-gray-500 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Source URL
@@ -256,8 +256,8 @@ const PaperDetailsContent = memo(
     if (!paper) {
       return (
         <div className="flex flex-col items-center justify-center py-16 px-4">
-          <FiDatabase className="w-12 h-12 text-gray-300 mb-3" />
-          <p className="text-gray-500 text-sm">No paper selected</p>
+          <FiDatabase className="mb-3 h-12 w-12 text-text-secondary" />
+          <p className="text-sm text-text-secondary">No paper selected</p>
         </div>
       );
     }
@@ -287,7 +287,7 @@ const PaperDetailsContent = memo(
             description={`Viewing full text for: ${paper.title}`}
             size="xl"
           >
-            <div className="h-[75vh] w-[calc(100%+4rem)] -mx-8 -mb-8 mt-4 bg-slate-50 overflow-hidden relative">
+            <div className="relative -mx-8 -mb-8 mt-4 h-[75vh] w-[calc(100%+4rem)] overflow-hidden bg-bg-secondary">
               <Worker workerUrl={PDF_WORKER_URL}>
                 <Viewer fileUrl={previewPdfUrl} />
               </Worker>
@@ -353,7 +353,7 @@ const PaperDetailsView: React.FC<PaperDetailsViewProps> = ({
       onClose={onClose || (() => {})}
       title={
         <div className="flex items-center gap-2">
-          <FiDatabase className="w-5 h-5 text-blue-600" />
+          <FiDatabase className="h-5 w-5 text-primary" />
           <span className="truncate max-w-md">
             {loading ? "Loading..." : paper?.title || "Paper Details"}
           </span>

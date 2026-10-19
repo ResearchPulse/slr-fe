@@ -431,23 +431,23 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
   return (
     <div className="flex h-screen flex-col bg-surface-white">
       {/* Header */}
-      <div className="fixed z-40 w-full bg-surface-white border-b border-border h-16 flex items-center px-4 sm:px-6 gap-4">
+      <div className="fixed inset-x-0 z-40 bg-surface-white border-b border-border h-16 flex items-center px-4 sm:px-6 gap-4">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => navigate(-1)}
-          className="p-2"
+          className="h-11 w-11 shrink-0 p-0"
           title="Go back"
           aria-label="Go back"
         >
           <FiChevronLeft className="w-6 h-6 text-text-secondary" />
         </Button>
 
-        <div className="flex-1">
-          <h1 className="text-lg font-bold text-text-primary truncate">
+        <div className="min-w-0 flex-1">
+          <h1 className="text-lg font-bold text-text-primary truncate max-[360px]:line-clamp-2 max-[360px]:whitespace-normal">
             {checklist.title}
           </h1>
-          <p className="text-xs text-text-secondary">
+          <p className="text-xs text-text-secondary max-[360px]:hidden">
             {checklist.templateName} • {checklist.completionPercentage}%
             Complete
           </p>
@@ -460,7 +460,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
               variant="secondary"
               size="sm"
               onClick={() => setIsPdfPanelOpen((prev) => !prev)}
-              className="inline-flex items-center gap-2"
+              className="min-h-11 inline-flex items-center gap-2"
               title={isPdfPanelOpen ? "Hide PDF panel" : "Show source PDF"}
             >
               <FiFileText className="w-4 h-4" />
@@ -471,7 +471,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             variant="secondary"
             size="sm"
             onClick={() => setIsPreviewModalOpen(true)}
-            className="inline-flex items-center gap-2"
+            className="min-h-11 inline-flex items-center gap-2"
           >
             <FiEye className="w-4 h-4" />
             Preview
@@ -481,7 +481,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             size="sm"
             onClick={() => handleGenerateReport("word")}
             disabled={isSaving}
-            className="inline-flex items-center gap-2"
+            className="min-h-11 inline-flex items-center gap-2"
           >
             <FiDownload className="w-4 h-4" />
             Word
@@ -490,7 +490,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             size="sm"
             onClick={handleSave}
             disabled={isReadOnly || isSaving || !hasDraftChanges}
-            className="inline-flex items-center gap-2"
+            className="min-h-11 inline-flex items-center gap-2"
           >
             <FiSave className="w-4 h-4" />
             {isSaving ? "Saving..." : "Save"}
@@ -502,7 +502,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
           variant="ghost"
           size="sm"
           onClick={() => setIsMobileMenuOpen(true)}
-          className="md:hidden p-2"
+          className="md:hidden min-h-11 min-w-11 p-2"
           aria-label="Open actions"
         >
           <FiMenu className="w-6 h-6 text-text-secondary" />
@@ -584,7 +584,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
         <main
           className={cn(
             "flex flex-col overflow-hidden flex-1",
-            !isDragging && "transition-all duration-300",
+            !isDragging && "transition-[width,flex-basis] duration-300 motion-reduce:transition-none",
           )}
         >
           {/* Progress Bar */}
@@ -599,7 +599,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
 
           {/* Error Message */}
           {saveError && (
-            <div className="shrink-0 mx-4 mt-4 p-3 bg-surface-white border border-border text-red-700 rounded-xl text-sm">
+            <div className="mx-4 mt-4 shrink-0 rounded-xl border border-error/20 bg-error/5 p-3 text-sm text-error">
               {saveError}
             </div>
           )}
@@ -696,7 +696,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
             style={{ width: pdfWidth ? `${pdfWidth}px` : undefined }}
             className={cn(
               "hidden lg:flex shrink-0",
-              !isDragging && "transition-all duration-300",
+              !isDragging && "transition-[width,flex-basis] duration-300 motion-reduce:transition-none",
               !pdfWidth && "w-[55%]",
             )}
           >
@@ -716,7 +716,7 @@ const ChecklistEditor: React.FC<ChecklistEditorProps> = ({
                   "w-0.5 h-6 rounded-full transition-colors",
                   isDragging
                     ? "bg-accent/40"
-                    : "bg-gray-400 group-hover:bg-surface-white",
+                    : "bg-border group-hover:bg-surface-white",
                 )}
               />
             </div>

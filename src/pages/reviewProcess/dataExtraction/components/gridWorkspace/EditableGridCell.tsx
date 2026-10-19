@@ -200,7 +200,7 @@ export default function EditableGridCell({
                 event as unknown as KeyboardEvent<HTMLTextAreaElement>,
               );
             }}
-            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-primary bg-surface-white px-2 py-1 text-xs text-text-primary outline-none ring-primary/30 transition-[border-color,box-shadow] focus:ring-2 motion-reduce:transition-none disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
 
@@ -212,7 +212,7 @@ export default function EditableGridCell({
             value={normalizeBooleanValue(draftValue)}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-primary bg-surface-white px-2 py-1 text-xs text-text-primary outline-none ring-primary/30 transition-[border-color,box-shadow] focus:ring-2 motion-reduce:transition-none disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             <option value="true">True</option>
@@ -228,7 +228,7 @@ export default function EditableGridCell({
             value={draftValue}
             onChange={(event) => setDraftValue(event.target.value)}
             onBlur={handleEditorBlur}
-            className="h-8 w-full rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="h-8 w-full rounded-xl border border-primary bg-surface-white px-2 py-1 text-xs text-text-primary outline-none ring-primary/30 transition-[border-color,box-shadow] focus:ring-2 motion-reduce:transition-none disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           >
             <option value="">-</option>
             {columnMeta.options.map((option) => (
@@ -269,7 +269,7 @@ export default function EditableGridCell({
               void handleKeyDown(event);
             }}
             rows={textEditorRows}
-            className="w-full resize-none rounded-xl border border-accent bg-surface-white px-2 py-1 text-xs text-slate-800 outline-none ring-accent/30 focus:ring-2 disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+            className="w-full resize-none rounded-xl border border-primary bg-surface-white px-2 py-1 text-xs text-text-primary outline-none ring-primary/30 transition-[border-color,box-shadow] focus:ring-2 motion-reduce:transition-none disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
           />
         );
     }
@@ -305,7 +305,7 @@ export default function EditableGridCell({
 
                   void commitWithOverride(nextDraftValue, nextIsNotReported);
                 }}
-                className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400"
+                className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary/40"
               />
               NR
             </label>
@@ -317,7 +317,7 @@ export default function EditableGridCell({
             <button
               type="button"
               onClick={cancelChanges}
-              className="shrink-0 rounded px-1.5 py-1 text-[10px] font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+              className="min-h-9 shrink-0 rounded px-1.5 py-1 text-[10px] font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
             >
               Esc
             </button>
@@ -326,7 +326,7 @@ export default function EditableGridCell({
       ) : (
         <div className="flex min-h-6 items-start justify-between gap-2">
           {cell.isNotReported ? (
-            <span className="inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
+            <span className="inline-flex rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-text-primary">
               NR
             </span>
           ) : (
@@ -335,17 +335,18 @@ export default function EditableGridCell({
             </span>
           )}
 
-          <span className="flex items-center gap-1">
+          <span className="absolute right-0 top-0 z-10 flex h-full items-center gap-0.5 bg-gradient-to-l from-surface-white via-surface-white to-transparent pl-5 pr-1">
             {isSaving ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin text-accent" />
+              <Loader2 aria-hidden="true" className="h-3.5 w-3.5 motion-safe:animate-spin motion-reduce:animate-none text-accent" />
             ) : null}
 
             {canViewHistory ? (
               <button
                 type="button"
                 onClick={() => setIsHistoryOpen(true)}
-                className="invisible rounded p-0.5 text-text-secondary transition group-hover:visible hover:bg-bg-secondary hover:text-text-primary"
-                aria-label="View cell history"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary opacity-0 shadow-sm transition-[opacity,color,background-color,border-color] duration-150 group-hover:opacity-100 group-focus-within:opacity-100 hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                aria-label={`View history for ${columnMeta.headerName}`}
+                title="View cell history"
               >
                 <History className="h-3.5 w-3.5" />
               </button>
@@ -355,8 +356,9 @@ export default function EditableGridCell({
               <button
                 type="button"
                 onClick={beginEdit}
-                className="invisible rounded p-0.5 text-text-secondary transition group-hover:visible hover:bg-bg-secondary hover:text-text-primary"
-                aria-label="Edit cell"
+                className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary opacity-0 shadow-sm transition-[opacity,color,background-color,border-color] duration-150 group-hover:opacity-100 group-focus-within:opacity-100 hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                aria-label={`Edit ${columnMeta.headerName}`}
+                title="Edit cell"
               >
                 <Pencil className="h-3.5 w-3.5" />
               </button>

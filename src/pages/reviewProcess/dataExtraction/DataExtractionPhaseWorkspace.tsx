@@ -1,8 +1,7 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import Button from "../../../components/ui/Button";
-import Card from "../../../components/ui/Card";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
+import QueryErrorState from "../../../components/ui/QueryErrorState";
 import DataExtractionConsensusWorkspace from "./components/DataExtractionConsensusWorkspace.tsx";
 import DataExtractionDashboard from "./components/DataExtractionDashboard.tsx";
 import DataExtractionReviewerWorkspace from "./components/DataExtractionReviewerWorkspace.tsx";
@@ -30,19 +29,15 @@ export default function DataExtractionPhaseWorkspace() {
 
   if (ws.error) {
     return (
-      <div className="min-h-screen bg-bg-secondary px-6 py-10">
-        <Card className="mx-auto max-w-4xl rounded-xl border border-border bg-surface-white shadow-none shadow-red-100/50">
-          <h2 className="text-lg font-semibold text-red-900">
-            Data Extraction Error
-          </h2>
-          <p className="mt-2 text-sm text-red-700">{ws.error}</p>
-          <div className="mt-6 flex gap-3">
-            <Button variant="outline" onClick={() => window.location.reload()}>
-              Retry
-            </Button>
-            <Button onClick={ws.handleBack}>Back to Workflow</Button>
-          </div>
-        </Card>
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+        <QueryErrorState
+          title="Data Extraction unavailable"
+          message={ws.error}
+          onRetry={() => void ws.refetch()}
+          retryLabel="Retry"
+          onBack={ws.handleBack}
+          backLabel="Back to workflow"
+        />
       </div>
     );
   }

@@ -118,12 +118,20 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
   };
 
   useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(panelRef.current, {
+        y: selectedCount > 0 ? 0 : 100,
+        opacity: selectedCount > 0 ? 1 : 0,
+      });
+      return;
+    }
+
     if (selectedCount > 0) {
       gsap.to(panelRef.current, {
         y: 0,
         opacity: 1,
-        duration: 0.5,
-        ease: "power3.out",
+        duration: 0.2,
+        ease: "power2.out",
       });
     } else {
       gsap.to(panelRef.current, {
@@ -200,7 +208,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
             <label className="mb-1 flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-text-secondary">
               <span>Assign reviewers</span>
               <span
-                className={`rounded-full px-2 py-1 text-[9px] tracking-normal ${selectedReviewers.size === 2 ? "bg-primary-light text-accent" : "bg-amber-500/10 text-amber-600"}`}
+                className={`rounded-full px-2 py-1 text-[9px] tracking-normal ${selectedReviewers.size === 2 ? "bg-primary-light text-accent" : "bg-warning/10 text-warning"}`}
               >
                 2 reviewers required
               </span>
@@ -210,7 +218,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
               {/* Selector Button with Dropdown */}
               <Dropdown
                 trigger={
-                  <button className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border bg-bg-secondary border-border text-text-primary hover:border-primary hover:bg-primary-light transition-all text-xs font-semibold whitespace-nowrap active:scale-95">
+                  <button type="button" className="flex min-h-11 items-center gap-1.5 rounded-xl border border-border bg-bg-secondary px-3 text-xs font-semibold whitespace-nowrap text-text-primary transition-colors hover:border-primary hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
                     <UserPlus className="w-3.5 h-3.5" />
                     Select Reviewers
                     <ChevronDown className="w-3.5 h-3.5 ml-1 text-text-secondary" />
@@ -230,7 +238,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                         placeholder="Search reviewers..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-surface-white border border-border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent text-text-primary transition-all"
+                        className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-9 pr-4 text-xs text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                       />
                     </div>
                   </div>
@@ -238,7 +246,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   <div className="max-h-60 overflow-y-auto p-2 custom-scrollbar min-h-[100px] relative">
                     {isLoading ? (
                       <div className="flex items-center justify-center py-10 text-text-secondary">
-                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        <Loader2 aria-hidden="true" className="w-5 h-5 motion-safe:animate-spin motion-reduce:animate-none mr-2" />
                         <span className="text-xs font-medium">
                           Fetching Team...
                         </span>
@@ -280,11 +288,12 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                       {selectedReviewers.size} Selected
                     </span>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedReviewers(new Map());
                       }}
-                      className="text-[10px] text-accent font-bold hover:text-primary-hover transition-colors uppercase"
+                      className="inline-flex min-h-11 items-center rounded-lg px-2 text-[10px] font-bold uppercase text-accent transition-colors hover:bg-surface-white hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     >
                       Clear All
                     </button>
@@ -298,15 +307,18 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                   {visibleChips.map(([id, name]) => (
                     <div
                       key={id}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-bg-secondary border border-border text-xs text-text-primary whitespace-nowrap animate-in zoom-in-95 duration-200"
+                      className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-border bg-bg-secondary px-2 py-1 text-xs text-text-primary whitespace-nowrap motion-safe:animate-in motion-safe:zoom-in-95 motion-safe:duration-200 motion-reduce:animate-none"
                     >
                       <Users className="w-3 h-3 text-accent" />
                       {name}
                       <button
+                        type="button"
                         onClick={() => removeReviewer(id)}
-                        className="p-0.5 hover:bg-border rounded transition-colors"
+                        aria-label={`Remove ${name}`}
+                        title={`Remove ${name}`}
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-border hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
-                        <X className="w-3 h-3 text-text-secondary hover:text-red-400" />
+                        <X className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
@@ -315,7 +327,7 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
                     <div                     className="px-2 py-1 rounded-xl bg-bg-secondary border border-border border-dashed text-[10px] font-bold text-accent whitespace-nowrap cursor-help relative group">
                       +{remainingCount} more
                       {/* Tooltip on hover */}
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-surface-white border border-border rounded-xl shadow-2xl p-3 z-(--z-index-popover) animate-in fade-in zoom-in-95">
+                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-surface-white border border-border rounded-xl shadow-2xl p-3 z-(--z-index-popover) motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-reduce:animate-none">
                         <div className="text-[10px] text-text-secondary uppercase font-black tracking-widest mb-2 border-b border-border pb-1">
                           Also Assigned To
                         </div>
@@ -344,10 +356,11 @@ const BulkAssignmentPanel: React.FC<BulkAssignmentPanelProps> = ({
             <Button
               onClick={() => !isDisabled && handleAssign()}
               disabled={selectedReviewers.size !== 2 || isPending || isDisabled}
-              className="min-h-11 w-full rounded-xl border-none px-4 py-2.5 text-xs font-semibold normal-case tracking-normal shadow-none transition-all active:scale-[0.98] disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary sm:w-auto"
+              aria-busy={isPending}
+              className="min-h-11 w-full rounded-xl border-none px-4 py-2.5 text-xs font-semibold normal-case tracking-normal shadow-none transition-transform active:scale-[0.98] motion-reduce:transition-none disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary sm:w-auto"
             >
               {isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
               ) : (
                 <CheckCircle2
                   className={`w-4 h-4 transition-transform ${selectedReviewers.size > 0 ? "scale-100" : "scale-0"}`}

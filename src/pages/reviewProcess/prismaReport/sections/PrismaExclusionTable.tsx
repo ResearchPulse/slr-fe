@@ -56,7 +56,7 @@ function buildExclusionRows(
 
 function SkeletonRow() {
   return (
-    <tr className="animate-pulse">
+    <tr className="motion-safe:animate-pulse motion-reduce:animate-none">
       <td className="px-4 py-3">
         <div className="h-4 w-48 bg-bg-secondary rounded" />
       </td>
@@ -85,7 +85,7 @@ export default function PrismaExclusionTable({
         </h3>
         <div className="group relative" tabIndex={0} aria-label="About exclusion percentages">
           <FiInfo className="w-4 h-4 text-text-secondary cursor-help" aria-hidden="true" />
-          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-none z-10">
+          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block w-64 p-2 bg-text-primary text-surface-white text-xs rounded shadow-none z-(--z-index-tooltip)">
             Breakdown of records removed at each stage of the PRISMA flow.
             Percentages are relative to total records identified.
           </div>
@@ -123,7 +123,7 @@ export default function PrismaExclusionTable({
               rows.map((row) => (
                 <tr
                   key={row.reason}
-                  className="hover:bg-primary-light/40 transition-colors"
+                  className="transition-colors hover:bg-primary-light/40 motion-reduce:transition-none"
                 >
                   <td className="px-2 py-2.5 text-text-primary">{row.reason}</td>
                   <td className="px-2 py-2.5 text-right font-medium text-text-primary tabular-nums">

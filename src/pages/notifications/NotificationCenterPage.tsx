@@ -60,9 +60,9 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
             size="sm"
             onClick={() => void refetch()}
             disabled={isFetching}
-            className="self-start normal-case tracking-normal sm:self-auto"
+            className="min-h-11 self-start normal-case tracking-normal sm:self-auto"
           >
-            <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "animate-spin" : ""}`} aria-hidden="true" />
+            <RefreshCw className={`h-3.5 w-3.5 ${isFetching ? "motion-safe:animate-spin" : ""}`} aria-hidden="true" />
             Refresh
           </Button>
         </header>
@@ -76,7 +76,7 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
                   type="button"
                   aria-pressed={filter === value}
                   onClick={() => { setFilter(value); setPage(1); }}
-                  className={`inline-flex min-h-9 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors ${filter === value ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 motion-reduce:transition-none ${filter === value ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
                 >
                   {value === "all" ? "All activity" : "Unread"}
                   {value === "unread" && unreadCount > 0 && (
@@ -91,7 +91,7 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
               type="button"
               onClick={() => markAllAsRead()}
               disabled={unreadCount === 0 && !notifications.some((item) => !item.isRead) || isMarkingAllAsRead || isLoading}
-              className="inline-flex min-h-9 items-center gap-2 self-start rounded-lg px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary-light disabled:cursor-not-allowed disabled:text-text-muted disabled:hover:bg-transparent sm:self-auto"
+              className="inline-flex min-h-11 items-center gap-2 self-start rounded-lg px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:text-text-muted disabled:hover:bg-transparent sm:self-auto"
             >
               <CheckCheck className="h-4 w-4" aria-hidden="true" />
               {isMarkingAllAsRead ? "Marking as read…" : "Mark all as read"}
@@ -101,7 +101,7 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
           {isLoading ? (
             <div className="divide-y divide-border" aria-label="Loading notifications">
               {[0, 1, 2, 3].map((item) => (
-                <div key={item} className="flex animate-pulse gap-3 px-5 py-5">
+                <div key={item} className="flex motion-safe:animate-pulse gap-3 px-5 py-5">
                   <div className="h-10 w-10 shrink-0 rounded-xl bg-bg-secondary" />
                   <div className="flex-1 space-y-2 py-1">
                     <div className="h-3 w-2/5 rounded bg-bg-secondary" />
@@ -115,12 +115,21 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
             <div className="px-6 py-14 text-center" role="alert">
               <p className="font-medium text-text-primary">Notifications couldn’t load</p>
               <p className="mt-1 text-sm text-text-secondary">{error || "Check your connection and try again."}</p>
-              <Button variant="outline" size="sm" onClick={() => void refetch()} className="mt-4 normal-case tracking-normal">Try again</Button>
+              <Button variant="outline" size="sm" onClick={() => void refetch()} className="mt-4 min-h-11 normal-case tracking-normal">Try again</Button>
             </div>
           ) : visibleNotifications.length > 0 ? (
             <div className="divide-y divide-border">
-              {visibleNotifications.map((notification) => (
-                <NotificationListItem key={notification.id} notification={notification} onClick={() => void handleNotificationClick(notification)} />
+              {visibleNotifications.map((notification, index) => (
+                <div
+                  key={notification.id}
+                  className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-200"
+                  style={{ animationDelay: `${Math.min(index * 25, 175)}ms` }}
+                >
+                  <NotificationListItem
+                    notification={notification}
+                    onClick={() => void handleNotificationClick(notification)}
+                  />
+                </div>
               ))}
             </div>
           ) : (
@@ -143,10 +152,10 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
                 {filteredNotifications.length} recent updates · Page {page} of {pageCount}
               </p>
               <div className="flex items-center gap-1">
-                <button type="button" aria-label="Previous page" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1} className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-white hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40">
+                <button type="button" aria-label="Previous page" onClick={() => setPage((current) => Math.max(1, current - 1))} disabled={page <= 1} className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-40">
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
                 </button>
-                <button type="button" aria-label="Next page" onClick={() => setPage((current) => Math.min(pageCount, current + 1))} disabled={page >= pageCount} className="flex h-9 w-9 items-center justify-center rounded-lg text-text-secondary hover:bg-surface-white hover:text-text-primary disabled:cursor-not-allowed disabled:opacity-40">
+                <button type="button" aria-label="Next page" onClick={() => setPage((current) => Math.min(pageCount, current + 1))} disabled={page >= pageCount} className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-40">
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>

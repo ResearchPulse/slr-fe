@@ -54,7 +54,7 @@ function CopyField({ label, value, displayValue }: { label: string; value: strin
           title={copied ? "Copied" : "Copy"}
           aria-label={`${copied ? "Copied" : "Copy"} ${label}`}
           disabled={!hasValue}
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-text-secondary transition hover:bg-surface-white hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-40"
         >
           {copied ? <FiCheck className="h-3.5 w-3.5 text-[#2E8B60]" /> : <FiCopy className="h-3.5 w-3.5" />}
         </button>
@@ -243,11 +243,11 @@ const MyProfilePage: React.FC = () => {
             <p className="text-[11px] text-text-muted">Keep your account details up to date.</p>
             {isEditingProfile ? (
               <div className="flex w-full gap-2 sm:w-auto">
-                <Button size="sm" variant="outline" onClick={handleCancelProfileEdit} disabled={isProfileSaving} className="flex-1 sm:flex-none">Cancel</Button>
-                <Button size="sm" onClick={handleSaveProfile} isLoading={isProfileSaving} className="flex-1 sm:flex-none"><FiCheck className="mr-1.5" />Save changes</Button>
+                <Button size="md" variant="outline" onClick={handleCancelProfileEdit} disabled={isProfileSaving} className="flex-1 sm:flex-none">Cancel</Button>
+                <Button size="md" onClick={handleSaveProfile} isLoading={isProfileSaving} className="flex-1 sm:flex-none"><FiCheck className="mr-1.5" />Save changes</Button>
               </div>
             ) : (
-              <Button size="sm" variant="secondary" onClick={() => setIsEditingProfile(true)} className="w-full sm:w-auto"><FiEdit2 className="mr-2 h-3.5 w-3.5" />Edit profile</Button>
+              <Button size="md" variant="secondary" onClick={() => setIsEditingProfile(true)} className="w-full sm:w-auto"><FiEdit2 className="mr-2 h-3.5 w-3.5" />Edit profile</Button>
             )}
           </div>
         </section>
@@ -292,14 +292,14 @@ const MyProfilePage: React.FC = () => {
                 <p className="mt-1 text-[11px] leading-5 text-text-muted">Use a strong password to keep your account secure.</p>
               </div>
             </div>
-            {!isResettingPassword && <Button size="sm" variant="secondary" onClick={() => setIsResettingPassword(true)} className="w-full sm:w-auto"><FiKey className="mr-2 h-3.5 w-3.5" />Change password</Button>}
+            {!isResettingPassword && <Button size="md" variant="secondary" onClick={() => setIsResettingPassword(true)} className="w-full sm:w-auto"><FiKey className="mr-2 h-3.5 w-3.5" />Change password</Button>}
           </div>
 
           {isResettingPassword && (
             <form onSubmit={handleResetPassword} className="mt-4 rounded-2xl border border-border bg-surface-white p-4 sm:p-5">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <div><p className="text-[13px] font-bold text-text-primary">Update password</p><p className="mt-1 text-[11px] text-text-muted">Choose a new password you do not use elsewhere.</p></div>
-                <button type="button" onClick={resetPasswordForm} aria-label="Cancel password change" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-text-muted transition hover:bg-bg-secondary hover:text-text-primary"><FiX /></button>
+                <button type="button" onClick={resetPasswordForm} aria-label="Cancel password change" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"><FiX /></button>
               </div>
 
               {status && <div className={cn("mb-4 flex items-center gap-2 rounded-lg px-3 py-2.5 text-[12px]", status.type === "success" ? "bg-[#EFF8F2] text-[#327B55]" : "bg-[#FBF2F1] text-[#A04F4B]")}>{status.type === "success" ? <FiCheckCircle className="shrink-0" /> : <FiInfo className="shrink-0" />}{status.message}</div>}
@@ -312,8 +312,8 @@ const MyProfilePage: React.FC = () => {
                 </div>
               </div>
               <div className="mt-5 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                <Button type="button" variant="outline" size="sm" onClick={resetPasswordForm} disabled={isSubmitting}>Cancel</Button>
-                <Button type="submit" size="sm" isLoading={isSubmitting} disabled={isSubmitting || (!!newPassword && newPassword !== confirmPassword)}><FiCheck className="mr-1.5" />Save password</Button>
+                <Button type="button" variant="outline" size="md" onClick={resetPasswordForm} disabled={isSubmitting}>Cancel</Button>
+                <Button type="submit" size="md" isLoading={isSubmitting} disabled={isSubmitting || (!!newPassword && newPassword !== confirmPassword)}><FiCheck className="mr-1.5" />Save password</Button>
               </div>
             </form>
           )}

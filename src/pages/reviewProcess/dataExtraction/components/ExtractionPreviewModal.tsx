@@ -240,7 +240,7 @@ export default function ExtractionPreviewModal({
             </div>
           </>
         ) : (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary px-6 py-16 text-center">
+          <div className="rounded-xl border border-dashed border-border bg-bg-secondary px-6 py-16 text-center">
             <p className="text-base font-semibold text-text-primary">
               No preview data available
             </p>

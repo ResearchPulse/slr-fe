@@ -51,12 +51,20 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
   const hasMoreReasons = exclusionReasons.length >= reasonPageSize;
 
   useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(panelRef.current, {
+        y: selectedCount > 0 ? 0 : 100,
+        opacity: selectedCount > 0 ? 1 : 0,
+      });
+      return;
+    }
+
     if (selectedCount > 0) {
       gsap.to(panelRef.current, {
         y: 0,
         opacity: 1,
-        duration: 0.5,
-        ease: "power3.out",
+        duration: 0.2,
+        ease: "power2.out",
       });
     } else {
       gsap.to(panelRef.current, {
@@ -117,23 +125,23 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-3xl px-4 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
+      className="fixed bottom-4 left-1/2 z-(--z-index-dropdown) max-h-[calc(100dvh-2rem)] w-full max-w-3xl -translate-x-1/2 overflow-y-auto px-3 opacity-0 translate-y-[100px] sm:bottom-6 sm:px-4"
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 text-white overflow-visible relative">
+      <div className="relative overflow-visible rounded-xl border border-border bg-surface-white p-4 text-text-primary shadow-xl sm:p-6">
         <div className="flex flex-col gap-6 relative">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
             {/* Section 1: Stats */}
             <div className="flex items-center gap-4 flex-shrink-0">
-              <div className="bg-accent p-3 rounded-xl shadow-inner ring-4 ring-accent/20">
-                <CheckCircle2 className="w-6 h-6" />
+              <div className="rounded-xl bg-primary-light p-3 text-primary ring-4 ring-primary/10">
+                <CheckCircle2 aria-hidden="true" className="w-6 h-6" />
               </div>
               <div>
-                <div className="text-[10px] text-indigo-400 font-bold uppercase tracking-widest mb-0.5">
+                <div className="mb-0.5 text-[10px] font-bold uppercase tracking-widest text-text-secondary">
                   Quick Decision
                 </div>
-                <div className="text-xl font-black flex items-center gap-2 tabular-nums">
+                <div className="flex items-center gap-2 text-xl font-bold tabular-nums text-text-primary">
                   <span>{selectedCount}</span>
-                  <span className="text-text-secondary text-xs font-medium uppercase">
+                  <span className="text-xs font-medium uppercase text-text-secondary">
                     Papers Selected
                   </span>
                 </div>
@@ -141,19 +149,20 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
             </div>
 
             {/* Section 2: Action Buttons */}
-            <div className="flex flex-col items-end gap-2 flex-shrink-0">
+            <div className="flex w-full flex-col items-stretch gap-2 sm:w-auto sm:items-end">
               {!isLoadingReasons && exclusionReasons.length === 0 && (
-                <div className="animate-in fade-in slide-in-from-bottom-1 duration-500">
-                  <span className="text-amber-500 text-[9px] font-black uppercase tracking-widest bg-amber-500/10 px-2 py-1 rounded border border-amber-500/20">
+                <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-150 motion-reduce:animate-none">
+                  <span className="rounded-lg border border-warning/20 bg-warning/10 px-2 py-1 text-[10px] font-semibold leading-5 text-warning">
                     Please import exclusion reason code to exclude papers
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col-reverse gap-2 sm:flex-row">
                 {decisionType === "exclude" && (
                   <Button
                     onClick={() => setDecisionType(null)}
-                    className="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3 px-6 rounded-xl border-none transition-all active:scale-95"
+                    variant="secondary"
+                    className="min-w-28"
                   >
                     Cancel
                   </Button>
@@ -165,10 +174,12 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
                     isSubmitting ||
                     isLoadingReasons
                   }
-                  className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-xl shadow-none shadow-green-900/40 border-none transition-all active:scale-95 flex items-center gap-2 disabled:opacity-40"
+                  aria-busy={isSubmitting && decisionType !== "exclude"}
+                  variant="success"
+                  className="min-w-28"
                 >
                   {isSubmitting && decisionType !== "exclude" ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
                   ) : null}
                   Include
                 </Button>
@@ -180,10 +191,12 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
                     isLoadingReasons ||
                     exclusionReasons.length === 0
                   }
-                  className="bg-red-600 hover:bg-red-500 text-white font-bold py-3 px-6 rounded-xl shadow-none shadow-red-900/40 border-none transition-all active:scale-95 flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                  aria-busy={isSubmitting && decisionType === "exclude"}
+                  variant="danger"
+                  className="min-w-28"
                 >
                   {isSubmitting && decisionType === "exclude" ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
                   ) : null}
                   {decisionType === "exclude" ? "Confirm Exclusion" : "Exclude"}
                 </Button>
@@ -193,10 +206,10 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
 
           {/* Section 3: Exclusion Options - Only shown when Exclude is selected */}
           {decisionType === "exclude" && (
-            <div className="flex flex-col sm:flex-row gap-4 p-4 bg-slate-800/50 rounded-xl border border-slate-700/50 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex flex-col gap-4 rounded-xl border border-border bg-bg-secondary p-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-200 motion-reduce:animate-none sm:flex-row">
               <div className="flex-1">
-                <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest mb-2 block ml-1">
-                  Exclusion Reason <span className="text-red-500">*</span>
+                <label className="mb-2 ml-1 block text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
+                  Exclusion Reason <span className="text-error">*</span>
                 </label>
                 <div className="relative group">
                   <Select
@@ -207,7 +220,7 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
                       label: r.name,
                     }))}
                     placeholder="Select a reason..."
-                    className="!py-3.5 !text-xs !font-bold !bg-slate-900 !border-slate-700 !text-white !rounded-xl transition-all hover:!bg-slate-800 focus:!ring-4 focus:!ring-accent/20"
+                    className="!min-h-11 !rounded-xl !border-border !bg-surface-white !py-3 !text-xs !font-medium !text-text-primary transition-colors hover:!bg-bg-primary focus:!ring-2 focus:!ring-primary/30 motion-reduce:transition-none"
                   />
 
                   {/* Show More / Reset Reasons Button */}
@@ -222,7 +235,7 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
                           setReasonPageSize(5);
                         }
                       }}
-                      className="mt-2 text-[10px] font-black uppercase text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1.5 px-1 py-0.5"
+                      className="mt-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-[10px] font-semibold uppercase text-primary transition-colors hover:bg-primary-light hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                     >
                       {hasMoreReasons ? (
                         <>
@@ -241,14 +254,14 @@ const QuickDecisionPanel: React.FC<QuickDecisionPanelProps> = ({
               </div>
 
               <div className="flex-1">
-                <label className="text-[10px] font-black uppercase text-text-secondary tracking-widest mb-2 block ml-1">
+                <label className="mb-2 ml-1 block text-[10px] font-semibold uppercase tracking-widest text-text-secondary">
                   Resolution Notes (Optional)
                 </label>
                 <textarea
                   placeholder="Explain why these papers are being excluded..."
                   value={resolutionNotes}
                   onChange={(e) => setResolutionNotes(e.target.value)}
-                  className="w-full bg-slate-900 border-slate-700 border-2 rounded-xl text-[11px] font-medium px-4 py-3 min-h-[50px] focus:ring-4 focus:ring-accent/20 focus:bg-slate-900 focus:border-accent transition-all outline-none resize-none text-white overflow-hidden"
+                  className="min-h-20 w-full resize-y overflow-hidden rounded-xl border border-border bg-surface-white px-4 py-3 text-sm font-medium text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                 />
               </div>
             </div>

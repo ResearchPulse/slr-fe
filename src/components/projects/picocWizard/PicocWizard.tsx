@@ -148,7 +148,7 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
             <div className="rounded-xl border border-border bg-bg-primary/60 p-4">
               <p className="text-sm font-semibold text-text-primary">Ready to set up the PICOC?</p>
               <p className="mt-1 text-xs leading-5 text-text-secondary">Generate a small set of suggestions for all five components in one AI request, then review them one step at a time.</p>
-              <button type="button" disabled={!draft.researchField || batchLoading} onClick={() => void generateAllSuggestions(true)} className="mt-3 inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary px-4 text-xs font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
+              <button type="button" disabled={!draft.researchField || batchLoading} onClick={() => void generateAllSuggestions(true)} className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-xs font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
                 <FiRefreshCw aria-hidden className={batchLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} /> {batchLoading ? "Generating all five steps…" : "Generate PICOC suggestions"}
               </button>
             </div>
@@ -175,7 +175,7 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
                     setSemanticState("failed");
                   }
                 }}
-                className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {semanticState === "running" ? "Checking…" : "Run AI consistency check (G3, G5)"}
               </button>
@@ -183,12 +183,12 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
               {semanticState === "failed" ? <span role="alert" className="text-text-primary">The AI check could not run. Try again later.</span> : null}
             </div>
             <div className="flex flex-wrap gap-2">
-              <button type="button" disabled={saveStatus === "saving"} onClick={() => void handleSaveDraft()} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70">
+              <button type="button" disabled={saveStatus === "saving"} onClick={() => void handleSaveDraft()} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 disabled:cursor-wait disabled:opacity-70">
                 {saveStatus === "saving" ? <FiRefreshCw aria-hidden className="motion-safe:animate-spin motion-reduce:animate-none" /> : <FiCheck aria-hidden />}
                 {saveStatus === "saving" ? "Saving…" : "Save draft"}
               </button>
-              <button type="button" onClick={() => void download(projectId, "md")} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary"><FiDownload aria-hidden /> Markdown</button>
-              <button type="button" onClick={() => void download(projectId, "json")} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary"><FiDownload aria-hidden /> JSON</button>
+              <button type="button" onClick={() => void download(projectId, "md")} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary"><FiDownload aria-hidden /> Markdown</button>
+              <button type="button" onClick={() => void download(projectId, "json")} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary"><FiDownload aria-hidden /> JSON</button>
             </div>
           </section>
         );
@@ -207,7 +207,7 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
             <p className="mt-1 text-xs text-text-secondary">You can leave at any time — progress is saved and you will resume here.</p>
           </div>
           <p aria-live="polite" className={`inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 text-xs font-medium ${saveStatus === "error" || saveStatus === "conflict" ? "border-warning/30 bg-warning/10 text-warning" : "border-border bg-bg-primary text-text-secondary"}`}>
-            {saveStatus === "saved" ? <FiCheck aria-hidden /> : saveStatus === "saving" ? <FiRefreshCw className="animate-spin" aria-hidden /> : null}
+            {saveStatus === "saved" ? <FiCheck aria-hidden /> : saveStatus === "saving" ? <FiRefreshCw className="motion-safe:animate-spin motion-reduce:animate-none" aria-hidden /> : null}
             {SAVE_TEXT[saveStatus] || "Autosave on"}
           </p>
         </div>
@@ -222,30 +222,30 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
       {saveStatus === "conflict" ? (
         <div role="alert" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4 text-sm text-text-primary">
           <span>Someone else saved this PICOC. Your latest changes were not saved. Reload to continue from their version.</span>
-          <button type="button" onClick={() => void reload()} className="min-h-9 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary">Reload</button>
+          <button type="button" onClick={() => void reload()} className="min-h-11 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary">Reload</button>
         </div>
       ) : null}
 
       {batchError ? (
         <div role="status" className="flex justify-end rounded-xl border border-border bg-bg-primary/60 p-3">
-          <button type="button" disabled={batchLoading} onClick={() => void generateAllSuggestions()} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold hover:bg-bg-secondary disabled:opacity-50">
+          <button type="button" disabled={batchLoading} onClick={() => void generateAllSuggestions()} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold hover:bg-bg-secondary disabled:opacity-50">
             <FiRefreshCw aria-hidden className={batchLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} />
             {batchLoading ? "Retrying…" : "Retry"}
           </button>
         </div>
       ) : null}
 
-      <div className="grid items-start gap-4 lg:grid-cols-[208px_minmax(0,1fr)_300px] xl:gap-5">
+      <div className="grid min-w-0 grid-cols-1 items-start gap-4 lg:grid-cols-[208px_minmax(0,1fr)_300px] xl:gap-5">
         <nav aria-label="PICOC steps" className="rounded-xl border border-border bg-surface-white p-2 lg:sticky lg:top-4">
           <p className="px-3 pb-2 pt-1 text-[11px] font-semibold text-text-secondary">YOUR QUESTION</p>
-          <ol className="flex gap-1 overflow-x-auto lg:flex-col">
+          <ol className="grid grid-cols-2 gap-1 lg:flex lg:flex-col">
             {WIZARD_STEPS.map((item, index) => (
-              <li key={item} className="min-w-max lg:min-w-0">
+              <li key={item} className="min-w-0">
                 <button
                   type="button"
                   aria-current={item === step ? "step" : undefined}
                   onClick={() => goTo(item)}
-                  className={`flex min-h-10 w-full items-center gap-2 rounded-lg px-2.5 text-left text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${item === step ? "bg-primary-light text-primary" : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"}`}
+                  className={`flex min-h-11 w-full items-center gap-1.5 rounded-lg px-1.5 text-left text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:gap-2 lg:px-2.5 lg:text-xs ${item === step ? "bg-primary-light text-primary" : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"}`}
                 >
                   <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-[11px] ${item === step ? "bg-primary text-white" : "bg-bg-secondary text-text-secondary"}`}>{index + 1}</span>
                   <span>{STEP_LABELS[item]}</span>
@@ -258,11 +258,11 @@ const PicocWizard: React.FC<PicocWizardProps> = ({ projectId, canEdit, onScopeCo
         <main className="min-w-0 rounded-xl border border-border bg-surface-white p-4 sm:p-6">
           {renderStep()}
           <div className="mt-6 flex justify-between border-t border-border pt-4">
-            <button type="button" disabled={stepIndex === 0} onClick={() => goTo(WIZARD_STEPS[stepIndex - 1])} className="inline-flex min-h-10 items-center gap-2 rounded-lg border border-border bg-surface-white px-4 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">
+            <button type="button" disabled={stepIndex === 0} onClick={() => goTo(WIZARD_STEPS[stepIndex - 1])} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-4 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">
               <FiArrowLeft aria-hidden /> Back
             </button>
             {stepIndex < WIZARD_STEPS.length - 1 ? (
-              <button type="button" onClick={() => goTo(WIZARD_STEPS[stepIndex + 1])} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
+              <button type="button" onClick={() => goTo(WIZARD_STEPS[stepIndex + 1])} className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2">
                 Continue <FiArrowRight aria-hidden />
               </button>
             ) : null}

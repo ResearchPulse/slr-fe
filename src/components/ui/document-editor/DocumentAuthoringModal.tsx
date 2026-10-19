@@ -81,15 +81,15 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
       size="xl"
       className="max-w-[95vw] h-[90vh]"
     >
-      <div className="flex h-[calc(90vh-180px)] -m-8 overflow-hidden bg-white">
+      <div className="flex h-[calc(90vh-180px)] -mx-4 -my-4 overflow-hidden bg-surface-white sm:-mx-6 sm:-my-6">
         {/* Left Side: Editor */}
-        <div className="w-full md:w-[45%] lg:w-[40%] border-r border-slate-100 h-full flex flex-col bg-slate-50/30">
-          <div className="p-4 border-b border-slate-100/50 bg-white/50 backdrop-blur-sm sticky top-0 z-10">
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <div className="w-full md:w-[45%] lg:w-[40%] border-r border-border h-full flex flex-col bg-bg-secondary/30">
+          <div className="p-4 border-b border-border/60 bg-surface-white/80 backdrop-blur-sm sticky top-0 z-10">
+            <span className="text-[10px] font-black uppercase tracking-widest text-text-muted">
               Editor Workspace
             </span>
           </div>
-          <div className="flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-200 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-300 transition-colors">
+          <div className="flex-1 overflow-y-auto p-6 md:p-8 xl:p-10 [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-border [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-text-muted transition-colors">
             <div className="max-w-2xl mx-auto">
               <EditorPanel
                 onSubmit={onSubmit}
@@ -103,7 +103,7 @@ export const DocumentAuthoringModal: React.FC<DocumentAuthoringModalProps> = ({
         </div>
 
         {/* Right Side: Live Preview */}
-        <div className="hidden md:block flex-1 h-full bg-slate-50/50">
+        <div className="hidden md:block flex-1 h-full bg-bg-secondary/50">
           <PreviewPanel
             localDraft={localDraft}
             onImport={handleImport}

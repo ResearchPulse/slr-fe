@@ -67,7 +67,7 @@ export default function AssessmentQueue({
             placeholder="Search title, author..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary/50 focus:bg-surface-white focus:ring-4 focus:ring-primary/10"
+            className="min-h-11 w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-9 pr-3 text-sm text-text-primary outline-none transition placeholder:text-text-muted focus:border-primary/50 focus:bg-surface-white focus:ring-4 focus:ring-primary/10 motion-reduce:transition-none"
           />
         </div>
       </div>
@@ -90,21 +90,21 @@ export default function AssessmentQueue({
 
           let StatusIcon = FiClock;
           let iconColor = "text-text-secondary";
-          let barColor = "bg-gray-300";
+          let barColor = "bg-bg-secondary";
 
           if (resolutionLabel === "HighQuality") {
             StatusIcon = FiCheckCircle;
-            iconColor = "text-emerald-600";
-            barColor = "bg-emerald-500";
+            iconColor = "text-success";
+            barColor = "bg-success";
           } else if (resolutionLabel === "LowQuality") {
             StatusIcon = FiAlertCircle;
-            iconColor = "text-rose-500";
-            barColor = "bg-rose-400";
+            iconColor = "text-error";
+            barColor = "bg-error";
           } else if (percentage === 100 && !isLeader) {
             // only show as completed if resolution is done for leaders, for non-leaders show as completed if assessment is done (100% completion)
             StatusIcon = FiCheckCircle;
-            iconColor = "text-green-500";
-            barColor = "bg-green-500";
+            iconColor = "text-success";
+            barColor = "bg-success";
           } else if (percentage > 0) {
             StatusIcon = FiClock;
             iconColor = "text-accent";
@@ -147,18 +147,18 @@ export default function AssessmentQueue({
                     <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-bg-secondary">
                       <div
                         className={cn(
-                          "h-full rounded-full transition-all",
+                          "h-full rounded-full transition-[width] duration-200 motion-reduce:transition-none",
                           barColor,
                         )}
                         style={{ width: `${percentage}%` }}
                       />
                     </div>
                     {resolutionLabel === "HighQuality" ? (
-                      <span className="text-[10px] bg-emerald-50 text-emerald-700 px-2 py-0.5 border border-emerald-100 rounded-full font-semibold">
+                      <span className="text-[10px] bg-success/10 text-success px-2 py-0.5 border border-success/20 rounded-full font-semibold">
                         High Quality
                       </span>
                     ) : resolutionLabel === "LowQuality" ? (
-                      <span className="text-[10px] bg-rose-50 text-rose-700 px-2 py-0.5 border border-rose-100 rounded-full font-semibold">
+                      <span className="text-[10px] bg-error/10 text-error px-2 py-0.5 border border-error/20 rounded-full font-semibold">
                         Low Quality
                       </span>
                     ) : (
@@ -192,6 +192,7 @@ export default function AssessmentQueue({
           currentPage={currentPage}
           totalPages={totalPages || 1}
           onPageChange={onPageChange}
+          compact
         />
       </div>
     </div>

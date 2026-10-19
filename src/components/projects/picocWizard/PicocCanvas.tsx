@@ -19,7 +19,7 @@ const PicocCanvas: React.FC<PicocCanvasProps> = ({ draft, onSelectStep }) => {
     <button
       type="button"
       onClick={() => onSelectStep(step)}
-      className="rounded-sm text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      className="inline-flex min-h-11 items-center rounded-sm px-1 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
     >
       {label}
     </button>

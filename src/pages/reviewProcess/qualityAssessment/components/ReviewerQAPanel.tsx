@@ -176,21 +176,21 @@ export default function ReviewerQAPanel({
                   <button
                     onClick={() => handleSelect(crit.criterionId, 0)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isYes ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${isYes ? "bg-success/10 border-success/40 text-success" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiCheck /> Yes
                   </button>
                   <button
                     onClick={() => handleSelect(crit.criterionId, 1)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isNo ? "bg-rose-50 border-rose-500 text-rose-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${isNo ? "bg-error/10 border-error/40 text-error" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiX /> No
                   </button>
                   <button
                     onClick={() => handleSelect(crit.criterionId, 2)}
                     disabled={hasResolution}
-                    className={`flex-1 flex justify-center items-center gap-1.5 py-1.5 text-xs font-medium border rounded-xl transition ${isUnclear ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`flex min-h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border py-1.5 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${isUnclear ? "bg-warning/10 border-warning/40 text-warning" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"} ${hasResolution ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
                     <FiHelpCircle /> Unclear
                   </button>
@@ -207,7 +207,7 @@ export default function ReviewerQAPanel({
                         handleCommentChange(crit.criterionId, e.target.value)
                       }
                       disabled={hasResolution}
-                      className={`w-full rounded-xl border border-border py-2 pl-8 pr-3 text-xs outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 ${hasResolution ? "cursor-not-allowed bg-bg-primary opacity-50" : ""}`}
+                      className={`min-h-11 w-full rounded-xl border border-border py-2 pl-8 pr-3 text-sm outline-none transition-colors focus:border-primary/50 focus:ring-4 focus:ring-primary/10 motion-reduce:transition-none ${hasResolution ? "cursor-not-allowed bg-bg-primary opacity-50" : ""}`}
                     />
                   </div>
                 </div>

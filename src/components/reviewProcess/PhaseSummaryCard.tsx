@@ -31,7 +31,7 @@ export default function PhaseSummaryCard({
     switch (status) {
       case "completed":
         return (
-          <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+          <span className="inline-flex items-center gap-1 px-2 py-1 bg-success/10 text-success text-xs font-medium rounded-full">
             <FiCheck className="w-3 h-3" />
             Completed
           </span>
@@ -39,7 +39,7 @@ export default function PhaseSummaryCard({
       case "current":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary-light text-accent text-xs font-medium rounded-full">
-            <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+            <div className="w-2 h-2 bg-primary rounded-full" />
             Active
           </span>
         );
@@ -58,11 +58,11 @@ export default function PhaseSummaryCard({
   const getStatColorClass = (variant?: string) => {
     switch (variant) {
       case "success":
-        return "text-green-700";
+        return "text-success";
       case "warning":
-        return "text-yellow-700";
+        return "text-warning";
       case "danger":
-        return "text-red-700";
+        return "text-error";
       default:
         return "text-text-primary";
     }
@@ -83,7 +83,7 @@ export default function PhaseSummaryCard({
 
   return (
     <div
-      className={`border-2 rounded-xl p-5 transition-all duration-200 hover:shadow-none ${getBorderClass()}`}
+      className={`rounded-xl border-2 p-5 transition-[border-color,box-shadow] duration-200 hover:shadow-sm motion-reduce:transition-none ${getBorderClass()}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">

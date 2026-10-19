@@ -12,14 +12,18 @@ const EMPTY_SEARCH_SOURCES: SearchSourceDto[] = [];
 export const useSearchSources = (projectId: string) => {
   const queryClient = useQueryClient();
 
-  const { data: searchSources, isLoading: isLoadingSources } = useQuery({
+  const searchSourcesQuery = useQuery({
     queryKey: QUERY_KEYS.searchSources.byProject(projectId),
     queryFn: async () => {
       const response = await searchSourceService.getByProjectId(projectId);
+      if (!response.isSuccess) {
+        throw new Error(response.message || "Failed to load search sources");
+      }
       return response.data;
     },
     enabled: !!projectId,
   });
+  const { data: searchSources, isLoading: isLoadingSources } = searchSourcesQuery;
 
   const { data: availableMasterSources, isLoading: isLoadingMasterSources } = useQuery({
     queryKey: QUERY_KEYS.masterSources.all,
@@ -83,6 +87,8 @@ export const useSearchSources = (projectId: string) => {
   return {
     searchSources: searchSources || EMPTY_SEARCH_SOURCES,
     isLoadingSources,
+    searchSourcesError: searchSourcesQuery.error,
+    refetchSearchSources: searchSourcesQuery.refetch,
     availableMasterSources: availableMasterSources || [],
     isLoadingMasterSources,
     bulkUpsert,

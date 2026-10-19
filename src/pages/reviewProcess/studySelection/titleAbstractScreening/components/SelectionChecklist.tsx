@@ -7,11 +7,13 @@ import {
   FiClipboard,
   FiMaximize2,
   FiExternalLink,
+  FiLoader,
 } from "react-icons/fi";
 import { studySelectionChecklistSubmissionService } from "../../../../../services/studySelectionChecklistSubmissionService";
 import { PreviewDocument } from "../../../../../components/ui/document-editor/PreviewDocument";
 import ConfirmModal from "../../../../../components/ui/ConfirmModal";
 import Modal from "../../../../../components/ui/Modal";
+import Button from "../../../../../components/ui/Button";
 import LoadingSpinner from "../../../../../components/ui/LoadingSpinner";
 import type { RootState } from "../../../../../redux/store";
 import type { ScreeningPaper } from "../types";
@@ -120,7 +122,7 @@ export default function SelectionChecklist({
     return (
       <div className="flex flex-col h-full bg-surface-white border-l border-border">
         <div className="flex flex-col items-center justify-center h-full text-center px-4">
-          <FiClipboard className="w-8 h-8 text-gray-300 mb-3" />
+          <FiClipboard aria-hidden="true" className="mb-3 h-8 w-8 text-text-tertiary" />
           <p className="text-sm text-text-secondary">
             Select a paper to view the checklist
           </p>
@@ -140,10 +142,10 @@ export default function SelectionChecklist({
   if (error || !data?.data) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-8 text-center bg-surface-white border-l border-border">
-        <div className="w-16 h-16 bg-bg-secondary text-slate-300 rounded-xl flex items-center justify-center mb-4 border border-dashed border-border">
-          <FiClipboard className="w-8 h-8" />
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl border border-dashed border-border bg-bg-secondary text-text-tertiary">
+          <FiClipboard aria-hidden="true" className="w-8 h-8" />
         </div>
-        <h3 className="text-sm font-bold text-slate-800 mb-2">
+        <h3 className="mb-2 text-sm font-bold text-text-primary">
           {error ? "Service Unavailable" : "No Checklist Found"}
         </h3>
         <p className="text-xs text-text-secondary max-w-[200px] leading-relaxed">
@@ -211,27 +213,34 @@ export default function SelectionChecklist({
     submitMutation.mutate(finalSubmission);
   };
 
-  const renderStatusIndicator = (isChecked: boolean, onToggle: () => void) => (
+  const renderStatusIndicator = (
+    isChecked: boolean,
+    label: string,
+    onToggle: () => void,
+  ) => (
     <button
+      type="button"
+      aria-label={`${label}: ${isChecked ? "meets criteria" : "does not meet criteria"}`}
+      aria-pressed={isChecked}
       onClick={(e) => {
         e.stopPropagation();
         onToggle();
       }}
       disabled={!submission.isFromTemplate}
       className={cn(
-        "w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-all shrink-0 shadow-none",
+        "inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-full border transition-[color,background-color,border-color,transform] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none",
         submission.isFromTemplate
-          ? "cursor-pointer hover:scale-110 active:scale-95"
+          ? "cursor-pointer hover:-translate-y-px active:translate-y-0"
           : "cursor-default opacity-80",
         isChecked
-          ? "bg-emerald-500 border-emerald-200 text-white fill-white"
-          : "bg-rose-500 border-rose-200 text-white fill-white",
+          ? "border-success/30 bg-success/10 text-success"
+          : "border-error/30 bg-error/10 text-error",
       )}
     >
       {isChecked ? (
-        <FiCheck className="w-4.5 h-4.5 stroke-[3]" />
+        <FiCheck aria-hidden="true" className="h-4 w-4 stroke-[3]" />
       ) : (
-        <FiX className="w-4 h-4 stroke-[3]" />
+        <FiX aria-hidden="true" className="h-4 w-4 stroke-[3]" />
       )}
     </button>
   );
@@ -244,20 +253,20 @@ export default function SelectionChecklist({
           <FiClipboard className="w-8 h-8" />
         </div>
         <div className="space-y-1">
-          <h3 className="text-sm font-bold text-slate-800">Checklist Ready</h3>
+          <h3 className="text-sm font-bold text-text-primary">Checklist Ready</h3>
           <p className="text-xs text-text-secondary max-w-[200px]">
             The screening checklist for "{paper.title.slice(0, 40)}..." is
             available.
           </p>
         </div>
 
-        <button
+        <Button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-5 py-2.5 bg-surface-white border border-border text-text-primary text-sm font-semibold rounded-xl hover:bg-bg-secondary hover:border-slate-300 active:scale-95 transition-all shadow-none"
+          variant="secondary"
         >
-          <FiMaximize2 className="w-4 h-4" />
+          <FiMaximize2 aria-hidden="true" className="w-4 h-4" />
           Expand Checklist
-        </button>
+        </Button>
       </div>
 
       {/* Main Checklist Modal */}
@@ -269,40 +278,54 @@ export default function SelectionChecklist({
         size="xl"
       >
         <div className="flex flex-col gap-6">
-          <div className="bg-bg-secondary/50 rounded-xl border border-border p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
+          <div className="max-h-[70vh] overflow-y-auto rounded-xl border border-border bg-bg-secondary/50 p-3 custom-scrollbar sm:p-5">
             <PreviewDocument
               draft={mappedDraft as any}
               renderSectionTitle={(section) =>
-                renderStatusIndicator(!!section.isChecked, () =>
-                  toggleSection(section.id),
+                renderStatusIndicator(
+                  !!section.isChecked,
+                  `Section ${section.title || "checklist section"}`,
+                  () => toggleSection(section.id),
                 )
               }
               renderItem={(item) =>
-                renderStatusIndicator(!!item.isChecked, () => toggleItem(item.id))
+                renderStatusIndicator(
+                  !!item.isChecked,
+                  item.text || "Checklist item",
+                  () => toggleItem(item.id),
+                )
               }
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-4">
+          <div className="mt-2 flex flex-col-reverse justify-end gap-2 sm:flex-row sm:gap-3">
             {submission.isFromTemplate && (
               <>
-                <button
+                <Button
                   onClick={handleCloseModal}
-                  className="px-6 py-3 text-sm font-bold text-text-secondary hover:text-slate-800 transition-colors"
+                  variant="secondary"
                 >
                   Close
-                </button>
+                </Button>
 
-                <button
+                <Button
                   onClick={() => setIsConfirmModalOpen(true)}
                   disabled={submitMutation.isPending}
-                  className="flex items-center gap-2 px-8 py-3 bg-slate-900 text-white font-bold text-sm rounded-xl hover:bg-slate-800 disabled:bg-slate-400 active:scale-[0.98] transition-all shadow-none shadow-slate-200"
+                  aria-busy={submitMutation.isPending}
+                  variant="success"
                 >
-                  <FiExternalLink className="w-4 h-4" />
+                  {submitMutation.isPending ? (
+                    <FiLoader
+                      aria-hidden="true"
+                      className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none"
+                    />
+                  ) : (
+                    <FiExternalLink aria-hidden="true" className="w-4 h-4" />
+                  )}
                   {submitMutation.isPending
                     ? "Submitting..."
                     : "Accept Submission"}
-                </button>
+                </Button>
               </>
             )}
           </div>

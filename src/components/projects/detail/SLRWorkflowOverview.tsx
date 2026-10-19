@@ -111,7 +111,7 @@ export default function SLRWorkflowOverview({
           <button
             type="button"
             onClick={onRetryProcesses}
-            className="inline-flex min-h-8 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-border px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           >
             <FiRefreshCw aria-hidden="true" /> Retry status
           </button>

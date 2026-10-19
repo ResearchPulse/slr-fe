@@ -105,7 +105,7 @@ export default function SetupWizardFlow({
         )}
 
         {!isAnalyzingIdea && currentStep === 1 && (
-          <section>
+          <section className="ui-section-enter">
             <h2 className="mb-1 text-xl font-bold text-text-primary">
               Step 1: Research idea
             </h2>
@@ -117,7 +117,7 @@ export default function SetupWizardFlow({
             <FieldLabel title="Research Topic / Raw Idea" />
             <textarea
               rows={7}
-              className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-bg-secondary px-4 py-3 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               placeholder="Describe your idea..."
               value={topic}
               onChange={(e) => onTopicChange(e.target.value)}
@@ -128,7 +128,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(2)}
                 disabled={!topic.trim()}
-                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -137,7 +137,7 @@ export default function SetupWizardFlow({
         )}
 
         {!isGeneratingPicoc && !isAnalyzingIdea && currentStep === 2 && (
-          <section>
+          <section className="ui-section-enter">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="mb-1 text-xl font-bold text-text-primary">
@@ -151,7 +151,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={onAnalyzeIdea}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Generate suggestions
               </button>
@@ -164,7 +164,7 @@ export default function SetupWizardFlow({
                   rows={3}
                   value={scopeForm.objectives}
                   onChange={(e) => onScopeChange("objectives", e.target.value)}
-                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
               <div className="rounded-xl border border-border bg-surface-white p-4">
@@ -173,7 +173,7 @@ export default function SetupWizardFlow({
                   rows={3}
                   value={scopeForm.domain}
                   onChange={(e) => onScopeChange("domain", e.target.value)}
-                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
               </div>
             </div>
@@ -182,7 +182,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(1)}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Back
               </button>
@@ -190,7 +190,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(3)}
                 disabled={!isStep2Valid}
-                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -203,7 +203,7 @@ export default function SetupWizardFlow({
         )}
 
         {!isGeneratingRQ && !isGeneratingPicoc && currentStep === 3 && (
-          <section>
+          <section className="ui-section-enter">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="mb-1 text-xl font-bold text-text-primary">
@@ -218,7 +218,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGeneratePicoc}
                 disabled={!isStep2Valid}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Generate suggestions
               </button>
@@ -274,13 +274,13 @@ export default function SetupWizardFlow({
                     rows={rows}
                     value={picocForm[key]}
                     onChange={(e) => onPicocChange(key, e.target.value)}
-                    className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                    className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-accent focus:ring-2 focus:ring-accent/10"
                   />
                   <div className="mt-2 text-right">
                     <button
                       type="button"
                       onClick={() => onPicocChange(key, "")}
-                      className="text-xs font-medium text-text-secondary transition hover:text-text-primary"
+                      className="inline-flex min-h-11 items-center rounded-md px-2 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                     >
                       Clear
                     </button>
@@ -293,7 +293,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(2)}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Back
               </button>
@@ -301,7 +301,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={() => onSetCurrentStep(4)}
                 disabled={!isStep3Valid}
-                className="rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-6 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
               </button>
@@ -314,7 +314,7 @@ export default function SetupWizardFlow({
         )}
 
         {!isGeneratingRQ && currentStep === 4 && (
-          <section>
+          <section className="ui-section-enter">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
               <div>
                 <h2 className="mb-1 text-xl font-bold text-text-primary">
@@ -328,7 +328,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onGenerateRQ}
                 disabled={!isStep3Valid}
-                className="inline-flex items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Generate suggestions
               </button>
@@ -387,7 +387,7 @@ export default function SetupWizardFlow({
 
             <div className="grid gap-4">
               {rqOptions.length === 0 && (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                <div className="rounded-xl border border-warning/20 bg-warning/10 p-3 text-sm text-warning">
                   No suggestions were returned. Please add custom research
                   questions manually.
                 </div>
@@ -401,7 +401,7 @@ export default function SetupWizardFlow({
                     key={option}
                     onClick={() => onToggleSuggestedRQ(index)}
                     className={[
-                      "w-full rounded-xl border p-4 text-left transition",
+                      "w-full rounded-xl border p-4 text-left transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40",
                       selected
                         ? "border-accent bg-bg-secondary"
                         : "border-border bg-surface-white hover:border-border",
@@ -426,14 +426,14 @@ export default function SetupWizardFlow({
                   value={customRQInput}
                   onChange={(e) => onCustomRQInputChange(e.target.value)}
                   placeholder="Write a custom research question, then click Add"
-                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                  className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-accent focus:ring-2 focus:ring-accent/10"
                 />
                 <div className="flex justify-end">
                   <button
                     type="button"
                     onClick={onAddCustomRQ}
                     disabled={!customRQInput.trim()}
-                    className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     Add Custom RQ
                   </button>
@@ -450,7 +450,7 @@ export default function SetupWizardFlow({
                         <button
                           type="button"
                           onClick={() => onRemoveCustomRQ(index)}
-                          className="shrink-0 text-xs font-medium text-text-secondary transition hover:text-text-primary"
+                          className="inline-flex min-h-11 shrink-0 items-center rounded-md px-2 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                         >
                           Remove
                         </button>
@@ -465,14 +465,14 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(3)}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={onConfirmAndReview}
-                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Confirm & Review
               </button>
@@ -481,7 +481,7 @@ export default function SetupWizardFlow({
         )}
 
         {currentStep === 5 && (
-          <section>
+          <section className="ui-section-enter">
             <h2 className="mb-1 text-xl font-bold text-text-primary">
               Step 5: Summary & Finalization
             </h2>
@@ -600,7 +600,7 @@ export default function SetupWizardFlow({
               <button
                 type="button"
                 onClick={() => onSetCurrentStep(4)}
-                className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Back
               </button>
@@ -608,7 +608,7 @@ export default function SetupWizardFlow({
                 type="button"
                 onClick={onSaveWizardSetup}
                 disabled={isSavingSetup}
-                className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSavingSetup ? "Saving..." : "Save Details"}
               </button>

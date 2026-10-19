@@ -16,8 +16,8 @@ import {
   FiRefreshCw,
   FiSearch,
 } from "react-icons/fi";
-import { motion } from "framer-motion";
 import Button from "../ui/Button";
+import Drawer from "../ui/Drawer";
 import { toastSuccess, toastError } from "../../utils/toast";
 import type { SearchSourceDto } from "../../types/searchSource";
 import type { SearchStrategyDto } from "./types/search-strategy";
@@ -30,6 +30,8 @@ import { searchSourceService } from "../../services/searchSourceService";
 interface SearchStrategyFormProps {
   projectId: string;
   source: SearchSourceDto;
+  isOpen: boolean;
+  onExited: () => void;
   onSave: (strategy: SearchStrategyDto) => void;
   onClose: () => void;
   isLeader?: boolean;
@@ -71,6 +73,8 @@ const STUDY_TYPE_OPTIONS = [
 export default function SearchStrategyForm({
   projectId,
   source,
+  isOpen,
+  onExited,
   onSave,
   onClose,
   isLeader = false,
@@ -271,54 +275,54 @@ export default function SearchStrategyForm({
   };
 
   return (
-    <div className="fixed inset-0 z-(--z-index-drawer) flex justify-end">
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="absolute inset-0 bg-slate-900/40"
-      />
-
-      <motion.div
-        initial={{ x: "100%" }}
-        animate={{ x: 0 }}
-        exit={{ x: "100%" }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
-        className="relative w-full max-w-2xl bg-surface-white h-full shadow-2xl flex flex-col"
-      >
+    <Drawer
+      isOpen={isOpen}
+      onClose={onClose}
+      onExited={onExited}
+      title={`Search Strategy Builder for ${source.name}`}
+      hideHeader
+      maxWidth="max-w-2xl"
+      contentClassName="flex min-h-0 flex-1 flex-col overflow-hidden p-0"
+    >
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
         {/* Header */}
-        <div className="px-8 py-6 border-b border-border flex items-center justify-between bg-surface-white sticky top-0 z-10">
-          <div className="flex-1">
+        <div className="sticky top-0 z-10 flex shrink-0 flex-col gap-4 border-b border-border bg-surface-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 text-accent mb-1">
               <FiDatabase className="w-4 h-4" />
               <span className="text-xs font-black uppercase tracking-widest">
                 Search Strategy Builder
               </span>
             </div>
-            <h2 className="text-2xl font-black text-text-primary">
+            <h2 className="break-words text-xl font-black text-text-primary sm:text-2xl">
               {source.name}
             </h2>
           </div>
 
-          <div className="flex items-center gap-4">
-            <div className="flex bg-bg-secondary p-1 rounded-xl">
+          <div className="flex shrink-0 items-center justify-between gap-3 sm:justify-end sm:gap-4">
+            <div className="flex rounded-xl bg-bg-secondary p-1">
               <button
+                type="button"
                 onClick={() => setMode("guided")}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${mode === "guided" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
+                aria-pressed={mode === "guided"}
+                className={`min-h-11 rounded-xl px-3 text-xs font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${mode === "guided" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Guided
               </button>
               <button
+                type="button"
                 onClick={() => setMode("manual")}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${mode === "manual" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
+                aria-pressed={mode === "manual"}
+                className={`min-h-11 rounded-xl px-3 text-xs font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${mode === "manual" ? "bg-surface-white text-accent shadow-none" : "text-text-secondary hover:text-text-primary"}`}
               >
                 Manual
               </button>
             </div>
             <button
+              type="button"
               onClick={onClose}
-              className="p-2 hover:bg-bg-secondary rounded-xl transition-colors text-text-secondary hover:text-text-primary"
+              aria-label="Close search strategy builder"
+              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
             >
               <FiX className="w-6 h-6" />
             </button>
@@ -326,7 +330,7 @@ export default function SearchStrategyForm({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto px-8 py-8 space-y-10 scrollbar-hide">
+        <div className="min-h-0 flex-1 space-y-8 overflow-y-auto px-4 py-5 scrollbar-hide sm:space-y-10 sm:px-8 sm:py-8">
           {mode === "guided" ? (
             <>
               {/* Step 1: PICO Context Overview */}
@@ -337,7 +341,7 @@ export default function SearchStrategyForm({
                     <h4>1. Project PICOC Framework</h4>
                   </div>
                   {(picocLoading || rqLoading) && (
-                    <div className="text-[10px] text-text-secondary animate-pulse">
+                    <div role="status" aria-live="polite" className="text-[10px] text-text-secondary motion-safe:animate-pulse motion-reduce:animate-none">
                       Loading...
                     </div>
                   )}
@@ -357,10 +361,10 @@ export default function SearchStrategyForm({
                           key={key}
                           className={key === "context" ? "col-span-2" : ""}
                         >
-                          <span className="text-[9px] font-black uppercase text-blue-400 block mb-1">
+                          <span className="mb-1 block text-[9px] font-black uppercase text-primary">
                             {key}
                           </span>
-                          <p className="text-xs font-medium text-blue-900 line-clamp-2 leading-relaxed">
+                          <p className="line-clamp-2 text-xs font-medium leading-relaxed text-text-primary">
                             {(picocs[0] as any)[key] || "Not specified"}
                           </p>
                         </div>
@@ -376,8 +380,8 @@ export default function SearchStrategyForm({
 
               {/* Step 2: Breakdown & Refinement */}
               <section className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-text-primary font-bold">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex flex-wrap items-center gap-2 text-text-primary font-bold">
                     <FiZap className="text-accent" />
                     <h4>2. Keyword Breakdown</h4>
                   </div>
@@ -385,11 +389,12 @@ export default function SearchStrategyForm({
                   <Button
                     onClick={handleAnalyzePicoc}
                     disabled={isAnalyzing || picocs.length === 0 || !isLeader}
-                    size="sm"
-                    className="gap-2"
+                    aria-busy={isAnalyzing}
+                    size="md"
+                    className="w-full justify-center gap-2 sm:w-auto"
                   >
                     {isAnalyzing ? (
-                      <FiRefreshCw className="animate-spin w-3 h-3" />
+                      <FiRefreshCw aria-hidden="true" className="motion-safe:animate-spin motion-reduce:animate-none w-3 h-3" />
                     ) : (
                       <FiCpu className="w-3 h-3" />
                     )}
@@ -413,7 +418,7 @@ export default function SearchStrategyForm({
                   ).map((type) => (
                     <div
                       key={type}
-                      className="bg-surface-white rounded-xl p-5 border border-border hover:border-accent/30 transition-all shadow-none"
+                      className="rounded-xl border border-border bg-surface-white p-5 shadow-none transition-colors hover:border-primary/30 motion-reduce:transition-none"
                     >
                       <label className="text-[10px] font-black uppercase text-text-secondary mb-3 flex items-center gap-2">
                         <FiArrowRight className="text-accent" />
@@ -423,13 +428,15 @@ export default function SearchStrategyForm({
                         {keywords[type].map((word, idx) => (
                           <span
                             key={idx}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary-light text-accent text-xs font-bold rounded-xl border border-accent/20"
+                            className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-accent/20 bg-primary-light px-3 py-1.5 text-xs font-bold text-accent"
                           >
                             {word}
                             {isLeader && (
                               <button
+                                type="button"
                                 onClick={() => removeKeyword(type, idx)}
-                                className="hover:text-rose-500"
+                                aria-label={`Remove ${word} keyword`}
+                                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none"
                               >
                                 <FiX />
                               </button>
@@ -451,11 +458,13 @@ export default function SearchStrategyForm({
                                 e.key === "Enter" && addKeyword(type)
                               }
                               placeholder="Add synonym..."
-                              className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none flex-1"
+                              className="min-h-11 flex-1 rounded-xl border border-border bg-surface-white px-3 text-xs text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                             />
                             <button
+                              type="button"
                               onClick={() => addKeyword(type)}
-                              className="p-1.5 bg-bg-secondary rounded-xl hover:bg-bg-secondary"
+                              aria-label={`Add ${type} keyword`}
+                              className="flex min-h-11 min-w-11 items-center justify-center rounded-xl bg-bg-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                             >
                               <FiPlus className="w-3 h-3" />
                             </button>
@@ -483,7 +492,7 @@ export default function SearchStrategyForm({
                     </a>
                   </h4>
                 </div>
-                <div className="p-6 bg-gray-900 rounded-xl text-blue-100 space-y-4 font-mono text-xs">
+                <div className="space-y-4 rounded-xl bg-text-primary p-6 font-mono text-xs text-bg-primary">
                   {Object.entries(keywords)
                     .filter(([, terms]) => terms.length > 0)
                     .map(([key, terms], idx, arr) => {
@@ -498,17 +507,19 @@ export default function SearchStrategyForm({
                               <span className="break-all">{queryPart}</span>
                             </div>
                             <button
+                              type="button"
                               onClick={() => {
                                 navigator.clipboard.writeText(queryPart);
                                 toastSuccess(`Copied ${key} query!`);
                               }}
-                              className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-surface-white/10 rounded transition-all text-blue-400 shrink-0"
+                              aria-label={`Copy ${key} query`}
+                              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-primary-light opacity-100 transition-colors hover:bg-surface-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 motion-reduce:transition-none"
                             >
                               <FiCopy className="w-3.5 h-3.5" />
                             </button>
                           </div>
                           {idx < arr.length - 1 && (
-                            <div className="text-amber-500 my-2 font-black">
+                            <div className="my-2 font-black text-warning">
                               AND
                             </div>
                           )}
@@ -535,15 +546,17 @@ export default function SearchStrategyForm({
                     }
                     disabled={!isLeader}
                     placeholder="The generated query will appear here..."
-                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-32 text-text-primary resize-none font-mono leading-relaxed disabled:opacity-75"
+                    className="h-32 w-full resize-none rounded-xl border border-border bg-surface-white px-4 py-2.5 pr-16 font-mono text-sm leading-relaxed text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
                     <button
+                      type="button"
                       onClick={() => {
                         navigator.clipboard.writeText(strategy.query);
                         toastSuccess("Copied query!");
                       }}
-                      className="p-2 bg-surface-white shadow-none border border-border rounded-xl text-text-secondary hover:text-primary-hover transition-all opacity-0 group-hover:opacity-100"
+                      aria-label="Copy search query"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary opacity-100 transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 motion-reduce:transition-none"
                       title="Copy to clipboard"
                     >
                       <FiCopy className="w-3.5 h-3.5" />
@@ -569,7 +582,7 @@ export default function SearchStrategyForm({
                 }
                 disabled={!isLeader}
                 placeholder="Enter full search query..."
-                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-64 text-text-primary resize-none disabled:opacity-75"
+                className="h-64 w-full resize-none rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               />
             </section>
           )}
@@ -577,7 +590,7 @@ export default function SearchStrategyForm({
           <div className="h-px bg-bg-secondary w-full" />
 
           {/* Common Fields */}
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
             <section className="space-y-4">
               <div className="flex items-center gap-2 text-text-primary font-bold">
                 <FiLayers className="text-accent" />
@@ -624,7 +637,7 @@ export default function SearchStrategyForm({
                     setStrategy({ ...strategy, dateSearched: e.target.value })
                   }
                   disabled={!isLeader}
-                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary disabled:opacity-75"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
                 />
                 <input
                   type="text"
@@ -634,7 +647,7 @@ export default function SearchStrategyForm({
                   }
                   disabled={!isLeader}
                   placeholder="Version (e.g. v1)"
-                  className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary disabled:opacity-75"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
                 />
               </div>
             </section>
@@ -653,7 +666,7 @@ export default function SearchStrategyForm({
               }
               disabled={!isLeader}
               placeholder="Add any additional notes about this search strategy..."
-              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full h-32 text-text-primary resize-none disabled:opacity-75"
+              className="h-32 w-full resize-none rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
             />
           </section>
 
@@ -663,7 +676,7 @@ export default function SearchStrategyForm({
               <FiFilter className="text-accent" />
               <h4>Filters</h4>
             </div>
-            <div className="bg-bg-primary rounded-xl p-6 grid grid-cols-2 gap-4 border border-border">
+            <div className="grid grid-cols-1 gap-4 rounded-xl border border-border bg-bg-primary p-4 sm:grid-cols-2 sm:p-6">
               <input
                 type="number"
                 min={1900}
@@ -683,7 +696,7 @@ export default function SearchStrategyForm({
                 }}
                 disabled={!isLeader}
                 placeholder="Year From"
-                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               />
               <input
                 type="number"
@@ -704,7 +717,7 @@ export default function SearchStrategyForm({
                 }}
                 disabled={!isLeader}
                 placeholder="Year To"
-                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               />
               <select
                 value={strategy.filters.language}
@@ -715,7 +728,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               >
                 <option value="">Any Language</option>
                 {LANGUAGE_OPTIONS.map((lang) => (
@@ -733,7 +746,7 @@ export default function SearchStrategyForm({
                   })
                 }
                 disabled={!isLeader}
-                className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none disabled:opacity-75"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               >
                 <option value="">Any Study Type</option>
                 {STUDY_TYPE_OPTIONS.map((type) => (
@@ -747,7 +760,7 @@ export default function SearchStrategyForm({
         </div>
 
         {/* Footer */}
-        <div className="px-8 py-6 border-t border-border bg-surface-white sticky bottom-0 flex gap-4">
+        <div className="sticky bottom-0 flex shrink-0 gap-3 border-t border-border bg-surface-white px-4 py-4 sm:gap-4 sm:px-8 sm:py-6">
           <Button variant="secondary" onClick={onClose} className="flex-1">
             {isLeader ? "Cancel" : "Close"}
           </Button>
@@ -758,7 +771,7 @@ export default function SearchStrategyForm({
             </Button>
           )}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </Drawer>
   );
 }

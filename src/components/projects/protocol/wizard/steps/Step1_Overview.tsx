@@ -95,7 +95,7 @@ export default function Step1_Overview({
             </p>
           </div>
           <div className="flex shrink-0 justify-end gap-2">
-            <button type="button" onClick={() => setSectionToDelete(null)} className="min-h-9 rounded-lg border border-border px-3 py-1.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+            <button type="button" onClick={() => setSectionToDelete(null)} className="min-h-11 rounded-xl border border-border px-3 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
               Cancel
             </button>
             <button
@@ -104,7 +104,7 @@ export default function Step1_Overview({
                 onDeleteSection(sectionToDelete.id);
                 setSectionToDelete(null);
               }}
-              className="min-h-9 rounded-lg bg-error px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-error/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30"
+              className="min-h-11 rounded-xl bg-error px-3 text-xs font-semibold text-white transition-colors hover:bg-error/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30"
             >
               Delete section
             </button>
@@ -113,8 +113,8 @@ export default function Step1_Overview({
       )}
 
       {activeSection ? (
-        <div className="grid min-h-[390px] gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-          <nav className="rounded-xl border border-border bg-surface-white p-2" aria-label="Template sections">
+        <div className="grid min-w-0 min-h-[390px] grid-cols-1 gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+          <nav className="min-w-0 rounded-xl border border-border bg-surface-white p-2" aria-label="Template sections">
             <div className="px-2 pb-2 pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
               Sections
             </div>
@@ -150,7 +150,7 @@ export default function Step1_Overview({
                       onClick={() => setSectionToDelete(section)}
                       aria-label={`Delete section ${getDisplaySectionName(section)}`}
                       title="Delete section"
-                      className="mr-1 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-text-muted opacity-70 transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
+                      className="mr-1 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-muted opacity-70 transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100"
                     >
                       <FiTrash2 className="h-3.5 w-3.5" aria-hidden="true" />
                     </button>
@@ -217,7 +217,7 @@ export default function Step1_Overview({
                   type="button"
                   onClick={() => onSetupSection(activeSection.id)}
                   disabled={isViewOnly}
-                  className="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {completedSections.includes(activeSection.id) ? "Edit fields" : "Configure fields"}
                 </button>

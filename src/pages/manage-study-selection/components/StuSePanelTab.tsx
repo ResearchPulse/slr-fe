@@ -31,7 +31,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       title: "Exclusion Codes",
       description: "Manage the reasons reviewers can use to exclude papers.",
       icon: Settings,
-      iconTone: "bg-slate-100 text-slate-600",
+      iconTone: "bg-bg-secondary text-text-secondary",
       onClick: () => setIsSettingsOpen(true),
     },
     {
@@ -39,7 +39,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
       description:
         "Monitor reviewer workloads and real-time screening completion status.",
       icon: UserCheck,
-      iconTone: "bg-emerald-50 text-emerald-600",
+      iconTone: "bg-success/10 text-success",
       onClick: () => setIsProgressOpen(true),
     },
     {
@@ -58,7 +58,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
   ];
 
   return (
-    <div className="flex flex-col h-full animate-in fade-in duration-500">
+    <div className="flex flex-col h-full motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-3">
         {/* Action Strategies */}
         <div className="grid gap-2.5">
@@ -84,7 +84,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
               </div>
 
               <div className="min-w-0 flex-1">
-                <h4 className="text-sm font-semibold leading-5 text-slate-800 transition-colors group-hover:text-accent">
+                <h4 className="text-sm font-semibold leading-5 text-text-primary transition-colors group-hover:text-primary">
                   {action.title}
                 </h4>
                 <p className="mt-1 text-[11px] leading-4 text-text-secondary">
@@ -92,7 +92,7 @@ export const ActionTab: React.FC<ActionTabProps> = ({ isDisabled }) => {
                 </p>
               </div>
 
-              <ArrowRight className="h-4 w-4 shrink-0 text-slate-400 transition-colors group-hover:text-accent" />
+              <ArrowRight className="h-4 w-4 shrink-0 text-text-secondary transition-colors group-hover:text-primary" />
             </button>
           ))}
         </div>

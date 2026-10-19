@@ -150,7 +150,7 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
               triggerRef.current?.focus();
               onAction?.(candidateId, "select");
             }}
-            className="flex min-h-10 w-full items-center gap-2.5 px-3 text-left text-sm text-text-primary transition-colors hover:bg-bg-secondary focus-visible:bg-bg-secondary focus-visible:outline-none disabled:opacity-50"
+            className="flex min-h-11 w-full items-center gap-2.5 px-3 text-left text-sm text-text-primary transition-colors hover:bg-bg-secondary focus-visible:bg-bg-secondary focus-visible:outline-none disabled:opacity-50"
           >
             <UserPlus className="h-4 w-4 text-accent" aria-hidden="true" />
             Add to repository
@@ -164,7 +164,7 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
               triggerRef.current?.focus();
               onAction?.(candidateId, "reject");
             }}
-            className="flex min-h-10 w-full items-center gap-2.5 px-3 text-left text-sm text-error transition-colors hover:bg-red-50 focus-visible:bg-red-50 focus-visible:outline-none disabled:opacity-50"
+            className="flex min-h-11 w-full items-center gap-2.5 px-3 text-left text-sm text-error transition-colors hover:bg-error/5 focus-visible:bg-error/5 focus-visible:outline-none disabled:opacity-50"
           >
             <XCircle className="h-4 w-4" aria-hidden="true" />
             Reject
@@ -283,7 +283,7 @@ const CandidateRow: React.FC<CandidateRowProps> = ({
               event.stopPropagation();
               setIsMenuOpen((open) => !open);
             }}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
           </button>

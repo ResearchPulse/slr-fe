@@ -273,13 +273,13 @@ const StudySelectionCriteriaModal: React.FC<
     >
       <div className="space-y-6">
         {/* Header Section */}
-        <div className="flex shrink-0 items-start justify-between gap-4 rounded-xl border border-primary/20 bg-primary-light p-5">
-          <div className="flex gap-4">
+        <div className="flex shrink-0 flex-col items-stretch gap-4 rounded-xl border border-primary/20 bg-primary-light p-4 sm:flex-row sm:items-start sm:justify-between sm:p-5">
+          <div className="flex min-w-0 gap-4">
             <div className="p-3 bg-surface-white rounded-xl shadow-sm border border-primary/20 shrink-0">
               <ClipboardList className="w-6 h-6 text-accent" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-text-primary">
+              <h3 className="text-lg font-bold text-text-primary sm:text-xl">
                 Define Your Study Selection Criteria
               </h3>
               <p className="text-sm text-text-secondary mt-1 max-w-2xl">
@@ -293,7 +293,7 @@ const StudySelectionCriteriaModal: React.FC<
             variant="secondary"
             size="sm"
             onClick={() => setShowRefData(!showRefData)}
-            className="shrink-0"
+            className="min-h-11 w-full shrink-0 justify-center sm:w-auto"
           >
             {showRefData ? (
               <ChevronUp className="w-4 h-4 mr-2" />
@@ -306,7 +306,7 @@ const StudySelectionCriteriaModal: React.FC<
 
         {/* Reference Data Section */}
         {showRefData && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-top-4 duration-300">
+          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-200 motion-reduce:animate-none">
             {isLoading ? (
               <div className="flex justify-center py-10">
                 <LoadingSpinner />

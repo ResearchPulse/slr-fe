@@ -1,7 +1,7 @@
 import {
   FiCheckCircle,
   FiClock,
-  FiLoader,
+  FiPlayCircle,
   FiXCircle,
   FiExternalLink,
   FiUsers,
@@ -26,7 +26,7 @@ export function ProcessStatusIcon({
   if (statusText === "Completed")
     return <FiCheckCircle className="h-4 w-4 text-success" />;
   if (statusText === "InProgress")
-    return <FiLoader className="h-4 w-4 text-accent animate-spin" />;
+    return <FiPlayCircle className="h-4 w-4 text-accent" />;
   if (statusText === "Cancelled")
     return <FiXCircle className="h-4 w-4 text-error" />;
   return <FiClock className="h-4 w-4 text-text-secondary" />;
@@ -43,7 +43,7 @@ export default function ReviewProcessCard({
 }: ReviewProcessCardProps) {
   return (
     <div
-      className={`group relative rounded-xl border border-border p-4 transition-all duration-200 ${
+      className={`group relative rounded-xl border border-border p-4 transition-[border-color,background-color,box-shadow] duration-200 motion-reduce:transition-none ${
         isSelected
           ? "border-accent bg-bg-secondary shadow-sm"
           : "border-border bg-surface-white hover:border-accent hover:shadow-sm"
@@ -78,11 +78,13 @@ export default function ReviewProcessCard({
           </span>
           {onNavigate && (
             <button
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 onNavigate(process.processId);
               }}
-              className="relative z-30 p-2 rounded-xl text-accent bg-surface-white hover:bg-bg-secondary hover:text-accent transition-all shadow-sm border border-border"
+              className="relative z-30 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-accent shadow-sm transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2"
+              aria-label={`Open ${process.processName} review workspace`}
               title="Go to review process workspace"
             >
               <FiExternalLink className="h-3.5 w-3.5" />
@@ -98,7 +100,7 @@ export default function ReviewProcessCard({
         </div>
         <div className="h-2 w-full rounded-full bg-bg-secondary overflow-hidden">
           <div
-            className="h-full rounded-full bg-accent transition-all duration-1000"
+            className="h-full rounded-full bg-accent transition-[width] duration-200"
             style={{ width: `${process.progressPercent}%` }}
           />
         </div>
@@ -109,8 +111,10 @@ export default function ReviewProcessCard({
 
       {actionLabel && isLeader && (
         <button
+          type="button"
           onClick={() => onSelect(process.processId)}
-          className={`w-full mt-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+          aria-pressed={isSelected}
+          className={`mt-4 min-h-11 w-full rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-widest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none ${
             isSelected
               ? "bg-accent text-surface-white shadow-sm"
               : "bg-surface-white border border-border text-text-secondary hover:bg-bg-secondary"
@@ -122,9 +126,11 @@ export default function ReviewProcessCard({
 
       {!actionLabel && !isSelected && isLeader && (
         <button
+          type="button"
           onClick={() => onSelect(process.processId)}
-          className="absolute inset-0 w-full h-full cursor-pointer opacity-0 z-10"
+          className="absolute inset-0 z-10 h-full w-full cursor-pointer rounded-xl opacity-0 focus-visible:bg-accent/5 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           aria-label="Select process"
+          aria-pressed={isSelected}
         />
       )}
     </div>

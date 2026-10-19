@@ -52,7 +52,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
             helperText="Select which component of the PICOC framework you are defining."
             options={elementTypeOptions}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -65,7 +65,7 @@ const PICOCForm: React.FC<PICOCFormProps> = ({
             placeholder="e.g., Adults aged 18-65 with a clinical diagnosis of Type 2 Diabetes..."
             rows={5}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
       </div>

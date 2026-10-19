@@ -9,10 +9,10 @@ interface ConflictDetailsProps {
 export default function ConflictDetails({ paper }: ConflictDetailsProps) {
   return (
     <div className="px-4 py-4 border-b border-border">
-      <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+      <div className="rounded-xl border border-warning/30 bg-warning/10 p-4">
         <div className="flex items-center gap-2 mb-4">
-          <FiAlertTriangle className="w-4 h-4 text-amber-600" />
-          <h3 className="text-sm font-semibold text-amber-800">
+          <FiAlertTriangle className="h-4 w-4 text-warning" />
+          <h3 className="text-sm font-semibold text-warning">
             Conflict Detected
           </h3>
         </div>
@@ -22,7 +22,7 @@ export default function ConflictDetails({ paper }: ConflictDetailsProps) {
           {paper.decisions.map((d) => (
             <div
               key={d.id}
-              className="bg-surface-white rounded-xl p-3 border border-amber-100"
+              className="rounded-xl border border-warning/20 bg-surface-white p-3"
             >
               <div className="flex items-center justify-between mb-1">
                 <span className="text-sm font-medium text-text-primary">
@@ -32,8 +32,8 @@ export default function ConflictDetails({ paper }: ConflictDetailsProps) {
                   className={cn(
                     "text-xs font-medium px-2 py-0.5 rounded-full",
                     d.decision === "included"
-                      ? "bg-surface-white text-green-700"
-                      : "bg-surface-white text-red-700",
+                      ? "bg-success/10 text-success"
+                      : "bg-error/10 text-error",
                   )}
                 >
                   {d.decision === "included" ? "Include" : "Exclude"}

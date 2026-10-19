@@ -138,7 +138,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         <div className="space-y-3">
           <button
             onClick={() => setShowTutorial(!showTutorial)}
-            className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-slate-400 hover:text-accent transition-colors group"
+            className="flex min-h-11 items-center gap-2 text-xs font-black uppercase tracking-widest text-text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none group"
           >
             <Info
               size={14}
@@ -150,33 +150,33 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
           </button>
 
           {showTutorial && (
-            <div className="p-5 bg-bg-secondary/50 rounded-xl border border-indigo-100/50 animate-in fade-in slide-in-from-top-2 duration-300">
-              <h4 className="text-sm font-black text-indigo-900 mb-3 flex items-center gap-2">
-                <Code2 className="text-indigo-500" size={16} />
+            <div className="rounded-xl border border-primary/15 bg-bg-secondary/50 p-5 animate-in fade-in slide-in-from-top-2 duration-300 motion-reduce:animate-none">
+              <h4 className="mb-3 flex items-center gap-2 text-sm font-black text-text-primary">
+                <Code2 className="text-primary" size={16} />
                 Required Data Structure
               </h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
-                  <p className="text-[11px] font-medium text-indigo-700/80 leading-relaxed">
+                  <p className="text-[11px] font-medium leading-relaxed text-text-secondary">
                     Importing will append new criteria to your current work.
                     Ensure the JSON follows the schema.
                   </p>
                   <ul className="space-y-2">
-                    <li className="flex items-start gap-2 text-[10px] font-bold text-accent/70">
-                      <div className="w-1 h-1 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                    <li className="flex items-start gap-2 text-[10px] font-bold text-text-secondary">
+                      <div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
                       New content will be appended to the end of the document
                     </li>
-                    <li className="flex items-start gap-2 text-[10px] font-bold text-accent/70">
-                      <div className="w-1 h-1 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                    <li className="flex items-start gap-2 text-[10px] font-bold text-text-secondary">
+                      <div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
                       Client-side IDs are regenerated safely
                     </li>
-                    <li className="flex items-start gap-2 text-[10px] font-bold text-accent/70">
-                      <div className="w-1 h-1 rounded-full bg-indigo-400 mt-1.5 shrink-0" />
+                    <li className="flex items-start gap-2 text-[10px] font-bold text-text-secondary">
+                      <div className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-primary" />
                       Orders are normalized automatically
                     </li>
                   </ul>
                 </div>
-                <pre className="text-[9px] font-mono bg-white/80 p-3 rounded-xl border border-indigo-100 text-indigo-800 leading-normal overflow-auto max-h-[140px] CustomScrollbar shadow-inner">
+                <pre className="max-h-[140px] overflow-auto rounded-xl border border-border bg-surface-white/80 p-3 font-mono text-[9px] leading-normal text-text-primary CustomScrollbar shadow-inner">
                   {`{
   "title": "Checklist Title",
   "paragraphs": [
@@ -200,7 +200,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
         {/* Textarea Input */}
         <div className="space-y-2">
           <div className="flex justify-between items-center px-1">
-            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            <label className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">
               JSON Content
             </label>
             <div className="flex items-center gap-4">
@@ -209,10 +209,10 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                   type="button"
                   onClick={handleImportFromProtocol}
                   disabled={isImportingFromProtocol}
-                  className="text-xs font-bold text-accent hover:text-indigo-700 cursor-pointer flex items-center gap-1.5 transition-colors disabled:opacity-50"
+                  className="flex min-h-11 cursor-pointer items-center gap-1.5 text-xs font-bold text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 motion-reduce:transition-none"
                 >
                   {isImportingFromProtocol ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 aria-hidden="true" className="w-3.5 h-3.5 motion-safe:animate-spin motion-reduce:animate-none" />
                   ) : (
                     <Code2 className="w-3.5 h-3.5" />
                   )}
@@ -220,7 +220,7 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
                 </button>
               )}
 
-              <label className="text-xs font-bold text-accent hover:text-indigo-700 cursor-pointer flex items-center gap-1.5 transition-colors">
+              <label className="flex min-h-11 cursor-pointer items-center gap-1.5 text-xs font-bold text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none">
                 <Upload className="w-3.5 h-3.5" />
                 Upload .json
                 <input
@@ -239,14 +239,14 @@ export const ImportDialog: React.FC<ImportDialogProps> = ({
               setValidationError(null);
             }}
             placeholder='e.g. { "title": "Checklist Name", "sections": [...] }'
-            className="font-mono text-[11px] h-[350px] bg-slate-50/50 leading-relaxed CustomScrollbar"
+            className="h-[350px] bg-bg-secondary/50 font-mono text-[11px] leading-relaxed CustomScrollbar"
             error={!!validationError}
           />
         </div>
 
         {/* Validation Error */}
         {validationError && (
-          <div className="flex items-start gap-3 p-4 bg-surface-white rounded-xl border border-error/20 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-start gap-3 p-4 bg-surface-white rounded-xl border border-error/20 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-reduce:animate-none">
             <AlertCircle className="w-5 h-5 text-error shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="text-sm font-bold text-error tracking-tight">

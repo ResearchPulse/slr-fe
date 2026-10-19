@@ -27,7 +27,7 @@ const Switch: React.FC<SwitchProps> = ({
       <div className="relative">
         <input
           type="checkbox"
-          className="sr-only"
+          className="peer sr-only"
           checked={checked}
           onChange={(e) => !disabled && onChange(e.target.checked)}
           disabled={disabled}
@@ -35,14 +35,14 @@ const Switch: React.FC<SwitchProps> = ({
         {/* Track */}
         <div
           className={cn(
-            "w-11 h-6 rounded-full transition-colors duration-200 ease-in-out",
-            checked ? "bg-accent" : "bg-border group-hover:bg-text-muted",
+            "h-6 w-11 rounded-full transition-colors duration-150 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-primary/40 motion-reduce:transition-none",
+            checked ? "bg-primary" : "bg-border group-hover:bg-text-muted",
           )}
         />
         {/* Thumb */}
         <div
           className={cn(
-            "absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform duration-200 ease-in-out shadow-sm",
+            "absolute left-1 top-1 h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-150 ease-out motion-reduce:transition-none",
             checked ? "translate-x-5" : "translate-x-0",
           )}
         />

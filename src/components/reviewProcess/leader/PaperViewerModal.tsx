@@ -182,7 +182,7 @@ const PaperViewerModal: FC<PaperViewerModalProps> = ({
               </div>
               <button
                 onClick={() => setIsSuggestionModalOpen(true)}
-                className="rounded-xl bg-accent px-3 py-1 text-[11px] font-bold text-white shadow-sm transition-all hover:bg-primary-hover active:scale-95"
+                className="inline-flex min-h-11 items-center rounded-xl bg-primary px-3 py-1 text-[11px] font-bold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 motion-reduce:active:scale-100 motion-reduce:transition-none"
               >
                 View & Apply Changes
               </button>

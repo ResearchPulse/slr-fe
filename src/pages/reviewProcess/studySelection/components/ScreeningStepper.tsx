@@ -26,7 +26,7 @@ function getStepClasses(state: StepItem["state"]): string {
     case "active":
       return "bg-primary-light border-accent/30 text-accent";
     case "completed":
-      return "bg-emerald-50 border-emerald-200 text-emerald-700";
+      return "bg-success/10 border-success/20 text-success";
     case "locked":
       return "bg-bg-secondary border-border text-text-secondary cursor-not-allowed";
     default:
@@ -39,7 +39,7 @@ function getDotClasses(state: StepItem["state"]): string {
     case "active":
       return "bg-primary text-white border-accent";
     case "completed":
-      return "bg-emerald-600 text-white border-emerald-600";
+      return "bg-success text-surface-white border-success";
     case "locked":
       return "bg-surface-white text-text-secondary border-border";
     default:

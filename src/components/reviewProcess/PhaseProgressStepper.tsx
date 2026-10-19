@@ -78,7 +78,7 @@ export default function PhaseProgressStepper({
 
     switch (status) {
       case "completed":
-        return `${baseClasses} text-green-700`;
+        return `${baseClasses} text-success`;
       case "current":
         return `${baseClasses} text-accent`;
       case "locked":
@@ -91,18 +91,18 @@ export default function PhaseProgressStepper({
   const getStepCircleClasses = (phaseId: number) => {
     const status = getPhaseStatus(phaseId);
     const baseClasses =
-      "w-12 h-12 rounded-full border-2 flex items-center justify-center font-semibold text-sm transition-all duration-200";
+      "flex h-12 w-12 items-center justify-center rounded-full border-2 text-sm font-semibold transition-[background-color,border-color,color,transform] duration-200 motion-reduce:transition-none sm:h-14 sm:w-14";
     const clickable = !isPhaseLocked(phaseId) && (onPhaseClick || onPhaseOpen);
 
     switch (status) {
       case "completed":
-        return `${baseClasses} bg-green-100 border-green-600 text-green-700${clickable ? " hover:shadow-none cursor-pointer" : ""}`;
+        return `${baseClasses} border-success/30 bg-success/10 text-success${clickable ? " cursor-pointer hover:shadow-sm" : ""}`;
       case "current":
-        return `${baseClasses} bg-primary border-accent text-white shadow-none scale-110${clickable ? " cursor-pointer" : ""}`;
+        return `${baseClasses} border-primary bg-primary text-white shadow-none scale-110 motion-reduce:transform-none${clickable ? " cursor-pointer" : ""}`;
       case "locked":
         return `${baseClasses} bg-bg-secondary border-border text-text-secondary cursor-not-allowed`;
       default:
-        return `${baseClasses} bg-surface-white border-gray-400 text-text-secondary hover:border-accent hover:shadow-none cursor-pointer`;
+        return `${baseClasses} cursor-pointer border-border bg-surface-white text-text-secondary hover:border-primary hover:shadow-sm`;
     }
   };
 
@@ -112,12 +112,12 @@ export default function PhaseProgressStepper({
     const isCurrent = isCurrentPhase(phaseId) || isCurrentPhase(phaseId + 1);
 
     if (isCompleted && nextIsCompleted) {
-      return "bg-green-600";
+      return "bg-success";
     }
     if (isCurrent) {
       return "bg-primary";
     }
-    return "bg-gray-300";
+    return "bg-border";
   };
 
   const handlePhaseClick = (phaseId: number) => {
@@ -144,8 +144,12 @@ export default function PhaseProgressStepper({
         {PHASES.map((phase, index) => (
           <div key={phase.id} className="flex items-center flex-1">
             {/* Phase Step */}
-            <div
-              className="flex flex-col items-center shrink-0 group"
+            <button
+              type="button"
+              disabled={isPhaseLocked(phase.id)}
+              aria-current={isCurrentPhase(phase.id) ? "step" : undefined}
+              aria-label={`${phase.name}, ${isPhaseCompleted(phase.id) ? "completed" : isPhaseLocked(phase.id) ? "locked" : isCurrentPhase(phase.id) ? "current phase" : "available"}`}
+              className="group flex shrink-0 flex-col items-center rounded-lg bg-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:cursor-not-allowed"
               onClick={() => handlePhaseClick(phase.id)}
             >
               {/* Circle */}
@@ -177,19 +181,19 @@ export default function PhaseProgressStepper({
                   </span>
                 )}
                 {showOpenAction && !isPhaseLocked(phase.id) && (
-                  <span className="inline-flex items-center gap-0.5 mt-1.5 text-[10px] text-accent opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="mt-1.5 inline-flex items-center gap-0.5 text-[10px] text-primary opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 motion-reduce:transition-none">
                     <FiExternalLink className="w-2.5 h-2.5" />
                     Open
                   </span>
                 )}
               </div>
-            </div>
+            </button>
 
             {/* Connector Line */}
             {index < PHASES.length - 1 && (
               <div className="flex-1 h-0.5 mx-4 relative -top-6">
                 <div
-                  className={`h-full transition-all duration-300 ${getConnectorClasses(phase.id)}`}
+                  className={`h-full transition-colors duration-300 motion-reduce:transition-none ${getConnectorClasses(phase.id)}`}
                 />
               </div>
             )}
@@ -200,7 +204,7 @@ export default function PhaseProgressStepper({
       {/* Current Phase Description */}
       <div className="mt-8 text-center max-w-2xl mx-auto">
         <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary-light border border-primary/20 rounded-xl">
-          <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+          <div className="w-2 h-2 bg-primary rounded-full" />
           <p className="text-sm text-accent">
             <span className="font-semibold">Current Phase:</span>{" "}
             {PHASES.find((p) => p.id === currentPhase)?.name || "Not started"}

@@ -64,7 +64,7 @@ export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
                   {item.isUpdated && (
                     <div className="group/spark relative flex items-center">
                       <Sparkles className="w-2.5 h-2.5 text-accent" />
-                      <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                      <div className="absolute left-full ml-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                         Suggested applied
                       </div>
                     </div>
@@ -77,8 +77,11 @@ export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
             </div>
             {item.label === "DOI" && (
               <button
+                type="button"
                 onClick={() => navigator.clipboard.writeText(item.value!)}
-                className="p-2 opacity-0 group-hover/item:opacity-100 text-text-secondary hover:text-accent transition-all"
+                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary opacity-100 transition-colors hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 sm:opacity-0 sm:group-hover/item:opacity-100 motion-reduce:transition-none"
+                aria-label="Copy DOI"
+                title="Copy DOI"
               >
                 <FiCopy className="w-3.5 h-3.5" />
               </button>

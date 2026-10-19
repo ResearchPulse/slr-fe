@@ -127,7 +127,7 @@ export default function SLRPhaseWorkspace({ projectId, processId, process, child
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-3" role="group" aria-label="Review phases">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-3" role="group" aria-label="Review phases">
         {SLR_WORKFLOW_PHASES.map((phase) => {
           const selected = phase.id === activePhase;
           const locked = !canOpenPhase(phase.id);
@@ -145,7 +145,7 @@ export default function SLRPhaseWorkspace({ projectId, processId, process, child
               disabled={locked}
               onClick={() => setActivePhase(phase.id)}
               title={locked ? phase.id === "conducting" ? "Complete Phase A first" : "Complete Phase B first" : undefined}
-              className={`flex min-h-16 w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:px-4 ${selected ? "border-primary/40 bg-primary-light/50" : locked ? "cursor-not-allowed border-border bg-bg-secondary" : "border-border bg-surface-white hover:bg-bg-primary"}`}
+              className={`flex min-h-16 w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:px-4 ${selected ? "border-primary/40 bg-primary-light/50" : locked ? "cursor-not-allowed border-border bg-bg-secondary" : "border-border bg-surface-white hover:bg-bg-primary"}`}
             >
               <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${phaseStatus === "Complete" ? "bg-success/10 text-success" : selected ? "bg-primary text-white" : "bg-bg-secondary text-text-secondary"}`}>
                 {phaseStatus === "Complete" ? <FiCheck aria-hidden="true" /> : locked ? <FiLock aria-hidden="true" /> : phase.letter}
@@ -195,7 +195,7 @@ export default function SLRPhaseWorkspace({ projectId, processId, process, child
                   <p className="text-sm font-medium text-text-primary">{projectQuery.isLoading ? "Checking Phase A status…" : phaseAStatusKnown ? "Complete project setup to unlock Phase B." : "Project setup status could not be confirmed."}</p>
                   <p className="mt-1 text-xs text-text-secondary">{projectQuery.isLoading ? "The review workspace will unlock when setup is confirmed." : phaseAStatusKnown ? "Finish the remaining preparation steps and activate the review." : "Retry the status check before opening the review phase."}</p>
                 </div>
-                {projectQuery.isLoading ? <span className="inline-flex min-h-9 shrink-0 items-center px-2 text-xs text-text-secondary">Checking…</span> : phaseAStatusKnown ? <Link to={`/projects/${projectId}?step=picoc-scope`} className="inline-flex min-h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Open project setup <FiArrowRight aria-hidden="true" /></Link> : <button type="button" onClick={() => void projectQuery.refetch()} className="inline-flex min-h-9 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-text-secondary hover:bg-bg-secondary"><FiRefreshCw aria-hidden="true" />Retry status</button>}
+                {projectQuery.isLoading ? <span className="inline-flex min-h-9 shrink-0 items-center px-2 text-xs text-text-secondary">Checking…</span> : phaseAStatusKnown ? <Link to={`/projects/${projectId}?step=picoc-scope`} className="inline-flex min-h-11 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-semibold text-white transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Open project setup <FiArrowRight aria-hidden="true" /></Link> : <button type="button" onClick={() => void projectQuery.refetch()} className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-border px-3 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiRefreshCw aria-hidden="true" />Retry status</button>}
               </div>
             ) : (
               <>
@@ -215,7 +215,7 @@ export default function SLRPhaseWorkspace({ projectId, processId, process, child
               <h4 className="text-sm font-semibold text-text-primary">Literature identification</h4>
               <p className="mt-1 text-xs text-text-secondary">Search sources, import references and resolve duplicates.</p>
               {identificationWorkspacePath ? (
-                <Link to={identificationWorkspacePath} className="group mt-3 flex min-h-14 items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5 transition-colors hover:border-primary/30 hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4">
+                <Link to={identificationWorkspacePath} className="group mt-3 flex min-h-14 items-center justify-between gap-3 rounded-lg border border-border px-3 py-2.5 transition-colors motion-reduce:transition-none hover:border-primary/30 hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary sm:px-4">
                   {identificationWorkspaceContent}
                 </Link>
               ) : (
@@ -250,8 +250,8 @@ function ModuleList({ modules, projectRoute }: { modules: SLRWorkflowModule[]; p
             {module.availability === "available" ? (
               <>
                 <span className="mr-1 inline-flex items-center gap-1 rounded-full bg-bg-secondary px-2.5 py-1 text-[11px] font-medium text-text-secondary"><FiClock aria-hidden /> Workspace available</span>
-                {module.links?.map((link) => <Link key={link.label} to={projectRoute(link.route)} className="inline-flex min-h-8 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-semibold text-text-primary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">{link.label}<FiArrowRight aria-hidden /></Link>)}
-                {!module.links && module.route ? <Link to={projectRoute(module.route)} className="inline-flex min-h-8 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-semibold text-text-primary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Open workspace <FiArrowRight aria-hidden /></Link> : null}
+                {module.links?.map((link) => <Link key={link.label} to={projectRoute(link.route)} className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-semibold text-text-primary transition-colors motion-reduce:transition-none hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">{link.label}<FiArrowRight aria-hidden /></Link>)}
+                {!module.links && module.route ? <Link to={projectRoute(module.route)} className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-semibold text-text-primary transition-colors motion-reduce:transition-none hover:border-primary/30 hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Open workspace <FiArrowRight aria-hidden /></Link> : null}
               </>
             ) : (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-bg-secondary px-2.5 py-1 text-[11px] font-medium text-text-secondary"><FiLock aria-hidden /> Not available yet</span>
@@ -282,10 +282,10 @@ function PhaseFooterNavigation({ activePhase, onChangePhase, canOpenPhase }: { a
   return (
     <footer className="flex items-center justify-between gap-3 border-t border-border px-4 py-3 sm:px-5">
       {previous ? (
-        <button type="button" onClick={() => onChangePhase(previous.id)} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border px-3 text-xs font-semibold text-text-primary hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiArrowRight aria-hidden className="h-3.5 w-3.5 rotate-180" />Phase {previous.letter}</button>
+        <button type="button" onClick={() => onChangePhase(previous.id)} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 text-xs font-semibold text-text-primary hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"><FiArrowRight aria-hidden className="h-3.5 w-3.5 rotate-180" />Phase {previous.letter}</button>
       ) : <span />}
       {next ? (
-        <button type="button" onClick={() => onChangePhase(next.id)} disabled={!canOpenPhase(next.id)} aria-disabled={!canOpenPhase(next.id)} title={!canOpenPhase(next.id) ? next.id === "conducting" ? "Complete Phase A first" : "Complete Phase B first" : undefined} className="inline-flex min-h-9 items-center gap-2 rounded-lg px-3 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:text-text-muted enabled:bg-accent enabled:text-white enabled:hover:bg-primary-hover">{!canOpenPhase(next.id) && <FiLock aria-hidden className="h-3.5 w-3.5" />}Phase {next.letter}<FiArrowRight aria-hidden className="h-3.5 w-3.5" /></button>
+        <button type="button" onClick={() => onChangePhase(next.id)} disabled={!canOpenPhase(next.id)} aria-disabled={!canOpenPhase(next.id)} title={!canOpenPhase(next.id) ? next.id === "conducting" ? "Complete Phase A first" : "Complete Phase B first" : undefined} className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:text-text-muted enabled:bg-accent enabled:text-white enabled:hover:bg-primary-hover">{!canOpenPhase(next.id) && <FiLock aria-hidden className="h-3.5 w-3.5" />}Phase {next.letter}<FiArrowRight aria-hidden className="h-3.5 w-3.5" /></button>
       ) : <span />}
     </footer>
   );

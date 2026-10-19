@@ -58,7 +58,7 @@ const ChecklistDashboardPage: React.FC<ChecklistDashboardPageProps> = ({
             <button
               type="button"
               onClick={() => navigate(projectId ? `/projects/${projectId}` : "/projects")}
-              className="-ml-2 rounded-lg p-2 text-text-secondary transition-colors hover:bg-white/60 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-white/60 hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               title="Quay lại dự án"
             >
               <FiArrowLeft className="w-5 h-5" />
@@ -168,9 +168,9 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
       tabIndex={0}
       aria-label={`Open checklist ${checklist?.title || "Checklist"}`}
       className={cn(
-        "group cursor-pointer rounded-xl border p-5 transition-colors hover:shadow-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+        "group cursor-pointer rounded-xl border p-5 transition-colors duration-150 hover:border-primary/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none",
         isComplete
-          ? "bg-emerald-50 border-emerald-200 hover:border-emerald-300"
+          ? "bg-success/10 border-success/20 hover:border-success/30"
           : "bg-surface-white border-border hover:border-accent",
       )}
       onClick={onOpen}
@@ -183,14 +183,14 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1">
-          <h3 className="font-semibold text-text-primary group-hover:text-accent transition-colors">
+          <h3 className="font-semibold text-text-primary transition-colors duration-150 group-hover:text-accent motion-reduce:transition-none">
             {checklist?.title || "Checklist"}
           </h3>
           <p className="text-xs text-text-secondary mt-1">
             Based on {checklist?.templateName || "PRISMA"} ({checklist?.typeName || "Standard"})
           </p>
         </div>
-        <FiChevronRight className="w-5 h-5 text-text-secondary group-hover:text-accent transition-colors shrink-0" />
+        <FiChevronRight className="h-5 w-5 shrink-0 text-text-secondary transition-colors duration-150 group-hover:text-accent motion-reduce:transition-none" />
       </div>
 
       <div className="mb-4">
@@ -201,7 +201,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
           <span
             className={cn(
               "text-sm font-bold",
-              isComplete ? "text-emerald-600" : "text-accent",
+              isComplete ? "text-success" : "text-accent",
             )}
           >
             {completionPercentage}%
@@ -210,7 +210,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
         <div className="w-full h-2 bg-bg-secondary rounded-full overflow-hidden">
           <div
             className={cn(
-              "h-full transition-all",
+              "h-full transition-[width] duration-200 motion-reduce:transition-none",
               isComplete
                 ? "bg-success"
                 : "bg-primary",
@@ -230,7 +230,7 @@ const ChecklistCard: React.FC<ChecklistCardProps> = ({ checklist, onOpen }) => {
             <span>{formatDate(checklist?.updatedAt)}</span>
           </div>
           {isComplete && (
-            <div className="flex items-center gap-1 text-emerald-600 font-medium">
+            <div className="flex items-center gap-1 text-success font-medium">
               <FiCheckCircle className="w-4 h-4" />
               <span>Complete</span>
             </div>
@@ -281,7 +281,7 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
             key={template.id}
             onClick={() => handleSelect(template.id)}
             disabled={isLoading}
-            className="w-full text-left p-4 border-2 border-border rounded-xl hover:border-accent hover:bg-bg-secondary transition-all disabled:opacity-50"
+            className="w-full rounded-xl border-2 border-border p-4 text-left transition-colors duration-150 hover:border-accent hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 disabled:opacity-50 motion-reduce:transition-none"
           >
             <div className="flex items-start justify-between">
               <div>
@@ -300,8 +300,8 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
                   className={cn(
                     "text-xs font-semibold px-2 py-1 rounded",
                     template.isSystem
-                      ? "bg-indigo-100 text-indigo-700"
-                      : "bg-emerald-100 text-emerald-700",
+                      ? "bg-primary-light text-primary"
+                      : "bg-bg-secondary text-text-secondary",
                   )}
                 >
                   {template.isSystem ? "System" : "Custom"}
@@ -310,8 +310,8 @@ const CreateChecklistModal: React.FC<CreateChecklistModalProps> = ({
                   className={cn(
                     "text-xs font-semibold px-2 py-1 rounded",
                     template.type === ChecklistType.FULL
-                      ? "bg-indigo-100 text-indigo-700"
-                      : "bg-emerald-100 text-emerald-700",
+                      ? "bg-primary-light text-primary"
+                      : "bg-accent/10 text-accent",
                   )}
                 >
                   {template.typeName}

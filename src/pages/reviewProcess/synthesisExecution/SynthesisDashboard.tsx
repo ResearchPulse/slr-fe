@@ -77,7 +77,7 @@ function ActionCard({
     <button
       type="button"
       onClick={onClick}
-      className="group flex min-h-[144px] w-full flex-col justify-between rounded-xl border border-border/70 bg-surface-white p-4 text-left shadow-sm shadow-slate-900/[0.025] transition-[border-color,box-shadow,background-color,transform] duration-150 hover:-translate-y-0.5 hover:border-primary/35 hover:bg-primary-light/20 hover:shadow-md hover:shadow-slate-900/[0.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
+      className="group flex min-h-[144px] w-full flex-col justify-between rounded-xl border border-border/70 bg-surface-white p-4 text-left motion-safe:transition-[border-color,box-shadow,background-color,transform] motion-safe:duration-150 motion-safe:hover:-translate-y-0.5 hover:border-primary/35 hover:bg-primary-light/20 hover:shadow-md hover:shadow-slate-900/[0.04] focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-start gap-3">
@@ -91,7 +91,7 @@ function ActionCard({
             </p>
           </div>
         </div>
-        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden="true" />
+        <ArrowRight className="mt-1 h-4 w-4 shrink-0 text-text-muted motion-safe:transition-transform motion-safe:group-hover:translate-x-0.5 group-hover:text-primary motion-reduce:transform-none motion-reduce:transition-none" aria-hidden="true" />
       </div>
       <p className="mt-4 pl-12 text-xs font-medium text-text-secondary">{meta}</p>
     </button>
@@ -112,7 +112,7 @@ function NextStep({
   onClick: () => void;
 }) {
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-surface-white p-4 shadow-sm shadow-slate-900/[0.025]">
+    <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-surface-white p-4">
       <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary">
         {icon}
       </span>
@@ -122,7 +122,7 @@ function NextStep({
         <button
           type="button"
           onClick={onClick}
-          className="mt-2 inline-flex items-center gap-1 text-sm font-semibold text-primary hover:text-primary-hover focus:outline-none focus-visible:underline"
+          className="mt-1 inline-flex min-h-11 items-center gap-1 rounded-lg text-sm font-semibold text-primary motion-safe:transition-colors hover:text-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none"
         >
           {action}
           <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />

@@ -187,7 +187,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
         <div className="rounded-xl border border-border bg-bg-primary/60 p-4">
           <p className="text-sm font-medium text-text-primary">PICOC suggestions have not been generated yet.</p>
           <p className="mt-1 text-xs leading-5 text-text-secondary">Generate a compact set for all five components once, then review each step at your pace.</p>
-          <button type="button" disabled={batchLoading || !draft.intent.topic.trim()} onClick={onGenerateAll} className="mt-3 inline-flex min-h-9 items-center gap-2 rounded-lg bg-primary px-3.5 text-xs font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="button" disabled={batchLoading || !draft.intent.topic.trim()} onClick={onGenerateAll} className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-lg bg-primary px-3.5 text-xs font-semibold text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50">
             <FiRefreshCw aria-hidden className={batchLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} /> {batchLoading ? "Generating PICOC suggestions…" : "Generate all suggestions"}
           </button>
         </div>
@@ -196,7 +196,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
       {stale && entry ? (
         <div role="status" className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-warning/20 bg-warning/5 p-3.5 text-xs text-text-primary">
           <span>Earlier PICOC choices changed. These suggestions are still available; refresh this step to include the new context.</span>
-          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 font-semibold hover:bg-bg-secondary disabled:opacity-50"><FiRefreshCw aria-hidden /> Refresh this step</button>
+          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 font-semibold hover:bg-bg-secondary disabled:opacity-50"><FiRefreshCw aria-hidden /> Refresh this step</button>
         </div>
       ) : null}
 
@@ -205,7 +205,12 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
           <span className="inline-flex items-center gap-2 text-sm font-medium text-text-primary">
             <FiCheck aria-hidden className="text-success" /> Suggestions are ready to review
           </span>
-          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60">
+          {entry.source === "openalex_fallback" ? (
+            <p className="basis-full text-xs leading-5 text-text-secondary">
+              AI suggestions are unavailable{entry.fallbackReason === "AI_TIMEOUT" ? " (the AI service timed out)" : entry.fallbackReason === "AI_INVALID_OUTPUT" ? " (the AI returned unusable suggestions)" : " (the AI service is unavailable)"}. Showing OpenAlex suggestions instead.
+            </p>
+          ) : null}
+          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60">
             <FiRefreshCw aria-hidden className={loading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} /> {loading ? "Refreshing…" : "Refresh"}
           </button>
         </div>
@@ -213,7 +218,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
 
       {requestError ? (
         <div role="status" className="flex justify-end rounded-xl border border-border bg-bg-primary/60 p-3">
-          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60">
+          <button type="button" disabled={loading} onClick={() => void fetchSuggestions("refresh")} className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary hover:bg-bg-secondary disabled:cursor-wait disabled:opacity-60">
             <FiRefreshCw aria-hidden className={loading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} /> {loading ? "Retrying…" : "Retry"}
           </button>
         </div>
@@ -224,9 +229,9 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
           <FiRefreshCw aria-hidden className="h-4 w-4 shrink-0 text-primary motion-safe:animate-spin motion-reduce:animate-none" />
           <span className="text-sm font-medium text-text-primary">Updating suggestions…</span>
           <span aria-hidden="true" className="ml-auto flex gap-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none [animation-delay:150ms]" />
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none [animation-delay:300ms]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none [animation-delay:150ms]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none [animation-delay:300ms]" />
           </span>
         </div>
       ) : null}
@@ -244,9 +249,9 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
                 <p className="mt-0.5 text-xs leading-5 text-text-secondary">Using your review topic and confirmed PICOC context.</p>
               </div>
               <span className="hidden shrink-0 items-center gap-1.5 sm:flex">
-                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none" />
-                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none [animation-delay:150ms]" />
-                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-bounce motion-reduce:animate-none [animation-delay:300ms]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none [animation-delay:150ms]" />
+                <span className="h-1.5 w-1.5 rounded-full bg-primary/50 motion-safe:animate-pulse motion-reduce:animate-none [animation-delay:300ms]" />
               </span>
             </div>
             <div className="h-1 overflow-hidden bg-primary/10">
@@ -295,7 +300,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
                   type="button"
                   aria-pressed={selected}
                   onClick={() => toggle(suggestion, "selected")}
-                  className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${selected ? "border-primary bg-primary text-white" : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"}`}
+                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${selected ? "border-primary bg-primary text-white" : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"}`}
                 >
                   <FiCheck aria-hidden /> {selected ? "Selected" : "Select"}
                 </button>
@@ -303,7 +308,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
                   type="button"
                   aria-pressed={unsure}
                   onClick={() => toggle(suggestion, "unsure")}
-                  className={`inline-flex min-h-9 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${unsure ? "border-primary/25 bg-primary-light text-primary" : "border-border bg-surface-white text-text-secondary hover:bg-bg-secondary"}`}
+                  className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${unsure ? "border-primary/25 bg-primary-light text-primary" : "border-border bg-surface-white text-text-secondary hover:bg-bg-secondary"}`}
                 >
                   <FiHelpCircle aria-hidden /> Not sure
                 </button>
@@ -311,7 +316,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
                   type="button"
                   aria-expanded={openRationale === suggestion.conceptId}
                   onClick={() => setOpenRationale(openRationale === suggestion.conceptId ? null : suggestion.conceptId)}
-                  className="min-h-9 rounded-lg px-2 text-xs font-medium text-text-secondary underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                  className="min-h-11 rounded-lg px-2 text-xs font-medium text-text-secondary underline underline-offset-4 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 >
                   Why?
                 </button> : null}
@@ -328,7 +333,7 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
             type="button"
             disabled={loading}
             onClick={() => void fetchSuggestions("more")}
-            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
           >
             <FiRefreshCw aria-hidden className={loading ? "motion-safe:animate-spin motion-reduce:animate-none" : undefined} /> {loading ? "Finding new terms…" : "Show more suggestions"}
           </button>
@@ -350,9 +355,9 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
           onChange={(event) => setCustomTerm(event.target.value)}
           maxLength={300}
           placeholder={`Add your own ${COMPONENT_LABELS[component].toLowerCase()} term`}
-          className="min-h-10 min-w-0 flex-1 rounded-lg border border-border bg-surface-white px-3.5 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
+          className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-surface-white px-3.5 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15"
         />
-        <button type="submit" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+        <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
           <FiPlus aria-hidden /> Add
         </button>
       </form>
@@ -371,13 +376,13 @@ const ComponentStep: React.FC<ComponentStepProps> = ({ projectId, component, dra
                 </span>
                 <span className="flex gap-2">
                   {item.needsReview ? (
-                    <button type="button" onClick={() => update((value) => keepItem(value, component, item.id))} className="min-h-8 rounded-lg border border-border px-2.5 text-xs font-medium hover:bg-bg-secondary">Keep</button>
+                    <button type="button" onClick={() => update((value) => keepItem(value, component, item.id))} className="min-h-11 rounded-lg border border-border px-2.5 text-xs font-medium hover:bg-bg-secondary">Keep</button>
                   ) : null}
                   <button
                     type="button"
                     aria-label={`Remove ${item.label}`}
                     onClick={() => update((value) => removeItem(value, component, item.id))}
-                    className="inline-flex min-h-8 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
+                    className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-border px-2.5 text-xs font-medium text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
                   >
                     <FiX aria-hidden /> Remove
                   </button>

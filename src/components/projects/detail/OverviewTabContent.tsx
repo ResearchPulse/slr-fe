@@ -118,7 +118,6 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
             project={props.project}
             projectId={props.projectId}
             isLeader={props.isLeader}
-            isProjectActive={props.isProjectActive}
             reviewNeeds={props.reviewNeeds}
             documents={props.documents}
             isUpdatingDates={props.isUpdatingDates}
@@ -138,9 +137,9 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
             <span
               className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium ${
                 props.project.statusText === "Active"
-                  ? "bg-emerald-50 text-emerald-700"
+                  ? "bg-success/10 text-success"
                   : props.project.statusText === "Completed"
-                    ? "bg-sky-50 text-sky-700"
+                    ? "bg-primary-light text-primary"
                     : "bg-bg-secondary text-text-secondary"
               }`}
             >
@@ -213,7 +212,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
                   <span
                     key={member.userId}
                     title={member.fullName}
-                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-sky-50 text-xs font-medium text-accent"
+                    className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-white bg-primary-light text-xs font-medium text-accent"
                   >
                     {member.fullName?.trim().charAt(0).toUpperCase() || "?"}
                   </span>
@@ -239,7 +238,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
               <button
                 type="button"
                 onClick={() => props.setIsMemberModalOpen(true)}
-                className="mt-3 text-xs font-medium text-accent hover:underline"
+                className="mt-3 inline-flex min-h-11 items-center rounded-lg px-2 text-xs font-medium text-primary transition-colors hover:bg-primary-light hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               >
                 Manage team
               </button>
@@ -264,7 +263,7 @@ const OverviewTabContent: React.FC<OverviewTabContentProps> = (props) => {
           <button
             type="button"
             onClick={props.onOpenWorkspace}
-            className="mt-5 inline-flex w-full items-center justify-between rounded-xl bg-accent px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            className="mt-5 inline-flex min-h-11 w-full items-center justify-between rounded-xl bg-primary px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             Open review workspace <FiArrowUpRight size={16} />
           </button>

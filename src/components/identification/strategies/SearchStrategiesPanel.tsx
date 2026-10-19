@@ -123,7 +123,7 @@ export default function SearchStrategiesPanel({
           <FiPlus className="h-4 w-4" />
           Create Search Strategy
           {canEdit && (
-            <span className="ml-1 rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-primary">
+            <span className="ml-1 hidden rounded-full bg-primary-light px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-primary sm:inline-flex">
               Recommended
             </span>
           )}
@@ -150,7 +150,7 @@ export default function SearchStrategiesPanel({
                     <div className="flex min-w-0 flex-1 items-start gap-3">
                       <button
                         onClick={() => toggleExpand(strategy.id)}
-                        className="mt-0.5 rounded-lg p-1 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                        className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                         aria-label={isExpanded ? "Collapse" : "Expand"}
                         aria-expanded={isExpanded}
                       >
@@ -220,7 +220,7 @@ export default function SearchStrategiesPanel({
                         onClick={() => onImportToStrategy(strategy.id)}
                         variant="secondary"
                         size="sm"
-                        className="flex items-center gap-2"
+                        className="min-h-11 flex items-center gap-2"
                         disabled={!canEdit}
                       >
                         <FiUpload className="w-4 h-4" />
@@ -228,7 +228,7 @@ export default function SearchStrategiesPanel({
                       </Button>
                       <button
                         onClick={() => onEditStrategy(strategy.id)}
-                        className="rounded-lg p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label="Edit search strategy"
                         title="Edit Strategy"
                         disabled={!canEdit}
@@ -237,7 +237,7 @@ export default function SearchStrategiesPanel({
                       </button>
                       <button
                         onClick={() => onDeleteStrategy(strategy.id)}
-                        className="rounded-lg p-2 text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
                         aria-label="Delete search strategy"
                         title="Delete Strategy"
                         disabled={!canEdit}
@@ -294,7 +294,7 @@ export default function SearchStrategiesPanel({
                                     onClick={() => onViewImportPapers(batch.id)}
                                     variant="secondary"
                                     size="sm"
-                                    className="flex items-center gap-1"
+                                    className="min-h-11 flex items-center gap-1"
                                   >
                                     <FiEye className="w-3 h-3" />
                                     View Papers
@@ -304,7 +304,7 @@ export default function SearchStrategiesPanel({
                                       onClick={() =>
                                         onDeleteImportBatch(batch.id)
                                       }
-                                      className="rounded-lg p-1.5 text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
+                                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-error transition-colors hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:cursor-not-allowed disabled:opacity-50"
                                       aria-label="Delete import batch"
                                       title="Delete Import Batch"
                                       disabled={!canEdit}
@@ -320,7 +320,7 @@ export default function SearchStrategiesPanel({
                       </div>
                     ) : (
                       <div className="p-6 text-center">
-                        <FiUpload className="w-10 h-10 text-gray-300 mx-auto mb-2" />
+                        <FiUpload className="w-10 h-10 text-text-secondary/35 mx-auto mb-2" />
                         <p className="text-sm text-text-secondary mb-3">
                           No imports yet
                         </p>

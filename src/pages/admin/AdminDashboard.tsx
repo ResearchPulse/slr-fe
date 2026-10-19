@@ -110,7 +110,7 @@ const AdminDashboard: React.FC = () => {
                       setIsMobileMenuOpen(false);
                     }}
                     type="button"
-                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[13px] font-semibold text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
                   >
                     <Icon className="h-[18px] w-[18px] opacity-70" />
                     {item.label}
@@ -124,12 +124,13 @@ const AdminDashboard: React.FC = () => {
                 return (
                   <button
                     key={item.label}
+                    type="button"
                     onClick={() => {
                       if (item.onClick) item.onClick();
                       else navigate(item.path);
                       setIsMobileMenuOpen(false);
                     }}
-                    className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
+                    className="flex min-h-11 w-full items-center gap-3 rounded-xl px-3 py-3 text-left text-[12px] font-semibold text-text-secondary transition-colors motion-reduce:transition-none hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <Icon className="h-[18px] w-[18px] opacity-70" />
                     {item.label}

@@ -14,6 +14,7 @@ import RqReportingWorkspace from "./RqReportingWorkspace";
 import SynthesisStrategyModal from "./components/SynthesisStrategyModal";
 import StrategyGuidelinesModal from "./components/StrategyGuidelinesModal";
 import SynthesisWorkspaceErrorBoundary from "./components/SynthesisWorkspaceErrorBoundary";
+import QueryErrorState from "../../../components/ui/QueryErrorState";
 
 type SynthesisSectionKey =
   | "overview"
@@ -61,6 +62,7 @@ export default function SynthesisPhaseWorkspace() {
   const [thematicViewMode, setThematicViewMode] = useState<
     "cards" | "matrix" | "subgroup"
   >("cards");
+  const [transitioningSection, setTransitioningSection] = useState<SynthesisSectionKey | null>(null);
   const [isStrategyGuidelinesOpen, setIsStrategyGuidelinesOpen] =
     useState(false);
   const [isStrategyModalOpen, setIsStrategyModalOpen] = useState(false);
@@ -106,21 +108,25 @@ export default function SynthesisPhaseWorkspace() {
       {
         key: "overview" as const,
         label: SECTION_LABELS.overview,
+        compactLabel: "Overview",
         icon: Layers3,
       },
       {
         key: "descriptive-charts" as const,
         label: SECTION_LABELS["descriptive-charts"],
+        compactLabel: "Charts",
         icon: BarChart3,
       },
       {
         key: "thematic-analysis" as const,
         label: SECTION_LABELS["thematic-analysis"],
+        compactLabel: "Themes",
         icon: NotebookText,
       },
       {
         key: "rq-reporting" as const,
         label: SECTION_LABELS["rq-reporting"],
+        compactLabel: "RQ",
         icon: NotebookText,
       },
     ],
@@ -137,26 +143,15 @@ export default function SynthesisPhaseWorkspace() {
 
   if (workspace.error || !workspace.workspace) {
     return (
-      <div className="min-h-screen bg-bg-secondary px-6 py-10">
-        <div className="mx-auto max-w-4xl rounded-xl border border-border bg-surface-white p-6 shadow-none">
-          <h2 className="text-lg font-semibold text-red-900">
-            Synthesis Workspace Error
-          </h2>
-          <p className="mt-2 text-sm text-red-700">
-            {workspace.error || "Unable to load synthesis workspace."}
-          </p>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button
-              variant="outline"
-              onClick={() => workspace.refetchWorkspace()}
-            >
-              Retry
-            </Button>
-            <Button variant="secondary" onClick={handleBack}>
-              Back to Process
-            </Button>
-          </div>
-        </div>
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+        <QueryErrorState
+          title="Synthesis workspace unavailable"
+          message={workspace.error || "Unable to load synthesis workspace."}
+          onRetry={() => void workspace.refetchWorkspace()}
+          retryLabel="Retry"
+          onBack={handleBack}
+          backLabel="Back to process"
+        />
       </div>
     );
   }
@@ -226,7 +221,7 @@ export default function SynthesisPhaseWorkspace() {
             <button
               type="button"
               onClick={handleBack}
-              className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+              className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl p-2.5 text-text-secondary motion-safe:transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none"
               title="Back to Process Workspace"
               aria-label="Back to Process Workspace"
             >
@@ -303,7 +298,7 @@ export default function SynthesisPhaseWorkspace() {
                   workspace.isCompleting
                 }
                 isLoading={workspace.isCompleting}
-                size="sm"
+                size="md"
                 className="normal-case tracking-normal disabled:border-border disabled:bg-bg-secondary disabled:text-text-muted disabled:opacity-100"
               >
                 Mark module complete
@@ -314,7 +309,7 @@ export default function SynthesisPhaseWorkspace() {
       </header>
 
       <main className="mx-auto max-w-[1440px] px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
-        <div className="mb-6 flex flex-col gap-2 border-b border-border/70 md:min-h-14 md:flex-row md:items-stretch md:gap-5">
+        <div className="mb-6 flex flex-col gap-2 border-b border-border/70 xl:min-h-14 xl:flex-row xl:items-stretch xl:gap-5">
           <div className="inline-flex min-h-14 max-w-full shrink-0 items-center gap-3 rounded-xl border border-border/50 bg-surface-white/70 px-3 py-2 sm:px-4">
             <div
               className="flex min-w-0 items-center gap-3"
@@ -331,17 +326,17 @@ export default function SynthesisPhaseWorkspace() {
                 aria-label="Exclude low-quality studies"
                 aria-checked={filterHighQualityOnly}
                 onClick={() => setFilterHighQualityOnly((v) => !v)}
-                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${filterHighQualityOnly ? "bg-primary" : "bg-border"}`}
+                className="inline-flex h-11 w-[52px] shrink-0 items-center justify-center rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
               >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-surface-white shadow-none transition-transform ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`}
-                />
+                <span aria-hidden="true" className={`relative inline-flex h-6 w-11 items-center rounded-full motion-safe:transition-colors motion-safe:duration-150 motion-reduce:transition-none ${filterHighQualityOnly ? "bg-primary" : "bg-border"}`}>
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-surface-white shadow-none motion-safe:transition-transform motion-safe:duration-150 motion-reduce:transform-none motion-reduce:transition-none ${filterHighQualityOnly ? "translate-x-5" : "translate-x-1"}`} />
+                </span>
               </button>
             </div>
           </div>
 
           <nav aria-label="Synthesis sections" className="min-w-0 flex-1 overflow-x-auto md:self-stretch">
-            <div className="flex min-h-14 min-w-max items-center gap-3 md:h-full md:items-stretch sm:gap-5">
+            <div className="flex min-h-14 min-w-max items-center gap-0.5 sm:gap-2 md:h-full md:items-stretch md:gap-4">
               {tabs.map((tab) => {
                 const Icon = tab.icon;
                 const isActive = activeSection === tab.key;
@@ -350,16 +345,21 @@ export default function SynthesisPhaseWorkspace() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => navigate(`${synthesisBasePath}/${tab.key}`)}
+                    onClick={() => {
+                      if (!isActive) setTransitioningSection(tab.key);
+                      navigate(`${synthesisBasePath}/${tab.key}`);
+                    }}
+                    aria-label={tab.label}
                     aria-current={isActive ? "page" : undefined}
-                    className={`group relative inline-flex min-h-[44px] items-center justify-center gap-2 px-2 text-sm font-medium transition-colors duration-150 after:absolute after:bottom-[-1px] after:left-1 after:right-1 after:h-0.5 after:rounded-full after:content-[''] after:transition-colors focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 sm:px-3 md:h-full ${
+                    className={`group relative inline-flex min-h-11 min-w-11 items-center justify-center gap-1 px-0.5 text-sm font-medium motion-safe:transition-colors motion-safe:duration-150 after:absolute after:bottom-[-1px] after:left-1 after:right-1 after:h-0.5 after:rounded-full after:content-[''] after:motion-safe:transition-colors focus-visible:rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 focus-visible:ring-offset-1 sm:gap-2 sm:px-2 md:h-full md:px-3 motion-reduce:transition-none ${
                       isActive
                         ? "text-primary after:bg-primary"
                         : "text-text-secondary after:bg-transparent hover:text-text-primary"
                     }`}
                   >
-                    <Icon className="h-4 w-4" aria-hidden="true" />
-                    {tab.label}
+                    <Icon className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" aria-hidden="true" />
+                    <span className="sm:hidden">{tab.compactLabel}</span>
+                    <span className="hidden sm:inline">{tab.label}</span>
                   </button>
                 );
               })}
@@ -367,6 +367,7 @@ export default function SynthesisPhaseWorkspace() {
           </nav>
         </div>
 
+        <div key={activeSection} className={transitioningSection === activeSection ? "ui-section-enter" : undefined}>
         <SynthesisWorkspaceErrorBoundary>
           {activeSection === "thematic-analysis" ? (
             <ThematicWorkspace
@@ -420,6 +421,7 @@ export default function SynthesisPhaseWorkspace() {
             />
           )}
         </SynthesisWorkspaceErrorBoundary>
+        </div>
       </main>
 
       {workspace.workspace?.process.id ? (
