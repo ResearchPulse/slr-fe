@@ -21,7 +21,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
           <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 h-[360px] w-[360px] rounded-full border border-white/10" />
 
           <div className="relative z-10 flex items-center gap-3">
-            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-sm font-black tracking-tight text-primary">S</span>
+            <img src="/brand/app-icon.png" alt="" className="h-11 w-11 select-none" draggable={false} />
             <div>
               <p className="text-sm font-bold tracking-[0.12em]">SLRS</p>
               <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/60">Research workbench</p>
@@ -60,7 +60,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
         <section className="flex min-h-screen flex-col justify-center px-5 py-8 sm:px-8 lg:px-12">
           <div className="mx-auto w-full max-w-md">
             <div className="mb-8 flex items-center gap-3 lg:hidden">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-black text-white">S</span>
+              <img src="/brand/app-icon.png" alt="" className="h-10 w-10 select-none" draggable={false} />
               <div>
                 <p className="text-sm font-bold tracking-[0.12em] text-text-primary">SLRS</p>
                 <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-[0.1em] text-text-secondary">Research workbench</p>
