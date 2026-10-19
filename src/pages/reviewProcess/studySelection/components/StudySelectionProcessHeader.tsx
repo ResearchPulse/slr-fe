@@ -141,7 +141,7 @@ export default function StudySelectionProcessHeader({
               <div className="w-32 h-2 bg-bg-secondary rounded-full overflow-hidden">
                 <div
                   className={cn(
-                    "h-full rounded-full transition-all duration-500",
+                    "h-full rounded-full transition-[width] duration-200 motion-reduce:transition-none",
                     progressBarClass,
                   )}
                   style={{ width: `${completedPercent}%` }}

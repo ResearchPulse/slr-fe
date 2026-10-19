@@ -41,7 +41,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             placeholder="e.g., Lack of consensus on the effectiveness of remote patient monitoring for chronic heart failure..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -55,7 +55,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             placeholder="e.g., Existing reviews are outdated (pre-2020) and do not account for recent large-scale clinical trials..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -68,7 +68,7 @@ const ReviewNeedForm: React.FC<ReviewNeedFormProps> = ({
             helperText="Name of the stakeholder or researcher who identified this review need."
             placeholder="e.g., Clinical Guidelines Committee"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
       </div>

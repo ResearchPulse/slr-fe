@@ -41,15 +41,17 @@ export default function CrossrefFilterSidebar({
 }: CrossrefFilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="w-16 flex flex-col items-center py-6 bg-surface-white border border-border rounded-xl sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none transition-all duration-300">
+      <aside className="flex h-fit w-full items-center justify-between rounded-xl border border-border bg-surface-white px-2 py-2 motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-16 lg:flex-col lg:justify-start lg:px-0 lg:py-6">
         <button
+          type="button"
           onClick={onToggleCollapse}
-          className="p-3 bg-primary-light text-accent border border-accent/30 rounded-xl hover:bg-accent/10 transition-colors mb-8"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-accent/30 bg-primary-light text-accent transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none lg:mb-8"
           title="Expand Explorer Filters"
+          aria-label="Expand Explorer Filters"
         >
-          <FiChevronRight className="w-5 h-5" />
+          <FiChevronRight className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="flex flex-col gap-6 text-gray-300">
+        <div className="hidden flex-col gap-6 text-text-secondary/50 lg:flex">
           <FiFilter className="w-5 h-5" />
           <FiUser className="w-5 h-5" />
           <FiType className="w-5 h-5" />
@@ -61,7 +63,7 @@ export default function CrossrefFilterSidebar({
   }
 
   return (
-    <aside className="w-80 flex flex-col bg-surface-white border border-border rounded-xl sticky top-24 h-fit max-h-[calc(100vh-8rem)] shadow-none overflow-hidden transition-all duration-300">
+    <aside className="flex h-fit w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-80">
       {/* Header */}
       <div className="px-6 py-6 border-b border-border flex items-center justify-between bg-primary-light/30">
         <div className="flex items-center gap-3">
@@ -78,8 +80,11 @@ export default function CrossrefFilterSidebar({
           </div>
         </div>
         <button
+          type="button"
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-primary-light rounded-xl text-text-secondary hover:text-accent transition-colors"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+          title="Collapse Explorer Filters"
+          aria-label="Collapse Explorer Filters"
         >
           <FiChevronLeft className="w-5 h-5" />
         </button>
@@ -93,7 +98,7 @@ export default function CrossrefFilterSidebar({
             Author
           </label>
           <div className="relative group">
-            <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
+            <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50 transition-colors group-focus-within:text-accent motion-reduce:transition-none" />
             <input
               type="text"
               placeholder="e.g. Kitchenham"
@@ -101,7 +106,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryAuthor: e.target.value })
               }
-              className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
         </div>
@@ -112,7 +117,7 @@ export default function CrossrefFilterSidebar({
             Title Keywords
           </label>
           <div className="relative group">
-            <FiType className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-accent transition-colors" />
+            <FiType className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50 transition-colors group-focus-within:text-accent motion-reduce:transition-none" />
             <input
               type="text"
               placeholder="e.g. Software Quality"
@@ -120,7 +125,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryTitle: e.target.value })
               }
-              className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-11 pr-4 text-text-primary"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
         </div>
@@ -183,7 +188,7 @@ export default function CrossrefFilterSidebar({
                   setLocalParams({ ...localParams, order: "desc" })
                 }
                 className={cn(
-                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                  "min-h-11 flex-1 rounded-xl py-2 text-[10px] font-black uppercase tracking-widest motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
                   localParams.order === "desc" || !localParams.order
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -195,7 +200,7 @@ export default function CrossrefFilterSidebar({
                 type="button"
                 onClick={() => setLocalParams({ ...localParams, order: "asc" })}
                 className={cn(
-                  "flex-1 py-2 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all",
+                  "min-h-11 flex-1 rounded-xl py-2 text-[10px] font-black uppercase tracking-widest motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
                   localParams.order === "asc"
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -238,7 +243,7 @@ export default function CrossrefFilterSidebar({
           isLoading={isLoading}
           className="w-full py-4 bg-accent hover:bg-primary-hover text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-sm flex items-center justify-center gap-2"
         >
-          <FiRefreshCw className={isLoading ? "animate-spin" : ""} />
+          <FiRefreshCw />
           Apply Explorer Filters
         </Button>
       </div>

@@ -21,7 +21,9 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       "/admin/users": "Users Management",
       "/admin/agents": "AI Agents",
       "/admin/templates": "Checklist Templates",
+      "/admin/quality-criteria": "Quality Criteria",
       "/admin/master-sources": "Search Sources",
+      "/admin/notifications": "Notifications",
       "/admin/analytics": "Analytics",
       "/admin/settings": "System Settings",
       "/admin/profile": "My Profile",
@@ -29,6 +31,18 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
 
     return titles[location.pathname] || "Dashboard";
   }, [location.pathname]);
+
+  const compactPageTitle = useMemo(() => {
+    const titles: Record<string, string> = {
+      "/admin/users": "Users",
+      "/admin/templates": "Templates",
+      "/admin/quality-criteria": "Criteria",
+      "/admin/master-sources": "Sources",
+      "/admin/settings": "Settings",
+    };
+
+    return titles[location.pathname] || pageTitle;
+  }, [location.pathname, pageTitle]);
 
   const getUserInitials = (name: string) => {
     return name ? name.trim().charAt(0).toUpperCase() : "";
@@ -39,14 +53,17 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       <div className="flex min-w-0 items-center gap-3.5">
         <button
           onClick={onMenuClick}
-          className="-ml-2 flex h-9 w-9 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
+          className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
           aria-label="Toggle Menu"
         >
           <FiMenu className="h-5 w-5" />
         </button>
         <div className="min-w-0">
           <p className="hidden text-[9px] font-bold uppercase tracking-[0.13em] text-text-muted sm:block">Admin workspace</p>
-          <h2 className="truncate text-[16px] font-bold tracking-[-0.02em] text-text-primary sm:mt-0.5 sm:text-[18px]">{pageTitle}</h2>
+          <h2 aria-label={pageTitle} className="truncate text-[16px] font-bold tracking-[-0.02em] text-text-primary sm:mt-0.5 sm:text-[18px]">
+            <span className="sm:hidden">{compactPageTitle}</span>
+            <span className="hidden sm:inline">{pageTitle}</span>
+          </h2>
         </div>
       </div>
 

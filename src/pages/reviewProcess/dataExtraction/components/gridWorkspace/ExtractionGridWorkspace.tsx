@@ -579,8 +579,13 @@ export default function ExtractionGridWorkspace() {
   if (ws.isGridLoading && !ws.editableGrid) {
     return (
       <div className="min-h-screen bg-bg-secondary px-6 py-8">
-        <div className="mx-auto flex max-w-7xl items-center justify-center rounded-xl border border-border bg-surface-white py-24 shadow-none">
-          <RefreshCw className="h-5 w-5 animate-spin text-accent" />
+        <div
+          className="mx-auto flex max-w-7xl items-center justify-center rounded-xl border border-border bg-surface-white py-24 shadow-none"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
+          <RefreshCw aria-hidden="true" className="h-5 w-5 motion-safe:animate-spin motion-reduce:animate-none text-accent" />
           <span className="ml-3 text-sm text-text-secondary">
             Loading editable grid...
           </span>
@@ -601,6 +606,9 @@ export default function ExtractionGridWorkspace() {
               <p className="mt-1 text-sm text-text-secondary">
                 Review and standardize reviewer submissions before leader consensus.
               </p>
+              <p className="mt-2 text-xs text-text-secondary lg:hidden">
+                Swipe the grid horizontally to view all extraction fields.
+              </p>
             </div>
 
             <div className="flex flex-col gap-2 sm:grid sm:grid-cols-2 xl:flex">
@@ -615,7 +623,8 @@ export default function ExtractionGridWorkspace() {
                 disabled={ws.isGridLoading}
               >
                 <RefreshCw
-                  className={`mr-2 h-4 w-4 ${ws.isGridLoading ? "animate-spin" : ""}`}
+                  aria-hidden="true"
+                  className={`mr-2 h-4 w-4 ${ws.isGridLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
                 />
                 Refresh Grid
               </Button>
@@ -631,7 +640,7 @@ export default function ExtractionGridWorkspace() {
                     max={MAX_GRID_ROW_HEIGHT}
                     value={rowHeight}
                     onChange={(event) => setRowHeight(Number(event.target.value))}
-                    className="h-1.5 min-w-20 flex-1 accent-primary lg:w-28 lg:flex-none"
+                    className="h-11 min-w-20 flex-1 cursor-pointer accent-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:w-28 lg:flex-none"
                     aria-label="Grid row height"
                   />
                 </div>
@@ -639,14 +648,14 @@ export default function ExtractionGridWorkspace() {
                   <button
                     type="button"
                     onClick={() => setRowHeight(72)}
-                    className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                    className="min-h-11 rounded-xl border border-border px-3 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
                     Comfort
                   </button>
                   <button
                     type="button"
                     onClick={() => setRowHeight(DEFAULT_GRID_ROW_HEIGHT)}
-                    className="rounded-xl border border-border px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary"
+                    className="min-h-11 rounded-xl border border-border px-3 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
                     Reset
                   </button>
@@ -660,9 +669,10 @@ export default function ExtractionGridWorkspace() {
                 <Button
                   onClick={() => setIsExportMenuOpen((current) => !current)}
                   disabled={isExporting || !projectId}
+                  aria-busy={isExporting}
                 >
                   {isExporting ? (
-                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    <RefreshCw aria-hidden="true" className="mr-2 h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
                   ) : (
                     <Download className="mr-2 h-4 w-4" />
                   )}
@@ -685,16 +695,16 @@ export default function ExtractionGridWorkspace() {
                           type="button"
                           onClick={handleDownloadJson}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
                         >
-                          <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-emerald-600" />
+                          <FileSpreadsheet className="h-4 w-4 flex-shrink-0 text-success" />
                           <span className="truncate">JSON (.json)</span>
                         </button>
                         <button
                           type="button"
                           onClick={handleDownloadCsv}
                           disabled={isExporting}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-60"
+                          className="flex min-h-11 w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                           <FileText className="h-4 w-4 flex-shrink-0 text-accent" />
                           <span className="truncate">CSV (.csv)</span>
@@ -709,7 +719,7 @@ export default function ExtractionGridWorkspace() {
         </div>
 
         {ws.error ? (
-          <div className="rounded-xl border border-border bg-surface-white px-5 py-4 text-sm text-red-700">
+          <div className="rounded-xl border border-border bg-surface-white px-5 py-4 text-sm text-error">
             {ws.error}
           </div>
         ) : null}
@@ -722,6 +732,7 @@ export default function ExtractionGridWorkspace() {
             <div className="ag-theme-quartz h-full w-full">
               <AgGridReact<AgGridRowData>
                 ref={gridRef}
+                theme="legacy"
                 rowData={agRowData}
                 columnDefs={columnDefs}
                 defaultColDef={defaultColDef}
@@ -736,7 +747,7 @@ export default function ExtractionGridWorkspace() {
           ) : (
             <div className="flex h-full items-center justify-center px-6 text-center">
               <div>
-                <p className="text-base font-semibold text-slate-800">
+                <p className="text-base font-semibold text-text-primary">
                   No grid data available
                 </p>
                 <p className="mt-1 text-sm text-text-secondary">

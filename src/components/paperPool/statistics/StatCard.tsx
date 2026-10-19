@@ -22,7 +22,7 @@ const StatCard: React.FC<StatCardProps> = ({
     <div
       className={cn(
         "flex h-full items-center rounded-xl border border-border bg-surface-white p-4 shadow-sm transition-colors duration-200 hover:border-primary/25",
-        loading && "animate-pulse",
+        loading && "motion-safe:animate-pulse motion-reduce:animate-none",
       )}
     >
       <div className="flex items-center gap-4">

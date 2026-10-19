@@ -89,7 +89,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary flex items-center justify-center shadow-none shadow-primary/10">
               <FiDatabase className="w-5 h-5 text-white" />
             </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-white animate-pulse" />
+            <div className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-surface-white bg-success" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-text-primary">
@@ -109,21 +109,22 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         <button
           onClick={onRefetch}
           disabled={fetching}
+          type="button"
+          aria-label="Refresh dataset"
           className={cn(
-            "flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all",
-            "text-text-secondary hover:text-accent hover:bg-primary-light",
-            fetching && "opacity-60 cursor-not-allowed",
+            "flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-text-secondary transition-colors hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none",
+            fetching && "cursor-not-allowed opacity-60",
           )}
           title="Refresh dataset"
         >
-          <FiRefreshCw className={cn("w-4 h-4", fetching && "animate-spin")} />
+          <FiRefreshCw aria-hidden="true" className={cn("w-4 h-4", fetching && "motion-safe:animate-spin motion-reduce:animate-none")} />
           <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
 
       {/* Search & Filter Bar */}
       <div className="mb-5">
-        <div className="flex items-center gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           {/* Search Input */}
           <div className="relative flex-1 group">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -131,6 +132,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             </div>
             <input
               type="text"
+              aria-label="Search snapshot papers"
               placeholder="Search papers by title, authors, keywords..."
               value={searchInput}
               onChange={(e) => onSearchInputChange(e.target.value)}
@@ -138,20 +140,21 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                 if (e.key === "Enter") onSearch(searchInput);
               }}
               className={cn(
-                "w-full pl-11 pr-4 py-3 bg-surface-white border border-border rounded-xl text-sm text-text-primary",
+                "min-h-11 w-full rounded-xl border border-border bg-surface-white py-3 pl-11 pr-4 text-sm text-text-primary",
                 "placeholder:text-text-secondary",
-                "focus:ring-2 focus:ring-accent/30 focus:border-accent",
+                "outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 focus-visible:ring-2 focus-visible:ring-primary/30",
                 "hover:border-border",
-                "transition-all duration-200 shadow-none",
+                "motion-reduce:transition-none",
               )}
             />
             {searchInput && (
               <button
+                type="button"
                 onClick={() => {
                   onSearchInputChange("");
                   onSearch("");
                 }}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-text-secondary hover:text-text-secondary"
+                className="absolute inset-y-0 right-0 flex h-11 w-11 items-center justify-center self-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               >
                 <FiX className="w-4 h-4" />
               </button>
@@ -160,9 +163,12 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
 
           {/* Filter Toggle Button */}
           <button
+            type="button"
             onClick={() => setShowFilters(!showFilters)}
+            aria-expanded={showFilters}
+            aria-controls="snapshot-extended-filters"
             className={cn(
-              "flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all",
+              "flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none",
               showFilters || yearInput
                 ? "bg-primary-light text-accent border border-primary/20"
                 : "bg-surface-white text-text-secondary border border-border hover:bg-bg-primary",
@@ -180,17 +186,21 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
 
         {/* Extended Filters */}
         <div
+          id="snapshot-extended-filters"
+          aria-hidden={!showFilters}
+          inert={!showFilters}
           className={cn(
-            "overflow-hidden transition-all duration-300",
+            "overflow-hidden transition-[max-height,opacity,margin] duration-200 motion-reduce:transition-none",
             showFilters ? "max-h-40 opacity-100 mt-3" : "max-h-0 opacity-0",
           )}
         >
-          <div className="flex items-center gap-3 p-4 bg-bg-primary/80 rounded-xl border border-border">
+          <div className="flex flex-col gap-3 rounded-xl border border-border bg-bg-primary/80 p-4 sm:flex-row sm:items-center">
             <div className="flex items-center gap-2">
-              <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+              <label htmlFor="snapshot-publication-year" className="text-xs font-medium uppercase tracking-wider text-text-secondary">
                 Publication Year
               </label>
               <input
+                id="snapshot-publication-year"
                 type="number"
                 placeholder="e.g. 2024"
                 value={yearInput}
@@ -204,16 +214,15 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                   }
                 }}
                 className={cn(
-                  "w-32 px-3 py-2 bg-surface-white border border-border rounded-xl text-sm text-text-primary",
-                  "placeholder:text-text-secondary focus:ring-2 focus:ring-accent/30 focus:border-accent",
-                  "transition-all shadow-none",
+                  "min-h-11 w-32 rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/20 transition-colors motion-reduce:transition-none",
                 )}
               />
             </div>
             {hasFilters && (
               <button
+                type="button"
                 onClick={onClearFilters}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-text-secondary hover:text-text-primary hover:bg-surface-white rounded-xl transition-all"
+                className="inline-flex min-h-11 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               >
                 <FiX className="w-3 h-3" />
                 Clear all
@@ -239,11 +248,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             </span>
           )}
           {yearInput && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-50 text-purple-700 rounded-full text-xs font-medium border border-purple-100">
+            <span className="inline-flex items-center gap-1 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-1 text-xs font-medium text-primary">
               Year: {yearInput}
               <button
                 onClick={() => onYearInputChange("")}
-                className="ml-1 hover:text-purple-900"
+                className="ml-1 text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               >
                 <FiX className="w-3 h-3" />
               </button>
@@ -259,7 +268,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
-                className="bg-surface-white rounded-xl border border-border p-5 animate-pulse"
+                className="bg-surface-white rounded-xl border border-border p-5 motion-safe:animate-pulse motion-reduce:animate-none"
               >
                 <div className="h-5 bg-bg-secondary rounded-xl w-3/4 mb-3" />
                 <div className="h-4 bg-bg-secondary rounded w-1/2 mb-4" />
@@ -279,7 +288,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
           <div className="flex flex-col items-center justify-center h-full py-20">
             <div className="w-20 h-20 rounded-xl bg-surface-white flex items-center justify-center mb-5 shadow-none">
               <svg
-                className="w-10 h-10 text-red-400"
+                className="h-10 w-10 text-error"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -295,7 +304,7 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             <h4 className="text-lg font-bold text-text-primary mb-2">
               Failed to load dataset
             </h4>
-            <p className="text-red-600 text-sm font-medium mb-5">{error}</p>
+            <p className="mb-5 text-sm font-medium text-error">{error}</p>
             <Button variant="primary" onClick={onRefetch}>
               <FiRefreshCw className="w-4 h-4 mr-2" />
               Try Again
@@ -347,8 +356,8 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center h-full py-20 px-4">
             <div className="relative mb-6">
-              <div className="w-28 h-28 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 flex items-center justify-center shadow-none">
-                <FiDatabase className="w-14 h-14 text-slate-300" />
+              <div className="flex h-28 w-28 items-center justify-center rounded-xl border border-border bg-bg-secondary">
+                <FiDatabase className="h-14 w-14 text-text-muted" />
               </div>
               <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-primary-light rounded-xl flex items-center justify-center shadow-none">
                 <FiSearch className="w-5 h-5 text-accent" />
@@ -396,12 +405,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
             </div>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 disabled={page <= 1 || fetching}
                 onClick={onPreviousPage}
                 className={cn(
-                  "px-3 py-2 text-xs font-medium rounded-xl transition-all",
-                  "text-text-secondary bg-surface-white border border-border",
-                  "hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed",
+                  "inline-flex min-h-11 items-center rounded-xl border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none",
                 )}
               >
                 Previous
@@ -410,12 +418,11 @@ export const SnapshotDatasetView: React.FC<SnapshotDatasetViewProps> = ({
                 {page} / {totalPages}
               </div>
               <button
+                type="button"
                 disabled={page >= totalPages || fetching}
                 onClick={onNextPage}
                 className={cn(
-                  "px-3 py-2 text-xs font-medium rounded-xl transition-all",
-                  "text-text-secondary bg-surface-white border border-border",
-                  "hover:bg-bg-primary disabled:opacity-40 disabled:cursor-not-allowed",
+                  "inline-flex min-h-11 items-center rounded-xl border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none",
                 )}
               >
                 Next

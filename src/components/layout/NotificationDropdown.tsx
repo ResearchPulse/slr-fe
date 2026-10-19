@@ -51,9 +51,9 @@ export default function NotificationDropdown({
       role="dialog"
       aria-modal="false"
       aria-label="Notifications"
-      className="fixed left-4 right-4 top-[72px] z-(--z-index-dropdown) mx-auto w-auto max-w-[27rem] overflow-hidden rounded-xl border border-border bg-surface-white shadow-[0_4px_12px_-4px_rgba(18,35,49,0.18)] animate-in fade-in slide-in-from-top-2 duration-150 sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:mx-0 sm:w-[min(27rem,calc(100vw-2rem))]"
+      className="ui-popover-enter fixed left-4 right-4 top-[72px] z-(--z-index-dropdown) mx-auto flex max-h-[calc(100dvh-5.5rem)] w-auto max-w-[27rem] flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-[0_4px_12px_-4px_rgba(18,35,49,0.18)] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-3 sm:mx-0 sm:w-[min(27rem,calc(100vw-2rem))]"
     >
-      <header className="flex items-center justify-between gap-3 border-b border-border bg-surface-white px-4 py-3.5 sm:px-5">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-border bg-surface-white px-4 py-3.5 sm:px-5">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-primary/10 bg-primary-light text-primary">
             <Bell className="h-[17px] w-[17px]" aria-hidden="true" />
@@ -64,23 +64,23 @@ export default function NotificationDropdown({
               {unreadCount > 0 ? `${unreadCount} unread` : "Updates across your review projects"}
             </p>
           </div>
-          {isFetching && <LoaderCircle className="h-3.5 w-3.5 animate-spin text-text-secondary" aria-label="Refreshing notifications" />}
+          {isFetching && <LoaderCircle className="h-3.5 w-3.5 text-text-secondary motion-safe:animate-spin motion-reduce:animate-none" aria-label="Refreshing notifications" />}
         </div>
         <button
           type="button"
           onClick={() => markAllAsRead()}
           disabled={!hasUnread || isMarkingAllAsRead || isLoading}
-          className="shrink-0 rounded-lg px-2.5 py-2 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:text-text-disabled disabled:hover:bg-transparent"
+          className="min-h-11 shrink-0 rounded-lg px-2.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:text-text-disabled disabled:hover:bg-transparent"
         >
           {isMarkingAllAsRead ? "Marking…" : "Mark all read"}
         </button>
       </header>
 
-      <div className="max-h-[min(26rem,65vh)] overflow-y-auto">
+      <div className="min-h-0 max-h-[min(26rem,65vh)] shrink overflow-y-auto">
         {isLoading ? (
           <div className="space-y-4 p-5" aria-label="Loading notifications">
             {[0, 1, 2].map((item) => (
-              <div key={item} className="flex gap-3 animate-pulse">
+              <div key={item} className="flex gap-3 motion-safe:animate-pulse motion-reduce:animate-none">
                 <div className="h-9 w-9 shrink-0 rounded-xl bg-bg-secondary" />
                 <div className="flex-1 space-y-2 py-1">
                   <div className="h-3 w-3/4 rounded bg-bg-secondary" />
@@ -97,7 +97,7 @@ export default function NotificationDropdown({
             <button
               type="button"
               onClick={() => void refetch()}
-              className="mt-4 inline-flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary"
+              className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-lg border border-border px-3 text-xs font-medium text-text-primary transition-colors hover:bg-bg-secondary"
             >
               <RefreshCw className="h-3.5 w-3.5" aria-hidden="true" /> Try again
             </button>
@@ -124,14 +124,14 @@ export default function NotificationDropdown({
         )}
       </div>
 
-      <footer className="border-t border-border bg-bg-secondary/50 p-2">
+      <footer className="shrink-0 border-t border-border bg-bg-secondary/50 p-2">
         <button
           type="button"
           onClick={() => {
             navigate(activityPath);
             onClose?.();
           }}
-          className="group flex min-h-10 w-full items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          className="group flex min-h-11 w-full items-center justify-center gap-2 rounded-lg px-3 text-xs font-semibold text-text-secondary transition-colors hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         >
           <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
           See all activity

@@ -73,7 +73,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
     <div className="flex flex-col gap-6 pb-20">
       {/* Title Editor */}
       <section>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-text-primary mb-2">
           Document Title
         </label>
         <Input
@@ -89,7 +89,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       {/* Paragraphs Editor */}
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-secondary">
             Paragraphs/Description
           </h3>
           <Button
@@ -111,7 +111,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </Button>
         </div>
         {draft.paragraphs.map((p, idx) => (
-          <Card key={p.id} className="relative group">
+          <Card key={p.id} className="relative group p-0 sm:p-0">
             <CardContent className="pt-4">
               <div className="flex gap-2">
                 <Textarea
@@ -132,7 +132,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-red-500 hover:text-red-700 hover:bg-surface-white"
+                  className="text-error hover:text-error/80 hover:bg-error/5"
                   onClick={() =>
                     setLocalDraft(
                       produce(draft, (draft) => {
@@ -154,7 +154,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
       {/* Sections Editor */}
       <section className="space-y-4">
         <div className="flex justify-between items-center">
-          <h3 className="text-sm font-bold uppercase tracking-wider text-gray-500">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-text-secondary">
             Sections
           </h3>
           <Button
@@ -178,7 +178,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
           </Button>
         </div>
         {draft.sections.map((section, sIdx) => (
-          <Card key={section.id} className="border-primary/40 bg-primary-light/20">
+          <Card key={section.id} className="border-primary/40 bg-primary-light/20 p-0 sm:p-0">
             <CardHeader className="pb-2 space-y-0">
               <div className="flex items-start justify-between">
                 <div className="flex-1 space-y-2">
@@ -254,7 +254,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-red-500 hover:text-red-700"
+                    className="text-error hover:text-error/80 hover:bg-error/5"
                     onClick={() =>
                       setLocalDraft(
                         produce(draft, (draft) => {
@@ -271,9 +271,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
               </div>
             </CardHeader>
             <CardContent>
-              <div className="pl-4 border-l-2 border-gray-100 space-y-3">
+              <div className="pl-4 border-l-2 border-border space-y-3">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="text-xs font-semibold text-gray-400">
+                  <span className="text-xs font-semibold text-text-muted">
                     Items ({section.items.length})
                   </span>
                   <Button
@@ -301,7 +301,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                 </div>
                 {section.items.map((item, iIdx) => (
                   <div key={item.id} className="flex gap-2 items-center">
-                    <span className="text-xs font-mono text-gray-400 w-4">
+                    <span className="text-xs font-mono text-text-muted w-4">
                       {iIdx + 1}.
                     </span>
                     <Input
@@ -374,7 +374,7 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-8 w-8 p-0 text-red-400"
+                        className="h-8 w-8 p-0 text-error"
                         onClick={() =>
                           setLocalDraft(
                             produce(draft, (draft) => {
@@ -403,9 +403,9 @@ export const EditorPanel: React.FC<EditorPanelProps> = ({
 
       {/* Action Area */}
       {onSubmit && (
-        <section className="pt-8 border-t border-gray-100 flex justify-end">
+        <section className="pt-8 border-t border-border flex justify-end">
           <Button
-            className="w-full sm:w-auto min-w-[200px] bg-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-100"
+            className="w-full sm:w-auto min-w-[200px]"
             onClick={handleSubmit}
             disabled={isSubmitting}
           >

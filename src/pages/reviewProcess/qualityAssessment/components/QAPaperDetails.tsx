@@ -95,7 +95,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
           </span>
         )}
         {paper.publicationType && (
-          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-100">
+          <span className="inline-flex items-center rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-xs font-medium text-text-secondary">
             {paper.publicationType}
           </span>
         )}
@@ -112,7 +112,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
         {paper.doi && (
           <button
             onClick={handleCopyDoi}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-primary"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             title={`Copy DOI: ${paper.doi}`}
           >
             <FiCopy className="w-3.5 h-3.5" />
@@ -124,7 +124,7 @@ const PaperHeader = memo(({ paper }: { paper: WorkspaceQAPaper }) => {
             href={`https://doi.org/${paper.doi}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+            className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-primary/15 bg-primary-light px-3 py-2 text-xs font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
           >
             <FiExternalLink className="w-3.5 h-3.5" />
             Open DOI

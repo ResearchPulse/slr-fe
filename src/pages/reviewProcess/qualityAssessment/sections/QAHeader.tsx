@@ -13,6 +13,7 @@ interface QAHeaderProps {
     completionPercentage: number;
   };
   phaseStatus: string;
+  unavailable?: boolean;
   rightControls?: ReactNode;
   onExport?: () => void;
 }
@@ -21,6 +22,7 @@ export function QAHeader({
   onBack,
   stats,
   phaseStatus,
+  unavailable = false,
   rightControls,
   onExport,
 }: QAHeaderProps) {
@@ -29,7 +31,7 @@ export function QAHeader({
   const statusLabel = normalizedStatus === "inprogress" ? "Active" : phaseStatus;
   const statusStyle =
     normalizedStatus === "inprogress"
-      ? "bg-emerald-50 text-emerald-700"
+      ? "bg-primary-light text-accent"
       : normalizedStatus === "completed"
         ? "bg-primary-light text-accent"
         : "bg-bg-primary text-text-secondary";
@@ -40,7 +42,7 @@ export function QAHeader({
         <div className="flex min-w-0 items-center gap-3 lg:flex-1">
           <button
             onClick={onBack}
-            className="shrink-0 rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus:outline-none focus:ring-2 focus:ring-accent/20"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Back"
             aria-label="Back"
           >
@@ -50,12 +52,12 @@ export function QAHeader({
             <FileCheck2 size={20} />
           </div>
           <div className="min-w-0">
-            <h1 className="review-process-header-title truncate text-lg font-semibold leading-6 text-text-primary sm:text-xl">
+            <h1 className="review-process-header-title line-clamp-2 text-lg font-semibold leading-6 text-text-primary sm:text-xl">
               Quality Assessment
             </h1>
             <div className="mt-1.5 flex flex-wrap items-center gap-2">
               <span className="text-xs text-text-secondary">Phase B · Conducting</span>
-              <span className="h-1 w-1 rounded-full bg-slate-400" />
+              <span className="hidden h-1 w-1 rounded-full bg-border sm:block" />
               <span className="text-xs text-text-secondary">
                 Methodological quality and bias risk
               </span>
@@ -70,20 +72,17 @@ export function QAHeader({
           <div className="flex items-center gap-3 rounded-xl border border-border bg-bg-primary px-3 py-2 sm:gap-4">
             <div>
               <div className="text-[10px] font-medium text-text-secondary">Studies</div>
-              <div className="mt-0.5 text-sm font-semibold text-text-primary">{stats.total}</div>
+              <div className="mt-0.5 text-sm font-semibold text-text-primary">{unavailable ? "—" : stats.total}</div>
             </div>
             <div className="h-8 w-px bg-border" />
             <div className="w-28 sm:w-36">
               <div className="mb-1 flex items-center justify-between text-[10px] font-medium text-text-secondary">
                 <span>Complete</span>
-                <span className="text-text-primary">{completedPercent}%</span>
+                <span className="text-text-primary">{unavailable ? "Unavailable" : `${completedPercent}%`}</span>
               </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
-                <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
-                  style={{ width: `${completedPercent}%` }}
-                />
-              </div>
+              {!unavailable ? <div className="h-1.5 overflow-hidden rounded-full bg-bg-secondary">
+                <div className="h-full rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none" style={{ width: `${completedPercent}%` }} />
+              </div> : null}
             </div>
           </div>
 

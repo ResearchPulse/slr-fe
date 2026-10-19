@@ -32,13 +32,13 @@ const getActivityIcon = (type: Activity["type"]) => {
     case "phase_started":
       return <FiActivity className="w-5 h-5 text-accent" />;
     case "phase_completed":
-      return <FiCheckCircle className="w-5 h-5 text-green-600" />;
+      return <FiCheckCircle className="w-5 h-5 text-success" />;
     case "record_added":
-      return <FiFileText className="w-5 h-5 text-purple-600" />;
+      return <FiFileText className="w-5 h-5 text-accent" />;
     case "screening_done":
-      return <FiCheckCircle className="w-5 h-5 text-teal-600" />;
+      return <FiCheckCircle className="w-5 h-5 text-success" />;
     case "note_added":
-      return <FiAlertCircle className="w-5 h-5 text-yellow-600" />;
+      return <FiAlertCircle className="w-5 h-5 text-warning" />;
     case "team_action":
       return <FiUser className="w-5 h-5 text-accent" />;
     default:

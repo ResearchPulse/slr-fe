@@ -137,11 +137,10 @@ export default function PaperViewer({
   const hasPendingReview = hasPendingAssignedReviewer;
 
   const [isResolutionModalOpen, setIsResolutionModalOpen] = useState(false);
-  console.log("paper sections ", paper?.fullTextSections);
   if (!paper) {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-bg-primary text-center px-8">
-        <FiFileText className="w-12 h-12 text-gray-300 mb-4" />
+        <FiFileText className="mb-4 h-12 w-12 text-text-secondary" />
         <h3 className="text-lg font-medium text-text-secondary">
           No Paper Selected
         </h3>
@@ -158,7 +157,7 @@ export default function PaperViewer({
     <div className="relative flex h-full flex-col bg-bg-primary">
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto custom-scrollbar">
-        <div className={cn("space-y-2 px-4 py-3 transition-all duration-300 lg:px-6 lg:py-4")}>
+        <div className={cn("space-y-2 px-4 py-3 transition-[padding] duration-300 motion-reduce:transition-none lg:px-6 lg:py-4")}>
           {openGraph && citationGraph && (
             <CitationGraphModal
               isOpen={openGraph}
@@ -172,10 +171,12 @@ export default function PaperViewer({
           {/* 1. Hero Header */}
           <div className="relative group/hero">
             <button
+              type="button"
+              aria-label="View full paper details"
               onClick={() =>
                 navigate(`/projects/${activeProjectId}/papers/${paper.id}`)
               }
-              className="absolute top-6 right-6 z-20 flex items-center gap-2 rounded-xl border border-border bg-bg-secondary/80 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-text-secondary opacity-0 shadow-none transition-[opacity,color,background-color,border-color] hover:border-accent hover:bg-primary hover:text-white group-hover/hero:opacity-100"
+              className="absolute right-6 top-6 z-20 hidden min-h-11 items-center gap-2 rounded-xl border border-border bg-bg-secondary/80 px-4 text-[10px] font-black uppercase tracking-widest text-text-secondary opacity-0 shadow-none transition-[opacity,color,background-color,border-color] hover:border-accent hover:bg-primary hover:text-white group-hover/hero:opacity-100 lg:flex"
             >
               Full Details
               <FiExternalLink className="w-3.5 h-3.5" />
@@ -185,6 +186,14 @@ export default function PaperViewer({
               isLeaderView={isLeaderView}
               isFieldUpdated={isFieldUpdated}
             />
+            <button
+              type="button"
+              onClick={() => navigate(`/projects/${activeProjectId}/papers/${paper.id}`)}
+              className="mt-2 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-surface-white px-4 text-xs font-semibold text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent lg:hidden"
+            >
+              View full paper details
+              <FiExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+            </button>
           </div>
 
           {/* Tab Navigation */}
@@ -224,7 +233,7 @@ export default function PaperViewer({
           </div>
 
           {/* 2. Tab Content */}
-          <div className="space-y-2 animate-in fade-in duration-300">
+          <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
             {activeTab === "abstract" && (
               <>
                 {infoSummary && (
@@ -253,27 +262,29 @@ export default function PaperViewer({
 
                 {paper.extraction?.status === "failed" &&
                   paper.extraction.requested && (
-                    <div className="rounded-xl border border-amber-200 bg-amber-50 px-6 py-4 shadow-none">
+                    <div className="rounded-xl border border-warning/20 bg-warning/10 px-6 py-4 shadow-none" role="alert">
                       <div className="flex items-start gap-3">
-                        <FiAlertTriangle className="w-5 h-5 text-amber-600 mt-0.5" />
+                        <FiAlertTriangle className="mt-0.5 h-5 w-5 text-warning" />
                         <div>
-                          <p className="text-sm font-bold text-amber-900">
+                          <p className="text-sm font-bold text-warning">
                             Extraction Failed
                           </p>
-                          <p className="text-xs text-amber-800 mt-1">
+                          <p className="mt-1 text-xs text-text-primary">
                             PDF uploaded, but AI could not extract metadata
                             automatically.
                           </p>
                           {finalOnRetryExtraction && isLeader && (
                             <button
+                              type="button"
                               onClick={() => finalOnRetryExtraction(paper.id)}
                               disabled={finalIsRetryingExtraction}
-                              className="mt-3 inline-flex items-center gap-2 rounded-xl bg-surface-white border border-amber-200 px-4 py-2 text-xs font-bold text-amber-800 hover:bg-amber-100 transition-all active:scale-95 disabled:opacity-50"
+                              className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl border border-warning/25 bg-surface-white px-4 text-xs font-bold text-warning transition-colors hover:bg-warning/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/40 motion-reduce:transition-none disabled:opacity-50"
                             >
                               <FiRefreshCw
+                                aria-hidden="true"
                                 className={cn(
                                   "w-3.5 h-3.5",
-                                  finalIsRetryingExtraction && "animate-spin",
+                                  finalIsRetryingExtraction && "motion-safe:animate-spin motion-reduce:animate-none",
                                 )}
                               />
                               {finalIsRetryingExtraction
@@ -327,7 +338,7 @@ export default function PaperViewer({
             )}
 
             {activeTab === "fulltext" && (
-              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+              <div className="flex h-[min(82vh,900px)] min-h-[560px] flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
                 {!paper.pdfUrl && <div className="flex items-center border-b border-border bg-bg-secondary/50 px-4 py-3">
                   <h2 className="text-xs font-black text-text-primary uppercase tracking-tight">
                     Full-Text Access
@@ -348,7 +359,7 @@ export default function PaperViewer({
                   </div>
                 ) : (
                   <div className="flex-1 flex flex-col items-center justify-center p-12 bg-bg-secondary/30">
-                    <div className="w-20 h-20 bg-surface-white rounded-xl shadow-none flex items-center justify-center mb-6 text-slate-300 border border-border">
+                    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary shadow-none">
                       <FiFileText className="w-10 h-10" />
                     </div>
                     <h3 className="text-lg font-bold text-text-primary mb-2">
@@ -361,7 +372,7 @@ export default function PaperViewer({
                     {isLeader && !isDisabled && (
                       <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-hover text-white rounded-xl text-sm font-bold shadow-none transition-all active:scale-95"
+                        className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-none transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 motion-reduce:active:scale-100 motion-reduce:transition-none"
                       >
                         <FiUploadCloud className="w-4 h-4" />
                         Upload Full-Text PDF
@@ -396,11 +407,11 @@ export default function PaperViewer({
         <div className="border-t border-border bg-white px-4 py-3 lg:px-6">
           <div className="mx-auto flex max-w-5xl flex-col gap-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-slate-500">
+              <span className="text-[10px] font-bold uppercase tracking-[0.16em] text-text-secondary">
                 Reviewer progress
               </span>
               <div className="ml-auto flex items-center gap-3">
-                <span className="text-xs font-semibold text-slate-700">
+                <span className="text-xs font-semibold text-text-primary">
                   {isLoadingReviewers
                     ? "Checking submissions…"
                     : `${submittedReviewCount} of ${totalReviewCount} human reviews submitted`}
@@ -412,7 +423,7 @@ export default function PaperViewer({
                   aria-label="Hide reviewer progress"
                   title="Hide reviewer progress"
                   tabIndex={isReviewerProgressCollapsed ? -1 : 0}
-                  className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-slate-100 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
+                  className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                 >
                   <FiChevronUp className="h-4 w-4" />
                 </button>
@@ -425,10 +436,10 @@ export default function PaperViewer({
               {reviewerDecisions?.map((item) => {
                 const decisionText = item.decision?.decisionText;
                 const decisionTone = decisionText?.toLowerCase().includes("include")
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  ? "border-success/20 bg-success/10 text-success"
                   : decisionText?.toLowerCase().includes("exclude")
-                    ? "border-rose-200 bg-rose-50 text-rose-700"
-                    : "border-slate-200 bg-slate-50 text-slate-600";
+                    ? "border-error/20 bg-error/10 text-error"
+                    : "border-border bg-bg-secondary text-text-secondary";
                 return (
                   <span
                     key={item.reviewerId}
@@ -443,7 +454,7 @@ export default function PaperViewer({
                 );
               })}
               {!isLoadingReviewers && !reviewerDecisions?.length && (
-                <span className="text-xs text-slate-500">No human reviewers are assigned to this paper.</span>
+                <span className="text-xs text-text-secondary">No human reviewers are assigned to this paper.</span>
               )}
             </div>
             {reviewerDecisions?.some((item) => item.decision?.comment ?? item.decision?.reason) && (
@@ -451,7 +462,7 @@ export default function PaperViewer({
                 {reviewerDecisions.map((item) => {
                   const comment = item.decision?.comment ?? item.decision?.reason;
                   return comment ? (
-                    <p key={`${item.reviewerId}-comment`} className="text-xs text-slate-600">
+                    <p key={`${item.reviewerId}-comment`} className="text-xs text-text-secondary">
                       <span className="font-semibold">{item.reviewerName} comment:</span>{" "}
                       {comment}
                     </p>
@@ -461,7 +472,7 @@ export default function PaperViewer({
             )}
             </div>
             {!paper.hasConflict && !isLoadingReviewers && reviewerDecisions?.length ? (
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-text-secondary">
                 {hasPendingReview
                   ? "Waiting for the remaining reviewer submissions."
                   : "All reviewer submissions are complete."}
@@ -491,7 +502,7 @@ export default function PaperViewer({
             (isLeaderView && (onInclude || onExclude)) ? (
               <div className="flex flex-col gap-2">
                 {exclusionReasons.length === 0 && !isLoadingReasons && (
-                  <div className="flex items-center gap-2.5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+                  <div className="flex items-center gap-2.5 rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-xs font-medium text-warning motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-reduce:animate-none">
                     <FiAlertTriangle className="w-4 h-4" />
                     {isLeaderView
                       ? "Add exclusion codes in Review Context → Criteria to enable Exclude."
@@ -499,14 +510,14 @@ export default function PaperViewer({
                   </div>
                 )}
                 {hasPendingAssignedReviewer && isLeaderView && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-accent/20 rounded-xl text-accent text-xs font-bold animate-in fade-in slide-in-from-bottom-2">
+                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-accent/20 rounded-xl text-accent text-xs font-bold motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-reduce:animate-none">
                     <FiAlertTriangle className="w-4 h-4" />
                     Wait for assigned reviewers finished reviews to make
                     decision
                   </div>
                 )}
                 {isLoadingReviewers && isLeaderView && (
-                  <div className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-text-secondary text-xs font-bold animate-pulse">
+                  <div role="status" className="flex items-center gap-2 px-4 py-2.5 bg-bg-secondary border border-border rounded-xl text-text-secondary text-xs font-bold">
                     <LoadingSpinner size="sm" />
                     Checking assignments...
                   </div>
@@ -547,7 +558,7 @@ export default function PaperViewer({
                         }
                         disabled={isDisabled}
                         className={cn(
-                          "inline-flex min-h-10 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-warning/30 bg-warning/10 px-4 py-2 text-sm font-semibold text-warning transition-colors hover:bg-warning/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30",
+                          "inline-flex min-h-11 items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-warning/30 bg-warning/10 px-4 py-2 text-sm font-semibold text-warning transition-colors hover:bg-warning/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30",
                           isDisabled && "cursor-not-allowed opacity-50",
                         )}
                       >
@@ -569,9 +580,9 @@ export default function PaperViewer({
                             (isLeaderView && hasPendingAssignedReviewer) ||
                             isLoadingReviewers
                           }
-                          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-emerald-300 hover:bg-emerald-50/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/20 disabled:cursor-not-allowed disabled:opacity-50"
+                          className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:border-success/30 hover:bg-success/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
                         >
-                          <FiCheck className="h-3.5 w-3.5 text-emerald-700" />
+                          <FiCheck className="h-3.5 w-3.5 text-success" />
                           {phase === PaperPhase.TitleAbstract ? "Advance to Full Text" : "Include in review"}
                           <kbd className="ml-0.5 rounded border border-border bg-bg-secondary px-1 py-0.5 text-[10px] font-medium text-text-secondary">
                             1
@@ -619,7 +630,7 @@ export default function PaperViewer({
           aria-label="Show reviewer progress and status"
           title="Show reviewer progress and status"
           className={cn(
-            "absolute bottom-3 right-4 z-10 inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-white/95 text-slate-500 shadow-sm transition-[opacity,transform,color,background-color] duration-300 ease-out hover:bg-white hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 motion-reduce:transition-none",
+            "absolute bottom-3 right-4 z-10 inline-flex h-11 w-11 items-center justify-center rounded-xl border border-border bg-surface-white/95 text-text-secondary shadow-sm transition-[opacity,transform,color,background-color] duration-300 ease-out hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
             isReviewerProgressCollapsed
               ? "translate-y-0 scale-100 opacity-100"
               : "pointer-events-none translate-y-2 scale-90 opacity-0",

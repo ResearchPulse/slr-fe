@@ -107,8 +107,8 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
   };
 
   return (
-    <div className="absolute inset-0 bg-surface-white z-30 p-6 flex flex-col animate-in slide-in-from-right-full duration-500 ease-out-expo">
-      <div className="flex items-center justify-between mb-6">
+    <div className="absolute inset-0 z-30 flex flex-col bg-surface-white p-4 motion-safe:animate-in motion-safe:slide-in-from-right-full motion-safe:duration-200 motion-reduce:animate-none sm:p-6">
+      <div className="mb-4 flex items-center justify-between sm:mb-6">
         <div>
           <h3 className="text-sm font-black uppercase tracking-tight text-text-primary flex items-center gap-2">
             <UserPlus className="w-4 h-4 text-accent" />
@@ -119,14 +119,16 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
           </p>
         </div>
         <button
+          type="button"
           onClick={onCancel}
-          className="p-2 hover:bg-bg-secondary rounded-xl transition-colors text-text-secondary hover:text-text-secondary"
+          aria-label="Cancel reviewer assignment"
+          className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="space-y-6 flex-1 overflow-y-auto no-scrollbar pb-6">
+      <div className="no-scrollbar flex-1 space-y-5 overflow-y-auto pb-4 sm:space-y-6 sm:pb-6">
         {/* Warning/Info Box */}
         <div className="bg-primary-light/50 border border-primary/20 rounded-xl p-4 flex gap-3">
           <Info className="w-5 h-5 text-accent shrink-0 mt-0.5" />
@@ -143,26 +145,26 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
           </label>
           <Dropdown
             trigger={
-              <button className="w-full flex items-center justify-between gap-3 px-4 py-4 rounded-xl bg-bg-secondary border border-transparent hover:border-border transition-all group active:scale-[0.98]">
+              <button type="button" className="group flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-bg-secondary px-3 py-2.5 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none sm:px-4">
                 <div className="flex items-center gap-3 overflow-hidden">
                   {selectedReviewers.length > 0 ? (
                     <div className="flex -space-x-2">
                       {selectedReviewers.slice(0, 3).map((r) => (
                         <div
                           key={r.id}
-                          className="w-8 h-8 rounded-full bg-primary border-2 border-white flex items-center justify-center text-[11px] font-bold text-white shadow-none ring-0"
+                          className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface-white bg-primary text-[11px] font-bold text-white"
                         >
                           {r.name.charAt(0)}
                         </div>
                       ))}
                       {selectedReviewers.length > 3 && (
-                        <div className="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[9px] font-bold text-text-secondary">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-surface-white bg-bg-secondary text-[9px] font-bold text-text-secondary">
                           +{selectedReviewers.length - 3}
                         </div>
                       )}
                     </div>
                   ) : (
-                    <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-text-secondary group-hover:bg-slate-300 transition-colors">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-bg-secondary text-text-secondary transition-colors group-hover:bg-border">
                       <Search className="w-4 h-4" />
                     </div>
                   )}
@@ -181,14 +183,14 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                     )}
                   </div>
                 </div>
-                <ChevronDown className="w-4 h-4 text-slate-300 group-hover:text-text-secondary transition-colors shrink-0" />
+                <ChevronDown className="h-4 w-4 shrink-0 text-text-secondary transition-colors group-hover:text-accent" />
               </button>
             }
             className="w-full"
             contentClassName="bg-surface-white shadow-2xl ring-0 w-full mt-2 rounded-xl border border-border overflow-hidden"
           >
             <div className="w-full">
-              <div className="p-3 border-b border-slate-50 bg-bg-secondary/50">
+              <div className="border-b border-border bg-bg-secondary/50 p-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-text-secondary" />
                   <input
@@ -197,7 +199,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                     placeholder="Search by name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2 bg-surface-white border border-border rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-accent/20 text-text-primary transition-all placeholder:text-slate-300"
+                    className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-9 pr-4 text-xs font-medium text-text-primary transition-[border-color,box-shadow] placeholder:text-text-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                   />
                 </div>
               </div>
@@ -215,13 +217,15 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                     return (
                       <button
                         key={member.userId}
+                        type="button"
+                        aria-pressed={isSelected}
                         onClick={() => toggleReviewer(member)}
-                        className={`w-full flex items-center gap-3 p-2.5 rounded-xl transition-all group text-left ${
+                        className={`group flex min-h-11 w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
                           isSelected ? "bg-primary-light" : "hover:bg-bg-secondary"
                         }`}
                       >
                         <div
-                          className={`w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-bold transition-all ${
+                          className={`flex h-7 w-7 items-center justify-center rounded-lg text-[10px] font-bold transition-colors motion-reduce:transition-none ${
                             isSelected
                               ? "bg-primary text-white"
                               : "bg-bg-secondary text-text-secondary group-hover:bg-primary-hover group-hover:text-white"
@@ -258,14 +262,15 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
         </div>
       </div>
 
-      <div className="mt-auto pt-6 space-y-3 border-t border-slate-50 bg-surface-white">
+      <div className="mt-auto space-y-3 border-t border-border bg-surface-white pt-4 sm:pt-6">
         <Button
           onClick={handleAssign}
           disabled={selectedReviewers.length === 0 || isAssigning}
-          className="w-full py-4 bg-slate-900 text-white font-black text-xs uppercase tracking-[0.25em] rounded-xl hover:bg-slate-800 transition-all shadow-none shadow-slate-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none flex items-center justify-center gap-2 group"
+          aria-busy={isAssigning}
+          className="min-h-11 w-full rounded-xl px-4 py-2.5 text-xs font-semibold normal-case tracking-normal shadow-none transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
         >
           {isAssigning ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
           ) : (
             <UserPlus className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           )}
@@ -279,7 +284,6 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
       </div>
 
       <style>{`
-        .ease-out-expo { transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1); }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>

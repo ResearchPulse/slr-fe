@@ -62,9 +62,11 @@ export const StuSePhaseHeaderController: React.FC<
     <div className="z-10 grid shrink-0 grid-cols-1 items-center gap-2 border-b border-border bg-white px-3 py-1.5 shadow-sm xl:grid-cols-[minmax(220px,1fr)_auto_minmax(220px,1fr)] xl:px-4">
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={handleBack}
-          className="rounded-xl border border-border p-2 text-slate-500 transition-colors hover:border-accent/20 hover:bg-primary-light hover:text-accent"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border text-text-secondary transition-colors hover:border-primary/20 hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           title="Back to Process Workspace"
+          aria-label="Back to Process Workspace"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
@@ -74,10 +76,10 @@ export const StuSePhaseHeaderController: React.FC<
             <LayoutList className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <h1 className="mb-1 text-base font-bold leading-none text-slate-900">
+            <h1 className="mb-1 text-base font-bold leading-none text-text-primary">
               Study Selection
             </h1>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-500">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-text-secondary">
               Project leader workspace
             </p>
           </div>
@@ -92,25 +94,30 @@ export const StuSePhaseHeaderController: React.FC<
           return (
             <React.Fragment key={phase.id}>
               <button
+                type="button"
                 onClick={() => onPhaseChange(phase.id)}
+                aria-pressed={isActive}
                 className={cn(
-                  "group relative flex items-center gap-2.5 rounded-xl px-3 py-2 transition-all duration-200 sm:px-4",
+                  "group relative flex min-h-11 items-center gap-2.5 rounded-xl px-3 py-2 transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none sm:px-4",
                   isActive
-                    ? "bg-white text-accent shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-500 hover:bg-white/70 hover:text-slate-900",
+                    ? "bg-surface-white text-primary shadow-sm ring-1 ring-border"
+                    : "text-text-secondary hover:bg-surface-white/70 hover:text-text-primary",
                 )}
               >
                 <Icon
                   className={cn(
-                    "w-4 h-4 transition-transform duration-200",
+                    "w-4 h-4 transition-colors duration-150 motion-reduce:transition-none",
                     isActive
                     ? "text-accent"
-                      : "text-slate-400 group-hover:text-accent",
+                      : "text-text-tertiary group-hover:text-primary",
                   )}
                 />
                 <div className="text-left">
                   <div className="whitespace-nowrap text-xs font-semibold leading-none sm:text-sm">
-                    {phase.label}
+                    <span className="sm:hidden">
+                      {phase.id === "TITLE_ABSTRACT" ? "Title & Abstract" : "Full Text"}
+                    </span>
+                    <span className="hidden sm:inline">{phase.label}</span>
                   </div>
                 </div>
                 {isActive && (
@@ -118,7 +125,7 @@ export const StuSePhaseHeaderController: React.FC<
                 )}
               </button>
               {index < PHASES.length - 1 && (
-                <div className="px-1 text-slate-300">
+                <div aria-hidden="true" className="px-1 text-text-tertiary">
                   <ChevronRight size={16} />
                 </div>
               )}
@@ -128,10 +135,11 @@ export const StuSePhaseHeaderController: React.FC<
       </div>
 
       <div className="flex items-center justify-self-end gap-3">
-        <div className="mr-1 hidden h-8 w-px bg-slate-200 xl:block" />
+        <div aria-hidden="true" className="mr-1 hidden h-8 w-px bg-border xl:block" />
         <button
+          type="button"
           onClick={() => setIsDataSetOpen(true)}
-          className="group relative flex items-center gap-2.5 overflow-hidden rounded-xl bg-emerald-600 px-3.5 py-2.5 text-white shadow-sm transition-colors hover:bg-emerald-700 active:bg-emerald-800 sm:px-4"
+          className="group relative flex min-h-11 items-center gap-2.5 overflow-hidden rounded-xl bg-primary px-3.5 py-2.5 text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none sm:px-4"
         >
           <div className="rounded-xl bg-white/15 p-1.5 transition-colors group-hover:bg-white/25">
             <Database className="h-4 w-4 text-white" />
@@ -144,7 +152,7 @@ export const StuSePhaseHeaderController: React.FC<
               Review Included
             </div>
           </div>
-          <ChevronRight className="w-4 h-4 text-white/60 group-hover:text-white transition-colors" />
+          <ChevronRight aria-hidden="true" className="w-4 h-4 text-white/60 transition-colors group-hover:text-white motion-reduce:transition-none" />
         </button>
       </div>
 

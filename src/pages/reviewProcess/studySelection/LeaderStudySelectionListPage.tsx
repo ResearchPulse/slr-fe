@@ -36,6 +36,9 @@ export default function LeaderStudySelectionListPage() {
     pagination={ws.pagination}
     filters={ws.filters}
     isLoading={ws.isLoading}
+    papersError={ws.papersError}
+    statsError={ws.statsError}
+    onRetry={() => void ws.refetch()}
     contextKey={workspaceContextKey(screeningProcessId, "title-abstract")}
     onBack={ws.handleBack}
     onOpenPaper={openPaper}

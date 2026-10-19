@@ -123,7 +123,7 @@ export default function ExtractionFieldInput({
 
                   onChange(selectedValues.filter((item) => item !== optionId));
                 }}
-                className="h-4 w-4 rounded border-slate-300 text-accent"
+                className="h-4 w-4 rounded border-border text-accent focus:ring-primary/40"
                 disabled={!optionId}
               />
               <span>{option.value}</span>

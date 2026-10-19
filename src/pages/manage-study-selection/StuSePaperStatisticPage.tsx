@@ -8,8 +8,6 @@ import {
   BarChart3,
   TrendingUp,
   AlertCircle,
-  ChevronLeft,
-  ChevronRight,
   ArrowLeft,
   X,
   Search,
@@ -21,10 +19,11 @@ import {
   ResponsiveContainer,
   Tooltip as ReChartsTooltip,
 } from "recharts";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useParams, useNavigate } from "react-router-dom";
 import Tooltip from "../../components/ui/Tooltip";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
+import Pagination from "../../components/ui/Pagination";
 import { cn } from "../../utils/cn";
 import {
   useFinalResolutionProgress,
@@ -64,16 +63,16 @@ const StatusIndicator = ({
   const configs: Record<string, any> = {
     included: {
       icon: CheckCircle2,
-      bg: "bg-emerald-100",
-      text: "text-emerald-600",
-      border: "border-emerald-200",
+      bg: "bg-success/10",
+      text: "text-success",
+      border: "border-success/20",
       opacity: "",
     },
     excluded: {
       icon: XCircle,
-      bg: "bg-rose-100",
-      text: "text-rose-600",
-      border: "border-rose-200",
+      bg: "bg-error/10",
+      text: "text-error",
+      border: "border-error/20",
       opacity: "",
     },
     pending: {
@@ -85,15 +84,15 @@ const StatusIndicator = ({
     },
     conflicted: {
       icon: AlertCircle,
-      bg: "bg-amber-100",
-      text: "text-amber-600",
-      border: "border-amber-200",
+      bg: "bg-warning/10",
+      text: "text-warning",
+      border: "border-warning/20",
       opacity: "",
     },
     not_reached: {
       icon: Clock,
       bg: "bg-bg-secondary",
-      text: "text-slate-300",
+      text: "text-text-secondary",
       border: "border-border",
       opacity: "opacity-40",
     },
@@ -105,14 +104,14 @@ const StatusIndicator = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-1.5 px-2.5 py-1 rounded-xl border text-[10px] font-bold uppercase tracking-tight transition-all",
+        "flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-tight transition-colors motion-reduce:transition-none",
         config.bg,
         config.text,
         config.border,
         config.opacity,
       )}
     >
-      <Icon className="w-3.5 h-3.5" />
+      <Icon aria-hidden="true" className="w-3.5 h-3.5" />
       <span>
         {label}: {status.replace("_", " ")}
       </span>
@@ -126,11 +125,11 @@ const ScreeningFlow = ({ paper }: { paper: PaperResolutionProgressItem }) => {
       <StatusIndicator status={paper.titleAbstractStatus.status} label="TA" />
       <div
         className={cn(
-          "w-8 h-px bg-slate-200 relative",
+        "relative h-px w-8 bg-border",
           paper.titleAbstractStatus.status === "EXCLUDED" && "opacity-40",
         )}
       >
-        <ArrowRight className="w-3 h-3 text-slate-300 absolute -right-1 -top-[5.5px]" />
+        <ArrowRight aria-hidden="true" className="absolute -right-1 -top-[5.5px] h-3 w-3 text-text-tertiary" />
       </div>
       <StatusIndicator status={paper.fullTextStatus.status} label="FT" />
     </div>
@@ -140,11 +139,11 @@ const ScreeningFlow = ({ paper }: { paper: PaperResolutionProgressItem }) => {
 const DecisionBadge = ({ status }: { status: string }) => {
   const s = status.toLowerCase();
   const configs: Record<string, any> = {
-    included: { bg: "bg-emerald-500", text: "text-white", label: "Included" },
-    excluded: { bg: "bg-rose-500", text: "text-white", label: "Excluded" },
-    pending: { bg: "bg-slate-400", text: "text-white", label: "Pending" },
+    included: { bg: "bg-success", text: "text-white", label: "Included" },
+    excluded: { bg: "bg-error", text: "text-white", label: "Excluded" },
+    pending: { bg: "bg-bg-secondary", text: "text-text-secondary", label: "Pending" },
     not_reached: {
-      bg: "bg-slate-200",
+      bg: "bg-bg-secondary",
       text: "text-text-secondary",
       label: "N/A",
     },
@@ -155,7 +154,7 @@ const DecisionBadge = ({ status }: { status: string }) => {
   return (
     <div
       className={cn(
-        "px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-widest shadow-none",
+        "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-widest ring-1 ring-inset ring-border/60",
         config.bg,
         config.text,
       )}
@@ -168,6 +167,7 @@ const DecisionBadge = ({ status }: { status: string }) => {
 // --- Main Page ---
 
 const StuSePaperStatisticPage: React.FC = () => {
+  const prefersReducedMotion = useReducedMotion();
   const { projectId, processId, screeningProcessId } = useParams();
   const navigate = useNavigate();
   const [filter, setFilter] = useState<StatusFilter>("all");
@@ -313,7 +313,7 @@ const StuSePaperStatisticPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50">
+      <div className="flex h-full min-h-0 flex-col items-center justify-center overflow-y-auto bg-bg-secondary/50">
         <LoadingSpinner size="lg" className="mb-4" />
         <p className="text-text-secondary font-medium">Loading statistics...</p>
       </div>
@@ -322,8 +322,8 @@ const StuSePaperStatisticPage: React.FC = () => {
 
   if (isError || !stats) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-bg-secondary/50">
-        <XCircle className="w-10 h-10 text-rose-500 mb-4" />
+      <div className="flex h-full min-h-0 flex-col items-center justify-center overflow-y-auto bg-bg-secondary/50">
+        <XCircle className="mb-4 h-10 w-10 text-error" />
         <p className="text-text-secondary font-medium">
           Failed to load statistics.
         </p>
@@ -338,23 +338,22 @@ const StuSePaperStatisticPage: React.FC = () => {
   ].filter((d) => d.value > 0);
 
   return (
-    <div className="min-h-screen bg-bg-secondary/50 flex flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-y-auto overscroll-y-contain bg-bg-secondary/50">
       {/* Sticky Header */}
       <div className="sticky top-0 z-20 bg-surface-white/90 backdrop-blur-md border-b border-border px-4 py-3 shadow-none sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex min-w-0 items-center gap-3 sm:gap-6">
             <button
+              type="button"
               onClick={() =>
                 navigate(
                   `/projects/${projectId}/processes/${processId}/screening/${screeningProcessId}`,
                 )
               }
-              className="group flex items-center gap-2.5 px-4 py-2 bg-surface-white border border-border rounded-xl text-text-secondary transition-all hover:border-accent/20 hover:text-accent hover:shadow-none active:scale-95"
+              className="group inline-flex min-h-11 items-center gap-2.5 rounded-xl border border-border bg-surface-white px-4 text-sm font-medium text-text-secondary transition-colors hover:border-primary/20 hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
-              <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-              <span className="text-[10px] font-black uppercase tracking-widest">
-                Back
-              </span>
+              <ArrowLeft aria-hidden="true" className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 motion-reduce:transition-none" />
+              <span>Back</span>
             </button>
 
             <div className="h-10 w-px shrink-0 bg-border" />
@@ -390,8 +389,9 @@ const StuSePaperStatisticPage: React.FC = () => {
                       paddingAngle={8}
                       dataKey="value"
                       stroke="none"
-                      animationBegin={200}
-                      animationDuration={1200}
+                      isAnimationActive={!prefersReducedMotion}
+                      animationBegin={prefersReducedMotion ? 0 : 200}
+                      animationDuration={prefersReducedMotion ? 0 : 800}
                     >
                       {chartData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
@@ -406,7 +406,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                             100
                           ).toFixed(1);
                           return (
-                            <div className="rounded-xl border border-slate-800 bg-slate-900 px-3 py-2 text-[11px] font-bold text-white shadow-none">
+                            <div className="rounded-xl border border-border bg-surface-white px-3 py-2 text-[11px] font-semibold text-text-primary shadow-lg">
                               <div className="mb-1 flex items-center gap-2">
                                 <div
                                   className="h-2 w-2 rounded-full"
@@ -416,9 +416,9 @@ const StuSePaperStatisticPage: React.FC = () => {
                                   {data.name}
                                 </span>
                               </div>
-                              <div className="text-lg font-black">
+                  <div className="text-lg font-bold">
                                 {data.value}{" "}
-                                <span className="text-xs font-medium text-text-secondary">
+                                  <span className="text-xs font-medium text-text-secondary">
                                   ({percentage}%)
                                 </span>
                               </div>
@@ -481,19 +481,19 @@ const StuSePaperStatisticPage: React.FC = () => {
           </div>
 
           {/* Secondary Info Card */}
-          <div className="bg-slate-900 rounded-xl p-8 shadow-none relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-surface-white/5 rounded-bl-full -mr-24 -mt-24 pointer-events-none" />
+          <div className="relative flex flex-col justify-between overflow-hidden rounded-xl border border-border bg-surface-white p-5 shadow-none sm:p-7">
+            <div aria-hidden="true" className="pointer-events-none absolute -right-24 -top-24 h-48 w-48 rounded-bl-full bg-primary-light/70" />
 
             <div className="space-y-6 relative z-10">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/20">
-                  <TrendingUp className="w-6 h-6 text-amber-500" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-primary/15 bg-primary-light">
+                  <TrendingUp aria-hidden="true" className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white tracking-tight">
+                  <h3 className="text-lg font-bold tracking-tight text-text-primary">
                     Key Insights
                   </h3>
-                  <p className="text-[11px] text-text-secondary font-medium uppercase tracking-widest">
+                  <p className="text-[11px] font-medium uppercase tracking-widest text-text-secondary">
                     Exclusion Patterns
                   </p>
                 </div>
@@ -501,25 +501,25 @@ const StuSePaperStatisticPage: React.FC = () => {
 
               {stats.topExclusionReason ? (
                 <div className="space-y-4">
-                  <div className="p-4 rounded-xl bg-surface-white/5 border border-white/10">
-                    <span className="text-[10px] font-bold text-amber-500 uppercase tracking-widest mb-1 block">
+                  <div className="rounded-xl border border-border bg-bg-secondary/60 p-4">
+                    <span className="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-warning">
                       Top Reason for Rejection
                     </span>
-                    <h4 className="text-lg font-black text-white leading-tight">
+                    <h4 className="text-lg font-bold leading-tight text-text-primary">
                       {stats.topExclusionReason.name}
                     </h4>
                     <div className="mt-2 flex items-center gap-2">
-                      <div className="px-2 py-0.5 rounded-xl bg-amber-500 text-text-primary text-[10px] font-black uppercase">
+                      <div className="rounded-full border border-warning/20 bg-warning/10 px-2 py-0.5 text-[10px] font-semibold uppercase text-warning">
                         CODE: {stats.topExclusionReason.code}
                       </div>
-                      <span className="text-xs text-text-secondary font-medium">
+                      <span className="text-xs font-medium text-text-secondary">
                         {stats.topExclusionReason.count} papers affected
                       </span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 text-[11px] text-text-secondary font-medium leading-relaxed italic">
-                    <Info className="w-3.5 h-3.5 text-indigo-400 flex-shrink-0" />
+                  <div className="flex items-center gap-2 text-[11px] font-medium italic leading-relaxed text-text-secondary">
+                    <Info aria-hidden="true" className="h-3.5 w-3.5 flex-shrink-0 text-primary" />
                     <span>
                       Focusing on this pattern can help refine your search
                       strings or inclusion criteria.
@@ -528,7 +528,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="py-8 flex flex-col items-center justify-center text-center">
-                  <Clock className="w-8 h-8 text-text-secondary mb-3" />
+                  <Clock aria-hidden="true" className="mb-3 h-8 w-8 text-text-tertiary" />
                   <p className="text-sm text-text-secondary">
                     Not enough data to generate insights yet.
                   </p>
@@ -536,12 +536,12 @@ const StuSePaperStatisticPage: React.FC = () => {
               )}
             </div>
 
-            <div className="relative z-10 mt-6 pt-6 border-t border-white/5 flex items-center justify-between">
+            <div className="relative z-10 mt-6 flex items-center justify-between border-t border-border pt-6">
               <div className="flex flex-col">
                 <span className="text-[10px] font-bold text-text-secondary uppercase">
                   Yield Rate
                 </span>
-                <span className="text-xl font-black text-emerald-400">
+                <span className="text-xl font-bold text-success">
                   {stats.totalPapers > 0
                     ? ((stats.includedCount / stats.totalPapers) * 100).toFixed(
                         1,
@@ -550,14 +550,14 @@ const StuSePaperStatisticPage: React.FC = () => {
                   %
                 </span>
               </div>
-              <div className="w-12 h-1 bg-surface-white/10 rounded-full overflow-hidden">
+              <div className="h-1 w-12 overflow-hidden rounded-full bg-bg-secondary">
                 <motion.div
-                  initial={{ width: 0 }}
+                  initial={prefersReducedMotion ? false : { width: 0 }}
                   animate={{
                     width: `${(stats.includedCount / (stats.totalPapers || 1)) * 100}%`,
                   }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="h-full bg-emerald-500"
+                  transition={{ duration: prefersReducedMotion ? 0 : 0.25, ease: "easeOut" }}
+                  className="h-full bg-success"
                 />
               </div>
             </div>
@@ -576,14 +576,17 @@ const StuSePaperStatisticPage: React.FC = () => {
                 <input
                   type="text"
                   value={search}
+                  aria-label="Search papers by title, authors, or DOI"
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search by title, authors, DOI..."
-                  className="block w-full pl-10 pr-4 py-2.5 bg-surface-white border border-border rounded-xl text-[13px] font-medium text-text-primary placeholder:text-text-secondary focus:outline-none focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all shadow-none"
+                  className="block min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-10 pr-12 text-[13px] font-medium text-text-primary placeholder:text-text-secondary shadow-none transition-[border-color,box-shadow] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                 />
                 {search && (
                   <button
+                    type="button"
+                    aria-label="Clear search"
                     onClick={() => setSearch("")}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-text-secondary hover:text-text-secondary transition-colors"
+                    className="absolute inset-y-0 right-0 flex min-h-11 min-w-11 items-center justify-center text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                   >
                     <X className="h-4 w-4" />
                   </button>
@@ -591,15 +594,19 @@ const StuSePaperStatisticPage: React.FC = () => {
               </div>
 
               <button
-                onClick={() => setIsFilterPanelOpen(!isFilterPanelOpen)}
+                type="button"
+                onClick={() => setIsFilterPanelOpen((open) => !open)}
+                aria-expanded={isFilterPanelOpen}
+                aria-controls="study-selection-statistics-filters"
                 className={cn(
-                  "relative flex shrink-0 items-center gap-2 rounded-xl border px-3 py-2.5 transition-all group overflow-hidden shadow-none sm:gap-2.5 sm:px-5",
+                  "group relative flex min-h-11 shrink-0 items-center gap-2 overflow-hidden rounded-xl border px-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none sm:gap-2.5 sm:px-5",
                   activeFilterCount > 0 || isFilterPanelOpen
-                    ? "bg-slate-900 border-slate-900 text-white"
+                    ? "bg-primary border-primary text-white"
                     : "bg-surface-white border-border text-text-secondary hover:border-accent/20 hover:bg-bg-secondary",
                 )}
               >
                 <Filter
+                  aria-hidden="true"
                   className={cn(
                     "w-4 h-4",
                     activeFilterCount > 0 || isFilterPanelOpen
@@ -611,14 +618,14 @@ const StuSePaperStatisticPage: React.FC = () => {
                   Filters
                 </span>
                 {activeFilterCount > 0 && (
-                  <span className="flex items-center justify-center min-w-[18px] h-[18px] bg-accent text-white text-[10px] font-black rounded-full ml-1">
+                  <span className="ml-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-primary px-1 text-[10px] font-semibold text-white">
                     {activeFilterCount}
                   </span>
                 )}
                 {isFilterPanelOpen ? (
-                  <ChevronUp className="w-4 h-4 ml-1 opacity-50" />
+                  <ChevronUp aria-hidden="true" className="ml-1 h-4 w-4 opacity-70" />
                 ) : (
-                  <ChevronDown className="w-4 h-4 ml-1 opacity-50" />
+                  <ChevronDown aria-hidden="true" className="ml-1 h-4 w-4 opacity-70" />
                 )}
               </button>
             </div>
@@ -630,18 +637,21 @@ const StuSePaperStatisticPage: React.FC = () => {
 
           {/* Inline Expandable Filter Panel */}
           <motion.div
+            id="study-selection-statistics-filters"
+            aria-hidden={!isFilterPanelOpen}
+            inert={!isFilterPanelOpen}
             initial={false}
             animate={{
               height: isFilterPanelOpen ? "auto" : 0,
               opacity: isFilterPanelOpen ? 1 : 0,
             }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
+            transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: "easeInOut" }}
             className="overflow-hidden"
           >
-            <div className="bg-surface-white border border-border rounded-xl p-8 shadow-none shadow-slate-100/50 space-y-8 relative">
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            <div className="relative min-w-0 space-y-6 rounded-xl border border-border bg-surface-white p-4 shadow-none sm:space-y-8 sm:p-8">
+              <div className="grid min-w-0 grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-10">
                 {/* Status Section */}
-                <div className="space-y-4">
+                <div className="min-w-0 space-y-4">
                   <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
@@ -653,6 +663,8 @@ const StuSePaperStatisticPage: React.FC = () => {
                       (f) => (
                         <button
                           key={f}
+                          type="button"
+                          aria-pressed={pendingFilter === f}
                           onClick={() => {
                             setPendingFilter(f);
                             if (f === "included" || f === "pending") {
@@ -660,9 +672,9 @@ const StuSePaperStatisticPage: React.FC = () => {
                             }
                           }}
                           className={cn(
-                            "flex items-center justify-center px-4 py-3 rounded-xl border transition-all text-[11px] font-bold uppercase tracking-wider",
+                            "flex min-h-11 items-center justify-center rounded-xl border px-4 text-[11px] font-semibold uppercase tracking-wider transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
                             pendingFilter === f
-                              ? "bg-slate-900 border-slate-900 text-white shadow-none"
+                              ? "bg-primary border-primary text-white shadow-none"
                               : "bg-bg-secondary border-border text-text-secondary hover:bg-surface-white hover:border-border",
                           )}
                         >
@@ -674,17 +686,18 @@ const StuSePaperStatisticPage: React.FC = () => {
                 </div>
 
                 {/* Exclusion Reason Section */}
-                <div className="space-y-4">
+                <div className="min-w-0 space-y-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                    <div aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-error" />
                     <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                       Exclusion Pattern
                     </span>
                   </div>
                   <div className="space-y-3">
                     <Dropdown
+                      className="block w-full min-w-0"
                       trigger={
-                        <div className="flex items-center justify-between w-full h-11 px-4 bg-bg-secondary border border-border rounded-xl text-[12px] font-bold text-text-primary hover:bg-surface-white hover:border-border transition-all cursor-pointer">
+                        <div className="flex h-11 w-full cursor-pointer items-center justify-between rounded-xl border border-border bg-bg-secondary px-4 text-left text-[12px] font-semibold text-text-primary transition-colors hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none">
                           <span className="truncate">
                             {pendingExclusionReasonCode !== undefined
                               ? exclusionReasons.find(
@@ -692,10 +705,10 @@ const StuSePaperStatisticPage: React.FC = () => {
                                 )?.name || `Code: ${pendingExclusionReasonCode}`
                               : "No Grouping"}
                           </span>
-                          <ChevronDown className="w-4 h-4 text-text-secondary" />
+                          <ChevronDown aria-hidden="true" className="w-4 h-4 text-text-secondary" />
                         </div>
                       }
-                      contentClassName="w-[340px] max-h-60 overflow-hidden flex flex-col bg-surface-white border border-border rounded-xl shadow-2xl z-(--z-index-dropdown)"
+                      contentClassName="z-(--z-index-dropdown) flex max-h-60 w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-2xl sm:w-[340px]"
                     >
                       <div
                         className="overflow-y-auto custom-scrollbar p-1 max-h-60"
@@ -710,11 +723,12 @@ const StuSePaperStatisticPage: React.FC = () => {
                         }}
                       >
                         <button
+                          type="button"
                           onClick={() =>
                             setPendingExclusionReasonCode(undefined)
                           }
                           className={cn(
-                            "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-xl mb-1",
+                            "mb-1 flex min-h-11 w-full items-center rounded-xl px-4 text-left text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
                             pendingExclusionReasonCode === undefined
                               ? "bg-bg-secondary text-text-primary"
                               : "text-text-secondary hover:bg-bg-secondary",
@@ -722,16 +736,17 @@ const StuSePaperStatisticPage: React.FC = () => {
                         >
                           No Grouping
                         </button>
-                        <div className="h-px bg-bg-secondary my-1 mx-2" />
+                        <div aria-hidden="true" className="mx-2 my-1 h-px bg-border" />
                         {exclusionReasons.map((reason) => (
                           <button
                             key={reason.id}
+                            type="button"
                             onClick={() => {
                               setPendingExclusionReasonCode(reason.code);
                               setPendingFilter("excluded");
                             }}
                             className={cn(
-                              "w-full flex items-center px-4 py-2.5 text-xs font-bold transition-all rounded-xl text-left mb-0.5",
+                              "mb-0.5 flex min-h-11 w-full items-center rounded-xl px-4 text-left text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
                               pendingExclusionReasonCode === reason.code
                                 ? "bg-bg-secondary text-accent"
                                 : "text-text-secondary hover:bg-bg-secondary",
@@ -749,9 +764,9 @@ const StuSePaperStatisticPage: React.FC = () => {
                 </div>
 
                 {/* Year Range Section */}
-                <div className="space-y-4">
+                <div className="min-w-0 space-y-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <div className="h-1.5 w-1.5 rounded-full bg-success" />
                     <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                       Publication Timeline
                     </span>
@@ -775,23 +790,25 @@ const StuSePaperStatisticPage: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-6 border-t border-border">
-                <p className="text-[11px] text-text-secondary font-medium italic">
+              <div className="flex flex-col gap-4 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between sm:pt-6">
+                <p className="text-[11px] font-medium italic text-text-secondary">
                   Note: Filters are applied cumulatively to refine your
                   screening dataset.
                 </p>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
                   <button
+                    type="button"
                     onClick={handleClearAllFilters}
-                    className="flex items-center gap-2 px-4 py-2 text-text-secondary hover:text-rose-500 font-bold text-[11px] uppercase tracking-widest transition-all"
+                    className="flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-text-secondary transition-colors hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary font-bold text-[11px] uppercase tracking-widest motion-reduce:transition-none"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     Reset Defaults
                   </button>
-                  <div className="w-px h-4 bg-slate-200" />
+                  <div className="h-4 w-px bg-border" />
                   <button
+                    type="button"
                     onClick={handleApplyFilters}
-                    className="px-8 py-2.5 bg-accent text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-none hover:bg-primary-hover transition-all active:scale-95"
+                    className="min-h-11 rounded-xl bg-primary px-8 text-white shadow-none transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 font-black text-[11px] uppercase tracking-widest motion-reduce:transition-none"
                   >
                     Apply Active Filters
                   </button>
@@ -805,106 +822,116 @@ const StuSePaperStatisticPage: React.FC = () => {
         <div className="space-y-4 pb-12">
           <div className="grid gap-3">
             {/* Table Header */}
-            <div className="grid grid-cols-[1fr_240px_140px_100px] px-6 py-2 text-[10px] font-black text-text-secondary uppercase tracking-widest">
+            <div className="hidden grid-cols-[1fr_240px_140px_100px] px-6 py-2 text-[10px] font-black uppercase tracking-widest text-text-secondary md:grid">
               <span>Paper Details</span>
               <span>Screening Flow</span>
               <span className="text-center">Final Decision</span>
               <span className="text-right">Reason</span>
             </div>
 
-            {papers.map((paper) => (
-              <div
-                key={paper.paperId}
-                className="group flex flex-col cursor-pointer"
-                onClick={() => handlePaperClick(paper.paperId)}
-              >
+            {papers.map((paper) => {
+              const decisionTone =
+                paper.finalDecision === "INCLUDED"
+                  ? "border-success/15 bg-success/5 hover:bg-success/10"
+                  : paper.finalDecision === "EXCLUDED"
+                    ? "border-error/15 bg-error/5 hover:bg-error/10"
+                    : "bg-surface-white border-border hover:border-accent/20 hover:bg-bg-secondary/50";
+              const publicationDetails = [
+                paper.authors,
+                paper.journal,
+                paper.publicationYear ? `(${paper.publicationYear})` : "",
+              ].filter(Boolean).join(" · ");
+
+              return (
                 <div
-                  className={cn(
-                    "grid grid-cols-[1fr_240px_140px_100px] items-center px-6 py-4 rounded-xl border transition-all duration-300",
-                    paper.finalDecision === "INCLUDED"
-                      ? "bg-emerald-50/30 border-emerald-100/50 hover:bg-emerald-50/60"
-                      : paper.finalDecision === "EXCLUDED"
-                        ? "bg-rose-50/30 border-rose-100/50 hover:bg-rose-50/60"
-                        : "bg-surface-white border-border hover:border-accent/20 hover:shadow-none hover:-translate-y-0.5",
-                  )}
+                  key={paper.paperId}
+                  className="group cursor-pointer"
+                  onClick={() => handlePaperClick(paper.paperId)}
                 >
-                  {/* Paper Info */}
-                  <div className="flex flex-col pr-4 min-w-0">
-                    <h4 className="text-sm font-bold text-text-primary truncate group-hover:text-accent transition-colors">
-                      {paper.title}
-                    </h4>
-                    <span className="text-[11px] text-text-secondary font-medium truncate italic">
-                      {paper.authors}{" "}
-                      {paper.journal ? `| ${paper.journal}` : ""}{" "}
-                      {paper.publicationYear
-                        ? `(${paper.publicationYear})`
-                        : ""}
-                    </span>
-                  </div>
-
-                  {/* Flow */}
-                  <div>
-                    <ScreeningFlow paper={paper} />
-                  </div>
-
-                  {/* Decision */}
-                  <div className="flex justify-center">
-                    <DecisionBadge status={paper.finalDecision} />
-                  </div>
-
-                  {/* Reason */}
-                  <div className="flex justify-end">
-                    {paper.exclusionReason ? (
-                      <Tooltip content={paper.exclusionReason.name}>
-                        <div className="w-8 h-8 rounded-xl bg-rose-100 flex items-center justify-center text-[11px] font-black text-rose-600 border border-rose-200 shadow-none transition-transform hover:scale-110">
-                          {paper.exclusionReason.code}
-                        </div>
-                      </Tooltip>
-                    ) : (
-                      <span className="text-slate-300">—</span>
+                  <button
+                    type="button"
+                    className={cn(
+                      "mb-3 grid w-full min-w-0 gap-3 rounded-xl border p-4 text-left transition-colors md:hidden",
+                      decisionTone,
                     )}
+                  >
+                    <span className="line-clamp-2 break-words text-sm font-semibold text-text-primary">
+                      {paper.title}
+                    </span>
+                    <span className="line-clamp-2 break-words text-xs leading-5 text-text-secondary">
+                      {publicationDetails || "Publication details unavailable"}
+                    </span>
+                    <div className="min-w-0 border-t border-border/70 pt-3">
+                      <span className="mb-2 block text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                        Screening flow
+                      </span>
+                      <ScreeningFlow paper={paper} />
+                    </div>
+                    <div className="flex min-w-0 items-center justify-between gap-3 border-t border-border/70 pt-3">
+                      <div className="min-w-0">
+                        <span className="mb-1 block text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                          Final decision
+                        </span>
+                        <DecisionBadge status={paper.finalDecision} />
+                      </div>
+                      <div className="flex shrink-0 flex-col items-end">
+                        <span className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                          Reason
+                        </span>
+                        {paper.exclusionReason ? (
+                          <Tooltip content={paper.exclusionReason.name}>
+                            <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-error/20 bg-error/10 px-2 text-xs font-bold text-error">
+                              {paper.exclusionReason.code}
+                            </span>
+                          </Tooltip>
+                        ) : (
+                          <span className="text-sm text-text-secondary">—</span>
+                        )}
+                      </div>
+                    </div>
+                  </button>
+
+                  <div
+                    className={cn(
+                      "hidden grid-cols-[1fr_240px_140px_100px] items-center rounded-xl border px-6 py-4 transition-colors md:grid",
+                      decisionTone,
+                    )}
+                  >
+                    <div className="flex min-w-0 flex-col pr-4">
+                      <h4 className="truncate text-sm font-semibold text-text-primary transition-colors group-hover:text-accent">
+                        {paper.title}
+                      </h4>
+                      <span className="truncate text-[11px] font-medium italic text-text-secondary">
+                        {publicationDetails}
+                      </span>
+                    </div>
+                    <ScreeningFlow paper={paper} />
+                    <div className="flex justify-center">
+                      <DecisionBadge status={paper.finalDecision} />
+                    </div>
+                    <div className="flex justify-end">
+                      {paper.exclusionReason ? (
+                        <Tooltip content={paper.exclusionReason.name}>
+                          <span className="inline-flex h-8 min-w-8 items-center justify-center rounded-lg border border-error/20 bg-error/10 px-2 text-xs font-bold text-error">
+                            {paper.exclusionReason.code}
+                          </span>
+                        </Tooltip>
+                      ) : (
+                        <span className="text-text-secondary">—</span>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-
+              );
+            })}
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-2 mt-8">
-                <button
-                  onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
-                  disabled={pageNumber === 1}
-                  className="p-2 rounded-xl border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-
-                <div className="flex items-center gap-1">
-                  {[...Array(totalPages)].map((_, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setPageNumber(i + 1)}
-                      className={cn(
-                        "w-8 h-8 rounded-xl text-xs font-bold transition-all",
-                        pageNumber === i + 1
-                          ? "bg-accent text-white shadow-none"
-                          : "text-text-secondary hover:bg-bg-secondary",
-                      )}
-                    >
-                      {i + 1}
-                    </button>
-                  ))}
-                </div>
-
-                <button
-                  onClick={() =>
-                    setPageNumber((prev) => Math.min(totalPages, prev + 1))
-                  }
-                  disabled={pageNumber === totalPages}
-                  className="p-2 rounded-xl border border-border bg-surface-white disabled:opacity-40 transition-all hover:bg-bg-secondary active:scale-95"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
+              <div className="mt-8 flex justify-center">
+                <Pagination
+                  currentPage={pageNumber}
+                  totalPages={totalPages}
+                  onPageChange={setPageNumber}
+                />
               </div>
             )}
           </div>

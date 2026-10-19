@@ -558,8 +558,8 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
             className={cn(
               "space-y-3",
               depth === 0
-                ? "ml-8 pl-5 border-l-2 border-slate-200"
-                : "ml-6 pl-4 border-l border-slate-200",
+                ? "ml-8 border-l-2 border-border pl-5"
+                : "ml-6 border-l border-border pl-4",
             )}
           >
             {renderTreeNodes(node.children, depth + 1)}
@@ -570,7 +570,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="mx-auto max-w-4xl p-4 sm:p-6">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-text-primary mb-4">
@@ -580,7 +580,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         {/* Template Info */}
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-text-secondary">
               Template Name
             </label>
             <Input
@@ -592,7 +592,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-text-secondary">
               Description
             </label>
             <Textarea
@@ -605,7 +605,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-text-secondary">
               Checklist Type
             </label>
             <select
@@ -614,7 +614,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                 setChecklistType(Number(event.target.value) as ChecklistType)
               }
               disabled={isLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-surface-white text-sm"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
             >
               <option value={ChecklistTypeValue.FULL}>Full</option>
               <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
@@ -628,24 +628,24 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
       </div>
 
       {/* Items Section */}
-      <div className="bg-bg-primary rounded-xl p-6 mb-8">
-        <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+      <div className="mb-8 rounded-xl bg-bg-primary p-4 sm:p-6">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold text-text-primary">
             Checklist Items ({items.length})
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
             <Input
               value={newSectionName}
               onChange={(event) => setNewSectionName(event.target.value)}
               placeholder="New section name"
               disabled={isLoading}
-              className="min-w-[220px]"
+              className="w-full min-w-0 sm:w-auto sm:min-w-[220px]"
             />
             <Button
               onClick={handleAddSection}
               size="sm"
               variant="secondary"
-              className="inline-flex items-center gap-2"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-2 sm:w-auto"
               disabled={
                 isLoading ||
                 !normalizedNewSectionName ||
@@ -672,9 +672,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           ) : (
             displayedSections.map((group) => (
               <section key={group.section} className="space-y-3">
-                <div className="sticky top-0 z-10 bg-bg-primary/95 backdrop-blur-xs border-b border-border py-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
+                <div className="sticky top-0 z-10 border-b border-border bg-bg-primary/95 py-2 backdrop-blur-xs">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
                       <h3 className="text-sm font-semibold tracking-wide text-text-primary uppercase">
                         {group.label}
                       </h3>
@@ -688,7 +688,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                         {group.nodes.length === 1 ? "" : "s"}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                       <Button
                         onClick={() => {
                           setAddItemMode("root");
@@ -699,7 +699,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                         }}
                         size="sm"
                         variant="secondary"
-                        className="inline-flex items-center gap-1"
+                        className="inline-flex min-h-11 items-center gap-1"
                         disabled={isLoading}
                       >
                         <FiPlus className="w-4 h-4" />
@@ -708,7 +708,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveSection(group.section)}
-                        className="px-2 py-1 text-xs rounded-md text-text-secondary hover:bg-red-100 hover:text-red-600 transition-colors"
+                        className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-xs text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error motion-reduce:transition-none"
                         disabled={isLoading}
                         title="Remove section and its items"
                       >
@@ -720,7 +720,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
                 {group.nodes.length > 0 ? (
                   renderTreeNodes(group.nodes)
                 ) : (
-                  <div className="text-sm text-text-secondary border border-dashed border-gray-300 rounded-xl p-4">
+                  <div className="rounded-xl border border-dashed border-border p-4 text-sm text-text-secondary">
                     No items in this section yet. Use Add Item to create
                     top-level items.
                   </div>
@@ -819,15 +819,15 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
         "border rounded-xl p-4 transition-colors",
         depthClass,
         isGroupingItem
-          ? "bg-amber-50 border-amber-200"
+          ? "border-warning/25 bg-warning/5"
           : isSubItem
-            ? "bg-slate-50 border-slate-200"
+            ? "border-border bg-bg-secondary"
             : "bg-surface-white border-border shadow-none",
       )}
     >
       {/* Header */}
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-baseline gap-3 flex-1">
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
           <span
             className={cn(
               "font-bold text-accent min-w-fit",
@@ -838,39 +838,43 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
           </span>
           <h3
             className={cn(
-              "text-text-primary",
+              "min-w-0 break-words text-text-primary",
               isSubItem ? "text-sm font-medium" : "font-semibold",
             )}
           >
             {item.topic}
           </h3>
           {isGroupingItem && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 inline-flex items-center gap-1">
+            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">
               <FiLayers className="w-3 h-3" /> Grouping / Header Only
             </span>
           )}
           {isSubItem && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-slate-200 text-slate-600">
+            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-xs text-text-secondary">
               Sub-item
             </span>
           )}
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto sm:shrink-0 sm:gap-2">
           <button
+            type="button"
             onClick={onMoveUp}
             disabled={!canMoveUp || isLoading}
-            className="p-1.5 hover:bg-bg-secondary rounded disabled:opacity-50 transition-colors"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
             title="Move up"
+            aria-label="Move item up"
           >
             <FiChevronUp className="w-4 h-4 text-text-secondary" />
           </button>
           <button
+            type="button"
             onClick={onMoveDown}
             disabled={!canMoveDown || isLoading}
-            className="p-1.5 hover:bg-bg-secondary rounded disabled:opacity-50 transition-colors"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
             title="Move down"
+            aria-label="Move item down"
           >
             <FiChevronDown className="w-4 h-4 text-text-secondary" />
           </button>
@@ -879,7 +883,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
               type="button"
               onClick={onAddSubItem}
               disabled={isLoading}
-              className="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-md border border-indigo-200 bg-bg-secondary text-indigo-700 hover:bg-indigo-100 transition-colors disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-1 whitespace-nowrap rounded-lg border border-primary/20 bg-primary/5 px-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 motion-reduce:transition-none"
               title="Add sub-item"
             >
               <FiLayers className="w-4 h-4" />
@@ -888,15 +892,17 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
           )}
           <button
             onClick={onToggleExpand}
-            className="px-2 py-1 text-sm font-medium bg-bg-secondary hover:bg-bg-secondary rounded transition-colors"
+            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-bg-secondary px-3 text-sm font-medium transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             {isExpanded ? "Hide" : "Show"}
           </button>
           <button
+            type="button"
             onClick={onDelete}
             disabled={isLoading}
-            className="p-1.5 hover:bg-red-100 rounded text-text-secondary hover:text-red-600 transition-colors disabled:opacity-50"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50 motion-reduce:transition-none"
             title="Delete item"
+            aria-label="Delete item"
           >
             <FiTrash2 className="w-4 h-4" />
           </button>
@@ -907,7 +913,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
       {isExpanded && (
         <div className="space-y-3 pt-3 border-t border-border">
           {isGroupingItem && (
-            <div className="rounded-md border border-amber-200 bg-amber-100/70 px-3 py-2 text-xs text-amber-900">
+            <div className="rounded-md border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
               This item is a grouping header. Users will not enter responses
               here - only fill its sub-items.
             </div>
@@ -924,7 +930,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
                   onUpdate({ section: e.target.value as ChecklistSection })
                 }
                 disabled={isLoading}
-                className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-surface-white"
+                className="min-h-11 w-full rounded-lg border border-border bg-surface-white px-2 py-1 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
                 {Array.from(new Set([...sectionOptions, item.section])).map(
                   (section) => (
@@ -942,9 +948,9 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
                 checked={item.isRequired}
                 onChange={(e) => onUpdate({ isRequired: e.target.checked })}
                 disabled={isLoading}
-                className="w-4 h-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-border accent-primary"
               />
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm font-medium text-text-primary">
                 Required
               </span>
             </label>
@@ -959,9 +965,9 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
                   onUpdate({ hasLocationField: e.target.checked })
                 }
                 disabled={isLoading}
-                className="w-4 h-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-border accent-primary"
               />
-              <span className="text-sm text-gray-700 font-medium">
+              <span className="text-sm font-medium text-text-primary">
                 Has Location Field
               </span>
             </label>
@@ -979,7 +985,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
               className="text-sm"
             />
             {isGroupingItem && (
-              <p className="text-xs text-sky-700 mt-1">
+              <p className="text-xs text-info mt-1">
                 (Grouping item - fill sub-items below)
               </p>
             )}
@@ -1110,21 +1116,43 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
       onClose={handleCloseModal}
       title={mode === "sub-item" ? "Add Sub-item" : "Add Root Item"}
       size="md"
+      footer={
+        <>
+          <Button
+            variant="secondary"
+            onClick={handleCloseModal}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleAdd}
+            disabled={
+              !topic.trim() ||
+              isDuplicateItemNumber ||
+              (mode === "sub-item" && !parentItem)
+            }
+            className="flex-1"
+          >
+            {mode === "sub-item" ? "Add Sub-item" : "Add Root Item"}
+          </Button>
+        </>
+      }
     >
       <div className="space-y-4">
         {mode === "sub-item" && parentItem && (
-          <div className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-sky-900">
+          <div className="rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-sm text-text-primary">
             Adding as sub-item under: {parentItem.itemNumber} -{" "}
             {parentItem.topic}
           </div>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-text-primary">
             Item Kind
           </label>
           {mode === "sub-item" ? (
-            <div className="rounded-xl border border-border bg-bg-primary px-3 py-2 text-sm text-gray-700">
+            <div className="rounded-xl border border-border bg-bg-primary px-3 py-2 text-sm text-text-primary">
               Normal Item only
             </div>
           ) : (
@@ -1133,10 +1161,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("normal")}
                 className={cn(
-                  "px-3 py-2 rounded-xl border text-sm font-medium transition-colors",
+                  "min-h-11 px-3 py-2 rounded-xl border text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30",
                   effectiveKind === "normal"
-                    ? "border-emerald-300 bg-emerald-50 text-emerald-700"
-                    : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
+                    ? "border-success/30 bg-success/10 text-success"
+                    : "border-border bg-surface-white text-text-primary hover:bg-bg-primary",
                 )}
               >
                 Normal Item
@@ -1145,10 +1173,10 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 type="button"
                 onClick={() => setItemKind("grouping")}
                 className={cn(
-                  "px-3 py-2 rounded-xl border text-sm font-medium transition-colors",
+                  "min-h-11 rounded-xl border px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30 motion-reduce:transition-none",
                   effectiveKind === "grouping"
-                    ? "border-amber-300 bg-amber-50 text-amber-800"
-                    : "border-gray-300 bg-surface-white text-gray-700 hover:bg-bg-primary",
+                    ? "border-warning/30 bg-warning/10 text-warning"
+                    : "border-border bg-surface-white text-text-primary hover:bg-bg-primary",
                 )}
               >
                 Grouping Item
@@ -1157,7 +1185,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
           )}
 
           {effectiveKind === "grouping" ? (
-            <p className="mt-2 text-xs text-amber-800 bg-amber-100 border border-amber-200 rounded-md px-2 py-1">
+            <p className="mt-2 rounded-md border border-warning/20 bg-warning/10 px-2 py-1 text-xs text-warning">
               This item is a header only. Users will not enter responses here,
               and sub-items can be added underneath it.
             </p>
@@ -1168,9 +1196,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
           ) : null}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-text-primary">
               Item Number
             </label>
             <div className="flex gap-2">
@@ -1193,7 +1221,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="mb-2 block text-sm font-medium text-text-primary">
               Section
             </label>
             <select
@@ -1202,7 +1230,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                 setSelectedSection(e.target.value as ChecklistSection)
               }
               disabled={mode === "sub-item"}
-              className="w-full px-3 py-2 border border-gray-300 rounded-xl bg-surface-white text-sm"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             >
               {Array.from(
                 new Set([
@@ -1219,7 +1247,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-text-primary">
             Topic
           </label>
           <Input
@@ -1230,13 +1258,13 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
         </div>
 
         {isDuplicateItemNumber && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-error" role="alert">
             This item number already exists in the template.
           </p>
         )}
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="mb-2 block text-sm font-medium text-text-primary">
             Description
           </label>
           <Textarea
@@ -1252,9 +1280,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
             type="checkbox"
             checked={isRequired}
             onChange={(e) => setIsRequired(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300"
+            className="h-4 w-4 rounded border-border accent-primary"
           />
-          <span className="text-sm text-gray-700 font-medium">Required</span>
+          <span className="text-sm font-medium text-text-primary">Required</span>
         </label>
 
         {effectiveKind === "normal" && !isAbstractType && (
@@ -1263,9 +1291,9 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
               type="checkbox"
               checked={hasLocationField}
               onChange={(e) => setHasLocationField(e.target.checked)}
-              className="w-4 h-4 rounded border-gray-300"
+              className="h-4 w-4 rounded border-border accent-primary"
             />
-            <span className="text-sm text-gray-700 font-medium">
+            <span className="text-sm font-medium text-text-primary">
               Has Location Field
             </span>
           </label>
@@ -1277,26 +1305,6 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
           </p>
         )}
 
-        <div className="flex gap-3 pt-4 border-t border-border">
-          <Button
-            variant="secondary"
-            onClick={handleCloseModal}
-            className="flex-1"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={handleAdd}
-            disabled={
-              !topic.trim() ||
-              isDuplicateItemNumber ||
-              (mode === "sub-item" && !parentItem)
-            }
-            className="flex-1"
-          >
-            {mode === "sub-item" ? "Add Sub-item" : "Add Root Item"}
-          </Button>
-        </div>
       </div>
     </Modal>
   );

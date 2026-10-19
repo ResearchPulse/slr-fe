@@ -9,34 +9,34 @@ export const STATUS_CONFIG = {
   pending: {
     label: "Not Screened",
     color: "gray",
-    bg: "bg-gray-100",
-    text: "text-gray-600",
-    border: "border-gray-200",
-    dot: "bg-emerald-400",
+    bg: "bg-bg-secondary",
+    text: "text-text-secondary",
+    border: "border-border",
+    dot: "bg-text-secondary",
   },
   included: {
     label: "Included",
     color: "green",
-    bg: "bg-green-50",
-    text: "text-green-700",
-    border: "border-green-200",
-    dot: "bg-green-500",
+    bg: "bg-success/10",
+    text: "text-success",
+    border: "border-success/20",
+    dot: "bg-success",
   },
   excluded: {
     label: "Excluded",
     color: "red",
-    bg: "bg-red-50",
-    text: "text-red-700",
-    border: "border-red-200",
-    dot: "bg-red-500",
+    bg: "bg-error/10",
+    text: "text-error",
+    border: "border-error/20",
+    dot: "bg-error",
   },
   conflicted: {
     label: "Conflicted",
     color: "amber",
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    border: "border-amber-200",
-    dot: "bg-amber-500",
+    bg: "bg-warning/10",
+    text: "text-warning",
+    border: "border-warning/20",
+    dot: "bg-warning",
   },
 } as const;
 
@@ -102,15 +102,15 @@ export const MATCH_STATUS_CONFIG: Record<
   MatchStatus,
   { label: string; icon: string; color: string; bg: string }
 > = {
-  match: { label: "Match", icon: "check", color: "text-green-600", bg: "bg-green-50" },
+  match: { label: "Match", icon: "check", color: "text-success", bg: "bg-success/10" },
   partial_match: {
     label: "Partial Match",
     icon: "alert-circle",
-    color: "text-amber-600",
-    bg: "bg-amber-50",
+    color: "text-warning",
+    bg: "bg-warning/10",
   },
-  not_match: { label: "Not Match", icon: "x", color: "text-red-600", bg: "bg-red-50" },
-  unknown: { label: "Unknown", icon: "help", color: "text-gray-500", bg: "bg-gray-50" },
+  not_match: { label: "Not Match", icon: "x", color: "text-error", bg: "bg-error/10" },
+  unknown: { label: "Unknown", icon: "help", color: "text-text-secondary", bg: "bg-bg-secondary" },
 } as const;
 
 // ============================================

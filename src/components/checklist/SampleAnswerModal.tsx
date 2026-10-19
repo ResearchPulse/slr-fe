@@ -55,13 +55,13 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
             </h3>
             <button
               onClick={handleCopy}
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-bg-secondary hover:bg-bg-secondary text-text-primary text-sm font-medium transition-colors"
+              className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-border bg-surface-white px-3 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
               title="Copy sample answer"
             >
               {copied ? (
                 <>
-                  <FiCheck className="w-4 h-4 text-green-600" />
-                  <span className="text-green-600">Copied</span>
+                  <FiCheck className="w-4 h-4 text-success" />
+                  <span className="text-success">Copied</span>
                 </>
               ) : (
                 <>
@@ -85,15 +85,15 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
             <h3 className="text-sm font-semibold text-text-primary">
               Why this is a good answer
             </h3>
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-              <p className="text-sm text-blue-900">{data.explanation}</p>
+            <div className="rounded-xl border border-primary/15 bg-primary-light/50 p-4">
+              <p className="text-sm leading-relaxed text-text-primary">{data.explanation}</p>
             </div>
           </div>
         )}
 
         {/* Hint about usage */}
-        <div className="bg-amber-50 border border-amber-100 rounded-xl p-3">
-          <p className="text-xs text-amber-900">
+        <div className="rounded-xl border border-warning/20 bg-warning/10 p-3">
+          <p className="text-xs text-warning">
             💡 This is a <strong>sample answer</strong> to guide you. Your own
             answer should reflect your specific study characteristics and be
             tailored to your research context.
@@ -102,13 +102,13 @@ const SampleAnswerModal: React.FC<SampleAnswerModalProps> = ({
 
         {/* Footer Actions */}
         <div className="flex justify-end gap-3 pt-4 border-t border-border">
-          <Button variant="secondary" onClick={onClose} size="sm">
+          <Button variant="secondary" onClick={onClose} size="sm" className="min-h-11">
             Close
           </Button>
           <Button
             onClick={handleCopy}
             size="sm"
-            className="inline-flex items-center gap-2"
+            className="min-h-11 inline-flex items-center gap-2"
           >
             <FiCopy className="w-4 h-4" />
             Copy to Clipboard

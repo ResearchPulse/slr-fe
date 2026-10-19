@@ -172,6 +172,7 @@ export interface UseFullTextScreeningReturn {
   pagination: PaginationInfo;
   isLoading: boolean;
   error: string | null;
+  refetch: () => Promise<void>;
   canReview: boolean;
 
   // Paper selection

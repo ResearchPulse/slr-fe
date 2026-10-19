@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import AdminProfileRedirect from "../components/profile/AdminProfileRedirect";
@@ -18,6 +18,7 @@ const ProjectSettingsPage = lazy(() => import("../pages/projects/ProjectSettings
 const ReviewProcessWorkspace = lazy(() => import("../pages/reviewProcess/ReviewProcessWorkspace"));
 const IdentificationPhaseWorkspace = lazy(() => import("../pages/reviewProcess/IdentificationPhaseWorkspace"));
 const PrismaReportWorkspace = lazy(() => import("../pages/reviewProcess/prismaReport/PrismaReportWorkspace"));
+const CanonicalReviewPhaseRoute = lazy(() => import("../pages/reviewProcess/CanonicalReviewPhaseRoute"));
 const FullTextScreeningWorkspace = lazy(() => import("../pages/reviewProcess/studySelection/fullTextScreening/FullTextScreeningWorkspace"));
 const QualityAssessmentWorkspace = lazy(() => import("../pages/reviewProcess/qualityAssessment/QualityAssessmentWorkspace"));
 const SynthesisPhaseWorkspace = lazy(() => import("../pages/reviewProcess/synthesisExecution/SynthesisPhaseWorkspace"));
@@ -97,12 +98,12 @@ function MainRoutes() {
               <Route path=":id/*" element={<ProjectDetailPage />} />
 
               {/* Canonical Project-Centric Routes (FR-G0-01) */}
-              <Route path=":projectId/identification" element={<IdentificationPhaseWorkspace />} />
-              <Route path=":projectId/screening" element={<ScreeningPhaseRouter />} />
-              <Route path=":projectId/screening/dashboard" element={<ScreeningPhaseRouter />} />
-              <Route path=":projectId/screening/assignment-management" element={<ManageStudySelectionPage />} />
-              <Route path=":projectId/screening/full-text" element={<FullTextScreeningWorkspace />} />
-              <Route path=":projectId/quality-assessment" element={<QualityAssessmentWorkspace />} />
+              <Route path=":projectId/identification" element={<CanonicalReviewPhaseRoute phase="identification" />} />
+              <Route path=":projectId/screening" element={<CanonicalReviewPhaseRoute phase="screening" />} />
+              <Route path=":projectId/screening/dashboard" element={<CanonicalReviewPhaseRoute phase="screening-dashboard" />} />
+              <Route path=":projectId/screening/assignment-management" element={<CanonicalReviewPhaseRoute phase="assignment-management" />} />
+              <Route path=":projectId/screening/full-text" element={<CanonicalReviewPhaseRoute phase="full-text" />} />
+              <Route path=":projectId/quality-assessment" element={<CanonicalReviewPhaseRoute phase="quality-assessment" />} />
               <Route path=":projectId/extraction" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/workspace/:studyId" element={<DataExtractionPhaseWorkspace />} />
               <Route path=":projectId/extraction/grid" element={<ExtractionGridWorkspace />} />
@@ -193,8 +194,7 @@ function MainRoutes() {
             </Route>
           </Route>
 
-          {/* 404 Page */}
-          {/* <Route path="*" element={<Navigate to="/404" replace />} /> */}
+          <Route path="*" element={<Navigate to="/404" replace />} />
         </Route>
       </Routes>
     </Suspense>

@@ -81,7 +81,7 @@ function MetaRow({ label, value, mono = false, wide = false }: MetaRowProps) {
       </span>
       {hasValue ? (
         <div
-          className={`break-all text-xs font-bold ${mono ? "font-mono text-text-secondary" : "text-slate-800"}`}
+          className={`break-all text-xs font-bold ${mono ? "font-mono text-text-secondary" : "text-text-primary"}`}
         >
           {value}
         </div>
@@ -100,10 +100,11 @@ export const SystemMetadataCollapse: React.FC<SystemMetadataCollapseProps> = ({
   const fileSize = formatSize(extras?.pdfSizeBytes);
 
   return (
-    <div className="bg-bg-secondary/50 rounded-xl border border-border overflow-hidden shadow-none transition-all">
+    <div className="overflow-hidden rounded-xl border border-border bg-bg-secondary/50 shadow-none transition-colors motion-reduce:transition-none">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-6 hover:bg-slate-200/50 transition-colors"
+        aria-expanded={isOpen}
+        className="flex w-full items-center justify-between p-6 transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none"
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-xl bg-surface-white border border-border flex items-center justify-center text-text-secondary">
@@ -121,7 +122,7 @@ export const SystemMetadataCollapse: React.FC<SystemMetadataCollapseProps> = ({
       </button>
 
       {isOpen && (
-        <div className="px-6 pb-8 animate-in slide-in-from-top-4 duration-300">
+        <div className="px-6 pb-8 motion-safe:animate-in motion-safe:slide-in-from-top-2 motion-safe:duration-150 motion-reduce:animate-none">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-border">
             <div className="space-y-1">
               <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
@@ -135,7 +136,7 @@ export const SystemMetadataCollapse: React.FC<SystemMetadataCollapseProps> = ({
               <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                 Source
               </span>
-              <p className="text-xs font-bold text-slate-800">
+              <p className="text-xs font-bold text-text-primary">
                 {paper.source || "Manual Entry"}
               </p>
             </div>

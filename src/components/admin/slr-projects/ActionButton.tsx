@@ -23,13 +23,14 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   return (
     <Tooltip content={label} position="bottom">
       <button
+        type="button"
         onClick={onClick}
         disabled={disabled}
         className={cn(
-          "p-2 rounded-xl transition-all active:scale-90",
+          "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors",
           variant === "destructive"
-            ? "text-rose-500 hover:bg-rose-50"
-            : "text-slate-400 hover:text-accent hover:bg-bg-secondary",
+            ? "text-error hover:bg-error/5"
+            : "text-text-secondary hover:text-accent hover:bg-bg-secondary",
           disabled &&
             "opacity-50 cursor-not-allowed pointer-events-none transform-none",
           className,

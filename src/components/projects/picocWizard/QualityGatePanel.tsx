@@ -29,7 +29,7 @@ const QualityGatePanel: React.FC<QualityGatePanelProps> = ({ gates, onGoToStep }
             <button
               type="button"
               onClick={() => onGoToStep(gate.remediation!.step)}
-              className="mt-2 inline-flex min-h-8 items-center rounded-md text-xs font-medium text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+              className="mt-2 inline-flex min-h-11 items-center rounded-md text-xs font-medium text-primary underline underline-offset-4 hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             >
               {gate.remediation.action} Go to {STEP_LABELS[gate.remediation.step]}
             </button>

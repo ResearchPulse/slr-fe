@@ -23,7 +23,7 @@ export default function ProjectLayout() {
   if (activeProjectId && (isLoading || (isFetching && !member))) {
     return (
       <div className="flex min-h-40 items-center justify-center gap-3 text-sm text-text-secondary">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+        <div className="h-6 w-6 rounded-full border-2 border-primary border-t-transparent motion-safe:animate-spin motion-reduce:animate-none" />
         Checking project access...
       </div>
     );

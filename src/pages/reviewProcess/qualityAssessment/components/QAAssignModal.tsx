@@ -91,8 +91,8 @@ export function QAAssignModal({
         </div>
 
         {hasResolution && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4">
-            <p className="text-sm font-medium text-center text-amber-800">
+          <div className="rounded-xl border border-warning/20 bg-warning/10 p-4">
+            <p className="text-sm font-medium text-center text-warning">
               This paper has already been resolved. You cannot change reviewer
               assignments.
             </p>

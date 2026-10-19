@@ -32,18 +32,18 @@ export default class SynthesisWorkspaceErrorBoundary extends React.Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="rounded-xl border border-border bg-surface-white p-6 text-center shadow-none">
-          <h2 className="text-lg font-semibold text-red-900">
+        <div className="rounded-xl border border-error/20 bg-surface-white p-6 text-center shadow-none">
+          <h2 className="text-lg font-semibold text-error">
             Synthesis workspace failed to render
           </h2>
-          <p className="mt-2 text-sm text-red-700">
+          <p className="mt-2 text-sm leading-6 text-text-secondary">
             Refresh the page or return to the project workflow if the problem
             persists.
           </p>
           <button
             type="button"
             onClick={this.handleRetry}
-            className="mt-6 inline-flex items-center justify-center rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-red-700"
+            className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl bg-error px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-error/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             Retry
           </button>

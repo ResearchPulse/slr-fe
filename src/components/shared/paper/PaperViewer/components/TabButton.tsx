@@ -7,6 +7,7 @@ interface TabButtonProps {
   icon: React.ReactNode;
   label: string;
   count?: number;
+  className?: string;
 }
 
 export const TabButton: React.FC<TabButtonProps> = ({
@@ -15,12 +16,16 @@ export const TabButton: React.FC<TabButtonProps> = ({
   icon,
   label,
   count,
+  className,
 }) => {
   return (
     <button
+      type="button"
       onClick={onClick}
+      aria-pressed={active}
       className={cn(
-        "flex-1 flex items-center justify-center gap-2 px-4 py-3 text-[11px] font-black uppercase tracking-widest transition-all rounded-xl",
+        "min-h-11 flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-[11px] font-black uppercase tracking-widest transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40 focus-visible:ring-offset-2",
+        className,
         active
           ? "bg-primary text-white shadow-none"
           : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",

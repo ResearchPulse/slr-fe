@@ -138,7 +138,7 @@ export default function ImportRISModal({
         <div className="bg-primary-light border border-accent/30 rounded-xl p-4 mb-6">
           <div className="flex gap-2 text-sm">
             <FiLock className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-            <div className="text-blue-800">
+            <div className="text-text-primary">
               <p className="font-medium">Importing to strategy:</p>
               <p className="text-xs text-accent mt-1">
                 {preselectedStrategy.searchSource} -{" "}
@@ -154,13 +154,13 @@ export default function ImportRISModal({
         {/* File Upload */}
         <div>
           <label className="block text-sm font-medium text-text-primary mb-2">
-            RIS File <span className="text-red-500">*</span>
+            RIS File <span className="text-error">*</span>
           </label>
           <div
-            className={`relative border-2 border-dashed rounded-xl p-6 transition-all ${
+            className={`relative rounded-xl border-2 border-dashed p-6 transition-colors motion-reduce:transition-none ${
               isDragging
-                ? "border-accent bg-primary-light"
-                : "border-border hover:border-gray-400 bg-surface-white"
+                ? "border-primary bg-primary-light"
+                : "border-border bg-surface-white hover:border-primary/40"
             }`}
             onDragOver={(e) => {
               e.preventDefault();
@@ -173,7 +173,7 @@ export default function ImportRISModal({
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <FiUpload className="w-5 h-5 text-green-600" />
+                    <FiUpload className="h-5 w-5 text-success" />
                     <div>
                       <p className="text-sm font-medium text-text-primary">
                         {selectedFile.name}
@@ -188,7 +188,7 @@ export default function ImportRISModal({
                     onClick={() => {
                       setSelectedFile(null);
                     }}
-                    className="p-1 text-text-secondary hover:text-text-secondary rounded transition-colors"
+                    className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
                     disabled={isUploading}
                   >
                     <FiX className="w-5 h-5" />
@@ -198,7 +198,7 @@ export default function ImportRISModal({
                 {/* Parsed Record Count */}
                 {/* {parsedRecordCount !== null && (
                   <div className="bg-surface-white border border-border rounded-xl p-3">
-                    <div className="flex items-center gap-2 text-sm text-green-800">
+                    <div className="flex items-center gap-2 text-sm text-success">
                       <FiCheck className="w-4 h-4" />
                       <p className="font-medium">
                         {parsedRecordCount.toLocaleString()} records detected
@@ -235,13 +235,13 @@ export default function ImportRISModal({
             <label className="block text-sm font-medium text-text-primary mb-2">
               {sourceLabel}{" "}
               {sourceRequiredInQuickImport && (
-                <span className="text-red-500">*</span>
+                <span className="text-error">*</span>
               )}
             </label>
             <select
               value={selectedSource}
               onChange={(e) => setSelectedSource(e.target.value)}
-              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               disabled={isUploading}
             >
               <option value="">{sourcePlaceholder}</option>
@@ -266,7 +266,7 @@ export default function ImportRISModal({
             <select
               value={selectedStrategyId}
               onChange={(e) => setSelectedStrategyId(e.target.value)}
-              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               disabled={isUploading || availableStrategies.length === 0}
             >
               <option value="">Don't link to a strategy</option>

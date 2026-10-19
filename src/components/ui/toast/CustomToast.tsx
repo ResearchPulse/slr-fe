@@ -33,33 +33,33 @@ const toastStyles: Record<
 > = {
   success: {
     bg: "bg-surface-white",
-    border: "border-border",
+    border: "border-success/25",
     iconColor: "text-success",
     icon: <HiCheckCircle className="w-5 h-5" />,
   },
   error: {
     bg: "bg-surface-white",
-    border: "border-border",
+    border: "border-error/25",
     iconColor: "text-error",
     icon: <HiXCircle className="w-5 h-5" />,
   },
   warning: {
     bg: "bg-surface-white",
-    border: "border-border",
+    border: "border-warning/25",
     iconColor: "text-warning",
     icon: <HiExclamationTriangle className="w-5 h-5" />,
   },
   info: {
     bg: "bg-surface-white",
-    border: "border-border",
+    border: "border-primary/20",
     iconColor: "text-text-secondary",
     icon: <HiInformationCircle className="w-5 h-5" />,
   },
   loading: {
     bg: "bg-surface-white",
-    border: "border-border",
+    border: "border-primary/20",
     iconColor: "text-accent",
-    icon: <CgSpinner className="w-5 h-5 animate-spin" />,
+    icon: <CgSpinner className="h-5 w-5 motion-safe:animate-spin motion-reduce:animate-none" />,
   },
 };
 
@@ -77,56 +77,41 @@ export const CustomToast: React.FC<CustomToastProps> = ({
 
   // Entrance & Exit Animations
   useLayoutEffect(() => {
+    const prefersReducedMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches ?? false;
     const ctx = gsap.context(() => {
+      if (prefersReducedMotion) {
+        gsap.set(containerRef.current, {
+          opacity: t.visible ? 1 : 0,
+          y: 0,
+          scale: 1,
+        });
+        gsap.set(iconRef.current, { scale: 1, opacity: 1 });
+        gsap.set(contentRef.current?.children || [], { y: 0, opacity: 1 });
+        return;
+      }
+
       if (t.visible) {
-        // Entrance sequence
         gsap.fromTo(
           containerRef.current,
-          { opacity: 0, y: -20, scale: 0.95 },
+          { opacity: 0, y: -8, scale: 0.99 },
           {
             opacity: 1,
             y: 0,
             scale: 1,
-            duration: 0.45,
-            ease: "power3.out",
-          },
-        );
-
-        // Icon pop effect
-        gsap.fromTo(
-          iconRef.current,
-          { scale: 0.8, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.35,
-            ease: "back.out(1.7)",
-            delay: 0.1,
-          },
-        );
-
-        // Staggered text appearance
-        gsap.fromTo(
-          contentRef.current?.children || [],
-          { y: 5, opacity: 0 },
-          {
-            y: 0,
-            opacity: 1,
-            duration: 0.3,
-            stagger: 0.05,
+            duration: 0.18,
             ease: "power2.out",
-            delay: 0.15,
           },
         );
-
-        // Removed Progress bar animation per editorial requirements
+        gsap.set(iconRef.current, { scale: 1, opacity: 1 });
+        gsap.set(contentRef.current?.children || [], { y: 0, opacity: 1 });
       } else {
-        // Exit sequence
         gsap.to(containerRef.current, {
           opacity: 0,
-          y: -20,
-          scale: 0.95,
-          duration: 0.3,
+          y: -8,
+          scale: 0.99,
+          duration: 0.15,
           ease: "power2.in",
         });
       }
@@ -137,8 +122,9 @@ export const CustomToast: React.FC<CustomToastProps> = ({
 
   // Hover Interactions
   const handleMouseEnter = () => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
     gsap.to(containerRef.current, {
-      scale: 1.02,
+      scale: 1.005,
       boxShadow:
         "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
       duration: 0.15,
@@ -147,6 +133,14 @@ export const CustomToast: React.FC<CustomToastProps> = ({
   };
 
   const handleMouseLeave = () => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(containerRef.current, {
+        scale: 1,
+        boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+      });
+      return;
+    }
+
     gsap.to(containerRef.current, {
       scale: 1,
       boxShadow: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
@@ -186,11 +180,13 @@ export const CustomToast: React.FC<CustomToastProps> = ({
           )}
         </div>
         <button
+          type="button"
+          aria-label="Dismiss notification"
           onClick={() => {
             if (onClose) onClose();
             toast.dismiss(t.id);
           }}
-          className="ml-4 flex-shrink-0 text-text-secondary hover:text-text-primary focus:outline-none transition-colors"
+          className="ml-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           <HiXMark className="w-4 h-4" />
         </button>

@@ -20,14 +20,14 @@ const PaperAbstractSection: React.FC<PaperAbstractSectionProps> = ({
 
   return (
     <section className="mb-6">
-      <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3">
+      <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-text-secondary">
         Abstract
       </h3>
 
       {hasAbstract ? (
         <div>
           <p
-            className={`text-sm text-gray-700 leading-relaxed whitespace-pre-wrap wrap-break-word ${
+            className={`text-sm text-text-primary leading-relaxed whitespace-pre-wrap wrap-break-word ${
               !isExpanded ? `line-clamp-${collapsedLines}` : ""
             }`}
             style={
@@ -45,7 +45,7 @@ const PaperAbstractSection: React.FC<PaperAbstractSectionProps> = ({
           </p>
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            className="mt-2 inline-flex min-h-11 items-center gap-1 rounded px-1 text-xs font-medium text-accent transition-colors hover:text-primary-hover motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
           >
             {isExpanded ? (
               <>
@@ -61,8 +61,8 @@ const PaperAbstractSection: React.FC<PaperAbstractSectionProps> = ({
           </button>
         </div>
       ) : (
-        <div className="rounded-lg border border-dashed border-gray-200 bg-gray-50/50 px-4 py-6 text-center">
-          <p className="text-sm text-gray-400 italic">No abstract available</p>
+        <div className="rounded-lg border border-dashed border-border bg-bg-secondary/50 px-4 py-6 text-center">
+          <p className="text-sm text-text-secondary italic">No abstract available</p>
         </div>
       )}
     </section>

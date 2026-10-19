@@ -119,12 +119,14 @@ export default function DuplicateQueuePanel({
         </h3>
         <button
           onClick={() => setShowFilters((prev) => !prev)}
-          className={`p-1.5 rounded-xl transition-colors ${
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
             showFilters
-              ? "bg-blue-100 text-accent"
+              ? "bg-primary-light text-accent"
               : "text-text-secondary hover:text-text-secondary hover:bg-bg-secondary"
           }`}
           title="Toggle filters"
+          aria-label="Toggle filters"
+          aria-pressed={showFilters}
         >
           <FiFilter className="w-4 h-4" />
         </button>
@@ -138,7 +140,7 @@ export default function DuplicateQueuePanel({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by paper title..."
-          className="rounded-xl border border-border bg-surface-white py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full pl-9 pr-3"
+          className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-9 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
         />
       </div>
 
@@ -151,9 +153,9 @@ export default function DuplicateQueuePanel({
               <button
                 key={key}
                 onClick={() => handleFilterChange(key)}
-                className={`px-2.5 py-1 rounded-full text-xs font-medium transition-colors ${
+                className={`min-h-9 rounded-full px-3 py-1 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                   filter === key
-                    ? "bg-blue-100 text-accent border border-accent/30"
+                    ? "bg-primary-light text-accent border border-accent/30"
                     : "bg-surface-white text-text-secondary border border-border hover:bg-bg-primary"
                 }`}
               >
@@ -167,7 +169,7 @@ export default function DuplicateQueuePanel({
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value as DuplicateSortType)}
-            className="rounded-xl border border-border bg-surface-white px-2 py-1.5 text-xs focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full"
+            className="min-h-10 w-full rounded-xl border border-border bg-surface-white px-3 py-1.5 text-xs text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           >
             <option value="similarity-desc">Highest similarity first</option>
             <option value="similarity-asc">Lowest similarity first</option>
@@ -189,7 +191,7 @@ export default function DuplicateQueuePanel({
               <button
                 key={pair.id}
                 onClick={() => onSelectPair(pair)}
-                className={`w-full text-left p-3.5 rounded-xl border-2 transition-all group ${
+                className={`w-full rounded-xl border-2 p-3.5 text-left transition-[border-color,background-color] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                   isSelected
                     ? "border-accent bg-primary-light shadow-none"
                     : isResolved
@@ -210,17 +212,17 @@ export default function DuplicateQueuePanel({
                     </span>
                   </div>
                   <div>
-                    <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium">
+                    <span className="text-xs px-2 py-0.5 bg-primary-light text-accent rounded-full font-medium">
                       {pair.methodText}
                     </span>
                   </div>
                   {isResolved ? (
                     pair.resolvedDecision === "cancel" ? (
-                      <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-medium">
+                      <span className="text-xs px-2 py-0.5 bg-error/10 text-error rounded-full font-medium">
                         Duplicate Removed
                       </span>
                     ) : (
-                      <span className="text-xs px-2 py-0.5 bg-green-100 text-green-700 rounded-full font-medium">
+                      <span className="text-xs px-2 py-0.5 bg-success/10 text-success rounded-full font-medium">
                         Not Duplicate
                       </span>
                     )
@@ -248,7 +250,7 @@ export default function DuplicateQueuePanel({
                     {pair.originalPaper.source}
                   </span>
                   <span className="text-text-secondary">vs</span>
-                  <span className="px-2 py-0.5 bg-purple-50 text-purple-700 rounded">
+                  <span className="px-2 py-0.5 bg-bg-secondary text-text-secondary rounded">
                     {pair.duplicatePaper.source}
                   </span>
                 </div>
@@ -257,14 +259,14 @@ export default function DuplicateQueuePanel({
           })
         ) : (
           <div className="text-center py-8 text-text-secondary">
-            <FiSearch className="w-8 h-8 mx-auto mb-2 text-gray-300" />
+            <FiSearch className="w-8 h-8 mx-auto mb-2 text-text-secondary/50" />
             <p className="text-sm">No pairs match your filters</p>
             <button
               onClick={() => {
                 setFilter("all");
                 setSearchQuery("");
               }}
-              className="text-xs text-accent hover:text-primary-hover mt-1"
+              className="mt-1 min-h-11 rounded-lg px-3 text-xs text-accent hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
             >
               Clear filters
             </button>

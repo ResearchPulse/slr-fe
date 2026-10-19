@@ -17,21 +17,21 @@ export const ResolutionDetails: React.FC<ResolutionDetailsProps> = ({
       className={cn(
         "rounded-xl border p-6 space-y-4",
         isIncluded
-          ? "bg-emerald-50 border-emerald-100"
-          : "bg-rose-50 border-rose-100",
+          ? "bg-success/10 border-success/20"
+          : "bg-error/10 border-error/20",
       )}
     >
       <div className="flex items-center gap-2">
         <FiGitBranch
           className={cn(
             "w-4 h-4",
-            isIncluded ? "text-emerald-600" : "text-rose-600",
+            isIncluded ? "text-success" : "text-error",
           )}
         />
         <h3
           className={cn(
             "text-xs font-black uppercase tracking-widest",
-            isIncluded ? "text-emerald-800" : "text-rose-800",
+            isIncluded ? "text-success" : "text-error",
           )}
         >
           Final Resolution
@@ -40,7 +40,7 @@ export const ResolutionDetails: React.FC<ResolutionDetailsProps> = ({
       <div className="grid grid-cols-2 gap-4 text-[11px] font-bold uppercase tracking-widest">
         <div className="space-y-1">
           <span className="text-text-secondary">Decision</span>
-          <p className={isIncluded ? "text-emerald-600" : "text-rose-600"}>
+          <p className={isIncluded ? "text-success" : "text-error"}>
             {resolution.finalDecision}
           </p>
         </div>

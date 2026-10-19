@@ -159,7 +159,7 @@ export default function MultiSelectDropdown({
                   }
                   onChange={handleSelectAll}
                   disabled={disabled || options.length === 0}
-                  className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400 disabled:cursor-not-allowed"
+                  className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary/40 disabled:cursor-not-allowed"
                 />
                 <span className="text-xs font-semibold text-text-secondary">
                   Select All
@@ -184,7 +184,7 @@ export default function MultiSelectDropdown({
                       checked={selectedValues.has(option.value)}
                       onChange={() => handleToggleOption(option.value)}
                       disabled={disabled}
-                      className="h-3.5 w-3.5 rounded border-slate-300 text-text-primary focus:ring-slate-400 disabled:cursor-not-allowed"
+                      className="h-3.5 w-3.5 rounded border-border text-primary focus:ring-primary/40 disabled:cursor-not-allowed"
                     />
                     <span className="min-w-0 flex-1 truncate text-xs text-text-primary">
                       {option.value}
@@ -200,7 +200,7 @@ export default function MultiSelectDropdown({
                 type="button"
                 onClick={onCancel}
                 disabled={disabled}
-                className="flex-1 rounded px-2 py-1 text-xs font-medium text-text-secondary hover:bg-bg-secondary disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 flex-1 rounded px-2 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -208,7 +208,7 @@ export default function MultiSelectDropdown({
                 type="button"
                 onClick={handleConfirm}
                 disabled={disabled}
-                className="flex-1 rounded bg-primary px-2 py-1 text-xs font-medium text-white hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="min-h-11 flex-1 rounded bg-primary px-2 py-1 text-xs font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white/80 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Apply
               </button>

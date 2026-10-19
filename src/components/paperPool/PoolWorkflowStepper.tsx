@@ -72,12 +72,12 @@ export default function PoolWorkflowStepper({
   const progressPercent = ((currentStep - 1) / (STEPS.length - 1)) * 80;
 
   return (
-    <section className="animate-in fade-in slide-in-from-top-2 duration-500">
+    <section className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-12">
-        <div className="absolute left-[10%] right-[10%] top-6 sm:top-7 h-1 -translate-y-1/2 rounded-full bg-slate-200 z-0" />
+        <div className="absolute left-[10%] right-[10%] top-6 z-0 h-1 -translate-y-1/2 rounded-full bg-border sm:top-7" />
         <div
           aria-hidden="true"
-          className="absolute left-[10%] top-6 sm:top-7 h-1 -translate-y-1/2 rounded-full bg-accent transition-[width] duration-500 z-0"
+          className="absolute left-[10%] top-6 z-0 h-1 -translate-y-1/2 rounded-full bg-accent transition-[width] duration-200 motion-reduce:transition-none sm:top-7"
           style={{ width: `${progressPercent}%` }}
         />
 
@@ -101,7 +101,7 @@ export default function PoolWorkflowStepper({
                   disabled={!isLeader}
                   title={!isLeader ? "Workflow steps are managed by the project leader" : undefined}
                   className={`
-                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-full border transition-all duration-200 sm:h-14 sm:w-14
+                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-full border transition-[background-color,border-color,color,transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none sm:h-14 sm:w-14
                     ${
                       isActive
                         ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
@@ -111,7 +111,7 @@ export default function PoolWorkflowStepper({
                             : "border-accent/30 bg-white text-accent/70 shadow-sm cursor-default"
                           : isLeader
                             ? "border-border bg-white text-text-secondary shadow-sm hover:border-accent/40 hover:text-accent cursor-pointer"
-                            : "border-slate-200 bg-slate-50 text-slate-400 shadow-none cursor-default"
+                            : "border-border bg-bg-secondary text-text-secondary shadow-none cursor-default"
                     }
                     ${!isLeader ? "cursor-default select-none" : ""}
                   `}
@@ -130,7 +130,7 @@ export default function PoolWorkflowStepper({
                     Step {step.id}
                   </p>
                   <p
-                    className={`mt-1 truncate text-sm font-medium ${isActive ? "text-text-primary" : "text-text-secondary"}`}
+                    className={`mt-1 text-[10px] leading-3 font-medium sm:truncate sm:text-sm sm:leading-normal ${isActive ? "text-text-primary" : "text-text-secondary"}`}
                   >
                     {step.title}
                   </p>
@@ -141,9 +141,9 @@ export default function PoolWorkflowStepper({
         </ol>
       </div>
 
-      <div className="mx-auto mt-3 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-white shadow-[0_8px_30px_rgba(18,35,49,0.06)]">
+      <div className="mx-auto mt-3 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
         <div className="flex flex-col md:flex-row">
-          <div className="flex items-center gap-4 border-b border-border bg-slate-50/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
+          <div className="flex items-center gap-4 border-b border-border bg-bg-secondary/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
               <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
             </div>
@@ -163,7 +163,7 @@ export default function PoolWorkflowStepper({
                 Instruction
               </span>
               {!isLeader && currentStep === 5 && (
-                <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-medium text-slate-700">
+                <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary">
                   Read-Only
                 </span>
               )}
@@ -186,10 +186,10 @@ export default function PoolWorkflowStepper({
                   key={i}
                   type="button"
                   onClick={action.onClick}
-                  className={`inline-flex min-h-10 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
                     action.primary
                       ? "bg-accent text-white shadow-sm hover:bg-primary-hover"
-                      : "border border-border bg-white text-text-secondary hover:bg-slate-50 hover:text-text-primary"
+                      : "border border-border bg-surface-white text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
                   }`}
                 >
                   {action.label}

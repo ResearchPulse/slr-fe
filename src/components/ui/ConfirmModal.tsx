@@ -8,11 +8,12 @@ interface ConfirmModalProps {
   onClose: () => void;
   onConfirm: () => void;
   title: string;
-  message: string;
+  message: React.ReactNode;
   confirmText?: string;
   cancelText?: string;
   isLoading?: boolean;
   variant?: "danger" | "warning" | "info";
+  closeOnOutsideClick?: boolean;
 }
 
 const ConfirmModal: React.FC<ConfirmModalProps> = ({
@@ -25,6 +26,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   cancelText = "Cancel",
   isLoading = false,
   variant = "danger",
+  closeOnOutsideClick = true,
 }) => {
   const variantStyles = {
     danger: {
@@ -50,7 +52,13 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
   const style = variantStyles[variant];
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={title} size="sm">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      size="sm"
+      closeOnOutsideClick={closeOnOutsideClick}
+    >
       <div className="flex flex-col items-center text-center space-y-6">
         <div
           className={`w-20 h-20 ${style.iconBg} rounded-full flex items-center justify-center`}

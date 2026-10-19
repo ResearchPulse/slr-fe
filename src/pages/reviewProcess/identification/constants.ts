@@ -27,9 +27,9 @@ export const SIMILARITY_THRESHOLDS = {
 
 /** Labels for confidence levels in the UI */
 export const CONFIDENCE_LABELS: Record<string, { label: string; color: string }> = {
-  high: { label: "Very Likely Duplicate", color: "text-red-600" },
-  medium: { label: "Probable Duplicate", color: "text-orange-600" },
-  low: { label: "Possible Duplicate", color: "text-yellow-600" },
+  high: { label: "Very Likely Duplicate", color: "text-error" },
+  medium: { label: "Probable Duplicate", color: "text-warning" },
+  low: { label: "Possible Duplicate", color: "text-accent" },
 };
 
 /** Max undo stack depth */

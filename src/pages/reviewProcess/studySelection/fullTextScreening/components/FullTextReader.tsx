@@ -125,7 +125,7 @@ export default function FullTextReader({
   if (!paper) {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-bg-primary text-center px-8">
-        <FiBookOpen className="w-12 h-12 text-gray-300 mb-4" />
+        <FiBookOpen className="mb-4 h-12 w-12 text-text-secondary" />
         <h3 className="text-lg font-medium text-text-secondary">
           No Paper Selected
         </h3>
@@ -185,8 +185,8 @@ export default function FullTextReader({
       )}
 
       {/* Reader Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-bg-primary shrink-0">
-        <div className="flex items-center gap-2 min-w-0">
+      <div className="flex flex-wrap items-center justify-between gap-x-1 px-4 py-2 border-b border-border bg-bg-primary shrink-0 max-[360px]:px-2 max-[360px]:py-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2">
           <FiFileText className="w-4 h-4 text-accent shrink-0" />
           <h2 className="text-sm font-medium text-text-primary truncate">
             {paper.title}
@@ -198,12 +198,16 @@ export default function FullTextReader({
           )}
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1 shrink-0 max-[360px]:gap-0.5">
           {/* Search toggle */}
           <button
             onClick={() => setShowSearch(!showSearch)}
+            type="button"
+            aria-label="Search within paper"
+            aria-expanded={showSearch}
+            aria-controls={showSearch ? "full-text-search" : undefined}
             className={cn(
-              "p-1.5 rounded-xl transition-colors",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
               showSearch
                 ? "bg-primary-light text-accent"
                 : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary",
@@ -213,35 +217,40 @@ export default function FullTextReader({
             <FiSearch className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-5 bg-bg-secondary mx-1" />
+          <div className="w-px h-5 bg-bg-secondary mx-0.5" />
 
           {/* Zoom controls */}
           <button
             onClick={handleZoomOut}
             disabled={zoomLevel <= 50}
-            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Zoom out"
+            aria-label={`Zoom out, current zoom ${zoomLevel}%`}
           >
             <FiZoomOut className="w-4 h-4" />
           </button>
-          <span className="text-xs text-text-secondary w-10 text-center font-medium">
+          <span className="text-xs text-text-secondary w-10 text-center font-medium max-[360px]:hidden">
             {zoomLevel}%
           </span>
           <button
             onClick={handleZoomIn}
             disabled={zoomLevel >= 200}
-            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 transition-colors"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary disabled:opacity-30 motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title="Zoom in"
+            aria-label={`Zoom in, current zoom ${zoomLevel}%`}
           >
             <FiZoomIn className="w-4 h-4" />
           </button>
 
-          <div className="w-px h-5 bg-bg-secondary mx-1" />
+          <div className="w-px h-5 bg-bg-secondary mx-0.5" />
 
           {/* Fullscreen */}
           <button
             onClick={toggleFullscreen}
-            className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+            type="button"
+            aria-label={isFullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            aria-pressed={isFullscreen}
+            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             title={isFullscreen ? "Exit fullscreen" : "Fullscreen"}
           >
             {isFullscreen ? (
@@ -257,7 +266,8 @@ export default function FullTextReader({
               href={paper.pdfUrl || paper.url || ""}
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+              aria-label="Open paper in a new tab"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               title="Open in new tab"
             >
               <FiExternalLink className="w-4 h-4" />
@@ -272,12 +282,14 @@ export default function FullTextReader({
           <div className="relative">
             <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-3.5 h-3.5" />
             <input
+              id="full-text-search"
+              aria-label="Search within paper"
               type="text"
               placeholder="Search within paper..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               autoFocus
-              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none transition-colors"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-border rounded-xl bg-bg-primary focus:bg-surface-white focus:border-accent focus:ring-1 focus:ring-accent/30 outline-none motion-safe:transition-colors focus-visible:ring-2 focus-visible:ring-primary/25 motion-reduce:transition-none"
             />
           </div>
         </div>
@@ -289,12 +301,12 @@ export default function FullTextReader({
         <div className="flex-1 min-w-0 overflow-auto bg-bg-secondary">
           {paper.extraction?.status === "failed" &&
             paper.extraction.requested && (
-              <div className="border-b border-amber-200 bg-amber-50 p-4">
-                <p className="text-sm font-medium text-amber-900">
+              <div className="border-b border-warning/20 bg-warning/10 p-4" role="alert">
+                <p className="text-sm font-medium text-warning">
                   PDF uploaded successfully, but metadata extraction failed.
                 </p>
                 {paper.extraction.message && (
-                  <p className="mt-1 text-xs text-amber-800">
+                  <p className="mt-1 text-xs text-text-primary">
                     {paper.extraction.message}
                   </p>
                 )}
@@ -302,12 +314,12 @@ export default function FullTextReader({
                   <button
                     onClick={() => onRetryExtraction(paper.id)}
                     disabled={isRetryingExtraction}
-                    className="mt-3 inline-flex items-center gap-2 rounded-xl border border-amber-300 bg-surface-white px-3 py-2 text-xs font-semibold text-amber-800 transition-colors hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="mt-3 inline-flex min-h-11 items-center gap-2 rounded-xl border border-warning/25 bg-surface-white px-3 text-xs font-semibold text-warning transition-colors hover:bg-warning/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
                   >
                     <FiRefreshCw
                       className={cn(
                         "h-3.5 w-3.5",
-                        isRetryingExtraction && "animate-spin",
+                        isRetryingExtraction && "motion-safe:animate-spin motion-reduce:animate-none",
                       )}
                     />
                     {isRetryingExtraction ? "Retrying..." : "Retry Extraction"}
@@ -519,20 +531,20 @@ function FullTextMissing({
   isUploading: boolean;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center h-full text-center px-8">
-      <div className="w-16 h-16 rounded-xl bg-amber-50 flex items-center justify-center mb-4">
-        <FiAlertTriangle className="w-8 h-8 text-amber-500" />
+    <div className="flex min-h-full flex-col items-center justify-center px-4 py-4 text-center max-[360px]:py-2 sm:px-8 sm:py-6">
+      <div className="mb-3 flex h-16 w-16 items-center justify-center rounded-xl bg-warning/10 sm:mb-4">
+        <FiAlertTriangle className="h-8 w-8 text-warning" />
       </div>
       <h3 className="text-lg font-semibold text-text-primary mb-2">
         Full Text Missing
       </h3>
-      <p className="text-sm text-text-secondary max-w-sm mb-6">
+      <p className="text-sm text-text-secondary max-w-sm mb-4 sm:mb-6">
         No PDF is available for this paper. Upload the full text to proceed with
         screening.
       </p>
 
       {/* Paper info */}
-      <div className="bg-surface-white rounded-xl p-4 border border-border max-w-md w-full mb-6">
+      <div className="bg-surface-white rounded-xl p-4 border border-border max-w-md w-full mb-4 sm:mb-6">
         <h4 className="text-sm font-medium text-text-primary mb-1 line-clamp-2">
           {paper.title}
         </h4>

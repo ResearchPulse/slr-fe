@@ -66,21 +66,21 @@ const statusConfig: Record<
   },
   Included: {
     icon: CheckCircle2,
-    color: "text-emerald-500",
-    bgColor: "bg-emerald-50",
-    borderColor: "border-emerald-200",
+    color: "text-success",
+    bgColor: "bg-success/10",
+    borderColor: "border-success/20",
   },
   Excluded: {
     icon: XCircle,
-    color: "text-rose-500",
-    bgColor: "bg-rose-50",
-    borderColor: "border-rose-200",
+    color: "text-error",
+    bgColor: "bg-error/10",
+    borderColor: "border-error/20",
   },
   Conflict: {
     icon: AlertCircle,
-    color: "text-amber-500",
-    bgColor: "bg-amber-50",
-    borderColor: "border-amber-200",
+    color: "text-warning",
+    bgColor: "bg-warning/10",
+    borderColor: "border-warning/20",
   },
   Resolved: {
     icon: CheckCircle2,
@@ -291,17 +291,18 @@ export const PaperList: React.FC<PaperListProps> = ({
 
   if (isCollapsed) {
     return (
-      <div className="flex flex-col items-center py-6 h-full bg-bg-secondary border-r border-border animate-in fade-in slide-in-from-left-4 duration-300">
+      <div className="flex h-full flex-col items-center border-r border-border bg-bg-secondary py-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-1 motion-safe:duration-150 motion-reduce:animate-none">
         <button
+          type="button"
           onClick={onToggleCollapse}
-          className="p-2 hover:bg-surface-white hover:shadow-none rounded-xl transition-all text-text-secondary hover:text-accent mb-8 border border-transparent hover:border-accent/20"
-          title="Expand List"
+          aria-label="Expand papers list"
+          className="mb-8 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-accent/20 hover:bg-surface-white hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         >
           <PanelLeftOpen className="w-5 h-5" />
         </button>
         <div className="flex-1 flex items-center justify-center">
           <div
-            className="font-black text-slate-300 tracking-[0.2em] uppercase text-[10px] whitespace-nowrap"
+            className="whitespace-nowrap text-[10px] font-black uppercase tracking-[0.2em] text-text-tertiary"
             style={{ writingMode: "vertical-rl", transform: "rotate(180deg)" }}
           >
             Papers Queue
@@ -314,13 +315,14 @@ export const PaperList: React.FC<PaperListProps> = ({
   if (isError) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-4 text-center">
-        <AlertCircle className="w-8 h-8 text-rose-500 mb-2" />
+        <AlertCircle className="mb-2 h-8 w-8 text-error" />
         <p className="text-sm font-medium text-text-secondary">
           Failed to load papers
         </p>
         <button
+          type="button"
           onClick={() => query.refetch()}
-          className="mt-2 text-xs font-bold text-accent hover:underline"
+          className="mt-2 inline-flex min-h-11 items-center rounded-lg px-3 text-xs font-bold text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
         >
           Try again
         </button>
@@ -338,7 +340,7 @@ export const PaperList: React.FC<PaperListProps> = ({
               <div className="flex items-center justify-center w-5 h-5">
                 <input
                   type="checkbox"
-                  className="w-4 h-4 rounded border-slate-300 text-accent focus:ring-accent accent-accent cursor-pointer"
+                  className="h-4 w-4 cursor-pointer rounded border-border text-primary accent-primary focus:ring-primary/40"
                   checked={isAllSelected}
                   ref={(el) => {
                     if (el) el.indeterminate = isSomeSelected;
@@ -348,21 +350,23 @@ export const PaperList: React.FC<PaperListProps> = ({
               </div>
             )}
             <div>
-              <h2 className="text-sm font-bold text-slate-900">Review queue</h2>
-              <p className="mt-0.5 text-[11px] text-slate-500">Select a paper to inspect and decide</p>
+              <h2 className="text-sm font-bold text-text-primary">Review queue</h2>
+              <p className="mt-0.5 text-[11px] text-text-secondary">Select a paper to inspect and decide</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={onToggleCollapse}
-              className="rounded-xl border border-transparent p-2 text-slate-500 transition-colors hover:border-slate-200 hover:bg-slate-50 hover:text-accent"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-border hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
               title="Collapse List"
+              aria-label="Collapse review queue"
             >
               <PanelLeftClose className="w-4 h-4" />
             </button>
             {isAssignmentMode && selectedIds.length > 0 && (
               <div className="flex items-center gap-2">
-                <span className="inline-flex shrink-0 whitespace-nowrap items-center rounded-full bg-bg-secondary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-accent animate-in fade-in slide-in-from-right-4">
+                <span className="inline-flex shrink-0 whitespace-nowrap items-center rounded-full bg-bg-secondary px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.1em] text-accent motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-1 motion-safe:duration-150 motion-reduce:animate-none">
                   {selectedIds.length} Selected
                 </span>
               </div>
@@ -373,8 +377,9 @@ export const PaperList: React.FC<PaperListProps> = ({
         <div className="relative group">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary group-focus-within:text-accent transition-colors" />
           <Input
+            aria-label="Search papers by title or authors"
             placeholder="Search title or authors..."
-            className="border-border bg-white pl-10 transition-all"
+            className="border-border bg-surface-white pl-10 transition-[border-color,box-shadow] focus-visible:ring-primary motion-reduce:transition-none"
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
           />
@@ -383,7 +388,7 @@ export const PaperList: React.FC<PaperListProps> = ({
         <div className="grid grid-cols-2 gap-2">
           <Select
             aria-label="Filter by publication year"
-            className="h-10 rounded-xl px-3 text-xs font-medium"
+            className="min-h-11 rounded-xl px-3 text-xs font-medium"
             value={yearFilter}
             onChange={(e) => handleFilterChange(setYearFilter, e.target.value)}
             options={[
@@ -397,7 +402,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
           <Select
             aria-label="Filter by decision"
-            className="h-10 rounded-xl px-3 text-xs font-medium"
+            className="min-h-11 rounded-xl px-3 text-xs font-medium"
             value={decisionFilter}
             onChange={(e) =>
               handleFilterChange(setDecisionFilter, e.target.value)
@@ -413,7 +418,7 @@ export const PaperList: React.FC<PaperListProps> = ({
 
           <Select
             aria-label="Filter by assignment"
-            className="h-10 rounded-xl px-3 text-xs font-medium"
+            className="min-h-11 rounded-xl px-3 text-xs font-medium"
             value={assignmentFilter}
             onChange={(e) =>
               handleFilterChange(setAssignmentFilter, e.target.value)
@@ -437,7 +442,7 @@ export const PaperList: React.FC<PaperListProps> = ({
             {[...Array(5)].map((_, i) => (
               <div
                 key={i}
-                className="h-32 animate-pulse rounded-xl border border-slate-100 bg-white"
+                className="h-32 rounded-xl border border-border bg-white motion-safe:animate-pulse motion-reduce:animate-none"
               />
             ))}
           </div>
@@ -456,7 +461,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                 key={paper.id}
                 onClick={() => onSelectPaper(paper.id)}
                 className={cn(
-                  "group relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-all",
+                  "group relative flex cursor-pointer gap-3 rounded-xl border p-4 transition-[border-color,background-color,box-shadow] duration-150 motion-reduce:transition-none",
                   isPaperActive
                     ? "border-accent bg-white shadow-sm ring-2 ring-accent/20"
                     : "border-border bg-white hover:border-accent/20 hover:shadow-sm",
@@ -470,7 +475,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                   <div className="flex-shrink-0 pt-1">
                     <input
                       type="checkbox"
-                      className="w-4 h-4 rounded border-slate-300 text-accent focus:ring-accent accent-accent cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="h-4 w-4 cursor-pointer rounded border-border text-primary accent-primary focus:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-30"
                       checked={isPaperSelected}
                       disabled={
                         ["Included", "Excluded", "Resolved"].includes(paper.status)
@@ -487,7 +492,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                       "line-clamp-2 text-[13px] font-semibold leading-5 transition-colors",
                       isPaperActive
                         ? "text-accent"
-                        : "text-slate-800 group-hover:text-accent",
+                        : "text-text-primary group-hover:text-primary",
                     )}
                   >
                     {paper.title}
@@ -536,6 +541,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                           : "Unassigned"}
                         {paper.isAssigned && (
                           <button
+                            type="button"
                             onClick={(e) =>
                               handleViewReviewers(
                                 e,
@@ -543,8 +549,9 @@ export const PaperList: React.FC<PaperListProps> = ({
                                 paper.assignedReviewers || [],
                               )
                             }
-                            className="ml-1 p-0.5 hover:bg-primary-light rounded-xl transition-colors"
+                            className="ml-1 inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                             title="View Reviewers"
+                            aria-label={`View reviewers for ${paper.title}`}
                           >
                             <Eye className="w-3 h-3" />
                           </button>
@@ -562,7 +569,7 @@ export const PaperList: React.FC<PaperListProps> = ({
                     </div>
 
                     {paper.hasConflict && (
-                      <div className="flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-full border border-amber-200 bg-amber-50 text-amber-600 text-[9px] font-black uppercase tracking-wider animate-blink shadow-none">
+                      <div className="flex w-fit items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-wider text-warning">
                         <AlertCircle className="w-3 h-3" />! Conflict
                       </div>
                     )}
@@ -574,19 +581,20 @@ export const PaperList: React.FC<PaperListProps> = ({
         ) : (
           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
             <div className="w-12 h-12 bg-bg-secondary rounded-full flex items-center justify-center mb-4">
-              <Search className="w-6 h-6 text-slate-300" />
+              <Search className="h-6 w-6 text-text-secondary" />
             </div>
             <p className="text-sm font-medium text-text-secondary">
               No papers found matching your filters
             </p>
             <button
+              type="button"
               onClick={() => {
                 setSearchQuery("");
                 setYearFilter("all");
                 setDecisionFilter("0");
                 setAssignmentFilter("all");
               }}
-              className="mt-2 text-xs font-bold text-accent hover:underline"
+              className="mt-2 inline-flex min-h-11 items-center rounded-lg px-3 text-xs font-bold text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
             >
               Clear all filters
             </button>

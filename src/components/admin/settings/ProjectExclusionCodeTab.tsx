@@ -182,31 +182,34 @@ const ProjectExclusionCodeTab: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-4 sm:p-5 rounded-xl border border-border">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
           <div className="relative flex-1 max-w-md">
-            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary/60" />
             <input
-              type="text"
+              type="search"
+              aria-label="Filter exclusion codes by code or name"
               placeholder="Filter by code or name..."
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-primary border border-border rounded-xl text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-colors"
+              className="min-h-11 w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm text-text-primary placeholder:text-text-muted transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               value={searchTerm}
               onChange={handleSearchChange}
             />
           </div>
 
           <button
+            type="button"
             onClick={handleToggleOnlyActive}
+            aria-pressed={onlyActive}
             className={cn(
-              "flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors border",
+              "flex min-h-11 items-center gap-2 rounded-xl border px-3.5 py-2.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none",
               onlyActive
-                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                ? "bg-success/10 text-success border-success/20"
                 : "bg-white text-text-secondary border-border hover:bg-bg-primary",
             )}
           >
             <div
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-300",
+                "h-2 w-2 rounded-full transition-colors duration-150 motion-reduce:transition-none",
                 onlyActive
-                  ? "bg-emerald-500"
-                  : "bg-slate-300",
+                  ? "bg-success"
+                  : "bg-border",
               )}
             />
             {onlyActive ? "Active only" : "Show active only"}
@@ -215,8 +218,9 @@ const ProjectExclusionCodeTab: React.FC = () => {
 
         <div className="flex items-center gap-2">
           <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-semibold rounded-xl hover:bg-primary-hover transition-colors"
+            className="flex min-h-11 items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             <FiPlus size={18} />
             New code
@@ -224,8 +228,57 @@ const ProjectExclusionCodeTab: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-surface-white rounded-xl border border-border overflow-hidden flex flex-col">
-        <div className="flex-1 overflow-x-auto">
+      <div className="flex flex-col overflow-hidden md:rounded-xl md:border md:border-border md:bg-surface-white">
+        <div className="space-y-3 md:hidden">
+          {isLoading ? (
+            <div className="flex min-h-40 flex-col items-center justify-center gap-3 rounded-xl border border-border bg-surface-white text-sm text-text-secondary">
+              <LoadingSpinner size="md" />
+              Loading exclusion codes...
+            </div>
+          ) : items.length > 0 ? (
+            items.map((item) => (
+              <article key={item.id} className="space-y-3 rounded-xl border border-border bg-surface-white p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="inline-flex rounded-md border border-border bg-bg-primary px-2.5 py-1 font-mono text-xs text-text-secondary">
+                      {item.code}
+                    </span>
+                    <h3 className="mt-2 break-words text-sm font-semibold text-text-primary">{item.name}</h3>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${item.isActive ? "bg-success/10 text-success ring-success/20" : "bg-bg-primary text-text-secondary ring-border"}`}>
+                    {item.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
+                  <div className="flex items-center gap-2 text-xs text-text-secondary">
+                    <span>Status</span>
+                    <Switch
+                      checked={item.isActive}
+                      onChange={() => handleToggleActive(item.id, item.isActive)}
+                      disabled={isToggling}
+                    />
+                    <span>{item.isActive ? "Active" : "Inactive"}</span>
+                  </div>
+                  <ActionButton
+                    icon={FiTrash2}
+                    label="Delete"
+                    variant="destructive"
+                    onClick={() => handleDeleteClick(item.id)}
+                    disabled={isDeleting && deletingId === item.id}
+                  />
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="rounded-xl border border-dashed border-border bg-surface-white px-5 py-10 text-center">
+              <FiInfo className="mx-auto mb-3 text-text-secondary/60" size={28} />
+              <h3 className="font-semibold text-text-primary">No results found</h3>
+              <p className="mt-1 text-sm text-text-secondary">We couldn't find any exclusion codes matching your criteria.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="hidden flex-1 overflow-x-auto md:block">
           <Table className="min-w-[620px]">
             <TableHeader className="bg-bg-primary">
               <TableRow>
@@ -346,9 +399,9 @@ const ProjectExclusionCodeTab: React.FC = () => {
             {newCodes.map((code, index) => (
               <div
                 key={index}
-                className="flex items-end gap-4 bg-slate-50/50 p-4 rounded-xl border border-slate-100 animate-in slide-in-from-top-2 duration-200"
+                className="grid grid-cols-[5rem_minmax(0,1fr)] items-end gap-3 rounded-xl border border-border bg-bg-primary/50 p-4 motion-safe:animate-in motion-safe:slide-in-from-top-2 motion-safe:duration-200 motion-reduce:animate-none sm:flex sm:gap-4"
               >
-                <div className="w-24 shrink-0">
+                <div className="w-20 shrink-0 sm:w-24">
                   <FormField
                     id={`code-${index}`}
                     label="Code"
@@ -360,7 +413,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
                     }
                   />
                 </div>
-                <div className="flex-1">
+                <div className="min-w-0 sm:flex-1">
                   <FormField
                     id={`name-${index}`}
                     label="Name"
@@ -373,8 +426,10 @@ const ProjectExclusionCodeTab: React.FC = () => {
                 </div>
                 {newCodes.length > 1 && (
                   <button
+                    type="button"
                     onClick={() => handleRemoveRow(index)}
-                    className="p-3 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"
+                    aria-label={`Remove exclusion code row ${index + 1}`}
+                    className="col-start-2 flex h-11 w-11 shrink-0 items-center justify-center justify-self-end rounded-xl text-error transition-colors hover:bg-error/5 hover:text-error/80 sm:justify-self-auto"
                   >
                     <FiX size={18} />
                   </button>
@@ -383,27 +438,28 @@ const ProjectExclusionCodeTab: React.FC = () => {
             ))}
           </div>
 
-          <div className="flex items-center justify-between pt-4">
+          <div className="flex flex-col gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
             <button
               onClick={handleAddRow}
-              className="flex items-center gap-2 text-accent text-sm font-black hover:bg-bg-secondary px-4 py-2 rounded-xl transition-all"
+              className="flex min-h-11 items-center gap-2 self-start rounded-xl px-3 py-2 text-sm font-semibold text-accent transition-colors hover:bg-bg-secondary"
             >
               <FiPlus size={18} />
               Add Another Row
             </button>
 
-            <div className="flex items-center gap-3">
+            <div className="flex w-full items-center justify-end gap-2 sm:w-auto sm:gap-3">
               <Button
                 variant="ghost"
                 onClick={() => setIsModalOpen(false)}
                 disabled={isBulkCreating}
+                className="flex-1 sm:flex-none"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleBulkCreate}
                 isLoading={isBulkCreating}
-                className="px-8"
+                className="flex-1 px-3 sm:flex-none sm:px-8"
               >
                 Save to Library
               </Button>

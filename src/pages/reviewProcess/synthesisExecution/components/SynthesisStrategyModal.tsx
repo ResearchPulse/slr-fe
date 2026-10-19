@@ -96,7 +96,7 @@ function ResearchQuestionList({
 }) {
   if (researchQuestions.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-amber-200 bg-amber-50/60 p-4 text-sm text-amber-800">
+      <div className="rounded-xl border border-dashed border-warning/25 bg-warning/10 p-4 text-sm text-warning">
         No research questions were found for this project yet. Create at least
         one question before defining a synthesis strategy.
       </div>
@@ -113,7 +113,8 @@ function ResearchQuestionList({
             key={question.selectionId}
             type="button"
             onClick={() => onToggle(question.selectionId)}
-            className={`flex h-full flex-col items-start gap-3 rounded-xl border p-4 text-left transition-all ${
+            aria-pressed={isSelected}
+            className={`flex h-full min-h-11 flex-col items-start gap-3 rounded-xl border p-4 text-left motion-safe:transition-[color,border-color,background-color,box-shadow] motion-safe:duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
               isSelected
                 ? "border-primary/20 bg-primary-light shadow-sm shadow-primary/10"
                 : "border-border bg-surface-white hover:border-primary/30 hover:bg-primary-light/40"
@@ -340,7 +341,7 @@ export default function SynthesisStrategyModal({
       <form id="synthesis-strategy-form" onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-xl border border-primary/20 bg-primary-light p-5">
           <div className="flex items-start gap-4">
-            <div className="rounded-xl bg-surface-white p-3 text-accent shadow-sm ring-1 ring-primary/20">
+            <div className="rounded-xl bg-surface-white p-3 text-accent ring-1 ring-primary/20">
               <BookOpen className="h-6 w-6" />
             </div>
             <div>
@@ -359,7 +360,7 @@ export default function SynthesisStrategyModal({
           </div>
 
           {activeStrategy ? (
-            <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <div className="mt-4 rounded-xl border border-success/20 bg-success/10 px-4 py-3 text-sm text-success">
               An existing strategy was found and will be updated when you save.
             </div>
           ) : null}
@@ -371,7 +372,7 @@ export default function SynthesisStrategyModal({
           </div>
         ) : (
           <div className="space-y-6">
-            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5">
               <div className="flex items-center gap-2">
                 <Layers3 className="h-5 w-5 text-accent" />
                 <h4 className="text-base font-semibold text-text-primary">
@@ -392,7 +393,7 @@ export default function SynthesisStrategyModal({
                           synthesisType: option.value,
                         }))
                       }
-                      className={`rounded-xl border p-4 text-left transition-all ${
+                      className={`min-h-11 rounded-xl border p-4 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                         isSelected
                           ? "border-primary/20 bg-primary-light shadow-sm shadow-primary/10"
                           : "border-border bg-bg-primary hover:border-primary/30 hover:bg-primary-light/50"
@@ -410,7 +411,7 @@ export default function SynthesisStrategyModal({
               </div>
             </section>
 
-            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-3 rounded-xl border border-border bg-surface-white p-5">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <Target className="h-5 w-5 text-accent" />
@@ -429,7 +430,7 @@ export default function SynthesisStrategyModal({
               />
             </section>
 
-            <section className="space-y-4 rounded-xl border border-border bg-surface-white p-5 shadow-sm">
+            <section className="space-y-4 rounded-xl border border-border bg-surface-white p-5">
               <div className="flex items-center gap-2">
                 <Sparkles className="h-5 w-5 text-accent" />
                 <h4 className="text-base font-semibold text-text-primary">

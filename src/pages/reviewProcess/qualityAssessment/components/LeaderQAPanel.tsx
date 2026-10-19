@@ -199,7 +199,7 @@ export default function LeaderQAPanel({
     <div className="relative flex h-full flex-col bg-surface-white">
       <div className="flex shrink-0 border-b border-border bg-bg-primary/60 px-2 pt-2">
         <button
-          className={`flex-1 rounded-t-lg py-2.5 text-xs font-semibold transition-colors focus:outline-none ${
+          className={`min-h-11 flex-1 rounded-t-lg px-1 py-2.5 text-xs font-semibold transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${
             activeTab === "reviewers"
               ? "bg-surface-white text-primary shadow-[0_-1px_0_0_#DCE4E9,1px_0_0_0_#DCE4E9,-1px_0_0_0_#DCE4E9]"
               : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
@@ -209,7 +209,7 @@ export default function LeaderQAPanel({
           Reviewers' Decisions
         </button>
         <button
-          className={`flex-1 rounded-t-lg py-2.5 text-xs font-semibold transition-colors focus:outline-none ${
+          className={`min-h-11 flex-1 rounded-t-lg px-1 py-2.5 text-xs font-semibold transition-colors motion-reduce:transition-none focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${
             activeTab === "my-assessment"
               ? "bg-surface-white text-primary shadow-[0_-1px_0_0_#DCE4E9,1px_0_0_0_#DCE4E9,-1px_0_0_0_#DCE4E9]"
               : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary"
@@ -286,9 +286,9 @@ export default function LeaderQAPanel({
                       <div className="flex flex-wrap gap-2">
                         {/* Yes Group */}
                         {groupedDecisions.yes.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-emerald-50 border border-emerald-100 px-2 py-1.5 rounded-xl">
-                            <FiCheckCircle className="text-emerald-500 w-3.5 h-3.5" />
-                            <span className="text-xs font-medium text-emerald-700 mr-1">
+                          <div className="flex items-center gap-1.5 rounded-xl border border-success/20 bg-success/10 px-2 py-1.5">
+                            <FiCheckCircle className="h-3.5 w-3.5 text-success" />
+                            <span className="mr-1 text-xs font-medium text-success">
                               Yes
                             </span>
                             <div className="flex -space-x-1.5">
@@ -297,14 +297,14 @@ export default function LeaderQAPanel({
                                   key={reviewer.id}
                                   className="relative group shrink-0"
                                 >
-                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-emerald-200">
-                                    <span className="text-[9px] font-bold leading-none text-emerald-700">
+                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-success/20">
+                                    <span className="text-[9px] font-bold leading-none text-success">
                                       {(reviewer.fullname || reviewer.username)
                                         .substring(0, 2)
                                         .toUpperCase()}
                                     </span>
                                   </div>
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 w-max bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-none whitespace-nowrap">
+                                  <div className="absolute bottom-full left-1/2 z-20 mb-1 hidden w-max -translate-x-1/2 whitespace-nowrap rounded bg-text-primary px-2 py-1 text-[10px] text-white shadow-sm group-hover:block">
                                     {reviewer.fullname || reviewer.username}
                                   </div>
                                 </div>
@@ -315,9 +315,9 @@ export default function LeaderQAPanel({
 
                         {/* No Group */}
                         {groupedDecisions.no.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-rose-50 border border-rose-100 px-2 py-1.5 rounded-xl">
-                            <FiXCircle className="text-rose-500 w-3.5 h-3.5" />
-                            <span className="text-xs font-medium text-rose-700 mr-1">
+                          <div className="flex items-center gap-1.5 rounded-xl border border-error/20 bg-error/10 px-2 py-1.5">
+                            <FiXCircle className="h-3.5 w-3.5 text-error" />
+                            <span className="mr-1 text-xs font-medium text-error">
                               No
                             </span>
                             <div className="flex -space-x-1.5">
@@ -326,14 +326,14 @@ export default function LeaderQAPanel({
                                   key={reviewer.id}
                                   className="relative group shrink-0"
                                 >
-                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-rose-200">
-                                    <span className="text-[9px] font-bold leading-none text-rose-700">
+                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-error/20">
+                                    <span className="text-[9px] font-bold leading-none text-error">
                                       {(reviewer.fullname || reviewer.username)
                                         .substring(0, 2)
                                         .toUpperCase()}
                                     </span>
                                   </div>
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 w-max bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-none whitespace-nowrap">
+                                  <div className="absolute bottom-full left-1/2 z-20 mb-1 hidden w-max -translate-x-1/2 whitespace-nowrap rounded bg-text-primary px-2 py-1 text-[10px] text-white shadow-sm group-hover:block">
                                     {reviewer.fullname || reviewer.username}
                                   </div>
                                 </div>
@@ -344,9 +344,9 @@ export default function LeaderQAPanel({
 
                         {/* Unclear Group */}
                         {groupedDecisions.unclear.length > 0 && (
-                          <div className="flex items-center gap-1.5 bg-amber-50 border border-amber-100 px-2 py-1.5 rounded-xl">
-                            <FiHelpCircle className="text-amber-500 w-3.5 h-3.5" />
-                            <span className="text-xs font-medium text-amber-700 mr-1">
+                          <div className="flex items-center gap-1.5 rounded-xl border border-warning/20 bg-warning/10 px-2 py-1.5">
+                            <FiHelpCircle className="h-3.5 w-3.5 text-warning" />
+                            <span className="mr-1 text-xs font-medium text-warning">
                               Unclear
                             </span>
                             <div className="flex -space-x-1.5">
@@ -355,14 +355,14 @@ export default function LeaderQAPanel({
                                   key={reviewer.id}
                                   className="relative group shrink-0"
                                 >
-                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-amber-200">
-                                    <span className="text-[9px] font-bold leading-none text-amber-700">
+                                  <div className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-surface-white ring-1 ring-warning/20">
+                                    <span className="text-[9px] font-bold leading-none text-warning">
                                       {(reviewer.fullname || reviewer.username)
                                         .substring(0, 2)
                                         .toUpperCase()}
                                     </span>
                                   </div>
-                                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1 hidden group-hover:block z-20 w-max bg-gray-900 text-white text-[10px] px-2 py-1 rounded shadow-none whitespace-nowrap">
+                                  <div className="absolute bottom-full left-1/2 z-20 mb-1 hidden w-max -translate-x-1/2 whitespace-nowrap rounded bg-text-primary px-2 py-1 text-[10px] text-white shadow-sm group-hover:block">
                                     {reviewer.fullname || reviewer.username}
                                   </div>
                                 </div>
@@ -428,16 +428,16 @@ export default function LeaderQAPanel({
                             handleAnswer(crit.criterionId, 0);
                           }}
                           disabled={!canEdit}
-                          className={`flex-1 py-1.5 px-2 rounded flex items-center justify-center gap-1.5 text-xs font-medium border transition-colors ${
+                          className={`min-h-11 min-w-0 flex-1 rounded flex items-center justify-center gap-1 px-1 py-1.5 text-[11px] font-medium border transition-colors ${
                             currentAns?.value === 0
-                              ? "bg-emerald-50 border-emerald-500 text-emerald-700"
+                              ? "bg-success/10 border-success/40 text-success"
                               : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"
                           } ${!canEdit ? "opacity-60 cursor-not-allowed" : ""}`}
                         >
                           <FiCheckCircle
                             className={
                               currentAns?.value === 0
-                                ? "text-emerald-500"
+                                ? "text-success"
                                 : "text-text-secondary"
                             }
                           />
@@ -449,16 +449,16 @@ export default function LeaderQAPanel({
                             handleAnswer(crit.criterionId, 1);
                           }}
                           disabled={!canEdit}
-                          className={`flex-1 py-1.5 px-2 rounded flex items-center justify-center gap-1.5 text-xs font-medium border transition-colors ${
+                          className={`min-h-11 min-w-0 flex-1 rounded flex items-center justify-center gap-1 px-1 py-1.5 text-[11px] font-medium border transition-colors ${
                             currentAns?.value === 1
-                              ? "bg-rose-50 border-rose-500 text-rose-700"
+                              ? "bg-error/10 border-error/40 text-error"
                               : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"
                           } ${!canEdit ? "opacity-60 cursor-not-allowed" : ""}`}
                         >
                           <FiXCircle
                             className={
                               currentAns?.value === 1
-                                ? "text-rose-500"
+                                ? "text-error"
                                 : "text-text-secondary"
                             }
                           />
@@ -470,16 +470,16 @@ export default function LeaderQAPanel({
                             handleAnswer(crit.criterionId, 2);
                           }}
                           disabled={!canEdit}
-                          className={`flex-1 py-1.5 px-2 rounded flex items-center justify-center gap-1.5 text-xs font-medium border transition-colors ${
+                          className={`min-h-11 min-w-0 flex-1 rounded flex items-center justify-center gap-1 px-1 py-1.5 text-[11px] font-medium border transition-colors ${
                             currentAns?.value === 2
-                              ? "bg-amber-50 border-amber-500 text-amber-700"
+                              ? "bg-warning/10 border-warning/40 text-warning"
                               : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"
                           } ${!canEdit ? "opacity-60 cursor-not-allowed" : ""}`}
                         >
                           <FiHelpCircle
                             className={
                               currentAns?.value === 2
-                                ? "text-amber-500"
+                                ? "text-warning"
                                 : "text-text-secondary"
                             }
                           />
@@ -522,14 +522,14 @@ export default function LeaderQAPanel({
             <div className="flex gap-2">
               <button
                 onClick={() => setFinalDecision(1)}
-                className={`p-2 rounded-xl text-xs font-medium border text-center transition ${finalDecision === 1 ? "bg-surface-white border-green-500 text-green-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
+                className={`flex min-h-11 flex-1 items-center justify-center rounded-xl border px-2 py-2 text-center text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${finalDecision === 1 ? "bg-success/10 border-success/40 text-success" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
                 disabled={!canEdit}
               >
                 High Quality
               </button>
               <button
                 onClick={() => setFinalDecision(0)}
-                className={`p-2 rounded-xl text-xs font-medium border text-center transition ${finalDecision === 0 ? "bg-surface-white border-red-500 text-red-700" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
+                className={`flex min-h-11 flex-1 items-center justify-center rounded-xl border px-2 py-2 text-center text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${finalDecision === 0 ? "bg-error/10 border-error/40 text-error" : "bg-surface-white border-border text-text-secondary hover:bg-bg-primary"}`}
                 disabled={!canEdit}
               >
                 Low Quality
@@ -546,7 +546,7 @@ export default function LeaderQAPanel({
               onChange={(e) => setResolutionNotes(e.target.value)}
               rows={3}
               placeholder="Add reasoning for this resolution..."
-              className="w-full px-3 py-1.5 text-xs border border-border rounded-xl focus:outline-none focus:ring-1 focus:ring-accent/30"
+              className="min-h-11 w-full rounded-xl border border-border px-3 py-1.5 text-xs text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               disabled={!canEdit}
             />
           </div>

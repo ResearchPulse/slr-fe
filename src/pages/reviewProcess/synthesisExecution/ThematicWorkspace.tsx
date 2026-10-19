@@ -324,7 +324,7 @@ export default function ThematicWorkspace({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-xl border border-border/80 bg-surface-white p-6 shadow-sm shadow-slate-200/30">
+      <div className="rounded-xl border border-border/80 bg-surface-white p-6">
         <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-text-secondary">
@@ -345,7 +345,8 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("cards")}
-                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                aria-pressed={viewMode === "cards"}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   viewMode === "cards"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -357,7 +358,8 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("matrix")}
-                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                aria-pressed={viewMode === "matrix"}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   viewMode === "matrix"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -369,7 +371,8 @@ export default function ThematicWorkspace({
               <button
                 type="button"
                 onClick={() => onViewModeChange("subgroup")}
-                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                aria-pressed={viewMode === "subgroup"}
+                className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 ${
                   viewMode === "subgroup"
                     ? "bg-surface-white text-primary shadow-sm"
                     : "text-text-secondary hover:text-text-primary"
@@ -381,7 +384,7 @@ export default function ThematicWorkspace({
             </div>
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={onViewStrategyGuidelines}
               className="rounded-xl text-text-secondary hover:bg-bg-primary hover:text-text-primary"
             >
@@ -406,7 +409,7 @@ export default function ThematicWorkspace({
       </div>
 
       {viewMode === "matrix" ? (
-        <section className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -416,7 +419,7 @@ export default function ThematicWorkspace({
                 A full-width evidence matrix for scanning themes across papers.
               </p>
               {hiddenEvidenceCount > 0 ? (
-                <p className="mt-2 text-xs font-semibold text-amber-700">
+                <p className="mt-2 text-xs font-semibold text-warning">
                   {hiddenEvidenceCount} evidences hidden by QA filter
                 </p>
               ) : null}
@@ -453,7 +456,7 @@ export default function ThematicWorkspace({
           )}
         </section>
       ) : viewMode === "subgroup" ? (
-        <section className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+        <section className="rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6">
           <div className="mb-5 flex items-center justify-between gap-4">
             <div>
               <h3 className="text-lg font-semibold text-text-primary">
@@ -495,7 +498,7 @@ export default function ThematicWorkspace({
           onDragCancel={handleDragCancel}
         >
           <div className="grid items-start gap-5 xl:grid-cols-[1.05fr_0.95fr]">
-            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -505,7 +508,7 @@ export default function ThematicWorkspace({
                     Drag evidence from the left and drop it on a theme card.
                   </p>
                   {hiddenSourceValueCount > 0 ? (
-                    <p className="mt-2 text-xs font-semibold text-amber-700">
+                    <p className="mt-2 text-xs font-semibold text-warning">
                       {hiddenSourceValueCount} extracted items hidden by QA
                       filter
                     </p>
@@ -522,7 +525,7 @@ export default function ThematicWorkspace({
               />
             </section>
 
-            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6">
+            <section className="min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h3 className="text-lg font-semibold text-text-primary">
@@ -532,7 +535,7 @@ export default function ThematicWorkspace({
                     Drop evidence directly onto a theme card to link it.
                   </p>
                   {hiddenEvidenceCount > 0 ? (
-                    <p className="mt-2 text-xs font-semibold text-amber-700">
+                    <p className="mt-2 text-xs font-semibold text-warning">
                       {hiddenEvidenceCount} evidences hidden by QA filter
                     </p>
                   ) : null}

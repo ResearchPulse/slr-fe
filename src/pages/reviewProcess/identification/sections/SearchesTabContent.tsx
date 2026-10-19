@@ -69,7 +69,7 @@ export default function SearchesTabContent({
               placeholder="Filter documented searches..."
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              className="min-h-11 w-full rounded-xl border border-border py-2 pl-10 pr-4 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent sm:w-[300px]"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-10 pr-4 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:w-[300px]"
             />
           </div>
           <Select
@@ -89,7 +89,7 @@ export default function SearchesTabContent({
           variant="secondary"
           size="sm"
           onClick={onCreateStrategy}
-          className="flex items-center gap-2"
+          className="min-h-11 flex items-center gap-2"
         >
           <FiFileText className="w-4 h-4" />
           Document Search Strategy
@@ -148,7 +148,7 @@ export default function SearchesTabContent({
                             ?.writeText(search.searchQuery ?? "")
                             .catch(() => undefined)
                         }
-                        className="mt-1 flex items-center gap-1 rounded text-xs text-accent hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                        className="mt-1 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-xs text-primary transition-colors hover:bg-primary-light hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                       >
                         <FiCopy className="w-3 h-3" />
                         Copy query
@@ -159,13 +159,13 @@ export default function SearchesTabContent({
                     {formatRelativeTime(search.executedAt)}
                   </td>
                   <td className="py-4 px-4">
-                    <span className="text-lg font-semibold text-green-600">
+                    <span className="text-lg font-semibold text-success">
                       {search.resultCount}
                     </span>
                   </td>
                   <td className="py-4 px-4">
                     <span
-                      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700`}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-success/10 px-2.5 py-1 text-xs font-medium text-success"
                     >
                       <FiCheck className="w-3 h-3" />
                       {search.type === SearchExecutionType.DatabaseSearch
@@ -180,7 +180,7 @@ export default function SearchesTabContent({
         </div>
       ) : (
         <EmptyState
-          icon={<FiFileText className="w-16 h-16 text-gray-300" />}
+          icon={<FiFileText className="h-16 w-16 text-text-secondary" />}
           title={searchExecutions.length > 0 && (query || source) ? "No Matching Searches" : "No Search Strategy Documented Yet"}
           description={searchExecutions.length > 0 && (query || source)
             ? "Try changing the search text or source filter."

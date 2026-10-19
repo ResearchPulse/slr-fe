@@ -97,7 +97,7 @@ export default function FieldComments({
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="relative inline-flex h-8 min-w-8 items-center justify-center rounded-full border border-border bg-surface-white px-2 text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent"
+        className="relative inline-flex h-11 min-w-11 items-center justify-center rounded-full border border-border bg-surface-white px-2 text-text-secondary transition-colors hover:border-accent/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
         aria-label={`Open comments for ${title}`}
         title="Comments"
       >
@@ -122,7 +122,7 @@ export default function FieldComments({
             className="flex-1 space-y-3 overflow-y-auto pr-1"
           >
             {orderedComments.length === 0 ? (
-              <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+              <div className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
                 No comments yet. Start the thread for this field.
               </div>
             ) : (
@@ -140,7 +140,7 @@ export default function FieldComments({
                     }
                   >
                     <div className="flex items-center gap-2">
-                      <div className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] font-semibold text-white">
+                      <div className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-text-primary text-[11px] font-semibold text-white">
                         {getInitials(comment.userName)}
                       </div>
                       <p className="text-xs font-semibold text-text-primary">
@@ -174,7 +174,7 @@ export default function FieldComments({
                 placeholder="Type your message..."
                 disabled={disabled || isSending}
                 rows={3}
-                className="w-full resize-none rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent disabled:cursor-not-allowed disabled:bg-bg-secondary"
+                className="min-h-11 w-full resize-none rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary motion-reduce:transition-none"
               />
               <Button
                 onClick={() => {
@@ -182,7 +182,7 @@ export default function FieldComments({
                 }}
                 isLoading={isSending}
                 disabled={!canSend}
-                className="h-10 shrink-0 !rounded-xl !px-3"
+                className="min-h-11 shrink-0 !rounded-xl !px-3"
               >
                 <Send className="h-4 w-4" />
               </Button>

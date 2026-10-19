@@ -2,10 +2,13 @@
 
 import { FiClock, FiFileText, FiChevronRight } from "react-icons/fi";
 import type { PrismaReportListResponse } from "../../../../types/prismaReport";
+import Button from "../../../../components/ui/Button";
 
 interface PrismaReportHistoryProps {
   reports: PrismaReportListResponse[];
   isLoading: boolean;
+  error?: string | null;
+  onRetry?: () => void;
   /** ID of the report currently being viewed (latest or historical) */
   activeReportId?: string | null;
   onSelectReport?: (reportId: string) => void;
@@ -13,7 +16,7 @@ interface PrismaReportHistoryProps {
 
 function SkeletonItem() {
   return (
-    <div className="flex items-center gap-4 px-4 py-3 animate-pulse">
+    <div className="flex items-center gap-4 px-4 py-3 motion-safe:animate-pulse motion-reduce:animate-none">
       <div className="w-8 h-8 bg-bg-secondary rounded-full" />
       <div className="flex-1 space-y-2">
         <div className="h-4 w-32 bg-bg-secondary rounded" />
@@ -27,6 +30,8 @@ function SkeletonItem() {
 export default function PrismaReportHistory({
   reports,
   isLoading,
+  error,
+  onRetry,
   activeReportId,
   onSelectReport,
 }: PrismaReportHistoryProps) {
@@ -44,20 +49,30 @@ export default function PrismaReportHistory({
       </div>
 
       <div className="overflow-hidden bg-surface-white">
+        {error && (
+          <div role="alert" className="mb-3 rounded-lg border border-error/25 bg-error/5 p-3">
+            <p className="text-sm text-text-secondary">{error}</p>
+            {onRetry && (
+              <Button type="button" variant="outline" size="sm" onClick={onRetry} className="mt-2">
+                Retry history
+              </Button>
+            )}
+          </div>
+        )}
         {isLoading ? (
           <div className="divide-y divide-border/70">
             {Array.from({ length: 3 }).map((_, i) => (
               <SkeletonItem key={i} />
             ))}
           </div>
-        ) : reports.length === 0 ? (
+        ) : reports.length === 0 && error ? null : reports.length === 0 ? (
           <div className="px-4 py-8 text-center">
-            <FiFileText className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+            <FiFileText className="mx-auto mb-2 h-8 w-8 text-text-secondary/50" />
             <p className="text-sm text-text-secondary">
               No reports generated yet.
             </p>
             <p className="text-xs text-text-secondary mt-1">
-              Click "Generate Report" to create your first PRISMA snapshot.
+              Click "Generate PRISMA Report" to create your first snapshot.
             </p>
           </div>
         ) : (
@@ -68,7 +83,7 @@ export default function PrismaReportHistory({
                 <li key={report.id}>
                   <button
                     onClick={() => onSelectReport?.(report.id)}
-                    className={`w-full flex items-center gap-3 px-3 py-3 transition-colors text-left group rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/30 ${
+                    className={`w-full flex min-h-14 items-center gap-3 px-3 py-3 text-left transition-colors group rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
                       isActive
                         ? "bg-primary-light border-l-2 border-primary"
                         : "hover:bg-bg-primary border-l-2 border-transparent"
@@ -111,7 +126,7 @@ export default function PrismaReportHistory({
                       className={`w-4 h-4 shrink-0 ${
                         isActive
                           ? "text-accent"
-                          : "text-gray-300 group-hover:text-text-secondary"
+                          : "text-text-secondary/50 group-hover:text-text-secondary"
                       }`}
                     />
                   </button>

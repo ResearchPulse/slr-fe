@@ -18,7 +18,7 @@ export const PaperNodeList: React.FC<PaperNodeListProps> = ({
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="h-20 bg-bg-secondary rounded-xl animate-pulse border border-border"
+            className="h-20 rounded-xl border border-border bg-bg-secondary motion-safe:animate-pulse motion-reduce:animate-none"
           />
         ))}
       </div>
@@ -28,7 +28,7 @@ export const PaperNodeList: React.FC<PaperNodeListProps> = ({
   if (nodes.length === 0) {
     return (
       <div className="py-12 text-center">
-        <FiFileText className="w-10 h-10 text-slate-100 mx-auto mb-3" />
+        <FiFileText className="mx-auto mb-3 h-10 w-10 text-text-secondary/30" />
         <p className="text-xs text-text-secondary font-bold uppercase tracking-widest">
           {emptyLabel}
         </p>
@@ -41,7 +41,7 @@ export const PaperNodeList: React.FC<PaperNodeListProps> = ({
       {nodes.map((node) => (
         <div
           key={node.id}
-          className="group flex items-start gap-3 rounded-xl border border-border bg-white p-4 transition-colors duration-200 hover:border-slate-300 hover:bg-slate-50/60 motion-reduce:transition-none sm:gap-4 sm:p-5"
+          className="group flex items-start gap-3 rounded-xl border border-border bg-surface-white p-4 transition-colors duration-200 hover:border-primary/30 hover:bg-bg-secondary/40 motion-reduce:transition-none sm:gap-4 sm:p-5"
         >
           <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light text-accent">
             <FiFileText aria-hidden="true" className="h-4 w-4" />
@@ -65,7 +65,7 @@ export const PaperNodeList: React.FC<PaperNodeListProps> = ({
               </span>
               {node.doi && (
                 <>
-                  <span aria-hidden="true" className="text-slate-300">·</span>
+          <span aria-hidden="true" className="text-text-secondary/40">·</span>
                   <span className="min-w-0 max-w-full truncate font-medium">DOI: {node.doi}</span>
                 </>
               )}

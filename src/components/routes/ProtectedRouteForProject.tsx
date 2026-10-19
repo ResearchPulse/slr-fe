@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet, useParams } from "react-router-dom";
 import { useProjectMember } from "../../hooks/useProjectMember";
 import type { RootState } from "../../redux/store";
+import Button from "../ui/Button";
 
 interface ProtectedRouteForProjectProps {
   allowedRoles?: (number | string)[];
@@ -60,8 +61,8 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
   // to handle cases where we are waiting for the API to confirm access.
   if (isLoading || (isFetching && !currentProjectMember)) {
     return (
-      <div className="flex items-center justify-center p-8">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-primary"></div>
+      <div className="flex items-center justify-center p-8" role="status" aria-live="polite" aria-busy="true">
+        <div aria-hidden="true" className="h-8 w-8 rounded-full border-2 border-border border-t-primary motion-safe:animate-spin motion-reduce:animate-none"></div>
         <span className="ml-3 text-sm text-muted-foreground">
           Verifying project access...
         </span>
@@ -76,16 +77,17 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
     }
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <h2 className="text-xl font-bold text-red-600 mb-2">Access Denied</h2>
+        <h2 className="mb-2 text-xl font-bold text-error">Access Denied</h2>
         <p className="text-muted-foreground">
           You do not have permission to access this project.
         </p>
-        <button
+        <Button
           onClick={() => window.history.back()}
-          className="mt-4 text-primary hover:underline"
+          variant="secondary"
+          className="mt-4"
         >
           Go Back
-        </button>
+        </Button>
       </div>
     );
   }
@@ -121,7 +123,7 @@ const ProtectedRouteForProject: React.FC<ProtectedRouteForProjectProps> = ({
 
     return (
       <div className="flex flex-col items-center justify-center p-12 text-center">
-        <h2 className="text-xl font-bold text-red-600 mb-2">
+        <h2 className="text-xl font-bold text-error mb-2">
           Insufficient Permissions
         </h2>
         <p className="text-muted-foreground">

@@ -21,7 +21,7 @@ export default function ProgressOverviewCard({
         </div>
         <div className="w-full bg-bg-secondary rounded-full h-2 overflow-hidden">
           <div
-            className="bg-primary h-2 rounded-full transition-all duration-500"
+            className="h-2 rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
             style={{ width: `${progressStats.completionPercentage}%` }}
           />
         </div>

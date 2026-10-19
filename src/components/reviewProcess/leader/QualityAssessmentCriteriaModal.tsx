@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useLayoutEffect, useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
+import ConfirmModal from "../../ui/ConfirmModal";
 import { Plus, Trash2, ShieldCheck, ChevronRight, BookMarked } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { toastError } from "../../../utils/toast";
@@ -21,6 +22,12 @@ interface CriterionDraft {
 }
 
 const BLANK_TEMPLATE = "";
+
+const resizeQuestionTextarea = (element: HTMLTextAreaElement | null) => {
+  if (!element) return;
+  element.style.height = "auto";
+  element.style.height = `${element.scrollHeight}px`;
+};
 
 const QualityAssessmentCriteriaModal: React.FC<
   QualityAssessmentCriteriaModalProps
@@ -44,6 +51,20 @@ const QualityAssessmentCriteriaModal: React.FC<
   const [selectedTemplateId, setSelectedTemplateId] = useState(BLANK_TEMPLATE);
   const [newTemplateName, setNewTemplateName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+  const [templateToApply, setTemplateToApply] = useState<QualityCriteriaTemplate | null>(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+  useLayoutEffect(() => {
+    const resizeAllQuestions = () => {
+      document
+        .querySelectorAll<HTMLTextAreaElement>("[data-qa-criterion-input]")
+        .forEach(resizeQuestionTextarea);
+    };
+
+    resizeAllQuestions();
+    window.addEventListener("resize", resizeAllQuestions);
+    return () => window.removeEventListener("resize", resizeAllQuestions);
+  }, [criteria]);
 
   const selectedTemplate: QualityCriteriaTemplate | undefined = templates.find(
     (template) => template.id === selectedTemplateId,
@@ -56,13 +77,14 @@ const QualityAssessmentCriteriaModal: React.FC<
   const handleSelectTemplate = (templateId: string) => {
     const template = templates.find((item) => item.id === templateId);
     const hasWork = criteria.some((c) => c.text.trim());
-    if (
-      template &&
-      hasWork &&
-      !window.confirm("Replace the questions you have written with this template?")
-    ) {
+    if (template && hasWork) {
+      setTemplateToApply(template);
       return;
     }
+    applyTemplate(templateId, template);
+  };
+
+  const applyTemplate = (templateId: string, template?: QualityCriteriaTemplate) => {
     setSelectedTemplateId(templateId);
     setNewTemplateName(template && template.scope === "USER" ? template.name : "");
     if (template) {
@@ -129,9 +151,6 @@ const QualityAssessmentCriteriaModal: React.FC<
 
   const handleDeleteTemplate = async () => {
     if (!ownEditableTemplate) return;
-    if (!window.confirm(`Delete your template "${ownEditableTemplate.name}"? Projects that already used it keep their questions.`)) {
-      return;
-    }
     try {
       await deleteTemplate(ownEditableTemplate.id);
       setSelectedTemplateId(BLANK_TEMPLATE);
@@ -208,7 +227,7 @@ const QualityAssessmentCriteriaModal: React.FC<
       title="Quality Assessment Criteria"
       size="xl"
     >
-      <div className="flex flex-col gap-4 py-2 h-[75vh]">
+      <div className="flex flex-col gap-4 py-2 h-auto sm:h-[75vh]">
         {/* Header Section */}
         <div className="flex shrink-0 items-center gap-3 rounded-xl border border-primary/20 bg-primary-light px-4 py-3">
           <div className="p-2 bg-surface-white rounded-lg shadow-sm border border-primary/20 shrink-0">
@@ -234,7 +253,7 @@ const QualityAssessmentCriteriaModal: React.FC<
             value={selectedTemplateId}
             onChange={(e) => handleSelectTemplate(e.target.value)}
             disabled={isLoadingTemplates}
-            className="mt-2 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary focus:border-accent focus:ring-accent/30 outline-none"
+            className="mt-2 min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none focus:border-accent focus:ring-accent/30"
           >
             <option value={BLANK_TEMPLATE}>
               {isLoadingTemplates ? "Loading templates..." : "Blank - write my own questions"}
@@ -268,7 +287,7 @@ const QualityAssessmentCriteriaModal: React.FC<
         </div>
 
         {/* Scrollable Criteria List */}
-        <div className="min-h-[160px] flex-1 overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+        <div className="min-h-[160px] flex-1 pr-2 space-y-3 custom-scrollbar sm:overflow-y-auto">
           {criteria.length === 0 && (
             <div className="rounded-xl border border-dashed border-border px-4 py-6 text-center text-sm text-text-secondary">
               No questions yet. Pick a template above or add your own.
@@ -277,28 +296,32 @@ const QualityAssessmentCriteriaModal: React.FC<
           {criteria.map((criterion, index) => (
             <div
               key={criterion.id}
-              className="group flex items-start gap-3 p-4 bg-surface-white border border-border rounded-xl transition-all hover:border-primary/30 hover:shadow-md hover:shadow-primary/10 animate-in fade-in slide-in-from-bottom-2 duration-300"
-              style={{ animationDelay: `${index * 50}ms` }}
+              className="group flex items-start gap-3 rounded-xl border border-border bg-surface-white p-4 transition-colors duration-150 hover:border-primary/30 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-150 motion-reduce:animate-none motion-reduce:transition-none"
             >
-              <div className="mt-2.5 flex items-center justify-center w-6 h-6 rounded-lg bg-bg-secondary text-[10px] font-black text-text-secondary border border-border group-hover:bg-primary-light group-hover:text-accent group-hover:border-primary/30 transition-colors">
+              <div className="mt-2.5 flex h-6 w-6 items-center justify-center rounded-lg border border-border bg-bg-secondary text-[10px] font-black text-text-secondary transition-colors duration-150 group-hover:border-primary/30 group-hover:bg-primary-light group-hover:text-accent motion-reduce:transition-none">
                 {index + 1}
               </div>
 
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <textarea
+                  ref={resizeQuestionTextarea}
+                  data-qa-criterion-input
+                  rows={3}
                   value={criterion.text}
-                  onChange={(e) =>
-                    handleUpdateCriterion(criterion.id, e.target.value)
-                  }
+                  onChange={(e) => {
+                    resizeQuestionTextarea(e.currentTarget);
+                    handleUpdateCriterion(criterion.id, e.target.value);
+                  }}
                   placeholder="Enter assessment question..."
-                  className="w-full bg-transparent border-none focus:ring-0 text-sm text-text-primary placeholder:text-text-secondary min-h-[60px] resize-none font-medium leading-relaxed"
+                  className="min-h-20 w-full resize-none border-none bg-transparent text-sm font-medium leading-relaxed text-text-primary placeholder:text-text-secondary focus:ring-0"
                 />
               </div>
 
               <button
                 onClick={() => handleRemoveCriterion(criterion.id)}
-                className="mt-1 rounded-xl p-2 text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:opacity-100 group-hover:opacity-100"
+                className="mt-1 flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors duration-150 hover:bg-error/10 hover:text-error focus-visible:opacity-100 group-hover:opacity-100 motion-reduce:transition-none"
                 title="Remove Criterion"
+                aria-label={`Remove criterion ${index + 1}`}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -307,9 +330,9 @@ const QualityAssessmentCriteriaModal: React.FC<
 
           <button
             onClick={handleAddCriterion}
-            className="w-full py-4 border-2 border-dashed border-border rounded-xl flex items-center justify-center gap-2 text-text-secondary hover:border-primary/30 hover:text-accent hover:bg-primary-light/30 transition-all group"
+            className="group flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-4 text-text-secondary transition-colors duration-150 hover:border-primary/30 hover:bg-primary-light/30 hover:text-accent motion-reduce:transition-none"
           >
-            <Plus className="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <Plus className="h-4 w-4 transition-transform duration-150 group-hover:scale-110 motion-reduce:transform-none motion-reduce:transition-none" />
             <span className="text-xs font-black uppercase tracking-widest">
               Add Custom Criterion
             </span>
@@ -317,21 +340,21 @@ const QualityAssessmentCriteriaModal: React.FC<
         </div>
 
         {/* Save, update or delete a personal template */}
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <input
             type="text"
             value={newTemplateName}
             onChange={(e) => setNewTemplateName(e.target.value)}
             placeholder="Name to save these questions as my template"
             aria-label="Template name"
-            className="min-w-0 flex-1 rounded-xl border border-border px-3 py-2 text-sm focus:border-accent focus:ring-accent/30 outline-none"
+            className="min-h-11 w-full min-w-0 flex-1 rounded-xl border border-border px-3 py-2 text-sm outline-none focus:border-accent focus:ring-accent/30 sm:w-auto"
           />
           <Button
             variant="secondary"
             onClick={handleSaveAsTemplate}
             disabled={criteria.length === 0 || isSavingTemplate}
             isLoading={isSavingTemplate}
-            className="rounded-xl"
+            className="w-full rounded-xl sm:w-auto"
           >
             Save as new template
           </Button>
@@ -342,16 +365,16 @@ const QualityAssessmentCriteriaModal: React.FC<
                 onClick={handleUpdateTemplate}
                 disabled={criteria.length === 0 || isUpdatingTemplate}
                 isLoading={isUpdatingTemplate}
-                className="rounded-xl"
+                className="w-full rounded-xl sm:w-auto"
               >
                 Update this template
               </Button>
               <Button
                 variant="secondary"
-                onClick={handleDeleteTemplate}
+                onClick={() => setIsDeleteConfirmOpen(true)}
                 disabled={isDeletingTemplate}
                 isLoading={isDeletingTemplate}
-                className="rounded-xl text-rose-600"
+                className="w-full rounded-xl text-error hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 sm:w-auto"
               >
                 <Trash2 className="mr-1.5 h-4 w-4" />
                 Delete
@@ -361,18 +384,18 @@ const QualityAssessmentCriteriaModal: React.FC<
         </div>
 
         {/* Footer Actions */}
-        <div className="flex justify-end gap-3 pt-6 border-t border-border shrink-0">
+        <div className="flex shrink-0 flex-col-reverse gap-2 border-t border-border pt-4 sm:flex-row sm:justify-end sm:gap-3 sm:pt-6">
           <Button
             variant="secondary"
             onClick={onClose}
-            className="px-6 rounded-xl"
+            className="w-full rounded-xl px-6 sm:w-auto"
           >
             Cancel
           </Button>
           <Button
             variant="primary"
             onClick={handleApplyCriteria}
-            className="px-8 rounded-xl shadow-lg shadow-primary/10 bg-primary hover:bg-primary-hover border-none"
+            className="w-full rounded-xl bg-primary px-8 hover:bg-primary-hover sm:w-auto"
             disabled={criteria.length === 0 || isSaving}
             isLoading={isSaving}
           >
@@ -381,6 +404,32 @@ const QualityAssessmentCriteriaModal: React.FC<
           </Button>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={Boolean(templateToApply)}
+        onClose={() => setTemplateToApply(null)}
+        onConfirm={() => {
+          if (templateToApply) applyTemplate(templateToApply.id, templateToApply);
+          setTemplateToApply(null);
+        }}
+        title="Replace your questions?"
+        message="The selected template will replace the questions you have written."
+        confirmText="Replace questions"
+        cancelText="Keep my questions"
+        variant="warning"
+      />
+      <ConfirmModal
+        isOpen={isDeleteConfirmOpen}
+        onClose={() => setIsDeleteConfirmOpen(false)}
+        onConfirm={() => {
+          void handleDeleteTemplate().finally(() => setIsDeleteConfirmOpen(false));
+        }}
+        title="Delete this template?"
+        message={ownEditableTemplate ? `Delete “${ownEditableTemplate.name}”? Projects that already used it keep their questions.` : "Delete this template?"}
+        confirmText="Delete template"
+        cancelText="Keep template"
+        isLoading={isDeletingTemplate}
+        variant="danger"
+      />
     </Modal>
   );
 };

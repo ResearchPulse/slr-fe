@@ -25,4 +25,6 @@ export interface SearchSourceDto {
 
   /** Search strategies configured for this source. */
   strategies?: SearchStrategyDto[];
+  /** Manual PRISMA 2020 source grouping, maintained by the project leader. */
+  prismaSourceGroup?: "DATABASES_AND_REGISTERS" | "OTHER_METHODS";
 }

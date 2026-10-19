@@ -12,7 +12,7 @@ export function ReviewerProgressPanel({
   if (!memberProgresses || memberProgresses.length === 0) return null;
 
   return (
-    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
+    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-none">
       <div className="border-b border-border bg-surface-white px-4 py-4 sm:px-5">
         <h2 className="text-base font-semibold text-text-primary">
           Reviewer Progress
@@ -38,14 +38,14 @@ export function ReviewerProgressPanel({
 
             <div className="h-2 w-full overflow-hidden rounded-full bg-bg-secondary">
               <div
-                className="h-full bg-primary rounded-full transition-all duration-500"
+                className="h-full rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
                 style={{ width: `${progress.completionPercentage}%` }}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="flex items-center gap-1.5 p-2 bg-emerald-50 text-emerald-700 rounded-xl">
-                <CheckCircle2 size={14} className="text-emerald-500" />
+              <div className="flex items-center gap-1.5 rounded-xl bg-success/10 p-2 text-success">
+                <CheckCircle2 size={14} className="text-success" />
                 <span className="font-medium">
                   {progress.completedPapers} done
                 </span>

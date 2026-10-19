@@ -382,48 +382,50 @@ export default function ProjectMembersModal({
       closeOnOutsideClick={false}
       mode="drawer"
       footer={
-        <div className="flex items-center justify-between w-full">
-          <div className="flex items-center gap-3">
+        <div className="flex w-full min-w-0 items-center justify-between gap-2 sm:gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
             {totalSelections > 0 && activeTab === "add" && (
-              <div className="flex items-center gap-2 px-4 py-2 bg-surface-white rounded-xl border border-indigo-100/50">
-                <div className="flex -space-x-2 overflow-hidden">
+              <div className="flex min-w-0 items-center gap-1 rounded-xl border border-accent/15 bg-primary-light px-2 py-1.5 sm:gap-2 sm:px-4 sm:py-2">
+                <div className="hidden -space-x-2 overflow-hidden sm:flex">
                   {waitlistUsers.slice(0, 3).map((u) => (
                     <div
                       key={u.id}
-                      className="h-6 w-6 rounded-full bg-slate-900 border-2 border-white flex items-center justify-center text-[8px] font-black text-white"
+                      className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-primary text-[8px] font-black text-white"
                     >
                       {getInitials(u.fullName)}
                     </div>
                   ))}
                 </div>
-                <p className="text-[10px] font-black text-accent uppercase tracking-wider">
-                  {totalSelections} Đã chọn gửi
+                <p className="whitespace-nowrap text-[9px] font-bold uppercase tracking-wide text-accent sm:text-[10px] sm:font-black sm:tracking-wider">
+                  {totalSelections} <span className="sm:hidden">đã chọn</span><span className="hidden sm:inline">Đã chọn gửi</span>
                 </p>
               </div>
             )}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-1 sm:gap-3">
             <button
+              type="button"
               onClick={onClose}
-              className="px-8 py-3.5 text-[11px] font-black text-slate-400 hover:text-slate-600 transition-all uppercase tracking-widest active:scale-95 cursor-pointer"
+              className="min-h-11 cursor-pointer px-3 py-3 text-[10px] font-bold uppercase tracking-wider text-text-secondary transition-colors hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none sm:px-8 sm:py-3.5 sm:text-[11px] sm:font-black sm:tracking-widest"
             >
               Đóng
             </button>
             {activeTab === "add" && (
               <button
+                type="button"
                 onClick={handleSendInvitations}
                 disabled={totalSelections === 0 || isSendingInvitations}
                 className={cn(
-                  "flex items-center gap-2 px-12 py-4 text-[11px] font-black rounded-xl transition-all active:scale-95 uppercase tracking-widest shadow-none min-w-[200px] justify-center cursor-pointer",
+                  "flex min-h-11 min-w-0 cursor-pointer items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-3 text-[9px] font-bold uppercase tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none sm:min-w-[200px] sm:gap-2 sm:px-12 sm:py-4 sm:text-[11px] sm:font-black sm:tracking-widest",
                   totalSelections > 0 && !isSendingInvitations
-                    ? "bg-slate-900 text-white hover:bg-accent"
-                    : "bg-slate-100 text-slate-300 cursor-not-allowed",
+                    ? "bg-primary text-white hover:bg-primary-hover"
+                    : "bg-bg-secondary text-text-secondary cursor-not-allowed",
                 )}
               >
                 {isSendingInvitations ? (
                   <>
-                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full motion-safe:animate-spin motion-reduce:animate-none" />
                     Đang gửi...
                   </>
                 ) : (
@@ -444,27 +446,31 @@ export default function ProjectMembersModal({
     >
       <div className="space-y-4">
         {/* Unified Tab Switcher */}
-        <div className="flex p-1 bg-slate-100/80 rounded-xl w-fit border border-slate-200/50">
+        <div className="grid w-full grid-cols-3 gap-1 rounded-xl border border-border bg-bg-secondary p-1 sm:flex sm:w-fit">
           <button
+            type="button"
+            aria-pressed={activeTab === "collaboration"}
             onClick={() => setActiveTab("collaboration")}
             className={cn(
-              "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+              "flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-lg border px-1.5 py-2 text-center text-[9px] font-bold leading-tight transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:flex-row sm:gap-2 sm:px-6 sm:py-2.5 sm:text-[11px] sm:font-black sm:uppercase sm:tracking-wider",
               activeTab === "collaboration"
-                ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
-                : "text-slate-400 hover:text-slate-600",
+                ? "border-border bg-surface-white text-accent"
+                : "border-transparent text-text-secondary hover:bg-surface-white/60 hover:text-text-primary",
             )}
           >
             <FiUsers size={14} />
-            Thành viên dự án
+            Thành viên
           </button>
           {canManageMembers && (
             <button
+              type="button"
+              aria-pressed={activeTab === "add"}
               onClick={() => setActiveTab("add")}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+                "flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-lg border px-1.5 py-2 text-center text-[9px] font-bold leading-tight transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:flex-row sm:gap-2 sm:px-6 sm:py-2.5 sm:text-[11px] sm:font-black sm:uppercase sm:tracking-wider",
                 activeTab === "add"
-                  ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
-                  : "text-slate-400 hover:text-slate-600",
+                  ? "border-border bg-surface-white text-accent"
+                  : "border-transparent text-text-secondary hover:bg-surface-white/60 hover:text-text-primary",
               )}
             >
               <FiUserPlus size={14} />
@@ -473,16 +479,18 @@ export default function ProjectMembersModal({
           )}
           {canManageMembers && (
             <button
+              type="button"
+              aria-pressed={activeTab === "invites"}
               onClick={() => setActiveTab("invites")}
               className={cn(
-                "flex items-center gap-2 px-6 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-wider transition-all duration-300",
+                "flex min-h-11 min-w-0 flex-col items-center justify-center gap-1 rounded-lg border px-1.5 py-2 text-center text-[9px] font-bold leading-tight transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:flex-row sm:gap-2 sm:px-6 sm:py-2.5 sm:text-[11px] sm:font-black sm:uppercase sm:tracking-wider",
                 activeTab === "invites"
-                  ? "bg-surface-white text-accent shadow-sm shadow-slate-200 border border-slate-100"
-                  : "text-slate-400 hover:text-slate-600",
+                  ? "border-border bg-surface-white text-accent"
+                  : "border-transparent text-text-secondary hover:bg-surface-white/60 hover:text-text-primary",
               )}
             >
               <FiSend size={14} />
-              Lịch sử gửi lời mời
+            Lịch sử mời
             </button>
           )}
         </div>
@@ -490,15 +498,16 @@ export default function ProjectMembersModal({
         {/* Tab Content */}
         <div className="min-h-[450px]">
           {activeTab === "collaboration" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300 flex flex-col h-full">
+            <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 motion-reduce:animate-none flex flex-col h-full">
               {/* Collaboration Search */}
               <div className="relative group max-w-md">
                 <FiSearch
-                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-accent transition-colors"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary transition-colors group-focus-within:text-primary motion-reduce:transition-none"
                   size={16}
                 />
                 <input
                   type="text"
+                  aria-label="Search project members"
                   placeholder="Tìm kiếm thành viên trong dự án..."
                   value={memberSearchTerm}
                   onChange={(e) => {
@@ -512,16 +521,16 @@ export default function ProjectMembersModal({
               {isLoadingMembers ? (
                 <div className="flex flex-col items-center justify-center py-20 space-y-4">
                   <LoadingSpinner size="lg" />
-                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest animate-pulse">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
                     Đang đồng bộ dữ liệu...
                   </p>
                 </div>
               ) : membersError ? (
-                <div className="p-6 bg-surface-white border border-red-100 rounded-xl text-center space-y-2 shadow-none">
-                  <p className="text-sm font-black text-red-600 uppercase tracking-tight">
+                <div className="space-y-2 rounded-xl border border-error/20 bg-surface-white p-6 text-center shadow-none">
+                  <p className="text-sm font-black uppercase tracking-tight text-error">
                     Đồng bộ thất bại
                   </p>
-                  <p className="text-xs text-red-400 font-medium">
+                  <p className="text-xs font-medium text-text-secondary">
                     {membersError}
                   </p>
                 </div>
@@ -545,11 +554,11 @@ export default function ProjectMembersModal({
                             {getInitials(member.fullName)}
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-0.5">
-                              <h4 className="truncate font-semibold text-text-primary">
+                            <div className="mb-0.5 flex flex-wrap items-center gap-2">
+                              <h4 className="w-full min-w-0 truncate font-semibold text-text-primary sm:w-auto">
                                 {member.fullName}
                               </h4>
-                              <div className="flex flex-wrap items-center gap-2">
+                              <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
                                 <span
                                   className={cn(
                                     "rounded-full border px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
@@ -571,43 +580,44 @@ export default function ProjectMembersModal({
                                         void handleExistingMemberRoleChange(member.userId, "OWNER")
                                       }
                                       disabled={isUpdatingMemberRole}
-                                      className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-lg border border-primary/20 bg-primary-light px-2.5 text-[10px] font-semibold text-primary-hover transition-colors hover:border-primary/40 disabled:cursor-not-allowed disabled:opacity-60"
+                                      className="inline-flex min-h-11 w-full min-w-0 max-w-full basis-full items-center gap-1.5 rounded-lg border border-primary/20 bg-primary-light px-2.5 text-left text-[10px] font-semibold leading-tight text-primary-hover transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:basis-auto"
                                       aria-label={`Transfer Project Leader role to ${member.fullName}`}
                                     >
                                       <FiRepeat size={12} />
-                                      Chuyển Project Leader
+                                      <span className="sm:hidden">Trưởng nhóm</span><span className="hidden sm:inline">Chuyển Project Leader</span>
                                     </button>
                                   )}
                               </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-400">
+                            <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-text-secondary">
                               <span className="text-accent/80 lowercase italic font-medium">
                                 @{member.userName}
                               </span>
-                              <div className="w-1 h-1 rounded-full bg-slate-200" />
+                              <div className="h-1 w-1 rounded-full bg-border" />
                               <div className="flex items-center gap-1.5">
-                                <FiMail size={12} className="text-slate-300" />
+                                <FiMail size={12} className="text-text-secondary" />
                                 {member.email}
                               </div>
                             </div>
                           </div>
                           <div className="hidden sm:flex flex-col items-end gap-1 text-right shrink-0">
-                            <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-none">
+                            <p className="text-[10px] font-black uppercase tracking-widest leading-none text-text-secondary">
                               Ngày tham gia
                             </p>
-                            <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100/50">
+                            <div className="flex items-center gap-1.5 rounded-xl border border-border bg-bg-secondary px-3 py-1.5 text-[11px] font-bold text-text-secondary">
                               <FiCalendar
                                 size={12}
-                                className="text-slate-300"
+                                className="text-text-secondary"
                               />
                               {formatDate(member.joinedAt)}
                             </div>
                           </div>
                           {canManageMembers && (
-                            <div className="pl-2 border-l border-slate-50 ml-2">
+                            <div className="ml-2 border-l border-border pl-2">
                               <Tooltip content={member.role === ProjectRole.Owner ? "Không thể xóa Trưởng nhóm" : "Xóa khỏi dự án"}>
                                 <button
                                   type="button"
+                                  aria-label={`Remove ${member.fullName} from project`}
                                   onClick={() =>
                                     setMemberToRemove({
                                       userId: member.userId,
@@ -615,11 +625,11 @@ export default function ProjectMembersModal({
                                     })
                                   }
                                   disabled={isRemovingMember || member.role === ProjectRole.Owner}
-                                  className="p-2.5 text-slate-300 hover:text-red-500 hover:bg-surface-white rounded-xl transition-all active:scale-95 group/del disabled:opacity-30 disabled:cursor-not-allowed"
+                                  className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-surface-white hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-95 motion-reduce:active:scale-100 group/del disabled:cursor-not-allowed disabled:opacity-40"
                                 >
                                   <FiTrash2
                                     size={18}
-                                    className="transition-transform group-hover/del:rotate-6"
+                                    className="motion-safe:transition-transform group-hover/del:rotate-6 motion-reduce:transform-none motion-reduce:transition-none"
                                   />
                                 </button>
                               </Tooltip>
@@ -629,8 +639,8 @@ export default function ProjectMembersModal({
                       ))
                     ) : (
                       <div className="py-20 flex flex-col items-center justify-center text-center opacity-30 grayscale">
-                        <FiUsers size={48} className="text-slate-300 mb-4" />
-                        <p className="text-sm font-black text-slate-900 uppercase">
+                        <FiUsers size={48} className="mb-4 text-text-secondary" />
+                        <p className="text-sm font-black uppercase text-text-primary">
                           {debouncedMemberSearch
                             ? "Không tìm thấy kết quả"
                             : "Dự án chưa có thành viên"}
@@ -641,38 +651,42 @@ export default function ProjectMembersModal({
 
                   {/* Pagination Controls */}
                   {totalMembersPages > 1 && (
-                    <div className="flex items-center justify-center gap-4 py-4 border-t border-slate-50 mt-auto">
+                    <div className="mt-auto flex items-center justify-center gap-4 border-t border-border py-4">
                       <button
+                        type="button"
+                        aria-label="Previous members page"
                         onClick={() =>
                           setMemberPageNumber((prev) => Math.max(1, prev - 1))
                         }
                         disabled={memberPageNumber === 1}
-                        className="p-2 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-40 active:scale-95 motion-reduce:active:scale-100 motion-reduce:transition-none"
                       >
                         <FiChevronLeft size={18} />
                       </button>
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
                           Page
                         </span>
-                        <span className="text-xs font-black text-accent bg-bg-secondary px-3 py-1 rounded-full border border-indigo-100">
+                        <span className="rounded-full border border-primary/20 bg-bg-secondary px-3 py-1 text-xs font-black text-primary">
                           {memberPageNumber}
                         </span>
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
                           of
                         </span>
-                        <span className="text-xs font-black text-slate-600">
+                        <span className="text-xs font-black text-text-primary">
                           {totalMembersPages}
                         </span>
                       </div>
                       <button
+                        type="button"
+                        aria-label="Next members page"
                         onClick={() =>
                           setMemberPageNumber((prev) =>
                             Math.min(totalMembersPages, prev + 1),
                           )
                         }
                         disabled={memberPageNumber === totalMembersPages}
-                        className="p-2 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-sm active:scale-95"
+                        className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:pointer-events-none disabled:opacity-40 active:scale-95 motion-reduce:active:scale-100 motion-reduce:transition-none"
                       >
                         <FiChevronRight size={18} />
                       </button>
@@ -684,7 +698,7 @@ export default function ProjectMembersModal({
           )}
 
           {activeTab === "add" && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 motion-reduce:animate-none">
               {!effectivelyHideLeaderRole && (
                 <ProjectLeaderStatus
                   currentLeader={currentLeader}
@@ -742,7 +756,7 @@ export default function ProjectMembersModal({
           )}
 
           {activeTab === "invites" && (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 motion-reduce:animate-none">
               <SentInvitations projectId={projectId || ""} />
             </div>
           )}

@@ -64,11 +64,13 @@ const ResolveConflictPage: React.FC = () => {
   );
 
   useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
     gsap.from(".page-content", {
       opacity: 0,
-      y: 20,
-      duration: 0.8,
-      ease: "power3.out",
+      y: 6,
+      duration: 0.18,
+      ease: "power2.out",
     });
   }, []);
 
@@ -92,8 +94,10 @@ const ResolveConflictPage: React.FC = () => {
         <div className="bg-surface-white border-b border-border">
           <div className="flex px-4 sm:px-6">
             <button
+              type="button"
+              aria-pressed={activeTab === "title-abstract"}
               onClick={() => setActiveTab("title-abstract")}
-              className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
+              className={`inline-flex min-h-11 items-center border-b-2 px-5 py-3 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:px-8 ${
                 activeTab === "title-abstract"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-secondary hover:text-text-secondary"
@@ -107,8 +111,10 @@ const ResolveConflictPage: React.FC = () => {
               </div>
             </button>
             <button
+              type="button"
+              aria-pressed={activeTab === "full-text"}
               onClick={() => setActiveTab("full-text")}
-              className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
+              className={`inline-flex min-h-11 items-center border-b-2 px-5 py-3 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:px-8 ${
                 activeTab === "full-text"
                   ? "border-accent text-accent"
                   : "border-transparent text-text-secondary hover:text-text-secondary"
@@ -130,8 +136,9 @@ const ResolveConflictPage: React.FC = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
             <input
               type="text"
+              aria-label="Search conflict papers by title, authors, or DOI"
               placeholder="Search by title, authors or DOI..."
-              className="w-full pl-12 pr-4 py-3 bg-bg-primary border-none rounded-xl text-sm focus:ring-2 focus:ring-primary/20 transition-all font-medium"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-12 pr-4 text-sm font-medium text-text-primary transition-[border-color,box-shadow] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -140,8 +147,10 @@ const ResolveConflictPage: React.FC = () => {
             {(["All", "Conflict", "Resolved"] as const).map((status) => (
               <button
                 key={status}
+                type="button"
+                aria-pressed={statusFilter === status}
                 onClick={() => setStatusFilter(status)}
-                className={`px-5 py-2 text-xs font-black uppercase tracking-widest rounded-xl transition-all whitespace-nowrap ${
+                className={`min-h-11 whitespace-nowrap rounded-xl px-5 text-xs font-black uppercase tracking-widest transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                   statusFilter === status
                     ? "bg-surface-white text-accent shadow-none border border-border"
                     : "text-text-secondary hover:text-text-secondary"
@@ -183,14 +192,14 @@ const ResolveConflictPage: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-border/70">
               {papers.map((paper) => (
                 <tr
                   key={paper.paperId}
-                  className="hover:bg-primary-light/30 transition-colors group"
+                  className="group transition-colors hover:bg-primary-light/30 motion-reduce:transition-none"
                 >
                   <td className="px-6 py-6">
-                    <p className="text-sm font-bold text-text-primary leading-relaxed group-hover:text-accent transition-colors">
+                    <p className="text-sm font-bold text-text-primary leading-relaxed transition-colors group-hover:text-accent motion-reduce:transition-none">
                       {paper.title}
                     </p>
                     <p className="text-xs text-accent font-medium mt-1">
@@ -198,28 +207,28 @@ const ResolveConflictPage: React.FC = () => {
                     </p>
                   </td>
                   <td className="px-6 py-6">
-                    <p className="text-xs font-semibold text-text-secondary group-hover:text-text-primary transition-colors break-words">
+                    <p className="text-xs font-semibold text-text-secondary break-words transition-colors group-hover:text-text-primary motion-reduce:transition-none">
                       {paper.authors || "Unknown Authors"}
                     </p>
                   </td>
                   <td className="px-6 py-6">
-                    <span className="text-xs font-black text-text-secondary group-hover:text-text-primary transition-colors">
+                    <span className="text-xs font-black text-text-secondary transition-colors group-hover:text-text-primary motion-reduce:transition-none">
                       {paper.year || "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-6 font-medium">
-                    <span className="text-[10px] font-black uppercase tracking-wider text-text-secondary bg-bg-secondary px-2 py-1 rounded-md border border-border group-hover:bg-primary-light group-hover:text-accent group-hover:border-primary/30 transition-all">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-text-secondary bg-bg-secondary px-2 py-1 rounded-md border border-border transition-colors group-hover:bg-primary-light group-hover:text-accent group-hover:border-primary/30 motion-reduce:transition-none">
                       {paper.source || "N/A"}
                     </span>
                   </td>
                   <td className="px-6 py-6 text-sm">
                     {paper.status === PaperSelectionStatus.Conflict ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-50 text-orange-600 border border-orange-100 text-[10px] font-black uppercase tracking-widest">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-warning/10 text-warning border border-warning/20 text-[10px] font-black uppercase tracking-widest">
                         <AlertCircle className="w-3 h-3" />
                         Conflict
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-[10px] font-black uppercase tracking-widest">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-success/10 text-success border border-success/20 text-[10px] font-black uppercase tracking-widest">
                         <CheckCircle2 className="w-3 h-3" />
                         Resolved
                       </span>
@@ -227,8 +236,10 @@ const ResolveConflictPage: React.FC = () => {
                   </td>
                   <td className="px-6 py-6 text-center">
                     <button
+                      type="button"
                       onClick={() => handleOpenDetailModal(paper)}
-                      className="p-2.5 text-text-secondary hover:text-accent hover:bg-surface-white rounded-xl transition-all shadow-none group-hover:shadow-none hover:scale-105 active:scale-95 border border-transparent hover:border-primary/30"
+                      aria-label={`Review conflict for ${paper.title}`}
+                      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-surface-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                     >
                       <Settings className="w-4 h-4" />
                     </button>
@@ -242,9 +253,9 @@ const ResolveConflictPage: React.FC = () => {
             <div className="flex flex-col items-center justify-center py-20">
               <div className="p-6 bg-bg-primary rounded-full mb-4">
                 {statusFilter === "Resolved" ? (
-                  <AlertCircle className="w-10 h-10 text-gray-300" />
+                  <AlertCircle className="w-10 h-10 text-text-secondary/50" />
                 ) : (
-                  <CheckCircle2 className="w-10 h-10 text-gray-300" />
+                  <CheckCircle2 className="w-10 h-10 text-text-secondary/50" />
                 )}
               </div>
               <h3 className="text-lg font-bold text-text-primary">
@@ -258,8 +269,9 @@ const ResolveConflictPage: React.FC = () => {
               </p>
               {statusFilter !== "All" && (
                 <button
+                  type="button"
                   onClick={() => setStatusFilter("All")}
-                  className="mt-6 text-sm font-bold text-accent hover:text-primary-hover underline underline-offset-4"
+                  className="mt-4 inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-bold text-primary underline underline-offset-4 transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   Reset status filter
                 </button>
@@ -269,7 +281,7 @@ const ResolveConflictPage: React.FC = () => {
         </div>
 
         {/* Footer Info */}
-        <div className="px-8 py-4 bg-bg-primary/50 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="px-4 py-4 bg-bg-primary/50 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 sm:px-8">
           <p className="text-xs text-text-secondary font-medium font-mono uppercase tracking-wider">
             Showing {papers.length} of {totalCount} papers
           </p>

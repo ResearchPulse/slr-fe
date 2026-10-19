@@ -67,6 +67,10 @@ const Tooltip: React.FC<TooltipProps> = ({
     if (controlledOpen !== undefined) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
+      if (triggerRef.current?.querySelector('[aria-haspopup][aria-expanded="true"]')) {
+        return;
+      }
       updatePosition();
       setInternalOpen(true);
     }, delay);
@@ -84,13 +88,22 @@ const Tooltip: React.FC<TooltipProps> = ({
       setShouldRender(true);
     } else {
       if (tooltipRef.current) {
-        gsap.to(tooltipRef.current, {
-          opacity: 0,
-          scale: 0.95,
-          duration: 0.2,
-          ease: "power2.inOut",
-          onComplete: () => setShouldRender(false),
-        });
+        const prefersReducedMotion = window.matchMedia?.(
+          "(prefers-reduced-motion: reduce)",
+        ).matches ?? false;
+        gsap.killTweensOf(tooltipRef.current);
+        if (prefersReducedMotion) {
+          gsap.set(tooltipRef.current, { opacity: 0, scale: 0.95 });
+          setShouldRender(false);
+        } else {
+          gsap.to(tooltipRef.current, {
+            opacity: 0,
+            scale: 0.98,
+            duration: 0.15,
+            ease: "power2.inOut",
+            onComplete: () => setShouldRender(false),
+          });
+        }
       } else {
         setShouldRender(false);
       }
@@ -112,29 +125,37 @@ const Tooltip: React.FC<TooltipProps> = ({
 
   useEffect(() => {
     if (shouldRender && tooltipRef.current) {
+      const prefersReducedMotion = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)",
+      ).matches ?? false;
       const offset = 8;
       const initialX =
         position === "left" ? offset : position === "right" ? -offset : 0;
       const initialY =
         position === "top" ? offset : position === "bottom" ? -offset : 0;
 
-      gsap.fromTo(
-        tooltipRef.current,
-        {
-          opacity: 0,
-          scale: 0.95,
-          x: initialX,
-          y: initialY,
-        },
-        {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-          duration: 0.35,
-          ease: "power3.out",
-        },
-      );
+      gsap.killTweensOf(tooltipRef.current);
+      if (prefersReducedMotion) {
+        gsap.set(tooltipRef.current, { opacity: 1, scale: 1, x: 0, y: 0 });
+      } else {
+        gsap.fromTo(
+          tooltipRef.current,
+          {
+            opacity: 0,
+            scale: 0.98,
+            x: initialX / 2,
+            y: initialY / 2,
+          },
+          {
+            opacity: 1,
+            scale: 1,
+            x: 0,
+            y: 0,
+            duration: 0.16,
+            ease: "power2.out",
+          },
+        );
+      }
     }
   }, [shouldRender, position]);
 
@@ -160,6 +181,18 @@ const Tooltip: React.FC<TooltipProps> = ({
       onMouseLeave={handleHide}
       onFocusCapture={handleShow}
       onBlurCapture={handleHide}
+      onClickCapture={handleHide}
+      onKeyDownCapture={(event) => {
+        const opensPopup =
+          event.target instanceof Element &&
+          event.target.closest('[aria-haspopup][aria-expanded]');
+        if (
+          opensPopup &&
+          ["Enter", " ", "ArrowDown", "ArrowUp"].includes(event.key)
+        ) {
+          handleHide();
+        }
+      }}
     >
       {children}
       {shouldRender &&

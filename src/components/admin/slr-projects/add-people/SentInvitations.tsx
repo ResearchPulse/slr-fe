@@ -31,35 +31,35 @@ const getStatusBadge = (status: number) => {
   switch (status) {
     case InvitationStatus.Pending:
       return (
-        <span className="px-2.5 py-1 rounded-full bg-amber-50 text-amber-600 border border-amber-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-warning">
           <FiClock size={10} />
           Pending
         </span>
       );
     case InvitationStatus.Accepted:
       return (
-        <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-success">
           <FiCheckCircle size={10} />
           Accepted
         </span>
       );
     case InvitationStatus.Rejected:
       return (
-        <span className="px-2.5 py-1 rounded-full bg-rose-50 text-rose-600 border border-rose-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-error/20 bg-error/10 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-error">
           <FiXCircle size={10} />
           Rejected
         </span>
       );
     case InvitationStatus.Cancelled:
       return (
-        <span className="px-2.5 py-1 rounded-full bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest flex items-center gap-1.5">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-text-secondary">
           <FiTrash2 size={10} />
           Cancelled
         </span>
       );
     default:
       return (
-        <span className="px-2.5 py-1 rounded-full bg-slate-50 text-slate-400 border border-slate-100 text-[9px] font-black uppercase tracking-widest">
+        <span className="rounded-full border border-border bg-bg-secondary px-2.5 py-1 text-[9px] font-black uppercase tracking-widest text-text-secondary">
           Expired
         </span>
       );
@@ -101,7 +101,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
     return (
       <div className="flex flex-col items-center justify-center py-20 space-y-4">
         <LoadingSpinner size="md" />
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
           Loading invitations...
         </p>
       </div>
@@ -110,14 +110,14 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
 
   if (!invitations || invitations.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 px-8 text-center bg-slate-50/50 rounded-xl border-2 border-dashed border-slate-100">
-        <div className="w-16 h-16 bg-surface-white rounded-xl flex items-center justify-center text-slate-300 mb-4 shadow-none">
+      <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border bg-bg-secondary/50 px-8 py-20 text-center">
+        <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-surface-white text-text-secondary shadow-none">
           <FiBell size={24} />
         </div>
-        <h4 className="text-sm font-black text-slate-800 uppercase tracking-tight">
+        <h4 className="text-sm font-black uppercase tracking-tight text-text-primary">
           No Active Invitations
         </h4>
-        <p className="text-[11px] font-medium text-slate-400 mt-1 max-w-[200px]">
+        <p className="mt-1 max-w-[200px] text-[11px] font-medium text-text-secondary">
           You haven't sent any invitations for this project yet.
         </p>
       </div>
@@ -125,9 +125,9 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
   }
 
   return (
-    <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+    <div className="space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 motion-reduce:animate-none">
       <div className="flex items-center justify-between px-2">
-        <h6 className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <h6 className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
           Status Overview ({invitations.length})
         </h6>
       </div>
@@ -136,16 +136,16 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
         {invitations.map((inv: ProjectInvitation) => (
           <div
             key={inv.id}
-            className="group rounded-xl border border-border bg-surface-white p-4 transition-colors hover:border-primary/35"
+            className="group min-w-0 rounded-xl border border-border bg-surface-white p-4 transition-colors hover:border-primary/35"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
+            <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
                   {inv.invitedUserFullName[0].toUpperCase()}
                 </div>
-                <div className="space-y-0.5">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-black text-slate-900 tracking-tight">
+                <div className="min-w-0 space-y-0.5">
+                  <div className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-1">
+                    <p className="break-words text-sm font-black tracking-tight text-text-primary">
                       {inv.invitedUserFullName}
                     </p>
                     <span
@@ -153,34 +153,36 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
                         "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
                         inv.role === ProjectRole.Owner
                           ? "bg-bg-secondary text-accent"
-                          : "bg-slate-100 text-slate-500",
+                          : "bg-bg-secondary text-text-secondary",
                       )}
                     >
                       {getProjectRoleLabel(inv.role)}
                     </span>
                   </div>
-                  <p className="text-[10px] font-medium text-slate-400">
+                  <p className="break-all text-[10px] font-medium text-text-secondary sm:break-normal">
                     {inv.invitedUserEmail}
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex min-w-0 items-center justify-between gap-3 sm:justify-end sm:gap-4">
                 <div className="text-right hidden sm:block">
-                  <p className="text-[9px] font-black uppercase tracking-widest text-slate-300">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-text-secondary">
                     Sent Date
                   </p>
-                  <p className="text-[10px] font-bold text-slate-600 italic">
+                  <p className="text-[10px] font-bold italic text-text-primary">
                     {formatDate(inv.createdAt)}
                   </p>
                 </div>
-                <div className="min-w-[100px] flex justify-end">
+                <div className="flex min-w-0 justify-start sm:min-w-[100px] sm:justify-end">
                   {getStatusBadge(inv.status)}
                 </div>
 
                 {inv.status === InvitationStatus.Pending && (
                   <Tooltip content="Cancel Invitation" position="left">
                     <button
+                      type="button"
+                      aria-label={`Cancel invitation to ${inv.invitedUserFullName}`}
                       onClick={() =>
                         setInvitationToCancel({
                           id: inv.id,
@@ -188,7 +190,7 @@ export default function SentInvitations({ projectId }: SentInvitationsProps) {
                         })
                       }
                       disabled={isCancelling}
-                      className="p-2 text-slate-300 hover:text-rose-500 transition-colors active:scale-90"
+                      className="flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 active:scale-90 motion-reduce:active:scale-100 motion-reduce:transition-none"
                     >
                       <FiXCircle size={18} />
                     </button>

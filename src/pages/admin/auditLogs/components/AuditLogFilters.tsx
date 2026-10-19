@@ -32,7 +32,7 @@ interface AuditLogFiltersProps {
 }
 
 const fieldClassName =
-  "w-full rounded-xl border border-border bg-white px-3.5 py-2.5 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent focus:ring-2 focus:ring-accent/10";
+  "min-h-11 w-full rounded-xl border border-border bg-surface-white px-3.5 py-2.5 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 const parseDate = (value: string): Date | null => {
   if (!value) return null;
@@ -165,7 +165,7 @@ export const DatePickerField: React.FC<{
           role="dialog"
           aria-label={`${label} calendar`}
           style={calendarPosition}
-          className="fixed z-(--z-index-popover) w-[296px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-white p-4 shadow-[0_12px_32px_rgba(18,35,49,0.14)]"
+          className="ui-popover-enter fixed z-(--z-index-popover) w-[296px] max-w-[calc(100vw-1.5rem)] rounded-xl border border-border bg-surface-white p-4 shadow-[0_12px_32px_rgba(18,35,49,0.14)]"
         >
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-semibold text-text-primary">
@@ -176,7 +176,7 @@ export const DatePickerField: React.FC<{
                 type="button"
                 aria-label="Previous month"
                 onClick={() => shiftMonth(-1)}
-                className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               >
                 <FiChevronLeft size={16} />
               </button>
@@ -184,7 +184,7 @@ export const DatePickerField: React.FC<{
                 type="button"
                 aria-label="Next month"
                 onClick={() => shiftMonth(1)}
-                className="flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+                className="flex h-11 w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               >
                 <FiChevronRight size={16} />
               </button>
@@ -209,7 +209,7 @@ export const DatePickerField: React.FC<{
                   aria-pressed={isSelected}
                   onClick={() => chooseDate(date)}
                   className={cn(
-                    "mx-auto flex h-8 w-8 items-center justify-center rounded-md text-xs transition-colors",
+                    "mx-auto flex h-9 w-9 items-center justify-center rounded-lg text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none",
                     isSelected
                       ? "bg-accent font-semibold text-white"
                       : isCurrentMonth
@@ -231,14 +231,14 @@ export const DatePickerField: React.FC<{
                 onChange("");
                 setIsOpen(false);
               }}
-              className="rounded-md px-2 py-1 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary"
+              className="inline-flex min-h-11 items-center rounded-md px-3 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
             >
               Clear
             </button>
             <button
               type="button"
               onClick={() => chooseDate(today)}
-              className="rounded-md px-2 py-1 text-xs font-medium text-accent transition-colors hover:bg-bg-secondary"
+              className="inline-flex min-h-11 items-center rounded-md px-3 text-xs font-medium text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
             >
               Today
             </button>
@@ -272,14 +272,14 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
   ];
 
   return (
-    <section className="rounded-xl border border-border bg-white p-4 sm:p-5">
+    <section className="rounded-xl border border-border bg-surface-white p-4 sm:p-5">
       <div className="mb-4 flex items-center justify-between gap-4">
         <h2 className="text-sm font-semibold text-text-primary">Filter activity</h2>
         <button
           type="button"
           onClick={onReset}
           className={cn(
-            "inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary",
+            "inline-flex min-h-11 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none",
           )}
         >
           <FiRefreshCw className="w-4 h-4" />
@@ -293,7 +293,7 @@ const AuditLogFilters: React.FC<AuditLogFiltersProps> = ({
             Search
           </span>
           <div className="relative">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/60" />
             <input
               type="text"
               value={searchTerm}

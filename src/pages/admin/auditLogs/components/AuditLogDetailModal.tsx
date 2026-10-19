@@ -35,7 +35,7 @@ const DiffBlock: React.FC<{ title: string; value: string }> = ({
   title,
   value,
 }) => (
-  <div className="min-w-0 overflow-hidden rounded-lg border border-border bg-white">
+  <div className="min-w-0 overflow-hidden rounded-lg border border-border bg-surface-white">
     <div className="border-b border-border px-4 py-3">
       <h4 className="text-sm font-semibold text-text-primary">
         {title}
@@ -55,8 +55,8 @@ const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({
 
   const statusClasses =
     entry.status === "Success"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-      : "bg-rose-50 text-rose-700 border-rose-100";
+      ? "bg-success/10 text-success border-success/20"
+      : "bg-error/10 text-error border-error/20";
 
   return (
     <Modal
@@ -84,7 +84,7 @@ const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({
                 {entry.resourceType}
               </span>
               {entry.importance === "high" && (
-                <span className="rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-xs font-medium text-rose-700">
+                <span className="rounded-md border border-error/20 bg-error/10 px-2.5 py-1 text-xs font-medium text-error">
                   Important
                 </span>
               )}
@@ -99,7 +99,7 @@ const AuditLogDetailModal: React.FC<AuditLogDetailModalProps> = ({
             </div>
           </div>
 
-          <div className="shrink-0 rounded-lg border border-border bg-white px-4 py-3 sm:min-w-52">
+          <div className="shrink-0 rounded-lg border border-border bg-surface-white px-4 py-3 sm:min-w-52">
             <div className="text-xs font-medium text-text-secondary">
               Recorded at
             </div>

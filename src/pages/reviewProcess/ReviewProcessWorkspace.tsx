@@ -2,7 +2,6 @@ import { useParams } from "react-router";
 import { useReviewProcessWorkspace } from "../../hooks/useReviewProcessWorkspace";
 import ProcessHeader from "../../components/reviewProcess/ProcessHeader";
 import WorkflowTimeline from "../../components/reviewProcess/workflow/WorkflowTimeline";
-import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import { useState } from "react";
 import PaperPoolSelectorModal from "../../components/reviewProcess/modals/PaperPoolSelectorModal";
@@ -11,6 +10,8 @@ import QualityAssessmentCriteriaModal from "../../components/reviewProcess/leade
 import SynthesisStrategyModal from "./synthesisExecution/components/SynthesisStrategyModal";
 import { SelectionProcessStatus } from "../../types/studySelection";
 import SLRPhaseWorkspace from "../../components/reviewProcess/workflow/SLRPhaseWorkspace";
+import ConfirmModal from "../../components/ui/ConfirmModal";
+import QueryErrorState from "../../components/ui/QueryErrorState";
 
 export default function ReviewProcessWorkspace() {
   const { projectId, processId } = useParams<{
@@ -32,6 +33,10 @@ export default function ReviewProcessWorkspace() {
     handleStartPhase,
     handleCompletePhase,
     handleReopenPhase,
+    pendingConfirmation,
+    closePendingConfirmation,
+    confirmPendingAction,
+    isConfirmingPendingAction,
     startLoading,
     completeLoading,
     phaseStartLoadingMap,
@@ -65,16 +70,13 @@ export default function ReviewProcessWorkspace() {
   // Error state
   if (error || !process) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="bg-surface-white border border-border rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-red-800 mb-2">
-            Error Loading Process
-          </h2>
-          <p className="text-red-600">{error || "Process not found"}</p>
-          <Button onClick={handleBack} variant="secondary" className="mt-4">
-            Back to Project
-          </Button>
-        </div>
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+        <QueryErrorState
+          title="Review process unavailable"
+          message={error || "This review process may have been removed or you may no longer have access to it."}
+          onBack={handleBack}
+          backLabel="Back to project"
+        />
       </div>
     );
   }
@@ -161,6 +163,19 @@ export default function ReviewProcessWorkspace() {
             startAfterSave={false}
           />
         ) : null}
+        <ConfirmModal
+          isOpen={Boolean(pendingConfirmation)}
+          onClose={closePendingConfirmation}
+          onConfirm={() => void confirmPendingAction()}
+          title={pendingConfirmation?.type === "force-quality" ? "Complete Quality Assessment with unresolved papers?" : "Complete this review process?"}
+          message={pendingConfirmation?.type === "force-quality"
+            ? "Some included papers have no final quality verdict yet. Completing now will leave those papers unresolved."
+            : "This finalizes the review process. You will not be able to continue editing its workflow afterward."}
+          confirmText={pendingConfirmation?.type === "force-quality" ? "Complete anyway" : "Complete process"}
+          cancelText="Cancel"
+          isLoading={isConfirmingPendingAction}
+          variant="warning"
+        />
       </div>
     </div>
   );

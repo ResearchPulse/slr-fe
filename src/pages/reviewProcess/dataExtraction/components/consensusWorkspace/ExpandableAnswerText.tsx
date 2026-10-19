@@ -42,7 +42,7 @@ export default function ExpandableAnswerText({
           e.stopPropagation();
           setIsExpanded((prev) => !prev);
         }}
-        className="mt-1.5 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] font-semibold text-accent hover:text-accent/80 hover:bg-primary-light/50 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent cursor-pointer"
+        className="mt-1.5 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-[11px] font-semibold text-primary transition-colors hover:bg-primary-light/50 hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
         aria-expanded={isExpanded}
       >
         <span>{isExpanded ? "Show less" : "Show more"}</span>

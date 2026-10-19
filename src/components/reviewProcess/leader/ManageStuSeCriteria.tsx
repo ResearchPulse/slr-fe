@@ -53,17 +53,18 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
 }) => {
   return (
     <section className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-widest">
-          <FileText className="w-4 h-4 text-emerald-500" />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2 text-text-primary font-bold text-xs uppercase tracking-widest">
+          <FileText className="w-4 h-4 text-accent" />
           Selection Criteria Groups
         </div>
-        <div className="flex gap-2">
+        <div className="grid w-full grid-cols-1 gap-2 sm:flex sm:w-auto">
           <Button
             variant="primary"
             size="sm"
             onClick={onAiSuggest}
             disabled={isGenerating}
+            className="min-h-11 w-full justify-center sm:w-auto"
           >
             {isGenerating ? (
               <LoadingSpinner size="sm" className="mr-2" />
@@ -72,7 +73,7 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
             )}
             {isGenerating ? "Generating..." : "AI Suggest Criteria"}
           </Button>
-          <Button variant="secondary" size="sm" onClick={onAddCustomGroup}>
+          <Button variant="secondary" size="sm" onClick={onAddCustomGroup} className="min-h-11 w-full justify-center sm:w-auto">
             <Plus className="w-4 h-4 mr-2" />
             Add Custom Group
           </Button>
@@ -82,7 +83,7 @@ const ManageStuSeCriteria: React.FC<ManageStuSeCriteriaProps> = ({
       {criteriaGroups.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 px-4 text-center border-2 border-dashed border-border rounded-xl bg-bg-secondary/50">
           <div className="w-16 h-16 bg-surface-white rounded-xl shadow-none border border-border flex items-center justify-center mb-4">
-            <ClipboardList className="w-8 h-8 text-slate-300" />
+            <ClipboardList className="w-8 h-8 text-text-secondary/50" />
           </div>
           <h4 className="text-text-primary font-bold">
             No criteria groups yet
@@ -149,7 +150,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
   return (
     <div
       className={clsx(
-        "group bg-surface-white rounded-xl border transition-all duration-300 overflow-hidden shadow-none hover:shadow-none",
+        "group overflow-hidden rounded-xl border bg-surface-white transition-colors duration-200 motion-reduce:transition-none hover:border-primary/30",
         group.isAiGenerated ? "border-primary/20" : "border-border",
       )}
     >
@@ -186,8 +187,10 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
           </div>
         </div>
         <button
+          type="button"
+          aria-label="Delete criteria group"
           onClick={onDelete}
-          className="p-2 text-text-secondary hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
           title="Delete Group"
         >
           <Trash2 className="w-4 h-4" />
@@ -205,7 +208,7 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
             value={group.description}
             onChange={(e) => onUpdateDescription(e.target.value)}
             placeholder="Describe the theme or focus of this criteria group..."
-            className="w-full px-4 py-3 bg-bg-secondary border border-border rounded-xl text-text-primary text-sm focus:ring-2 focus:ring-accent focus:border-transparent transition-all outline-none min-h-[80px]"
+            className="min-h-[80px] w-full rounded-xl border border-border bg-bg-secondary px-4 py-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow,background-color] focus:border-primary focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           />
         </div>
 
@@ -214,13 +217,14 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
           {/* Inclusion Criteria */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h5 className="text-xs font-bold text-emerald-700 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+              <h5 className="text-xs font-bold text-success uppercase tracking-widest flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-success" />
                 Inclusion Criteria
               </h5>
               <button
+                type="button"
                 onClick={() => onAddCriterion("inclusion")}
-                className="text-[10px] font-bold text-emerald-600 hover:text-emerald-700 flex items-center gap-1 px-2 py-1 hover:bg-emerald-50 rounded-xl transition-colors"
+                className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2 text-xs font-bold text-success transition-colors hover:bg-success/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
               >
                 <Plus className="w-3 h-3" />
                 Add Criterion
@@ -250,13 +254,14 @@ const CriteriaGroupCard: React.FC<CriteriaGroupCardProps> = ({
           {/* Exclusion Criteria */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h5 className="text-xs font-bold text-rose-700 uppercase tracking-widest flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-rose-500" />
+              <h5 className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-error">
+                <div className="h-2 w-2 rounded-full bg-error" />
                 Exclusion Criteria
               </h5>
               <button
+                type="button"
                 onClick={() => onAddCriterion("exclusion")}
-                className="text-[10px] font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 px-2 py-1 hover:bg-rose-50 rounded-xl transition-colors"
+                className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-xl px-2 text-xs font-bold text-error transition-colors hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
               >
                 <Plus className="w-3 h-3" />
                 Add Criterion
@@ -300,7 +305,7 @@ const CriterionItemRow = ({
   onUpdate: (text: string) => void;
 }) => {
   return (
-    <div className="group/item relative bg-bg-secondary hover:bg-surface-white border border-transparent hover:border-border rounded-xl p-3 transition-all">
+    <div className="group/item relative rounded-xl border border-transparent bg-bg-secondary p-3 transition-colors duration-150 hover:border-border hover:bg-surface-white motion-reduce:transition-none">
       <div className="flex gap-3">
         <textarea
           value={criterion.text}
@@ -309,8 +314,10 @@ const CriterionItemRow = ({
           className="flex-1 bg-transparent border-none text-text-primary text-sm resize-none outline-none focus:ring-0 p-0 leading-relaxed min-h-[40px]"
         />
         <button
+          type="button"
+          aria-label={`Delete ${type} criterion`}
           onClick={onDelete}
-          className="p-1.5 text-slate-300 hover:text-rose-600 opacity-0 group-hover/item:opacity-100 transition-opacity"
+          className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary opacity-0 transition-opacity group-hover/item:opacity-100 group-focus-within/item:opacity-100 hover:bg-error/10 hover:text-error focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
         >
           <Trash2 className="w-3.5 h-3.5" />
         </button>
@@ -336,7 +343,7 @@ const SourceBadge = ({ source }: { source: CriterionSource }) => {
         "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold border shadow-none",
         isPicoc
           ? "bg-primary-light text-accent border-primary/20"
-          : "bg-bg-secondary text-indigo-700 border-indigo-100",
+          : "border-border bg-bg-secondary text-text-secondary",
       )}
     >
       <Tag className="w-2.5 h-2.5 opacity-60" />

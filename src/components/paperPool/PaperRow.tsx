@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FiAlertCircle, FiCheckCircle, FiEye, FiLink, FiLoader, FiTrash2 } from "react-icons/fi";
 import ConfirmModal from "../ui/ConfirmModal";
+import Checkbox from "../ui/Checkbox";
 import type { PaperPoolItem } from "./types";
 import PaperPdfActions from "../reviewProcess/leader/PaperPdfActions";
 import type { PaperDetailsResponse } from "../../types/paper";
@@ -33,7 +34,7 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
   // A queued job that already failed once is waiting to be retried (e.g. GROBID is offline).
   if (status === "PENDING" && paper.pdfProcessingError) {
     return (
-      <span className={`${base} bg-amber-50 text-amber-700`} title={`${paper.pdfProcessingError}. Retrying automatically.`}>
+      <span className={`${base} border border-warning/20 bg-warning/10 text-warning`} title={`${paper.pdfProcessingError}. Retrying automatically.`}>
         <FiAlertCircle className="h-3 w-3" />
         Retrying
       </span>
@@ -45,14 +46,14 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
         className={`${base} bg-primary-light text-accent`}
         title={status === "PENDING" ? "Waiting in the extraction queue" : "Extracting full text with GROBID"}
       >
-        <FiLoader className="h-3 w-3 animate-spin" />
+        <FiLoader aria-hidden="true" className="h-3 w-3 motion-safe:animate-spin motion-reduce:animate-none" />
         Loading
       </span>
     );
   }
   if (status === "FAILED") {
     return (
-      <span className={`${base} bg-red-50 text-red-600`} title={paper.pdfProcessingError || "Full-text extraction failed"}>
+      <span className={`${base} border border-error/20 bg-error/10 text-error`} title={paper.pdfProcessingError || "Full-text extraction failed"}>
         <FiAlertCircle className="h-3 w-3" />
         Failed
       </span>
@@ -61,7 +62,7 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
   if (paper.pdfFullTextStatus === "PARTIAL") {
     return (
       <span
-        className={`${base} bg-amber-50 text-amber-700`}
+        className={`${base} border border-warning/20 bg-warning/10 text-warning`}
         title="Only metadata and references could be extracted from the PDF"
       >
         <FiAlertCircle className="h-3 w-3" />
@@ -71,14 +72,14 @@ function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
   }
   if (paper.pdfFullTextStatus === "COMPLETED" || status === "COMPLETED") {
     return (
-      <span className={`${base} bg-green-50 text-green-700`} title="PDF uploaded">
+      <span className={`${base} border border-success/20 bg-success/10 text-success`} title="PDF uploaded">
         <FiCheckCircle className="h-3 w-3" />
         Loaded
       </span>
     );
   }
   return (
-    <span className={`${base} bg-amber-50 text-amber-800`} title="A PDF is attached, but full text has not been extracted">
+    <span className={`${base} border border-warning/20 bg-warning/10 text-warning`} title="A PDF is attached, but full text has not been extracted">
       NOT FULL TEXT
     </span>
   );
@@ -128,19 +129,18 @@ export default function PaperRow({
 
   return (
     <tr
-      className={`group border-b border-border transition-all duration-200 ${
+      className={`group border-b border-border transition-colors duration-150 motion-reduce:transition-none ${
         isSelected ? "bg-bg-secondary/40" : "hover:bg-bg-secondary/80"
       }`}
     >
       {isLeader && (
         <td className="px-6 py-4 align-top">
           <div className="flex items-center pt-0.5">
-            <input
-              type="checkbox"
+            <Checkbox
               checked={isSelected}
               onChange={(e) => onToggleSelect(paper.id, e.target.checked)}
-              className="w-4 h-4 rounded border-border text-accent focus:ring-accent/20 transition-all cursor-pointer"
               aria-label={`Select paper ${paper.id}`}
+              wrapperClassName="h-8 w-8 justify-center rounded-lg transition-colors hover:bg-primary-light motion-reduce:transition-none"
             />
           </div>
         </td>
@@ -150,7 +150,7 @@ export default function PaperRow({
           isLeader ? "px-3" : "px-4 sm:px-5"
         } py-4 align-top`}
       >
-        <span className="text-[10px] font-mono font-bold text-text-secondary bg-bg-secondary/50 px-1.5 py-0.5 rounded leading-none">
+        <span className="whitespace-nowrap rounded bg-bg-secondary/50 px-1.5 py-0.5 font-mono text-[10px] font-bold leading-none text-text-secondary">
           {paper.id.slice(0, 8)}...
         </span>
       </td>
@@ -161,17 +161,17 @@ export default function PaperRow({
             className="block min-w-0 max-w-full text-left group/title focus:outline-none"
             title={paper.title}
           >
-            <span className="block truncate whitespace-nowrap text-sm font-bold text-text-primary leading-snug group-hover/title:text-accent transition-colors">
+            <span className="line-clamp-2 break-words text-sm font-bold leading-snug text-text-primary transition-colors group-hover/title:text-accent">
               {paper.title}
             </span>
           </button>
           {!paper.abstract?.trim() && (
-            <span className="mt-1.5 w-fit rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+            <span className="mt-1.5 w-fit rounded-full border border-warning/20 bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
               Missing abstract
             </span>
           )}
-          <div className="text-xs font-medium text-text-secondary mt-1.5 flex items-center gap-1.5">
-            <span className="truncate max-w-[280px]">{paper.authors}</span>
+          <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-text-secondary">
+            <span className="min-w-0 max-w-[280px] truncate">{paper.authors}</span>
           </div>
         </div>
       </td>
@@ -196,7 +196,7 @@ export default function PaperRow({
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
-            <span className="text-[11px] font-bold text-text-secondary truncate max-w-[100px]">
+            <span className="min-w-0 max-w-[104px] truncate text-[11px] font-bold text-text-secondary" title={paper.source}>
               {paper.source}
             </span>
           </div>
@@ -222,14 +222,17 @@ export default function PaperRow({
       <td className="px-6 py-4 align-top text-right">
         <div className="flex items-center justify-end gap-2">
           <button
+            type="button"
+            aria-label={`View details for ${paper.title}`}
             onClick={() => onViewDetails(paper)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-border px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-text-primary hover:bg-surface-white hover:border-accent hover:text-accent hover:shadow-sm transition-all duration-200"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border border-border px-3 text-[11px] font-black uppercase tracking-wider text-text-primary transition-colors hover:border-accent hover:bg-surface-white hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           >
             <FiEye className="h-3.5 w-3.5" />
           </button>
           {onDeletePaper && (
             <button
               type="button"
+              aria-label={`Delete ${paper.title}`}
               onClick={() => {
                 if (onDeleteClick) {
                   onDeleteClick(paper);
@@ -238,11 +241,11 @@ export default function PaperRow({
                 }
               }}
               disabled={isDeletingPaper}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-red-100 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider text-red-600 hover:bg-surface-white hover:border-red-500 hover:text-red-700 hover:shadow-none transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border border-error/20 px-3 text-[11px] font-black uppercase tracking-wider text-error transition-colors hover:border-error/50 hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
               title="Delete paper"
             >
               {isDeletingPaper ? (
-                <div className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-red-400 border-t-transparent" />
+                <div aria-hidden="true" className="h-3.5 w-3.5 rounded-full border-2 border-error border-t-transparent motion-safe:animate-spin motion-reduce:animate-none" />
               ) : (
                 <FiTrash2 className="h-3.5 w-3.5" />
               )}

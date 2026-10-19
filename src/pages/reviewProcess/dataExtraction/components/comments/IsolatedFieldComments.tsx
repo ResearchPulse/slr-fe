@@ -94,7 +94,7 @@ export default function IsolatedFieldComments({
         className="flex-1 space-y-3 overflow-y-auto pr-1"
       >
         {orderedComments.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 bg-bg-secondary p-4 text-sm text-text-secondary">
+          <div className="rounded-xl border border-dashed border-border bg-bg-secondary p-4 text-sm text-text-secondary">
             No messages in this thread yet.
           </div>
         ) : (
@@ -117,7 +117,7 @@ export default function IsolatedFieldComments({
                   }
                 >
                   <div className="flex items-center gap-2">
-                    <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-800 text-[10px] font-semibold text-white">
+                    <div className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-text-primary text-[10px] font-semibold text-white">
                       {getInitials(comment.userName)}
                     </div>
                     <p className="text-xs font-semibold text-text-primary">
@@ -149,7 +149,7 @@ export default function IsolatedFieldComments({
             placeholder="Type your message..."
             disabled={isLoading}
             rows={3}
-            className="w-full resize-none rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-accent disabled:cursor-not-allowed disabled:bg-bg-secondary"
+            className="min-h-11 w-full resize-none rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary motion-reduce:transition-none"
           />
           <Button
             onClick={() => {

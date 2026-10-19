@@ -91,7 +91,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <div
           id={contentId}
           className={cn(
-            "absolute z-(--z-index-dropdown) rounded-xl focus:outline-none",
+            "absolute z-(--z-index-dropdown) ui-popover-enter rounded-xl focus:outline-none",
             !contentClassName?.includes("bg-") && "bg-surface-white",
             !contentClassName?.includes("w-") && "w-56",
             !contentClassName?.includes("shadow-") && "shadow-lg",
@@ -124,7 +124,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   return (
     <button
       className={cn(
-        "flex min-h-10 w-full items-center px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent",
+        "flex min-h-11 w-full items-center px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
         className,
       )}
       type={props.type ?? "button"}
@@ -132,7 +132,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
       {...props}
     >
       {icon && (
-        <span className="mr-3 text-text-muted group-hover:text-accent">
+        <span aria-hidden="true" className="mr-3 text-text-muted group-hover:text-primary">
           {icon}
         </span>
       )}

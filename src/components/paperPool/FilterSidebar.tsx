@@ -71,11 +71,11 @@ export default function FilterSidebar({
 
   if (isCollapsed) {
     return (
-      <aside className="flex w-full items-center gap-3 rounded-xl border border-border bg-white p-3 shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-16 lg:h-full lg:flex-col lg:py-6">
+      <aside className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface-white p-3 shadow-sm motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-4 lg:w-16 lg:h-full lg:flex-col lg:py-6">
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="rounded-xl border border-border bg-white p-2.5 text-text-secondary transition-colors hover:bg-slate-50 hover:text-accent lg:mb-8"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:mb-8"
           title="Expand Filters"
           aria-label="Expand filters"
         >
@@ -92,7 +92,7 @@ export default function FilterSidebar({
   }
 
   return (
-    <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm transition-all duration-300 lg:sticky lg:top-4 lg:w-80 lg:h-full">
+    <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-4 lg:w-80 lg:h-full">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
@@ -103,7 +103,7 @@ export default function FilterSidebar({
             <h3 className="text-sm font-semibold text-text-primary">
               Filters
             </h3>
-            <p className="text-[10px] font-medium uppercase tracking-wider text-text-secondary">
+            <p className="text-xs text-text-secondary">
               Refine Paper Pool
             </p>
           </div>
@@ -111,7 +111,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="rounded-xl p-2 text-text-secondary transition-colors hover:bg-slate-50 hover:text-text-primary"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           aria-label="Collapse filters"
         >
           <FiChevronLeft className="h-5 w-5" />
@@ -122,25 +122,25 @@ export default function FilterSidebar({
       <div className="space-y-3 p-3 sm:p-4">
         {/* Search Input */}
         <div className="space-y-1.5">
-          <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+          <label className="px-0.5 text-xs font-medium text-text-secondary">
             Keywords
           </label>
           <div className="relative group">
-            <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
+            <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted motion-safe:transition-colors motion-reduce:transition-none group-focus-within:text-accent" />
             <input
               value={filters.keyword}
               onChange={(e) =>
                 onChange({ ...filters, keyword: e.target.value })
               }
               placeholder="Search concepts..."
-              className="h-10 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
         </div>
 
         {/* Year Range */}
         <div className="space-y-1.5">
-          <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+          <label className="px-0.5 text-xs font-medium text-text-secondary">
             Publication Year
           </label>
           <div className="grid grid-cols-2 gap-3">
@@ -166,7 +166,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="From"
-                className="h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               />
             </div>
             <div className="relative group">
@@ -191,7 +191,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="To"
-                className="h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               />
             </div>
           </div>
@@ -200,7 +200,7 @@ export default function FilterSidebar({
         {/* Source & Batch */}
         <div className="space-y-3">
           <div className="space-y-1.5">
-            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+            <label className="px-0.5 text-xs font-medium text-text-secondary">
               Paper Source
             </label>
             <select
@@ -208,7 +208,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, paperSource: e.target.value })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Paper Sources</option>
               {availablePaperSources.map((source) => (
@@ -219,7 +219,7 @@ export default function FilterSidebar({
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+            <label className="px-0.5 text-xs font-medium text-text-secondary">
               Search Source
             </label>
             <select
@@ -227,7 +227,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, searchSourceId: e.target.value })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Sources</option>
               {availableSources.map((source) => (
@@ -238,7 +238,7 @@ export default function FilterSidebar({
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+            <label className="px-0.5 text-xs font-medium text-text-secondary">
               Import Batch
             </label>
             <select
@@ -246,7 +246,7 @@ export default function FilterSidebar({
               onChange={(e) =>
                 onChange({ ...filters, importBatchId: e.target.value })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Batches</option>
               {availableBatches.map((batch) => (
@@ -258,7 +258,7 @@ export default function FilterSidebar({
           </div>
 
           <div className="space-y-1.5">
-            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+            <label className="px-0.5 text-xs font-medium text-text-secondary">
               DOI Availability
             </label>
             <select
@@ -269,7 +269,7 @@ export default function FilterSidebar({
                   doiState: e.target.value as PaperPoolFilters["doiState"],
                 })
               }
-              className="h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">Any DOI Status</option>
               <option value="has">Has DOI</option>
@@ -278,7 +278,7 @@ export default function FilterSidebar({
           </div>
 
           <div className="space-y-1.5">
-            <label className="px-0.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+            <label className="px-0.5 text-xs font-medium text-text-secondary">
               Fulltext Availability
             </label>
             <div className="relative" ref={fullTextDropdownRef}>
@@ -289,7 +289,7 @@ export default function FilterSidebar({
                 aria-expanded={isFullTextOpen}
                 aria-controls="fulltext-status-options"
                 onClick={() => setIsFullTextOpen((open) => !open)}
-                className="flex h-10 w-full items-center justify-between rounded-xl border border-border bg-surface-white px-3.5 text-left text-sm font-medium text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20"
+                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-border bg-surface-white px-3.5 text-left text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               >
                 <span>
                   {fullTextOptions.find(
@@ -315,10 +315,10 @@ export default function FilterSidebar({
                         onChange({ ...filters, fullTextState: option.value });
                         setIsFullTextOpen(false);
                       }}
-                      className={`w-full rounded-lg px-3.5 py-2 text-left text-sm transition-colors ${
+                      className={`min-h-11 w-full rounded-lg px-3.5 py-2 text-left text-sm motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 ${
                         filters.fullTextState === option.value
-                          ? "bg-slate-600 text-white"
-                          : "text-text-primary hover:bg-slate-100"
+                          ? "bg-primary text-white"
+                          : "text-text-primary hover:bg-bg-secondary"
                       }`}
                     >
                       {option.label}
@@ -332,29 +332,29 @@ export default function FilterSidebar({
 
         {/* State Filters */}
         <div className="space-y-1 border-t border-border pt-3">
-          <label           className="group flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50">
+          <label className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
             <input
               type="checkbox"
               checked={filters.onlyUnused}
               onChange={(e) =>
                 onChange({ ...filters, onlyUnused: e.target.checked })
               }
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20"
             />
-            <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+            <span className="text-sm text-text-secondary motion-safe:transition-colors motion-reduce:transition-none group-hover:text-text-primary">
               Only Unused Papers
             </span>
           </label>
-          <label           className="group flex cursor-pointer items-center gap-3 rounded-xl p-2 transition-colors hover:bg-slate-50">
+          <label className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
             <input
               type="checkbox"
               checked={filters.recentlyImported}
               onChange={(e) =>
                 onChange({ ...filters, recentlyImported: e.target.checked })
               }
-              className="h-4 w-4 rounded border-border text-accent focus:ring-accent/20"
+              className="h-4 w-4 rounded border-border text-primary focus:ring-primary/20"
             />
-            <span className="text-sm text-text-secondary transition-colors group-hover:text-text-primary">
+            <span className="text-sm text-text-secondary motion-safe:transition-colors motion-reduce:transition-none group-hover:text-text-primary">
               Recently Imported
             </span>
           </label>
@@ -362,11 +362,11 @@ export default function FilterSidebar({
       </div>
 
       {/* Footer Actions */}
-      <div className="space-y-1.5 border-t border-border bg-slate-50/70 p-3">
+      <div className="space-y-1.5 border-t border-border bg-bg-primary p-3">
         <Button
           variant="secondary"
           onClick={onAddToProcess}
-          className="w-full rounded-xl text-xs font-semibold"
+          className="min-h-11 w-full rounded-xl text-xs font-semibold"
         >
           <FiLayers className="w-4 h-4 mr-2" />
           Add to Review Process
@@ -374,14 +374,14 @@ export default function FilterSidebar({
         <Button
           onClick={onSaveCurrent}
           isLoading={isSaving}
-          className="w-full rounded-xl text-xs font-semibold"
+          className="min-h-11 w-full rounded-xl text-xs font-semibold"
         >
           <FiSave className="w-4 h-4 mr-2" />
           Save As Collection
         </Button>
         <button
           onClick={onReset}
-          className="flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary"
+          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl text-xs font-medium text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
         >
           <FiRotateCcw className="w-3.5 h-3.5" />
           Reset All Filters

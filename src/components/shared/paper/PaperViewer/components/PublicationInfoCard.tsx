@@ -64,13 +64,13 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
               {field.isUpdated && (
                 <div className="group/spark relative flex items-center">
                   <Sparkles className="w-2.5 h-2.5 text-accent" />
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-slate-900 text-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
+                  <div className="absolute left-full ml-2 px-2 py-1 bg-text-primary text-surface-white text-[9px] font-black uppercase tracking-[0.1em] rounded-xl opacity-0 group-hover/spark:opacity-100 transition-opacity whitespace-nowrap z-(--z-index-tooltip) pointer-events-none shadow-none border border-white/10 backdrop-blur-md">
                     Suggested applied
                   </div>
                 </div>
               )}
             </div>
-            <p className="text-sm font-bold text-slate-800 break-words">
+            <p className="text-sm font-bold text-text-primary break-words">
               {field.value || "N/A"}
             </p>
           </div>

@@ -76,7 +76,7 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
   if (!isLeader) {
     return (
       <div className="flex flex-col items-center justify-center h-full p-20 bg-surface-white rounded-xl shadow-none border border-border">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-amber-100 text-amber-600">
+        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-warning/10 text-warning">
           <FiAlertCircle className="h-8 w-8" />
         </div>
         <h2 className="text-xl font-bold text-text-primary">
@@ -114,7 +114,7 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
             <button
               type="button"
               onClick={handleBack}
-              className="inline-flex min-h-9 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden="true" />
               <span className="hidden sm:inline">Back to papers</span>
@@ -143,7 +143,7 @@ const SnowballingCandidatesPage: React.FC<SnowballingCandidatesPageProps> = ({
           />
         ) : (
           <div className="h-full flex flex-col items-center justify-center p-20 bg-surface-white">
-            <Loader2 className="w-10 h-10 animate-spin text-primary/40 mb-4" />
+            <Loader2 aria-hidden="true" className="w-10 h-10 motion-safe:animate-spin motion-reduce:animate-none text-primary/40 mb-4" />
             <p className="text-sm font-black uppercase tracking-widest text-text-secondary">
               Loading Workspace...
             </p>

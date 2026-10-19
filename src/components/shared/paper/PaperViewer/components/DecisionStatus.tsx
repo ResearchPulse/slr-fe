@@ -35,8 +35,8 @@ export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper, phase }) 
         className={cn(
           "flex items-center gap-3 px-6 py-3 rounded-xl border font-black uppercase tracking-widest text-[11px]",
           isInclude
-            ? "bg-emerald-50 text-emerald-700 border-emerald-100"
-            : "bg-rose-50 text-rose-700 border-rose-100",
+            ? "bg-success/10 text-success border-success/20"
+            : "bg-error/10 text-error border-error/20",
         )}
       >
         {isInclude ? (
@@ -64,10 +64,10 @@ export const DecisionStatus: React.FC<DecisionStatusProps> = ({ paper, phase }) 
       className={cn(
         "flex items-center gap-3 px-6 py-3 rounded-xl border font-black uppercase tracking-widest text-[11px]",
         isIncluded
-          ? "bg-emerald-50 text-emerald-700 border-emerald-100"
+          ? "bg-success/10 text-success border-success/20"
           : isExcluded
-            ? "bg-rose-50 text-rose-700 border-rose-100"
-            : "bg-amber-50 text-amber-700 border-amber-100",
+            ? "bg-error/10 text-error border-error/20"
+            : "bg-warning/10 text-warning border-warning/20",
       )}
     >
       {isIncluded ? (

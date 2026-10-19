@@ -113,7 +113,7 @@ export default function RichTextEditor({
 
   return (
     <div
-      className={`overflow-hidden rounded-xl bg-surface-white shadow-none ring-1 ring-gray-200 ${className}`}
+      className={`overflow-hidden rounded-xl bg-surface-white shadow-none ring-1 ring-border ${className}`}
     >
       <div
         className={`flex flex-wrap items-center gap-2 border-b border-border bg-bg-primary px-4 py-3 ${readOnly ? "pointer-events-none opacity-60" : ""}`}
@@ -122,7 +122,9 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat("bold")}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("bold") ? "border-primary/20 text-accent" : "border-border text-text-primary"}`}
+            disabled={readOnly}
+            aria-pressed={editor?.isActive("bold") ?? false}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-surface-white transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none disabled:cursor-not-allowed ${editor?.isActive("bold") ? "border-primary/20 text-primary" : "border-border text-text-primary"}`}
             aria-label="Bold"
           >
             <span className="sr-only">Bold</span>
@@ -131,7 +133,9 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat("italic")}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("italic") ? "border-primary/20 text-accent" : "border-border text-text-primary"}`}
+            disabled={readOnly}
+            aria-pressed={editor?.isActive("italic") ?? false}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-surface-white transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none disabled:cursor-not-allowed ${editor?.isActive("italic") ? "border-primary/20 text-primary" : "border-border text-text-primary"}`}
             aria-label="Italic"
           >
             <span className="sr-only">Italic</span>
@@ -140,7 +144,9 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat("underline")}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("underline") ? "border-primary/20 text-accent" : "border-border text-text-primary"}`}
+            disabled={readOnly}
+            aria-pressed={editor?.isActive("underline") ?? false}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-surface-white transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none disabled:cursor-not-allowed ${editor?.isActive("underline") ? "border-primary/20 text-primary" : "border-border text-text-primary"}`}
             aria-label="Underline"
           >
             <span className="sr-only">Underline</span>
@@ -152,7 +158,9 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat("bulletList")}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("bulletList") ? "border-primary/20 text-accent" : "border-border text-text-primary"}`}
+            disabled={readOnly}
+            aria-pressed={editor?.isActive("bulletList") ?? false}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-surface-white transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none disabled:cursor-not-allowed ${editor?.isActive("bulletList") ? "border-primary/20 text-primary" : "border-border text-text-primary"}`}
             aria-label="Bullet list"
           >
             <span className="sr-only">Bullet list</span>
@@ -161,7 +169,9 @@ export default function RichTextEditor({
           <button
             type="button"
             onClick={() => applyFormat("orderedList")}
-            className={`inline-flex h-9 w-9 items-center justify-center rounded-xl border bg-surface-white transition hover:bg-bg-secondary ${editor?.isActive("orderedList") ? "border-primary/20 text-accent" : "border-border text-text-primary"}`}
+            disabled={readOnly}
+            aria-pressed={editor?.isActive("orderedList") ?? false}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border bg-surface-white transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none disabled:cursor-not-allowed ${editor?.isActive("orderedList") ? "border-primary/20 text-primary" : "border-border text-text-primary"}`}
             aria-label="Numbered list"
           >
             <span className="sr-only">Numbered list</span>

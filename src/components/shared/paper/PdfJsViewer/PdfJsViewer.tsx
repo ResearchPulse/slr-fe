@@ -129,7 +129,7 @@ function PdfPageThumbnail({
   }, [observerRoot, pageNumber, pdf]);
 
   return (
-    <div className="flex h-[116px] items-center justify-center overflow-hidden rounded-md bg-slate-100 p-1.5">
+    <div className="flex h-[116px] items-center justify-center overflow-hidden rounded-md bg-bg-secondary p-1.5">
       <canvas
         ref={canvasRef}
         aria-label={`Preview of page ${pageNumber}`}
@@ -596,13 +596,13 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               className={cn(
                 "flex w-full items-start gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors",
                 isActive
-                  ? "bg-blue-50 font-medium text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
+                  ? "bg-primary/10 font-medium text-primary"
+                  : "text-text-secondary hover:bg-bg-secondary hover:text-text-primary",
               )}
               style={{ paddingLeft: `${10 + depth * 14}px` }}
             >
               <span className="min-w-0 flex-1 truncate">{entry.title}</span>
-              <span className="shrink-0 text-[10px] tabular-nums text-slate-400">
+              <span className="shrink-0 text-[10px] tabular-nums text-text-secondary">
                 {entry.pageIndex + 1}
               </span>
             </button>
@@ -614,14 +614,14 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
     if (error) {
       return (
-        <div className="flex h-full flex-col items-center justify-center gap-3 bg-slate-50 p-8 text-center text-slate-500">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+        <div className="flex h-full flex-col items-center justify-center gap-3 bg-bg-secondary p-8 text-center text-text-secondary">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-error/10 text-error">
             <FileText className="h-6 w-6" />
           </div>
-          <div className="text-sm font-semibold text-slate-800">
+          <div className="text-sm font-semibold text-text-primary">
             Unable to display PDF preview
           </div>
-          <p className="max-w-md text-xs text-slate-500">
+          <p className="max-w-md text-xs text-text-secondary">
             {error.includes("401") || error.includes("Missing PDF")
               ? "Access to the PDF was denied or the document URL is no longer valid."
               : error}
@@ -630,7 +630,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
             href={fileUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-blue-700"
+            className="mt-1 inline-flex min-h-11 items-center gap-2 rounded-xl bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
           >
             Open PDF <ExternalLink className="h-3.5 w-3.5" />
           </a>
@@ -640,8 +640,8 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
     if (!activePdf || Object.keys(pageInfoMap).length !== numPages) {
       return (
-        <div className="flex h-full items-center justify-center bg-slate-50 text-sm text-slate-500">
-          <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-slate-300 border-t-blue-600" />
+        <div role="status" aria-live="polite" className="flex h-full items-center justify-center bg-bg-secondary text-sm text-text-secondary">
+          <span aria-hidden="true" className="mr-2 h-4 w-4 rounded-full border-2 border-border border-t-primary motion-safe:animate-spin motion-reduce:animate-none" />
           Loading document…
         </div>
       );
@@ -651,18 +651,18 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     return (
       <div
         ref={viewerRef}
-        className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-slate-100 text-slate-800"
+        className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-bg-secondary text-text-primary"
       >
-        <header className="z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-3 py-2 shadow-sm sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
+        <header className="z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-white px-3 py-2 shadow-sm sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
           <div className="flex min-w-0 flex-1 items-center gap-2 lg:max-w-[23%]">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-700">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <FileText className="h-4 w-4" />
             </span>
             <div className="min-w-0">
-              <p title={documentName} className="truncate text-xs font-semibold text-slate-800">
+              <p title={documentName} className="truncate text-xs font-semibold text-text-primary">
                 {documentName}
               </p>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-text-secondary">
                 {numPages} {numPages === 1 ? "page" : "pages"}
               </p>
             </div>
@@ -680,7 +680,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               <ChevronLeft className="h-4 w-4" />
             </button>
             <form
-              className="flex items-center gap-1 text-xs text-slate-500"
+              className="flex items-center gap-1 text-xs text-text-secondary"
               onSubmit={(event) => {
                 event.preventDefault();
                 handlePageSubmit();
@@ -695,7 +695,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                   if (event.key === "Escape") setPageInput(String(activePage));
                 }}
                 inputMode="numeric"
-                className="h-8 w-11 rounded-md border border-slate-200 bg-white text-center text-xs font-medium tabular-nums outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+                className="h-11 w-11 rounded-lg border border-border bg-surface-white text-center text-xs font-medium tabular-nums outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
               <span className="whitespace-nowrap">/ {numPages}</span>
             </form>
@@ -710,7 +710,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               <ChevronRight className="h-4 w-4" />
             </button>
 
-            <span className="mx-1 hidden h-5 w-px bg-slate-200 sm:block" />
+            <span className="mx-1 hidden h-5 w-px bg-border sm:block" />
             <button
               type="button"
               onClick={() => updateZoom(zoom - 0.1)}
@@ -724,7 +724,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               value={activeZoomPercent}
               aria-label="Zoom percentage"
               onChange={(event) => updateZoom(Number(event.target.value) / 100)}
-              className="h-8 rounded-md border border-slate-200 bg-white px-2 text-xs font-medium text-slate-700 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
+              className="h-11 rounded-lg border border-border bg-surface-white px-2 text-xs font-medium text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               {!ZOOM_LEVELS.includes(activeZoomPercent) && (
                 <option value={activeZoomPercent}>{activeZoomPercent}%</option>
@@ -846,9 +846,9 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         {isSearchOpen && (
           <form
             onSubmit={searchDocument}
-            className="flex shrink-0 items-center gap-2 border-b border-slate-200 bg-white px-4 py-2"
+            className="flex shrink-0 items-center gap-2 border-b border-border bg-surface-white px-4 py-2"
           >
-            <Search className="h-4 w-4 shrink-0 text-slate-400" />
+            <Search className="h-4 w-4 shrink-0 text-text-secondary" />
             <input
               autoFocus
               value={searchInput}
@@ -860,11 +860,11 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               }}
               placeholder="Search text in this document…"
               aria-label="Search text in PDF"
-              className="h-9 min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-slate-400"
+              className="h-11 min-w-0 flex-1 bg-transparent text-sm text-text-primary outline-none placeholder:text-text-secondary"
             />
             {searchPages.length > 0 && (
               <>
-                <span className="whitespace-nowrap text-xs tabular-nums text-slate-500">
+                <span className="whitespace-nowrap text-xs tabular-nums text-text-secondary">
                   {searchResultIndex + 1} / {searchPages.length} pages
                 </span>
                 <button type="button" onClick={() => moveSearchResult(-1)} className="reader-icon-button" title="Previous match">
@@ -875,12 +875,12 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                 </button>
               </>
             )}
-            {isSearching && <span className="text-xs text-slate-500">Searching…</span>}
+            {isSearching && <span className="text-xs text-text-secondary">Searching…</span>}
             {!isSearching && hasSearched && searchInput && searchPages.length === 0 && (
-              <span className="whitespace-nowrap text-xs text-slate-500">No matches</span>
+              <span className="whitespace-nowrap text-xs text-text-secondary">No matches</span>
             )}
             {!isSearching && searchInput && searchPages.length === 0 && (
-              <button type="submit" className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700">
+              <button type="submit" className="min-h-11 shrink-0 rounded-lg bg-primary px-3 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
                 Search
               </button>
             )}
@@ -892,14 +892,14 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
         <div className="flex min-h-0 flex-1">
           {navigationMode && (
-            <aside className="flex w-60 shrink-0 flex-col border-r border-slate-200 bg-white sm:w-64">
-              <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2.5">
+            <aside className="flex w-60 shrink-0 flex-col border-r border-border bg-surface-white sm:w-64">
+              <div className="flex items-center justify-between border-b border-border px-3 py-2.5">
                 <div className="min-w-0">
-                  <h2 className="text-xs font-semibold text-slate-800">
+                  <h2 className="text-xs font-semibold text-text-primary">
                     {navigationMode === "outline" ? "Document outline" : "Page thumbnails"}
                   </h2>
                   {navigationMode === "outline" && currentSectionTitle && (
-                    <p title={currentSectionTitle} className="mt-0.5 truncate text-[10px] text-slate-400">
+                    <p title={currentSectionTitle} className="mt-0.5 truncate text-[10px] text-text-secondary">
                       {currentSectionTitle}
                     </p>
                   )}
@@ -909,7 +909,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                   onClick={() => setNavigationMode(null)}
                   title="Close navigation panel"
                   aria-label="Close navigation panel"
-                  className="reader-icon-button h-7 w-7"
+                  className="reader-icon-button"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -923,9 +923,9 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                     renderOutlineEntries(navigationEntries)
                   ) : (
                     <div className="flex h-full min-h-40 flex-col items-center justify-center px-4 text-center">
-                      <ListTree className="mb-2 h-5 w-5 text-slate-300" />
-                      <p className="text-xs font-medium text-slate-600">No outline available</p>
-                      <p className="mt-1 text-[11px] leading-relaxed text-slate-400">
+                      <ListTree className="mb-2 h-5 w-5 text-text-secondary" />
+                      <p className="text-xs font-medium text-text-primary">No outline available</p>
+                      <p className="mt-1 text-[11px] leading-relaxed text-text-secondary">
                         This PDF has no bookmarks or detected section headings.
                       </p>
                     </div>
@@ -940,8 +940,8 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                       className={cn(
                         "group w-full rounded-lg border p-2 text-left transition-colors",
                         activePage === pageIndex + 1
-                          ? "border-blue-300 bg-blue-50/70"
-                          : "border-transparent hover:border-slate-200 hover:bg-slate-50",
+                          ? "border-primary/30 bg-primary/5"
+                          : "border-transparent hover:border-border hover:bg-bg-secondary",
                       )}
                     >
                       <PdfPageThumbnail
@@ -949,7 +949,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                         pageNumber={pageIndex + 1}
                         observerRoot={thumbnailRoot}
                       />
-                      <span className="mt-1.5 block text-center text-[10px] font-medium tabular-nums text-slate-500">
+                      <span className="mt-1.5 block text-center text-[10px] font-medium tabular-nums text-text-secondary">
                         Page {pageIndex + 1}
                       </span>
                     </button>
@@ -961,7 +961,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
           <div
             ref={containerRef}
-            className="min-h-0 min-w-0 flex-1 overflow-auto bg-slate-100 p-3 scroll-smooth sm:p-5"
+            className="min-h-0 min-w-0 flex-1 overflow-auto bg-bg-secondary p-3 scroll-smooth sm:p-5"
           >
             <div className="mx-auto flex w-fit min-w-full flex-col items-center gap-4 pb-4">
               {Array.from({ length: numPages }, (_, pageIndex) => {
@@ -976,7 +976,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                       pageRefs.current[pageIndex] = element;
                     }}
                     data-page-number={pageIndex + 1}
-                    className="relative shrink-0 bg-white shadow-[0_4px_18px_rgba(15,23,42,0.12)] ring-1 ring-slate-900/5"
+        className="relative shrink-0 bg-white shadow-[0_4px_18px_rgba(15,23,42,0.12)] ring-1 ring-text-primary/5"
                     style={{
                       width: viewport?.width || "auto",
                       height: viewport?.height || "auto",
@@ -990,7 +990,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                           ref={(element) => {
                             highlightRefs.current[highlight.id] = element;
                           }}
-                          className="absolute rounded-sm border border-blue-500/40 bg-blue-500/25 transition-opacity duration-300"
+                          className="absolute rounded-sm border border-primary/40 bg-primary/25 transition-opacity duration-300 motion-reduce:transition-none"
                           style={{
                             left: highlight.left,
                             top: highlight.top,
@@ -1000,7 +1000,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                         />
                       ))}
                     </div>
-                    <div className="pointer-events-none absolute bottom-2 right-2 rounded-md bg-slate-900/65 px-2 py-1 text-[10px] font-medium tabular-nums text-white backdrop-blur-sm">
+                    <div className="pointer-events-none absolute bottom-2 right-2 rounded-md bg-text-primary/80 px-2 py-1 text-[10px] font-medium tabular-nums text-white backdrop-blur-sm">
                       {pageIndex + 1} / {numPages}
                     </div>
                   </div>
@@ -1010,11 +1010,11 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           </div>
         </div>
         <style>{`
-          .reader-icon-button { display: inline-flex; height: 2rem; width: 2rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: var(--radius-control); color: var(--color-text-secondary); transition: color 150ms, background-color 150ms, border-color 150ms; }
+          .reader-icon-button { display: inline-flex; height: 2.75rem; min-height: 2.75rem; width: 2.75rem; min-width: 2.75rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: var(--radius-control); color: var(--color-text-secondary); transition: color 150ms, background-color 150ms, border-color 150ms; }
           .reader-icon-button:hover:not(:disabled) { background: var(--color-bg-secondary); color: var(--color-text-primary); }
           .reader-icon-button:disabled { cursor: not-allowed; opacity: 0.35; }
           .reader-icon-button:focus-visible, .reader-text-button:focus-visible { outline: 2px solid var(--color-border-focus); outline-offset: 2px; }
-          .reader-text-button { display: inline-flex; height: 2rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: var(--radius-control); padding: 0 0.55rem; color: var(--color-text-secondary); font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
+          .reader-text-button { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: var(--radius-control); padding: 0 0.65rem; color: var(--color-text-secondary); font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
           .reader-text-button:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
           .reader-control-active { background: var(--color-primary-light); color: var(--color-primary-hover); }
           @media (prefers-reduced-motion: reduce) { .reader-icon-button, .reader-text-button { transition: none; } }

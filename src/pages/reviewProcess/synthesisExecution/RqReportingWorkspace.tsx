@@ -6,6 +6,7 @@ import {
   FileText,
   LayoutList,
   Maximize,
+  Minimize2,
   PencilLine,
 } from "lucide-react";
 import Button from "../../../components/ui/Button";
@@ -32,10 +33,10 @@ interface RqReportingWorkspaceProps {
 
 function statusChipClassName(status: FindingStatus): string {
   if (status === "Finalized") {
-    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    return "border-success/20 bg-success/10 text-success";
   }
 
-  return "border-amber-200 bg-amber-50 text-amber-700";
+  return "border-warning/20 bg-warning/10 text-warning";
 }
 
 function FindingEditor({
@@ -83,7 +84,7 @@ function FindingEditor({
           <div className="flex flex-wrap items-center justify-end gap-2">
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={onViewStrategyGuidelines}
               className="rounded-xl text-text-secondary hover:bg-bg-primary hover:text-text-primary"
             >
@@ -127,14 +128,15 @@ function FindingEditor({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={() => setDraftStatus("Draft")}
+            aria-pressed={draftStatus === "Draft"}
             disabled={isReadOnly}
-            className={`rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
+              className={`min-h-11 rounded-xl border px-4 py-2 text-sm font-medium motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none ${
               draftStatus === "Draft"
-                ? "border-amber-300 bg-amber-100 text-amber-800"
+                ? "border-warning/40 bg-warning/10 text-warning"
                 : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"
             } disabled:cursor-not-allowed disabled:opacity-60`}
           >
@@ -143,23 +145,26 @@ function FindingEditor({
           <button
             type="button"
             onClick={() => setDraftStatus("Finalized")}
+            aria-pressed={draftStatus === "Finalized"}
             disabled={isReadOnly}
-            className={`rounded-xl border px-4 py-2 text-sm font-medium transition-colors ${
+              className={`min-h-11 rounded-xl border px-4 py-2 text-sm font-medium motion-safe:transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none ${
               draftStatus === "Finalized"
-                ? "border-emerald-300 bg-emerald-100 text-emerald-800"
+                ? "border-success/30 bg-success/10 text-success"
                 : "border-border bg-surface-white text-text-primary hover:bg-bg-secondary"
             } disabled:cursor-not-allowed disabled:opacity-60`}
           >
             Finalized
           </button>
-          <button
-            type="button"
-            onClick={onToggleFullscreen}
-            className="inline-flex items-center rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary"
-          >
-            <Maximize className="mr-2 h-4 w-4" />
-            {isFullscreen ? "Exit Fullscreen" : "Toggle Fullscreen"}
-          </button>
+          {!isFullscreen ? (
+            <button
+              type="button"
+              onClick={onToggleFullscreen}
+              className="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface-white px-4 py-2 text-sm font-medium text-text-primary motion-safe:transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none"
+            >
+              <Maximize className="mr-2 h-4 w-4" />
+              Toggle Fullscreen
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -216,9 +221,9 @@ export default function RqReportingWorkspace({
 
   if (workspace.findings.length === 0) {
     return (
-      <div className="mx-auto max-w-5xl rounded-xl border border-border/80 bg-surface-white p-4 shadow-sm shadow-slate-200/30 sm:p-6">
+      <div className="mx-auto max-w-5xl rounded-xl border border-border/80 bg-surface-white p-4 sm:p-6">
         <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl bg-bg-primary/60 px-6 py-10 text-center">
-          <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface-white text-primary shadow-sm shadow-slate-200/50">
+          <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-surface-white text-primary">
             <LayoutList className="h-6 w-6" />
           </span>
           <p className="mt-5 text-base font-semibold text-text-primary">
@@ -241,8 +246,24 @@ export default function RqReportingWorkspace({
           : "grid min-w-0 items-start gap-5 2xl:grid-cols-[300px_minmax(0,1fr)_320px] xl:grid-cols-[290px_minmax(0,1fr)]"
       }
     >
+      {isFullscreen ? (
+        <div className="sticky top-0 z-10 -mx-4 -mt-4 mb-4 flex items-center justify-between gap-3 bg-bg-secondary/95 px-2 py-2 backdrop-blur-sm sm:-mx-6 sm:-mt-6">
+          <span className="min-w-0 text-sm font-semibold text-text-primary">
+            Fullscreen answer editor
+          </span>
+          <Button
+            variant="outline"
+            onClick={() => setIsFullscreen(false)}
+            className="min-h-11 shrink-0"
+          >
+            <Minimize2 className="mr-2 h-4 w-4" aria-hidden="true" />
+            Exit Fullscreen
+          </Button>
+        </div>
+      ) : null}
+
       {!isFullscreen ? (
-        <aside className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30">
+        <aside className="rounded-xl border border-border/80 bg-surface-white p-5">
           <div className="mb-4 flex items-center gap-2">
             <LayoutList className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold text-text-primary">
@@ -256,7 +277,8 @@ export default function RqReportingWorkspace({
                 key={finding.id}
                 type="button"
                 onClick={() => setActiveFindingId(finding.id)}
-                className={`w-full rounded-xl border p-4 text-left transition-all ${
+                aria-pressed={activeFinding?.id === finding.id}
+                className={`w-full rounded-xl border p-4 text-left motion-safe:transition-[color,background-color,border-color,box-shadow] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 focus-visible:ring-offset-2 motion-reduce:transition-none ${
                   activeFinding?.id === finding.id
                     ? "border-primary/25 bg-primary-light/50 shadow-sm shadow-primary/10"
                     : "border-border/80 bg-surface-white hover:bg-bg-primary/70"
@@ -286,8 +308,8 @@ export default function RqReportingWorkspace({
       <section
         className={
           isFullscreen
-            ? "min-w-0 min-h-[calc(100vh-2rem)] rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6"
-            : "min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 sm:p-6"
+            ? "min-w-0 min-h-[calc(100vh-2rem)] rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6"
+            : "min-w-0 rounded-xl border border-border/80 bg-surface-white p-5 sm:p-6"
         }
       >
         {activeFinding ? (
@@ -311,7 +333,7 @@ export default function RqReportingWorkspace({
       </section>
 
       {!isFullscreen ? (
-        <aside className="rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 xl:col-span-2 2xl:col-span-1">
+        <aside className="rounded-xl border border-border/80 bg-surface-white p-5 xl:col-span-2 2xl:col-span-1">
           <div className="mb-4 flex items-center gap-2">
             <BookOpenText className="h-5 w-5 text-primary" />
             <h3 className="text-lg font-semibold text-text-primary">

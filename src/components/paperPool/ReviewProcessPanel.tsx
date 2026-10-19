@@ -4,8 +4,8 @@ import {
   FiClock,
   FiFolder,
   FiLayers,
-  FiLoader,
   FiPlus,
+  FiPlay,
   FiXCircle,
 } from "react-icons/fi";
 import type { KeyboardEvent } from "react";
@@ -29,25 +29,25 @@ function statusPresentation(status: ProcessSnapshot["statusText"]) {
       return {
         label: "Completed",
         icon: <FiCheckCircle aria-hidden="true" />,
-        badge: "bg-emerald-50 text-emerald-700 ring-emerald-600/10",
+        badge: "bg-success/10 text-success ring-success/20",
       };
     case "InProgress":
       return {
         label: "In progress",
-        icon: <FiLoader aria-hidden="true" className="animate-spin" />,
-        badge: "bg-blue-50 text-blue-700 ring-blue-600/10",
+        icon: <FiPlay aria-hidden="true" />,
+        badge: "bg-primary-light text-primary ring-primary/20",
       };
     case "Cancelled":
       return {
         label: "Cancelled",
         icon: <FiXCircle aria-hidden="true" />,
-        badge: "bg-slate-100 text-slate-600 ring-slate-500/10",
+        badge: "bg-bg-secondary text-text-secondary ring-border",
       };
     default:
       return {
         label: "Draft",
         icon: <FiClock aria-hidden="true" />,
-        badge: "bg-slate-100 text-slate-600 ring-slate-500/10",
+        badge: "bg-bg-secondary text-text-secondary ring-border",
       };
   }
 }
@@ -174,7 +174,7 @@ export default function ReviewProcessPanel({
                     aria-valuemax={100}
                     aria-valuenow={progress}
                   >
-                    <div className="h-full rounded-full bg-primary transition-[width] duration-500" style={{ width: `${progress}%` }} />
+                    <div className="h-full rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
 

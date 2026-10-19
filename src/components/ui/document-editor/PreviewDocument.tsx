@@ -42,22 +42,22 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
 
   if (!displayData) {
     return (
-      <div className="w-full max-w-3xl mx-auto bg-white min-h-[400px] shadow-sm border border-gray-100 p-12 flex flex-col items-center justify-center rounded-xl">
-        <p className="text-gray-400 italic">No document data provided.</p>
+      <div className="mx-auto flex min-h-[320px] w-full max-w-3xl flex-col items-center justify-center rounded-xl border border-border bg-surface-white p-6 text-center">
+        <p className="text-sm italic text-text-secondary">No document data provided.</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto bg-white min-h-[1000px] shadow-sm border border-gray-100 p-12 sm:p-16 lg:p-20 flex flex-col gap-8 transition-all duration-300">
+    <div className="mx-auto flex min-h-[720px] w-full max-w-3xl flex-col gap-8 rounded-xl border border-border bg-surface-white p-6 shadow-sm sm:min-h-[800px] sm:gap-10 sm:p-10 lg:p-12">
       {/* Title */}
       <header>
-        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight leading-tight">
+        <h1 className="text-3xl font-bold leading-tight tracking-tight text-text-primary sm:text-4xl">
           {displayData.title || (
-            <span className="text-gray-300 italic">Untitled Document</span>
+            <span className="text-text-tertiary italic">Untitled Document</span>
           )}
         </h1>
-        <div className="h-1 w-20 bg-blue-600 mt-4 rounded-full"></div>
+        <div aria-hidden="true" className="mt-4 h-1 w-16 rounded-full bg-primary" />
       </header>
 
       {/* Paragraphs / Description */}
@@ -66,30 +66,30 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
           displayData.paragraphs.map((p) => (
             <p
               key={p.id}
-              className="text-gray-600 leading-relaxed text-lg whitespace-pre-wrap"
+              className="whitespace-pre-wrap text-base leading-7 text-text-secondary sm:text-lg"
             >
               {p.text || (
-                <span className="text-gray-200">Empty paragraph...</span>
+                <span className="text-text-tertiary">Empty paragraph...</span>
               )}
             </p>
           ))
         ) : (
-          <p className="text-gray-300 italic text-sm">
+          <p className="text-sm italic text-text-tertiary">
             No introductory paragraphs added.
           </p>
         )}
       </div>
 
       {/* Sections */}
-      <div className="space-y-12">
+      <div className="space-y-8 sm:space-y-10">
         {displayData.sections.length > 0 ? (
           displayData.sections.map((section) => (
-            <section key={section.id} className="space-y-6">
+            <section key={section.id} className="space-y-4 sm:space-y-5">
               <div>
-                <h2 className="text-2xl font-bold text-gray-800 flex items-center justify-between gap-3">
+                <h2 className="flex items-center justify-between gap-3 text-xl font-semibold text-text-primary sm:text-2xl">
                   <span>
                     {section.title || (
-                      <span className="text-gray-300 italic">
+                      <span className="text-text-tertiary italic">
                         Untitled Section
                       </span>
                     )}
@@ -97,24 +97,24 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
                   {renderSectionTitle && renderSectionTitle(section)}
                 </h2>
                 {section.description && (
-                  <p className="mt-2 text-gray-500 text-sm italic">
+                  <p className="mt-2 text-sm italic text-text-secondary">
                     {section.description}
                   </p>
                 )}
               </div>
 
-              <div className="ml-11">
+              <div className="ml-5 sm:ml-8">
                 {section.items.length > 0 ? (
-                  <ol className="space-y-4 list-decimal marker:text-blue-500 marker:font-bold">
+                  <ol className="list-decimal space-y-4 marker:font-bold marker:text-primary">
                     {section.items.map((item) => (
                       <li
                         key={item.id}
-                        className="pl-3 text-gray-700 font-medium"
+                        className="pl-2 text-sm font-medium leading-6 text-text-primary sm:pl-3 sm:text-base"
                       >
                         <div className="flex items-center justify-between gap-4">
                           <span>
                             {item.text || (
-                              <span className="text-gray-300 italic">
+                              <span className="text-text-tertiary italic">
                                 No text provided
                               </span>
                             )}
@@ -125,7 +125,7 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
                     ))}
                   </ol>
                 ) : (
-                  <p className="text-gray-300 italic text-sm">
+                  <p className="text-sm italic text-text-tertiary">
                     No items in this section.
                   </p>
                 )}
@@ -133,8 +133,8 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
             </section>
           ))
         ) : (
-          <div className="py-20 flex flex-col items-center justify-center border-2 border-dashed border-gray-100 rounded-xl">
-            <p className="text-gray-300 font-medium italic">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-16">
+            <p className="text-sm font-medium italic text-text-tertiary">
               Your sections will appear here.
             </p>
           </div>
@@ -142,8 +142,8 @@ export const PreviewDocument: React.FC<PreviewDocumentProps> = ({
       </div>
 
       {/* Footer / Meta */}
-      <footer className="mt-auto pt-16 border-t border-gray-50 text-center">
-        <p className="text-xs text-gray-400 uppercase tracking-widest font-semibold">
+      <footer className="mt-auto border-t border-border pt-8 text-center text-xs text-text-tertiary sm:pt-12">
+        <p className="text-xs font-semibold uppercase tracking-widest text-text-tertiary">
           Generated Document • {new Date().toLocaleDateString()}
         </p>
       </footer>

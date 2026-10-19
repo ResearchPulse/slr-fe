@@ -37,7 +37,7 @@ const AdminNotification: React.FC = () => {
         aria-expanded={showNotifications}
         onClick={() => setShowNotifications(!showNotifications)}
         aria-controls="notifications-popover"
-        className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
+        className={`relative flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
           showNotifications
             ? "bg-primary-light text-accent"
             : "text-text-secondary hover:bg-primary-light hover:text-accent"

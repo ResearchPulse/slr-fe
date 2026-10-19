@@ -10,52 +10,6 @@ interface PaperCardProps {
   className?: string;
 }
 
-const TAG_COLORS: Record<string, { bg: string; text: string; border: string }> =
-  {
-    IoT: { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
-    Security: {
-      bg: "bg-surface-white",
-      text: "text-red-700",
-      border: "border-border",
-    },
-    Review: {
-      bg: "bg-purple-50",
-      text: "text-purple-700",
-      border: "border-purple-200",
-    },
-    ML: {
-      bg: "bg-surface-white",
-      text: "text-green-700",
-      border: "border-border",
-    },
-    AI: {
-      bg: "bg-bg-secondary",
-      text: "text-indigo-700",
-      border: "border-indigo-200",
-    },
-    Cloud: {
-      bg: "bg-cyan-50",
-      text: "text-cyan-700",
-      border: "border-cyan-200",
-    },
-    Network: {
-      bg: "bg-orange-50",
-      text: "text-orange-700",
-      border: "border-orange-200",
-    },
-  };
-
-const getTagStyle = (tag: string) => {
-  const normalized = tag.charAt(0).toUpperCase() + tag.slice(1);
-  return (
-    TAG_COLORS[normalized] || {
-      bg: "bg-bg-primary",
-      text: "text-text-primary",
-      border: "border-border",
-    }
-  );
-};
-
 export const PaperCard: React.FC<PaperCardProps> = ({
   paper,
   onViewDetails,
@@ -81,9 +35,9 @@ export const PaperCard: React.FC<PaperCardProps> = ({
   return (
     <div
       className={cn(
-        "group relative bg-surface-white rounded-xl border border-border shadow-none",
-        "hover:shadow-none hover:shadow-slate-200/50 hover:border-border",
-        "hover:-translate-y-0.5 transition-all duration-300 ease-out",
+        "group relative rounded-xl border border-border bg-surface-white",
+        "transition-[transform,border-color] duration-200 ease-out motion-reduce:transition-none",
+        "motion-safe:hover:-translate-y-0.5 hover:border-primary/30",
         "cursor-pointer",
         className,
       )}
@@ -112,16 +66,10 @@ export const PaperCard: React.FC<PaperCardProps> = ({
         {/* Tags */}
         <div className="flex flex-wrap gap-1.5 mb-4">
           {mockTags.map((tag) => {
-            const style = getTagStyle(tag);
             return (
               <span
                 key={tag}
-                className={cn(
-                  "inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-medium border",
-                  style.bg,
-                  style.text,
-                  style.border,
-                )}
+                className="inline-flex items-center rounded-full border border-primary/15 bg-primary-light/50 px-2.5 py-0.5 text-[11px] font-medium text-accent"
               >
                 #{tag}
               </span>

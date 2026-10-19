@@ -101,37 +101,92 @@ export const ChecklistTemplateVersions: React.FC<
 
   if (error) {
     return (
-      <div className="p-8 text-center bg-surface-white rounded-xl border border-red-100">
-        <p className="text-red-500 font-medium">{error}</p>
+      <div className="rounded-xl border border-error/20 bg-surface-white p-8 text-center" role="alert">
+        <p className="font-medium text-error">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8 animate-in fade-in slide-in-from-right-4 duration-700">
-      <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-2xl font-black text-slate-800 tracking-tight flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-bg-secondary flex items-center justify-center text-accent">
+    <div className="flex flex-col gap-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-1 motion-safe:duration-150 motion-reduce:animate-none">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h3 className="flex items-center gap-2 text-xl font-black tracking-tight text-text-primary sm:gap-3 sm:text-2xl">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-bg-secondary text-accent sm:h-10 sm:w-10">
               <RiHistoryLine size={24} />
             </div>
             Template Versions
           </h3>
-          <p className="text-text-secondary font-medium text-sm mt-1">
+          <p className="mt-1 text-sm font-medium text-text-secondary">
             Manage your study selection checklist templates and versions
           </p>
         </div>
 
         <Button
           onClick={() => setIsCreateModalOpen(true)}
-          className="rounded-xl px-6 py-3 font-bold shadow-none shadow-primary/10 transition-all hover:-translate-y-0.5"
+          className="w-full justify-center rounded-xl px-4 py-2.5 font-bold shadow-none transition-transform duration-150 ease-out hover:-translate-y-0.5 motion-reduce:transition-none sm:w-auto sm:px-6 sm:py-3"
         >
           <RiAddLine className="mr-2" size={20} />
           Create Template
         </Button>
       </div>
 
-      <div className="bg-surface-white rounded-xl border border-border overflow-hidden shadow-none">
+      <div className="space-y-3 md:hidden">
+        {templates.length === 0 ? (
+          <p className="rounded-xl border border-border bg-surface-white p-5 text-center text-sm text-text-secondary">
+            No templates found
+          </p>
+        ) : (
+          templates.map((template) => (
+            <article key={template.id} className="min-w-0 rounded-xl border border-border bg-surface-white p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="mb-2 flex items-center gap-2">
+                    <span className="rounded-lg bg-bg-secondary px-2.5 py-1 text-xs font-bold text-accent">
+                      v{template.version}
+                    </span>
+                    {template.isActive ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-success/20 bg-success/10 px-2 py-1 text-[11px] font-semibold text-success">
+                        <RiCheckboxCircleLine aria-hidden="true" size={13} />
+                        Active
+                      </span>
+                    ) : (
+                      <span className="rounded-full border border-border bg-bg-secondary px-2 py-1 text-[11px] font-semibold text-text-secondary">
+                        Inactive
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="break-words text-sm font-semibold text-text-primary">{template.name}</h4>
+                  <p className="mt-1 line-clamp-2 break-words text-xs leading-5 text-text-secondary">
+                    {template.description || "No description"}
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 flex flex-wrap gap-2 border-t border-border pt-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="min-h-11 flex-1 text-text-secondary hover:text-accent"
+                  onClick={() => handleViewDetail(template.id)}
+                >
+                  <RiEyeLine className="mr-1.5" aria-hidden="true" />
+                  View Detail
+                </Button>
+                <Button
+                  size="sm"
+                  className="min-h-11 flex-1"
+                  disabled={template.isActive || isActivating}
+                  onClick={() => handleActivateTemplate(template.id)}
+                >
+                  {template.isActive ? "Active" : "Activate"}
+                </Button>
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
+      <div className="hidden overflow-x-auto rounded-xl border border-border bg-surface-white shadow-none md:block">
         <Table>
           <TableHeader>
             <TableRow className="hover:bg-transparent cursor-default">
@@ -168,7 +223,7 @@ export const ChecklistTemplateVersions: React.FC<
                   </TableCell>
                   <TableCell>
                     {t.isActive ? (
-                      <span className="flex items-center gap-1.5 text-emerald-600 text-xs font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-100">
+                      <span className="flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-2.5 py-1 text-xs font-bold text-success">
                         <RiCheckboxCircleLine size={14} />
                         Active
                       </span>

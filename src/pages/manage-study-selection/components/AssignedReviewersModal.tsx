@@ -30,7 +30,7 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
           reviewers.map((reviewer) => (
             <div
               key={reviewer.reviewerId}
-              className="flex flex-col gap-2 p-3 rounded-xl bg-bg-secondary border border-border group hover:border-accent/20 hover:bg-surface-white transition-all"
+              className="flex flex-col gap-2 rounded-xl border border-border bg-bg-secondary p-3 transition-colors hover:border-primary/20 hover:bg-surface-white motion-reduce:transition-none"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -53,10 +53,10 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
                       className={cn(
                         "px-2.5 py-1 text-[9px] font-black uppercase tracking-wider rounded-xl border",
                         reviewer.decision.toLowerCase().includes("include")
-                          ? "bg-green-100 text-green-700 border-green-300"
+                          ? "border-success/20 bg-success/10 text-success"
                           : reviewer.decision.toLowerCase().includes("exclude")
-                            ? "bg-red-100 text-red-700 border-red-300"
-                            : "bg-bg-secondary text-text-secondary border-slate-300",
+                            ? "border-error/20 bg-error/10 text-error"
+                            : "border-border bg-bg-secondary text-text-secondary",
                       )}
                     >
                       {reviewer.decision}
@@ -71,10 +71,10 @@ const AssignedReviewersModal: React.FC<AssignedReviewersModalProps> = ({
 
               {reviewer.decision?.toLowerCase().includes("exclude") &&
                 (reviewer.exclusionReasonName || reviewer.exclusionNote) && (
-                  <div className="mt-1 pt-2 border-t border-border/50 space-y-2 animate-in fade-in slide-in-from-top-1">
+                  <div className="mt-1 pt-2 border-t border-border/50 space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-150 motion-reduce:animate-none">
                     {reviewer.exclusionReasonName && (
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
+                        <span className="rounded border border-error/20 bg-error/10 px-2 py-0.5 text-[10px] font-bold text-error">
                           {reviewer.exclusionReasonName}
                         </span>
                       </div>

@@ -17,7 +17,7 @@ const STATUS_CONFIG: Record<
   InProgress: {
     label: "In Progress",
     classes: "bg-primary-light text-primary border-primary/20",
-    icon: <span className="h-2 w-2 rounded-full bg-primary animate-pulse" />,
+    icon: <span className="h-2 w-2 rounded-full bg-primary" />,
   },
   NotStarted: {
     label: "Not Started",

@@ -62,7 +62,7 @@ const ProjectPICOCElement: React.FC<ProjectPICOCElementProps> = ({
 }) => {
   return (
     <section className="space-y-4">
-      <div className="flex items-center gap-2 text-slate-800 font-bold text-xs uppercase tracking-widest">
+      <div className="flex items-center gap-2 text-text-primary font-bold text-xs uppercase tracking-widest">
         <Target className="w-4 h-4 text-rose-500" />
         Project PICOC Framework
       </div>
@@ -158,7 +158,7 @@ const PicocElementCard = ({
   return (
     <div
       className={clsx(
-        "p-3 rounded-xl border shadow-none transition-all hover:shadow-none h-fit",
+        "h-fit rounded-xl border p-3 transition-colors duration-150 hover:border-primary/30 motion-reduce:transition-none",
         colorMap[color],
       )}
     >
@@ -180,7 +180,7 @@ const PicocElementCard = ({
             type="button"
             onClick={() => setIsExpanded(!isExpanded)}
             aria-expanded={isExpanded}
-            className="shrink-0 text-[10px] font-medium text-accent hover:underline"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-2 text-xs font-medium text-accent transition-colors hover:bg-surface-white/70 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
           >
             {isExpanded ? "Show less" : "Show all"}
           </button>

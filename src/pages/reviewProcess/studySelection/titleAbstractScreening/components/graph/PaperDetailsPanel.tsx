@@ -42,7 +42,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
       : [];
 
   return (
-    <div className="flex flex-col h-full bg-surface-white text-text-primary border-l border-border shadow-none animate-in slide-in-from-right duration-300">
+    <div className="flex h-full flex-col border-l border-border bg-surface-white text-text-primary shadow-none motion-safe:animate-in motion-safe:slide-in-from-right-1 motion-safe:duration-150 motion-reduce:animate-none">
       <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 space-y-6 scrollbar-thin scrollbar-thumb-gray-200">
         {/* Header Section: Title & Year */}
         <header className="space-y-2">
@@ -117,7 +117,7 @@ const PaperDetailsPanel: React.FC<PaperDetailsPanelProps> = ({ paper }) => {
 
       {/* Footer Branding */}
       <div className="p-4 bg-bg-primary/50 border-t border-border flex items-center justify-between">
-        <span className="text-[9px] font-bold text-gray-300 uppercase tracking-tighter italic">
+        <span className="text-[9px] font-bold text-text-secondary/50 uppercase tracking-tighter italic">
           LITMAPS STYLE VISUALIZER
         </span>
         <div className="flex gap-1">

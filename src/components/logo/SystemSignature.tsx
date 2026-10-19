@@ -22,7 +22,7 @@ const SystemSignature = forwardRef<HTMLDivElement, SystemSignatureProps>(
         >
           SLR<span className={accentClassName}>S</span>
         </div>
-        <p className="hidden min-[360px]:block text-[8.5px] sm:text-[9px] text-text-muted uppercase tracking-[0.18em] mt-1 font-semibold">
+        <p className="hidden text-[8.5px] text-text-muted uppercase tracking-[0.18em] sm:block sm:text-[9px]">
           Systematic Literature Review System
         </p>
       </div>

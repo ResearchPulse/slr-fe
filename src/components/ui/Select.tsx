@@ -110,6 +110,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       triggerRef.current?.focus();
     };
 
+    const handleNativeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+      if (value === undefined) setUncontrolledValue(event.currentTarget.value);
+      onChange?.(event);
+    };
+
     const handleKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
       if (event.key === "Escape") {
         setIsOpen(false);
@@ -155,7 +160,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           aria-hidden="true"
           className="sr-only"
           value={selectedValue}
-          onChange={onChange}
+          onChange={handleNativeChange}
           {...props}
         >
           {placeholder && (
@@ -192,11 +197,11 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           onKeyDown={handleKeyDown}
           className={cn(
             "flex h-11 w-full items-center justify-between gap-3 rounded-xl border bg-surface-white px-3.5 text-left font-sans text-sm text-text-primary",
-            "transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2",
+            "transition-[color,background-color,border-color,box-shadow] duration-150 ease-out motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2",
             "hover:border-text-secondary disabled:cursor-not-allowed disabled:opacity-60",
             error
               ? "border-error focus-visible:border-error focus-visible:ring-error/20"
-              : "border-border focus-visible:border-accent focus-visible:ring-accent/20",
+              : "border-border focus-visible:border-primary focus-visible:ring-primary/20",
             className,
           )}
         >
@@ -206,8 +211,8 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           <ChevronDown
             aria-hidden="true"
             className={cn(
-              "h-4 w-4 shrink-0 text-text-secondary transition-transform duration-150",
-              isOpen && "rotate-180 text-accent",
+              "h-4 w-4 shrink-0 text-text-secondary transition-transform duration-150 motion-reduce:transition-none",
+              isOpen && "rotate-180 text-primary",
             )}
           />
         </button>
@@ -218,7 +223,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               onClick={(event) => event.stopPropagation()}
               className={cn(
-                "fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                "ui-popover-enter fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
                 menuClassName,
               )}
               style={menuStyle}

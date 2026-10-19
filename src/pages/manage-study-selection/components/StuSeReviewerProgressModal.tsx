@@ -18,8 +18,9 @@ export const ReviewerProgressModal: React.FC<ReviewerProgressModalProps> = ({
       title="Reviewer Progress"
       size="xl"
       className="p-0"
+      bodyClassName="p-0"
     >
-      <div className="h-[80vh] overflow-y-auto custom-scrollbar">
+      <div className="max-h-[calc(100dvh-10rem)] overflow-y-auto custom-scrollbar">
         <ReviewerProgressPage />
       </div>
     </Modal>

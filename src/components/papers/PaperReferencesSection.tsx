@@ -20,20 +20,20 @@ const PaperReferencesSection: React.FC<PaperReferencesSectionProps> = ({
 
   return (
     <section className="mb-6">
-      <h3 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-3 flex items-center gap-2">
-        <FiBookOpen className="text-blue-500" />
+      <h3 className="mb-3 flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-text-primary">
+        <FiBookOpen className="text-primary" />
         Extracted References
       </h3>
 
-      <div className="bg-linear-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div className="flex flex-col items-center justify-between gap-4 rounded-xl border border-primary/15 bg-primary/5 p-4 sm:flex-row">
         <div>
           <div className="flex items-center gap-2">
-            <Network className="w-5 h-5 text-blue-600" />
-            <span className="font-semibold text-gray-900">
+            <Network className="h-5 w-5 text-primary" />
+            <span className="font-semibold text-text-primary">
               Backward Snowballing
             </span>
           </div>
-          <p className="text-xs text-gray-600 mt-1">
+          <p className="mt-1 text-xs text-text-secondary">
             {extractedReferencesCount > 0
               ? `${extractedReferencesCount} references have been extracted from this paper.`
               : "No references have been extracted yet from the full-text PDF."}
@@ -42,12 +42,12 @@ const PaperReferencesSection: React.FC<PaperReferencesSectionProps> = ({
 
         <div className="flex shrink-0 gap-2 w-full sm:w-auto">
           {extractedReferencesCount > 0 ? (
-            <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition shadow-sm">
+            <button className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none sm:flex-none">
               View Candidates
               <FiArrowRight />
             </button>
           ) : (
-            <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 text-sm font-semibold rounded-lg hover:bg-blue-50 hover:border-blue-300 transition shadow-sm">
+            <button className="inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-lg border border-primary/20 bg-surface-white px-4 py-2 text-sm font-semibold text-primary shadow-sm transition-colors hover:bg-primary/5 hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none sm:flex-none">
               Extract References
             </button>
           )}

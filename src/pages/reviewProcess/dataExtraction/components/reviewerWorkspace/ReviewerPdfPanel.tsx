@@ -76,7 +76,7 @@ export default function ReviewerPdfPanel({
               onUseEvidenceSelection(nextCoordinates);
               cancel();
             }}
-            className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700 shadow-none transition-colors hover:bg-blue-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-h-11 rounded-lg border border-primary/20 bg-primary-light px-3 py-1 text-xs font-semibold text-primary shadow-none transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
             title={
               canUseEvidenceSelection
                 ? "Use selection as evidence for the selected field"
@@ -99,7 +99,7 @@ export default function ReviewerPdfPanel({
               onRemoveEvidence();
               cancel();
             }}
-            className="rounded-md border border-border bg-surface-white px-2 py-1 text-xs font-semibold text-red-700 shadow-none transition-colors hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-60"
+            className="min-h-11 rounded-lg border border-error/20 bg-surface-white px-3 py-1 text-xs font-semibold text-error shadow-none transition-colors hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/40 disabled:cursor-not-allowed disabled:opacity-60 motion-reduce:transition-none"
             title={
               canRemoveEvidence
                 ? "Remove linked evidence from selected field"
@@ -171,8 +171,8 @@ export default function ReviewerPdfPanel({
 
   return (
     <section className="h-full min-h-0 min-w-0">
-      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white shadow-sm">
-        <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border bg-[#F2F6F9] px-3 py-2 sm:px-4">
+      <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface-white">
+        <div className="flex min-h-11 flex-wrap items-center justify-between gap-2 border-b border-border bg-bg-secondary/70 px-3 py-2 sm:px-4">
           <p className="min-w-0 flex-1 text-xs font-medium text-text-secondary">
             {activeEvidenceTargetLabel
               ? `Evidence mode: ${activeEvidenceTargetLabel}. Select text then click Use as Evidence.`
@@ -187,7 +187,7 @@ export default function ReviewerPdfPanel({
                   onClick={onClick}
                   aria-label="Zoom out"
                   title="Zoom out"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   <ZoomOut className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -207,7 +207,7 @@ export default function ReviewerPdfPanel({
                   onClick={onClick}
                   aria-label="Zoom in"
                   title="Zoom in"
-                  className="inline-flex h-7 w-7 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                  className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   <ZoomIn className="h-4 w-4" aria-hidden="true" />
                 </button>
@@ -215,7 +215,7 @@ export default function ReviewerPdfPanel({
             </zoomPluginInstance.ZoomIn>
           </div>
           {canUseEvidenceSelection ? (
-            <span className="shrink-0 rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-700">
+            <span className="shrink-0 rounded-md border border-primary/20 bg-primary-light px-2 py-1 text-xs font-semibold text-primary">
               Selection enabled
             </span>
           ) : null}
@@ -231,7 +231,7 @@ export default function ReviewerPdfPanel({
           ) : (
             <div className="flex h-full items-center justify-center p-8 text-center">
               <div className="max-w-sm">
-                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-primary">
+                <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-light text-primary">
                   <FileText className="h-6 w-6" />
                 </span>
                 <h3 className="mt-4 text-sm font-semibold text-text-primary">

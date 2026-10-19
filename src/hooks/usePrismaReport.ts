@@ -163,11 +163,6 @@ export function usePrismaReport({ reviewProcessId }: UsePrismaReportParams): Use
   }, [latestQuery.error]);
 
   useEffect(() => {
-    if (!historyQuery.error) return;
-    toastError(getErrorMessage(historyQuery.error, "Failed to load report history."));
-  }, [historyQuery.error]);
-
-  useEffect(() => {
     if (!selectedQuery.error) return;
     toastError(getErrorMessage(selectedQuery.error, "Failed to load the selected report."));
   }, [selectedQuery.error]);

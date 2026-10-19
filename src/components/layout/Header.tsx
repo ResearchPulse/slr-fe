@@ -67,7 +67,10 @@ const Header: React.FC = () => {
       }
     };
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setShowNotifications(false);
+      if (event.key === "Escape") {
+        setShowNotifications(false);
+        setShowUserDropdown(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleKeyDown);
@@ -135,12 +138,14 @@ const Header: React.FC = () => {
         <div className="container mx-auto px-5 sm:px-8 lg:px-12 h-full">
           <div className="flex justify-between items-center h-full">
             {/* Left Side: Logo & Desktop Nav */}
-            <div className="flex items-center gap-2 md:gap-8 lg:gap-12">
+            <div className="flex items-center gap-2 lg:gap-8 xl:gap-12">
               {/* Mobile Menu Toggle */}
               <button
+                type="button"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="md:hidden p-2 -ml-2 text-text-secondary hover:text-text-primary transition-opacity"
+                className="-ml-2 inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none lg:hidden"
                 aria-label="Toggle Menu"
+                aria-expanded={isMenuOpen}
               >
                 {isMenuOpen ? (
                   <FiX className="w-5 h-5" />
@@ -149,7 +154,7 @@ const Header: React.FC = () => {
                 )}
               </button>
 
-              <Link to="/" className="flex items-center gap-2 group shrink-0">
+              <Link to="/" className="group flex min-h-11 shrink-0 items-center gap-2">
                 <SystemSignature
                   primaryClassName="text-text-primary"
                   accentClassName="text-accent"
@@ -158,9 +163,9 @@ const Header: React.FC = () => {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden md:flex items-center gap-1">
+              <nav className="hidden lg:flex items-center gap-1">
                 {navLinks.map((link) => {
-                  const className = "px-3 py-2 text-sm font-medium normal-case tracking-normal text-text-secondary transition-colors whitespace-nowrap hover:text-primary";
+                  const className = "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium normal-case tracking-normal text-text-secondary transition-colors whitespace-nowrap hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none";
                   return location.pathname === "/" && link.path.startsWith("/#") ? (
                     <a key={link.name} href={link.path.slice(1)} className={className}>{link.name}</a>
                   ) : (
@@ -182,7 +187,7 @@ const Header: React.FC = () => {
                       aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
                       aria-expanded={showNotifications}
                       aria-controls="notifications-popover"
-                      className={`relative flex h-9 w-9 items-center justify-center rounded-xl transition-colors duration-200 ${
+                      className={`relative flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none ${
                         showNotifications
                           ? "bg-primary-light text-primary"
                           : "text-text-secondary hover:bg-bg-secondary hover:text-primary"
@@ -205,15 +210,15 @@ const Header: React.FC = () => {
 
                   {/* Admin Dashboard Access */}
                   {user?.role === "Admin" && (
-                    <button
+                    <Button
                       onClick={handleSwitchAdmin}
-                      className="flex items-center gap-2 rounded-xl bg-text-primary px-3 py-2 text-white transition-colors duration-200 hover:bg-[#1B4057] sm:px-4"
+                      size="sm"
+                      variant="primary"
+                      className="min-h-11 min-w-11 px-3 sm:px-4"
                     >
                       <FiShield className="w-4 h-4" />
-                      <span className="hidden sm:inline text-[11px] font-medium uppercase tracking-[0.15em]">
-                        Admin Console
-                      </span>
-                    </button>
+                      <span className="hidden sm:inline">Admin Console</span>
+                    </Button>
                   )}
 
                   {/* Desktop Separator */}
@@ -226,7 +231,7 @@ const Header: React.FC = () => {
                       onClick={() => setShowUserDropdown(!showUserDropdown)}
                       aria-expanded={showUserDropdown}
                       aria-controls="header-user-menu"
-                      className={`group flex items-center gap-2.5 rounded-xl py-1 pl-2 pr-1 transition-colors ${
+                      className={`group flex min-h-11 min-w-11 items-center gap-2.5 rounded-xl py-1 pl-2 pr-1 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none ${
                         showUserDropdown
                           ? "bg-bg-secondary"
                           : "hover:bg-bg-secondary"
@@ -240,16 +245,16 @@ const Header: React.FC = () => {
                           {user?.role || "User"}
                         </p>
                       </div>
-                      <div className="flex h-8 w-8 items-center justify-center rounded-[7px] bg-accent text-sm font-bold text-white">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
                         {user?.name ? getUserInitials(user.name) : "U"}
                       </div>
                     </button>
 
                     {/* Profile Dropdown Menu */}
                     {showUserDropdown && (
-                      <div id="header-user-menu" className="absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.12)]">
+                      <div id="header-user-menu" className="ui-popover-enter absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.12)]">
                         <div className="flex items-center gap-3 px-3 py-3">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent text-sm font-bold text-white">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
                             {user?.name ? getUserInitials(user.name) : "U"}
                           </div>
                           <div className="min-w-0">
@@ -267,7 +272,7 @@ const Header: React.FC = () => {
                         <Link
                           to="/profile"
                           onClick={() => setShowUserDropdown(false)}
-                          className="mt-1 flex items-center gap-3 rounded-xl px-3 py-2.5 text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary"
+                          className="mt-1 flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-text-secondary transition-colors hover:bg-primary-light hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
                         >
                           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-light text-accent"><FiUser className="h-4 w-4" /></span>
                           <span>
@@ -297,11 +302,11 @@ const Header: React.FC = () => {
               ) : (
                 <div className="flex items-center gap-2.5 sm:gap-3">
                   {location.pathname === "/" && (
-                    <Link to="/auth/signin" className="hidden sm:block">
+                    <Link to="/auth/signin" className="hidden min-h-11 sm:inline-flex">
                       <Button
                         variant="outline"
                         size="sm"
-                        className="px-6"
+                        className="min-h-11 px-6"
                       >
                         Get Started
                       </Button>
@@ -311,7 +316,7 @@ const Header: React.FC = () => {
                     <Button
                       variant="primary"
                       size="sm"
-                      className="px-6"
+                      className="min-h-11 px-6"
                     >
                       Sign In
                     </Button>
@@ -327,7 +332,7 @@ const Header: React.FC = () => {
         isOpen={isMenuOpen}
         onClose={() => setIsMenuOpen(false)}
         side="left"
-        maxWidth="max-w-[85%] md:hidden"
+        maxWidth="max-w-[85%] sm:max-w-sm lg:hidden"
         title={
           <Link to="/" onClick={() => setIsMenuOpen(false)}>
             <SystemSignature
@@ -350,7 +355,7 @@ const Header: React.FC = () => {
         </p>
         <nav className="space-y-1">
           {navLinks.map((link) => {
-            const className = "flex items-center gap-4 p-3 text-[11px] font-medium uppercase tracking-[0.2em] text-text-primary hover:bg-bg-secondary transition-colors";
+            const className = "flex min-h-11 items-center gap-4 rounded-lg p-3 text-[11px] font-medium uppercase tracking-[0.2em] text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none";
             const content = <><link.icon className="w-4 h-4 opacity-50" />{link.name}</>;
             return location.pathname === "/" && link.path.startsWith("/#") ? (
               <a key={link.name} href={link.path.slice(1)} onClick={() => setIsMenuOpen(false)} className={className}>{content}</a>
@@ -371,7 +376,8 @@ const Header: React.FC = () => {
                   setIsMenuOpen(false);
                   handleSwitchAdmin();
                 }}
-                className="w-full flex items-center gap-4 p-3 bg-text-primary text-bg-primary rounded-xl transition-colors active:scale-[0.98]"
+                type="button"
+                className="flex min-h-11 w-full items-center gap-4 rounded-xl bg-text-primary p-3 text-bg-primary transition-colors active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transform-none motion-reduce:transition-none"
               >
                 <FiShield className="w-4 h-4" />
                 <span className="text-[12px] font-medium uppercase tracking-[0.15em]">
@@ -386,7 +392,7 @@ const Header: React.FC = () => {
           {isAuthenticated ? (
             <>
               <div className="flex items-center gap-3 p-3 bg-bg-secondary rounded-xl">
-                <div className="h-10 w-10 bg-accent text-bg-primary rounded-xl flex items-center justify-center font-medium text-base">
+                <div className="h-10 w-10 bg-accent text-bg-primary rounded-full flex items-center justify-center font-medium text-base">
                   {user?.name ? getUserInitials(user.name) : "U"}
                 </div>
                 <div>
@@ -400,7 +406,8 @@ const Header: React.FC = () => {
               </div>
               <button
                 onClick={handleLogout}
-                className="w-full mt-3 flex items-center gap-3 p-3 text-sm text-accent hover:bg-bg-secondary transition-colors"
+                type="button"
+                className="mt-3 flex min-h-11 w-full items-center gap-3 rounded-lg p-3 text-sm text-accent transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
               >
                 <FiLogOut className="w-4 h-4" />
                 Sign Out

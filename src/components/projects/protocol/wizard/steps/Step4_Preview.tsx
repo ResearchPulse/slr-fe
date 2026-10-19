@@ -228,7 +228,7 @@ export default function Step4_Preview({
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <Label htmlFor="template_name">
-              Template Name <span className="text-red-600">*</span>
+              Template Name <span className="text-error">*</span>
             </Label>
             <Input
               id="template_name"
@@ -240,7 +240,7 @@ export default function Step4_Preview({
               placeholder="e.g., RQ-Driven Software Testing Extraction Template"
               className={
                 publishError && !templateName.trim()
-                  ? "border-red-500 focus:ring-red-500"
+                  ? "border-error focus:ring-error/30"
                   : ""
               }
             />
@@ -261,7 +261,7 @@ export default function Step4_Preview({
 
       {publishError && (
         <div className="rounded-lg border border-error/25 bg-surface-white p-3">
-          <p className="text-sm text-red-700 whitespace-pre-wrap">
+          <p className="whitespace-pre-wrap text-sm text-error">
             {publishError}
           </p>
         </div>
@@ -317,7 +317,7 @@ export default function Step4_Preview({
                         <div className="flex items-center gap-2 mb-2 flex-wrap">
                           <label className="font-medium text-text-primary">{`${idx + 1}. ${item.name}`}</label>
                           {item.is_required && (
-                            <span className="text-red-600 font-bold">*</span>
+                            <span className="font-bold text-error">*</span>
                           )}
                           <span className="inline-block px-2 py-0.5 bg-bg-secondary text-text-secondary text-xs rounded">
                             {item.data_type}
@@ -477,7 +477,7 @@ export default function Step4_Preview({
         >
           {isPublishing ? (
             <>
-              <FiLoader className="w-4 h-4 animate-spin" />
+              <FiLoader aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
               Publishing...
             </>
           ) : (

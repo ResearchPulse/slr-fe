@@ -15,7 +15,7 @@ const ProcessSettingPage: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-700">
+    <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       <Tabs items={tabItems} activeTabId={activeTab} onTabChange={setActiveTab}>
         <div className="bg-surface-white rounded-xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[500px]">
           {activeTab === "exclusion-code" && <ProcessExclusionCodeTab />}

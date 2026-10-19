@@ -65,7 +65,7 @@ export default function SetupEditForm({
               rows={3}
               value={picocForm[key]}
               onChange={(e) => onPicocChange(key, e.target.value)}
-              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
           </div>
         ))}
@@ -86,7 +86,7 @@ export default function SetupEditForm({
                 <button
                   type="button"
                   onClick={() => onDeleteEditRQ(index)}
-                  className="text-xs font-medium text-text-secondary transition hover:text-text-primary"
+                  className="inline-flex min-h-11 items-center rounded-md px-2 text-xs font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
                 >
                   Delete
                 </button>
@@ -95,7 +95,7 @@ export default function SetupEditForm({
                 rows={3}
                 value={rq.questionText}
                 onChange={(e) => onEditRQTextChange(index, e.target.value)}
-                className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+                className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
               />
             </div>
           ))}
@@ -106,13 +106,13 @@ export default function SetupEditForm({
               value={editNewRQInput}
               onChange={(e) => onEditNewRQInputChange(e.target.value)}
               placeholder="Type a new research question"
-              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/10"
+              className="w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             />
             <div className="mt-2 flex justify-end">
               <button
                 type="button"
                 onClick={onAddEditRQ}
-                className="rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+                className="inline-flex min-h-11 items-center rounded-xl border border-border bg-surface-white px-3 py-1.5 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               >
                 Add Research Question
               </button>
@@ -125,7 +125,7 @@ export default function SetupEditForm({
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition hover:bg-bg-secondary"
+          className="inline-flex min-h-11 items-center rounded-xl border border-border px-4 py-2 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
         >
           Cancel
         </button>
@@ -133,7 +133,7 @@ export default function SetupEditForm({
           type="button"
           onClick={onSave}
           disabled={isSavingSetup}
-          className="rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex min-h-11 items-center justify-center rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white shadow-none transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSavingSetup ? "Saving..." : "Save Changes"}
         </button>

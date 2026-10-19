@@ -15,16 +15,20 @@ const SectionLoading: React.FC<SectionLoadingProps> = ({
   const isAdmin = type === "admin";
 
   return (
-    <div className="fixed inset-0 bg-bg-primary z-(--z-index-section-loading) flex flex-col items-center justify-center space-y-8 animate-in fade-in duration-500">
+    <div
+      role="status"
+      aria-live="polite"
+      className="fixed inset-0 z-(--z-index-section-loading) flex flex-col items-center justify-center space-y-8 bg-bg-primary motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none"
+    >
       <div className="relative">
-        <LoadingSpinner size="lg" className="text-accent opacity-80" />
+        <LoadingSpinner size="lg" className="text-accent opacity-80" aria-hidden="true" />
       </div>
       <div className="text-center space-y-3">
-        <h3 className="font-cormorant text-3xl font-normal text-text-primary tracking-tight">
+        <h3 className="text-2xl font-semibold tracking-tight text-text-primary sm:text-[28px]">
           {title ||
             (isAdmin ? "Initializing Admin Console" : "Loading Client Portal")}
         </h3>
-        <p className="text-text-secondary text-sm max-w-[280px] mx-auto animate-pulse">
+        <p className="mx-auto max-w-[280px] text-sm text-text-secondary">
           {subtitle ||
             (isAdmin
               ? "Setting up your management workspace..."

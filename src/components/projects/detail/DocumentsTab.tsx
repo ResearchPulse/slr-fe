@@ -27,7 +27,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
           <Button
             size="sm"
             onClick={onAdd}
-            className="inline-flex items-center gap-2"
+            className="inline-flex min-h-11 items-center gap-2"
           >
             <FiPlus size={14} /> Add document
           </Button>
@@ -62,7 +62,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
                   href={document.document_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+                  className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-md px-2 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 >
                   View document <FiExternalLink size={14} />
                 </a>
@@ -80,7 +80,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
             <Button
               size="sm"
               onClick={onAdd}
-              className="mt-4 inline-flex items-center gap-2"
+              className="mt-4 inline-flex min-h-11 items-center gap-2"
             >
               <FiPlus size={14} /> Add document
             </Button>
@@ -92,7 +92,7 @@ const DocumentsTab: React.FC<DocumentsTabProps> = ({
         <button
           type="button"
           onClick={() => setShowAll((current) => !current)}
-          className="mt-3 text-sm font-medium text-accent hover:underline"
+          className="mt-3 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           aria-expanded={showAll}
         >
           {showAll

@@ -9,10 +9,10 @@ interface ConflictDetailsProps {
 
 export const ConflictDetails: React.FC<ConflictDetailsProps> = ({ paper }) => {
   return (
-    <div className="bg-amber-50 rounded-xl border border-amber-200 p-6 space-y-4">
+    <div className="space-y-4 rounded-xl border border-warning/20 bg-warning/10 p-6">
       <div className="flex items-center gap-2">
-        <FiAlertTriangle className="w-4 h-4 text-amber-600" />
-        <h3 className="text-xs font-black text-amber-800 uppercase tracking-widest">
+        <FiAlertTriangle className="w-4 h-4 text-warning" />
+        <h3 className="text-xs font-black uppercase tracking-widest text-warning">
           Conflict Detected
         </h3>
       </div>
@@ -20,18 +20,18 @@ export const ConflictDetails: React.FC<ConflictDetailsProps> = ({ paper }) => {
         {paper.decisions.map((d) => (
           <div
             key={d.id}
-            className="bg-surface-white rounded-xl p-4 border border-amber-100 shadow-none space-y-2"
+            className="space-y-2 rounded-xl border border-warning/20 bg-surface-white p-4 shadow-none"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-slate-800 uppercase tracking-tight truncate max-w-[120px]">
+              <span className="max-w-[120px] truncate text-xs font-black uppercase tracking-tight text-text-primary">
                 {d.reviewerName}
               </span>
               <span
                 className={cn(
                   "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full",
                   d.decision === "included"
-                    ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                    : "bg-rose-50 text-rose-600 border border-rose-100",
+                    ? "bg-success/10 text-success border border-success/20"
+                    : "bg-error/10 text-error border border-error/20",
                 )}
               >
                 {d.decision}

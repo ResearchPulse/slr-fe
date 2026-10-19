@@ -162,9 +162,9 @@ const AddUserModal: React.FC<AddUserModalProps> = ({ isOpen, onClose }) => {
           <div>
             <label
               htmlFor="role"
-              className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5"
+              className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-text-primary"
             >
-              Role <span className="text-red-500">*</span>
+              Role <span className="text-error">*</span>
             </label>
             <div className="[&>div]:block [&>div]:w-full">
               <Select

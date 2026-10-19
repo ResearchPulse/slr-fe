@@ -54,17 +54,17 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
 
   if (error && templates.length === 0) {
     return (
-      <div className="p-8 text-center bg-surface-white rounded-xl border border-red-100">
-        <p className="text-red-500 font-medium">{error}</p>
+      <div className="rounded-xl border border-error/20 bg-error/5 p-8 text-center">
+        <p className="font-medium text-error">{error}</p>
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-1000">
+    <div className="mx-auto w-full min-w-0 max-w-6xl space-y-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none sm:space-y-8">
       {templates.length > 0 ? (
-        <div className="space-y-8">
-          <div className="bg-surface-white rounded-xl border border-border/80 p-10 shadow-none shadow-slate-200/20 relative overflow-hidden transition-all duration-500 min-h-[700px]">
+        <div className="min-w-0">
+          <div className="relative min-h-0 min-w-0 overflow-hidden rounded-xl border border-border/80 bg-surface-white p-4 shadow-none sm:p-6 lg:min-h-[700px] lg:p-10">
             <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/30 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="relative z-10">
@@ -73,20 +73,20 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div className="max-w-4xl mx-auto bg-surface-white rounded-xl border border-border/80 p-20 shadow-none shadow-primary/10 relative overflow-hidden text-center flex flex-col items-center">
+        <div className="relative mx-auto flex max-w-4xl flex-col items-center overflow-hidden rounded-xl border border-border/80 bg-surface-white p-5 text-center shadow-none sm:p-8 lg:p-20">
           {/* Subtle Decorative Background Element */}
           <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-bg-secondary/50 rounded-full blur-3xl pointer-events-none"></div>
 
-          <div className="w-24 h-24 rounded-xl bg-bg-secondary flex items-center justify-center text-slate-200 mb-8 border-2 border-dashed border-border relative group transition-all hover:bg-bg-secondary hover:border-primary/30 hover:text-accent">
+          <div className="relative group mb-8 flex h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-border bg-bg-secondary text-text-secondary/50 transition-colors hover:border-primary/30 hover:text-accent motion-reduce:transition-none">
             <RiFileList3Line size={48} />
-            <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-surface-white border-4 border-slate-50 flex items-center justify-center text-text-secondary group-hover:border-primary/30 group-hover:text-accent shadow-none transition-all">
+            <div className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border-4 border-bg-primary bg-surface-white text-text-secondary shadow-none transition-colors group-hover:border-primary/30 group-hover:text-accent motion-reduce:transition-none">
               <RiAddLine size={18} />
             </div>
           </div>
-          <h2 className="text-3xl font-black text-text-primary mb-4 tracking-tight">
+          <h2 className="mb-4 text-2xl font-black tracking-tight text-text-primary sm:text-3xl">
             Initialize Eligibility Framework
           </h2>
-          <p className="text-text-secondary mb-12 font-medium leading-relaxed text-lg">
+          <p className="mb-8 text-base font-medium leading-relaxed text-text-secondary sm:mb-12 sm:text-lg">
             Every robust systematic review starts with clear, pre-defined
             eligibility criteria. Your checklist template will serve as the
             single source of truth for all study screening decisions.
@@ -95,7 +95,7 @@ const StudySelectionChecklistTemplatePage: React.FC = () => {
             onClick={() => {
               setIsModalOpen(true);
             }}
-            className="rounded-xl px-12 py-7 h-auto text-xl font-black shadow-2xl shadow-primary/10 transition-all hover:-translate-y-1 active:translate-y-0"
+            className="h-auto w-full rounded-xl px-4 py-4 text-base font-bold shadow-none transition-transform duration-150 ease-out hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transition-none sm:w-auto sm:px-8 sm:py-5 sm:text-lg lg:px-12 lg:py-7 lg:text-xl"
           >
             <RiAddLine className="mr-2" size={28} />
             Create Master Template

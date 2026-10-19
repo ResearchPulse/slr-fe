@@ -230,7 +230,7 @@ export default function PaperViewerModal({
               </div>
               <button
                 onClick={() => setIsSuggestionModalOpen(true)}
-                className="rounded-xl bg-accent px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-lg transition-all hover:bg-primary-hover active:scale-95"
+                className="inline-flex min-h-11 items-center rounded-xl bg-primary px-4 py-1.5 text-[10px] font-black uppercase tracking-widest text-white shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 active:scale-95 motion-reduce:active:scale-100 motion-reduce:transition-none"
               >
                 View & Apply
               </button>
@@ -244,7 +244,7 @@ export default function PaperViewerModal({
                   <div className="w-16 h-16 rounded-xl bg-surface-white shadow-2xl flex items-center justify-center">
                     <LoadingSpinner size="md" />
                   </div>
-                  <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em] animate-pulse">
+                  <p className="text-[10px] font-black text-text-secondary uppercase tracking-[0.3em]">
                     Synchronizing Metadata...
                   </p>
                 </div>

@@ -119,7 +119,7 @@ describe("FieldStep", () => {
       source: "manual_browse",
       classifierVersion: null,
     }));
-    expect(service.browseTaxonomy).toHaveBeenLastCalledWith("p1", "topic", "https://openalex.org/subfields/1702");
+    expect(service.browseTaxonomy).toHaveBeenLastCalledWith("p1", "topic", "https://openalex.org/subfields/1702", undefined);
     expect(service.track).toHaveBeenCalledWith("p1", "field_confirmed", { source: "user" });
   });
 });

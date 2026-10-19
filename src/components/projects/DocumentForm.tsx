@@ -42,7 +42,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             helperText="The institution or body funding or commissioning the systematic review (e.g., NIH, WHO, Ministry of Health)."
             placeholder="e.g., World Health Organization"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -56,7 +56,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             placeholder="e.g., This document outlines the requirements for a review of childhood obesity interventions in Southeast Asia..."
             rows={4}
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -71,7 +71,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             helperText="The financial resources allocated specifically for this review's synthesis and administrative costs."
             placeholder="e.g., 25000.00"
             required
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
 
@@ -84,7 +84,7 @@ const DocumentForm: React.FC<DocumentFormProps> = ({
             type="url"
             helperText="Direct link to the full text of the commissioning document or contract for reference."
             placeholder="https://example.com/docs/commissioning-brief.pdf"
-            className="bg-bg-primary/50 border-border focus:bg-surface-white transition-all rounded-xl"
+              className="rounded-xl border-border bg-bg-primary/50 transition-colors focus:bg-surface-white motion-reduce:transition-none"
           />
         </div>
       </div>

@@ -19,6 +19,8 @@ import type { ReviewerDecisionPayload } from "./components/ReviewerQAPanel";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
 import { CheckCircle2, CircleDashed, Clock3, Files } from "lucide-react";
+import Button from "../../../components/ui/Button";
+import ConfirmModal from "../../../components/ui/ConfirmModal";
 
 export type WorkspaceQAPaper = QAPaperResponse | LeaderQAPaperResponse;
 
@@ -45,6 +47,7 @@ export default function QualityAssessmentWorkspace() {
     null,
   );
   const [isAutoResolveOpen, setIsAutoResolveOpen] = useState(false);
+  const [paperToReopen, setPaperToReopen] = useState<WorkspaceQAPaper | null>(null);
 
   const [selectedPaperId, setSelectedPaperId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -72,7 +75,11 @@ export default function QualityAssessmentWorkspace() {
     isSubmittingResolution,
     isUpdatingResolution,
     isAutoResolving,
+    isReopeningPaper,
     phaseStatus,
+    isError,
+    error,
+    refetch,
     assign,
     submitDecisions,
     updateDecisions,
@@ -348,14 +355,20 @@ export default function QualityAssessmentWorkspace() {
     }
   };
 
-  const handleReopenPaper = async (paperId: string) => {
+  const handleReopenPaper = (paperId: string) => {
     const paper = activePapers.find((item) => item.paperId === paperId);
     if (!paper?.resolution) return;
-    const confirmed = window.confirm(
-      `Reopen “${paper.title}”? The final resolution will be removed and reviewers can edit their assessments again.`,
-    );
-    if (!confirmed) return;
-    await reopenPaper(paperId);
+    setPaperToReopen(paper);
+  };
+
+  const handleConfirmReopen = async () => {
+    if (!paperToReopen) return;
+    try {
+      await reopenPaper(paperToReopen.paperId);
+      setPaperToReopen(null);
+    } catch {
+      // The mutation hook reports the error; keep the dialog open so the user can retry.
+    }
   };
 
   return (
@@ -363,22 +376,34 @@ export default function QualityAssessmentWorkspace() {
       <QAHeader
         onBack={viewMode === "edit" ? closeEditSpace : handleBack}
         stats={stats}
-        phaseStatus={phaseStatus ?? "NotStarted"}
-        onExport={isLeader ? exportCsv : undefined}
+        phaseStatus={isError ? "Unavailable" : phaseStatus ?? "NotStarted"}
+        unavailable={isError}
+        onExport={isLeader && !isError ? exportCsv : undefined}
         rightControls={
           isLeader &&
+          !isError &&
           canEdit && (
-            <button
+            <Button
+              type="button"
+              variant="outline"
               onClick={() => setIsAutoResolveOpen(true)}
-              className="flex h-12 items-center gap-2 rounded-xl border border-accent/30 bg-primary-light px-3 text-xs font-medium text-accent transition-colors hover:bg-primary-light"
+              className="h-12 min-h-12 border-accent/30 bg-primary-light px-3 text-xs font-medium text-accent hover:bg-primary-light"
             >
               Auto-Resolve
-            </button>
+            </Button>
           )
         }
       />
 
-      {viewMode === "list" ? (
+      {viewMode === "list" && isError ? (
+        <main className="mx-auto flex w-full max-w-3xl flex-1 items-center justify-center px-5 py-12 sm:px-6">
+          <div role="alert" className="w-full rounded-xl border border-error/25 bg-surface-white p-6 text-center">
+            <h2 className="text-lg font-semibold text-text-primary">Assessment data unavailable</h2>
+            <p className="mt-2 text-sm text-text-secondary">{error || "The assessment workspace could not be loaded."}</p>
+            <Button type="button" variant="secondary" className="mt-5" onClick={() => void refetch()}>Try again</Button>
+          </div>
+        </main>
+      ) : viewMode === "list" ? (
         <main className="mx-auto flex w-full max-w-[1600px] flex-1 flex-col gap-5 overflow-auto px-5 py-5 sm:px-6 lg:gap-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-2">
             <div>
@@ -392,7 +417,7 @@ export default function QualityAssessmentWorkspace() {
           </div>
 
           <section aria-label="Assessment progress" className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
-            <div className="flex items-center justify-between rounded-xl border border-border bg-surface-white p-4 shadow-sm sm:p-5">
+            <div className="flex items-center justify-between rounded-xl border border-border bg-surface-white p-4 sm:p-5">
               <div>
                 <p className="text-sm text-text-secondary">Total studies</p>
                 <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.total}</p>
@@ -400,15 +425,15 @@ export default function QualityAssessmentWorkspace() {
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-primary text-text-secondary"><Files size={19} /></div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-emerald-200 bg-surface-white p-4 shadow-sm sm:p-5">
+            <div className="flex items-center justify-between rounded-xl border border-success/20 bg-surface-white p-4 sm:p-5">
               <div>
                 <p className="text-sm text-text-secondary">Completed</p>
                 <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.completed}</p>
                 <p className="mt-2 text-xs text-text-secondary">Assessment submitted</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><CheckCircle2 size={19} /></div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success"><CheckCircle2 size={19} /></div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-accent/30 bg-surface-white p-4 shadow-sm sm:p-5">
+            <div className="flex items-center justify-between rounded-xl border border-accent/30 bg-surface-white p-4 sm:p-5">
               <div>
                 <p className="text-sm text-text-secondary">In progress</p>
                 <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{stats.inProgress}</p>
@@ -416,13 +441,13 @@ export default function QualityAssessmentWorkspace() {
               </div>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-light text-accent"><Clock3 size={19} /></div>
             </div>
-            <div className="flex items-center justify-between rounded-xl border border-amber-200 bg-surface-white p-4 shadow-sm sm:p-5">
+            <div className="flex items-center justify-between rounded-xl border border-warning/20 bg-surface-white p-4 sm:p-5">
               <div>
                 <p className="text-sm text-text-secondary">{isLeader ? "Not started" : "Pending"}</p>
                 <p className="mt-2 text-2xl font-semibold leading-none text-text-primary">{isLeader ? stats.notStarted : stats.pending}</p>
                 <p className="mt-2 text-xs text-text-secondary">Waiting for reviewer activity</p>
               </div>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600"><CircleDashed size={19} /></div>
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-warning/10 text-warning"><CircleDashed size={19} /></div>
             </div>
           </section>
 
@@ -516,6 +541,16 @@ export default function QualityAssessmentWorkspace() {
           totalCriteria={totalCriteria}
         />
       )}
+      <ConfirmModal
+        isOpen={!!paperToReopen}
+        onClose={() => setPaperToReopen(null)}
+        onConfirm={() => void handleConfirmReopen()}
+        title="Reopen assessment?"
+        message={`Reopening “${paperToReopen?.title ?? "this study"}” removes its final resolution and lets reviewers edit their assessments again.`}
+        confirmText="Reopen study"
+        variant="warning"
+        isLoading={isReopeningPaper}
+      />
     </div>
   );
 }

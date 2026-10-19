@@ -75,7 +75,7 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
               </p>
             </div>
             <div className="text-right">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center rounded-full bg-primary-light px-2.5 py-1 text-xs font-semibold text-primary ring-1 ring-inset ring-primary/15">
                 Tiến độ: {checklist.completionPercentage}%
               </span>
               <p className="text-[11px] text-text-secondary mt-1">
@@ -88,7 +88,7 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
         {/* Sections & Items Table */}
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full border-collapse text-left text-xs">
-            <thead className="bg-slate-800 text-white uppercase text-[11px] tracking-wider font-semibold">
+            <thead className="bg-text-primary text-white uppercase text-[11px] tracking-wider font-semibold">
               <tr>
                 <th className="px-3 py-3 w-[20%]">Chủ đề (Topic)</th>
                 <th className="px-2 py-3 w-[10%] text-center">Mã số (#)</th>
@@ -101,7 +101,7 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
               {sections.map((section) => (
                 <React.Fragment key={section.section}>
                   {/* Section Divider */}
-                  <tr className="bg-slate-100 font-bold text-slate-800">
+                  <tr className="bg-bg-secondary font-bold text-text-primary">
                     <td colSpan={5} className="px-3 py-2 text-xs uppercase tracking-wide">
                       {section.displayName}
                       {section.description && (
@@ -118,11 +118,11 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
                     const location = (item.reportLocation || "").trim();
 
                     return (
-                      <tr key={item.itemTemplateId} className="hover:bg-slate-50/80 transition-colors">
+                      <tr key={item.itemTemplateId} className="transition-colors hover:bg-bg-secondary/60 motion-reduce:transition-none">
                         <td className="px-3 py-2.5 font-medium text-text-primary align-top">
                           {item.topic}
                         </td>
-                        <td className="px-2 py-2.5 text-center font-bold text-slate-600 align-top">
+                        <td className="px-2 py-2.5 text-center font-bold text-text-secondary align-top">
                           {item.itemNumber}
                         </td>
                         <td className="px-4 py-2.5 text-text-secondary leading-relaxed align-top">
@@ -132,18 +132,18 @@ export const ChecklistPreviewModal: React.FC<ChecklistPreviewModalProps> = ({
                           {location ? (
                             <span className="text-text-primary font-medium">{location}</span>
                           ) : (
-                            <span className="text-slate-400 italic">Chưa điền</span>
+                            <span className="text-text-secondary italic">Chưa điền</span>
                           )}
                         </td>
                         <td className="px-2 py-2.5 text-center align-top">
                           {item.isSectionHeaderOnly ? (
-                            <span className="text-slate-400">—</span>
+                            <span className="text-text-secondary/60">—</span>
                           ) : isCompleted ? (
-                            <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                            <span className="inline-flex items-center gap-1 font-semibold text-success">
                               <FiCheckCircle className="w-3.5 h-3.5" /> Có
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 text-red-500">
+                            <span className="inline-flex items-center gap-1 text-error">
                               <FiXCircle className="w-3.5 h-3.5" /> Chưa
                             </span>
                           )}

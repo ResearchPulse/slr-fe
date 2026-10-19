@@ -201,7 +201,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
               <input
                 type="text"
                 placeholder="Search standard reasons (e.g. 'duplicate', 'animal')..."
-                className="w-full pl-11 pr-4 py-3 bg-surface-white border border-border rounded-xl text-sm focus:ring-4 focus:ring-accent/10 focus:border-accent transition-all outline-none"
+                className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-3 pl-11 pr-4 text-sm outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                 value={libSearch}
                 onChange={(e) => setLibSearch(e.target.value)}
               />
@@ -223,7 +223,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                       key={reason.id}
                       onClick={() => toggleLibrarySelection(reason.id)}
                       className={cn(
-                        "flex items-center gap-3 p-4 rounded-xl text-left border transition-all duration-300 group",
+                        "flex min-h-11 items-center gap-3 rounded-xl border p-4 text-left transition-colors duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
                         isSelected
                           ? "bg-bg-secondary border-primary/20 shadow-sm"
                           : "bg-surface-white border-border hover:border-primary/30 hover:shadow-md",
@@ -231,10 +231,10 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                     >
                       <div
                         className={cn(
-                          "w-6 h-6 rounded-lg flex items-center justify-center transition-all",
+                          "flex h-6 w-6 items-center justify-center rounded-lg transition-[background-color,color] motion-reduce:transition-none",
                           isSelected
                             ? "bg-accent text-white"
-                            : "bg-bg-secondary text-transparent group-hover:bg-slate-200",
+                            : "bg-bg-secondary text-transparent group-hover:bg-border/70",
                         )}
                       >
                         <FiCheck size={14} className="stroke-[3]" />
@@ -261,7 +261,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                 })
               ) : (
                 <div className="col-span-2 py-12 text-center text-text-secondary font-bold uppercase text-[10px] tracking-widest flex flex-col items-center gap-3">
-                  <div className="w-12 h-12 bg-bg-secondary rounded-xl flex items-center justify-center text-slate-300 mx-auto">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary">
                     <FiInfo size={24} />
                   </div>
                   No matching library reasons found
@@ -273,7 +273,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
 
         <div className="flex items-center gap-4">
           <div className="h-px flex-1 bg-bg-secondary" />
-          <div className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">
+          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-text-secondary">
             OR
           </div>
           <div className="h-px flex-1 bg-bg-secondary" />
@@ -282,7 +282,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
         {/* Section 2: Custom Reasons */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-emerald-600">
+            <div className="flex items-center gap-2 text-success">
               <FiEdit3 size={20} className="stroke-[2.5]" />
               <h3 className="text-sm font-black uppercase tracking-wider">
                 Custom Reasons
@@ -290,7 +290,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
             </div>
             <button
               onClick={addCustomRow}
-              className="flex items-center gap-2 text-[11px] font-black text-accent hover:bg-bg-secondary px-4 py-2 rounded-xl transition-all uppercase tracking-wider"
+              className="flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-[11px] font-black uppercase tracking-wider text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
             >
               <FiPlus size={16} />
               Add Another row
@@ -302,7 +302,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
               {customReasons.map((reason, index) => (
                 <div
                   key={reason.id}
-                  className="flex items-start gap-4 animate-in slide-in-from-top-2 duration-300"
+                  className="flex items-start gap-4 motion-safe:animate-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 motion-reduce:animate-none"
                 >
                   <div className="w-24 shrink-0">
                     <FormField
@@ -316,11 +316,11 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                       }
                       className={cn(
                         hasDuplicates.errors[reason.id]?.code &&
-                          "ring-2 ring-rose-500/20 border-rose-300",
+                          "ring-2 ring-error/20 border-error/40",
                       )}
                     />
                     {hasDuplicates.errors[reason.id]?.code && (
-                      <span className="text-[9px] font-bold text-rose-500 mt-1 flex items-center gap-1 uppercase tracking-tighter">
+                      <span className="mt-1 flex items-center gap-1 text-[9px] font-bold uppercase tracking-tighter text-error" role="alert">
                         <FiAlertCircle size={10} /> Duplicate
                       </span>
                     )}
@@ -336,11 +336,11 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                       }
                       className={cn(
                         hasDuplicates.errors[reason.id]?.name &&
-                          "ring-2 ring-rose-500/20 border-rose-300",
+                          "ring-2 ring-error/20 border-error/40",
                       )}
                     />
                     {hasDuplicates.errors[reason.id]?.name && (
-                      <span className="text-[9px] font-bold text-rose-500 mt-1 flex items-center gap-1 uppercase tracking-tighter">
+                      <span className="mt-1 flex items-center gap-1 text-[9px] font-bold uppercase tracking-tighter text-error" role="alert">
                         <FiAlertCircle size={10} /> Duplicate name
                       </span>
                     )}
@@ -350,10 +350,10 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
                       onClick={() => removeCustomRow(reason.id)}
                       disabled={customReasons.length === 1}
                       className={cn(
-                        "p-3 rounded-xl transition-all",
+                        "flex min-h-11 min-w-11 items-center justify-center rounded-xl transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
                         customReasons.length === 1
-                          ? "text-slate-200 cursor-not-allowed"
-                          : "text-text-secondary hover:text-rose-500 hover:bg-rose-50",
+                          ? "cursor-not-allowed text-text-secondary/50"
+                          : "text-text-secondary hover:bg-error/10 hover:text-error",
                       )}
                     >
                       <FiX size={18} />
@@ -375,7 +375,7 @@ const AddExclusionReasonsModal: React.FC<AddExclusionReasonsModalProps> = ({
               <div className="px-3 py-1 bg-bg-secondary text-accent text-[10px] font-black rounded-xl border border-primary/20 uppercase tracking-tight">
                 {selectedLibIds.size} Library
               </div>
-              <div className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-black rounded-xl border border-emerald-100 uppercase tracking-tight">
+              <div className="rounded-xl border border-success/20 bg-success/10 px-3 py-1 text-[10px] font-black uppercase tracking-tight text-success">
                 {customReasons.filter((r) => r.code && r.name).length} Custom
               </div>
             </div>

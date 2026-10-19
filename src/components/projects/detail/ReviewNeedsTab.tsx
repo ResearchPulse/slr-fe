@@ -54,7 +54,7 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
           {reviewNeeds.length} {reviewNeeds.length === 1 ? "review need" : "review needs"}
         </p>
         {isLeader && reviewNeeds.length > 0 && (
-          <Button size="sm" onClick={onAdd}>
+          <Button size="sm" onClick={onAdd} className="min-h-11">
             Add review need
           </Button>
         )}
@@ -101,7 +101,7 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
             <Button
               size="sm"
               onClick={onAdd}
-              className="mt-5 w-full justify-between px-4 normal-case tracking-normal"
+              className="mt-5 min-h-11 w-full justify-between px-4 normal-case tracking-normal"
             >
               Add review need
               <FiArrowUpRight size={16} aria-hidden="true" />
@@ -114,7 +114,7 @@ const ReviewNeedsTab: React.FC<ReviewNeedsTabProps> = ({
         <button
           type="button"
           onClick={() => setShowAll((current) => !current)}
-          className="mt-3 text-sm font-medium text-accent hover:underline"
+          className="mt-3 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           aria-expanded={showAll}
         >
           {showAll ? "Show fewer needs" : `View all ${reviewNeeds.length} needs`}

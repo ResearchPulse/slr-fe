@@ -69,7 +69,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
   };
 
   return (
-    <div className="flex flex-col gap-4 p-4 min-w-[300px]">
+    <div className="flex w-full min-w-0 flex-col gap-4 p-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Calendar className="w-4 h-4 text-accent" />
@@ -78,8 +78,10 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           </span>
         </div>
         <button
+          type="button"
           onClick={onClear}
-          className="p-1 rounded-xl hover:bg-bg-secondary text-text-secondary hover:text-rose-500 transition-colors"
+          aria-label="Reset publication years"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
         >
           <X className="w-3.5 h-3.5" />
         </button>
@@ -90,19 +92,20 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           <span className="text-[10px] font-bold text-text-secondary uppercase">
             From
           </span>
-          <span className="text-sm font-black text-slate-800">{minVal}</span>
+          <span className="text-sm font-black text-text-primary">{minVal}</span>
         </div>
         <div className="flex flex-col text-right">
           <span className="text-[10px] font-bold text-text-secondary uppercase">
             To
           </span>
-          <span className="text-sm font-black text-slate-800">{maxVal}</span>
+          <span className="text-sm font-black text-text-primary">{maxVal}</span>
         </div>
       </div>
 
       <div className="relative h-10 flex items-center">
         <input
           type="range"
+          aria-label="Minimum publication year"
           min={minYear}
           max={maxYear}
           value={minVal}
@@ -117,6 +120,7 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         />
         <input
           type="range"
+          aria-label="Maximum publication year"
           min={minYear}
           max={maxYear}
           value={maxVal}
@@ -128,14 +132,14 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
         />
 
         <div className="slider">
-          <div className="slider__track bg-slate-200" />
-          <div ref={range} className="slider__range bg-accent" />
+          <div className="slider__track bg-border" />
+          <div ref={range} className="slider__range bg-primary" />
         </div>
       </div>
 
       <div className="flex justify-between mt-1">
-        <span className="text-[9px] font-bold text-slate-300">{minYear}</span>
-        <span className="text-[9px] font-bold text-slate-300">{maxYear}</span>
+        <span className="text-[9px] font-bold text-text-secondary">{minYear}</span>
+        <span className="text-[9px] font-bold text-text-secondary">{maxYear}</span>
       </div>
 
       <style>{`
@@ -213,6 +217,11 @@ const YearRangeSlider: React.FC<YearRangeSliderProps> = ({
           width: 18px;
           pointer-events: all;
           position: relative;
+        }
+
+        .thumb:focus-visible::-webkit-slider-thumb,
+        .thumb:focus-visible::-moz-range-thumb {
+          box-shadow: 0 0 0 4px rgb(0 113 188 / 0.22);
         }
       `}</style>
     </div>

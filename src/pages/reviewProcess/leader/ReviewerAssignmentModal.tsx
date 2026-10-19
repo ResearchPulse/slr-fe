@@ -165,75 +165,105 @@ const ReviewerAssignmentModal: React.FC<ReviewerAssignmentModalProps> = ({
     >
       <div className="space-y-6 pt-4">
         <div className="relative overflow-hidden rounded-xl border border-border shadow-none bg-surface-white min-h-[400px]">
-          <Table>
-            <TableHeader className="bg-bg-secondary/50">
-              <TableRow className="hover:bg-transparent border-b border-border">
-                <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 px-8">
-                  Paper Title
-                </TableHead>
-                <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
-                  Title/Abstract
-                </TableHead>
-                <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
-                  Full-text
-                </TableHead>
-                <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
-                  Overall Status
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
-                <TableRow>
-                  <TableCell colSpan={4} className="py-24 text-center">
-                    <div className="flex flex-col items-center justify-center text-text-secondary">
-                      <LoadingSpinner size="lg" className="mb-4" />
-                      <p className="text-lg font-black tracking-tight italic">
-                        Loading assignments...
-                      </p>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : assignments && assignments.length > 0 ? (
-                assignments.map((assignment) => (
-                  <TableRow
+          {isLoading ? (
+            <div className="flex min-h-[400px] flex-col items-center justify-center px-6 text-center text-text-secondary">
+              <LoadingSpinner size="lg" className="mb-4" />
+              <p className="text-lg font-black tracking-tight italic">
+                Loading assignments...
+              </p>
+            </div>
+          ) : assignments && assignments.length > 0 ? (
+            <>
+              <div className="hidden sm:block">
+                <Table>
+                  <TableHeader className="bg-bg-secondary/50">
+                    <TableRow className="hover:bg-transparent border-b border-border">
+                      <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 px-8">
+                        Paper Title
+                      </TableHead>
+                      <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
+                        Title/Abstract
+                      </TableHead>
+                      <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
+                        Full-text
+                      </TableHead>
+                      <TableHead className="text-[10px] uppercase font-black tracking-[0.2em] text-text-secondary py-6 text-center">
+                        Overall Status
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {assignments.map((assignment) => (
+                      <TableRow
+                        key={assignment.paperId}
+                        className="group border-b border-border/70 transition-colors hover:bg-bg-secondary/50 motion-reduce:transition-none last:border-none"
+                      >
+                        <TableCell className="py-6 px-8 max-w-sm">
+                          <div className="font-bold text-text-primary leading-tight transition-colors group-hover:text-accent motion-reduce:transition-none">
+                            {assignment.paperTitle}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-center py-6">
+                          <PhaseBadge status={assignment.titleAbstractDisplay} />
+                        </TableCell>
+                        <TableCell className="text-center py-6">
+                          <PhaseBadge status={assignment.fullTextDisplay} />
+                        </TableCell>
+                        <TableCell className="text-center py-6 px-8">
+                          <StatusBadge status={assignment.overallStatus} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+
+              <div className="space-y-3 p-3 sm:hidden">
+                {assignments.map((assignment) => (
+                  <article
                     key={assignment.paperId}
-                    className="group hover:bg-bg-secondary/50 transition-colors border-b border-slate-50 last:border-none"
+                    className="min-w-0 rounded-xl border border-border bg-surface-white p-3"
                   >
-                    <TableCell className="py-6 px-8 max-w-sm">
-                      <div className="font-bold text-text-primary leading-tight group-hover:text-accent transition-colors">
-                        {assignment.paperTitle}
+                    <h3 className="break-words text-sm font-semibold leading-snug text-text-primary">
+                      {assignment.paperTitle}
+                    </h3>
+                    <div className="mt-3 grid grid-cols-2 gap-2">
+                      <div className="min-w-0 space-y-1.5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                          Title/Abstract
+                        </p>
+                        <PhaseBadge status={assignment.titleAbstractDisplay} />
                       </div>
-                    </TableCell>
-                    <TableCell className="text-center py-6">
-                      <PhaseBadge status={assignment.titleAbstractDisplay} />
-                    </TableCell>
-                    <TableCell className="text-center py-6">
-                      <PhaseBadge status={assignment.fullTextDisplay} />
-                    </TableCell>
-                    <TableCell className="text-center py-6 px-8">
-                      <StatusBadge status={assignment.overallStatus} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={4} className="py-24 text-center">
-                    <div className="flex flex-col items-center justify-center text-slate-300">
-                      <Search
-                        size={48}
-                        strokeWidth={1.5}
-                        className="mb-4 opacity-50"
-                      />
-                      <p className="text-lg font-black tracking-tight text-text-secondary italic">
-                        No Papers Assigned
-                      </p>
+                      <div className="min-w-0 space-y-1.5">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                          Full-text
+                        </p>
+                        <PhaseBadge status={assignment.fullTextDisplay} />
+                      </div>
                     </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                    <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                      <span className="text-[10px] font-semibold uppercase tracking-wide text-text-secondary">
+                        Overall status
+                      </span>
+                      <StatusBadge status={assignment.overallStatus} />
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </>
+          ) : (
+            <div className="flex min-h-[400px] flex-col items-center justify-center px-6 text-center text-text-secondary">
+              <Search
+                size={48}
+                strokeWidth={1.5}
+                className="mb-4 opacity-50"
+                aria-hidden="true"
+              />
+              <p className="text-lg font-black tracking-tight italic">
+                No Papers Assigned
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </Modal>

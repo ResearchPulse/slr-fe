@@ -71,7 +71,7 @@ const InteractionGuard: React.FC<InteractionGuardProps> = ({ children }) => {
     >
       {/* Visual banner for Read-only mode */}
       {isAdminOnClientPage && (
-        <div className="bg-bg-primary border-b border-border px-4 py-3 text-center sticky top-[52px] md:top-[60px] z-[999] animate-in fade-in slide-in-from-top duration-300">
+        <div className="bg-bg-primary border-b border-border px-4 py-3 text-center sticky top-[52px] md:top-[60px] z-[999] motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top motion-safe:duration-300 motion-reduce:animate-none">
           <p className="text-[11px] font-medium text-text-primary uppercase tracking-[0.2em] flex items-center justify-center gap-3">
             <span className="w-1.5 h-1.5 rounded-full bg-accent opacity-80" />
             Admin Read-Only Mode

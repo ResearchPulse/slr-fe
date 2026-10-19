@@ -17,7 +17,7 @@ export default function ConsensusSidebar({
   onSectionChange,
 }: ConsensusSidebarProps) {
   return (
-    <aside className="w-[260px] xl:w-[280px] shrink-0 flex flex-col justify-between border-r border-border bg-surface-white p-3 overflow-y-auto">
+    <aside className="hidden w-[260px] shrink-0 flex-col justify-between overflow-y-auto border-r border-border bg-surface-white p-3 lg:flex xl:w-[280px]">
       <div className="space-y-2">
         <div className="px-2 pb-1.5 pt-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-text-muted">
           Section Navigator <span className="ml-1 font-normal">({sections.length})</span>
@@ -33,9 +33,9 @@ export default function ConsensusSidebar({
               <button
                 key={section.sectionId}
                 type="button"
-                aria-current={isActive ? "true" : undefined}
+                aria-pressed={isActive}
                 onClick={() => onSectionChange(section.sectionId)}
-                className={`flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
+                className={`flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors duration-150 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                   isActive
                     ? "bg-primary-light text-primary"
                     : "text-text-primary hover:bg-bg-primary"
@@ -74,7 +74,7 @@ export default function ConsensusSidebar({
                 {isResolved ? (
                   <FiCheck className="h-4 w-4 shrink-0 text-success" aria-label="Resolved" />
                 ) : (
-                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-100 px-1 text-[10px] font-bold text-amber-700">
+                  <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-warning/10 px-1 text-[10px] font-bold text-warning">
                     {sectionConflictCount}
                   </span>
                 )}
@@ -92,8 +92,8 @@ export default function ConsensusSidebar({
           <span
             className={`inline-flex items-center gap-1 font-semibold ${
               totalConflictCount === 0
-                ? "text-emerald-600"
-                : "text-amber-600"
+                ? "text-success"
+                : "text-warning"
             }`}
           >
             {totalConflictCount === 0 ? (

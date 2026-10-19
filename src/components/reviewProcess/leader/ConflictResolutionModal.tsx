@@ -210,7 +210,7 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
       size="md"
       bodyClassName="p-0 overflow-hidden flex-1 flex flex-col"
     >
-      <div className="flex flex-col bg-surface-white overflow-hidden h-[65vh] min-h-[450px]">
+      <div className="flex flex-col bg-surface-white overflow-hidden h-[min(65vh,calc(100dvh-8rem))] min-h-0">
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center p-12">
             <div className="flex flex-col items-center gap-4">
@@ -290,9 +290,9 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
         size="xl"
       >
         {isLoadingSubmission ? (
-          <div className="flex flex-col items-center justify-center p-20 gap-4">
+          <div className="flex flex-col items-center justify-center p-20 gap-4" role="status" aria-live="polite" aria-busy="true">
             <LoadingSpinner size="lg" />
-            <p className="text-text-secondary animate-pulse font-medium">
+            <p className="text-text-secondary motion-safe:animate-pulse motion-reduce:animate-none font-medium">
               Loading submission data...
             </p>
           </div>
@@ -303,11 +303,11 @@ const ConflictResolutionModal: React.FC<ConflictResolutionModalProps> = ({
               renderItem={(item) => (
                 <div className="flex items-center">
                   {item.isChecked ? (
-                    <div className="w-5 h-5 rounded-md bg-green-100 border border-border flex items-center justify-center text-green-600 shadow-sm">
+                    <div className="w-5 h-5 rounded-md bg-success/10 border border-success/20 flex items-center justify-center text-success shadow-sm">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                   ) : (
-                    <div className="w-5 h-5 rounded-md bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-400 shadow-sm">
+                    <div className="w-5 h-5 rounded-md bg-error/5 border border-error/20 flex items-center justify-center text-error shadow-sm">
                       <X className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                   )}

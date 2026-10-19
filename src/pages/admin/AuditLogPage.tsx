@@ -187,8 +187,8 @@ const AuditLogPage: React.FC = () => {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-bg-primary">
         <div className="flex flex-col items-center gap-4">
-          <FiRefreshCw className="h-7 w-7 animate-spin text-accent" />
-          <p className="text-sm font-medium text-slate-500">
+          <FiRefreshCw className="h-7 w-7 motion-safe:animate-spin motion-reduce:animate-none text-accent" />
+          <p className="text-sm font-medium text-text-muted">
             Loading audit history...
           </p>
         </div>
@@ -215,20 +215,12 @@ const AuditLogPage: React.FC = () => {
           <button
             type="button"
             onClick={() => setIsExportOpen(true)}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-medium text-white transition-colors hover:bg-primary-hover"
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-medium text-white transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
           >
             <FiDownload className="w-4 h-4" />
             Export
           </button>
 
-          <button
-            type="button"
-            onClick={handleResetFilters}
-            className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-white px-4 text-sm font-medium text-text-primary transition-colors hover:bg-bg-secondary hover:text-accent"
-          >
-            <FiRefreshCw className="w-4 h-4" />
-            Reset filters
-          </button>
         </div>
       </div>
 

@@ -84,7 +84,7 @@ export default function IdentificationHeader({
               disabled={listLoading || statsLoading}
             >
               <FiRefreshCw
-                className={`w-4 h-4 ${listLoading || statsLoading ? "animate-spin" : ""}`}
+                className={`w-4 h-4 ${listLoading || statsLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
               />
               Refresh Data
             </Button>

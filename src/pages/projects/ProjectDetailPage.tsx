@@ -21,8 +21,6 @@ import type {
 } from "../../components/projects/detail/StepProgressNav";
 import ActivateProjectStep from "../../components/projects/detail/ActivateProjectStep";
 import ProjectDrawers from "../../components/projects/detail/ProjectDrawers";
-import Button from "../../components/ui/Button";
-import Card from "../../components/ui/Card";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 import { aiProjectSetupService } from "../../services/aiProjectSetupService";
@@ -36,6 +34,7 @@ import PaperPoolTab from "../../components/paperPool/PaperPoolTab";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { useProjectMember } from "../../hooks/useProjectMember";
+import QueryErrorState from "../../components/ui/QueryErrorState";
 
 type WorkflowStepKey =
   | "picoc-scope"
@@ -453,33 +452,27 @@ export default function ProjectDetailPage() {
 
   if (projectError) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card>
-          <p className="text-center text-red-500">{projectError}</p>
-          <div className="text-center mt-4">
-            <Button onClick={() => navigate("/projects")}>
-              Back to Projects
-            </Button>
-          </div>
-        </Card>
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+        <QueryErrorState
+          title="Project could not be loaded"
+          message={projectError}
+          onRetry={() => void refetchProject()}
+          onBack={() => navigate("/projects")}
+          backLabel="Back to projects"
+        />
       </div>
     );
   }
 
   if (!project) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="bg-surface-white rounded-xl border border-border p-8 text-center">
-          <p className="text-text-secondary mb-6 text-sm">
-            Project not found (ID: {id || "none"})
-          </p>
-          <button
-            onClick={() => navigate("/projects")}
-            className="px-6 py-2 bg-accent text-bg-primary rounded-xl hover:bg-primary-hover transition-colors text-[12px] uppercase tracking-[0.1em]"
-          >
-            Back to Project List
-          </button>
-        </div>
+      <div className="mx-auto flex min-h-[calc(100vh-8rem)] w-full max-w-5xl items-center px-4 py-8 sm:px-6">
+        <QueryErrorState
+          title="Project not found"
+          message="This project may have been removed or you may no longer have access to it."
+          onBack={() => navigate("/projects")}
+          backLabel="Back to projects"
+        />
       </div>
     );
   }
@@ -545,7 +538,7 @@ export default function ProjectDetailPage() {
                 type="button"
                 aria-current={activeMainSection === "overview" ? "page" : undefined}
                 onClick={() => setActiveMainSection("overview")}
-                className={`-mb-px border-b-2 pb-3 text-sm font-medium transition-colors ${
+                className={`-mb-px min-h-11 border-b-2 pb-3 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   activeMainSection === "overview"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"
@@ -558,7 +551,7 @@ export default function ProjectDetailPage() {
                 type="button"
                 aria-current={activeMainSection === "paper-pool" ? "page" : undefined}
                 onClick={() => setActiveMainSection("paper-pool")}
-                className={`-mb-px border-b-2 pb-3 text-sm font-medium transition-colors ${
+                className={`-mb-px min-h-11 border-b-2 pb-3 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   activeMainSection === "paper-pool"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"
@@ -573,7 +566,7 @@ export default function ProjectDetailPage() {
             <Route
               path="overview"
               element={
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 motion-safe:duration-300 motion-reduce:animate-none">
                   <OverviewTabContent
                     project={projectForHeader ?? project}
                     projectId={id || ""}
@@ -628,7 +621,6 @@ export default function ProjectDetailPage() {
             project={project}
             projectId={id || ""}
             isLeader={isLeader}
-            isProjectActive={isProjectActive}
             reviewNeeds={reviewNeeds}
             documents={documents}
             isUpdatingDates={isUpdatingDates}
@@ -636,10 +628,6 @@ export default function ProjectDetailPage() {
             setIsNeedModalOpen={setIsNeedModalOpen}
             setIsDocModalOpen={setIsDocModalOpen}
             initialTab={businessJustificationInitialTab}
-            onSkip={() => {
-              setHasPassedReviewJustification(true);
-              setSelectedStep("activate-project");
-            }}
           />
         );
 

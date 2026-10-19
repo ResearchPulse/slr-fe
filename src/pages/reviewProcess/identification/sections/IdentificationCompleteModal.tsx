@@ -52,8 +52,8 @@ const IdentificationCompleteModal: React.FC<
     >
       <div className="space-y-6">
         {/* Warning Section */}
-        <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 flex gap-3 text-amber-800">
-          <FiAlertCircle size={24} className="shrink-0 text-amber-500" />
+        <div className="flex gap-3 rounded-xl border border-warning/20 bg-warning/10 p-4 text-text-primary" role="status">
+          <FiAlertCircle size={24} className="shrink-0 text-warning" />
           <div className="space-y-1">
             <p className="text-sm font-black">Ready to proceed?</p>
             <p className="text-xs font-medium leading-relaxed opacity-90">
@@ -70,7 +70,7 @@ const IdentificationCompleteModal: React.FC<
         </div>
 
         {!canComplete && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          <div className="rounded-xl border border-warning/20 bg-warning/10 px-4 py-3 text-sm text-warning" role="alert">
             Add a search strategy or import at least one paper before completing this phase.
           </div>
         )}
@@ -95,7 +95,7 @@ const IdentificationCompleteModal: React.FC<
               placeholder="Search in snapshot..."
               value={snapshotSearch}
               onChange={(e) => setSnapshotSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-surface-white border border-border rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all font-medium"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-10 pr-4 text-sm font-medium text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
 
@@ -113,7 +113,7 @@ const IdentificationCompleteModal: React.FC<
                   key={paper.id || index}
                   className="bg-surface-white border border-border p-3 rounded-xl shadow-sm hover:border-primary/30 transition-colors"
                 >
-                  <p className="text-sm font-bold text-slate-800 line-clamp-1">
+                  <p className="line-clamp-1 text-sm font-bold text-text-primary">
                     {paper.title}
                   </p>
                   <div className="flex items-center gap-3 mt-1 text-[10px] font-medium text-text-secondary uppercase tracking-wider">
@@ -146,18 +146,22 @@ const IdentificationCompleteModal: React.FC<
               </span>
               <div className="flex gap-1">
                 <button
+                    type="button"
+                    aria-label="Previous snapshot page"
                   onClick={snapshotPrevPage}
                   disabled={snapshotPage === 1 || snapshotLoading}
-                  className="p-1 rounded hover:bg-surface-white border border-transparent hover:border-border disabled:opacity-30 text-text-secondary transition-all"
+                    className="flex h-11 w-11 items-center justify-center rounded-lg border border-transparent text-text-secondary transition-colors hover:border-border hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-30 motion-reduce:transition-none"
                 >
                   <FiChevronLeft />
                 </button>
                 <button
+                    type="button"
+                    aria-label="Next snapshot page"
                   onClick={snapshotNextPage}
                   disabled={
                     snapshotPage === snapshotTotalPages || snapshotLoading
                   }
-                  className="p-1 rounded hover:bg-surface-white border border-transparent hover:border-border disabled:opacity-30 text-text-secondary transition-all"
+                    className="flex h-11 w-11 items-center justify-center rounded-lg border border-transparent text-text-secondary transition-colors hover:border-border hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-30 motion-reduce:transition-none"
                 >
                   <FiChevronRight />
                 </button>
@@ -167,11 +171,11 @@ const IdentificationCompleteModal: React.FC<
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-6 border-t border-slate-50">
+        <div className="flex items-center justify-end gap-3 border-t border-border pt-6">
           <button
             type="button"
             onClick={onClose}
-            className="px-6 py-2.5 text-sm font-bold text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-all"
+            className="inline-flex min-h-11 items-center rounded-xl px-6 py-2.5 text-sm font-bold text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none"
             disabled={isCompleting}
           >
             Cancel
@@ -181,7 +185,7 @@ const IdentificationCompleteModal: React.FC<
             isLoading={isCompleting}
             variant="primary"
             disabled={!canComplete || isCompleting}
-            className="min-w-[160px] bg-accent hover:bg-primary-hover shadow-lg shadow-primary/10 transition-transform active:scale-95"
+            className="min-h-11 min-w-[160px] bg-primary shadow-sm shadow-primary/10 transition-transform active:scale-[0.98] motion-reduce:active:scale-100 motion-reduce:transition-none"
           >
             Complete module
           </Button>

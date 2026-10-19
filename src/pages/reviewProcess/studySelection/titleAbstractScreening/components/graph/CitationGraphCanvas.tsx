@@ -25,6 +25,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
 }) => {
   const cyRef = useRef<cytoscape.Core | null>(null);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>("timeline");
+  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
 
   // Cache for radial positions to prevent re-calculating on every mode switch
   const radialPositionsRef = useRef<Record<string, cytoscape.Position>>({});
@@ -33,6 +34,12 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   useEffect(() => {
     radialPositionsRef.current = {};
   }, [data]);
+
+  useEffect(() => {
+    const updateViewportWidth = () => setViewportWidth(window.innerWidth);
+    window.addEventListener("resize", updateViewportWidth);
+    return () => window.removeEventListener("resize", updateViewportWidth);
+  }, []);
 
   // Memoize elements with Manual Timeline positions in the data
   // These positions are used exclusively for 'timeline' mode via the preset layout
@@ -49,8 +56,12 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
     const maxYear =
       validYears.length > 0 ? Math.max(...validYears) : currentYear;
 
-    const yearSpacing = 300;
-    const ySpacing = 100;
+    const yearSpan = Math.max(1, maxYear - minYear);
+    const yearSpacing = Math.min(
+      300,
+      (viewportWidth < 768 ? 180 : 640) / yearSpan,
+    );
+    const ySpacing = viewportWidth < 768 ? 64 : 100;
     const yearCountMap: Record<number, number> = {};
 
     const nodes = data.nodes.map((node) => {
@@ -86,7 +97,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
     }));
 
     return [...nodes, ...edges];
-  }, [data, rootPaperId]);
+  }, [data, rootPaperId, viewportWidth]);
 
   // Stable Stylesheet with conditional classes for edges
   const stylesheet = useMemo<
@@ -196,6 +207,10 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   ) => {
     const cy = cyRef.current;
     if (!cy) return;
+    const prefersReducedMotion = window.matchMedia?.(
+      "(prefers-reduced-motion: reduce)",
+    ).matches ?? false;
+    const animationDuration = prefersReducedMotion ? 0 : 800;
 
     if (mode === "timeline") {
       cy.edges().removeClass("bezier").addClass("timeline-curve");
@@ -203,9 +218,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       cy.layout({
         name: "preset",
         animate: true,
-        animationDuration: 800,
+        animationDuration,
         fit: true,
-        padding: 100,
+        padding: viewportWidth < 768 ? 24 : 64,
         positions: (nodeId: string) =>
           cy.getElementById(nodeId).data("timelinePos"),
       }).run();
@@ -219,9 +234,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         cy.layout({
           name: "preset",
           animate: true,
-          animationDuration: 800,
+          animationDuration,
           fit: true,
-          padding: 100,
+          padding: viewportWidth < 768 ? 24 : 64,
           positions: (nodeId: string) => radialPositionsRef.current[nodeId],
         }).run();
       } else {
@@ -229,9 +244,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         const layout = cy.layout({
           name: "fcose",
           animate: true,
-          animationDuration: 1200,
+          animationDuration: prefersReducedMotion ? 0 : 1200,
           fit: true,
-          padding: 100,
+          padding: viewportWidth < 768 ? 24 : 64,
           nodeDimensionsIncludeLabels: true,
           nodeSeparation: 120,
           idealEdgeLength: (edge: cytoscape.EdgeSingular) =>
@@ -278,6 +293,9 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
     cy.elements().removeClass("semitransparent highlight selected");
 
     if (selectedPaperId) {
+      const prefersReducedMotion = window.matchMedia?.(
+        "(prefers-reduced-motion: reduce)",
+      ).matches ?? false;
       const selectedNode = cy.getElementById(selectedPaperId);
       if (selectedNode.length > 0) {
         selectedNode.addClass("selected");
@@ -297,7 +315,7 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
             level: Math.max(cy.zoom(), 0.8),
             position: selectedNode.position(),
           },
-          duration: 500,
+          duration: prefersReducedMotion ? 0 : 250,
           easing: "ease-in-out-cubic",
         });
       }
@@ -341,54 +359,74 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
         style={{ width: "100%", height: "100%" }}
         stylesheet={stylesheet}
         cy={handleCyReady}
-        className="transition-opacity duration-500"
+        className="transition-opacity duration-150 motion-reduce:transition-none"
       />
 
       {/* Primary Mode Switcher */}
-      <div className="absolute top-4 left-4 flex items-center p-1 bg-surface-white/90 backdrop-blur-md rounded-xl border border-border shadow-none z-20">
+      <div className="absolute left-3 right-3 top-3 z-20 flex w-fit max-w-[calc(100%-1.5rem)] flex-wrap items-center rounded-xl border border-border bg-surface-white/90 p-1 shadow-none backdrop-blur-md sm:left-4 sm:right-auto sm:top-4">
         <button
+          type="button"
           onClick={() => setLayoutMode("timeline")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
+          aria-pressed={layoutMode === "timeline"}
+          className={`flex min-h-11 items-center gap-1.5 rounded-xl px-2 sm:gap-2 sm:px-3 text-[10px] sm:text-[11px] font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             layoutMode === "timeline"
               ? "bg-primary text-white shadow-none"
               : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
           <GitBranch className="h-4 w-4" />
-          Timeline Flow
+          <span className="sm:hidden">Timeline</span>
+          <span className="hidden sm:inline">Timeline Flow</span>
         </button>
         <button
+          type="button"
           onClick={() => setLayoutMode("radial")}
-          className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold transition-all ${
+          aria-pressed={layoutMode === "radial"}
+          className={`flex min-h-11 items-center gap-1.5 rounded-xl px-2 sm:gap-2 sm:px-3 text-[10px] sm:text-[11px] font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
             layoutMode === "radial"
               ? "bg-primary text-white shadow-none"
               : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
           }`}
         >
           <BoxSelect className="h-4 w-4" />
-          Radial Cluster
+          <span className="sm:hidden">Radial</span>
+          <span className="hidden sm:inline">Radial Cluster</span>
         </button>
 
         {layoutMode === "radial" && (
-          <div className="mx-1 h-4 w-[1px] bg-slate-200" />
+          <div className="mx-1 h-4 w-[1px] bg-border" />
         )}
 
         {layoutMode === "radial" && (
           <button
+            type="button"
             onClick={() => triggerLayout("radial", true)}
             title="Regenerate Radial Layout"
-            className="p-2 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-all"
+            aria-label="Regenerate radial layout"
+            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-accent motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           >
             <RefreshCw className="h-4 w-4" />
           </button>
         )}
       </div>
 
+      {data.nodes.length === 0 && (
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-5 pt-16 text-center">
+          <div className="max-w-sm rounded-xl border border-border bg-surface-white/95 p-5 shadow-sm">
+            <GitBranch className="mx-auto mb-2 h-6 w-6 text-text-secondary" aria-hidden="true" />
+            <p className="text-sm font-semibold text-text-primary">No citation data available</p>
+            <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+              This paper has no citation network to display yet.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Help Legend - Autohide */}
-      <div className="absolute bottom-6 left-6 pointer-events-none transition-all duration-500 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0">
-        <div className="px-4 py-2 bg-slate-900/90 text-white backdrop-blur rounded-xl shadow-2xl flex items-center gap-3 border border-white/10">
+      <div className="pointer-events-none absolute bottom-6 left-6 hidden translate-y-1 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none sm:block">
+        <div className="px-4 py-2 bg-text-primary/90 text-surface-white backdrop-blur rounded-xl shadow-2xl flex items-center gap-3 border border-surface-white/10">
           <div
-            className={`w-2 h-2 rounded-full animate-pulse ${layoutMode === "timeline" ? "bg-accent" : "bg-purple-400"}`}
+            className={`h-2 w-2 rounded-full ${layoutMode === "timeline" ? "bg-accent" : "bg-purple-400"}`}
           />
           <span className="text-[11px] font-medium tracking-wide">
             {layoutMode === "timeline"

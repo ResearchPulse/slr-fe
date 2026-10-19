@@ -38,7 +38,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
   return (
     <aside
       className={cn(
-        "relative z-30 flex h-screen flex-col border-r border-border bg-surface-white ",
+        "relative z-30 flex h-screen flex-col border-r border-border bg-surface-white transition-[width] duration-200 ease-out motion-reduce:transition-none ",
         isCollapsed ? "w-20" : "w-64",
         className,
       )}
@@ -46,7 +46,9 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
       {onToggleCollapse && (
         <button
           onClick={onToggleCollapse}
-          className="absolute -right-4 top-8 z-40 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-none shadow-slate-200/50  hover:border-accent/20 hover:text-accent active:scale-90"
+          type="button"
+          aria-expanded={!isCollapsed}
+          className="absolute -right-4 top-8 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary transition-colors hover:border-primary/20 hover:text-primary active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:active:scale-100 motion-reduce:transition-none"
           title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
           aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
@@ -76,7 +78,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
               onClick={() => onSectionClick(section.section)}
               title={isCollapsed ? section.displayName : undefined}
               className={cn(
-                "group relative flex w-full items-center overflow-hidden rounded-xl border text-left transition-all",
+                "group relative flex min-h-11 w-full items-center overflow-hidden rounded-xl border text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
                 isCollapsed
                   ? "h-14 justify-center px-2"
                   : "justify-between px-3 py-2.5",
@@ -127,7 +129,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
                   >
                     <span
                       className={cn(
-                        isComplete ? "text-emerald-600" : "text-accent",
+                        isComplete ? "text-success" : "text-accent",
                       )}
                     >
                       {percentage}%
@@ -174,7 +176,7 @@ const SectionSidebar: React.FC<SectionSidebarProps> = ({
 
         {isCollapsed && (
           <div className="flex justify-center">
-            <div className="rounded-full bg-surface-white px-2 py-1 text-[10px] font-semibold text-text-secondary shadow-none ring-1 ring-gray-200">
+            <div className="rounded-full bg-surface-white px-2 py-1 text-[10px] font-semibold text-text-secondary ring-1 ring-border">
               {totalProgress}%
             </div>
           </div>

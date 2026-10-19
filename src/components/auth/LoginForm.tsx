@@ -35,6 +35,7 @@ interface GoogleIdentityServices {
           width: number;
           text: string;
           shape: string;
+            locale: string;
         },
       ) => void;
     };
@@ -123,7 +124,7 @@ const LoginForm: React.FC = () => {
 
     let resizeObserver: ResizeObserver | undefined;
     let script = document.querySelector(
-      'script[src="https://accounts.google.com/gsi/client"]',
+      'script[src^="https://accounts.google.com/gsi/client"]',
     ) as HTMLScriptElement;
 
     const initializeGoogleSignIn = () => {
@@ -152,6 +153,7 @@ const LoginForm: React.FC = () => {
             width,
             text: "continue_with",
             shape: "rectangular",
+            locale: "en",
           });
           setIsGoogleButtonReady(true);
         };
@@ -164,7 +166,7 @@ const LoginForm: React.FC = () => {
 
     if (!script) {
       script = document.createElement("script");
-      script.src = "https://accounts.google.com/gsi/client";
+      script.src = "https://accounts.google.com/gsi/client?hl=en";
       script.async = true;
       script.defer = true;
       document.body.appendChild(script);

@@ -113,29 +113,29 @@ const criteriaFrom = (data?: Record<string, unknown>): Criterion[] => {
 const statusStyle = (value?: string) => {
   const normalized = (value || "").trim().toUpperCase().replace(/[\s-]+/g, "_");
   if (["MET", "PASS", "PASSED", "SATISFIED", "INCLUDE", "INCLUDED", "TRUE"].includes(normalized)) {
-    return { label: "Met", className: "text-emerald-600", Icon: FiCheck };
+    return { label: "Met", className: "text-success", Icon: FiCheck };
   }
   if (["NOT_MET", "NOTMET", "FAIL", "FAILED", "UNMET", "EXCLUDE", "EXCLUDED", "FALSE"].includes(normalized)) {
-    return { label: "Not met", className: "text-rose-500", Icon: FiX };
+    return { label: "Not met", className: "text-error", Icon: FiX };
   }
   if (["INSUFFICIENT_EVIDENCE", "NO_EVIDENCE", "MISSING_EVIDENCE"].includes(normalized)) {
-    return { label: "Insufficient evidence", className: "text-slate-500", Icon: FiInfo };
+    return { label: "Insufficient evidence", className: "text-text-secondary", Icon: FiInfo };
   }
   if (["UNCLEAR", "UNCERTAIN", "UNKNOWN", "PARTIAL", "INCONCLUSIVE"].includes(normalized)) {
-    return { label: value || "Uncertain", className: "text-amber-600", Icon: FiHelpCircle };
+    return { label: value || "Uncertain", className: "text-warning", Icon: FiHelpCircle };
   }
   if (["PENDING", "ASSIGNED", "NOT_ASSESSED"].includes(normalized)) {
-    return { label: value || "Pending", className: "text-slate-400", Icon: FiClock };
+    return { label: value || "Pending", className: "text-text-muted", Icon: FiClock };
   }
-  return { label: value || "Not assessed", className: "text-slate-400", Icon: FiHelpCircle };
+  return { label: value || "Not assessed", className: "text-text-muted", Icon: FiHelpCircle };
 };
 
 const recommendationStyle = (decision: string) => {
   const normalized = decision.trim().toUpperCase();
-  if (["INCLUDE", "INCLUDED"].includes(normalized)) return "border-emerald-200 bg-emerald-50 text-emerald-800";
-  if (["EXCLUDE", "EXCLUDED"].includes(normalized)) return "border-rose-200 bg-rose-50 text-rose-800";
-  if (["UNCERTAIN", "UNCLEAR", "MAYBE"].includes(normalized)) return "border-amber-200 bg-amber-50 text-amber-800";
-  return "border-slate-200 bg-slate-50 text-slate-700";
+  if (["INCLUDE", "INCLUDED"].includes(normalized)) return "border-success/20 bg-success/10 text-success";
+  if (["EXCLUDE", "EXCLUDED"].includes(normalized)) return "border-error/20 bg-error/5 text-error";
+  if (["UNCERTAIN", "UNCLEAR", "MAYBE"].includes(normalized)) return "border-warning/20 bg-warning/10 text-warning";
+  return "border-border bg-bg-secondary text-text-secondary";
 };
 
 const isMet = (value?: string) => ["MET", "PASS", "PASSED", "SATISFIED", "INCLUDE", "INCLUDED", "TRUE"]
@@ -151,7 +151,7 @@ function EvidenceBlock({ value }: { value: unknown }) {
   const text = quote || (evidence ? firstText(evidence, ["reasoning", "description"]) : undefined);
 
   return (
-    <blockquote className="min-w-0 border-l-2 border-slate-200 pl-3 text-xs leading-5 text-text-secondary">
+    <blockquote className="min-w-0 border-l-2 border-border pl-3 text-xs leading-5 text-text-secondary">
       {text ? <p className="break-words">{text}</p> : <p>Evidence details were provided without a readable quotation.</p>}
       {(location || label) && <footer className="mt-1 text-[10px] text-text-tertiary">{[label, location].filter(Boolean).join(" · ")}</footer>}
     </blockquote>
@@ -160,7 +160,7 @@ function EvidenceBlock({ value }: { value: unknown }) {
 
 function JsonPreview({ value }: { value: string }) {
   const tokens = value.split(/("(?:\\.|[^"\\])*"\s*:|"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g);
-  return <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-slate-950 p-3 font-mono text-[10px] leading-4 text-slate-200">{tokens.map((token, index) => {
+  return <pre className="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-lg bg-text-primary p-3 font-mono text-[10px] leading-4 text-bg-primary">{tokens.map((token, index) => {
     let color = "";
     if (/^"(?:\\.|[^"\\])*"\s*:$/.test(token)) color = "text-sky-300";
     else if (/^"/.test(token)) color = "text-emerald-300";
@@ -176,7 +176,7 @@ function CriterionRow({ criterion, open, onToggle }: { criterion: Criterion; ope
   const hasDetails = Boolean(criterion.name || criterion.status || criterion.detail || criterion.evidence.length);
   return (
     <div className="min-w-0">
-      <button type="button" aria-expanded={hasDetails ? open : undefined} aria-label={`${criterion.id}${criterion.name ? `, ${criterion.name}` : ""}${hasDetails ? ", toggle assessment details" : ""}`} onClick={() => hasDetails && onToggle()} className="flex min-h-[34px] w-full min-w-0 items-center gap-2 px-1.5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500">
+      <button type="button" aria-expanded={hasDetails ? open : undefined} aria-label={`${criterion.id}${criterion.name ? `, ${criterion.name}` : ""}${hasDetails ? ", toggle assessment details" : ""}`} onClick={() => hasDetails && onToggle()} className="flex min-h-11 w-full min-w-0 items-center gap-2 px-1.5 text-left transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none">
         <span className="w-8 shrink-0 text-[11px] font-semibold text-text-secondary">{criterion.id}</span>
         {criterion.name && <span className="min-w-0 flex-1 truncate text-[12px] text-text-primary" title={criterion.name}>{criterion.name}</span>}
         {!criterion.name && <span className="min-w-0 flex-1" />}
@@ -185,7 +185,7 @@ function CriterionRow({ criterion, open, onToggle }: { criterion: Criterion; ope
           ? open ? <FiChevronDown className="h-3 w-3 shrink-0 text-text-tertiary" /> : <FiChevronRight className="h-3 w-3 shrink-0 text-text-tertiary" />
           : <span className="w-3 shrink-0" />}
       </button>
-      {open && <div className="ml-10 space-y-1.5 border-l border-slate-200 py-1.5 pl-3 pr-2">
+      {open && <div className="ml-10 space-y-1.5 border-l border-border py-1.5 pl-3 pr-2">
         {criterion.name && <p className="break-words text-[11px] leading-4 text-text-secondary"><span className="font-medium text-text-primary">Description: </span>{criterion.name}</p>}
         {criterion.status && <p className="text-[11px] text-text-secondary"><span className="font-medium text-text-primary">Assessment: </span>{status.label}</p>}
         {criterion.detail && <p className="whitespace-pre-wrap break-words text-[11px] leading-4 text-text-secondary"><span className="font-medium text-text-primary">Reasoning: </span>{criterion.detail}</p>}
@@ -277,7 +277,7 @@ export default function AIReviewResultCard({
       </header>
 
       <div className="space-y-3 p-3">
-        {notice && <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${notice.tone === "info" ? "bg-sky-50 text-sky-800" : "bg-amber-50 text-amber-900"}`}>
+        {notice && <div className={`flex items-start gap-2 rounded-lg px-3 py-2 text-xs ${notice.tone === "info" ? "bg-primary-light text-primary" : "bg-warning/10 text-warning"}`}>
           <FiInfo className="mt-0.5 h-3.5 w-3.5 shrink-0" /><p className="min-w-0 break-words">{notice.message}</p>
         </div>}
 
@@ -285,8 +285,8 @@ export default function AIReviewResultCard({
           <section aria-label="Key finding">
             <h4 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">Key finding</h4>
             <p className={`${showFullFinding ? "whitespace-pre-wrap" : "line-clamp-3"} break-words text-xs leading-5 text-text-secondary`}>{finding}</p>
-            {hasLongReasoning && <button type="button" aria-expanded={showReasoning} onClick={() => setShowReasoning((value) => !value)} className="mt-1 text-[11px] font-semibold text-sky-700 hover:text-sky-900">{showReasoning ? "Hide full reasoning" : "Read full reasoning"}</button>}
-            {showSeparateReasoning && <div className="mt-2 rounded-lg bg-slate-50 p-3"><h5 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">Full reasoning</h5><p className="whitespace-pre-wrap break-words text-xs leading-5 text-text-secondary">{result.reasoning}</p></div>}
+            {hasLongReasoning && <button type="button" aria-expanded={showReasoning} onClick={() => setShowReasoning((value) => !value)} className="mt-1 inline-flex min-h-11 items-center rounded-md px-2 text-[11px] font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none">{showReasoning ? "Hide full reasoning" : "Read full reasoning"}</button>}
+            {showSeparateReasoning && <div className="mt-2 rounded-lg bg-bg-secondary p-3"><h5 className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">Full reasoning</h5><p className="whitespace-pre-wrap break-words text-xs leading-5 text-text-secondary">{result.reasoning}</p></div>}
           </section>
 
           {criteria.length > 0 && <section className="min-w-0">
@@ -295,7 +295,7 @@ export default function AIReviewResultCard({
                 const groups = { ...previous, [group]: !previous[group] };
                 rememberExpansion(task.id, { groups, criteria: expandedCriteria });
                 return groups;
-              })} className="flex min-h-[36px] w-full min-w-0 items-center gap-2 border-b border-slate-100 px-1.5 text-left transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500">
+              })} className="flex min-h-11 w-full min-w-0 items-center gap-2 border-b border-border px-1.5 text-left transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none">
                 {expandedGroups[group] ? <FiChevronDown className="h-3.5 w-3.5 shrink-0 text-text-tertiary" /> : <FiChevronRight className="h-3.5 w-3.5 shrink-0 text-text-tertiary" />}
                 <span className="min-w-0 flex-1 text-[13px] font-semibold text-text-primary">{group === "Exclusion" ? "Exclusion Criteria (EC)" : group === "Inclusion" ? "Inclusion Criteria (IC)" : "Other Criteria"}</span>
                 <span className="shrink-0 text-[11px] tabular-nums text-text-secondary" title={`${items.filter((criterion) => isMet(criterion.status)).length} met of ${items.length}`}>
@@ -331,12 +331,12 @@ export default function AIReviewResultCard({
         </> : <p className="text-xs text-text-secondary">The agent has not submitted a result yet.</p>}
 
         <details className="group pt-1">
-          <summary className="inline-flex cursor-pointer list-none items-center gap-1 text-[11px] font-medium text-text-tertiary hover:text-text-secondary [&::-webkit-details-marker]:hidden">
+          <summary className="inline-flex min-h-11 cursor-pointer list-none items-center gap-1 rounded-md px-2 text-[11px] font-medium text-text-tertiary hover:text-text-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary [&::-webkit-details-marker]:hidden">
             <FiChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" /> View raw response
           </summary>
           <div className="mt-2 min-w-0">
-            <div className="mb-1.5 flex items-center justify-between gap-2"><span className="text-[10px] text-text-tertiary">Original response payload</span><button type="button" onClick={() => void copyRaw()} className="inline-flex shrink-0 items-center gap-1 rounded border border-border px-2 py-1 text-[10px] text-text-secondary hover:bg-bg-secondary">{copied ? <FiClipboard /> : <FiCopy />}{copied ? "Copied" : "Copy JSON"}</button></div>
-            {notice?.technical && <p className="mb-2 break-all rounded bg-slate-900 px-3 py-2 font-mono text-[10px] text-amber-200">{notice.technical}</p>}
+            <div className="mb-1.5 flex items-center justify-between gap-2"><span className="text-[10px] text-text-tertiary">Original response payload</span><button type="button" onClick={() => void copyRaw()} className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded border border-border px-2 text-[10px] text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary motion-reduce:transition-none">{copied ? <FiClipboard /> : <FiCopy />}{copied ? "Copied" : "Copy JSON"}</button></div>
+            {notice?.technical && <p className="mb-2 break-all rounded bg-text-primary px-3 py-2 font-mono text-[10px] text-warning">{notice.technical}</p>}
             <JsonPreview value={rawResponse} />
           </div>
         </details>

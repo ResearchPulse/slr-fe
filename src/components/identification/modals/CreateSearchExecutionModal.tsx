@@ -110,7 +110,7 @@ export default function CreateSearchExecutionModal({
     >
       {/* Info Banner */}
       {mode === "create" && <div className="bg-primary-light border border-accent/30 rounded-xl p-4 mb-6">
-        <div className="flex gap-2 text-sm text-blue-800">
+        <div className="flex gap-2 text-sm text-text-primary">
           <FiAlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
           <div>
             <p className="font-medium">Best Practice</p>
@@ -169,7 +169,7 @@ export default function CreateSearchExecutionModal({
         {mode === "create" && <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-text-primary mb-2">
-              Executed Date <span className="text-red-500">*</span>
+              Executed Date <span className="text-error">*</span>
             </label>
             <CalendarDatePicker
               label="Executed Date"

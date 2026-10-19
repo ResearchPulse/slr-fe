@@ -6,6 +6,7 @@ import AiAnalysisPanel from "./components/AiAnalysisPanel";
 import LoadingSpinner from "../../../../components/ui/LoadingSpinner";
 import SelectionChecklist from "./components/SelectionChecklist";
 import Tabs from "../../../../components/ui/Tabs";
+import Drawer from "../../../../components/ui/Drawer";
 import { FiArrowLeft, FiChevronLeft, FiChevronRight, FiCpu, FiClipboard, FiList } from "react-icons/fi";
 import { useEffect, useState } from "react";
 import { CriteriaTab } from "../../../manage-study-selection/components/CriteriaTab";
@@ -101,7 +102,7 @@ export default function TitleAbstractScreeningWorkspace() {
   if (ws.error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
-        <p className="text-red-600 text-sm">{ws.error}</p>
+        <p className="text-error text-sm">{ws.error}</p>
         <button
           onClick={ws.handleBack}
           className="text-sm text-accent hover:underline"
@@ -141,9 +142,9 @@ export default function TitleAbstractScreeningWorkspace() {
     ) : (
       <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-bg-primary">
         <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b border-border bg-surface-white px-3 sm:px-5">
-          <button onClick={() => navigate((location.state as { listPath?: string } | null)?.listPath || listPath)} className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary"><FiArrowLeft/> <span className="hidden sm:inline">Back to papers</span></button>
+          <button type="button" aria-label="Back to papers" onClick={() => navigate((location.state as { listPath?: string } | null)?.listPath || listPath)} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary sm:justify-start"><FiArrowLeft/> <span className="hidden sm:inline">Back to papers</span></button>
           <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">Title &amp; Abstract Screening</div><div className="truncate text-xs font-semibold sm:text-sm">Paper {currentPaperIndex >= 0 ? (ws.filters.pageNumber - 1) * ws.pagination.pageSize + currentPaperIndex + 1 : "—"} of {ws.pagination.totalCount || "—"}</div></div>
-          <div className="flex shrink-0 items-center gap-1"><button onClick={() => void navigateAdjacent(-1)} disabled={currentPaperIndex >= 0 ? currentPaperIndex === 0 && !ws.pagination.hasPreviousPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.previous} aria-label="Previous paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronLeft/></button><button onClick={() => void navigateAdjacent(1)} disabled={currentPaperIndex >= 0 ? currentPaperIndex === ws.papers.length - 1 && !ws.pagination.hasNextPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next} aria-label="Next paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronRight/></button><button onClick={toggleContextPanel} className="ml-1 inline-flex items-center gap-2 rounded-lg border border-border px-2.5 py-2 text-xs text-text-secondary hover:bg-bg-secondary"><FiList/><span className="hidden lg:inline">Review context</span></button></div>
+          <div className="flex shrink-0 items-center gap-1"><button type="button" onClick={() => void navigateAdjacent(-1)} disabled={currentPaperIndex >= 0 ? currentPaperIndex === 0 && !ws.pagination.hasPreviousPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.previous} aria-label="Previous paper" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronLeft/></button><button type="button" onClick={() => void navigateAdjacent(1)} disabled={currentPaperIndex >= 0 ? currentPaperIndex === ws.papers.length - 1 && !ws.pagination.hasNextPage : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next} aria-label="Next paper" className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-border text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronRight/></button><button type="button" aria-label="Toggle review context" aria-expanded={contextOpen} onClick={toggleContextPanel} className="ml-1 inline-flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg border border-border px-2.5 text-xs text-text-secondary hover:bg-bg-secondary lg:w-auto"><FiList/><span className="hidden lg:inline">Review context</span></button></div>
         </header>
         <div className="min-h-0 flex-1">
           <div className="flex h-full min-h-0">
@@ -202,7 +203,54 @@ export default function TitleAbstractScreeningWorkspace() {
               </Tabs>
             </aside>}
           </div>
-          {mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={() => persistContextPanel(false)}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><div className="flex h-full flex-col"><button onClick={() => persistContextPanel(false)} className="self-end px-4 py-3 text-sm text-accent">Close context</button><Tabs className="min-h-0 flex-1 flex flex-col gap-0" contentClassName="flex-1 overflow-hidden" listClassName="mx-2 mt-2 grid grid-cols-3 gap-1 bg-bg-secondary p-1" itemClassName="justify-center px-2 py-2 text-[11px]" activeTabId={activeTab} onTabChange={setActiveTab} items={[{ id: "criteria", label: "Criteria", icon: FiList }, { id: "ai", label: "AI Agents", icon: FiCpu }, { id: "checklist", label: "Checklist", icon: FiClipboard }]}>{activeTab === "criteria" && <div className="h-full overflow-y-auto p-4"><CriteriaTab projectId={projectId} screeningProcessId={screeningProcessId}/></div>}{activeTab === "ai" && <AiAnalysisPanel paper={ws.selectedPaper} aiAnalysis={ws.aiAnalysis} isAnalyzing={ws.isAnalyzing} onRunAnalysis={ws.runAiAnalysis} isDisabled={isCompleted}/ >}{activeTab === "checklist" && <SelectionChecklist paper={ws.selectedPaper} processId={screeningProcessId!} onClose={() => setActiveTab("ai")}/>}</Tabs></div></aside></div>}
+          <Drawer
+            isOpen={mobileContextOpen}
+            onClose={() => persistContextPanel(false)}
+            title="Review context"
+            description="Criteria, AI agents, and checklist"
+            maxWidth="max-w-[min(92vw,380px)]"
+            contentClassName="min-h-0 overflow-hidden p-0"
+            className="xl:hidden"
+          >
+            <Tabs
+              className="flex min-h-0 flex-1 flex-col gap-0"
+              contentClassName="flex-1 overflow-hidden"
+              listClassName="mx-2 mt-2 grid grid-cols-3 gap-1 bg-bg-secondary p-1"
+              itemClassName="justify-center px-2 py-2 text-[11px]"
+              activeTabId={activeTab}
+              onTabChange={setActiveTab}
+              items={[
+                { id: "criteria", label: "Criteria", icon: FiList },
+                { id: "ai", label: "AI Agents", icon: FiCpu },
+                { id: "checklist", label: "Checklist", icon: FiClipboard },
+              ]}
+            >
+              {activeTab === "criteria" && (
+                <div className="h-full overflow-y-auto p-4">
+                  <CriteriaTab
+                    projectId={projectId}
+                    screeningProcessId={screeningProcessId}
+                  />
+                </div>
+              )}
+              {activeTab === "ai" && (
+                <AiAnalysisPanel
+                  paper={ws.selectedPaper}
+                  aiAnalysis={ws.aiAnalysis}
+                  isAnalyzing={ws.isAnalyzing}
+                  onRunAnalysis={ws.runAiAnalysis}
+                  isDisabled={isCompleted}
+                />
+              )}
+              {activeTab === "checklist" && (
+                <SelectionChecklist
+                  paper={ws.selectedPaper}
+                  processId={screeningProcessId!}
+                  onClose={() => setActiveTab("ai")}
+                />
+              )}
+            </Tabs>
+          </Drawer>
         </div>
       </div>
     )

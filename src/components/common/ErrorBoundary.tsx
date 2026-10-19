@@ -117,12 +117,12 @@ export default class ErrorBoundary extends Component<
             </div>
 
             {this.state.showDetails && (
-              <div className="mt-4 max-h-60 overflow-auto rounded-xl bg-gray-900 p-4 text-xs font-mono text-gray-200">
-                <div className="font-bold text-red-400 mb-1">Stack trace:</div>
+              <div className="mt-4 max-h-60 overflow-auto rounded-xl bg-text-primary p-4 text-xs font-mono text-surface-white/85">
+                <div className="font-bold text-error mb-1">Stack trace:</div>
                 <pre className="whitespace-pre-wrap">{errorStack}</pre>
                 {componentStack && (
                   <>
-                    <div className="font-bold text-yellow-400 mt-3 mb-1">
+                    <div className="font-bold text-warning mt-3 mb-1">
                       Component stack:
                     </div>
                     <pre className="whitespace-pre-wrap">{componentStack}</pre>

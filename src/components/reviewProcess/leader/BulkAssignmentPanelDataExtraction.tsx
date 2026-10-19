@@ -54,12 +54,20 @@ const BulkAssignmentPanelDataExtraction: React.FC<
   const [isPending, setIsPending] = useState(false);
 
   useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      gsap.set(panelRef.current, {
+        y: selectedCount > 0 ? 0 : 100,
+        opacity: selectedCount > 0 ? 1 : 0,
+      });
+      return;
+    }
+
     if (selectedCount > 0) {
       gsap.to(panelRef.current, {
         y: 0,
         opacity: 1,
-        duration: 0.5,
-        ease: "power3.out",
+        duration: 0.2,
+        ease: "power2.out",
       });
     } else {
       gsap.to(panelRef.current, {
@@ -167,56 +175,56 @@ const BulkAssignmentPanelDataExtraction: React.FC<
   return (
     <div
       ref={panelRef}
-      className="fixed bottom-6 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 z-(--z-index-dropdown) opacity-0 translate-y-[100px]"
+      className="fixed bottom-5 left-1/2 z-(--z-index-dropdown) w-full max-w-5xl -translate-x-1/2 px-3 opacity-0 translate-y-[100px] sm:px-4"
     >
-      <div className="bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-6 text-white overflow-visible relative">
-        <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+      <div className="relative overflow-visible rounded-2xl border border-border bg-surface-white/95 p-3 text-text-primary shadow-[0_12px_36px_rgba(15,23,42,0.14)] backdrop-blur-md sm:p-4">
+        <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-primary/5 blur-3xl"></div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 relative">
-          <div className="flex items-center gap-4 flex-shrink-0">
-            <div className="bg-primary p-3 rounded-xl shadow-inner ring-4 ring-accent/20">
-              <CheckCircle2 className="w-6 h-6" />
+        <div className="relative flex flex-col items-stretch gap-3 md:flex-row md:items-center md:justify-between md:gap-4">
+          <div className="flex shrink-0 items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white shadow-sm ring-4 ring-primary/10">
+              <CheckCircle2 className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-[10px] text-blue-400 font-bold uppercase tracking-widest mb-0.5">
+              <div className="mb-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-accent">
                 Bulk Action
               </div>
-              <div className="text-xl font-black flex items-center gap-2 tabular-nums">
+              <div className="flex items-center gap-1.5 text-base font-semibold tabular-nums">
                 <span>{selectedCount}</span>
-                <span className="text-text-secondary text-xs font-medium uppercase">
+                <span className="text-[11px] font-medium uppercase text-text-secondary">
                   Papers
                 </span>
               </div>
             </div>
           </div>
 
-          <div className="h-12 w-px bg-slate-700 hidden lg:block"></div>
+          <div className="hidden h-12 w-px bg-border md:block"></div>
 
           <div className="flex-1 w-full min-w-0">
-            <label className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-2 block flex items-center justify-between">
+            <label className="mb-1 flex items-center justify-between gap-2 text-[10px] font-semibold uppercase tracking-[0.1em] text-text-secondary">
               <span>Assign to Reviewers</span>
               <span
-                className={`text-[9px] px-1.5 py-0.5 rounded ${selectedReviewers.size === 2 ? "text-blue-400 bg-blue-500/10" : "text-amber-500 bg-amber-500/10"}`}
+                className={`rounded-full px-2 py-1 text-[9px] tracking-normal ${selectedReviewers.size === 2 ? "bg-primary-light text-accent" : "bg-warning/10 text-warning"}`}
               >
                 Require 2 Reviewers
               </span>
             </label>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Dropdown
                 trigger={
-                  <button className="flex items-center gap-2 px-4 py-2.5 rounded-xl border bg-slate-800 border-slate-700 text-slate-200 hover:border-slate-500 hover:bg-slate-750 transition-all text-sm font-semibold whitespace-nowrap active:scale-95">
+                  <button type="button" className="flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-bg-secondary px-3 text-xs font-semibold text-text-primary transition-colors hover:border-primary hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
                     <UserPlus className="w-4 h-4" />
                     Select Reviewers
-                    <ChevronDown className="w-3.5 h-3.5 ml-1 text-text-secondary" />
+                    <ChevronDown className="ml-1 h-3.5 w-3.5 text-text-secondary" />
                   </button>
                 }
                 className="w-auto"
                 position="top"
                 contentClassName="bg-transparent shadow-none ring-0 w-auto p-0"
               >
-                <div className="w-72 bg-slate-800 rounded-xl overflow-hidden shadow-2xl">
-                  <div className="p-3 border-b border-slate-700 bg-slate-850">
+                <div className="w-72 overflow-hidden rounded-xl border border-border bg-surface-white shadow-2xl">
+                  <div className="border-b border-border bg-bg-secondary p-3">
                     <div className="relative">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
                       <input
@@ -225,7 +233,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                         placeholder="Search reviewers..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-accent text-white transition-all"
+                        className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2 pl-9 pr-4 text-xs text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                       />
                     </div>
                   </div>
@@ -233,7 +241,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                   <div className="max-h-60 overflow-y-auto p-2 custom-scrollbar min-h-[100px] relative">
                     {isLoading ? (
                       <div className="flex items-center justify-center py-10 text-text-secondary">
-                        <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                        <Loader2 aria-hidden="true" className="w-5 h-5 motion-safe:animate-spin motion-reduce:animate-none mr-2" />
                         <span className="text-xs font-medium">
                           Fetching Team...
                         </span>
@@ -242,7 +250,7 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                       reviewers.map((member) => (
                         <label
                           key={member.userId}
-                          className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-700/50 cursor-pointer transition-colors group"
+                          className="group flex cursor-pointer items-center gap-3 rounded-xl p-2.5 transition-colors hover:bg-bg-secondary"
                         >
                           <input
                             type="checkbox"
@@ -251,13 +259,13 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                               e.stopPropagation();
                               toggleReviewer(member);
                             }}
-                            className="w-4 h-4 rounded border-slate-600 text-accent focus:ring-accent bg-slate-900"
+                            className="h-4 w-4 rounded border-border bg-surface-white text-accent focus:ring-accent"
                           />
                           <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-slate-700 flex items-center justify-center text-[10px] font-bold text-slate-300 group-hover:bg-primary-hover transition-colors">
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-light text-[10px] font-bold text-accent transition-colors group-hover:bg-primary group-hover:text-white">
                               {member.fullName.charAt(0)}
                             </div>
-                            <span className="text-xs font-medium text-slate-300 group-hover:text-white transition-colors">
+                            <span className="text-xs font-medium text-text-primary transition-colors group-hover:text-accent">
                               {member.fullName}
                             </span>
                           </div>
@@ -270,16 +278,17 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                     )}
                   </div>
 
-                  <div className="p-3 border-t border-slate-700 bg-slate-850 flex items-center justify-between">
-                    <span className="text-[10px] text-text-secondary font-bold uppercase tabular-nums">
+                  <div className="flex items-center justify-between border-t border-border bg-bg-secondary p-3">
+                    <span className="text-[10px] font-bold uppercase tabular-nums text-text-secondary">
                       {selectedReviewers.size} Selected
                     </span>
                     <button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedReviewers(new Map());
                       }}
-                      className="text-[10px] text-blue-400 font-bold hover:text-blue-300 transition-colors uppercase"
+                      className="inline-flex min-h-11 items-center rounded-lg px-2 text-[10px] font-bold uppercase text-accent transition-colors hover:bg-surface-white hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                     >
                       Clear All
                     </button>
@@ -287,43 +296,46 @@ const BulkAssignmentPanelDataExtraction: React.FC<
                 </div>
               </Dropdown>
 
-              <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+              <div className="flex flex-1 items-center gap-2 overflow-hidden min-w-0">
                 <div className="flex items-center gap-1.5 flex-nowrap overflow-x-auto no-scrollbar py-1">
                   {visibleChips.map(([id, name]) => (
                     <div
                       key={id}
-                      className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 text-xs text-slate-300 whitespace-nowrap animate-in zoom-in-95 duration-200"
+                      className="flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl border border-border bg-bg-secondary px-2 py-1 text-xs text-text-primary motion-safe:animate-in motion-safe:zoom-in-95 motion-safe:duration-200 motion-reduce:animate-none"
                     >
-                      <Users className="w-3 h-3 text-blue-400" />
+                      <Users className="h-3 w-3 text-accent" />
                       {name}
                       <button
+                        type="button"
                         onClick={() => removeReviewer(id)}
-                        className="p-0.5 hover:bg-slate-700 rounded transition-colors"
+                        aria-label={`Remove ${name}`}
+                        title={`Remove ${name}`}
+                        className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-border hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
-                        <X className="w-3 h-3 text-text-secondary hover:text-red-400" />
+                        <X className="h-4 w-4" />
                       </button>
                     </div>
                   ))}
 
                   {remainingCount > 0 && (
-                    <div className="px-2 py-1 rounded-xl bg-slate-800 border border-slate-700 border-dashed text-[10px] font-bold text-primary-light whitespace-nowrap cursor-help relative group">
+                    <div className="group relative cursor-help whitespace-nowrap rounded-xl border border-border border-dashed bg-bg-secondary px-2 py-1 text-[10px] font-bold text-accent">
                       +{remainingCount} more
-                      <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 hidden group-hover:block w-48 bg-slate-950 border border-slate-800 rounded-xl shadow-2xl p-3 z-(--z-index-popover) animate-in fade-in zoom-in-95">
-                        <div className="text-[10px] text-text-secondary uppercase font-black tracking-widest mb-2 border-b border-slate-800 pb-1">
+                      <div className="absolute bottom-full left-1/2 z-(--z-index-popover) mb-2 hidden w-48 -translate-x-1/2 rounded-xl border border-border bg-surface-white p-3 shadow-xl motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 motion-reduce:animate-none group-hover:block">
+                        <div className="mb-2 border-b border-border pb-1 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                           Also Assigned To
                         </div>
                         <div className="flex flex-col gap-1.5">
                           {selectedEntries.slice(2).map(([id, name]) => (
                             <div
                               key={id}
-                              className="flex items-center gap-2 text-xs text-slate-300"
+                              className="flex items-center gap-2 text-xs text-text-primary"
                             >
                               <div className="w-1.5 h-1.5 rounded-full bg-primary"></div>
                               {name}
                             </div>
                           ))}
                         </div>
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-slate-950"></div>
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-[6px] border-transparent border-t-surface-white"></div>
                       </div>
                     </div>
                   )}
@@ -332,14 +344,15 @@ const BulkAssignmentPanelDataExtraction: React.FC<
             </div>
           </div>
 
-          <div className="flex flex-col items-center lg:items-end flex-shrink-0">
+          <div className="flex shrink-0 flex-col items-stretch md:items-end">
             <Button
               onClick={handleAssign}
               disabled={selectedReviewers.size !== 2 || isPending}
-              className="bg-primary hover:bg-primary-hover disabled:bg-slate-800 disabled:text-text-secondary disabled:border-slate-700 text-white font-bold py-3 px-8 rounded-xl shadow-none shadow-primary/10 border-none transition-all active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+              aria-busy={isPending}
+              className="min-h-11 w-full rounded-xl px-4 py-2.5 text-xs font-semibold normal-case tracking-normal shadow-none transition-transform active:scale-[0.98] motion-reduce:transition-none disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary sm:w-auto"
             >
               {isPending ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
+                <Loader2 aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
               ) : (
                 <CheckCircle2
                   className={`w-4 h-4 transition-transform ${selectedReviewers.size > 0 ? "scale-100" : "scale-0"}`}

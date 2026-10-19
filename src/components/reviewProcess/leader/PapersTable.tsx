@@ -161,9 +161,9 @@ export const PaperRow: React.FC<PaperRowProps> = ({
           <span
             className={`px-2 py-1 text-xs font-semibold rounded-full border ${
               paper.decidedStatus.toLowerCase() === "include"
-                ? "bg-surface-white text-green-700 border-green-100"
+                ? "bg-success/10 text-success border-success/20"
                 : paper.decidedStatus.toLowerCase() === "exclude"
-                  ? "bg-surface-white text-red-700 border-red-100"
+                  ? "bg-error/10 text-error border-error/20"
                   : "bg-bg-primary text-text-primary border-border"
             }`}
           >
@@ -193,7 +193,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
 
           <button
             onClick={() => setIsDetailDrawerOpen(true)}
-            className="p-1.5 text-text-secondary hover:text-accent hover:bg-primary-light rounded-xl transition-colors border border-transparent hover:border-primary/30"
+            className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
             title="View Details"
           >
             <Eye className="w-4 h-4" />
@@ -206,13 +206,13 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                   e.stopPropagation();
                   setIsModalOpen(true);
                 }}
-                className="px-3 py-1.5 text-[11px] font-bold rounded-xl bg-bg-secondary text-text-secondary border border-border hover:bg-slate-200 hover:text-accent transition-all shadow-none active:scale-95 flex items-center gap-2 group whitespace-nowrap"
+                className="inline-flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl border border-border bg-bg-secondary px-3 py-1.5 text-[11px] font-bold text-text-secondary shadow-none transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none group"
               >
                 <div className="flex -space-x-2 mr-1">
                   {reviewers.slice(0, 2).map((reviewer, i) => (
                     <div
                       key={i}
-                      className="w-4 h-4 rounded-full bg-slate-200 border border-white flex items-center justify-center text-[8px] text-text-secondary font-bold group-hover:bg-primary-hover group-hover:text-white transition-colors"
+                      className="flex h-4 w-4 items-center justify-center rounded-full border border-white bg-bg-secondary text-[8px] font-bold text-text-secondary transition-colors group-hover:bg-primary-hover group-hover:text-white motion-reduce:transition-none"
                     >
                       {reviewer.name?.charAt(0) || "?"}
                     </div>
@@ -243,7 +243,7 @@ export const PaperRow: React.FC<PaperRowProps> = ({
               reviewerDecisions.map((rd, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col gap-2 p-3 rounded-xl bg-bg-secondary border border-border group hover:border-primary/30 hover:bg-surface-white transition-all"
+                  className="group flex flex-col gap-2 rounded-xl border border-border bg-bg-secondary p-3 transition-colors hover:border-primary/30 hover:bg-surface-white motion-reduce:transition-none"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -261,10 +261,10 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                           className={`px-2 py-1 text-[10px] font-bold rounded-xl border ${
                             rd.decision.decisionText?.toLowerCase() ===
                             "include"
-                              ? "bg-surface-white text-green-700 border-green-100"
+                              ? "bg-success/10 text-success border-success/20"
                               : rd.decision.decisionText?.toLowerCase() ===
                                   "exclude"
-                                ? "bg-surface-white text-red-700 border-red-100"
+                                ? "bg-error/10 text-error border-error/20"
                                 : "bg-bg-primary text-text-primary border-border"
                           }`}
                         >
@@ -299,9 +299,9 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                   </div>
 
                   {(rd.decision?.exclusionReasonName || rd.decision?.comment || rd.decision?.reason) && (
-                      <div className="pl-11 pr-2 pb-1 space-y-1.5 animate-in fade-in slide-in-from-left-1 duration-200">
+                      <div className="pl-11 pr-2 pb-1 space-y-1.5 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-1 motion-safe:duration-200 motion-reduce:animate-none">
                         {rd.decision.decisionText === "Exclude" && rd.decision.exclusionReasonName && (
-                          <div className="text-[11px] text-red-600 font-bold bg-surface-white/50 px-2 py-0.5 rounded border border-red-100/50 w-fit">
+                          <div className="w-fit rounded border border-error/20 bg-error/5 px-2 py-0.5 text-[11px] font-bold text-error">
                             {rd.decision.exclusionReasonName}
                           </div>
                         )}
@@ -334,9 +334,9 @@ export const PaperRow: React.FC<PaperRowProps> = ({
           size="xl"
         >
           {isLoadingSubmission ? (
-            <div className="flex flex-col items-center justify-center p-20 gap-4">
+            <div className="flex flex-col items-center justify-center p-20 gap-4" role="status" aria-live="polite" aria-busy="true">
               <LoadingSpinner size="lg" />
-              <p className="text-text-secondary animate-pulse font-medium">
+              <p className="text-text-secondary motion-safe:animate-pulse motion-reduce:animate-none font-medium">
                 Loading submission data...
               </p>
             </div>
@@ -347,11 +347,11 @@ export const PaperRow: React.FC<PaperRowProps> = ({
                 renderItem={(item) => (
                   <div className="flex items-center">
                     {item.isChecked ? (
-                      <div className="w-5 h-5 rounded-md bg-green-100 border border-border flex items-center justify-center text-green-600 shadow-none">
+                      <div className="flex h-5 w-5 items-center justify-center rounded-md border border-success/20 bg-success/10 text-success shadow-none">
                         <Check className="w-3.5 h-3.5 stroke-[3]" />
                       </div>
                     ) : (
-                      <div className="w-5 h-5 rounded-md bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-400 shadow-none">
+                      <div className="w-5 h-5 rounded-md bg-error/5 border border-error/20 flex items-center justify-center text-error shadow-none">
                         <X className="w-3.5 h-3.5 stroke-[3]" />
                       </div>
                     )}

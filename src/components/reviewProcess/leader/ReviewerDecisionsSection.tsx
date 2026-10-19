@@ -29,24 +29,24 @@ const ReviewerDecisionsSection: React.FC<ReviewerDecisionsSectionProps> = ({
         {/* Conflict Summary Card */}
         <div className="bg-surface-white p-6 rounded-xl shadow-none border border-border">
           <h3 className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary mb-6 flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-orange-500" />
+            <AlertCircle className="h-4 w-4 text-warning" />
             Conflict Summary
           </h3>
 
           <div className="flex gap-4">
-            <div className="flex-1 bg-emerald-50/50 border border-emerald-100 rounded-xl p-4 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black text-emerald-600">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-success/20 bg-success/5 p-4">
+              <span className="text-2xl font-black text-success">
                 {includeCount}
               </span>
-              <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+              <span className="text-[10px] font-black uppercase tracking-widest text-success">
                 Include
               </span>
             </div>
-            <div className="flex-1 bg-rose-50/50 border border-rose-100 rounded-xl p-4 flex flex-col items-center justify-center">
-              <span className="text-2xl font-black text-rose-600">
+            <div className="flex flex-1 flex-col items-center justify-center rounded-xl border border-error/20 bg-error/5 p-4">
+              <span className="text-2xl font-black text-error">
                 {excludeCount}
               </span>
-              <span className="text-[10px] font-black text-rose-600 uppercase tracking-widest">
+              <span className="text-[10px] font-black uppercase tracking-widest text-error">
                 Exclude
               </span>
             </div>

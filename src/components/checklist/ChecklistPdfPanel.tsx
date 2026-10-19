@@ -75,7 +75,7 @@ export default function ChecklistPdfPanel({
         <button
           type="button"
           onClick={onClose}
-          className="p-1.5 rounded-xl text-text-secondary hover:text-text-primary hover:bg-bg-secondary transition-colors"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-bg-primary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
           title="Close PDF panel"
           aria-label="Close PDF panel"
         >

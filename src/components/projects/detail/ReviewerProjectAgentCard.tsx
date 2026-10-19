@@ -136,7 +136,7 @@ export default function ReviewerProjectAgentCard({
         </p>
 
         {error && (
-          <div role="alert" className="mt-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700">
+          <div role="alert" className="mt-4 rounded-lg border border-error/20 bg-error/5 p-3 text-sm text-error">
             {error}
           </div>
         )}
@@ -150,7 +150,7 @@ export default function ReviewerProjectAgentCard({
                 aria-label="Choose reviewer extraction agent"
                 value={selectedAgentId}
                 onChange={(event) => setSelectedAgentId(event.target.value)}
-                className="min-w-0 flex-1 rounded-lg border border-border bg-white px-3 py-2 text-sm"
+                className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-white px-3 py-2 text-sm"
               >
                 <option value="">Select an agent</option>
                 {availableAgents.map(({ agent }) => (
@@ -163,7 +163,7 @@ export default function ReviewerProjectAgentCard({
                 type="button"
                 disabled={isBusy || !selectedAgentId || selectedAgentId === connected?.agent.id}
                 onClick={() => void connect()}
-                className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <FiUserPlus />
                 {connected ? "Switch agent" : "Connect agent"}
@@ -183,9 +183,9 @@ export default function ReviewerProjectAgentCard({
       </div>
 
       {token && (
-        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4">
+        <div className="rounded-xl border border-warning/20 bg-warning/10 p-4">
           <h3 className="font-semibold text-text-primary">Reviewer project token</h3>
-          <p className="mt-1 text-xs text-amber-900">
+          <p className="mt-1 text-xs text-warning">
             This token scopes MCP access to your extraction tasks in this project.
           </p>
           <div className="mt-3 flex flex-col gap-2 sm:flex-row">
@@ -193,12 +193,12 @@ export default function ReviewerProjectAgentCard({
               aria-label="Reviewer project token"
               readOnly
               value={token}
-              className="min-w-0 flex-1 rounded-lg border border-amber-300 bg-white px-3 py-2 font-mono text-xs"
+              className="min-h-11 min-w-0 flex-1 rounded-lg border border-warning/30 bg-surface-white px-3 py-2 font-mono text-xs text-text-primary"
             />
             <button
               type="button"
               onClick={() => void copyToken()}
-              className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
+              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover"
             >
               <FiCopy />
               Copy
@@ -206,12 +206,12 @@ export default function ReviewerProjectAgentCard({
             <button
               type="button"
               onClick={() => setToken("")}
-              className="rounded-lg border border-amber-300 px-4 py-2 text-sm text-text-primary"
+              className="inline-flex min-h-11 items-center rounded-lg border border-warning/30 px-4 py-2 text-sm text-text-primary transition-colors hover:bg-warning/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
             >
               Close
             </button>
           </div>
-          <p className="mt-2 text-xs text-amber-900">
+          <p className="mt-2 text-xs text-warning">
             Configure this token in the MCP connection and run <code>/slr review</code>.
           </p>
         </div>
@@ -227,10 +227,10 @@ export default function ReviewerProjectAgentCard({
               <button
                 type="button"
                 onClick={() => setToken("")}
-                className="w-full text-left"
+                className="min-h-11 w-full rounded-md px-1 py-2 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
                 <span className="font-medium text-text-primary">{connected.agent.name}</span>
-                <span className="ml-2 text-xs text-emerald-700">Connected</span>
+                <span className="ml-2 text-xs text-success">Connected</span>
                 <p className="mt-1 text-xs text-text-secondary">Extraction reviewer capability</p>
               </button>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -238,7 +238,7 @@ export default function ReviewerProjectAgentCard({
                   type="button"
                   disabled={isBusy}
                   onClick={() => void viewToken()}
-                  className="inline-flex items-center gap-1 rounded border border-border bg-white px-2 py-1 text-xs"
+                  className="inline-flex min-h-11 items-center gap-1 rounded border border-border bg-white px-2 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                 >
                   <FiEye /> View token
                 </button>

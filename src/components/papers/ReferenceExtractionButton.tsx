@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FiLink, FiLoader } from "react-icons/fi";
+import { FiCheckCircle, FiLink, FiLoader } from "react-icons/fi";
 
 import toast from "react-hot-toast";
 import { useExtractReferences } from "../../hooks/useSnowballCandidates";
@@ -26,6 +26,13 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
   const [success, setSuccess] = useState(false);
 
   const extractReferencesMutation = useExtractReferences();
+  const iconButtonLabel = extractReferencesMutation.isPending
+    ? "Extracting references"
+    : success
+      ? "Reference extraction complete"
+      : hasPdf
+        ? "Extract references"
+        : "No PDF available";
 
   const handleExtract = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent row click in table
@@ -64,7 +71,7 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
       size="md"
     >
       <div className="space-y-6">
-        <p className="text-slate-600 leading-relaxed">
+        <p className="text-text-secondary leading-relaxed">
           This will analyze the full-text PDF and extract references using
           GROBID.
           <br />
@@ -73,7 +80,7 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
           <br />
           Do you want to continue?
         </p>
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <div className="flex justify-end gap-3 border-t border-border pt-4">
           <Button
             variant="secondary"
             onClick={() => setIsConfirmModalOpen(false)}
@@ -84,11 +91,12 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
           <Button
             onClick={handleExtract}
             disabled={extractReferencesMutation.isPending}
+            aria-busy={extractReferencesMutation.isPending}
             className="flex items-center gap-2"
           >
             {extractReferencesMutation.isPending ? (
               <>
-                <FiLoader className="w-4 h-4 animate-spin" />
+                <FiLoader aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
                 Extracting...
               </>
             ) : (
@@ -104,29 +112,27 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
     return (
       <>
         <button
+          type="button"
           onClick={handleOpenModal}
           disabled={!hasPdf || extractReferencesMutation.isPending || success}
+          aria-label={iconButtonLabel}
+          aria-busy={extractReferencesMutation.isPending}
           className={cn(
-            "p-2 rounded-lg transition-all border border-transparent whitespace-nowrap",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
             success
-              ? "text-emerald-500 bg-emerald-50 border-emerald-100 cursor-default"
-              : "text-slate-400 hover:text-primary hover:bg-white hover:border-slate-200",
+              ? "text-success bg-success/10 border-success/20 cursor-default"
+              : "text-text-secondary hover:text-accent hover:bg-surface-white hover:border-border",
             !hasPdf && "opacity-30 cursor-not-allowed",
-            extractReferencesMutation.isPending && "animate-pulse",
             className,
           )}
-          title={
-            success
-              ? "Extraction Complete"
-              : hasPdf
-                ? "Extract References"
-                : "No PDF available"
-          }
+          title={iconButtonLabel}
         >
           {extractReferencesMutation.isPending ? (
-            <FiLoader className="w-4 h-4 animate-spin text-primary" />
+            <FiLoader aria-hidden="true" className="w-4 h-4 text-primary motion-safe:animate-spin motion-reduce:animate-none" />
+          ) : success ? (
+            <FiCheckCircle className="w-4 h-4 text-success" />
           ) : (
-            <FiLink className={cn("w-4 h-4", success && "text-emerald-500")} />
+            <FiLink className="w-4 h-4" />
           )}
         </button>
         {renderModal()}
@@ -138,13 +144,15 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
     <>
       <div className="flex flex-col items-end gap-2 w-full sm:w-auto">
         {success ? (
-          <div className="text-sm font-medium text-green-600 bg-surface-white px-3 py-1.5 rounded-lg border border-green-100 flex items-center gap-2">
+          <div role="status" aria-live="polite" className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-success/20 bg-success/5 px-4 py-2 text-sm font-semibold text-success">
+            <FiCheckCircle aria-hidden="true" className="h-4 w-4" />
             Extraction Complete
           </div>
         ) : (
           <Button
             onClick={handleOpenModal}
             disabled={extractReferencesMutation.isPending || !hasPdf}
+            aria-busy={extractReferencesMutation.isPending}
             className={cn(
               "w-full sm:w-auto flex items-center justify-center gap-2 whitespace-nowrap",
               className,
@@ -152,7 +160,7 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
           >
             {extractReferencesMutation.isPending ? (
               <>
-                <FiLoader className="w-4 h-4 animate-spin" />
+                <FiLoader aria-hidden="true" className="w-4 h-4 motion-safe:animate-spin motion-reduce:animate-none" />
                 Extracting references...
               </>
             ) : (

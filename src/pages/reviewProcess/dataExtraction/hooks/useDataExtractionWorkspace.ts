@@ -775,6 +775,14 @@ export function useDataExtractionWorkspace(): UseDataExtractionWorkspaceReturn {
     extractionProcessLastUpdatedAt: extractionMetadata?.lastUpdatedAt ?? projectPhaseQuery.data?.updatedAt ?? null,
     isLoading,
     error,
+    refetch: async () => {
+      await Promise.all([
+        dashboardQuery.refetch(),
+        projectMembersQuery.refetch(),
+        templatesQuery.refetch(),
+        workloadQuery.refetch(),
+      ]);
+    },
     isMockMode: false,
     activeTab,
     setActiveTab,

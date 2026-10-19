@@ -19,6 +19,7 @@ import type { RootState } from "../../redux/store";
 import PaperViewer from "../../components/shared/paper/PaperViewer";
 import { PaperPhase } from "../../types/studySelection";
 import Button from "../../components/ui/Button";
+import Drawer from "../../components/ui/Drawer";
 import { Users, X, AlertCircle } from "lucide-react";
 import { cn } from "../../utils/cn";
 import BulkAssignmentPanel from "../../components/reviewProcess/leader/BulkAssignmentPanel";
@@ -48,6 +49,7 @@ export default function ManageStudySelectionPage() {
   const [isLeftCollapsed, setIsLeftCollapsed] = useState(false);
   const [isRightCollapsed, setIsRightCollapsed] = useState(false);
   const [isCriteriaModalOpen, setIsCriteriaModalOpen] = useState(false);
+  const [mobileActionOpen, setMobileActionOpen] = useState(false);
   const currentPhaseNumeric =
     currentPhase === "TITLE_ABSTRACT"
       ? PaperPhase.TitleAbstract
@@ -297,16 +299,36 @@ export default function ManageStudySelectionPage() {
       : !directNeighbors || directNeighbors.paperId !== paperId || !directNeighbors.next;
     return <div className="flex h-screen min-h-0 flex-col overflow-hidden bg-bg-primary">
       <header className="sticky top-0 z-30 flex min-h-14 items-center justify-between gap-3 border-b border-border bg-surface-white px-3 sm:px-5">
-        <button onClick={backToList} className="inline-flex shrink-0 items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium text-text-secondary hover:bg-bg-secondary"><FiArrowLeft/><span className="hidden sm:inline">Back to papers</span></button>
+        <button type="button" aria-label="Back to papers" onClick={backToList} className="inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center gap-2 rounded-lg px-2 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:justify-start motion-reduce:transition-none"><FiArrowLeft/><span className="hidden sm:inline">Back to papers</span></button>
         <div className="min-w-0 text-center"><div className="text-xs text-text-secondary">{project?.title || "Study Selection"} · Leader review</div><div className="truncate text-xs font-semibold sm:text-sm">Paper {currentPaperIndex >= 0 ? (selectionWorkspace.filters.pageNumber - 1) * selectionWorkspace.pagination.pageSize + currentPaperIndex + 1 : "—"} of {selectionWorkspace.pagination.totalCount || "—"}</div></div>
-        <div className="flex shrink-0 items-center gap-1"><button onClick={() => void navigateAdjacent(-1)} disabled={previousDisabled} aria-label="Previous paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronLeft/></button><button onClick={() => void navigateAdjacent(1)} disabled={nextDisabled} aria-label="Next paper" className="rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary disabled:opacity-40"><FiChevronRight/></button><button onClick={() => navigate(`${listPath}/assignment-management`)} className="hidden rounded-lg border border-border px-3 py-2 text-xs font-medium text-text-secondary hover:bg-bg-secondary sm:inline-flex">Manage assignments</button><button onClick={toggleContextPanel} aria-label="Toggle review context" className="ml-1 rounded-lg border border-border p-2 text-text-secondary hover:bg-bg-secondary"><FiList/></button></div>
+        <div className="flex shrink-0 items-center gap-1"><button type="button" onClick={() => void navigateAdjacent(-1)} disabled={previousDisabled} aria-label="Previous paper" className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"><FiChevronLeft/></button><button type="button" onClick={() => void navigateAdjacent(1)} disabled={nextDisabled} aria-label="Next paper" className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"><FiChevronRight/></button><button type="button" onClick={() => navigate(`${listPath}/assignment-management`)} className="hidden min-h-11 items-center rounded-lg border border-border px-3 text-xs font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 sm:inline-flex motion-reduce:transition-none">Manage assignments</button><button type="button" onClick={toggleContextPanel} aria-label="Toggle review context" className="ml-1 inline-flex h-11 w-11 items-center justify-center rounded-lg border border-border text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"><FiList/></button></div>
       </header>
       <div className="flex min-h-0 flex-1">
         <main className="min-w-0 flex-1 overflow-hidden rounded-xl bg-surface-white">
           <PaperViewer paper={selectedPaper ? { ...selectedPaper, hasConflict: paperHasConflict } : null} isLeaderView onInclude={!isCompleted && (paperHasConflict || selectedPaper?.hasConflict) ? handleInclude : undefined} onExclude={!isCompleted && (paperHasConflict || selectedPaper?.hasConflict) ? handleExclude : undefined} isSubmitting={isResolving} phase={currentPhaseNumeric} isDisabled={isCompleted}/>
         </main>
         {contextOpen && <aside className="hidden w-[340px] shrink-0 border-l border-border bg-surface-white xl:block"><SelectionActionPanel currentPhase={currentPhase} selectedPaper={selectedPaper} aiAnalysis={aiAnalysis} isAnalyzing={isAnalyzing} runAiAnalysis={runAiAnalysis} isCollapsed={false} onToggleCollapse={toggleContextPanel} isDisabled={isCompleted} onEditCriteria={() => setIsCriteriaModalOpen(true)}/></aside>}
-        {mobileContextOpen && <div className="fixed inset-0 z-40 bg-black/30 xl:hidden" onClick={closeContext}><aside className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl" onClick={(event) => event.stopPropagation()}><SelectionActionPanel currentPhase={currentPhase} selectedPaper={selectedPaper} aiAnalysis={aiAnalysis} isAnalyzing={isAnalyzing} runAiAnalysis={runAiAnalysis} isCollapsed={false} onToggleCollapse={closeContext} isDisabled={isCompleted} onEditCriteria={() => setIsCriteriaModalOpen(true)}/></aside></div>}
+        <Drawer
+          isOpen={mobileContextOpen}
+          onClose={closeContext}
+          title="Review context"
+          hideHeader
+          maxWidth="max-w-[min(92vw,380px)]"
+          contentClassName="min-h-0 overflow-hidden p-0"
+          className="xl:hidden"
+        >
+          <SelectionActionPanel
+            currentPhase={currentPhase}
+            selectedPaper={selectedPaper}
+            aiAnalysis={aiAnalysis}
+            isAnalyzing={isAnalyzing}
+            runAiAnalysis={runAiAnalysis}
+            isCollapsed={false}
+            onToggleCollapse={closeContext}
+            isDisabled={isCompleted}
+            onEditCriteria={() => setIsCriteriaModalOpen(true)}
+          />
+        </Drawer>
       </div>
       <StudySelectionCriteriaModal isOpen={isCriteriaModalOpen} onClose={() => setIsCriteriaModalOpen(false)} studySelectionProcessId={screeningProcessId || ""}/>
     </div>;
@@ -323,42 +345,74 @@ export default function ManageStudySelectionPage() {
         }}
       />
 
-      <div
-        ref={containerRef}
-        className="relative flex min-h-0 flex-1 gap-2 overflow-hidden p-2 select-none"
-      >
+      <div className="relative flex min-h-0 flex-1 flex-col">
+        <div className="flex justify-end px-2 pt-2 lg:hidden">
+          <button
+            type="button"
+            onClick={() => setMobileActionOpen(true)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-sm font-medium text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            <FiList aria-hidden="true" />
+            Review tools
+          </button>
+        </div>
+
+        <div
+          ref={containerRef}
+          className="relative flex min-h-0 flex-1 gap-2 overflow-hidden p-2 select-none"
+        >
         {/* Main Content: Paper Viewer - Occupies full space */}
-        <div className="order-2 z-0 min-h-0 min-w-0 flex-1 overflow-hidden rounded-xl border border-border bg-white shadow-sm">
-          <PaperViewer
-            paper={
-              selectedPaper
-                ? { ...selectedPaper, hasConflict: paperHasConflict }
-                : null
-            }
-            isLeaderView={true}
-            onInclude={
-              !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
-                ? handleInclude
-                : undefined
-            }
-            onExclude={
-              !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
-                ? handleExclude
-                : undefined
-            }
-            isSubmitting={isResolving}
-            phase={currentPhaseNumeric}
-            isDisabled={isCompleted}
-          />
+        <div
+          className={cn(
+            "order-2 z-0 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-surface-white",
+            !selectedPaperId && "max-lg:hidden",
+            selectedPaperId && "max-lg:absolute max-lg:inset-2 max-lg:z-20",
+          )}
+        >
+          {selectedPaperId && (
+            <button
+              type="button"
+              onClick={() => setSelectedPaperId(null)}
+              className="inline-flex min-h-11 shrink-0 items-center gap-2 border-b border-border px-4 text-sm font-medium text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary lg:hidden"
+            >
+              <FiArrowLeft aria-hidden="true" />
+              Back to review queue
+            </button>
+          )}
+          <div className="min-h-0 flex-1 overflow-hidden">
+            <PaperViewer
+              paper={
+                selectedPaper
+                  ? { ...selectedPaper, hasConflict: paperHasConflict }
+                  : null
+              }
+              isLeaderView={true}
+              onInclude={
+                !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
+                  ? handleInclude
+                  : undefined
+              }
+              onExclude={
+                !isCompleted && (paperHasConflict || selectedPaper?.hasConflict)
+                  ? handleExclude
+                  : undefined
+              }
+              isSubmitting={isResolving}
+              phase={currentPhaseNumeric}
+              isDisabled={isCompleted}
+            />
+          </div>
         </div>
 
         {/* Left Side: Paper List Overlay */}
         <div
-          style={{ width: isLeftCollapsed ? "48px" : `${leftWidth}px` }}
+          style={{
+            "--left-panel-width": isLeftCollapsed ? "48px" : `${leftWidth}px`,
+          } as React.CSSProperties}
           className={cn(
-            "order-1 relative flex h-full min-h-0 shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm",
+            "order-1 relative flex h-full min-h-0 w-[var(--left-panel-width)] max-w-full shrink-0 flex-col overflow-hidden rounded-xl border border-border bg-surface-white max-lg:w-full",
             isAssignmentMode && "ring-1 ring-accent/20",
-            !isResizing && "transition-all duration-300",
+            !isResizing && "transition-[width] duration-300 motion-reduce:transition-none",
           )}
         >
           {/* Resize Handle Left */}
@@ -367,14 +421,14 @@ export default function ManageStudySelectionPage() {
               onMouseDown={startResizingLeft}
               className="absolute -right-1 top-0 bottom-0 w-2 cursor-col-resize z-30 group"
             >
-              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-accent group-active:bg-primary-hover transition-colors" />
+              <div className="absolute inset-y-0 left-1/2 w-px bg-border transition-colors group-hover:bg-accent group-active:bg-primary-hover" />
             </div>
           )}
           {!isLeftCollapsed && (
             <div
               className={cn(
-                "border-b border-border p-4 transition-colors duration-300",
-                isAssignmentMode ? "bg-primary-light/50" : "bg-white",
+                "border-b border-border p-4 transition-colors duration-150",
+                isAssignmentMode ? "bg-primary-light/50" : "bg-surface-white",
               )}
             >
               <Button
@@ -385,9 +439,9 @@ export default function ManageStudySelectionPage() {
                 }}
                 disabled={isCompleted}
                 className={cn(
-                  "w-full gap-2 rounded-xl transition-all duration-200",
+                  "min-h-11 w-full gap-2 rounded-xl transition-colors duration-150 motion-reduce:transition-none",
                   isAssignmentMode
-                    ? "border border-rose-200 bg-rose-50 text-rose-700 hover:bg-rose-100"
+                    ? "border border-error/20 bg-error/10 text-error hover:bg-error/15"
                     : "bg-primary text-white hover:bg-primary-hover",
                   isCompleted && "opacity-50 cursor-not-allowed",
                 )}
@@ -406,16 +460,16 @@ export default function ManageStudySelectionPage() {
                 )}
               </Button>
               {isAssignmentMode && (
-                <div className="mt-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                <div className="mt-3 space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-1 motion-safe:duration-150 motion-reduce:animate-none">
                   <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent">
                     <div className="w-1.5 h-1.5 rounded-full bg-accent" />
                     Assignment Mode Active
                   </div>
-                  <div className="flex gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2.5">
-                    <AlertCircle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="flex gap-2 rounded-xl border border-warning/20 bg-warning/10 px-3 py-2.5">
+                    <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-warning" />
                     <p className="text-[10px] text-text-secondary leading-relaxed font-medium">
                       Select papers to assign reviewers.{" "}
-                      <span className="text-amber-700 font-bold">
+                      <span className="font-bold text-warning">
                         Resolved papers
                       </span>{" "}
                       cannot be assigned.
@@ -444,9 +498,10 @@ export default function ManageStudySelectionPage() {
         <div
           style={{ width: isRightCollapsed ? "48px" : `${rightWidth}px` }}
           className={cn(
-            "order-3 relative h-full min-h-0 shrink-0 overflow-hidden rounded-xl border border-border bg-white shadow-sm",
+            "order-3 relative h-full min-h-0 shrink-0 overflow-hidden rounded-xl border border-border bg-surface-white",
             isRightCollapsed && "w-12",
-            !isResizing && "transition-all duration-300",
+            "max-lg:hidden",
+            !isResizing && "transition-[width] duration-300 motion-reduce:transition-none",
           )}
         >
           {/* Resize Handle Right */}
@@ -455,7 +510,7 @@ export default function ManageStudySelectionPage() {
               onMouseDown={startResizingRight}
               className="absolute -left-1 top-0 bottom-0 w-2 cursor-col-resize z-30 group"
             >
-              <div className="absolute inset-y-0 left-1/2 w-[1px] bg-slate-200 group-hover:bg-accent group-active:bg-primary-hover transition-colors" />
+              <div className="absolute inset-y-0 left-1/2 w-px bg-border transition-colors group-hover:bg-accent group-active:bg-primary-hover" />
             </div>
           )}
           <SelectionActionPanel
@@ -470,6 +525,34 @@ export default function ManageStudySelectionPage() {
             onEditCriteria={() => setIsCriteriaModalOpen(true)}
           />
         </div>
+        </div>
+
+        {mobileActionOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/30 lg:hidden"
+            onClick={() => setMobileActionOpen(false)}
+          >
+            <aside
+              role="dialog"
+              aria-modal="true"
+              aria-label="Review tools"
+              className="absolute inset-y-0 right-0 w-[min(92vw,380px)] bg-surface-white shadow-xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <SelectionActionPanel
+                currentPhase={currentPhase}
+                selectedPaper={selectedPaper}
+                aiAnalysis={aiAnalysis}
+                isAnalyzing={isAnalyzing}
+                runAiAnalysis={runAiAnalysis}
+                isCollapsed={false}
+                onToggleCollapse={() => setMobileActionOpen(false)}
+                isDisabled={isCompleted}
+                onEditCriteria={() => setIsCriteriaModalOpen(true)}
+              />
+            </aside>
+          </div>
+        )}
       </div>
 
       {isAssignmentMode && selectedIds.length > 0 && (

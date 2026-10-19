@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Routes, Route, useNavigate } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
+import { MotionConfig } from "framer-motion";
 import store, { type RootState } from "./redux/store";
 import {
   updateAccessToken,
@@ -58,8 +59,8 @@ function App() {
     return (
       <div className="flex h-screen w-screen items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <div className="h-12 w-12 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-          <p className="text-lg font-medium text-muted-foreground animate-pulse">
+          <div className="h-12 w-12 motion-safe:animate-spin motion-reduce:animate-none rounded-full border-4 border-primary border-t-transparent"></div>
+          <p className="text-lg font-medium text-muted-foreground motion-safe:animate-pulse motion-reduce:animate-none">
             Initializing application...
           </p>
         </div>
@@ -68,14 +69,16 @@ function App() {
   }
 
   return (
-    <ErrorBoundary>
-      <Routes>
-        <Route path="auth/*" element={<AuthRoutes />} />
-        <Route path="admin/*" element={<AdminRoutes />} />
-        <Route path="404" element={<NotFoundPage />} />
-        <Route path="*" element={<MainRoutes />} />
-      </Routes>
-    </ErrorBoundary>
+    <MotionConfig reducedMotion="user">
+      <ErrorBoundary>
+        <Routes>
+          <Route path="auth/*" element={<AuthRoutes />} />
+          <Route path="admin/*" element={<AdminRoutes />} />
+          <Route path="404" element={<NotFoundPage />} />
+          <Route path="*" element={<MainRoutes />} />
+        </Routes>
+      </ErrorBoundary>
+    </MotionConfig>
   );
 }
 

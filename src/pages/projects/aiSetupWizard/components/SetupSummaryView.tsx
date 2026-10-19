@@ -56,7 +56,7 @@ function PicoCCard({
   return (
     <article className="rounded-[14px] border border-border bg-surface-white p-3.5">
       <div className="mb-2 flex items-center gap-2.5">
-        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sm font-semibold text-accent">
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary-light text-sm font-semibold text-accent">
           {letter}
         </span>
         <h4 className="text-[15px] font-semibold text-text-primary">{title}</h4>
@@ -78,7 +78,7 @@ function PicoCCard({
         <button
           type="button"
           onClick={() => setExpanded((current) => !current)}
-          className="mt-2 text-xs font-medium text-accent hover:underline"
+          className="mt-2 inline-flex min-h-11 items-center rounded-md px-2 text-xs font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
           aria-expanded={expanded}
         >
           {expanded ? "Show less" : "View details"}
@@ -107,7 +107,7 @@ export default function SetupSummaryView({
     <button
       type="button"
       onClick={onEdit}
-      className="rounded-xl border border-border bg-surface-white px-3.5 py-1.5 text-sm font-medium text-text-primary transition-colors hover:bg-bg-primary shadow-xs"
+      className="min-h-11 rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary transition-colors motion-reduce:transition-none hover:bg-bg-primary shadow-xs"
     >
       Edit Protocol
     </button>
@@ -176,7 +176,7 @@ export default function SetupSummaryView({
             <button
               type="button"
               onClick={() => setShowAllQuestions((current) => !current)}
-              className="mt-2 text-sm font-medium text-accent hover:underline"
+              className="mt-2 inline-flex min-h-11 items-center rounded-md px-2 text-sm font-medium text-accent hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30"
               aria-expanded={showAllQuestions}
             >
               {showAllQuestions

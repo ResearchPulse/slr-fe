@@ -83,12 +83,12 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
     <>
       {/* Access & Full Text Section */}
       {hasAccessInfo && (
-        <section className="mb-6">
-          <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-            <FiFileText className="w-3.5 h-3.5" />
+        <section className="mb-6 min-w-0">
+          <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+            <FiFileText className="h-4 w-4 text-text-tertiary" />
             Access & Full Text
           </h3>
-          <div className="bg-gray-50/60 rounded-lg border border-gray-100 p-4">
+          <div className="min-w-0 rounded-xl border border-border bg-surface-white p-4 shadow-none">
             <div className="flex flex-wrap items-center gap-3">
               {/* Full text availability */}
               {paper.fullTextAvailable != null && (
@@ -96,8 +96,8 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                   <span
                     className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                       paper.fullTextAvailable
-                        ? "bg-green-100 text-green-700"
-                        : "bg-gray-100 text-gray-600"
+                        ? "bg-success/10 text-success"
+                        : "bg-bg-secondary text-text-secondary"
                     }`}
                   >
                     {paper.fullTextAvailable ? (
@@ -113,7 +113,7 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                     <>
                       <button
                         onClick={() => setIsUploadModalOpen(true)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 shadow-sm rounded-lg text-xs font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600 transition-all ml-2"
+                        className="ml-2 inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-border bg-surface-white px-3 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                         title="Upload PDF"
                       >
                         <FiUpload className="w-3.5 h-3.5" />
@@ -142,7 +142,7 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
 
               {/* Access type */}
               {paper.accessTypeText && (
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary-light px-2.5 py-1 text-xs font-medium text-primary">
                   {paper.accessTypeText}
                 </span>
               )}
@@ -154,7 +154,7 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                     href={paper.pdfUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-surface-white text-red-700 hover:bg-red-100 transition-colors"
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-border bg-surface-white px-3 text-xs font-semibold text-accent transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                   >
                     <FiExternalLink className="w-3 h-3" />
                     Open PDF
@@ -162,7 +162,7 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
                   {onPreviewPdf && (
                     <button
                       onClick={() => onPreviewPdf(paper.pdfUrl!)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                      className="inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-primary/20 bg-primary-light px-3 text-xs font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                       title="Preview PDF"
                     >
                       <FiEye className="w-3 h-3" />
@@ -177,33 +177,33 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
       )}
 
       {/* Import Provenance Section */}
-      <section className="mb-6">
-        <h3 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 flex items-center gap-2">
-          <FiDatabase className="w-3.5 h-3.5" />
+      <section className="mb-6 min-w-0">
+        <h3 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-text-secondary">
+            <FiDatabase className="h-4 w-4 text-text-tertiary" />
           Import Provenance
         </h3>
-        <div className="bg-slate-50/60 rounded-lg border border-slate-100 px-4 py-3">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-2">
+        <div className="min-w-0 rounded-xl border border-border bg-surface-white p-4 shadow-none">
+          <div className="grid min-w-0 grid-cols-1 gap-x-6 gap-y-3 sm:grid-cols-2">
             {paper.source && (
-              <div className="flex items-center gap-2">
-                <FiDatabase className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
+              <div className="flex min-w-0 items-center gap-2">
+                <FiDatabase className="h-4 w-4 shrink-0 text-text-tertiary" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
                     Source
                   </p>
-                  <p className="text-xs text-gray-700">{paper.source}</p>
+                  <p className="break-words text-xs text-text-primary">{paper.source}</p>
                 </div>
               </div>
             )}
 
             {paper.importedAt && (
-              <div className="flex items-center gap-2">
-                <FiClock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
+              <div className="flex min-w-0 items-center gap-2">
+                <FiClock className="h-4 w-4 shrink-0 text-text-tertiary" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
                     Imported At
                   </p>
-                  <p className="text-xs text-gray-700">
+                  <p className="break-words text-xs text-text-primary">
                     {formatDate(paper.importedAt)}
                   </p>
                 </div>
@@ -211,25 +211,25 @@ const PaperAccessPanel: React.FC<PaperAccessPanelProps> = ({
             )}
 
             {paper.importedBy && (
-              <div className="flex items-center gap-2">
-                <FiUser className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
+              <div className="flex min-w-0 items-center gap-2">
+                <FiUser className="h-4 w-4 shrink-0 text-text-tertiary" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
                     Imported By
                   </p>
-                  <p className="text-xs text-gray-700">{paper.importedBy}</p>
+                  <p className="break-words text-xs text-text-primary">{paper.importedBy}</p>
                 </div>
               </div>
             )}
 
             {paper.createdAt && (
-              <div className="flex items-center gap-2">
-                <FiClock className="w-3.5 h-3.5 text-gray-400 shrink-0" />
-                <div>
-                  <p className="text-[10px] uppercase text-gray-400 font-medium tracking-wider">
+              <div className="flex min-w-0 items-center gap-2">
+                <FiClock className="h-4 w-4 shrink-0 text-text-tertiary" />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-semibold uppercase tracking-wide text-text-tertiary">
                     Created At
                   </p>
-                  <p className="text-xs text-gray-700">
+                  <p className="break-words text-xs text-text-primary">
                     {formatDate(paper.createdAt)}
                   </p>
                 </div>

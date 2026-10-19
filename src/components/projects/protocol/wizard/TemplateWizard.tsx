@@ -205,7 +205,7 @@ function TemplatePresetPicker({
             type="button"
             onClick={onContinue}
             disabled={selectedTemplate === undefined || isLoading || Boolean(error)}
-            className="inline-flex min-h-10 shrink-0 items-center justify-center rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-primary px-5 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Continue
           </button>
@@ -453,7 +453,7 @@ function TemplateWizardEditor({
             <button
               type="button"
               onClick={() => setShowTemplateChangeConfirm(true)}
-              className="shrink-0 rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+              className="min-h-11 shrink-0 rounded-xl border border-border bg-surface-white px-3 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
             >
               Change template
             </button>
@@ -468,10 +468,10 @@ function TemplateWizardEditor({
             <p id="change-template-description" className="mt-0.5 text-xs text-text-secondary">Leaving this editor will discard its unsaved section and field changes.</p>
           </div>
           <div className="flex shrink-0 justify-end gap-2">
-            <button type="button" onClick={() => setShowTemplateChangeConfirm(false)} className="min-h-9 rounded-lg border border-border bg-surface-white px-3 py-1.5 text-xs font-semibold text-text-secondary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+            <button type="button" onClick={() => setShowTemplateChangeConfirm(false)} className="min-h-11 rounded-xl border border-border bg-surface-white px-3 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
               Keep editing
             </button>
-            <button type="button" onClick={onBackToPresetPicker} className="min-h-9 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
+            <button type="button" onClick={onBackToPresetPicker} className="min-h-11 rounded-xl bg-primary px-3 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
               Choose another template
             </button>
           </div>
@@ -492,7 +492,7 @@ function TemplateWizardEditor({
             type="button"
             onClick={() => goToStep(4)}
             disabled={state.sections.length === 0}
-            className="min-h-10 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+            className="min-h-11 rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
           >
             Preview &amp; publish
           </button>

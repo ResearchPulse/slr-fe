@@ -7,18 +7,18 @@ import { SIMILARITY_THRESHOLDS } from "./constants";
  * Returns a Tailwind background color class based on similarity score
  */
 export const getSimilarityColor = (score: number): string => {
-  if (score >= 95) return "bg-red-500";
-  if (score >= 85) return "bg-orange-500";
-  return "bg-yellow-500";
+  if (score >= 95) return "bg-error";
+  if (score >= 85) return "bg-warning";
+  return "bg-primary";
 };
 
 /**
  * Returns a Tailwind text color class based on similarity score
  */
 export const getSimilarityTextColor = (score: number): string => {
-  if (score >= 95) return "text-red-600";
-  if (score >= 85) return "text-orange-600";
-  return "text-yellow-600";
+  if (score >= 95) return "text-error";
+  if (score >= 85) return "text-warning";
+  return "text-accent";
 };
 
 /**

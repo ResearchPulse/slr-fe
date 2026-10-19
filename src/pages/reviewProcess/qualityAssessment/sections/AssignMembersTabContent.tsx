@@ -91,7 +91,7 @@ export function AssignMembersTabContent({
   };
 
   return (
-    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
+    <Card className="overflow-hidden rounded-xl border border-border bg-surface-white shadow-none">
       <div className="flex flex-col justify-between gap-4 border-b border-border bg-surface-white p-4 sm:flex-row sm:items-center sm:p-5">
         <div>
           <h2 className="text-base font-semibold text-text-primary sm:text-lg">
@@ -117,13 +117,102 @@ export function AssignMembersTabContent({
                 if (onSearchChange) onSearchChange(e.target.value);
               }}
               placeholder="Search papers by title..."
-              className="w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-sm transition-colors placeholder:text-text-secondary/80 focus:border-accent focus:bg-surface-white focus:outline-none focus:ring-2 focus:ring-accent/15 sm:w-72"
+              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-10 pr-4 text-sm text-text-primary transition-[border-color,box-shadow] placeholder:text-text-secondary/80 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 motion-reduce:transition-none sm:w-72"
             />
           </div>
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="divide-y divide-border md:hidden">
+        {papers.map((paper) => {
+          const status = getPaperStatus(paper, isLeader);
+          const statusStyles: Record<string, string> = {
+            "high-quality": "border-success/20 bg-success/10 text-success",
+            "low-quality": "border-error/20 bg-error/10 text-error",
+            completed: "border-success/20 bg-success/10 text-success",
+            "in-progress": "border-accent/30 bg-primary-light text-accent",
+            pending: "border-border bg-bg-secondary text-text-primary",
+          };
+          const statusLabels: Record<string, string> = {
+            "high-quality": "High Quality",
+            "low-quality": "Low Quality",
+            completed: "Completed",
+            "in-progress": "In Progress",
+            pending: "Pending",
+          };
+          const reviewers = getPaperReviewers(paper);
+
+          return (
+            <article key={paper.paperId} className="space-y-3 p-4">
+              <div className="flex items-start gap-3">
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${paper.title}`}
+                  checked={selectedIds.has(paper.paperId)}
+                  onChange={() => togglePaper(paper.paperId)}
+                  className="mt-1 rounded-md border-border text-accent focus:ring-primary/40"
+                />
+                <div className="min-w-0 flex-1">
+                  <button
+                    type="button"
+                    onClick={() => onPaperClick(paper.paperId)}
+                    className="line-clamp-3 text-left text-sm font-semibold leading-5 text-text-primary hover:text-accent focus-visible:outline-none focus-visible:underline"
+                  >
+                    {paper.title}
+                  </button>
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-text-secondary">
+                    {paper.authors || "Unknown authors"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-2 pl-7">
+                <span className={`inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold ${statusStyles[status] || statusStyles.pending}`}>
+                  {statusLabels[status] || "Pending"}
+                </span>
+                {isLeader && paper.resolution && (
+                  <button
+                    type="button"
+                    onClick={() => onReopenPaper?.(paper.paperId)}
+                    className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-warning/20 bg-warning/10 px-2.5 py-1.5 text-xs font-semibold text-warning transition-colors hover:border-warning/40 hover:bg-warning/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                    aria-label={`Reopen ${paper.title}`}
+                  >
+                    <RotateCcw size={13} aria-hidden="true" />
+                    Reopen
+                  </button>
+                )}
+              </div>
+
+              {isLeader && (
+                <div className="flex items-center justify-between gap-3 pl-7">
+                  <div className="flex min-w-0 flex-wrap items-center gap-1.5 text-xs text-text-secondary">
+                    <span className="shrink-0">Reviewers</span>
+                    {reviewers.length > 0 ? (
+                      reviewers.map((reviewer) => (
+                        <span key={reviewer.id} className="max-w-full truncate rounded-full bg-bg-primary px-2 py-1 text-text-primary">
+                          {reviewer.fullname || reviewer.username}
+                        </span>
+                      ))
+                    ) : (
+                      <span>Unassigned</span>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={(event) => onAssignClick(event, paper.paperId)}
+                    className="min-h-11 shrink-0 rounded-lg border border-border px-2.5 py-1.5 text-xs font-medium text-text-primary transition-colors hover:border-primary/40 hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+                    aria-label={`${reviewers.length ? "Edit" : "Assign"} reviewers for ${paper.title}`}
+                  >
+                    {reviewers.length ? "Edit" : "Assign"}
+                  </button>
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+
+      <div className="hidden overflow-x-auto md:block">
         <Table>
           <TableHeader className="bg-bg-primary">
             <TableRow className="hover:bg-transparent">
@@ -137,7 +226,7 @@ export function AssignMembersTabContent({
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={toggleAll}
-                  className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
+                  className="rounded-md border-border text-accent transition-colors focus:ring-primary/40 motion-reduce:transition-none"
                 />
               </TableHead>
               <TableHead className="text-xs font-semibold uppercase tracking-wider text-text-secondary">
@@ -174,7 +263,7 @@ export function AssignMembersTabContent({
                     aria-label={`Select ${paper.title}`}
                     checked={selectedIds.has(paper.paperId)}
                     onChange={() => togglePaper(paper.paperId)}
-                    className="rounded-md border-slate-300 text-accent focus:ring-accent transition-colors"
+                  className="rounded-md border-border text-accent transition-colors focus:ring-primary/40 motion-reduce:transition-none"
                   />
                 </TableCell>
                 <TableCell>
@@ -229,7 +318,7 @@ export function AssignMembersTabContent({
                                     .toUpperCase()}
                                 </span>
                               </span>
-                              <span className="absolute bottom-full left-1/2 z-10 mb-2 hidden w-max -translate-x-1/2 rounded bg-slate-800 px-2 py-1 text-xs text-white group-hover/member:block group-focus-visible/member:block">
+                              <span className="absolute bottom-full left-1/2 z-10 mb-2 hidden w-max -translate-x-1/2 rounded bg-text-primary px-2 py-1 text-xs text-surface-white group-hover/member:block group-focus-visible/member:block">
                                 {member.fullname || member.username}
                               </span>
                             </button>
@@ -239,12 +328,12 @@ export function AssignMembersTabContent({
                       {getPaperReviewers(paper).length < 2 && (
                         <button
                           type="button"
-                          className="flex h-8 w-8 items-center justify-center rounded-full border border-dashed border-slate-300 bg-surface-white text-text-secondary hover:text-accent hover:border-accent hover:bg-primary-light ring-2 ring-white shrink-0 transition-all relative group/btn"
+                  className="group/btn relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-dashed border-border bg-surface-white text-text-secondary ring-2 ring-white transition-colors hover:border-primary hover:bg-primary-light hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                           onClick={(e) => onAssignClick(e, paper.paperId)}
                           aria-label={`Assign reviewer to ${paper.title}`}
                         >
                           <User size={14} aria-hidden="true" />
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/btn:block z-10 w-max bg-slate-800 text-white text-xs px-2 py-1 rounded shadow-none">
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover/btn:block z-10 w-max bg-text-primary text-surface-white text-xs px-2 py-1 rounded shadow-none">
                             Assign Reviewer
                           </div>
                         </button>
@@ -266,31 +355,31 @@ export function AssignMembersTabContent({
                       }
                     > = {
                       "high-quality": {
-                        bg: "bg-emerald-50 border-emerald-200",
-                        text: "text-emerald-700",
+                        bg: "bg-success/10 border-success/20",
+                        text: "text-success",
                         icon: (
                           <CheckCircle2
                             size={12}
-                            className="text-emerald-500"
+                            className="text-success"
                           />
                         ),
                         label: "High Quality",
                       },
                       "low-quality": {
-                        bg: "bg-rose-50 border-rose-200",
-                        text: "text-rose-700",
+                        bg: "bg-error/10 border-error/20",
+                        text: "text-error",
                         icon: (
-                          <CheckCircle2 size={12} className="text-rose-500" />
+                          <CheckCircle2 size={12} className="text-error" />
                         ),
                         label: "Low Quality",
                       },
                       completed: {
-                        bg: "bg-emerald-50 border-emerald-200",
-                        text: "text-emerald-700",
+                        bg: "bg-success/10 border-success/20",
+                        text: "text-success",
                         icon: (
                           <CheckCircle2
                             size={12}
-                            className="text-emerald-500"
+                            className="text-success"
                           />
                         ),
                         label: "Completed",
@@ -330,7 +419,7 @@ export function AssignMembersTabContent({
                       <button
                         type="button"
                         onClick={() => onReopenPaper?.(paper.paperId)}
-                        className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-1.5 text-xs font-semibold text-amber-700 transition-colors hover:border-amber-300 hover:bg-amber-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/40"
+                        className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-warning/20 bg-warning/10 px-2.5 py-1.5 text-xs font-semibold text-warning transition-colors hover:border-warning/40 hover:bg-warning/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                         aria-label={`Reopen ${paper.title}`}
                         title="Reopen this paper for reviewer corrections"
                       >
@@ -346,7 +435,7 @@ export function AssignMembersTabContent({
         </Table>
         {papers.length === 0 && (
           <div className="flex flex-col items-center px-4 py-9 text-center text-text-secondary sm:py-10">
-            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-bg-primary text-slate-400">
+            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-bg-primary text-text-secondary/60">
               <FileText size={22} />
             </div>
             <p className="text-sm font-semibold text-text-primary">

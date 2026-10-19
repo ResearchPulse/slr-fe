@@ -25,6 +25,8 @@ interface PrismaExportActionsProps {
   onGenerate: () => void;
   /** Trigger PRISMA diagram download (.docx) */
   onDownloadDiagram?: () => void;
+  /** Download the structured PRISMA and included-study handoff for writing. */
+  onDownloadWritingExport?: () => void;
   /** Version label of the latest report */
   version?: string;
   /** Timestamp of last generation */
@@ -47,6 +49,7 @@ export default function PrismaExportActions({
   canGenerate = true,
   onGenerate,
   onDownloadDiagram,
+  onDownloadWritingExport,
   onExportPNG,
   nodes,
   includedNode,
@@ -118,7 +121,7 @@ export default function PrismaExportActions({
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex w-full min-w-0 flex-wrap items-center gap-3 lg:w-auto lg:flex-nowrap">
       {/* Generate / Regenerate button */}
       {canGenerate && (
         <Button
@@ -127,61 +130,84 @@ export default function PrismaExportActions({
           className="inline-flex gap-2"
         >
           <FiRefreshCw
-            className={`w-4 h-4 ${isGenerating ? "animate-spin" : ""}`}
+            className={`w-4 h-4 ${isGenerating ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
           />
           {isGenerating
             ? "Generating…"
             : cooldown > 0
               ? `Wait ${cooldown}s`
               : hasReport
-                ? "Regenerate Diagram"
-                : "Generate Diagram"}
+                ? "Regenerate Report"
+                : "Generate PRISMA Report"}
         </Button>
       )}
 
       {/* Export buttons — only enabled when a report exists */}
-      <div className="inline-flex items-center border border-border/70 rounded-xl overflow-hidden shadow-sm">
+      <div className="flex min-w-0 max-w-full flex-wrap items-center overflow-hidden rounded-xl border border-border/70 shadow-none">
+        <button
+          type="button"
+          onClick={onDownloadWritingExport}
+          aria-label="Download structured PRISMA data for writing as JSON"
+          title="Download structured PRISMA data for writing (.json)"
+          className="inline-flex min-h-11 items-center gap-1.5 px-3 py-3 text-sm text-text-primary bg-surface-white hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 motion-safe:transition-colors motion-reduce:transition-none"
+        >
+          <FiFileText className="w-4 h-4" />
+          <span className="sm:hidden">JSON</span>
+          <span className="hidden sm:inline">Writing JSON</span>
+        </button>
         <button
           onClick={handleExportPNG}
+          type="button"
+          aria-label="Export PRISMA diagram as PNG"
           disabled={!hasReport}
           title="Export as PNG"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex min-h-11 items-center gap-1.5 px-3 py-3 text-sm text-text-primary bg-surface-white hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed motion-safe:transition-colors motion-reduce:transition-none"
         >
           <FiImage className="w-4 h-4" />
+          <span className="sm:hidden">PNG</span>
           <span className="hidden sm:inline">PNG</span>
         </button>
 
         <button
+          type="button"
           onClick={handleExportPDF}
+          aria-label="Export PRISMA diagram as PDF"
           disabled={!hasReport}
           title="Export as PDF (print)"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex min-h-11 items-center gap-1.5 px-3 py-3 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed motion-safe:transition-colors motion-reduce:transition-none"
         >
           <FiFileText className="w-4 h-4" />
+          <span className="sm:hidden">PDF</span>
           <span className="hidden sm:inline">PDF</span>
         </button>
 
         <button
+          type="button"
           onClick={onDownloadDiagram}
+          aria-label="Download PRISMA flow diagram as Word document"
           disabled={!hasReport || isDownloading}
           title="Download PRISMA Flow Diagram (.docx)"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium shadow-none"
+          className="inline-flex min-h-11 items-center gap-1.5 px-3 py-3 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed motion-safe:transition-colors motion-reduce:transition-none font-medium shadow-none"
         >
           <FiFileText
-            className={`w-4 h-4 ${isDownloading ? "animate-pulse" : ""}`}
+            className={`w-4 h-4 ${isDownloading ? "motion-safe:animate-pulse motion-reduce:animate-none" : ""}`}
           />
+          <span className="sm:hidden">Word</span>
           <span className="hidden sm:inline">
             {isDownloading ? "Downloading…" : "Word"}
           </span>
         </button>
 
         <button
+          type="button"
           onClick={handleCopyNumbers}
+          aria-label="Copy PRISMA numbers"
           disabled={!hasReport}
           title="Copy numbers to clipboard"
-          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus:outline-none focus:ring-2 focus:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex min-h-11 items-center gap-1.5 px-3 py-3 text-sm text-text-primary bg-surface-white border-l border-border hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30 disabled:opacity-40 disabled:cursor-not-allowed motion-safe:transition-colors motion-reduce:transition-none"
         >
           <FiCopy className="w-4 h-4" />
+          <span className="sm:hidden">Copy</span>
           <span className="hidden sm:inline">Copy</span>
         </button>
       </div>
@@ -193,7 +219,7 @@ export default function PrismaExportActions({
           <span>v{version}</span>
           {generatedAt && (
             <>
-              <span className="text-gray-300">·</span>
+              <span className="text-text-secondary/40">·</span>
               <span>
                 {new Date(generatedAt).toLocaleDateString("en-US", {
                   month: "short",

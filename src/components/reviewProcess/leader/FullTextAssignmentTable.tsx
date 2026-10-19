@@ -162,20 +162,20 @@ const FullTextAssignmentTable: React.FC<FullTextAssignmentTableProps> = ({
       />
 
       {/* Info Banner */}
-      <div className="bg-amber-50 border-b border-amber-100 px-6 py-3 flex items-center gap-3">
+      <div className="flex items-center gap-3 border-b border-warning/20 bg-warning/10 px-6 py-3" role="status">
         <div className="flex-shrink-0">
-          <AlertCircle className="w-5 h-5 text-amber-600" />
+          <AlertCircle className="h-5 w-5 text-warning" />
         </div>
         <div className="flex-1">
-          <p className="text-sm text-amber-800">
+          <p className="text-sm text-text-primary">
             <span className="font-bold">PDF Required for Assignment</span>: In
             the Full-Text phase, project policy requires all papers to have an
             attached PDF before they can be assigned to reviewers.
           </p>
-          <p className="text-xs text-amber-700 mt-0.5">
+          <p className="mt-0.5 text-xs text-text-secondary">
             Papers missing a PDF will have their selection checkbox disabled.
             Use the{" "}
-            <span className="inline-flex items-center gap-1 mx-1 px-1 py-0.5 bg-surface-white border border-amber-200 rounded text-[10px] text-amber-800 font-bold">
+            <span className="mx-1 inline-flex items-center gap-1 rounded border border-warning/20 bg-surface-white px-1 py-0.5 text-[10px] font-bold text-warning">
               Attach PDF
             </span>{" "}
             action to upload missing files.

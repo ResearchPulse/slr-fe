@@ -19,10 +19,10 @@ const ReviewerDecisionCard: React.FC<ReviewerDecisionCardProps> = ({
 }) => {
   return (
     <div
-      className={`bg-surface-white p-5 rounded-xl border transition-all ${
+      className={`bg-surface-white p-5 rounded-xl border transition-colors motion-reduce:transition-none ${
         decision.decision === "Include"
-          ? "border-emerald-100"
-          : "border-rose-100"
+          ? "border-success/20"
+          : "border-error/20"
       }`}
     >
       <div className="flex justify-between items-start mb-4">
@@ -30,8 +30,8 @@ const ReviewerDecisionCard: React.FC<ReviewerDecisionCardProps> = ({
           <div
             className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs ${
               decision.decision === "Include"
-                ? "bg-emerald-50 text-emerald-600"
-                : "bg-rose-50 text-rose-600"
+                ? "bg-success/10 text-success"
+                : "bg-error/10 text-error"
             }`}
           >
             {decision.reviewerName
@@ -47,7 +47,7 @@ const ReviewerDecisionCard: React.FC<ReviewerDecisionCardProps> = ({
               {onViewSubmission && (
                 <button
                   onClick={() => onViewSubmission(decision.reviewerId)}
-                  className="text-[10px] font-black text-accent uppercase tracking-widest hover:underline"
+                  className="min-h-11 rounded px-2 text-[10px] font-black text-accent uppercase tracking-widest hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                 >
                   [ View submission ]
                 </button>
@@ -61,8 +61,8 @@ const ReviewerDecisionCard: React.FC<ReviewerDecisionCardProps> = ({
         <span
           className={`px-2.5 py-1 rounded-xl text-[10px] font-black uppercase tracking-widest border ${
             decision.decision === "Include"
-              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
-              : "bg-rose-50 text-rose-600 border-rose-100"
+              ? "bg-success/10 text-success border-success/20"
+              : "bg-error/10 text-error border-error/20"
           }`}
         >
           {decision.decision}
@@ -70,11 +70,11 @@ const ReviewerDecisionCard: React.FC<ReviewerDecisionCardProps> = ({
       </div>
 
       {decision.exclusionReason && (
-        <div className="mb-4 bg-rose-50/30 p-3 rounded-xl border border-rose-100/50">
-          <span className="text-[10px] font-black text-rose-400 uppercase tracking-tight block mb-1">
+        <div className="mb-4 rounded-xl border border-error/15 bg-error/5 p-3">
+          <span className="mb-1 block text-[10px] font-black uppercase tracking-tight text-error">
             Exclusion Reason
           </span>
-          <p className="text-xs font-bold text-rose-700 uppercase tracking-tight">
+          <p className="text-xs font-bold uppercase tracking-tight text-error">
             {decision.exclusionReason}
           </p>
         </div>

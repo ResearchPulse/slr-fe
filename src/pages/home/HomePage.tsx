@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { ReactNode } from "react";
@@ -137,9 +137,37 @@ export default function HomePage() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const startPath = isAuthenticated ? "/projects" : "/auth/signin";
+  const pageRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const page = pageRef.current;
+    if (!page) return;
+
+    const targets = page.querySelectorAll<HTMLElement>(".scroll-reveal, .scroll-pop");
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      targets.forEach((target) => { target.dataset.scrollReveal = "visible"; });
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        (entry.target as HTMLElement).dataset.scrollReveal = "visible";
+        observer.unobserve(entry.target);
+      });
+    }, { threshold: 0.12, rootMargin: "0px 0px -24px 0px" });
+
+    targets.forEach((target) => {
+      target.dataset.scrollReveal = "pending";
+      observer.observe(target);
+    });
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="overflow-hidden bg-bg-primary text-text-primary">
+    <div ref={pageRef} className="overflow-hidden bg-bg-primary text-text-primary">
       <section className="relative border-b border-border bg-bg-secondary">
         <div className="relative mx-auto grid max-w-[1280px] items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[650px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-12 lg:px-12 lg:py-20">
           <div className="relative z-10 max-w-[570px]">
@@ -152,11 +180,11 @@ export default function HomePage() {
               Plan, screen, extract, and report research evidence through one structured and reproducible workflow.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <button onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-[12px] font-bold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-                Start a Review <FiArrowRight className="transition-transform group-hover:translate-x-0.5" />
+              <button type="button" onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-[12px] font-bold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none">
+                Start a Review <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
               </button>
-              <button onClick={() => navigate("/projects")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[#CBD9E1] bg-white/70 px-6 text-[12px] font-bold text-[#234256] transition hover:-translate-y-0.5 hover:border-[#8DBFE0] hover:bg-white">
-                View Projects <FiArrowUpRight />
+              <button type="button" onClick={() => navigate("/projects")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-surface-white px-6 text-[12px] font-bold text-text-primary transition-colors hover:border-primary/40 hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none">
+                View Projects <FiArrowUpRight aria-hidden="true" />
               </button>
             </div>
             <div className="mt-7 space-y-2.5 text-[11px] font-semibold text-[#728592]">
@@ -303,7 +331,7 @@ export default function HomePage() {
                 <div className="flex items-center justify-between rounded-xl border border-[#E9EEF1] bg-[#FCFDFD] px-3.5 py-3"><span className="flex items-center gap-2.5"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[9px] font-bold text-[#477BA2]">RA</span><span><b className="block text-[10px] text-[#405866]">Reviewer A</b><small className="text-[9px] text-[#91A0A9]">Independent review</small></span></span><span className="rounded-md bg-[#EDF7F1] px-2.5 py-1 text-[9px] font-bold text-[#37835D]">Include</span></div>
                 <div className="flex items-center justify-between rounded-xl border border-[#E9EEF1] bg-[#FCFDFD] px-3.5 py-3"><span className="flex items-center gap-2.5"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F3EDF8] text-[9px] font-bold text-[#80669B]">RB</span><span><b className="block text-[10px] text-[#405866]">Reviewer B</b><small className="text-[9px] text-[#91A0A9]">Independent review</small></span></span><span className="rounded-md bg-[#F3F4F5] px-2.5 py-1 text-[9px] font-bold text-[#778790]">Exclude</span></div>
               </div>
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#F5F8FA] p-3"><span className="inline-flex items-center gap-2 text-[10px] font-bold text-[#A17630]"><FiGitMerge /> Conflict · decision history saved</span><button onClick={() => navigate(startPath)} className="inline-flex items-center gap-1.5 rounded-lg bg-[#102D40] px-3 py-2 text-[9px] font-bold text-white transition hover:-translate-y-0.5">Resolve decision <FiArrowRight /></button></div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#F5F8FA] p-3"><span className="inline-flex items-center gap-2 text-[10px] font-bold text-[#A17630]"><FiGitMerge aria-hidden="true" /> Conflict · decision history saved</span><button type="button" onClick={() => navigate(startPath)} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-3 text-[9px] font-bold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none">Resolve decision <FiArrowRight aria-hidden="true" /></button></div>
               <div className="mt-4 flex items-center gap-2 text-[9px] text-[#84949E]"><FiClock /> Both reviewers' decisions remain independent until resolution.</div>
             </div>
           </div>
@@ -315,7 +343,7 @@ export default function HomePage() {
             <ul className="mt-7 space-y-3">
               {["Independent screening", "Conflict resolution", "Decision history"].map((item) => <li key={item} className="flex items-center gap-3 text-[13px] font-semibold text-[#405967]"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E5F2F9] text-primary"><FiCheck size={13} /></span>{item}</li>)}
             </ul>
-            <button onClick={() => navigate("/projects")} className="group mt-8 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.12em] text-primary">Explore your projects <FiArrowRight className="transition-transform group-hover:translate-x-1" /></button>
+            <button type="button" onClick={() => navigate("/projects")} className="group mt-8 inline-flex min-h-11 items-center gap-2 rounded-lg text-[11px] font-bold uppercase tracking-[0.12em] text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none">Explore your projects <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" /></button>
           </div>
         </div>
       </section>
@@ -328,8 +356,8 @@ export default function HomePage() {
             <h2 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-white sm:text-[38px]">Ready to start your next review?</h2>
             <p className="mx-auto mt-4 max-w-[500px] text-[13px] leading-6 text-white/70">Create a structured review project and guide your team through the PRISMA workflow.</p>
             <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
-              <button onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 text-[11px] font-bold text-[#12354A] transition hover:-translate-y-0.5 hover:bg-[#EFF8FC]">Start a Review <FiArrowRight className="transition-transform group-hover:translate-x-0.5" /></button>
-              <button onClick={() => navigate("/projects")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 px-5 text-[11px] font-bold text-white transition hover:-translate-y-0.5 hover:bg-white/10">View Projects <FiArrowUpRight /></button>
+              <button type="button" onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 text-[11px] font-bold text-[#12354A] transition-colors hover:bg-[#EFF8FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#12354A] motion-reduce:transition-none">Start a Review <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" /></button>
+              <button type="button" onClick={() => navigate("/projects")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 px-5 text-[11px] font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 motion-reduce:transition-none">View Projects <FiArrowUpRight aria-hidden="true" /></button>
             </div>
           </div>
         </div>

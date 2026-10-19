@@ -44,20 +44,21 @@ export default function UserSearchSection({
     <div className="space-y-4">
       <div className="relative group">
         <FiSearch
-          className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-accent transition-colors"
+          className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors"
           size={16}
         />
         <input
           type="text"
+          aria-label="Search users by username or email"
           placeholder="Search username or email..."
           value={searchTerm}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-xl text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-indigo-500/5 focus:border-indigo-200 focus:bg-surface-white transition-all placeholder:text-slate-300 placeholder:font-medium"
+          className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-3.5 pl-11 pr-4 text-sm font-bold text-text-primary outline-none transition-[border-color,box-shadow] placeholder:font-medium placeholder:text-text-secondary focus:border-primary focus:ring-2 focus:ring-primary/15 motion-reduce:transition-none"
         />
       </div>
 
       {showSuggestions && displayUsers.length > 0 && (
-        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+        <p className="text-[10px] font-black uppercase tracking-widest text-text-secondary">
           Gợi ý người có thể mời
         </p>
       )}
@@ -78,14 +79,17 @@ export default function UserSearchSection({
             const isSelectable = user.status === "available";
 
             return (
-              <div
+              <button
+                type="button"
                 key={user.id}
                 onClick={() => onSelectUser(user)}
+                aria-pressed={isSelected}
+                disabled={!isSelectable}
                 className={cn(
-                  "group flex items-center gap-3 p-3 rounded-xl border transition-all duration-300 cursor-pointer select-none",
+                  "group flex w-full cursor-pointer select-none items-center gap-3 rounded-xl border p-3 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:cursor-not-allowed",
                   isSelected
-                    ? "bg-accent border-indigo-600 shadow-none shadow-indigo-100"
-                    : "bg-surface-white border-slate-50 hover:border-slate-200 hover:bg-slate-50",
+                    ? "border-accent bg-accent"
+                    : "border-border bg-surface-white hover:border-accent/30 hover:bg-bg-secondary",
                   !isSelectable &&
                     !isSelected &&
                     "opacity-50 cursor-not-allowed",
@@ -96,7 +100,7 @@ export default function UserSearchSection({
                     "w-10 h-10 rounded-full flex items-center justify-center text-xs font-black shrink-0",
                     isSelected
                       ? "bg-surface-white/20 text-white"
-                      : "bg-slate-100 text-slate-500",
+                      : "bg-bg-secondary text-text-secondary",
                   )}
                 >
                   {getInitials(user.fullName)}
@@ -105,7 +109,7 @@ export default function UserSearchSection({
                   <p
                     className={cn(
                       "text-sm font-black tracking-tight truncate",
-                      isSelected ? "text-white" : "text-slate-800",
+                      isSelected ? "text-white" : "text-text-primary",
                     )}
                   >
                     {user.fullName}
@@ -114,7 +118,7 @@ export default function UserSearchSection({
                     <p
                       className={cn(
                         "text-[9px] font-bold italic",
-                        isSelected ? "text-white/60" : "text-slate-400",
+                        isSelected ? "text-white/70" : "text-text-secondary",
                       )}
                     >
                       @{user.userName}
@@ -122,13 +126,13 @@ export default function UserSearchSection({
                     <div
                       className={cn(
                         "w-0.5 h-0.5 rounded-full",
-                        isSelected ? "bg-surface-white/20" : "bg-slate-300",
+                        isSelected ? "bg-surface-white/30" : "bg-border",
                       )}
                     />
                     <p
                       className={cn(
                         "text-[9px] font-medium truncate",
-                        isSelected ? "text-white/60" : "text-slate-400",
+                        isSelected ? "text-white/70" : "text-text-secondary",
                       )}
                     >
                       {user.email}
@@ -141,7 +145,7 @@ export default function UserSearchSection({
                       "px-2 py-0.5 rounded-full text-[7px] font-black uppercase tracking-widest",
                       isSelected
                         ? "bg-surface-white/20 text-white"
-                        : "bg-slate-50 text-slate-400",
+                        : "bg-bg-secondary text-text-secondary",
                     )}
                   >
                     {isAdded ? "Member" : "Invited"}
@@ -152,22 +156,22 @@ export default function UserSearchSection({
                     <FiCheck size={10} />
                   </div>
                 ) : isSelected ? (
-                  <FiChevronRight className="text-white animate-pulse" />
+                  <FiChevronRight className="text-white" />
                 ) : (
                   isSelectable && (
-                    <div className="w-5 h-5 rounded-md border-2 border-slate-100 group-hover:border-indigo-200 flex items-center justify-center transition-colors">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-md border-2 border-border transition-colors group-hover:border-accent/50">
                       <FiPlus
-                        className="text-slate-200 group-hover:text-indigo-400"
+                        className="text-text-secondary group-hover:text-accent"
                         size={12}
                       />
                     </div>
                   )
                 )}
-              </div>
+              </button>
             );
           })
         ) : searchTerm.length > 0 && searchTerm.length < 2 && !isSearching ? (
-          <div className="py-10 text-center space-y-2 text-slate-300">
+          <div className="space-y-2 py-10 text-center text-text-secondary">
             <p className="text-xs font-bold">Continue typing to search...</p>
           </div>
         ) : (
@@ -175,15 +179,15 @@ export default function UserSearchSection({
             <div className="py-10 text-center space-y-2">
               {currentPage !== undefined ? (
                 <>
-                  <p className="text-xs font-bold text-slate-300">
+                  <p className="text-xs font-bold text-text-secondary">
                     Browsing all active users
                   </p>
-                  <p className="text-[10px] text-slate-200 uppercase tracking-widest">
+                  <p className="text-[10px] uppercase tracking-widest text-text-secondary">
                     Select members from the list below
                   </p>
                 </>
               ) : (
-                <p className="text-xs font-bold text-slate-300">
+                <p className="text-xs font-bold text-text-secondary">
                   {showSuggestions
                     ? "Chưa có gợi ý phù hợp. Hãy tìm theo username hoặc email."
                     : "Type at least 2 characters to search"}
@@ -197,25 +201,29 @@ export default function UserSearchSection({
         {currentPage !== undefined &&
           totalPages !== undefined &&
           totalPages > 1 && (
-            <div className="flex items-center justify-between gap-4 py-3 border-t border-slate-50 sticky bottom-0 bg-surface-white pt-3">
+            <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-border bg-surface-white py-3 pt-3">
               <button
+                type="button"
+                aria-label="Previous users page"
                 onClick={() => onPageChange?.(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="p-1.5 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-40 active:scale-95 motion-reduce:active:scale-100"
               >
                 <FiChevronRight className="rotate-180" size={14} />
               </button>
               <div className="flex items-center gap-2">
-                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">
+                <span className="text-[9px] font-black uppercase tracking-widest text-text-secondary">
                   {currentPage} / {totalPages}
                 </span>
               </div>
               <button
+                type="button"
+                aria-label="Next users page"
                 onClick={() =>
                   onPageChange?.(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                className="p-1.5 bg-surface-white border border-slate-200 rounded-xl text-slate-400 hover:bg-slate-50 hover:text-accent transition-all disabled:opacity-30 disabled:pointer-events-none shadow-none active:scale-95"
+                className="flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-40 active:scale-95 motion-reduce:active:scale-100"
               >
                 <FiChevronRight size={14} />
               </button>

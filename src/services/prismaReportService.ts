@@ -66,6 +66,22 @@ class PrismaReportService {
     });
     return response.data;
   }
+
+  /** Download the live, structured handoff for the writing step. */
+  async downloadWritingExport(projectId: string): Promise<Blob> {
+    const response = await api.get(`/projects/${projectId}/prisma/writing-export.json`, {
+      responseType: "blob",
+    });
+    return response.data;
+  }
+
+  async classifySearchSource(
+    projectId: string,
+    sourceId: string,
+    group: "DATABASES_AND_REGISTERS" | "OTHER_METHODS" | null,
+  ): Promise<void> {
+    await api.patch(`/projects/${projectId}/prisma/sources/${sourceId}/classification`, { group });
+  }
 }
 
 const prismaReportService = PrismaReportService.getInstance();

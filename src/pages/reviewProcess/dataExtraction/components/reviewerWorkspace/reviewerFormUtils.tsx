@@ -165,7 +165,7 @@ export function renderInputControl(
           const raw = event.target.value;
           onChange(raw === "" ? null : Number(raw));
         }}
-        className="w-full rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none focus:border-accent disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+        className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-base text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:text-text-secondary motion-reduce:transition-none"
       />
     );
   }
@@ -175,9 +175,9 @@ export function renderInputControl(
       value === true ? "true" : value === false ? "false" : "";
 
     return (
-      <div className="rounded-xl border border-slate-300 bg-surface-white px-3 py-2 disabled:border-border disabled:bg-bg-secondary">
+      <div className="rounded-xl border border-border bg-surface-white px-3 py-2 disabled:bg-bg-secondary">
         <div className="flex flex-wrap items-center gap-5 text-sm text-text-primary">
-          <label className="inline-flex items-center gap-2">
+          <label className={`inline-flex min-h-11 items-center gap-2 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}>
             <input
               type="radio"
               name={controlId}
@@ -185,12 +185,12 @@ export function renderInputControl(
               disabled={disabled}
               checked={booleanValue === "true"}
               onChange={() => onChange(true)}
-              className="h-4 w-4 border-slate-300"
+              className="h-5 w-5 border-border text-primary focus:ring-primary/30"
             />
             Yes
           </label>
 
-          <label className="inline-flex items-center gap-2">
+          <label className={`inline-flex min-h-11 items-center gap-2 ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}>
             <input
               type="radio"
               name={controlId}
@@ -198,7 +198,7 @@ export function renderInputControl(
               disabled={disabled}
               checked={booleanValue === "false"}
               onChange={() => onChange(false)}
-              className="h-4 w-4 border-slate-300"
+              className="h-5 w-5 border-border text-primary focus:ring-primary/30"
             />
             No
           </label>
@@ -207,7 +207,7 @@ export function renderInputControl(
             type="button"
             disabled={disabled}
             onClick={() => onChange(null)}
-            className="text-xs font-medium text-text-secondary hover:text-text-primary"
+            className="min-h-11 px-2 text-xs font-medium text-text-secondary hover:text-text-primary"
           >
             Clear
           </button>
@@ -228,7 +228,7 @@ export function renderInputControl(
           const nextValue = event.target.value;
           onChange(nextValue === "" ? null : nextValue);
         }}
-        className="w-full rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none focus:border-accent disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+        className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-base text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:text-text-secondary motion-reduce:transition-none"
       >
         <option value="">Select...</option>
         {(field.options ?? []).map((option, optionIndex) => (
@@ -252,7 +252,7 @@ export function renderInputControl(
       : [];
 
     return (
-      <div className="space-y-2 rounded-xl border border-slate-300 bg-surface-white px-3 py-2">
+      <div className="space-y-2 rounded-xl border border-border bg-surface-white px-3 py-2">
         {(field.options ?? []).map((option, optionIndex) => {
           const key = option.optionId ?? `${controlId}-option-${optionIndex}`;
           const checkboxId = `${controlId}-checkbox-${optionIndex}`;
@@ -264,7 +264,7 @@ export function renderInputControl(
             <label
               key={key}
               htmlFor={checkboxId}
-              className="flex items-center gap-2 text-sm text-text-primary"
+              className={`flex min-h-11 items-center gap-2 text-sm text-text-primary ${disabled ? "cursor-not-allowed" : "cursor-pointer"}`}
             >
               <input
                 id={checkboxId}
@@ -283,7 +283,7 @@ export function renderInputControl(
                       );
                   onChange(updatedValues);
                 }}
-                className="h-4 w-4 rounded border-slate-300 text-accent focus:ring-accent"
+                className="h-5 w-5 rounded border-border text-primary focus:ring-primary/30"
                 aria-label={option.value}
               />
               <span>{option.value}</span>
@@ -304,7 +304,7 @@ export function renderInputControl(
       onChange={(event) => onChange(event.target.value)}
       placeholder={`Enter ${field.name.toLowerCase()}`}
       rows={3}
-      className="w-full rounded-xl border border-slate-300 bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary focus:border-accent disabled:cursor-not-allowed disabled:border-border disabled:bg-bg-secondary disabled:text-text-secondary"
+      className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-base text-text-primary outline-none placeholder:text-text-secondary transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:text-text-secondary motion-reduce:transition-none"
     />
   );
 }

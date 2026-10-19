@@ -676,7 +676,7 @@ export default function PaperPoolTab({
       />
 
       {workflowStep === 1 && (
-        <div className="max-w-6xl mx-auto w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="max-w-6xl mx-auto w-full space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
           <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
@@ -699,7 +699,7 @@ export default function PaperPoolTab({
       )}
 
       {workflowStep === 2 && (
-        <div className="  w-full space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div className="w-full space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
           <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
@@ -713,8 +713,8 @@ export default function PaperPoolTab({
           </div>
 
           {!hasSearchSources && (
-            <div className="p-6 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-4 text-amber-800">
-              <div className="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-4 rounded-xl border border-warning/20 bg-warning/10 p-6 text-warning" role="alert">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warning/10">
                 <FiAlertCircle className="w-6 h-6" />
               </div>
               <div>

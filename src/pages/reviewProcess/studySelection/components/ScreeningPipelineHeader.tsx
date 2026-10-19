@@ -26,9 +26,11 @@ function PhaseCard({
 
   return (
     <button
+      type="button"
+      aria-pressed={isActive}
       onClick={onClick}
       className={cn(
-        "flex flex-col gap-1 p-2.5 rounded-xl border transition-all duration-200 text-center min-w-[200px]",
+        "flex min-h-11 min-w-[200px] flex-col gap-1 rounded-xl border p-2.5 text-center transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none",
         isActive
           ? isBlue
             ? "border-accent/30 bg-primary-light/50 ring-1 ring-accent/30 shadow-none"
@@ -52,14 +54,14 @@ function PhaseCard({
         {isActive ? (
           <FiActivity
             className={cn(
-              "w-3.5 h-3.5 animate-pulse",
+              "w-3.5 h-3.5",
               isBlue ? "text-accent" : "text-accent",
             )}
           />
         ) : stats.completionPercentage === 100 ? (
-          <FiCheckCircle className="w-3.5 h-3.5 text-emerald-500" />
+          <FiCheckCircle className="w-3.5 h-3.5 text-success" />
         ) : (
-          <FiCircle className="w-3.5 h-3.5 text-gray-300" />
+          <FiCircle className="w-3.5 h-3.5 text-text-secondary/35" />
         )}
       </div>
     </button>

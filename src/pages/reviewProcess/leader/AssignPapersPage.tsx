@@ -21,12 +21,13 @@ const AssignPapersPage: React.FC = () => {
 
   // ---- Page entrance animation ----
   useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+
     gsap.from(".page-content", {
       opacity: 0,
-      y: 20,
-      duration: 0.8,
-      ease: "power3.out",
-      delay: 0.2,
+      y: 6,
+      duration: 0.18,
+      ease: "power2.out",
     });
   }, []);
 
@@ -48,7 +49,7 @@ const AssignPapersPage: React.FC = () => {
               Selection Mode
             </h2>
             {selectionMode === "quick" && (
-              <p className="text-xs text-text-secondary animate-in fade-in slide-in-from-left-2 duration-300">
+              <p className="text-xs text-text-secondary motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-2 motion-safe:duration-300 motion-reduce:animate-none">
                 * Note:{" "}
                 <span className="font-semibold text-accent">
                   Quick Decision
@@ -58,7 +59,7 @@ const AssignPapersPage: React.FC = () => {
               </p>
             )}
             {selectionMode === "assignment" && (
-              <p className="text-xs text-text-secondary animate-in fade-in slide-in-from-left-2 duration-300">
+              <p className="text-xs text-text-secondary motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-left-2 motion-safe:duration-300 motion-reduce:animate-none">
                 * Note: You can only{" "}
                 <span className="font-semibold text-accent">
                   Assign Reviewer
@@ -71,8 +72,10 @@ const AssignPapersPage: React.FC = () => {
           {/* Mode Switcher */}
           <div className="flex items-center gap-1 bg-surface-white p-1 rounded-xl border border-border shadow-none self-start">
             <button
+              type="button"
+              aria-pressed={selectionMode === "assignment"}
               onClick={() => handleModeChange("assignment")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              className={`inline-flex min-h-11 items-center rounded-xl px-5 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                 selectionMode === "assignment"
                   ? "bg-primary text-white shadow-none shadow-primary/10"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-primary"
@@ -81,8 +84,10 @@ const AssignPapersPage: React.FC = () => {
               Assign Reviewer
             </button>
             <button
+              type="button"
+              aria-pressed={selectionMode === "quick"}
               onClick={() => handleModeChange("quick")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${
+              className={`inline-flex min-h-11 items-center rounded-xl px-5 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                 selectionMode === "quick"
                   ? "bg-primary text-white shadow-none shadow-primary/10"
                   : "text-text-secondary hover:text-text-primary hover:bg-bg-primary"
@@ -97,8 +102,10 @@ const AssignPapersPage: React.FC = () => {
             <div className="bg-surface-white border-b border-border">
               <div className="flex px-4 sm:px-6">
                 <button
+                  type="button"
+                  aria-pressed={activeTab === "title-abstract"}
                   onClick={() => handleTabChange("title-abstract")}
-                  className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
+                  className={`inline-flex min-h-11 items-center border-b-2 px-5 py-3 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:px-8 ${
                     activeTab === "title-abstract"
                       ? "border-accent text-accent"
                       : "border-transparent text-text-secondary hover:text-text-secondary"
@@ -112,8 +119,10 @@ const AssignPapersPage: React.FC = () => {
                   </div>
                 </button>
                 <button
+                  type="button"
+                  aria-pressed={activeTab === "full-text"}
                   onClick={() => handleTabChange("full-text")}
-                  className={`px-8 py-5 text-sm font-bold border-b-2 transition-all ${
+                  className={`inline-flex min-h-11 items-center border-b-2 px-5 py-3 text-sm font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none sm:px-8 ${
                     activeTab === "full-text"
                       ? "border-accent text-accent"
                       : "border-transparent text-text-secondary hover:text-text-secondary"

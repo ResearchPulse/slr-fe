@@ -15,7 +15,7 @@ const ConflictResolutionHeader: React.FC<ConflictResolutionHeaderProps> = ({
       <div className="flex items-center gap-4">
         <button
           onClick={onBack}
-          className="p-2 hover:bg-bg-primary rounded-full transition-colors group"
+          className="inline-flex h-11 w-11 items-center justify-center rounded-full transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none group"
         >
           <ArrowLeft className="w-5 h-5 text-text-secondary group-hover:text-accent" />
         </button>
@@ -37,10 +37,10 @@ const ConflictResolutionHeader: React.FC<ConflictResolutionHeaderProps> = ({
           </span>
           <span className="text-xs font-black text-text-primary">2 of 10</span>
           <div className="flex gap-1 ml-2">
-            <button className="p-1 hover:bg-surface-white hover:shadow-none rounded-xl transition-all disabled:opacity-30">
+            <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-surface-white disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <button className="p-1 hover:bg-surface-white hover:shadow-none rounded-xl transition-all">
+            <button type="button" className="inline-flex h-9 w-9 items-center justify-center rounded-xl transition-colors hover:bg-surface-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none">
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>

@@ -52,7 +52,7 @@ export default function NotificationListItem({
     <button
       type="button"
       onClick={onClick}
-      className={`group flex w-full items-start gap-3 text-left transition-colors hover:bg-primary-light/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary ${
+      className={`group flex w-full items-start gap-3 text-left transition-colors hover:bg-primary-light/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none ${
         compact ? "px-4 py-3" : "px-5 py-4 sm:px-6"
       } ${notification.isRead ? "bg-surface-white" : "bg-primary-light/40"}`}
     >

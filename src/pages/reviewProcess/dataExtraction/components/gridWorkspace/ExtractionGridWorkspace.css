@@ -38,3 +38,15 @@
   white-space: normal;
   word-wrap: break-word;
 }
+
+@media (hover: none) {
+  .ag-theme-quartz .group.relative button[aria-label] {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ag-theme-quartz .group.relative button[aria-label] {
+    transition: none;
+  }
+}

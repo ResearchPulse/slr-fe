@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from "react";
+import { useReducedMotion } from "framer-motion";
 import {
   FiPlus,
   FiSearch,
@@ -29,6 +30,7 @@ import Select from "../../components/ui/Select";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MasterSourcePage: React.FC = () => {
+  const prefersReducedMotion = useReducedMotion();
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -146,7 +148,7 @@ const MasterSourcePage: React.FC = () => {
             placeholder="Search by name or URL..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="h-11 w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-[13px] text-text-secondary outline-none transition focus:border-accent focus:bg-white focus:ring-4 focus:ring-accent/[0.08]"
+            className="min-h-11 w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow,background-color] focus:border-primary focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           />
         </div>
         <div className="flex w-full items-center gap-2 sm:w-auto">
@@ -174,7 +176,7 @@ const MasterSourcePage: React.FC = () => {
           </div>
         ) : hasSourceLoadError && !sources ? (
           <div className="flex min-h-[250px] flex-col items-center justify-center px-5 py-12 text-center text-text-secondary">
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-error/10 text-error">
               <FiAlertCircle className="h-5 w-5" />
             </div>
             <p className="text-[15px] font-semibold text-text-secondary">Could not load search sources</p>
@@ -207,14 +209,50 @@ const MasterSourcePage: React.FC = () => {
                   setSearchQuery("");
                   setStatusFilter("all");
                 }}
-                className="mt-4 h-9 rounded-xl border border-border bg-white px-3.5 text-[11px] font-semibold text-text-secondary transition hover:bg-bg-primary"
+                className="mt-4 min-h-11 rounded-xl border border-border bg-white px-3.5 text-[11px] font-semibold text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
               >
                 Clear filters
               </button>
             )}
           </div>
         ) : (
-          <div className="overflow-x-auto no-scrollbar">
+          <>
+          <div className="divide-y divide-border lg:hidden">
+            {filteredSources.map((source) => (
+              <article key={source.id} className="space-y-3 p-4">
+                <div className="flex min-w-0 items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-light text-[13px] font-semibold text-accent">
+                      {source.sourceName.charAt(0).toUpperCase()}
+                    </div>
+                    <h2 className="truncate text-sm font-semibold text-text-primary">{source.sourceName}</h2>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${source.isActive ? "bg-success/10 text-success ring-success/20" : "bg-bg-primary text-text-secondary ring-border"}`}>
+                    {source.isActive ? "Active" : "Inactive"}
+                  </span>
+                </div>
+                <a href={source.baseUrl} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-start gap-1.5 break-all rounded-sm text-xs leading-5 text-text-secondary underline decoration-border underline-offset-4 transition-colors motion-reduce:transition-none hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                  <span className="min-w-0">{source.baseUrl}</span>
+                  <FiExternalLink className="mt-1 h-3 w-3 shrink-0" />
+                </a>
+                <div className="flex items-center justify-between border-t border-border pt-2">
+                  <span className="text-xs text-text-secondary"><strong className="font-semibold text-text-primary">{source.usageCount || 0}</strong> projects</span>
+                  <div className="flex items-center gap-1">
+                    <button type="button" onClick={() => toggleStatus(source.id)} title={source.isActive ? "Deactivate" : "Activate"} aria-label={source.isActive ? "Deactivate source" : "Activate source"} className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${source.isActive ? "text-success hover:bg-success/10" : "text-text-muted hover:bg-bg-primary"}`}>
+                      {source.isActive ? <FiToggleRight className="h-5 w-5" /> : <FiToggleLeft className="h-5 w-5" />}
+                    </button>
+                    <button type="button" onClick={() => handleOpenModal(source)} aria-label={`Edit ${source.sourceName}`} title="Edit" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-accent transition-colors motion-reduce:transition-none hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                      <FiEdit2 className="h-[17px] w-[17px]" />
+                    </button>
+                    <button type="button" onClick={() => setDeleteId(source.id)} aria-label={`Delete ${source.sourceName}`} title="Delete" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-error transition-colors motion-reduce:transition-none hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40">
+                      <FiTrash2 className="h-[17px] w-[17px]" />
+                    </button>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="hidden overflow-x-auto no-scrollbar lg:block">
             <table className="w-full min-w-[760px] table-fixed text-left">
               <colgroup>
                 <col className="w-[24%]" />
@@ -247,10 +285,11 @@ const MasterSourcePage: React.FC = () => {
                   {filteredSources.map((source) => (
                     <motion.tr
                       key={source.id}
-                      initial={{ opacity: 0 }}
+                      initial={prefersReducedMotion ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      className="transition-colors hover:bg-bg-primary"
+                      exit={prefersReducedMotion ? undefined : { opacity: 0 }}
+                      transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.16 }}
+                      className="transition-colors motion-reduce:transition-none hover:bg-bg-primary"
                     >
                       <td className="px-5 py-4">
                         <div className="flex min-w-0 items-center gap-3">
@@ -267,7 +306,7 @@ const MasterSourcePage: React.FC = () => {
                           href={source.baseUrl}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="group flex min-w-0 items-center gap-1.5 text-[12px] text-text-secondary transition-colors hover:text-accent"
+                          className="group flex min-w-0 items-center gap-1.5 rounded-sm text-[12px] text-text-secondary transition-colors motion-reduce:transition-none hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
                           <span className="truncate underline decoration-border underline-offset-4">
                             {source.baseUrl}
@@ -280,8 +319,8 @@ const MasterSourcePage: React.FC = () => {
                           <span
                             className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${
                               source.isActive
-                                ? "bg-emerald-50 text-emerald-700 ring-emerald-200"
-                                : "bg-slate-50 text-slate-600 ring-slate-200"
+                                ? "bg-success/10 text-success ring-success/20"
+                                : "bg-bg-primary text-text-secondary ring-border"
                             }`}
                           >
                             {source.isActive ? "Active" : "Inactive"}
@@ -305,9 +344,9 @@ const MasterSourcePage: React.FC = () => {
                             onClick={() => toggleStatus(source.id)}
                             title={source.isActive ? "Deactivate" : "Activate"}
                             aria-label={source.isActive ? "Deactivate source" : "Activate source"}
-                            className={`flex h-9 w-9 items-center justify-center rounded-xl transition-colors ${
+                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                               source.isActive
-                                ? "text-emerald-600 hover:bg-emerald-50"
+                                ? "text-success hover:bg-success/10"
                                 : "text-text-muted hover:bg-bg-primary"
                             }`}
                           >
@@ -321,7 +360,7 @@ const MasterSourcePage: React.FC = () => {
                             type="button"
                             onClick={() => handleOpenModal(source)}
                             aria-label={`Edit ${source.sourceName}`}
-                            className="flex h-9 w-9 items-center justify-center rounded-xl text-accent transition-colors hover:bg-primary-light"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-accent transition-colors motion-reduce:transition-none hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             title="Edit"
                           >
                             <FiEdit2 className="h-[17px] w-[17px]" />
@@ -330,7 +369,7 @@ const MasterSourcePage: React.FC = () => {
                             type="button"
                             onClick={() => setDeleteId(source.id)}
                             aria-label={`Delete ${source.sourceName}`}
-                            className="flex h-9 w-9 items-center justify-center rounded-xl text-rose-500 transition-colors hover:bg-rose-50"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-error transition-colors motion-reduce:transition-none hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             title="Delete"
                           >
                             <FiTrash2 className="h-[17px] w-[17px]" />
@@ -343,6 +382,7 @@ const MasterSourcePage: React.FC = () => {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </div>
 
@@ -408,10 +448,11 @@ const MasterSourcePage: React.FC = () => {
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
+                aria-label="Set source active initially"
                 {...register("isActive")}
                 className="sr-only peer"
               />
-              <div className="relative h-6 w-11 rounded-full bg-slate-200 transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-accent/10"></div>
+              <div className="relative h-6 w-11 rounded-full bg-border transition-colors after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-border after:bg-white after:transition-transform after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus-visible:outline-none peer-focus-visible:ring-2 peer-focus-visible:ring-primary/30 motion-reduce:transition-none"></div>
             </label>
           </div>
 

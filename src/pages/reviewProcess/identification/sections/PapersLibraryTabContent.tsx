@@ -83,8 +83,8 @@ export default function PapersLibraryTabContent({
   return (
     <div>
       {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0 sm:flex-1">
           <IdentificationFilterBar
             protocolId={protocolId}
             searchInput={librarySearchInput}
@@ -100,7 +100,7 @@ export default function PapersLibraryTabContent({
             tone="blue"
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:justify-end">
           <span className="text-sm text-text-secondary">
             {readyPapersTotalCount.toLocaleString()} ready paper
             {readyPapersTotalCount !== 1 ? "s" : ""}
@@ -112,7 +112,7 @@ export default function PapersLibraryTabContent({
             disabled={readyPapersLoading}
           >
             <FiRefreshCw
-              className={`w-4 h-4 ${readyPapersLoading ? "animate-spin" : ""}`}
+              className={`w-4 h-4 ${readyPapersLoading ? "motion-safe:animate-spin motion-reduce:animate-none" : ""}`}
             />
             Refresh
           </Button>
@@ -132,8 +132,8 @@ export default function PapersLibraryTabContent({
       ) : readyPapersError ? (
         /* Error State */
         <div className="flex flex-col items-center justify-center py-16">
-          <FiAlertCircle className="w-12 h-12 text-red-400 mb-3" />
-          <p className="text-red-600 text-sm mb-4">{readyPapersError}</p>
+          <FiAlertCircle className="mb-3 h-12 w-12 text-error" />
+          <p className="mb-4 text-sm text-error" role="alert">{readyPapersError}</p>
           <Button variant="secondary" onClick={onRefetch}>
             <FiRefreshCw className="w-4 h-4 mr-2" />
             Retry
@@ -238,7 +238,7 @@ export default function PapersLibraryTabContent({
                       {/* Manual Deduplication Action */}
                       <button
                         onClick={() => onMarkAsDuplicate(paper)}
-                        className="p-2 text-amber-600 hover:text-amber-700 hover:bg-amber-50 rounded transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex min-h-11 min-w-11 items-center justify-center rounded-lg p-2 text-warning transition-colors hover:bg-warning/10 hover:text-warning focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-warning/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
                         title="Mark as duplicate"
                         disabled={!canEdit}
                       >
@@ -287,7 +287,7 @@ export default function PapersLibraryTabContent({
         </div>
       ) : (
         <EmptyState
-          icon={<FiFileText className="w-16 h-16 text-gray-300" />}
+          icon={<FiFileText className="h-16 w-16 text-text-secondary" />}
           title="No Ready Papers Found"
           description={
             hasFilters

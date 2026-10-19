@@ -73,7 +73,7 @@ export default function WorkflowTimeline({
           <button
             type="button"
             onClick={onAddPapers}
-            className="ml-auto inline-flex min-h-8 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-primary transition-colors hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+            className="ml-auto inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-primary transition-colors motion-reduce:transition-none hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           >
             <FiPlus aria-hidden="true" className="h-3.5 w-3.5" />
             Add papers
@@ -94,7 +94,7 @@ export default function WorkflowTimeline({
           const isLocked = phase.status === "Locked";
 
           return (
-            <li key={phase.key} className={`relative flex min-h-[250px] min-w-0 flex-col rounded-xl border p-4 transition-colors ${isLocked ? "border-border bg-bg-primary/60" : phase.status === "Completed" ? "border-success/25 bg-success/[0.025]" : "border-primary/25 bg-surface-white"}`}>
+            <li key={phase.key} className={`relative flex min-h-[250px] min-w-0 flex-col rounded-xl border p-4 transition-colors motion-reduce:transition-none ${isLocked ? "border-border bg-bg-primary/60" : phase.status === "Completed" ? "border-success/25 bg-success/[0.025]" : "border-primary/25 bg-surface-white"}`}>
               {index < activePhases.length - 1 ? (
                 <span aria-hidden="true" className="absolute -right-8 top-1/2 z-10 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-sm xl:flex">
                   <FiArrowRight className="h-3.5 w-3.5" />
@@ -150,7 +150,7 @@ function InlineStats({ stats }: { stats: WorkflowPhase["stats"] }) {
     <dl className="mt-3 grid grid-cols-2 gap-2">
       {stats.map((stat, index) => (
         <div key={`${stat.label}-${index}`} className="min-w-0 rounded-lg bg-bg-secondary/70 px-2.5 py-2">
-          <dt className="truncate text-[11px] leading-4 text-text-secondary">{stat.label}</dt>
+          <dt className="text-[11px] leading-4 text-text-secondary">{stat.label}</dt>
           <dd className={`mt-0.5 text-base font-semibold leading-5 tabular-nums ${stat.variant === "success" ? "text-success" : stat.variant === "warning" ? "text-warning" : stat.variant === "danger" ? "text-error" : "text-text-primary"}`}>
             {stat.value}
           </dd>

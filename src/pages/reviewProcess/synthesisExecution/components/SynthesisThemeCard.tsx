@@ -31,7 +31,7 @@ export default function SynthesisThemeCard({
   return (
     <article
       ref={setNodeRef}
-      className={`relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-5 shadow-sm shadow-slate-200/30 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:shadow-slate-200/50 ${
+      className={`relative overflow-hidden rounded-xl border border-border/80 bg-surface-white p-5 transition-[border-color,box-shadow,background-color,transform] duration-200 motion-reduce:transition-none hover:-translate-y-0.5 motion-reduce:hover:transform-none hover:shadow-md hover:shadow-slate-200/50 ${
         isOver
           ? "scale-[1.01] ring-2 ring-accent/70 bg-primary-light/30 shadow-md shadow-primary/10"
           : ""
@@ -77,7 +77,7 @@ export default function SynthesisThemeCard({
                   type="button"
                   onClick={() => onEditTheme(theme)}
                   disabled={disabled}
-                  className="inline-flex items-center justify-center rounded-full border border-primary/20 bg-primary-light p-1.5 text-accent transition hover:bg-primary/10 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-primary/20 bg-primary-light p-1.5 text-accent transition hover:bg-primary/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Edit theme"
                   title="Edit theme"
                 >
@@ -89,7 +89,7 @@ export default function SynthesisThemeCard({
                   type="button"
                   onClick={() => onDeleteTheme(theme)}
                   disabled={disabled}
-                  className="inline-flex items-center justify-center rounded-full border border-border bg-surface-white p-1.5 text-red-600 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-error/20 bg-surface-white p-1.5 text-error transition-colors hover:bg-error/10 motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   aria-label="Delete theme"
                   title="Delete theme"
                 >
@@ -135,7 +135,7 @@ export default function SynthesisThemeCard({
                     type="button"
                     onClick={() => onUnlinkEvidence(evidence)}
                     disabled={disabled || unlinkingEvidenceId === evidence.id}
-                    className="text-[11px] font-semibold uppercase tracking-[0.14em] text-red-600 transition hover:text-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center rounded-lg px-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-error transition-colors hover:bg-error/5 hover:text-error motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {unlinkingEvidenceId === evidence.id
                       ? "Unlinking..."

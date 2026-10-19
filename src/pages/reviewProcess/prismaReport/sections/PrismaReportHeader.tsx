@@ -19,7 +19,7 @@ export default function PrismaReportHeader({
           <div className="flex items-center gap-4 min-w-0">
             <button
               onClick={onBack}
-              className="p-2.5 -ml-2 text-text-secondary hover:text-text-primary hover:bg-bg-secondary rounded-xl transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 print:hidden"
+              className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl p-2.5 text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 print:hidden"
               aria-label="Go back"
             >
               <FiArrowLeft className="w-5 h-5" />

@@ -98,22 +98,22 @@ const ProcessExclusionCodeTab: React.FC = () => {
   const filteredData = exclusionReasons;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-4 p-3 sm:space-y-6 sm:p-6">
       {/* 🛠️ Action Bar 🛠️ */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-white p-6 rounded-xl border border-border shadow-none">
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 flex-1">
-          <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-surface-white p-3 shadow-none sm:p-5 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-w-0 flex-1 flex-col items-stretch gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="relative w-full sm:max-w-md sm:flex-1">
             <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-secondary" />
             <input
               type="text"
               placeholder="Filter by code or name..."
-              className="w-full pl-10 pr-4 py-2.5 bg-bg-secondary border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-accent/20 transition-all"
+              className="min-h-11 w-full rounded-xl border-none bg-bg-secondary py-2.5 pl-10 pr-4 text-sm font-medium text-text-primary outline-none transition-[background-color,box-shadow] focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
 
-          <div className="w-[180px]">
+          <div className="w-full sm:w-[180px]">
             <Select
               value={source.toString()}
               onChange={(e) => setSource(Number(e.target.value))}
@@ -129,18 +129,18 @@ const ProcessExclusionCodeTab: React.FC = () => {
           <button
             onClick={() => setOnlyActive(!onlyActive)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all border",
+              "flex min-h-11 items-center justify-center gap-2 rounded-xl border px-4 py-2.5 text-[10px] font-black uppercase transition-colors sm:justify-start",
               onlyActive
-                ? "bg-emerald-50 text-emerald-600 border-emerald-200 shadow-none"
+                ? "border-success/20 bg-success/10 text-success shadow-none"
                 : "bg-surface-white text-text-secondary border-border hover:text-text-secondary hover:bg-bg-secondary",
             )}
           >
             <div
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-300",
+                "h-2 w-2 rounded-full transition-colors duration-150 motion-reduce:transition-none",
                 onlyActive
-                  ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                  : "bg-slate-300",
+                  ? "bg-success"
+                  : "bg-border",
               )}
             />
             {onlyActive ? "Active" : "All Status"}
@@ -148,7 +148,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+          <Button onClick={() => setIsModalOpen(true)} className="w-full justify-center gap-2 md:w-auto">
             <FiPlus size={18} />
             New Code
           </Button>
@@ -156,8 +156,63 @@ const ProcessExclusionCodeTab: React.FC = () => {
       </div>
 
       {/* 📊 Table 📊 */}
-      <div className="bg-surface-white rounded-xl border border-border shadow-[0_20px_50px_rgba(0,0,0,0.02)] overflow-hidden min-h-[400px] flex flex-col">
-        <div className="flex-1">
+      <div className="flex min-h-[300px] flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-none sm:min-h-[400px]">
+        <div className="space-y-3 p-3 md:hidden">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center gap-3 py-10 text-sm text-text-secondary">
+              <LoadingSpinner size="md" />
+              Loading reasons...
+            </div>
+          ) : filteredData.length > 0 ? (
+            filteredData.map((item) => (
+              <article key={item.id} className="min-w-0 rounded-xl border border-border p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <span className="inline-flex rounded-lg border border-primary/20 bg-bg-secondary px-2.5 py-1 text-xs font-bold text-accent">
+                      {item.code}
+                    </span>
+                    <h3 className="mt-2 break-words text-sm font-semibold text-text-primary">{item.name}</h3>
+                  </div>
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-semibold uppercase",
+                      item.source === 0
+                        ? "border-primary/20 bg-primary-light text-accent"
+                        : "border-border bg-bg-secondary text-text-secondary",
+                    )}
+                  >
+                    {item.source === 0 ? "Library" : "Custom"}
+                  </span>
+                </div>
+                <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-3">
+                  <div className="flex items-center gap-2 text-xs text-text-secondary">
+                    <span>Status</span>
+                    <Switch
+                      checked={item.isActive}
+                      onChange={() => handleToggleActive(item.id)}
+                      disabled={toggleActiveMutation.isPending}
+                    />
+                    <span>{item.isActive ? "Active" : "Inactive"}</span>
+                  </div>
+                  <ActionButton
+                    icon={FiTrash2}
+                    label="Delete"
+                    variant="destructive"
+                    onClick={() => handleDeleteClick(item.id)}
+                  />
+                </div>
+              </article>
+            ))
+          ) : (
+            <div className="py-10 text-center">
+              <FiInfo aria-hidden="true" className="mx-auto mb-3 text-text-secondary/50" size={32} />
+              <h4 className="font-semibold text-text-primary">No results found</h4>
+              <p className="mt-1 text-sm text-text-secondary">We couldn&apos;t find any exclusion codes matching your criteria.</p>
+            </div>
+          )}
+        </div>
+
+        <div className="hidden flex-1 md:block">
           <Table>
             <TableHeader className="bg-bg-secondary/50">
               <TableRow>
@@ -212,7 +267,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                           "inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border whitespace-nowrap",
                           item.source === 0 // 0: Library
                             ? "bg-primary-light text-accent border-primary/20"
-                            : "bg-purple-50 text-purple-600 border-purple-100",
+                            : "bg-bg-secondary text-text-secondary border-border",
                         )}
                       >
                         {item.source === 0 ? "Library" : "Custom"}
@@ -243,7 +298,7 @@ const ProcessExclusionCodeTab: React.FC = () => {
                 <TableRow>
                   <TableCell colSpan={5} className="py-20 text-center">
                     <div className="space-y-3">
-                      <div className="w-16 h-16 bg-bg-secondary rounded-xl flex items-center justify-center text-slate-300 mx-auto">
+                      <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary">
                         <FiInfo size={32} />
                       </div>
                       <div className="space-y-1">
@@ -264,8 +319,8 @@ const ProcessExclusionCodeTab: React.FC = () => {
         </div>
 
         {/* 🔢 Pagination (UI Only) 🔢 */}
-        <div className="px-8 py-6 bg-bg-secondary/50 border-t border-border flex items-center justify-between">
-          <div className="text-xs font-black text-text-secondary uppercase tracking-widest">
+        <div className="flex flex-col gap-3 border-t border-border bg-bg-secondary/50 px-3 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6 sm:py-5">
+          <div className="text-xs font-semibold text-text-secondary sm:font-black sm:uppercase sm:tracking-widest">
             Showing {filteredData.length} of {exclusionReasons.length} reasons
           </div>
           <Pagination

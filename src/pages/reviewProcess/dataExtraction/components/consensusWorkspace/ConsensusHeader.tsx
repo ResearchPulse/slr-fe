@@ -20,39 +20,37 @@ export default function ConsensusHeader({
     <header className="shrink-0 border-b border-border bg-surface-white">
       <div className="flex flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-6">
         {/* Left: Back button + Divider + Paper Title */}
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="grid min-w-0 flex-1 grid-cols-[auto_minmax(0,1fr)] items-center gap-x-2 gap-y-2 sm:flex sm:items-center sm:gap-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={onBack}
-            className="shrink-0 !px-2.5 text-text-secondary hover:text-text-primary"
+            className="min-h-11 shrink-0 !px-2.5 text-text-secondary hover:text-text-primary"
           >
             <ArrowLeft className="mr-1.5 h-4 w-4" />
             Back to Dashboard
           </Button>
 
-          <div className="hidden h-5 w-px bg-border sm:block shrink-0" />
+          <div className="hidden h-5 w-px shrink-0 bg-border sm:block" />
 
-          <div className="min-w-0 flex-1">
-            <h2
-              className="truncate text-sm sm:text-base font-semibold text-text-primary tracking-tight"
-              title={paperTitle}
-            >
-              {paperTitle}
-            </h2>
-          </div>
+          <h2
+            className="col-span-2 break-words text-sm font-semibold tracking-tight text-text-primary sm:col-span-1 sm:min-w-0 sm:flex-1 sm:truncate sm:text-base"
+            title={paperTitle}
+          >
+            {paperTitle}
+          </h2>
         </div>
 
         {/* Right: Badge & View Document */}
-        <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto">
+        <div className="flex shrink-0 items-center gap-3 self-end sm:self-auto">
           {isPartialPreview ? (
-            <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-amber-300/60 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">
-              <Eye className="h-3.5 w-3.5 text-amber-600" />
+            <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-warning/20 bg-warning/10 px-3 py-1 text-xs font-semibold text-warning">
+              <Eye className="h-3.5 w-3.5 text-warning" />
               Read-Only Preview
             </span>
           ) : isReadOnly ? (
-            <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-emerald-300/60 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-800">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+            <span className="shrink-0 inline-flex items-center gap-1.5 rounded-full border border-success/20 bg-success/10 px-3 py-1 text-xs font-semibold text-success">
+              <CheckCircle2 className="h-3.5 w-3.5 text-success" />
               Finalized
             </span>
           ) : (
@@ -64,7 +62,7 @@ export default function ConsensusHeader({
             variant="outline"
             size="sm"
             onClick={onOpenDocument}
-            className="flex items-center gap-1.5 shadow-none"
+            className="flex min-h-11 items-center gap-1.5 shadow-none"
           >
             <FileText className="h-3.5 w-3.5 text-accent" />
             <span>View Document</span>

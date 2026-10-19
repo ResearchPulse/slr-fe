@@ -53,12 +53,12 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
       onClose={onClose}
       title={
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 border border-rose-100 shadow-sm">
-            <FiTrash2 className="w-5 h-5 text-rose-600" />
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-error/20 bg-error/5 text-error">
+            <FiTrash2 className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-900">Delete Paper</h3>
-            <p className="text-xs text-slate-500 font-normal mt-0.5">
+            <h3 className="text-base font-bold text-text-primary">Delete Paper</h3>
+            <p className="mt-0.5 text-xs font-normal text-text-secondary">
               Permanently remove this paper from the repository
             </p>
           </div>
@@ -68,34 +68,34 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
     >
       <div className="space-y-5">
         {/* Paper Summary Card */}
-        <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2.5">
+        <div className="space-y-2.5 rounded-xl border border-border bg-bg-primary p-4">
           <div className="flex items-start gap-2.5">
-            <FiFileText className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+            <FiFileText className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" />
             <div className="flex-1 min-w-0">
-              <h4 className="text-sm font-semibold text-slate-800 line-clamp-2 leading-snug">
+              <h4 className="line-clamp-2 text-sm font-semibold leading-snug text-text-primary">
                 {paper.title}
               </h4>
               {paper.authors && (
-                <p className="text-xs text-slate-500 truncate mt-1">
+                <p className="mt-1 truncate text-xs text-text-secondary">
                   {paper.authors}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-slate-200/60">
+          <div className="flex flex-wrap items-center gap-2 border-t border-border pt-2">
             {paper.year && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
+              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-[11px] font-semibold text-text-secondary">
                 Year: {paper.year}
               </span>
             )}
             {paper.doi && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-mono text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md truncate max-w-[200px]">
+              <span className="inline-flex max-w-[200px] items-center gap-1 truncate rounded-md border border-border bg-surface-white px-2 py-1 font-mono text-[11px] text-text-secondary">
                 DOI: {paper.doi}
               </span>
             )}
             {paper.source && (
-              <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-600 bg-white border border-slate-200 px-2 py-0.5 rounded-md">
+              <span className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-white px-2 py-1 text-[11px] font-semibold text-text-secondary">
                 Source: {paper.source}
               </span>
             )}
@@ -104,15 +104,16 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
 
         {/* Reason for Deletion */}
         <div className="space-y-2">
-          <label className="flex items-center gap-1.5 text-xs font-semibold text-slate-700">
-            <FiTag className="w-3.5 h-3.5 text-slate-400" />
+          <label htmlFor="delete-paper-reason" className="flex items-center gap-1.5 text-xs font-semibold text-text-primary">
+            <FiTag className="h-3.5 w-3.5 text-text-muted" />
             Reason for Deletion
           </label>
           <select
+            id="delete-paper-reason"
             value={selectedReason}
             onChange={(e) => setSelectedReason(e.target.value)}
             disabled={isLoading}
-            className="w-full text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-colors"
+            className="min-h-11 w-full rounded-lg border border-border bg-surface-white px-3 py-2.5 text-xs font-medium text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
           >
             {COMMON_REASONS.map((r) => (
               <option key={r} value={r}>
@@ -123,20 +124,22 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
 
           {selectedReason === "Other reason" && (
             <input
+              id="delete-paper-custom-reason"
               type="text"
+              aria-label="Custom deletion reason"
               placeholder="Enter custom reason..."
               value={customReason}
               onChange={(e) => setCustomReason(e.target.value)}
               disabled={isLoading}
-              className="w-full text-xs font-medium text-slate-700 bg-white border border-slate-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 mt-2 transition-colors"
+              className="mt-2 min-h-11 w-full rounded-lg border border-border bg-surface-white px-3 py-2 text-xs font-medium text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
               autoFocus
             />
           )}
         </div>
 
         {/* Permanent Warning */}
-        <div className="flex items-start gap-2.5 rounded-lg border border-rose-200 bg-rose-50/70 p-3 text-rose-800 text-xs leading-relaxed">
-          <FiAlertTriangle className="w-4 h-4 shrink-0 text-rose-600 mt-0.5" />
+        <div className="flex items-start gap-2.5 rounded-lg border border-error/20 bg-error/5 p-3 text-xs leading-relaxed text-error">
+          <FiAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
           <div>
             <span className="font-bold">Permanent Action:</span> The paper record and its linked PDF and Markdown assets on Cloudinary will be deleted.
           </div>
@@ -148,7 +151,7 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
             type="button"
             onClick={onClose}
             disabled={isLoading}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg border border-slate-200 transition-colors disabled:opacity-50"
+            className="inline-flex min-h-11 items-center rounded-lg border border-border px-4 py-2 text-xs font-semibold text-text-secondary transition-colors hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 motion-reduce:transition-none"
           >
             Cancel
           </button>
@@ -156,7 +159,7 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
             variant="danger"
             onClick={handleConfirm}
             isLoading={isLoading}
-            className="px-5 py-2 text-xs font-bold text-white rounded-lg shadow-sm"
+            className="min-h-11 rounded-lg px-5 py-2 text-xs font-bold text-white shadow-sm"
           >
             Delete Paper
           </Button>

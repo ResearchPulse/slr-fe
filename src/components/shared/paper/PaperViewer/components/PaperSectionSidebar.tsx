@@ -23,7 +23,7 @@ export function PaperSectionSidebar({
   return (
     <div
       style={{ width: `${width}px` }}
-      className="bg-bg-secondary border-r border-border flex flex-col h-full animate-in slide-in-from-left duration-300 shrink-0 overflow-hidden"
+      className="flex h-full shrink-0 flex-col overflow-hidden border-r border-border bg-bg-secondary motion-safe:animate-in motion-safe:slide-in-from-left-1 motion-safe:duration-150 motion-reduce:animate-none"
     >
       <div className="p-4 border-b border-border bg-surface-white/50">
         <h3 className="text-[10px] font-black text-text-secondary uppercase tracking-[0.2em]">
@@ -41,7 +41,7 @@ export function PaperSectionSidebar({
                 key={`${section.sectionTitle}-${section.order}`}
                 onClick={() => onSectionClick(section.sectionTitle)}
                 className={cn(
-                  "w-full text-left px-3 py-2 rounded-xl transition-all duration-200 group",
+                  "min-h-11 w-full rounded-xl px-3 py-2 text-left transition-colors duration-150 group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none",
                   "text-xs font-bold uppercase tracking-tight",
                   isActive
                     ? "bg-primary-light text-accent shadow-none"

@@ -136,6 +136,7 @@ export default function EvidenceMatrixView({
                       >
                         {hasEvidence ? (
                           <span
+                            role="img"
                             className="inline-flex h-8 w-8 items-center justify-center rounded-full"
                             style={{
                               color: themeColor,
@@ -148,12 +149,13 @@ export default function EvidenceMatrixView({
                           </span>
                         ) : (
                           <span
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-slate-300"
+                            role="img"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full text-text-muted"
                             title={`${theme.name} has no evidence from ${paperTitle}`}
                             aria-label={`${theme.name} has no evidence from ${paperTitle}`}
                           >
                             <span
-                              className="h-2.5 w-2.5 rounded-full bg-slate-200"
+                              className="h-2.5 w-2.5 rounded-full bg-border"
                               aria-hidden="true"
                             />
                           </span>

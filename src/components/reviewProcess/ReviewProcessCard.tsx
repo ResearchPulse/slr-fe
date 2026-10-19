@@ -41,13 +41,13 @@ const getStatusConfig = (statusText: string) => {
       };
     case "Completed":
       return {
-        color: "text-green-600 bg-green-100",
+        color: "text-success bg-success/10",
         icon: FiCheckCircle,
         label: "Completed",
       };
     case "Cancelled":
       return {
-        color: "text-red-600 bg-red-100",
+        color: "text-error bg-error/10",
         icon: FiXCircle,
         label: "Cancelled",
       };
@@ -162,7 +162,7 @@ export default function ReviewProcessCard({
               </div>
               <div className="w-full bg-bg-secondary rounded-full h-1.5 overflow-hidden">
                 <div
-                  className="bg-primary h-1.5 rounded-full transition-all duration-500"
+                  className="h-1.5 rounded-full bg-primary transition-[width] duration-200 motion-reduce:transition-none"
                   style={{ width: `${process.progressPercent}%` }}
                 />
               </div>
@@ -179,18 +179,18 @@ export default function ReviewProcessCard({
               </span>
             </div>
             <div className="flex-1 text-center border-r border-border">
-              <span className="block text-[10px] uppercase tracking-wider text-green-600 font-bold mb-0.5">
+              <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-success">
                 Included
               </span>
-              <span className="text-sm font-bold text-green-600">
+              <span className="text-sm font-bold text-success">
                 {process.totalIncludedPapers ?? 0}
               </span>
             </div>
             <div className="flex-1 text-center">
-              <span className="block text-[10px] uppercase tracking-wider text-red-600 font-bold mb-0.5">
+              <span className="mb-0.5 block text-[10px] font-bold uppercase tracking-wider text-error">
                 Excluded
               </span>
-              <span className="text-sm font-bold text-red-600">
+              <span className="text-sm font-bold text-error">
                 {process.totalExcludedPapers ?? 0}
               </span>
             </div>
@@ -272,7 +272,7 @@ export default function ReviewProcessCard({
             variant="secondary"
             onClick={() => onDelete(id)}
             disabled={isLoading}
-            className="flex items-center gap-1.5 ml-auto text-red-600 hover:bg-surface-white"
+            className="ml-auto flex min-h-11 items-center gap-1.5 text-error hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30"
           >
             <FiTrash2 className="w-4 h-4" />
             Delete

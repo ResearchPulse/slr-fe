@@ -235,10 +235,10 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
           <span>Send this exact title and abstract to OpenAlex (an external service) to suggest topics and keywords. Consent is needed for each request and resets when you edit the text.</span>
         </label>
         <div className="flex flex-wrap gap-2">
-          <button type="button" disabled={!canClassify} onClick={() => void classify()} className="inline-flex min-h-10 items-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-45">
+          <button type="button" disabled={!canClassify} onClick={() => void classify()} className="inline-flex min-h-11 items-center rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-45">
             {classifying ? "Asking OpenAlex…" : "Get field suggestions"}
           </button>
-          <button type="button" onClick={toggleBrowse} aria-label="Browse fields manually" aria-expanded={browsing} className="inline-flex min-h-10 items-center rounded-lg border border-border bg-surface-white px-4 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Search OpenAlex fields</button>
+          <button type="button" onClick={toggleBrowse} aria-label="Browse fields manually" aria-expanded={browsing} className="inline-flex min-h-11 items-center rounded-lg border border-border bg-surface-white px-4 text-xs font-semibold text-text-primary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">Search OpenAlex fields</button>
         </div>
         {error ? <p role="alert" className="rounded-lg border border-error/20 bg-error/5 p-3 text-sm leading-5 text-error">{error} You can browse the OpenAlex fields manually instead.</p> : null}
       </div>
@@ -281,7 +281,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
                         if (kept) next.delete(keyword.id); else next.add(keyword.id);
                         return next;
                       })}
-                      className={`inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors ${kept ? "border-primary/20 bg-primary-light text-primary" : "border-border bg-surface-white text-text-muted line-through"}`}
+                      className={`inline-flex min-h-11 items-center gap-1.5 rounded-full border px-3 py-1 text-xs transition-colors ${kept ? "border-primary/20 bg-primary-light text-primary" : "border-border bg-surface-white text-text-muted line-through"}`}
                     >
                       {kept ? <FiCheck aria-hidden /> : <FiX aria-hidden />} {keyword.label}
                     </button>
@@ -291,7 +291,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
             </div>
           ) : null}
           {topics.length > 0 ? (
-              <button type="button" disabled={!chosenTopicId} onClick={confirmSuggestion} className="min-h-10 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-45">
+              <button type="button" disabled={!chosenTopicId} onClick={confirmSuggestion} className="min-h-11 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-45">
               Confirm selected topic
             </button>
           ) : null}
@@ -312,22 +312,22 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
                 onChange={(event) => setBrowseSearch(event.target.value)}
                 placeholder={`Search OpenAlex ${browseLevel}s`}
                 aria-label={`Search OpenAlex ${browseLevel}s`}
-                className="min-h-11 w-full rounded-lg border border-border bg-surface-white py-2 pl-10 pr-10 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
+                className="min-h-11 w-full rounded-lg border border-border bg-surface-white py-2 pl-10 pr-14 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/15"
               />
               {browseSearch ? (
-                <button type="button" onClick={() => setBrowseSearch("")} aria-label="Clear OpenAlex search" className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-text-muted hover:bg-bg-secondary hover:text-text-primary">
+                <button type="button" onClick={() => setBrowseSearch("")} aria-label="Clear OpenAlex search" className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-md text-text-muted hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">
                   <FiX aria-hidden />
                 </button>
               ) : null}
             </div>
           </div>
           <nav aria-label="Taxonomy path" className="flex flex-wrap items-center gap-1 text-xs text-text-secondary">
-            <button type="button" onClick={startBrowse} className="rounded-md px-1 py-1 font-medium text-primary underline underline-offset-4">All domains</button>
+            <button type="button" onClick={startBrowse} className="inline-flex min-h-11 items-center rounded-md px-2 font-medium text-primary underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">All domains</button>
             {browsePath.map((item) => <span key={item.id} className="inline-flex items-center gap-1">{"\u203a"} {item.label}</span>)}
           </nav>
           {browseError ? <p role="alert" className="rounded-lg border border-error/20 bg-error/5 p-3 text-sm text-error">{browseError}</p> : null}
           {browseLoading ? (
-            <p role="status" className="flex items-center gap-2 py-2 text-sm text-text-secondary"><FiLoader aria-hidden className="animate-spin" /> Searching OpenAlex…</p>
+            <p role="status" aria-live="polite" aria-busy="true" className="flex items-center gap-2 py-2 text-sm text-text-secondary"><FiLoader aria-hidden className="motion-safe:animate-spin motion-reduce:animate-none" /> Searching OpenAlex…</p>
           ) : browseItems.length ? (
             <ul aria-label={`OpenAlex ${browseLevel} results`} className="grid max-h-72 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
               {browseItems.map((item) => (
@@ -343,7 +343,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
             <p className="rounded-lg border border-border bg-surface-white p-3 text-sm text-text-secondary">No matching OpenAlex {browseLevel}s. Try another search.</p>
           )}
           {browsedTopic ? (
-            <button type="button" onClick={confirmBrowse} className="min-h-10 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover">
+            <button type="button" onClick={confirmBrowse} className="min-h-11 rounded-lg bg-primary px-4 text-xs font-semibold text-white transition-colors hover:bg-primary-hover">
               Confirm “{browsedTopic.label}”
             </button>
           ) : null}
@@ -360,7 +360,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
               type="button"
               aria-pressed={keyword.kept}
               onClick={() => toggleKeyword(keyword.label)}
-              className={`inline-flex min-h-8 items-center gap-1 rounded-full border px-3 py-1 text-xs transition-colors ${keyword.kept ? "border-primary/20 bg-primary-light text-primary" : "border-border bg-bg-primary text-text-secondary line-through"}`}
+              className={`inline-flex min-h-11 items-center gap-1 rounded-full border px-3 py-1 text-xs transition-colors ${keyword.kept ? "border-primary/20 bg-primary-light text-primary" : "border-border bg-bg-primary text-text-secondary line-through"}`}
             >
               {keyword.label} <span className="text-[10px] text-text-muted">· {keyword.origin === "openalex" ? "OpenAlex" : "You added"}</span>
             </button>
@@ -368,8 +368,8 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
         </div>
         <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={(event) => { event.preventDefault(); addKeyword(); }}>
           <label htmlFor="picoc-custom-keyword" className="sr-only">Add a keyword</label>
-          <input id="picoc-custom-keyword" value={customKeyword} maxLength={300} onChange={(event) => setCustomKeyword(event.target.value)} placeholder="Add a keyword" className="min-h-10 min-w-0 flex-1 rounded-lg border border-border bg-surface-white px-3.5 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" />
-          <button type="submit" className="inline-flex min-h-10 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-semibold text-white hover:bg-primary-hover"><FiPlus aria-hidden /> Add</button>
+          <input id="picoc-custom-keyword" value={customKeyword} maxLength={300} onChange={(event) => setCustomKeyword(event.target.value)} placeholder="Add a keyword" className="min-h-11 min-w-0 flex-1 rounded-lg border border-border bg-surface-white px-3.5 py-2 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary/15" />
+          <button type="submit" className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-xs font-semibold text-white hover:bg-primary-hover"><FiPlus aria-hidden /> Add</button>
         </form>
       </div>
     </section>
