@@ -73,7 +73,12 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
     <aside className={cn("relative z-30 flex shrink-0 flex-col border-r border-border bg-bg-secondary transition-[width] duration-200 ease-out motion-reduce:transition-none", isCollapsed ? "w-[76px]" : "w-[252px]", className)}>
       <div className={cn("flex h-[72px] shrink-0 items-center border-b border-border", isCollapsed ? "justify-center px-2" : "px-6")}>
         <Link to="/admin" className="flex min-h-11 min-w-0 flex-col justify-center" aria-label="SLRS Admin overview">
-          <span className="block text-[21px] font-extrabold leading-none tracking-[0.05em] text-text-primary">SLR<span className="text-accent">S</span></span>
+          <img
+            src={isCollapsed ? "/brand/logo-mark.png" : "/brand/logo-horizontal.png"}
+            alt="SLRS"
+            className={cn("w-auto select-none", isCollapsed ? "h-8" : "h-7")}
+            draggable={false}
+          />
           {!isCollapsed && <span className="mt-1.5 block whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.1em] text-text-muted">Systematic Literature Review System</span>}
         </Link>
       </div>

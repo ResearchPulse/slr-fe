@@ -95,7 +95,7 @@ const AdminDashboard: React.FC = () => {
           onClose={() => setIsMobileMenuOpen(false)}
           side="left"
           maxWidth="max-w-[280px]"
-          title={<SystemSignature primaryClassName="text-text-primary" accentClassName="text-accent" className="mb-0 text-xl" />}
+          title={<SystemSignature className="mb-0" logoClassName="h-8" />}
         >
           <div className="flex flex-col h-full -mx-6 -my-8">
             <nav className="flex-1 space-y-1 px-4 py-5">

@@ -155,11 +155,7 @@ const Header: React.FC = () => {
               </button>
 
               <Link to="/" className="group flex min-h-11 shrink-0 items-center gap-2">
-                <SystemSignature
-                  primaryClassName="text-text-primary"
-                  accentClassName="text-accent"
-                  className="mb-0"
-                />
+                <SystemSignature className="mb-0" />
               </Link>
 
               {/* Desktop Navigation */}
@@ -335,11 +331,7 @@ const Header: React.FC = () => {
         maxWidth="max-w-[85%] sm:max-w-sm lg:hidden"
         title={
           <Link to="/" onClick={() => setIsMenuOpen(false)}>
-            <SystemSignature
-              primaryClassName="text-text-primary"
-              accentClassName="text-accent"
-              className="mb-0 scale-90 origin-left"
-            />
+            <SystemSignature className="mb-0" logoClassName="h-8" />
           </Link>
         }
         footer={

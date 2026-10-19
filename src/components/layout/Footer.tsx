@@ -10,7 +10,7 @@ const Footer: React.FC = () => {
       <footer className="border-t border-border bg-surface-white">
         <div className="mx-auto flex max-w-[1280px] flex-col gap-7 px-5 py-8 sm:px-8 md:flex-row md:items-center md:justify-between lg:px-12">
           <Link to="/" className="group inline-flex min-h-11 flex-col items-start justify-center">
-            <span className="text-[19px] font-extrabold tracking-[0.06em] text-text-primary">SLR<span className="text-primary">S</span></span>
+            <img src="/brand/logo-horizontal.png" alt="SLRS" className="h-8 w-auto select-none" draggable={false} />
             <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-text-muted">Systematic Literature Review System</span>
           </Link>
           <nav aria-label="Footer navigation" className="flex flex-wrap items-center gap-x-6 gap-y-3 text-[11px] font-semibold text-text-secondary">
