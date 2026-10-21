@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BarChart3, Layers3, NotebookText } from "lucide-react";
+import { ArrowLeft, BarChart3, Layers3, Network, NotebookText } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useProjectMember } from "../../../hooks/useProjectMember";
@@ -15,21 +15,28 @@ import SynthesisStrategyModal from "./components/SynthesisStrategyModal";
 import StrategyGuidelinesModal from "./components/StrategyGuidelinesModal";
 import SynthesisWorkspaceErrorBoundary from "./components/SynthesisWorkspaceErrorBoundary";
 import QueryErrorState from "../../../components/ui/QueryErrorState";
+import ArgumentWebWorkspace from "./ArgumentWebWorkspace";
 
 type SynthesisSectionKey =
   | "overview"
   | "descriptive-charts"
   | "thematic-analysis"
-  | "rq-reporting";
+  | "rq-reporting"
+  | "argument-web";
 
 const SECTION_LABELS: Record<SynthesisSectionKey, string> = {
   overview: "Overview",
   "descriptive-charts": "Descriptive Charts",
   "thematic-analysis": "Thematic Analysis",
   "rq-reporting": "RQ Reporting",
+  "argument-web": "Argument Web",
 };
 
 function resolveSection(pathname: string): SynthesisSectionKey {
+  if (pathname.includes("argument-web")) {
+    return "argument-web";
+  }
+
   if (pathname.includes("rq-reporting")) {
     return "rq-reporting";
   }
@@ -128,6 +135,12 @@ export default function SynthesisPhaseWorkspace() {
         label: SECTION_LABELS["rq-reporting"],
         compactLabel: "RQ",
         icon: NotebookText,
+      },
+      {
+        key: "argument-web" as const,
+        label: SECTION_LABELS["argument-web"],
+        compactLabel: "AIF",
+        icon: Network,
       },
     ],
     [],
@@ -402,6 +415,12 @@ export default function SynthesisPhaseWorkspace() {
               isSavingFinding={workspace.isSavingFinding}
               onSaveFinding={workspace.saveFinding}
               onViewStrategyGuidelines={() => setIsStrategyGuidelinesOpen(true)}
+            />
+          ) : activeSection === "argument-web" && processId ? (
+            <ArgumentWebWorkspace
+              processId={processId}
+              isLeader={isLeader}
+              isReadOnly={isReadOnly}
             />
           ) : (
             <SynthesisDashboard
