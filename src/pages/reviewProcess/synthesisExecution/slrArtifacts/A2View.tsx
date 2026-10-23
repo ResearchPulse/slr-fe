@@ -3,7 +3,7 @@ import { asArray, asText, isObject, Metric, type Data } from "../SlrArtifactsSha
 export function A2View({ data }: { data: Data }) {
   const distributions = isObject(data.distributions) ? data.distributions : {};
   const dimensions = asArray(data.dimensions).filter(isObject);
-  const totalStudies = typeof data.study_count === "number" ? data.study_count : 0;
+  const totalStudies = typeof data.total_included_studies === "number" ? data.total_included_studies : 0;
 
   return <section className="space-y-4" aria-label="Research landscape and taxonomy">
     <div className="grid gap-3 md:grid-cols-3">
