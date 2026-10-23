@@ -7,6 +7,7 @@ import QueryErrorState from "../../../components/ui/QueryErrorState";
 import { useProjectMember } from "../../../hooks/useProjectMember";
 import { slrArtifactsService, SLR_ARTIFACT_TYPES, type SlrArtifactType } from "../../../services/slrArtifactsService";
 import { Empty, GenericArtifactView, isObject, asText, StatusPill } from "./SlrArtifactsShared";
+import { A1View } from "./slrArtifacts/A1View";
 const dateText = (value: unknown) => typeof value === "string" ? new Date(value).toLocaleString() : "—";
 
 export default function SlrArtifactsWorkspace({ projectId }: { projectId: string }) {
@@ -43,7 +44,7 @@ export default function SlrArtifactsWorkspace({ projectId }: { projectId: string
     </div>
     {!runs.length ? <Empty title="No artifact runs yet" detail={isLeader ? "Generate the first package when the project corpus is ready." : "The project leader has not generated an artifact package yet."} /> : artifactQuery.isLoading ? <div className="flex min-h-48 items-center justify-center"><LoadingSpinner /></div> : artifactQuery.error ? <QueryErrorState title={`${artifactType} unavailable`} message={artifactQuery.error instanceof Error ? artifactQuery.error.message : "Unable to load this artifact."} onRetry={() => void artifactQuery.refetch()} retryLabel="Retry" /> : artifact ? <>
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border bg-bg-primary p-4"><div><h3 className="font-semibold text-text-primary">{selectedLabel}</h3><p className="mt-1 text-xs text-text-muted">Run {asText(currentRun?.run_id)} · generated {dateText(metadata?.generated_at ?? currentRun?.generated_at)} · corpus {asText(isObject(metadata?.corpus) ? metadata.corpus.corpus_version : currentRun?.corpus_version)}</p></div><div className="flex flex-wrap gap-2"><StatusPill>{asText(metadata?.review_status, "unreviewed")}</StatusPill><StatusPill>{asText(metadata?.validation_status, "not applicable")}</StatusPill></div></div>
-      {<GenericArtifactView type={artifactType} data={artifact} corpus={corpus} />}
+      {artifactType === "A1" ? <A1View data={artifact} corpus={corpus} /> : <GenericArtifactView type={artifactType} data={artifact} corpus={corpus} />}
       {artifactType === "A1" && corpusQuery.error && <p role="alert" className="text-sm text-warning">Source quotes could not be loaded: {corpusQuery.error instanceof Error ? corpusQuery.error.message : "corpus unavailable"}</p>}
     </> : <Empty title="Artifact is empty" detail="The selected artifact has no stored payload." />}
   </div>;
