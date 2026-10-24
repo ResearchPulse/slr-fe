@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, BarChart3, Layers3, NotebookText } from "lucide-react";
+import { ArrowLeft, BarChart3, FileSearch, Layers3, NotebookText } from "lucide-react";
 import Button from "../../../components/ui/Button";
 import LoadingSpinner from "../../../components/ui/LoadingSpinner";
 import { useProjectMember } from "../../../hooks/useProjectMember";
@@ -15,21 +15,28 @@ import SynthesisStrategyModal from "./components/SynthesisStrategyModal";
 import StrategyGuidelinesModal from "./components/StrategyGuidelinesModal";
 import SynthesisWorkspaceErrorBoundary from "./components/SynthesisWorkspaceErrorBoundary";
 import QueryErrorState from "../../../components/ui/QueryErrorState";
+import SlrArtifactsWorkspace from "./SlrArtifactsWorkspace";
 
 type SynthesisSectionKey =
   | "overview"
   | "descriptive-charts"
   | "thematic-analysis"
-  | "rq-reporting";
+  | "rq-reporting"
+  | "artifacts";
 
 const SECTION_LABELS: Record<SynthesisSectionKey, string> = {
   overview: "Overview",
   "descriptive-charts": "Descriptive Charts",
   "thematic-analysis": "Thematic Analysis",
   "rq-reporting": "RQ Reporting",
+  artifacts: "SLR Artifacts",
 };
 
 function resolveSection(pathname: string): SynthesisSectionKey {
+  if (pathname.includes("/artifacts")) {
+    return "artifacts";
+  }
+
   if (pathname.includes("rq-reporting")) {
     return "rq-reporting";
   }
@@ -128,6 +135,12 @@ export default function SynthesisPhaseWorkspace() {
         label: SECTION_LABELS["rq-reporting"],
         compactLabel: "RQ",
         icon: NotebookText,
+      },
+      {
+        key: "artifacts" as const,
+        label: SECTION_LABELS.artifacts,
+        compactLabel: "Artifacts",
+        icon: FileSearch,
       },
     ],
     [],
@@ -369,7 +382,9 @@ export default function SynthesisPhaseWorkspace() {
 
         <div key={activeSection} className={transitioningSection === activeSection ? "ui-section-enter" : undefined}>
         <SynthesisWorkspaceErrorBoundary>
-          {activeSection === "thematic-analysis" ? (
+          {activeSection === "artifacts" && projectId ? (
+            <SlrArtifactsWorkspace projectId={projectId} />
+          ) : activeSection === "thematic-analysis" ? (
             <ThematicWorkspace
               workspace={workspace.workspace}
               sourceDataGroups={workspace.sourceDataGroups}
