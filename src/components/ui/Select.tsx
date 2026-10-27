@@ -6,12 +6,61 @@ import { cn } from "../../utils/cn";
 
 export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   error?: boolean;
-  options: { value: string; label: string; description?: string }[];
+  options?: SelectOption[];
   placeholder?: string;
   searchable?: boolean;
   searchPlaceholder?: string;
   containerClassName?: string;
   menuClassName?: string;
+}
+
+interface SelectOption {
+  value: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+  group?: string;
+}
+
+function getNodeText(node: React.ReactNode): string {
+  if (typeof node === "string" || typeof node === "number") return String(node);
+  if (Array.isArray(node)) return node.map(getNodeText).join("");
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    return getNodeText(node.props.children);
+  }
+  return "";
+}
+
+function optionsFromChildren(children: React.ReactNode): SelectOption[] {
+  const options: SelectOption[] = [];
+
+  const visit = (nodes: React.ReactNode, group?: string) => {
+    React.Children.forEach(nodes, (child) => {
+      if (!React.isValidElement<{ children?: React.ReactNode; value?: string | number; label?: string; disabled?: boolean }>(child)) {
+        return;
+      }
+
+      const childType = child.type;
+      const childProps = child.props;
+      if (childType === "option") {
+        const label = childProps.label ?? getNodeText(childProps.children);
+        options.push({
+          value: String(childProps.value ?? label),
+          label,
+          disabled: childProps.disabled,
+          group,
+        });
+      } else if (childType === "optgroup") {
+        const label = (child.props as { label?: string }).label;
+        visit(childProps.children, label || group);
+      } else if (childType === React.Fragment) {
+        visit(childProps.children, group);
+      }
+    });
+  };
+
+  visit(children);
+  return options;
 }
 
 const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
@@ -24,12 +73,17 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     searchPlaceholder = "Search options...",
     containerClassName,
     menuClassName,
+    children,
     value,
     defaultValue,
     onChange,
+    onBlur,
+    onFocus,
+    onKeyUp,
     id,
     ...props
   }, ref) => {
+    const selectOptions = options ?? optionsFromChildren(children);
     const generatedId = useId();
     const selectId = id ?? generatedId;
     const triggerRef = useRef<HTMLButtonElement>(null);
@@ -40,14 +94,19 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
     const [activeIndex, setActiveIndex] = useState(0);
     const [searchTerm, setSearchTerm] = useState("");
-    const [uncontrolledValue, setUncontrolledValue] = useState(defaultValue ?? "");
+    const [uncontrolledValue, setUncontrolledValue] = useState(
+      defaultValue ??
+        (placeholder
+          ? ""
+          : (selectOptions.find((option) => !option.disabled)?.value ?? "")),
+    );
     const selectedValue = value ?? uncontrolledValue;
-    const selectedOption = options.find(
+    const selectedOption = selectOptions.find(
       (option) => String(option.value) === String(selectedValue),
     );
     const visibleOptions = searchable && searchTerm.trim()
-      ? options.filter((option) => option.label.toLowerCase().includes(searchTerm.trim().toLowerCase()))
-      : options;
+      ? selectOptions.filter((option) => option.label.toLowerCase().includes(searchTerm.trim().toLowerCase()))
+      : selectOptions;
 
     React.useImperativeHandle(ref, () => nativeSelectRef.current as HTMLSelectElement);
 
@@ -122,14 +181,15 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       }
     }, [isOpen, searchable]);
 
-    const selectOption = (option: (typeof options)[number]) => {
+    const selectOption = (option: SelectOption) => {
+      if (option.disabled) return;
       const nativeSelect = nativeSelectRef.current;
       if (nativeSelect) nativeSelect.value = option.value;
       setUncontrolledValue(option.value);
       setSearchTerm("");
       onChange?.({
-        target: { value: option.value },
-        currentTarget: { value: option.value },
+        target: nativeSelect ?? { value: option.value },
+        currentTarget: nativeSelect ?? { value: option.value },
       } as React.ChangeEvent<HTMLSelectElement>);
       setIsOpen(false);
       triggerRef.current?.focus();
@@ -148,18 +208,28 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
 
       if (event.key === "ArrowDown" || event.key === "ArrowUp") {
         event.preventDefault();
+        if (!visibleOptions.length) return;
         if (!isOpen) {
           setIsOpen(true);
           return;
         }
         const direction = event.key === "ArrowDown" ? 1 : -1;
-        setActiveIndex((index) => (index + direction + visibleOptions.length) % visibleOptions.length);
+        setActiveIndex((index) => {
+          let next = index;
+          for (let i = 0; i < visibleOptions.length; i += 1) {
+            next = (next + direction + visibleOptions.length) % visibleOptions.length;
+            if (!visibleOptions[next].disabled) return next;
+          }
+          return index;
+        });
       }
 
       if ((event.key === "Enter" || event.key === " ") && isOpen) {
         event.preventDefault();
         if (visibleOptions[activeIndex]) selectOption(visibleOptions[activeIndex]);
       }
+
+      props.onKeyDown?.(event as unknown as React.KeyboardEvent<HTMLSelectElement>);
     };
 
     const handleSearchKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -169,8 +239,9 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
         triggerRef.current?.focus();
       } else if (event.key === "ArrowDown" && visibleOptions.length) {
         event.preventDefault();
-        setActiveIndex(0);
-        menuRef.current?.querySelector<HTMLButtonElement>("[role='option']")?.focus();
+        const firstEnabledIndex = visibleOptions.findIndex((option) => !option.disabled);
+        setActiveIndex(Math.max(0, firstEnabledIndex));
+        menuRef.current?.querySelector<HTMLButtonElement>("[role='option']:not(:disabled)")?.focus();
       } else if (event.key === "Enter" && visibleOptions.length) {
         event.preventDefault();
         selectOption(visibleOptions[Math.min(activeIndex, visibleOptions.length - 1)]);
@@ -178,7 +249,13 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     };
 
     return (
-      <div className={cn("relative inline-block min-w-0", containerClassName)}>
+      <div
+        className={cn(
+          "relative inline-block min-w-0",
+          /\bw-full\b/.test(className ?? "") && "w-full",
+          containerClassName,
+        )}
+      >
         <select
           ref={nativeSelectRef}
           tabIndex={-1}
@@ -193,8 +270,12 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               {placeholder}
             </option>
           )}
-          {options.map((option) => (
-            <option key={option.value} value={option.value}>
+          {selectOptions.map((option, index) => (
+            <option
+              key={`${option.group ?? ""}:${option.value}:${index}`}
+              value={option.value}
+              disabled={option.disabled}
+            >
               {option.label}
             </option>
           ))}
@@ -205,6 +286,10 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           type="button"
           aria-label={props["aria-label"]}
           disabled={props.disabled}
+          title={props.title}
+          onBlur={onBlur as unknown as React.FocusEventHandler<HTMLButtonElement>}
+          onFocus={onFocus as unknown as React.FocusEventHandler<HTMLButtonElement>}
+          onKeyUp={onKeyUp as unknown as React.KeyboardEventHandler<HTMLButtonElement>}
           aria-haspopup="listbox"
           aria-expanded={isOpen}
           aria-controls={`${selectId}-listbox`}
@@ -248,7 +333,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               onClick={(event) => event.stopPropagation()}
               className={cn(
-                "ui-popover-enter fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white px-0 py-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                "ui-popover-enter fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl border border-border bg-surface-white px-0 py-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
                 menuClassName,
               )}
               style={menuStyle}
@@ -270,33 +355,40 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                 </div>
               </div>}
               <div id={`${selectId}-listbox`} role="listbox" aria-label={props["aria-label"]} className="dropdown-scroll-area min-h-0 w-full flex-1 overflow-y-auto px-0">
-              {visibleOptions.map((option, index) => {
+          {visibleOptions.map((option, index) => {
                 const isSelected = String(option.value) === String(selectedValue);
                 return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    role="option"
-                    aria-selected={isSelected}
-                    onMouseEnter={() => setActiveIndex(index)}
-                    onClick={() => selectOption(option)}
-                    className={cn(
-                      "flex w-full min-w-0 items-center px-2 text-left font-sans text-[13px] leading-5 text-text-primary transition-colors whitespace-normal break-words",
-                      option.description ? "min-h-12 py-2" : "min-h-9 h-auto py-1.5",
-                      "hover:bg-primary-light hover:text-accent",
-                      (isSelected || activeIndex === index) && "bg-primary-light text-accent",
-                      isSelected && "font-semibold",
-                    )}
-                  >
-                    {option.description ? (
-                      <span className="flex min-w-0 flex-col gap-0.5">
-                        <span className="break-words">{option.label}</span>
-                        <span className="text-xs font-normal leading-4 text-text-secondary">
-                          {option.description}
-                        </span>
+              <React.Fragment key={`${option.group ?? ""}:${option.value}:${index}`}>
+                {option.group && option.group !== visibleOptions[index - 1]?.group && (
+                  <p className="px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
+                    {option.group}
+                  </p>
+                )}
+                <button
+                  type="button"
+                  role="option"
+                  aria-selected={isSelected}
+                  disabled={option.disabled}
+                  onMouseEnter={() => setActiveIndex(index)}
+                  onClick={() => selectOption(option)}
+                  className={cn(
+                    "flex w-full min-w-0 items-center px-3 text-left font-sans text-[13px] leading-5 text-text-primary transition-colors whitespace-normal break-words disabled:cursor-not-allowed disabled:opacity-50",
+                    option.description ? "min-h-12 py-2" : "min-h-9 h-auto py-1.5",
+                    "hover:bg-primary-light hover:text-accent",
+                    (isSelected || activeIndex === index) && "bg-primary-light text-accent",
+                    isSelected && "font-semibold",
+                  )}
+                >
+                  {option.description ? (
+                    <span className="flex min-w-0 flex-col gap-0.5">
+                      <span className="break-words">{option.label}</span>
+                      <span className="text-xs font-normal leading-4 text-text-secondary">
+                        {option.description}
                       </span>
-                    ) : <span className="min-w-0 flex-1 break-words">{option.label}</span>}
-                  </button>
+                    </span>
+                  ) : <span className="min-w-0 flex-1 break-words">{option.label}</span>}
+                </button>
+              </React.Fragment>
                 );
               })}
               {!visibleOptions.length && <p className="px-3 py-4 text-center text-xs text-text-tertiary">No matching options.</p>}

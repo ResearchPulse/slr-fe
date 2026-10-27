@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import { useState, useMemo } from "react";
 import { FiFilter, FiCheckCircle } from "react-icons/fi";
 import Button from "../ui/Button";
@@ -157,7 +158,7 @@ export default function AddToProcessByFilterModal({
                   2. Select Saved Filter Collection
                 </h4>
                 <div className="grid grid-cols-1 gap-2">
-                  <select
+                  <Select
                     value={selectedSavedFilterId || ""}
                     onChange={(e) => onSelectFilter(e.target.value)}
                     className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -170,7 +171,7 @@ export default function AddToProcessByFilterModal({
                         {filter.name}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
 
                 {selectedSavedFilterId && (

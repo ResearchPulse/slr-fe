@@ -86,24 +86,24 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
   return (
     <>
-      <div className="hidden overflow-x-auto lg:block">
-        <Table className="w-full min-w-[1080px] table-fixed">
+      <div className="hidden lg:block">
+        <Table className="w-full min-w-[1280px] table-fixed">
           <colgroup>
-            <col className="w-[34%]" />
+            <col className="w-[36%]" />
             <col className="w-[10%]" />
             <col className="w-[12%]" />
-            <col className="w-[16%]" />
-            <col className="w-[12%]" />
-            <col className="w-[16%]" />
+            <col className="w-[14%]" />
+            <col className="w-[14%]" />
+            <col className="w-[14%]" />
           </colgroup>
           <TableHeader className="bg-bg-primary">
             <TableRow className="cursor-default hover:bg-transparent">
-              <TableHead className="px-5 py-2.5 text-xs font-semibold normal-case tracking-normal">Project</TableHead>
-              <TableHead className="px-3 py-2.5 text-center text-xs font-semibold normal-case tracking-normal">Status</TableHead>
-              <TableHead className="px-3 py-2.5 text-center text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
-              <TableHead className="px-3 py-2.5 text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
-              <TableHead className="px-3 py-2.5 text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
-              <TableHead className="px-3 py-2.5 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
+              <TableHead className="px-4 py-2.5 text-xs font-semibold normal-case tracking-normal">Project</TableHead>
+              <TableHead className="px-4 py-2.5 text-center text-xs font-semibold normal-case tracking-normal">Status</TableHead>
+              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
+              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
+              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
+              <TableHead className="px-4 py-2.5 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,30 +113,30 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 onClick={() => { if (!isDeletedView) onView(project.id); }}
                 className={`group bg-surface-white transition-colors motion-reduce:transition-none hover:bg-bg-primary/60 ${isDeletedView ? "cursor-default" : "cursor-pointer"}`}
               >
-                <TableCell className="px-5 py-3">
-                  <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
+                <TableCell className="px-4 py-2.5">
+                  <div className="block min-w-0 truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
                     {project.title}
                   </div>
-                  <div className="mt-1 flex min-w-0 items-center gap-2 text-xs text-text-secondary">
+                  <div className="mt-1 flex min-w-0 items-center gap-2 overflow-hidden text-xs text-text-secondary">
                     <span className="shrink-0 font-mono text-accent">{project.code}</span>
                     <span aria-hidden="true">·</span>
-                    <span className="truncate">{project.domain}</span>
+                    <span className="min-w-0 truncate">{project.domain}</span>
                   </div>
                 </TableCell>
-                <TableCell className="px-3 py-3 text-center">
+                <TableCell className="px-4 py-2.5 text-center">
                   <span className={cn("inline-flex rounded-md border px-2 py-1 text-xs font-medium", statusClass(project.statusText))}>
                     {project.statusText}
                   </span>
                 </TableCell>
-                <TableCell className="px-3 py-3 text-center text-sm text-text-primary">
+                <TableCell className="px-4 py-2.5 text-left text-sm text-text-primary">
                   {getProjectRoleLabel(project.role ?? project.roleText)}
                 </TableCell>
-                <TableCell className="px-3 py-3">
+                <TableCell className="px-4 py-2.5">
                   <span className="block truncate text-sm text-text-primary" title={project.leader?.fullName}>
                     {project.leader?.fullName || "—"}
                   </span>
                 </TableCell>
-                <TableCell className="px-3 py-3 text-xs leading-5 text-text-secondary">
+                <TableCell className="px-4 py-2.5 text-xs leading-[18px] text-text-secondary">
                   {isDeletedView ? (
                     <div>Deleted {formatDate(project.deletedAt || "")}</div>
                   ) : (
@@ -146,7 +146,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                     </>
                   )}
                 </TableCell>
-                <TableCell className="px-3 py-3 text-right">
+                <TableCell className="px-4 py-2.5 text-right">
                   <div className="flex items-center justify-end gap-1">
                     {isDeletedView && onRestore ? (
                       <Button

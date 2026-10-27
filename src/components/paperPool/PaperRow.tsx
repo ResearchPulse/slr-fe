@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FiAlertCircle, FiCheckCircle, FiEye, FiLink, FiLoader, FiTrash2 } from "react-icons/fi";
+import { FiAlertCircle, FiCheckCircle, FiLink, FiLoader, FiTrash2 } from "react-icons/fi";
 import ConfirmModal from "../ui/ConfirmModal";
 import Checkbox from "../ui/Checkbox";
 import type { PaperPoolItem } from "./types";
@@ -21,7 +21,7 @@ type ApplyMetadataSuggestionHandler = (
 
 function PdfStatusBadge({ paper }: { paper: PaperPoolItem }) {
   const status = paper.pdfProcessingStatus;
-  const base = "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-black uppercase tracking-wider whitespace-nowrap";
+  const base = "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide whitespace-nowrap";
 
   if (!paper.hasFullText) {
     return (
@@ -134,7 +134,7 @@ export default function PaperRow({
       }`}
     >
       {isLeader && (
-        <td className="px-6 py-4 align-top">
+        <td className="px-3 py-3 align-top">
           <div className="flex items-center pt-0.5">
             <Checkbox
               checked={isSelected}
@@ -148,39 +148,39 @@ export default function PaperRow({
       <td
         className={`${
           isLeader ? "px-3" : "px-4 sm:px-5"
-        } py-4 align-top`}
+        } py-3 align-top`}
       >
         <span className="whitespace-nowrap rounded bg-bg-secondary/50 px-1.5 py-0.5 font-mono text-[10px] font-bold leading-none text-text-secondary">
           {paper.id.slice(0, 8)}...
         </span>
       </td>
-      <td className="w-[360px] max-w-[360px] overflow-hidden px-3 py-4 align-top">
+      <td className="w-[320px] max-w-[320px] overflow-hidden px-2.5 py-3 align-top">
         <div className="flex flex-col">
           <button
             onClick={() => onViewDetails(paper)}
             className="block min-w-0 max-w-full text-left group/title focus:outline-none"
             title={paper.title}
           >
-            <span className="line-clamp-2 break-words text-sm font-bold leading-snug text-text-primary transition-colors group-hover/title:text-accent">
+            <span className="line-clamp-2 break-words text-[13px] font-semibold leading-[1.35] text-text-primary transition-colors group-hover/title:text-accent">
               {paper.title}
             </span>
           </button>
           {!paper.abstract?.trim() && (
-            <span className="mt-1.5 w-fit rounded-full border border-warning/20 bg-warning/10 px-2 py-0.5 text-[10px] font-semibold text-warning">
+            <span className="mt-1 w-fit rounded-full border border-warning/20 bg-warning/10 px-2 py-0.5 text-[9px] font-semibold text-warning">
               Missing abstract
             </span>
           )}
-          <div className="mt-1.5 flex min-w-0 items-center gap-1.5 text-xs font-medium text-text-secondary">
+          <div className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] font-medium text-text-secondary">
             <span className="min-w-0 max-w-[280px] truncate">{paper.authors}</span>
           </div>
         </div>
       </td>
-      <td className="px-3 py-4 align-top">
+      <td className="px-2.5 py-3 align-top">
         <span className="text-xs font-black text-text-primary bg-bg-secondary px-2 py-0.5 rounded-full">
           {paper.year ?? "N/A"}
         </span>
       </td>
-      <td className="px-3 py-4 align-top max-w-[150px]">
+      <td className="px-2.5 py-3 align-top max-w-[150px]">
         {paper.doi ? (
           <div className="flex items-center gap-1.5 text-text-primary hover:text-accent cursor-pointer group/doi">
             <FiLink className="w-3 h-3 shrink-0" />
@@ -192,7 +192,7 @@ export default function PaperRow({
           </span>
         )}
       </td>
-      <td className="px-3 py-4 align-top">
+      <td className="px-2.5 py-3 align-top">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1.5">
             <div className="w-1.5 h-1.5 rounded-full bg-accent" />
@@ -202,7 +202,7 @@ export default function PaperRow({
           </div>
         </div>
       </td>
-      <td className="px-3 py-4 align-top">
+      <td className="px-2.5 py-3 align-top">
         <PaperPdfActions
           paper={paper as unknown as PaperDetailsResponse}
           onUploadPdf={onUploadPdf}
@@ -213,22 +213,15 @@ export default function PaperRow({
           isRemovingPdf={isRemovingPdf}
           isLeader={isLeader}
           canUploadPdf={canUploadPdf}
+          compact
         />
       </td>
-      <td className="px-3 py-4 align-top">
+      <td className="px-2.5 py-3 align-top">
         <PdfStatusBadge paper={paper} />
       </td>
 
-      <td className="px-6 py-4 align-top text-right">
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            aria-label={`View details for ${paper.title}`}
-            onClick={() => onViewDetails(paper)}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border border-border px-3 text-[11px] font-black uppercase tracking-wider text-text-primary transition-colors hover:border-accent hover:bg-surface-white hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-          >
-            <FiEye className="h-3.5 w-3.5" />
-          </button>
+      <td className="px-3 py-3 align-top text-right">
+        <div className="flex items-center justify-end">
           {onDeletePaper && (
             <button
               type="button"
@@ -241,7 +234,7 @@ export default function PaperRow({
                 }
               }}
               disabled={isDeletingPaper}
-              className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-xl border border-error/20 px-3 text-[11px] font-black uppercase tracking-wider text-error transition-colors hover:border-error/50 hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
+              className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-error/20 text-error transition-colors hover:border-error/50 hover:bg-error/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none lg:min-h-9 lg:min-w-9"
               title="Delete paper"
             >
               {isDeletingPaper ? (

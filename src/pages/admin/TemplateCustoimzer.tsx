@@ -1,3 +1,4 @@
+import Select from "../../components/ui/Select";
 import React, { useMemo, useState } from "react";
 import {
   FiPlus,
@@ -617,7 +618,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
             </div>
             <div>
               <label htmlFor="checklist-type" className="mb-1.5 block text-xs font-semibold text-text-secondary">Checklist type</label>
-              <select
+              <Select
                 id="checklist-type"
                 value={checklistType}
                 onChange={(event) => setChecklistType(Number(event.target.value) as ChecklistType)}
@@ -626,7 +627,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
               >
                 <option value={ChecklistTypeValue.FULL}>Full</option>
                 <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
-              </select>
+              </Select>
               <p className="mt-1 text-[11px] leading-4 text-text-secondary">
                 {checklistType === ChecklistTypeValue.FULL
                   ? "Includes location fields for response items."
@@ -922,7 +923,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
               <label className="text-xs font-medium text-text-secondary mb-1 block">
                 Section
               </label>
-              <select
+              <Select
                 value={item.section}
                 onChange={(e) =>
                   onUpdate({ section: e.target.value as ChecklistSection })
@@ -937,7 +938,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
                     </option>
                   ),
                 )}
-              </select>
+              </Select>
             </div>
 
             <label className="flex items-center gap-2 cursor-pointer">
@@ -1222,7 +1223,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
             <label className="mb-2 block text-sm font-medium text-text-primary">
               Section
             </label>
-            <select
+            <Select
               value={resolvedSection}
               onChange={(e) =>
                 setSelectedSection(e.target.value as ChecklistSection)
@@ -1240,7 +1241,7 @@ const AddItemModal: React.FC<AddItemModalProps> = ({
                   {getSectionDisplayName(section)}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
         </div>
 

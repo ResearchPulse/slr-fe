@@ -10,11 +10,13 @@ import {
   FiChevronRight,
   FiChevronLeft,
   FiRefreshCw,
+  FiLoader,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCrossrefWorks } from "../../hooks/useCrossrefWorks";
 import { usePaperImport } from "../../hooks/usePaperImport";
 import Button from "../ui/Button";
+import Input from "../ui/Input";
 import Modal from "../ui/Modal";
 import type { CrossrefWorkDto } from "../../types/paper";
 
@@ -53,9 +55,11 @@ export default function CrossrefWorksExplorer({
   const [selectedWork, setSelectedWork] = useState<CrossrefWorkDto | null>(
     null,
   );
+  const [loadingDetailDoi, setLoadingDetailDoi] = useState<string | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedSourceId, setSelectedSourceId] = useState("");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const selectedAbstract = selectedWork?.abstract?.trim();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,12 +67,20 @@ export default function CrossrefWorksExplorer({
   };
 
   const handleViewDetail = async (doi: string) => {
+    setLoadingDetailDoi(doi);
     try {
       const response = await fetchDetail(doi);
-      setSelectedWork(response.data);
+      const searchWork = searchResults?.items.find((work) => work.DOI === doi);
+      setSelectedWork({
+        ...searchWork,
+        ...response.data,
+        abstract: response.data.abstract?.trim() || searchWork?.abstract,
+      });
       setIsDetailOpen(true);
     } catch {
       // Error handled by mutation toast if added, or here
+    } finally {
+      setLoadingDetailDoi(null);
     }
   };
 
@@ -82,7 +94,7 @@ export default function CrossrefWorksExplorer({
 
   return (
     <div className="mt-8 space-y-6 sm:mt-12 sm:space-y-8">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end lg:gap-6">
         <div className="space-y-2">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-light text-accent border border-accent/30 rounded-full text-[10px] font-black uppercase tracking-widest">
             <FiBookOpen className="w-3 h-3" />
@@ -99,24 +111,24 @@ export default function CrossrefWorksExplorer({
 
         <form
           onSubmit={handleSearch}
-          className="flex w-full flex-wrap items-center gap-3 rounded-xl border border-border bg-surface-white p-2 shadow-none md:w-auto"
+          className="flex w-full items-center gap-3 lg:w-auto"
         >
-          <div className="group relative w-full min-w-0 md:min-w-[240px]">
-            <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary group-focus-within:text-accent transition-colors" />
-            <input
+          <div className="group relative min-w-0 flex-1 lg:w-[340px] lg:flex-none">
+            <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary transition-colors group-focus-within:text-primary motion-reduce:transition-none" aria-hidden="true" />
+            <Input
               type="text"
               placeholder="Search title, keywords..."
               value={localParams.query}
               onChange={(e) =>
                 setLocalParams({ ...localParams, query: e.target.value })
               }
-              className="w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none focus:border-accent focus:ring-2 focus:ring-accent/20"
+              className="h-11 min-h-11 w-full rounded-[10px] pl-10 pr-3.5 transition-[border-color,box-shadow] hover:border-primary/40"
             />
           </div>
           <Button
             type="submit"
             isLoading={isLoading}
-            className="rounded-xl px-6 bg-accent hover:bg-primary-hover text-white shadow-sm"
+            className="h-11 min-h-11 shrink-0 rounded-[10px] px-6 shadow-none hover:shadow-none"
           >
             Search
           </Button>
@@ -207,9 +219,9 @@ export default function CrossrefWorksExplorer({
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex flex-col items-start gap-6 rounded-xl border border-border bg-surface-white p-6 transition-[border-color,box-shadow] hover:border-accent/40 hover:shadow-sm motion-reduce:transition-none md:flex-row md:items-center"
+                    className="group flex flex-col items-start gap-4 rounded-xl border border-border bg-surface-white p-4 transition-[border-color,box-shadow] hover:border-accent/40 hover:shadow-sm motion-reduce:transition-none md:flex-row md:items-center"
                   >
-                    <div className="flex-1 space-y-3">
+                    <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="px-2 py-0.5 bg-bg-secondary text-text-secondary rounded-xl text-[10px] font-black uppercase tracking-widest">
                           {work.type || "journal-article"}
@@ -228,10 +240,10 @@ export default function CrossrefWorksExplorer({
                           Score: {work.score}
                         </span>
                       </div>
-                      <h4 className="text-lg font-black text-text-primary leading-tight transition-colors group-hover:text-accent motion-reduce:transition-none line-clamp-2">
+                      <h4 className="line-clamp-2 text-base font-semibold leading-snug text-text-primary transition-colors group-hover:text-accent motion-reduce:transition-none">
                         {work.title?.[0] || "Untitled Work"}
                       </h4>
-                      <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
                         <div className="flex items-center gap-1.5 text-xs text-text-secondary font-medium">
                           <FiUser className="w-3.5 h-3.5 text-accent/70" />
                           <span className="truncate max-w-[200px]">
@@ -250,14 +262,24 @@ export default function CrossrefWorksExplorer({
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
+                    <div className="flex shrink-0 items-center gap-2 self-end md:self-center">
                       <button
                         onClick={() => handleViewDetail(work.DOI)}
-                        disabled={isFetchingDetail}
-                        className="flex h-11 w-11 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
-                        title="View Metadata Detail"
+                        disabled={isFetchingDetail || loadingDetailDoi !== null}
+                        aria-label={
+                          loadingDetailDoi === work.DOI
+                            ? "Loading metadata details"
+                            : "View metadata details"
+                        }
+                        aria-busy={loadingDetailDoi === work.DOI || undefined}
+                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                        title={loadingDetailDoi === work.DOI ? "Loading metadata details" : "View Metadata Detail"}
                       >
-                        <FiEye />
+                        {loadingDetailDoi === work.DOI ? (
+                          <FiLoader className="motion-safe:animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                        ) : (
+                          <FiEye aria-hidden="true" />
+                        )}
                       </button>
                       {isLeader && (
                         <Button
@@ -265,7 +287,7 @@ export default function CrossrefWorksExplorer({
                           isLoading={isImportingByDoi}
                           disabled={work.isImported}
                           className={cn(
-                            "rounded-xl px-5 flex items-center gap-2 text-xs font-black uppercase tracking-widest h-11",
+                            "h-10 rounded-xl px-4 flex items-center gap-2 text-xs font-black uppercase tracking-widest",
                             work.isImported
                               ? "bg-bg-secondary text-text-secondary cursor-not-allowed border-border shadow-none"
                               : "",
@@ -438,7 +460,7 @@ export default function CrossrefWorksExplorer({
               </div>
             </div>
 
-            {selectedWork.abstract && (
+            {selectedAbstract && (
               <div className="space-y-2">
                 <p className="text-[10px] font-black text-text-secondary uppercase tracking-widest ml-1">
                   Abstract
@@ -446,7 +468,7 @@ export default function CrossrefWorksExplorer({
                 <div className="p-6 bg-primary-light/30 rounded-xl border border-accent/20">
                   <div
                     className="text-sm text-text-primary leading-relaxed font-medium"
-                    dangerouslySetInnerHTML={{ __html: selectedWork.abstract }}
+                    dangerouslySetInnerHTML={{ __html: selectedAbstract }}
                   />
                 </div>
               </div>

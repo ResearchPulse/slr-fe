@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import { useState, useEffect } from "react";
 import {
   FiTrash2,
@@ -294,7 +295,7 @@ export default function ManageFiltersModal({
                           Search Source
                         </span>
                       </div>
-                      <select
+                      <Select
                         value={draft.filters.searchSourceId}
                         onChange={(e) =>
                           setDraft({
@@ -314,7 +315,7 @@ export default function ManageFiltersModal({
                             {s.name}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </div>
 
                     <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
@@ -324,7 +325,7 @@ export default function ManageFiltersModal({
                           Paper Source
                         </span>
                       </div>
-                      <select
+                      <Select
                         value={draft.filters.paperSource ?? "all"}
                         onChange={(e) =>
                           setDraft({
@@ -344,7 +345,7 @@ export default function ManageFiltersModal({
                             {source}
                           </option>
                         ))}
-                      </select>
+                      </Select>
                     </div>
 
                     {/* DOI/FullText Toggles */}
@@ -353,7 +354,7 @@ export default function ManageFiltersModal({
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           DOI Status
                         </div>
-                        <select
+                        <Select
                           value={draft.filters.doiState}
                           aria-label="DOI status"
                           onChange={(e) =>
@@ -370,13 +371,13 @@ export default function ManageFiltersModal({
                           <option value="all">Any Status</option>
                           <option value="has">Has DOI</option>
                           <option value="missing">Missing DOI</option>
-                        </select>
+                        </Select>
                       </div>
                       <div className="p-4 bg-bg-primary rounded-xl border border-border">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           Full Text
                         </div>
-                        <select
+                        <Select
                           value={draft.filters.fullTextState}
                           aria-label="Full text status"
                           onChange={(e) =>
@@ -393,7 +394,7 @@ export default function ManageFiltersModal({
                           <option value="all">Any Status</option>
                           <option value="has">Has PDF</option>
                           <option value="missing">Missing PDF</option>
-                        </select>
+                        </Select>
                       </div>
                       <label htmlFor="filter-only-unused" className="flex min-h-11 cursor-pointer items-center justify-between rounded-xl border border-border bg-bg-primary p-4">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest">

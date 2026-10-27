@@ -1,3 +1,4 @@
+import Select from "../../../components/ui/Select";
 import { useEffect, useMemo, useState } from "react";
 import {
   Bar,
@@ -218,7 +219,7 @@ export default function DescriptiveChartsWorkspace({
                   {chartableGroups.length} available
                 </span>
               </div>
-              <select
+              <Select
                 id="chart-field-select"
                 value={resolvedSelectedFieldId}
                 onChange={(event) => setSelectedFieldId(event.target.value)}
@@ -233,7 +234,7 @@ export default function DescriptiveChartsWorkspace({
                     {group.fieldName} ({group.values.length})
                   </option>
                 ))}
-              </select>
+              </Select>
             </div>
 
             <div>

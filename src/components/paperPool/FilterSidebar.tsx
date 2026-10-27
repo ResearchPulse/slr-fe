@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import { useEffect, useRef, useState } from "react";
 import {
   FiChevronDown,
@@ -75,7 +76,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:mb-8"
+          className="inline-flex min-h-11 lg:min-h-10 min-w-11 items-center justify-center rounded-xl border border-border bg-surface-white text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 lg:mb-8"
           title="Expand Filters"
           aria-label="Expand filters"
         >
@@ -92,12 +93,12 @@ export default function FilterSidebar({
   }
 
   return (
-    <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-4 lg:w-80 lg:h-full">
+      <aside className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-4 lg:h-full lg:w-[272px]">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-border px-4 py-4 sm:px-5">
+      <div className="flex items-center justify-between border-b border-border px-3.5 py-3 sm:px-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent">
-            <FiFilter className="h-5 w-5" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-accent/20 bg-primary-light text-accent">
+            <FiFilter className="h-4 w-4" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-text-primary">
@@ -111,7 +112,7 @@ export default function FilterSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+          className="inline-flex min-h-11 lg:min-h-10 min-w-11 items-center justify-center rounded-xl text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
           aria-label="Collapse filters"
         >
           <FiChevronLeft className="h-5 w-5" />
@@ -119,7 +120,7 @@ export default function FilterSidebar({
       </div>
 
       {/* Filter Content */}
-      <div className="space-y-3 p-3 sm:p-4">
+      <div className="space-y-2.5 p-3">
         {/* Search Input */}
         <div className="space-y-1.5">
           <label className="px-0.5 text-xs font-medium text-text-secondary">
@@ -133,7 +134,7 @@ export default function FilterSidebar({
                 onChange({ ...filters, keyword: e.target.value })
               }
               placeholder="Search concepts..."
-              className="min-h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+              className="min-h-11 lg:min-h-10 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             />
           </div>
         </div>
@@ -166,7 +167,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="From"
-                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                className="min-h-11 lg:min-h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               />
             </div>
             <div className="relative group">
@@ -191,7 +192,7 @@ export default function FilterSidebar({
                   }
                 }}
                 placeholder="To"
-                className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                className="min-h-11 lg:min-h-10 w-full rounded-xl border border-border bg-surface-white px-3.5 text-sm text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               />
             </div>
           </div>
@@ -203,12 +204,12 @@ export default function FilterSidebar({
             <label className="px-0.5 text-xs font-medium text-text-secondary">
               Paper Source
             </label>
-            <select
+            <Select
               value={filters.paperSource}
               onChange={(e) =>
                 onChange({ ...filters, paperSource: e.target.value })
               }
-              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+              className="min-h-11 lg:min-h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Paper Sources</option>
               {availablePaperSources.map((source) => (
@@ -216,18 +217,18 @@ export default function FilterSidebar({
                   {source}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <label className="px-0.5 text-xs font-medium text-text-secondary">
               Search Source
             </label>
-            <select
+            <Select
               value={filters.searchSourceId}
               onChange={(e) =>
                 onChange({ ...filters, searchSourceId: e.target.value })
               }
-              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+              className="min-h-11 lg:min-h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Sources</option>
               {availableSources.map((source) => (
@@ -235,18 +236,18 @@ export default function FilterSidebar({
                   {source.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
           <div className="space-y-1.5">
             <label className="px-0.5 text-xs font-medium text-text-secondary">
               Import Batch
             </label>
-            <select
+            <Select
               value={filters.importBatchId}
               onChange={(e) =>
                 onChange({ ...filters, importBatchId: e.target.value })
               }
-              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+              className="min-h-11 lg:min-h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">All Batches</option>
               {availableBatches.map((batch) => (
@@ -254,14 +255,14 @@ export default function FilterSidebar({
                   {batch.name}
                 </option>
               ))}
-            </select>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
             <label className="px-0.5 text-xs font-medium text-text-secondary">
               DOI Availability
             </label>
-            <select
+            <Select
               value={filters.doiState}
               onChange={(e) =>
                 onChange({
@@ -269,12 +270,12 @@ export default function FilterSidebar({
                   doiState: e.target.value as PaperPoolFilters["doiState"],
                 })
               }
-              className="min-h-11 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+              className="min-h-11 lg:min-h-10 w-full cursor-pointer appearance-none rounded-xl border border-border bg-surface-white px-3.5 text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
             >
               <option value="all">Any DOI Status</option>
               <option value="has">Has DOI</option>
               <option value="missing">Missing DOI</option>
-            </select>
+            </Select>
           </div>
 
           <div className="space-y-1.5">
@@ -289,7 +290,7 @@ export default function FilterSidebar({
                 aria-expanded={isFullTextOpen}
                 aria-controls="fulltext-status-options"
                 onClick={() => setIsFullTextOpen((open) => !open)}
-                className="flex min-h-11 w-full items-center justify-between rounded-xl border border-border bg-surface-white px-3.5 text-left text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                className="flex min-h-11 lg:min-h-10 w-full items-center justify-between rounded-xl border border-border bg-surface-white px-3.5 text-left text-sm font-medium text-text-primary outline-none motion-safe:transition-colors motion-reduce:transition-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
               >
                 <span>
                   {fullTextOptions.find(
@@ -315,7 +316,7 @@ export default function FilterSidebar({
                         onChange({ ...filters, fullTextState: option.value });
                         setIsFullTextOpen(false);
                       }}
-                      className={`min-h-11 w-full rounded-lg px-3.5 py-2 text-left text-sm motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 ${
+                      className={`min-h-11 lg:min-h-10 w-full rounded-lg px-3.5 py-2 text-left text-sm motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 ${
                         filters.fullTextState === option.value
                           ? "bg-primary text-white"
                           : "text-text-primary hover:bg-bg-secondary"
@@ -332,7 +333,7 @@ export default function FilterSidebar({
 
         {/* State Filters */}
         <div className="space-y-1 border-t border-border pt-3">
-          <label className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
+          <label className="group flex min-h-11 lg:min-h-10 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
             <input
               type="checkbox"
               checked={filters.onlyUnused}
@@ -345,7 +346,7 @@ export default function FilterSidebar({
               Only Unused Papers
             </span>
           </label>
-          <label className="group flex min-h-11 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
+          <label className="group flex min-h-11 lg:min-h-10 cursor-pointer items-center gap-3 rounded-xl p-2 motion-safe:transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-within:ring-2 focus-within:ring-inset focus-within:ring-primary/30">
             <input
               type="checkbox"
               checked={filters.recentlyImported}
@@ -366,7 +367,7 @@ export default function FilterSidebar({
         <Button
           variant="secondary"
           onClick={onAddToProcess}
-          className="min-h-11 w-full rounded-xl text-xs font-semibold"
+          className="min-h-11 lg:min-h-10 w-full rounded-xl text-xs font-semibold"
         >
           <FiLayers className="w-4 h-4 mr-2" />
           Add to Review Process
@@ -374,14 +375,14 @@ export default function FilterSidebar({
         <Button
           onClick={onSaveCurrent}
           isLoading={isSaving}
-          className="min-h-11 w-full rounded-xl text-xs font-semibold"
+          className="min-h-11 lg:min-h-10 w-full rounded-xl text-xs font-semibold"
         >
           <FiSave className="w-4 h-4 mr-2" />
           Save As Collection
         </Button>
         <button
           onClick={onReset}
-          className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl text-xs font-medium text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
+          className="flex min-h-11 lg:min-h-10 w-full items-center justify-center gap-2 rounded-xl text-xs font-medium text-text-secondary motion-safe:transition-colors motion-reduce:transition-none hover:bg-surface-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/30"
         >
           <FiRotateCcw className="w-3.5 h-3.5" />
           Reset All Filters

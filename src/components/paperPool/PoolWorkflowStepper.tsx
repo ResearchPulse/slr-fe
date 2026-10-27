@@ -73,18 +73,19 @@ export default function PoolWorkflowStepper({
 
   return (
     <section className="motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
-      <div className="relative mx-auto w-full max-w-[1440px] px-4 sm:px-8 lg:px-12">
-        <div className="absolute left-[10%] right-[10%] top-6 z-0 h-1 -translate-y-1/2 rounded-full bg-border sm:top-7" />
+      <div className="relative mx-auto w-full max-w-none px-0">
+        <div className="absolute left-[10%] right-[10%] top-5 z-0 h-1 -translate-y-1/2 rounded-full bg-border sm:top-6" />
         <div
           aria-hidden="true"
-          className="absolute left-[10%] top-6 z-0 h-1 -translate-y-1/2 rounded-full bg-accent transition-[width] duration-200 motion-reduce:transition-none sm:top-7"
+          className="absolute left-[10%] top-5 z-0 h-1 -translate-y-1/2 rounded-full bg-accent transition-[width] duration-200 motion-reduce:transition-none sm:top-6"
           style={{ width: `${progressPercent}%` }}
         />
 
         <ol className="relative z-10 grid grid-cols-5 gap-1 sm:gap-3">
           {STEPS.map((step) => {
             const isActive = step.id === currentStep;
-            const isDone = !isActive && isCompleted(step.id);
+            const isDone = isCompleted(step.id);
+            const isInProgress = isActive && !isDone;
             const Icon = step.icon;
 
             return (
@@ -92,7 +93,7 @@ export default function PoolWorkflowStepper({
                 <button
                   type="button"
                   aria-current={isActive ? "step" : undefined}
-                  aria-label={`Step ${step.id}: ${step.title}`}
+                  aria-label={`Step ${step.id}: ${step.title}${isInProgress ? ", in progress" : ""}`}
                   onClick={() => {
                     if (isLeader) {
                       onStepClick(step.id);
@@ -101,10 +102,10 @@ export default function PoolWorkflowStepper({
                   disabled={!isLeader}
                   title={!isLeader ? "Workflow steps are managed by the project leader" : undefined}
                   className={`
-                    relative z-10 mx-auto flex h-12 w-12 items-center justify-center rounded-full border transition-[background-color,border-color,color,transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none sm:h-14 sm:w-14
+                    relative z-10 mx-auto flex h-11 w-11 items-center justify-center rounded-full border transition-[background-color,border-color,color,transform,box-shadow] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none sm:h-12 sm:w-12
                     ${
                       isActive
-                        ? "scale-105 border-accent bg-accent text-white shadow-md shadow-accent/20 ring-4 ring-accent/10"
+                        ? "border-accent bg-accent text-white shadow-sm ring-2 ring-accent/10"
                         : isDone
                           ? isLeader
                             ? "border-accent/30 bg-white text-accent hover:bg-primary-light shadow-sm cursor-pointer"
@@ -116,21 +117,27 @@ export default function PoolWorkflowStepper({
                     ${!isLeader ? "cursor-default select-none" : ""}
                   `}
                 >
+                  {isInProgress && (
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute -inset-1 rounded-full border-2 border-accent/25 border-t-accent motion-safe:animate-spin motion-reduce:animate-none"
+                    />
+                  )}
                   {isDone ? (
-                    <FiCheckCircle className="h-6 w-6 sm:h-7 sm:w-7" />
+                    <FiCheckCircle className="h-5 w-5" />
                   ) : (
-                    <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                 </button>
 
-                <div className="mt-3 px-0.5 sm:px-2">
+                <div className="mt-2 px-0.5 sm:px-2">
                   <p
                     className={`text-xs font-medium ${isActive ? "text-accent" : "text-text-muted"}`}
                   >
                     Step {step.id}
                   </p>
                   <p
-                    className={`mt-1 text-[10px] leading-3 font-medium sm:truncate sm:text-sm sm:leading-normal ${isActive ? "text-text-primary" : "text-text-secondary"}`}
+                    className={`mt-0.5 text-[10px] leading-3 font-medium sm:truncate sm:text-xs sm:leading-normal ${isActive ? "text-text-primary" : "text-text-secondary"}`}
                   >
                     {step.title}
                   </p>
@@ -141,14 +148,14 @@ export default function PoolWorkflowStepper({
         </ol>
       </div>
 
-      <div className="mx-auto mt-3 w-full max-w-[1440px] overflow-hidden rounded-xl border border-border bg-surface-white shadow-sm">
+      <div className="mx-auto mt-2 w-full max-w-none overflow-hidden rounded-xl border border-border bg-surface-white">
         <div className="flex flex-col md:flex-row">
-          <div className="flex items-center gap-4 border-b border-border bg-bg-secondary/80 p-5 md:w-[240px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-6 md:text-center">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
-              <FiInfo className="h-6 w-6 sm:h-7 sm:w-7" />
+          <div className="flex items-center gap-3 border-b border-border bg-bg-secondary/70 p-4 md:w-[200px] md:flex-col md:justify-center md:border-b-0 md:border-r md:p-4 md:text-center">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-primary-light text-accent">
+              <FiInfo className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-semibold tracking-tight text-text-primary sm:text-lg">
+              <h3 className="text-sm font-semibold tracking-tight text-text-primary sm:text-base">
                 Step Guide
               </h3>
               <p className="mt-1 text-xs font-medium text-text-secondary">
@@ -157,36 +164,36 @@ export default function PoolWorkflowStepper({
             </div>
           </div>
 
-          <div className="min-w-0 flex-1 p-5 sm:p-6">
-            <div className="mb-3 flex flex-wrap items-center gap-2 text-accent">
-              <span className="rounded-full border border-accent/20 bg-primary-light px-3 py-1 text-xs font-medium">
+          <div className="min-w-0 flex-1 p-4">
+            <div className="mb-2 flex flex-wrap items-center gap-2 text-accent">
+              <span className="rounded-full border border-accent/20 bg-primary-light px-2.5 py-0.5 text-[11px] font-medium">
                 Instruction
               </span>
               {!isLeader && currentStep === 5 && (
-                <span className="rounded-full border border-border bg-bg-secondary px-3 py-1 text-xs font-medium text-text-secondary">
+                <span className="rounded-full border border-border bg-bg-secondary px-2.5 py-0.5 text-[11px] font-medium text-text-secondary">
                   Read-Only
                 </span>
               )}
               <FiChevronRight className="h-3 w-3" />
-              <span className="text-sm font-medium text-text-secondary">
+              <span className="text-xs font-medium text-text-secondary">
                 {STEPS[currentStep - 1].title}
               </span>
             </div>
 
-            <h2 className="mb-2 text-2xl font-semibold tracking-tight text-text-primary">
+            <h2 className="mb-1.5 text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
               {getInstructionTitle(currentStep, isLeader)}
             </h2>
-            <p className="max-w-4xl text-sm leading-6 text-text-secondary">
+            <p className="max-w-4xl text-xs leading-5 text-text-secondary sm:text-sm">
               {getInstructionDescription(currentStep, isLeader)}
             </p>
 
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-4 flex flex-wrap gap-2">
               {actions.map((action, i) => (
                 <button
                   key={i}
                   type="button"
                   onClick={action.onClick}
-                  className={`inline-flex min-h-11 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold transition-colors ${
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3.5 py-2 text-xs font-semibold transition-colors lg:min-h-10 ${
                     action.primary
                       ? "bg-accent text-white shadow-sm hover:bg-primary-hover"
                       : "border border-border bg-surface-white text-text-secondary hover:bg-bg-secondary hover:text-text-primary"

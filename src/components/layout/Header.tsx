@@ -26,6 +26,8 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const notificationRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
+  const landingTopRef = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -34,6 +36,21 @@ const Header: React.FC = () => {
     (state: RootState) => state.auth,
   );
   const { unreadCount } = useUnreadCount();
+
+  useEffect(() => {
+    const sentinel = landingTopRef.current;
+    const header = headerRef.current;
+    if (location.pathname !== "/" || !sentinel || !header || typeof IntersectionObserver === "undefined") {
+      header?.removeAttribute("data-scrolled");
+      return;
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry) header.toggleAttribute("data-scrolled", !entry.isIntersecting);
+    }, { threshold: 0 });
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [location.pathname]);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -130,12 +147,14 @@ const Header: React.FC = () => {
 
   return (
     <>
+      {location.pathname === "/" && <div ref={landingTopRef} aria-hidden="true" className="pointer-events-none -mb-px h-px" />}
       <header
-        className="sticky top-0 z-(--z-index-header) h-16 border-b border-border bg-surface-white transition-[box-shadow] duration-150"
+        ref={headerRef}
+        className="sticky top-0 z-(--z-index-header) h-16 border-b border-border bg-surface-white transition-[box-shadow] duration-200 data-[scrolled]:shadow-[0_2px_8px_rgba(18,35,49,0.06)]"
         onClickCapture={handleHeaderInteraction}
         onKeyDownCapture={handleHeaderInteraction}
       >
-        <div className="container mx-auto px-5 sm:px-8 lg:px-12 h-full">
+        <div className="mx-auto h-full w-full max-w-[1360px] px-5 sm:px-8 lg:px-10 xl:px-12">
           <div className="flex justify-between items-center h-full">
             {/* Left Side: Logo & Desktop Nav */}
             <div className="flex items-center gap-2 lg:gap-8 xl:gap-12">
@@ -159,9 +178,12 @@ const Header: React.FC = () => {
               </Link>
 
               {/* Desktop Navigation */}
-              <nav className="hidden lg:flex items-center gap-1">
+              <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
                 {navLinks.map((link) => {
-                  const className = "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium normal-case tracking-normal text-text-secondary transition-colors whitespace-nowrap hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none";
+                  const isActive = link.path === "/projects"
+                    ? location.pathname.startsWith("/projects")
+                    : location.hash === link.path.slice(1);
+                  const className = `relative inline-flex min-h-11 items-center px-3 text-sm font-medium normal-case tracking-normal whitespace-nowrap transition-colors after:absolute after:inset-x-3 after:bottom-0 after:h-0.5 after:rounded-full after:bg-primary after:transition-transform after:duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none motion-reduce:after:transition-none ${isActive ? "text-primary after:scale-x-100" : "text-text-secondary after:scale-x-0 hover:text-text-primary hover:after:scale-x-100"}`;
                   return location.pathname === "/" && link.path.startsWith("/#") ? (
                     <a key={link.name} href={link.path.slice(1)} className={className}>{link.name}</a>
                   ) : (

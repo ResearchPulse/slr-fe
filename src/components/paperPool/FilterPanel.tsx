@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import type { PaperPoolFilterOption, PaperPoolFilters } from "./types";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import Button from "../ui/Button";
@@ -115,7 +116,7 @@ export default function FilterPanel({
         <label className="text-xs font-medium text-text-primary">
           Search Source ID
         </label>
-        <select
+        <Select
           value={filters.searchSourceId}
           onChange={(e) =>
             onChange({ ...filters, searchSourceId: e.target.value })
@@ -128,14 +129,14 @@ export default function FilterPanel({
               {source.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="space-y-2">
         <label className="text-xs font-medium text-text-primary">
           Import Batch
         </label>
-        <select
+        <Select
           value={filters.importBatchId}
           onChange={(e) =>
             onChange({ ...filters, importBatchId: e.target.value })
@@ -148,14 +149,14 @@ export default function FilterPanel({
               {batch.name}
             </option>
           ))}
-        </select>
+        </Select>
       </div>
 
       <div className="space-y-2">
         <label className="text-xs font-medium text-text-primary">
           DOI State
         </label>
-        <select
+        <Select
           value={filters.doiState}
           onChange={(e) =>
             onChange({
@@ -168,14 +169,14 @@ export default function FilterPanel({
           <option value="all">All</option>
           <option value="has">Has DOI</option>
           <option value="missing">Missing DOI</option>
-        </select>
+        </Select>
       </div>
 
       <div className="space-y-2">
         <label className="text-xs font-medium text-text-primary">
           Full-text
         </label>
-        <select
+        <Select
           value={filters.fullTextState}
           onChange={(e) =>
             onChange({
@@ -189,7 +190,7 @@ export default function FilterPanel({
           <option value="all">All</option>
           <option value="has">Has PDF</option>
           <option value="missing">No PDF</option>
-        </select>
+        </Select>
       </div>
 
       <div className="space-y-2">

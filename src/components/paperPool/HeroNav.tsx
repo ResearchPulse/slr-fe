@@ -52,7 +52,7 @@ export default function HeroNav({
 
   return (
     <nav className="w-full">
-      <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-border bg-surface-white p-1 sm:flex sm:items-center sm:gap-2 sm:p-1.5">
+      <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface-white p-1 sm:flex sm:items-center sm:gap-1.5">
         {navItems.map((item) => {
           const isActive = activeTab === item.id;
           const Icon = item.icon;
@@ -62,8 +62,8 @@ export default function HeroNav({
               key={item.id}
               onClick={() => onChange(item.id)}
               className={`
-                group relative flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-lg px-2 py-2.5
-                transition-colors duration-200 sm:flex-1 sm:gap-2 sm:rounded-xl sm:px-3 sm:py-3
+                group relative flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md px-2 py-2
+                transition-colors duration-200 sm:flex-1 sm:gap-2 sm:rounded-md sm:px-3 sm:py-2
                 ${
                   isActive
                     ? "bg-primary-light text-primary-hover"
@@ -77,7 +77,7 @@ export default function HeroNav({
                 className={`h-4 w-4 shrink-0 transition-transform duration-200 sm:h-5 sm:w-5 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
               />
 
-              <span className="min-w-0 truncate text-xs font-medium normal-case tracking-normal sm:text-sm">
+              <span className="min-w-0 truncate text-xs font-medium normal-case tracking-normal sm:text-[13px]">
                 {item.label}
               </span>
 

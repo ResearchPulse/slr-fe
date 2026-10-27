@@ -227,18 +227,18 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
+    <div className="flex flex-col gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       {/* Header Area */}
-      <div className="flex flex-col gap-5 rounded-xl border border-border bg-white p-5 shadow-sm sm:p-6 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex min-w-0 items-center gap-4 sm:gap-5">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-accent/20 bg-primary-light text-accent sm:h-14 sm:w-14">
-            <FiLayers className="h-6 w-6 sm:h-7 sm:w-7" />
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-4 sm:p-5 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-primary-light text-accent sm:h-12 sm:w-12">
+            <FiLayers className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
           <div className="min-w-0">
-            <h2 className="text-xl font-semibold tracking-tight text-text-primary sm:text-2xl">
+            <h2 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
               Paper <span className="text-accent">Identification</span> Repository
             </h2>
-            <p className="mt-1 max-w-xl text-sm leading-5 text-text-secondary">
+            <p className="mt-1 max-w-xl text-xs leading-5 text-text-secondary sm:text-sm">
               Centralized repository of all imported papers. Select and assign
               papers to review processes below.
             </p>
@@ -255,7 +255,7 @@ export default function PaperRepositoryPage({
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search title, DOI, authors..."
-              className="h-11 w-full rounded-xl border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none sm:w-[260px]"
+              className="h-11 w-full rounded-lg border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none lg:h-10 sm:w-[240px]"
             />
           </div>
 
@@ -271,7 +271,7 @@ export default function PaperRepositoryPage({
           {isLeader && (
             <Button
               variant="outline"
-              className="w-full rounded-xl border-border px-4 hover:border-accent hover:bg-accent hover:text-text-on-primary sm:w-auto"
+              className="min-h-11 w-full rounded-lg border-border px-4 text-xs hover:border-accent hover:bg-accent hover:text-text-on-primary sm:w-auto lg:min-h-10"
               onClick={() => setIsImportModalOpen(true)}
             >
               <FiUpload className="w-4 h-4 mr-2" />
@@ -283,9 +283,9 @@ export default function PaperRepositoryPage({
 
       {/* Read-Only Banner for Non-Leaders */}
       {!isLeader && (
-        <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4 text-sm text-text-primary shadow-sm" role="status">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <FiInfo className="h-5 w-5" />
+        <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-text-primary sm:text-sm" role="status">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <FiInfo className="h-4 w-4" />
           </div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
             <span className="font-semibold text-text-primary">
@@ -299,7 +299,7 @@ export default function PaperRepositoryPage({
       )}
 
       {/* Main Content: Sidebar + Table */}
-      <div className="flex flex-col items-stretch gap-4 lg:min-h-[calc(100dvh-7rem)] lg:flex-row lg:items-stretch lg:gap-5">
+      <div className="flex flex-col items-stretch gap-3 lg:min-h-[calc(100dvh-7rem)] lg:flex-row lg:items-stretch lg:gap-4">
         <FilterSidebar
           filters={filters}
           availablePaperSources={metadata?.paperSources ?? []}
@@ -316,7 +316,7 @@ export default function PaperRepositoryPage({
           isSaving={isCreatingFilter}
         />
 
-        <div className="flex min-w-0 flex-1 flex-col space-y-6 lg:h-full">
+        <div className="flex min-w-0 flex-1 flex-col space-y-4 lg:h-full">
           <PaperTable
             papers={papers}
             isLoading={isLoadingPapers}

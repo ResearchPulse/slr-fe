@@ -48,14 +48,14 @@ export default function SavedFilterDropdown({
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex min-h-11 items-center gap-3 rounded-xl border px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none ${
+        className={`flex min-h-11 items-center gap-3 rounded-lg border px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none lg:min-h-10 ${
           isOpen
             ? "border-accent bg-primary-light"
             : "border-border bg-white hover:border-accent/40"
         }`}
       >
         <div
-          className={`flex h-8 w-8 items-center justify-center rounded-xl ${selectedFilter ? "bg-primary text-white" : "bg-bg-secondary text-text-secondary"}`}
+          className={`flex h-7 w-7 items-center justify-center rounded-lg ${selectedFilter ? "bg-primary text-white" : "bg-bg-secondary text-text-secondary"}`}
         >
           <FiFilter className="h-4 w-4" />
         </div>

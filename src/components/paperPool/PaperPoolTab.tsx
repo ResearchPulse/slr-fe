@@ -700,7 +700,7 @@ export default function PaperPoolTab({
   // Redundant import handler removed as it's now handled by PaperImportModal internally
 
   return (
-    <div className="flex flex-col gap-3 pb-12">
+    <div className="flex flex-col gap-2.5 pb-8">
       <PoolWorkflowStepper
         currentStep={workflowStep}
         onStepClick={setWorkflowStep}
@@ -710,7 +710,7 @@ export default function PaperPoolTab({
       />
 
       {workflowStep === 1 && (
-        <div className="max-w-6xl mx-auto w-full space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
+        <div className="w-full space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
           <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
             <div className="mb-8 pb-8 border-b border-border">
               <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useProject, useProjectMutations } from "../../../hooks/useProjects";
 import type { Project } from "../../../types/project";
 import FormField from "../../ui/FormField";
+import DatePicker from "../../ui/DatePicker";
 import FormTextarea from "../../ui/FormTextarea";
 import LoadingSpinner from "../../ui/LoadingSpinner";
 import Drawer from "../../ui/Drawer";
@@ -544,27 +545,21 @@ export default function ProjectFormModal({
               </div>
               {/* DÒNG THỜI GIAN (Ngày bắt đầu & Ngày kết thúc) */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <FormField
+                <DatePicker
                   id="startDate"
                   label="Ngày bắt đầu"
                   name="startDate"
-                  type="date"
                   value={formData.startDate}
-                  onChange={handleChange}
+                  onChange={(startDate) => setFormData((prev) => ({ ...prev, startDate }))}
                   errorMessage={errors.startDate}
-                  containerClassName="space-y-1.5"
-                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
                 />
-                <FormField
+                <DatePicker
                   id="endDate"
                   label="Ngày kết thúc"
                   name="endDate"
-                  type="date"
                   value={formData.endDate}
-                  onChange={handleChange}
+                  onChange={(endDate) => setFormData((prev) => ({ ...prev, endDate }))}
                   errorMessage={errors.endDate}
-                  containerClassName="space-y-1.5"
-                  className="rounded-lg border-border bg-white py-3 font-medium text-text-primary focus:bg-white shadow-none"
                 />
               </div>
             </div>

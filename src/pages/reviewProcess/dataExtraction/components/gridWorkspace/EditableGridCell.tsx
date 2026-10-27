@@ -1,3 +1,4 @@
+import Select from "../../../../../components/ui/Select";
 import { useCallback, useMemo, useRef, useState } from "react";
 import type { FocusEvent, KeyboardEvent } from "react";
 import { History, Loader2, Pencil } from "lucide-react";
@@ -206,7 +207,7 @@ export default function EditableGridCell({
 
       case "boolean":
         return (
-          <select
+          <Select
             autoFocus
             disabled={isNotReported}
             value={normalizeBooleanValue(draftValue)}
@@ -217,12 +218,12 @@ export default function EditableGridCell({
             <option value="">-</option>
             <option value="true">True</option>
             <option value="false">False</option>
-          </select>
+          </Select>
         );
 
       case "singleselect":
         return (
-          <select
+          <Select
             autoFocus
             disabled={isNotReported}
             value={draftValue}
@@ -239,7 +240,7 @@ export default function EditableGridCell({
                 {option.value}
               </option>
             ))}
-          </select>
+          </Select>
         );
 
       case "multiselect":

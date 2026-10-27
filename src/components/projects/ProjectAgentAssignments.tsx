@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import { useEffect, useMemo, useState } from "react";
 import { FiCopy, FiEye, FiKey, FiRefreshCw, FiUserPlus } from "react-icons/fi";
 import { isAxiosError } from "axios";
@@ -113,10 +114,10 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
         <h2 className="flex items-center gap-2 text-base font-semibold text-text-primary"><FiUserPlus /> Connect an extraction agent</h2>
         <p className="mt-1 text-sm text-text-secondary">Choose a provider from the system catalog and issue a project-scoped MCP token for extraction consensus.</p>
         <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-          <select aria-label="Choose catalog agent" value={connectAgentId} onChange={event => setConnectAgentId(event.target.value)} className="min-h-11 min-w-0 flex-1 rounded-xl border border-border bg-white px-3 py-2 text-sm">
+          <Select aria-label="Choose catalog agent" value={connectAgentId} onChange={event => setConnectAgentId(event.target.value)} className="min-h-11 min-w-0 flex-1 rounded-xl border border-border bg-white px-3 py-2 text-sm">
             <option value="">Select an agent</option>
             {available.map(({ agent }) => <option key={agent.id} value={agent.id}>{agent.name}{agent.description ? ` — ${agent.description}` : ""}</option>)}
-          </select>
+          </Select>
           <button type="button" disabled={busy || !connectAgentId} onClick={() => void connect()} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">Connect and generate project token</button>
         </div>
         {!available.length && <p className="mt-2 text-xs text-text-secondary">{entries.some(({ agent }) => agent.isActive) ? "All active catalog agents are already connected to this project." : "There are no active agents in the system catalog."}</p>}
@@ -155,9 +156,9 @@ export default function ProjectAgentAssignments({ projectId }: { projectId?: str
           <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-text-primary"><FiKey /> Assign review papers</h2>
           {!selected ? <p className="text-sm text-text-secondary">Select a connected agent to assign papers and view its submitted reviews.</p> : <>
             {selected.access?.isActive && <form onSubmit={event => { event.preventDefault(); void assign(); }} className="space-y-3">
-              <select aria-label="Paper to assign" required value={paperId} onChange={event => setPaperId(event.target.value)} className="min-h-11 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm">
+              <Select aria-label="Paper to assign" required value={paperId} onChange={event => setPaperId(event.target.value)} className="min-h-11 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm">
                 <option value="">Choose a paper</option>{papers.map(paper => <option key={paper.id} value={paper.id}>{paper.title || paper.id}</option>)}
-              </select>
+              </Select>
               <textarea aria-label="Agent review instructions" maxLength={5000} placeholder="Instructions for this review (optional)" value={instructions} onChange={event => setInstructions(event.target.value)} className="min-h-24 w-full rounded-xl border border-border bg-white px-3 py-2 text-sm" />
               <button disabled={busy || !paperId} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50">Assign to {selected.agent.name}</button>
             </form>}

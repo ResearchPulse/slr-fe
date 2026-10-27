@@ -1,3 +1,4 @@
+import Select from "../ui/Select";
 import React, { useState, useEffect } from "react";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
@@ -108,7 +109,7 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
             <FiTag className="h-3.5 w-3.5 text-text-muted" />
             Reason for Deletion
           </label>
-          <select
+          <Select
             id="delete-paper-reason"
             value={selectedReason}
             onChange={(e) => setSelectedReason(e.target.value)}
@@ -120,7 +121,7 @@ export const DeletePaperModal: React.FC<DeletePaperModalProps> = ({
                 {r}
               </option>
             ))}
-          </select>
+          </Select>
 
           {selectedReason === "Other reason" && (
             <input
