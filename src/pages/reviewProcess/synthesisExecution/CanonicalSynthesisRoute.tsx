@@ -9,6 +9,7 @@ const supportedSections = new Set([
   "descriptive-charts",
   "thematic-analysis",
   "rq-reporting",
+  "artifacts",
 ]);
 
 export default function CanonicalSynthesisRoute() {
