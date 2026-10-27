@@ -43,9 +43,8 @@ describe("PrismaSourceClassification", () => {
     } as unknown as ReturnType<typeof useSearchSources>);
 
     renderWithClient();
-    fireEvent.change(screen.getByRole("combobox", { name: "PRISMA source group for PubMed" }), {
-      target: { value: "" },
-    });
+    fireEvent.click(screen.getByRole("button", { name: "PRISMA source group for PubMed" }));
+    fireEvent.click(screen.getByRole("option", { name: "Unclassified" }));
 
     await waitFor(() => expect(mockClassify).toHaveBeenCalledWith("project-1", "source-1", null));
   });
