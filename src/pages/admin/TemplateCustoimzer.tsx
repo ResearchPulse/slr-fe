@@ -300,8 +300,9 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
             : section.name,
           description: section.description ?? undefined,
           nodes: checklistTree.filter((node) => node.section === section.key),
+          itemCount: items.filter((item) => item.section === section.key).length,
         })),
-    [checklistTree, sections],
+    [checklistTree, items, sections],
   );
   const normalizedNewSectionName = newSectionName.trim().replace(/\s+/g, " ");
   const hasDuplicateSectionName = useMemo(
@@ -525,7 +526,6 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
           item={node}
           sectionOptions={sections.map((section) => section.key)}
           isSubItem={depth > 0}
-          depth={depth}
           isExpanded={expandedItemId === node.id}
           onToggleExpand={() =>
             setExpandedItemId(expandedItemId === node.id ? null : node.id)
@@ -554,14 +554,7 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
         />
 
         {node.children.length > 0 && (
-          <div
-            className={cn(
-              "space-y-3",
-              depth === 0
-                ? "ml-8 border-l-2 border-border pl-5"
-                : "ml-6 border-l border-border pl-4",
-            )}
-          >
+          <div className="space-y-2 border-t border-dashed border-border/70 pt-2">
             {renderTreeNodes(node.children, depth + 1)}
           </div>
         )}
@@ -570,185 +563,195 @@ const TemplateCustoimzerInner: React.FC<TemplateCustoimzerProps> = ({
   };
 
   return (
-    <div className="mx-auto max-w-4xl p-4 sm:p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-text-primary mb-4">
-          {template ? "Edit Template" : "Create Template"}
-        </h1>
-
-        {/* Template Info */}
-        <div className="space-y-4">
-          <div>
-            <label className="mb-2 block text-sm font-medium text-text-secondary">
-              Template Name
-            </label>
-            <Input
-              value={templateName}
-              onChange={(e) => setTemplateName(e.target.value)}
-              placeholder="e.g., PRISMA 2020 Main Checklist"
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-text-secondary">
-              Description
-            </label>
-            <Textarea
-              value={templateDescription}
-              onChange={(e) => setTemplateDescription(e.target.value)}
-              placeholder="Optional description of this template"
-              rows={3}
-              disabled={isLoading}
-            />
-          </div>
-
-          <div>
-            <label className="mb-2 block text-sm font-medium text-text-secondary">
-              Checklist Type
-            </label>
-            <select
-              value={checklistType}
-              onChange={(event) =>
-                setChecklistType(Number(event.target.value) as ChecklistType)
-              }
-              disabled={isLoading}
-              className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <option value={ChecklistTypeValue.FULL}>Full</option>
-              <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
-            </select>
-            <p className="text-xs text-text-secondary mt-1">
-              Full mode keeps location fields (except grouping/header items).
-              Abstract mode disables location fields for all response items.
-            </p>
-          </div>
+    <div className="mx-auto w-full max-w-[1600px] space-y-5 px-4 py-5 pb-8 sm:px-6 lg:px-8">
+      <header className="flex flex-col gap-4 border-b border-border pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <nav aria-label="Breadcrumb" className="mb-2">
+            <ol className="flex items-center gap-2 text-xs">
+              <li className="text-text-secondary">Checklist Templates</li>
+              <li aria-hidden="true" className="text-text-muted">/</li>
+              <li aria-current="page" className="font-medium text-text-primary">{template ? "Edit template" : "New template"}</li>
+            </ol>
+          </nav>
+          <h1 className="text-2xl font-semibold tracking-tight text-text-primary sm:text-[26px]">
+            {template ? "Edit Checklist Template" : "Create Checklist Template"}
+          </h1>
+          <p className="mt-1 max-w-2xl text-sm text-text-secondary">
+            Configure template details and organize the checklist into clear sections.
+          </p>
         </div>
-      </div>
-
-      {/* Items Section */}
-      <div className="mb-8 rounded-xl bg-bg-primary p-4 sm:p-6">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <h2 className="text-xl font-semibold text-text-primary">
-            Checklist Items ({items.length})
-          </h2>
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-            <Input
-              value={newSectionName}
-              onChange={(event) => setNewSectionName(event.target.value)}
-              placeholder="New section name"
-              disabled={isLoading}
-              className="w-full min-w-0 sm:w-auto sm:min-w-[220px]"
-            />
-            <Button
-              onClick={handleAddSection}
-              size="sm"
-              variant="secondary"
-              className="inline-flex min-h-11 w-full items-center justify-center gap-2 sm:w-auto"
-              disabled={
-                isLoading ||
-                !normalizedNewSectionName ||
-                hasDuplicateSectionName
-              }
-              title={
-                hasDuplicateSectionName
-                  ? "Section name already exists"
-                  : undefined
-              }
-            >
-              <FiPlus className="w-4 h-4" />
-              Add Section
-            </Button>
-          </div>
+        <div className="flex shrink-0 items-center gap-2">
+          <Button variant="secondary" size="sm" onClick={onClose} disabled={isLoading}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSaveTemplate}
+            disabled={isLoading || !templateName.trim()}
+            isLoading={isLoading}
+            size="sm"
+            className="min-w-32"
+          >
+            {!isLoading && <FiSave aria-hidden="true" className="h-4 w-4" />}
+            {isLoading ? "Saving…" : "Save changes"}
+          </Button>
         </div>
+      </header>
 
-        {/* Items List */}
-        <div className="space-y-3">
-          {displayedSections.length === 0 ? (
-            <div className="text-center py-8 text-text-secondary">
-              <p>No sections yet. Add a section to get started.</p>
+      <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
+        <section aria-labelledby="template-details-title" className="p-4 sm:p-5 lg:p-6">
+          <div className="mb-4">
+            <h2 id="template-details-title" className="text-base font-semibold text-text-primary">Template details</h2>
+            <p className="mt-0.5 text-xs text-text-secondary">Set the name, format, and purpose of this checklist.</p>
+          </div>
+          <div className="grid gap-x-5 gap-y-3 md:grid-cols-2">
+            <div>
+              <label htmlFor="template-name" className="mb-1.5 block text-xs font-semibold text-text-secondary">Template name</label>
+              <Input
+                id="template-name"
+                value={templateName}
+                onChange={(event) => setTemplateName(event.target.value)}
+                placeholder="e.g., PRISMA 2020 Main Checklist"
+                disabled={isLoading}
+                className="min-h-10 rounded-lg px-3 py-2"
+              />
             </div>
-          ) : (
-            displayedSections.map((group) => (
-              <section key={group.section} className="space-y-3">
-                <div className="sticky top-0 z-10 border-b border-border bg-bg-primary/95 py-2 backdrop-blur-xs">
-                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex min-w-0 flex-wrap items-center gap-2 sm:gap-3">
-                      <h3 className="text-sm font-semibold tracking-wide text-text-primary uppercase">
-                        {group.label}
-                      </h3>
-                      {group.description && (
-                        <span className="text-xs text-text-secondary max-w-[40ch] truncate">
-                          {group.description}
-                        </span>
-                      )}
-                      <span className="text-xs font-medium text-text-secondary">
-                        {group.nodes.length} item
-                        {group.nodes.length === 1 ? "" : "s"}
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Button
-                        onClick={() => {
-                          setAddItemMode("root");
-                          setAddItemParentItem(undefined);
-                          setPreferredSectionForAdd(group.section);
-                          setAddItemSessionId((prev) => prev + 1);
-                          setShowAddItemModal(true);
-                        }}
-                        size="sm"
-                        variant="secondary"
-                        className="inline-flex min-h-11 items-center gap-1"
-                        disabled={isLoading}
-                      >
-                        <FiPlus className="w-4 h-4" />
-                        Add Item
-                      </Button>
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveSection(group.section)}
-                        className="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-xs text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error motion-reduce:transition-none"
-                        disabled={isLoading}
-                        title="Remove section and its items"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                </div>
-                {group.nodes.length > 0 ? (
-                  renderTreeNodes(group.nodes)
-                ) : (
-                  <div className="rounded-xl border border-dashed border-border p-4 text-sm text-text-secondary">
-                    No items in this section yet. Use Add Item to create
-                    top-level items.
-                  </div>
-                )}
-              </section>
-            ))
-          )}
-        </div>
-      </div>
+            <div>
+              <label htmlFor="checklist-type" className="mb-1.5 block text-xs font-semibold text-text-secondary">Checklist type</label>
+              <select
+                id="checklist-type"
+                value={checklistType}
+                onChange={(event) => setChecklistType(Number(event.target.value) as ChecklistType)}
+                disabled={isLoading}
+                className="min-h-10 w-full rounded-lg border border-border bg-surface-white px-3 py-2 text-sm text-text-primary transition-[border-color,box-shadow] focus-visible:border-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/20 disabled:cursor-not-allowed disabled:bg-bg-secondary disabled:opacity-70"
+              >
+                <option value={ChecklistTypeValue.FULL}>Full</option>
+                <option value={ChecklistTypeValue.ABSTRACT}>Abstract</option>
+              </select>
+              <p className="mt-1 text-[11px] leading-4 text-text-secondary">
+                {checklistType === ChecklistTypeValue.FULL
+                  ? "Includes location fields for response items."
+                  : "Hides location fields for response items."}
+              </p>
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="template-description" className="mb-1.5 block text-xs font-semibold text-text-secondary">Description</label>
+              <Textarea
+                id="template-description"
+                value={templateDescription}
+                onChange={(event) => setTemplateDescription(event.target.value)}
+                placeholder="Describe when this checklist should be used"
+                rows={2}
+                disabled={isLoading}
+                className="min-h-[72px] resize-y rounded-lg px-3 py-2"
+              />
+            </div>
+          </div>
+        </section>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3 sticky bottom-0 bg-surface-white border-t border-border p-4 -mx-6 -mb-6">
-        <Button
-          variant="secondary"
-          onClick={onClose}
-          disabled={isLoading}
-          className="flex-1"
-        >
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSaveTemplate}
-          disabled={isLoading || !templateName.trim()}
-          className="flex-1 inline-flex items-center justify-center gap-2"
-        >
-          <FiSave className="w-4 h-4" />
-          {isLoading ? "Saving..." : "Save Template"}
-        </Button>
+        <section aria-labelledby="checklist-items-title" className="border-t border-border">
+          <div className="flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+            <div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h2 id="checklist-items-title" className="text-base font-semibold text-text-primary">Checklist items</h2>
+                <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-[11px] font-medium text-text-secondary">
+                  {items.length} {items.length === 1 ? "item" : "items"}
+                </span>
+                <span className="text-xs text-text-muted">{displayedSections.length} {displayedSections.length === 1 ? "section" : "sections"}</span>
+              </div>
+              <p className="mt-0.5 text-xs text-text-secondary">Arrange questions and grouping headers in the order reviewers will see them.</p>
+            </div>
+            <div className="flex w-full flex-col gap-2 sm:flex-row lg:w-auto lg:min-w-[360px]">
+              <Input
+                value={newSectionName}
+                onChange={(event) => setNewSectionName(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault();
+                    handleAddSection();
+                  }
+                }}
+                placeholder="Name a new section"
+                aria-label="New section name"
+                disabled={isLoading}
+                className="min-h-10 rounded-lg px-3 py-2"
+              />
+              <Button
+                onClick={handleAddSection}
+                size="sm"
+                variant="secondary"
+                className="min-h-10 shrink-0"
+                disabled={isLoading || !normalizedNewSectionName || hasDuplicateSectionName}
+                title={hasDuplicateSectionName ? "Section name already exists" : undefined}
+              >
+                <FiPlus aria-hidden="true" className="h-4 w-4" />
+                Add section
+              </Button>
+            </div>
+          </div>
+
+          <div className="border-t border-border px-4 sm:px-5 lg:px-6">
+            {displayedSections.length === 0 ? (
+              <div className="py-10 text-center">
+                <p className="text-sm font-medium text-text-primary">No checklist sections yet</p>
+                <p className="mt-1 text-xs text-text-secondary">Create a section above, then add the first checklist item.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-border">
+                {displayedSections.map((group) => (
+                  <section key={group.section} aria-labelledby={`section-title-${group.section}`} className="py-4 first:pt-3 last:pb-5">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex min-w-0 items-start gap-3">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
+                            <h3 id={`section-title-${group.section}`} className="text-sm font-semibold text-text-primary">{group.label}</h3>
+                            <span className="text-[11px] text-text-muted">{group.itemCount} {group.itemCount === 1 ? "item" : "items"}</span>
+                          </div>
+                          {group.description && <p className="mt-0.5 max-w-2xl truncate text-xs text-text-secondary">{group.description}</p>}
+                        </div>
+                      </div>
+                      <div className="flex shrink-0 items-center gap-1">
+                        <Button
+                          onClick={() => {
+                            setAddItemMode("root");
+                            setAddItemParentItem(undefined);
+                            setPreferredSectionForAdd(group.section);
+                            setAddItemSessionId((previous) => previous + 1);
+                            setShowAddItemModal(true);
+                          }}
+                          size="sm"
+                          variant="secondary"
+                          className="min-h-9 rounded-lg px-3 text-xs"
+                          disabled={isLoading}
+                        >
+                          <FiPlus aria-hidden="true" className="h-3.5 w-3.5" />
+                          Add item
+                        </Button>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveSection(group.section)}
+                          className="inline-flex min-h-9 items-center justify-center rounded-lg px-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:opacity-50 motion-reduce:transition-none"
+                          disabled={isLoading}
+                          title="Remove section and its items"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                    <div className="mt-3 w-full space-y-2">
+                      {group.nodes.length > 0 ? (
+                        renderTreeNodes(group.nodes)
+                      ) : (
+                        <div className="rounded-lg border border-dashed border-border px-3 py-3 text-xs text-text-secondary">
+                          No items in this section yet. Add a top-level item to begin.
+                        </div>
+                      )}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
       </div>
 
       {/* Add Item Modal */}
@@ -775,7 +778,6 @@ interface TemplateItemEditorProps {
   item: ChecklistTreeNode;
   sectionOptions: ChecklistSection[];
   isSubItem: boolean;
-  depth: number;
   isExpanded: boolean;
   onToggleExpand: () => void;
   onUpdate: (updates: Partial<ChecklistItemTemplate>) => void;
@@ -794,7 +796,6 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
   item,
   sectionOptions,
   isSubItem,
-  depth,
   isExpanded,
   onToggleExpand,
   onUpdate,
@@ -808,7 +809,6 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
   checklistType,
   isLoading = false,
 }) => {
-  const depthClass = depth > 1 ? "ml-6" : depth === 1 ? "ml-2" : "";
   const isGroupingItem =
     Boolean(item.isSectionHeaderOnly) || (item.children?.length ?? 0) > 0;
   const isAbstractType = checklistType === ChecklistTypeValue.ABSTRACT;
@@ -816,102 +816,100 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
   return (
     <div
       className={cn(
-        "border rounded-xl p-4 transition-colors",
-        depthClass,
+        "rounded-lg px-3 py-2.5 transition-colors motion-reduce:transition-none",
         isGroupingItem
-          ? "border-warning/25 bg-warning/5"
+          ? "border-l-2 border-warning/60 bg-warning/5"
           : isSubItem
-            ? "border-border bg-bg-secondary"
-            : "bg-surface-white border-border shadow-none",
+            ? "border-l-2 border-border bg-bg-secondary/50"
+            : "border-l-2 border-transparent hover:bg-bg-secondary/40",
       )}
     >
-      {/* Header */}
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-3 gap-y-1">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-1">
           <span
             className={cn(
-              "font-bold text-accent min-w-fit",
-              isSubItem ? "text-base" : "text-lg",
+              "min-w-8 rounded-md bg-white/80 px-1.5 py-1 text-center font-mono text-xs font-semibold",
+              isGroupingItem ? "text-warning" : "text-primary",
             )}
           >
             {item.itemNumber}
           </span>
           <h3
             className={cn(
-              "min-w-0 break-words text-text-primary",
-              isSubItem ? "text-sm font-medium" : "font-semibold",
+              "min-w-0 break-words text-sm text-text-primary",
+              isSubItem ? "font-medium" : "font-semibold",
             )}
           >
             {item.topic}
           </h3>
           {isGroupingItem && (
-            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-xs text-warning">
-              <FiLayers className="w-3 h-3" /> Grouping / Header Only
+            <span className="inline-flex items-center gap-1 rounded-full bg-warning/10 px-2 py-0.5 text-[10px] font-medium text-warning">
+              <FiLayers aria-hidden="true" className="h-3 w-3" /> Grouping
             </span>
           )}
           {isSubItem && (
-            <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-xs text-text-secondary">
+            <span className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] text-text-secondary">
               Sub-item
             </span>
           )}
         </div>
 
-        {/* Actions */}
-        <div className="flex w-full flex-wrap items-center justify-end gap-1 sm:w-auto sm:shrink-0 sm:gap-2">
+        <div className="flex flex-wrap items-center gap-1 sm:shrink-0">
           <button
             type="button"
             onClick={onMoveUp}
             disabled={!canMoveUp || isLoading}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
             title="Move up"
-            aria-label="Move item up"
+            aria-label={`Move ${item.topic} up`}
           >
-            <FiChevronUp className="w-4 h-4 text-text-secondary" />
+            <FiChevronUp aria-hidden="true" className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={onMoveDown}
             disabled={!canMoveDown || isLoading}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent disabled:opacity-50"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-white hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-40 motion-reduce:transition-none"
             title="Move down"
-            aria-label="Move item down"
+            aria-label={`Move ${item.topic} down`}
           >
-            <FiChevronDown className="w-4 h-4 text-text-secondary" />
+            <FiChevronDown aria-hidden="true" className="h-4 w-4" />
           </button>
           {canAddSubItem && (
             <button
               type="button"
               onClick={onAddSubItem}
               disabled={isLoading}
-              className="inline-flex min-h-11 items-center gap-1 whitespace-nowrap rounded-lg border border-primary/20 bg-primary/5 px-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:opacity-50 motion-reduce:transition-none"
+              className="inline-flex min-h-8 items-center gap-1 whitespace-nowrap rounded-md px-2 text-xs font-medium text-primary transition-colors hover:bg-primary/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
               title="Add sub-item"
             >
-              <FiLayers className="w-4 h-4" />
-              Add Sub-item
+              <FiLayers aria-hidden="true" className="h-3.5 w-3.5" />
+              Add child
             </button>
           )}
           <button
+            type="button"
             onClick={onToggleExpand}
-            className="inline-flex min-h-11 items-center justify-center rounded-lg bg-bg-secondary px-3 text-sm font-medium transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+            aria-expanded={isExpanded}
+            className="inline-flex min-h-8 items-center justify-center rounded-md px-2.5 text-xs font-medium text-text-secondary transition-colors hover:bg-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           >
-            {isExpanded ? "Hide" : "Show"}
+            {isExpanded ? "Hide details" : "Edit"}
           </button>
           <button
             type="button"
             onClick={onDelete}
             disabled={isLoading}
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50 motion-reduce:transition-none"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-text-secondary transition-colors hover:bg-error/5 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transition-none"
             title="Delete item"
-            aria-label="Delete item"
+            aria-label={`Delete ${item.topic}`}
           >
-            <FiTrash2 className="w-4 h-4" />
+            <FiTrash2 aria-hidden="true" className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Expanded View */}
       {isExpanded && (
-        <div className="space-y-3 pt-3 border-t border-border">
+        <div className="mt-3 space-y-3 border-t border-border/80 pt-3">
           {isGroupingItem && (
             <div className="rounded-md border border-warning/20 bg-warning/10 px-3 py-2 text-xs text-warning">
               This item is a grouping header. Users will not enter responses
@@ -919,7 +917,7 @@ const TemplateItemEditor: React.FC<TemplateItemEditorProps> = ({
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid gap-3 sm:grid-cols-2">
             <div>
               <label className="text-xs font-medium text-text-secondary mb-1 block">
                 Section

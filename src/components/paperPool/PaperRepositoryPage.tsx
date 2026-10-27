@@ -343,6 +343,17 @@ export default function PaperRepositoryPage({
             isLeader={isLeader}
             canUploadPdf={canUploadPdf}
           />
+          {isLeader && (
+            <BulkActionBar
+              selectedCount={selectedPaperIds.length}
+              onAddToProcess={() => setIsAddToProcessBySelectionOpen(true)}
+              onClear={() => {
+                setSelectedPaperIds([]);
+                setInsertResult(null);
+              }}
+              isSubmitting={isAdding}
+            />
+          )}
         </div>
       </div>
 
@@ -366,18 +377,6 @@ export default function PaperRepositoryPage({
       </div>
 
       {/* Overlays / Modals */}
-      {isLeader && (
-        <BulkActionBar
-          selectedCount={selectedPaperIds.length}
-          onAddToProcess={() => setIsAddToProcessBySelectionOpen(true)}
-          onClear={() => {
-            setSelectedPaperIds([]);
-            setInsertResult(null);
-          }}
-          isSubmitting={isAdding}
-        />
-      )}
-
       <AddToProcessBySelectionModal
         isOpen={isAddToProcessBySelectionOpen}
         onClose={() => {

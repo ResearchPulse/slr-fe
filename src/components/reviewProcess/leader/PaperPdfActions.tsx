@@ -162,7 +162,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className="flex flex-wrap items-center gap-1.5">
       {(isLeader || canUploadPdf) && (
         <button
           onClick={(e) => {

@@ -56,13 +56,38 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
       if (!trigger) return;
 
       const bounds = trigger.getBoundingClientRect();
-      const menuHeight = menuRef.current?.getBoundingClientRect().height ?? 0;
-      const opensAbove = bounds.bottom + menuHeight > window.innerHeight && bounds.top > menuHeight;
+      const measuredHeight = menuRef.current?.getBoundingClientRect().height || 240;
+      const viewportPadding = 8;
+      const gap = 6;
+      const availableBelow = Math.max(
+        0,
+        window.innerHeight - bounds.bottom - gap - viewportPadding,
+      );
+      const availableAbove = Math.max(0, bounds.top - gap - viewportPadding);
+      const opensAbove = measuredHeight > availableBelow && availableAbove > availableBelow;
+      const availableHeight = opensAbove ? availableAbove : availableBelow;
+      const maxHeight = Math.max(96, Math.min(240, availableHeight));
+      const renderedHeight = Math.min(measuredHeight, maxHeight);
+      const maxWidth = Math.max(0, window.innerWidth - viewportPadding * 2);
+      const width = Math.min(bounds.width, maxWidth);
+      const centeredLeft = bounds.left + (bounds.width - width) / 2;
 
       setMenuStyle({
-        left: bounds.left,
-        width: bounds.width,
-        top: opensAbove ? bounds.top - menuHeight - 6 : bounds.bottom + 6,
+        left: Math.max(
+          viewportPadding,
+          Math.min(centeredLeft, window.innerWidth - width - viewportPadding),
+        ),
+        width,
+        top: opensAbove
+          ? Math.max(viewportPadding, bounds.top - renderedHeight - gap)
+          : Math.max(
+              viewportPadding,
+              Math.min(
+                bounds.bottom + gap,
+                window.innerHeight - renderedHeight - viewportPadding,
+              ),
+            ),
+        maxHeight,
       });
     };
 
@@ -223,7 +248,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               id={`${selectId}-options`}
               onClick={(event) => event.stopPropagation()}
               className={cn(
-                "ui-popover-enter fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+                "ui-popover-enter fixed z-(--z-index-popover) flex max-h-60 flex-col overflow-hidden rounded-xl bg-surface-white px-0 py-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
                 menuClassName,
               )}
               style={menuStyle}
@@ -244,7 +269,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                   />
                 </div>
               </div>}
-              <div id={`${selectId}-listbox`} role="listbox" aria-label={props["aria-label"]} className="min-h-0 flex-1 overflow-y-auto">
+              <div id={`${selectId}-listbox`} role="listbox" aria-label={props["aria-label"]} className="dropdown-scroll-area min-h-0 w-full flex-1 overflow-y-auto px-0">
               {visibleOptions.map((option, index) => {
                 const isSelected = String(option.value) === String(selectedValue);
                 return (
@@ -256,7 +281,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
                     onMouseEnter={() => setActiveIndex(index)}
                     onClick={() => selectOption(option)}
                     className={cn(
-                      "flex w-full min-w-0 items-center rounded-lg px-2 text-left font-sans text-[13px] leading-5 text-text-primary transition-colors whitespace-normal break-words",
+                      "flex w-full min-w-0 items-center px-2 text-left font-sans text-[13px] leading-5 text-text-primary transition-colors whitespace-normal break-words",
                       option.description ? "min-h-12 py-2" : "min-h-9 h-auto py-1.5",
                       "hover:bg-primary-light hover:text-accent",
                       (isSelected || activeIndex === index) && "bg-primary-light text-accent",

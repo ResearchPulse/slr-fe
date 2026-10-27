@@ -160,6 +160,26 @@ function mapReviewProcessesToSnapshots(
   });
 }
 
+function mergeProcessSnapshots(
+  current: ProcessSnapshot[],
+  incoming: ProcessSnapshot[],
+): ProcessSnapshot[] {
+  const snapshotsById = new Map(
+    current.map((snapshot) => [snapshot.processId, snapshot]),
+  );
+
+  incoming.forEach((snapshot) => {
+    if (snapshot.processId) {
+      snapshotsById.set(snapshot.processId, {
+        ...snapshotsById.get(snapshot.processId),
+        ...snapshot,
+      });
+    }
+  });
+
+  return Array.from(snapshotsById.values());
+}
+
 export default function PaperPoolTab({
   projectId,
   reviewProcesses,
@@ -499,23 +519,31 @@ export default function PaperPoolTab({
   // --- Effects ---
   useEffect(() => {
     if (reviewProcessSnapshotsFromApi.length > 0) {
-      setProcessSnapshots(
-        reviewProcessSnapshotsFromApi.map(
-          (snapshot): ProcessSnapshot => ({
-            processId: snapshot.processId || snapshot.id || "",
-            processName:
-              snapshot.processName || snapshot.name || "Untitled process",
-            statusText: snapshot.statusText as ProcessSnapshot["statusText"],
-            progressPercent: snapshot.progressPercent ?? 0,
-            existingPaperIds: [],
-            totalPapers: snapshot.totalPapersImported ?? 0,
-            totalIncludedPapers: snapshot.totalIncludedPapers ?? 0,
-            totalExcludedPapers: snapshot.totalExcludedPapers ?? 0,
-          }),
+      setProcessSnapshots((current) =>
+        mergeProcessSnapshots(
+          current,
+          reviewProcessSnapshotsFromApi.map(
+            (snapshot): ProcessSnapshot => ({
+              processId: snapshot.processId || snapshot.id || "",
+              processName:
+                snapshot.processName || snapshot.name || "Untitled process",
+              statusText: snapshot.statusText as ProcessSnapshot["statusText"],
+              progressPercent: snapshot.progressPercent ?? 0,
+              existingPaperIds: [],
+              totalPapers: snapshot.totalPapersImported ?? 0,
+              totalIncludedPapers: snapshot.totalIncludedPapers ?? 0,
+              totalExcludedPapers: snapshot.totalExcludedPapers ?? 0,
+            }),
+          ),
         ),
       );
     } else if (reviewProcesses.length > 0) {
-      setProcessSnapshots(mapReviewProcessesToSnapshots(reviewProcesses));
+      setProcessSnapshots((current) =>
+        mergeProcessSnapshots(
+          current,
+          mapReviewProcessesToSnapshots(reviewProcesses),
+        ),
+      );
     }
   }, [reviewProcessSnapshotsFromApi, reviewProcesses]);
 
@@ -655,7 +683,13 @@ export default function PaperPoolTab({
 
   const handleCreateProcess = async (data: CreateReviewProcessRequest) => {
     try {
-      await createReviewProcess({ projectId, data });
+      const response = await createReviewProcess({ projectId, data });
+      const [createdSnapshot] = mapReviewProcessesToSnapshots([response.data]);
+      if (createdSnapshot.processId) {
+        setProcessSnapshots((current) =>
+          mergeProcessSnapshots(current, [createdSnapshot]),
+        );
+      }
       setIsCreateProcessModalOpen(false);
       toastSuccess("Review process created successfully");
     } catch {

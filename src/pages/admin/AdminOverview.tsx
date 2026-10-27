@@ -170,9 +170,6 @@ const AdminOverview: React.FC = () => {
     <div className="mx-auto max-w-[1600px] space-y-7 pb-2">
       <section className="flex flex-col justify-between gap-5 border-b border-border pb-6 sm:flex-row sm:items-end">
         <div>
-          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-accent">
-            Admin overview
-          </p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[34px]">
             Welcome back, {displayName}
           </h1>

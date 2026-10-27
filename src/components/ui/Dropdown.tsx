@@ -91,7 +91,7 @@ const Dropdown: React.FC<DropdownProps> = ({
         <div
           id={contentId}
           className={cn(
-            "absolute z-(--z-index-dropdown) ui-popover-enter rounded-xl focus:outline-none",
+            "dropdown-scroll-area absolute z-(--z-index-dropdown) ui-popover-enter rounded-xl focus:outline-none",
             !contentClassName?.includes("bg-") && "bg-surface-white",
             !contentClassName?.includes("w-") && "w-56",
             !contentClassName?.includes("shadow-") && "shadow-lg",

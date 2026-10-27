@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useDispatch } from "react-redux";
-import { FiSearch, FiFolder, FiPlus, FiRefreshCw, FiArchive } from "react-icons/fi";
+import { FiSearch, FiFolder, FiPlus, FiRefreshCw, FiArchive, FiFilter } from "react-icons/fi";
 import { useDeletedProjects, useMyProjects, useProjectMutations } from "../../hooks/useProjects";
 import type { Project, ProjectStatus } from "../../types/project";
 import Button from "../../components/ui/Button";
@@ -15,6 +15,9 @@ import {
 import { getProjectRoleLabel } from "../../types/project";
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import Select from "../../components/ui/Select";
+import DataTableToolbar from "../../components/ui/DataTableToolbar";
+import Pagination from "../../components/ui/Pagination";
 
 type RoleFilter = "All" | "Project Leader" | "Reviewer";
 
@@ -30,6 +33,7 @@ export default function ProjectListPage() {
   const [roleFilter, setRoleFilter] = useState<RoleFilter>("All");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [showDeletedProjects, setShowDeletedProjects] = useState(false);
+  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
   const [busyProjectId, setBusyProjectId] = useState<string | null>(null);
   const pageSize = 10;
@@ -153,176 +157,223 @@ export default function ProjectListPage() {
   };
 
   const hasNoResults = !isLoading && !error && filteredProjects.length === 0;
+  const roleOptions = [
+    { value: "All", label: `All roles (${allList.length})` },
+    {
+      value: "Project Leader",
+      label: `Project Leader (${allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === "Project Leader").length})`,
+    },
+    {
+      value: "Reviewer",
+      label: `Reviewer (${allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === "Reviewer").length})`,
+    },
+  ];
+  const statusOptions = [
+    { value: "all", label: "All statuses" },
+    { value: "Draft", label: "Draft" },
+    { value: "Active", label: "Active" },
+    { value: "Completed", label: "Completed" },
+  ];
+  const activeFilterCount = [
+    !showDeletedProjects && roleFilter !== "All",
+    !showDeletedProjects && Boolean(statusFilter),
+  ].filter(Boolean).length;
+  const totalCount = showDeletedProjects
+    ? deletedData?.totalCount || 0
+    : roleFilter === "All"
+      ? activeData?.totalCount || 0
+      : roleFilteredResults.length;
+  const pageStart = filteredProjects.length ? (currentPage - 1) * pageSize + 1 : 0;
+  const pageEnd = Math.min(currentPage * pageSize, totalCount);
 
   return (
-    <div className="min-h-[calc(100vh-72px)] bg-bg-primary">
-      <main className="mx-auto w-full max-w-[1480px] px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <h1 className="mb-1 text-[28px] font-semibold leading-tight tracking-tight text-text-primary sm:text-[32px]">
-              {showDeletedProjects ? "Deleted projects" : roleFilter === "All" ? "Research Projects" : `${roleFilter} Projects`}
+    <div className="min-h-[calc(100vh-64px)] bg-bg-primary">
+      <main className="mx-auto w-full max-w-[1600px] px-4 py-5 sm:px-6 sm:py-6 lg:px-8">
+        <header className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-[26px] font-semibold leading-tight tracking-tight text-text-primary">
+              Research Projects
             </h1>
-            <p className="max-w-3xl text-sm leading-relaxed text-text-secondary">
-              {showDeletedProjects
-                ? "Projects you deleted are kept here until you restore them. Project data remains available after restoration."
-                : roleFilter === "Reviewer"
-                ? "Your review assignments and the projects where you contribute screening, assessment, and extraction."
-                : roleFilter === "Project Leader"
-                  ? "Projects you lead, with setup, team coordination, and review process controls."
-                  : "Your research workspace, organized around the role you hold in each project."}
+            <p className="mt-1 max-w-3xl text-[13px] leading-5 text-text-secondary sm:text-sm">
+              Your research workspace, organized around the role you hold in each project.
             </p>
           </div>
           {!showDeletedProjects && (
-            <Button onClick={() => setIsCreateModalOpen(true)} className="inline-flex min-h-11 items-center gap-2">
+            <Button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="inline-flex h-9 min-h-9 shrink-0 items-center gap-2 self-start sm:self-center"
+            >
               <FiPlus size={16} /> Create project
             </Button>
           )}
-        </div>
+        </header>
 
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          {!showDeletedProjects && (
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects by role">
-              {([
-                { value: "All", label: "All roles" },
-                { value: "Project Leader", label: "Project Leader" },
-                { value: "Reviewer", label: "Reviewer" },
-              ] as const).map(({ value, label }) => {
-                const count = value === "All"
-                  ? allList.length
-                  : allList.filter((project: Project) => getProjectRoleLabel(project.role ?? project.roleText) === value).length;
-                return (
+        <section className="overflow-hidden rounded-xl border border-border bg-surface-white">
+          <DataTableToolbar
+            search={(
+              <div className="group relative w-full min-w-0 sm:max-w-[320px] sm:flex-1">
+                <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
+                <Input
+                  aria-label="Search projects"
+                  placeholder="Search projects..."
+                  value={searchQuery}
+                  className="h-9 min-h-9 rounded-lg border-border bg-surface-white pl-9 text-[13px] transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  onChange={(event) => {
+                    setSearchQuery(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                />
+              </div>
+            )}
+            filters={!showDeletedProjects ? (
+              <div className="w-full min-w-0 sm:w-auto">
+                <div className="hidden items-center gap-2 lg:flex">
+                  <Select
+                    aria-label="Filter projects by role"
+                    value={roleFilter}
+                    onChange={(event) => {
+                      setRoleFilter(event.target.value as RoleFilter);
+                      setCurrentPage(1);
+                    }}
+                    options={roleOptions}
+                    className="h-9 min-h-9 w-full rounded-lg px-3 text-[13px] lg:w-[176px]"
+                  />
+                  <Select
+                    aria-label="Filter projects by status"
+                    value={statusFilter ?? "all"}
+                    onChange={(event) => {
+                      setStatusFilter(event.target.value === "all" ? undefined : event.target.value as ProjectStatus);
+                      setCurrentPage(1);
+                    }}
+                    options={statusOptions}
+                    className="h-9 min-h-9 w-full rounded-lg px-3 text-[13px] lg:w-[160px]"
+                  />
+                </div>
+                <div className="lg:hidden">
                   <button
-                    key={value}
                     type="button"
-                    onClick={() => { setRoleFilter(value); setCurrentPage(1); }}
-                    aria-pressed={roleFilter === value}
-                    className={`inline-flex min-h-11 items-center gap-2 rounded-xl border px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${
-                      roleFilter === value
-                        ? "border-accent bg-bg-secondary font-medium text-accent"
-                        : "border-border bg-surface-white text-text-secondary hover:bg-bg-primary hover:text-text-primary"
-                    }`}
+                    aria-expanded={isMobileFiltersOpen}
+                    aria-controls="project-list-filters"
+                    onClick={() => setIsMobileFiltersOpen((open) => !open)}
+                    className="inline-flex h-9 min-h-9 items-center gap-2 rounded-lg border border-border bg-surface-white px-3 text-[13px] font-medium text-text-secondary transition-colors hover:bg-bg-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                   >
-                    {label}
-                    <span className={`rounded-md px-1.5 py-0.5 text-xs ${roleFilter === value ? "bg-surface-white text-accent" : "bg-bg-primary text-text-secondary"}`}>{count}</span>
+                    <FiFilter className="h-3.5 w-3.5" aria-hidden="true" />
+                    Filters
+                    {activeFilterCount > 0 && (
+                      <span className="rounded-full bg-primary-light px-1.5 py-0.5 text-[10px] font-semibold text-primary">
+                        {activeFilterCount}
+                      </span>
+                    )}
                   </button>
-                );
-              })}
+                  {isMobileFiltersOpen && (
+                    <div id="project-list-filters" className="mt-2 grid gap-2 sm:grid-cols-2">
+                      <Select
+                        aria-label="Filter projects by role"
+                        value={roleFilter}
+                        onChange={(event) => {
+                          setRoleFilter(event.target.value as RoleFilter);
+                          setCurrentPage(1);
+                        }}
+                        options={roleOptions}
+                        className="h-9 min-h-9 w-full rounded-lg px-3 text-[13px]"
+                      />
+                      <Select
+                        aria-label="Filter projects by status"
+                        value={statusFilter ?? "all"}
+                        onChange={(event) => {
+                          setStatusFilter(event.target.value === "all" ? undefined : event.target.value as ProjectStatus);
+                          setCurrentPage(1);
+                        }}
+                        options={statusOptions}
+                        className="h-9 min-h-9 w-full rounded-lg px-3 text-[13px]"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : undefined}
+            filterPlacement="left"
+            actions={(
+              <div className="inline-flex items-center rounded-lg bg-bg-primary p-0.5" role="group" aria-label="Project view">
+                <button
+                  type="button"
+                  aria-pressed={!showDeletedProjects}
+                  onClick={() => { setShowDeletedProjects(false); setCurrentPage(1); setIsMobileFiltersOpen(false); }}
+                  className={`inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${!showDeletedProjects ? "bg-surface-white text-accent shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+                >
+                  Active
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={showDeletedProjects}
+                  onClick={() => { setShowDeletedProjects(true); setCurrentPage(1); setIsMobileFiltersOpen(false); }}
+                  className={`inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${showDeletedProjects ? "bg-surface-white text-accent shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
+                >
+                  <FiArchive size={13} aria-hidden="true" /> Deleted
+                  {deletedData?.totalCount ? (
+                    <span className="rounded-full bg-bg-secondary px-1.5 py-0.5 text-[10px]">
+                      {deletedData.totalCount}
+                    </span>
+                  ) : null}
+                </button>
+              </div>
+            )}
+          />
+
+          {(softDeleteError || restoreError) && (
+            <div role="alert" className="mx-3 mt-3 rounded-lg border border-error/25 bg-error/5 px-3 py-2 text-[13px] text-error sm:mx-4">
+              {softDeleteError || restoreError}
             </div>
           )}
 
-          <div className="inline-flex items-center rounded-xl border border-border bg-surface-white p-1" role="group" aria-label="Project view">
-            <button
-              type="button"
-              aria-pressed={!showDeletedProjects}
-              onClick={() => { setShowDeletedProjects(false); setCurrentPage(1); }}
-              className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${!showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
-            >
-              Active
-            </button>
-            <button
-              type="button"
-              aria-pressed={showDeletedProjects}
-              onClick={() => { setShowDeletedProjects(true); setCurrentPage(1); }}
-              className={`inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${showDeletedProjects ? "bg-bg-secondary font-medium text-accent" : "text-text-secondary hover:text-text-primary"}`}
-            >
-              <FiArchive size={14} /> Deleted
-              {deletedData?.totalCount ? <span className="rounded-md bg-surface-white px-1.5 py-0.5 text-xs">{deletedData.totalCount}</span> : null}
-            </button>
-          </div>
-        </div>
+          {error && data && (
+            <div role="status" className="mx-3 mt-3 rounded-lg border border-warning/25 bg-warning/10 px-3 py-2 text-[13px] text-warning sm:mx-4">
+              {error}
+            </div>
+          )}
 
-        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-border bg-surface-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-          <div className="relative w-full sm:max-w-sm">
-            <FiSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-placeholder"
-              size={14}
-            />
-            <Input
-              aria-label="Search projects"
-              placeholder="Search projects..."
-              value={searchQuery}
-              className="h-11 rounded-xl border-border bg-surface-white pl-9 text-sm transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-
-          {!showDeletedProjects && <div className="flex flex-wrap items-center gap-1 rounded-xl bg-bg-primary p-1">
-            {([undefined, "Draft", "Active", "Completed"] as (ProjectStatus | undefined)[]).map((status) => (
-              <button
-                key={status ?? "All"}
-                type="button"
-                aria-pressed={statusFilter === status}
-                onClick={() => { setStatusFilter(status); setCurrentPage(1); }}
-                className={`min-h-11 rounded-md px-3 text-xs font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 ${statusFilter === status ? "bg-surface-white text-text-primary shadow-sm" : "text-text-secondary hover:text-text-primary"}`}
-              >
-                {status ?? "All"}
-              </button>
-            ))}
-          </div>}
-        </div>
-
-        {(softDeleteError || restoreError) && (
-          <div role="alert" className="mb-4 rounded-lg border border-error/25 bg-error/5 px-4 py-3 text-sm text-error">
-            {softDeleteError || restoreError}
-          </div>
-        )}
-
-        {error && data && (
-          <div role="status" className="mb-4 rounded-lg border border-warning/25 bg-warning/10 px-4 py-3 text-sm text-warning">
-            {error}
-          </div>
-        )}
-
-        {/* Projects Table or Skeleton */}
-        <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
           {isLoading && !data ? (
             <TableSkeleton rows={pageSize} />
           ) : error && !data ? (
-            <div role="alert" className="flex flex-col items-center justify-center px-4 py-16 text-center">
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-error/10 text-error">
-                <FiRefreshCw className="h-5 w-5" aria-hidden="true" />
+            <div role="alert" className="flex flex-col items-center justify-center px-4 py-12 text-center">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-error/10 text-error">
+                <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-text-primary">
+              <h2 className="mb-1 text-base font-semibold text-text-primary">
                 Projects couldn’t be loaded
-              </h3>
-              <p className="mb-5 max-w-sm text-sm leading-relaxed text-text-secondary">
+              </h2>
+              <p className="mb-4 max-w-sm text-[13px] leading-5 text-text-secondary">
                 {error || "Check your connection and try again."}
               </p>
-              <Button variant="outline" onClick={() => void refetch()}>
+              <Button variant="outline" size="sm" onClick={() => void refetch()}>
                 Try again
               </Button>
             </div>
           ) : hasNoResults ? (
-            <div className="flex flex-col items-center justify-center px-4 py-16 text-center">
-              <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-lg bg-bg-primary text-text-secondary">
-                <FiFolder className="w-5 h-5" />
+            <div className="flex flex-col items-center justify-center px-4 py-12 text-center">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-bg-primary text-text-secondary">
+                <FiFolder className="h-4 w-4" aria-hidden="true" />
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-text-primary">
+              <h2 className="mb-1 text-base font-semibold text-text-primary">
                 {showDeletedProjects
                   ? searchQuery ? "No deleted projects match your search" : "No deleted projects"
                   : searchQuery || statusFilter ? "No matching projects" : "No projects yet"}
-              </h3>
-              <p className="max-w-sm text-sm leading-relaxed text-text-secondary">
+              </h2>
+              <p className="max-w-sm text-[13px] leading-5 text-text-secondary">
                 {showDeletedProjects
                   ? "Projects you move to Deleted will appear here, where you can restore them at any time."
                   : searchQuery || statusFilter
-                  ? "No projects match your search or filter. Try different keywords or clear the filters."
-                  : "You haven't created or joined any projects yet. Ask a project leader to invite you, or set up your first review."}
+                    ? "No projects match your search or filter. Try different keywords or clear the filters."
+                    : "You haven't created or joined any projects yet. Ask a project leader to invite you, or set up your first review."}
               </p>
             </div>
           ) : (
             <ProjectTable
               projects={filteredProjects}
               onView={(id) => {
-                const project = filteredProjects.find((p: Project) => p.id === id);
+                const project = filteredProjects.find((projectItem: Project) => projectItem.id === id);
                 if (project) {
-                  dispatch(
-                    setCurrentProject({ id: project.id, title: project.title }),
-                  );
-                  // Clear stale membership so ProtectedRouteForProject fetches fresh data for this project
+                  dispatch(setCurrentProject({ id: project.id, title: project.title }));
                   dispatch(clearProjectMember());
                 }
                 navigate(`/projects/${id}`);
@@ -334,78 +385,25 @@ export default function ProjectListPage() {
               busyProjectId={busyProjectId}
             />
           )}
-        </div>
 
-        {/* Pagination */}
-        {totalPages > 1 && (
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              aria-label="Previous page"
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              disabled={currentPage === 1 || isLoading}
-              className="min-h-11"
-            >
-              ← Prev
-            </Button>
-
-            <div className="flex gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (page) => {
-                  // Show first page, last page, current page, and pages around current
-                  if (
-                    page === 1 ||
-                    page === totalPages ||
-                    (page >= currentPage - 1 && page <= currentPage + 1)
-                  ) {
-                    return (
-                      <Button
-                        key={page}
-                        size="sm"
-                        variant={page === currentPage ? "primary" : "outline"}
-                        aria-current={page === currentPage ? "page" : undefined}
-                        onClick={() => setCurrentPage(page)}
-                        disabled={isLoading}
-                        className="min-h-11 min-w-11 px-2"
-                      >
-                        {page}
-                      </Button>
-                    );
-                  } else if (
-                    page === currentPage - 2 ||
-                    page === currentPage + 2
-                  ) {
-                    return (
-                      <span
-                        key={page}
-                        className="px-2 py-1 text-text-secondary text-sm"
-                      >
-                        ...
-                      </span>
-                    );
-                  }
-                  return null;
-                },
-              )}
-            </div>
-
-            <Button
-              size="sm"
-              variant="outline"
-              aria-label="Next page"
-              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages || isLoading}
-              className="min-h-11"
-            >
-              Next →
-            </Button>
-
-            <span className="ml-2 text-xs text-text-secondary">
-              Page {currentPage} / {totalPages}
-            </span>
-          </div>
-        )}
+          {!isLoading && !error && (
+            <footer className="flex flex-col gap-2 border-t border-border bg-bg-primary/50 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+              <p className="text-xs text-text-secondary">
+                Showing {pageStart}–{pageEnd} of {totalCount} projects
+              </p>
+              <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
+                <span className="text-xs text-text-secondary">Per page: {pageSize}</span>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                  disabled={isLoading}
+                  compact
+                />
+              </div>
+            </footer>
+          )}
+        </section>
       </main>
       <ProjectFormModal
         isOpen={isCreateModalOpen}

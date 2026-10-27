@@ -45,7 +45,7 @@ export default function NotificationCenterPage({ disableNavigation = false }: No
 
   return (
     <main className="min-h-[calc(100vh-64px)] bg-bg-primary px-4 py-6 sm:px-6 sm:py-9">
-      <div className="mx-auto max-w-4xl">
+      <div className="mx-auto w-full max-w-[1600px]">
         <header className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="mb-2 flex items-center gap-2 text-primary">

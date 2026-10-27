@@ -9,11 +9,11 @@ interface SystemSignatureProps {
 const SystemSignature = forwardRef<HTMLDivElement, SystemSignatureProps>(
   ({ className = "", logoClassName = "h-8 lg:h-9", showTagline = false }, ref) => {
     return (
-      <div className={`flex flex-col items-start justify-center ${className}`} ref={ref}>
+      <div className={`flex min-w-0 max-w-full flex-col items-start justify-center ${className}`} ref={ref}>
         <img
           src="/brand/logo-horizontal.png"
           alt="SLRS"
-          className={`w-auto select-none ${logoClassName}`}
+          className={`block max-w-full w-auto object-contain object-left select-none ${logoClassName}`}
           draggable={false}
         />
         {showTagline && (
