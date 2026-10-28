@@ -1,20 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { toastError } from "../../utils/toast";
 import {
-  FiSearch,
-  FiUpload,
-  FiLayers,
   FiInfo,
 } from "react-icons/fi";
-import Button from "../ui/Button";
 import PaperTable from "./PaperTable";
-import FilterSidebar from "./FilterSidebar";
-import SavedFilterDropdown from "./SavedFilterDropdown";
+import FilterPopover from "./FilterPopover";
 import BulkActionBar from "./BulkActionBar";
 import AddToProcessBySelectionModal from "./AddToProcessBySelectionModal";
 import AddToProcessByFilterModal from "./AddToProcessByFilterModal";
 import ManageFiltersModal from "./ManageFiltersModal";
-import PaperViewerModal from "../shared/paper/PaperViewerModal";
 import NameFilterModal from "./NameFilterModal";
 import PaperImportModal from "./PaperImportModal";
 import ReviewProcessRail from "./ReviewProcessRail";
@@ -56,8 +51,6 @@ interface PaperRepositoryPageProps {
   filters: PaperPoolFilters;
   setFilters: (filters: PaperPoolFilters) => void;
   onResetFilters: () => void;
-  isFilterPanelCollapsed: boolean;
-  setIsFilterPanelCollapsed: (val: boolean) => void;
 
   // Selection
   selectedPaperIds: string[];
@@ -85,10 +78,6 @@ interface PaperRepositoryPageProps {
   insertResult: SelectionInsertResult | null;
   setInsertResult: (res: SelectionInsertResult | null) => void;
   selectedSavedFilterMatchedCount: number | null;
-
-  // Detail View
-  viewerPaper: PaperPoolItem | null;
-  setViewerPaper: (paper: PaperPoolItem | null) => void;
 
   // Modals/UI State
   isManageFiltersOpen: boolean;
@@ -147,8 +136,6 @@ export default function PaperRepositoryPage({
   filters,
   setFilters,
   onResetFilters,
-  isFilterPanelCollapsed,
-  setIsFilterPanelCollapsed,
   selectedPaperIds,
   setSelectedPaperIds,
   savedFilters,
@@ -166,8 +153,6 @@ export default function PaperRepositoryPage({
   insertResult,
   setInsertResult,
   selectedSavedFilterMatchedCount,
-  viewerPaper,
-  setViewerPaper,
   isManageFiltersOpen,
   setIsManageFiltersOpen,
   isNameFilterModalOpen,
@@ -201,6 +186,7 @@ export default function PaperRepositoryPage({
   isLeader = false,
   canUploadPdf = false,
 }: PaperRepositoryPageProps) {
+  const navigate = useNavigate();
   const [isReviewRailOpen, setIsReviewRailOpen] = React.useState(false);
   const allPageSelected =
     papers.length > 0 && papers.every((p) => selectedPaperIds.includes(p.id));
@@ -227,60 +213,7 @@ export default function PaperRepositoryPage({
   };
 
   return (
-    <div className="flex flex-col gap-4 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
-      {/* Header Area */}
-      <div className="flex flex-col gap-4 rounded-xl border border-border bg-white p-4 sm:p-5 xl:flex-row xl:items-center xl:justify-between">
-        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-accent/20 bg-primary-light text-accent sm:h-12 sm:w-12">
-            <FiLayers className="h-5 w-5 sm:h-6 sm:w-6" />
-          </div>
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold tracking-tight text-text-primary sm:text-xl">
-              Paper <span className="text-accent">Identification</span> Repository
-            </h2>
-            <p className="mt-1 max-w-xl text-xs leading-5 text-text-secondary sm:text-sm">
-              Centralized repository of all imported papers. Select and assign
-              papers to review processes below.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center xl:justify-end">
-          {/* Search Box */}
-          <div className="group relative min-w-0 flex-1 sm:min-w-[250px] sm:flex-none">
-            <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
-            <input
-              type="text"
-              aria-label="Search papers by title, DOI, or authors"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Search title, DOI, authors..."
-              className="h-11 w-full rounded-lg border border-border bg-surface-white pl-10 pr-3.5 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none lg:h-10 sm:w-[240px]"
-            />
-          </div>
-
-          <SavedFilterDropdown
-            savedFilters={savedFilters}
-            selectedFilterId={selectedSavedFilterId}
-            onSelect={onApplySavedFilter}
-            onManage={() => setIsManageFiltersOpen(true)}
-            onSaveNew={onOpenSaveModal}
-            isCreating={isCreatingFilter}
-          />
-
-          {isLeader && (
-            <Button
-              variant="outline"
-              className="min-h-11 w-full rounded-lg border-border px-4 text-xs hover:border-accent hover:bg-accent hover:text-text-on-primary sm:w-auto lg:min-h-10"
-              onClick={() => setIsImportModalOpen(true)}
-            >
-              <FiUpload className="w-4 h-4 mr-2" />
-              Import Papers
-            </Button>
-          )}
-        </div>
-      </div>
-
+    <div className="flex flex-col gap-3 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
       {/* Read-Only Banner for Non-Leaders */}
       {!isLeader && (
         <div className="flex items-center gap-3 rounded-lg border border-primary/20 bg-primary/5 p-3 text-xs text-text-primary sm:text-sm" role="status">
@@ -298,30 +231,35 @@ export default function PaperRepositoryPage({
         </div>
       )}
 
-      {/* Main Content: Sidebar + Table */}
-      <div className="flex flex-col items-stretch gap-3 lg:min-h-[calc(100dvh-7rem)] lg:flex-row lg:items-stretch lg:gap-4">
-        <FilterSidebar
-          filters={filters}
-          availablePaperSources={metadata?.paperSources ?? []}
-          availableSources={metadata?.searchSources ?? []}
-          availableBatches={metadata?.importBatches ?? []}
-          isCollapsed={isFilterPanelCollapsed}
-          onToggleCollapse={() =>
-            setIsFilterPanelCollapsed(!isFilterPanelCollapsed)
-          }
-          onChange={setFilters}
-          onReset={onResetFilters}
-          onSaveCurrent={onOpenSaveModal}
-          onAddToProcess={() => setIsAddToProcessByFilterOpen(true)}
-          isSaving={isCreatingFilter}
-        />
-
-        <div className="flex min-w-0 flex-1 flex-col space-y-4 lg:h-full">
+      {/* Unified repository table and filter toolbar */}
+      <div className="flex min-w-0 flex-1 flex-col space-y-4">
           <PaperTable
             papers={papers}
             isLoading={isLoadingPapers}
             isFetching={isFetchingPapers}
             totalCount={totalCount}
+            searchText={searchText}
+            onSearchTextChange={setSearchText}
+            filterControl={
+              <FilterPopover
+                filters={filters}
+                availablePaperSources={metadata?.paperSources ?? []}
+                availableSources={metadata?.searchSources ?? []}
+                availableBatches={metadata?.importBatches ?? []}
+                onChange={(nextFilters) => {
+                  setFilters(nextFilters);
+                }}
+                onReset={onResetFilters}
+                onSaveCurrent={onOpenSaveModal}
+                onAddToProcess={() => setIsAddToProcessByFilterOpen(true)}
+                savedFilters={savedFilters}
+                selectedFilterId={selectedSavedFilterId}
+                onSelectSavedFilter={onApplySavedFilter}
+                onManageSavedFilters={() => setIsManageFiltersOpen(true)}
+                isSaving={isCreatingFilter}
+              />
+            }
+            onImport={() => setIsImportModalOpen(true)}
             pageNumber={pageNumber}
             totalPages={totalPages}
             pageSize={pageSize}
@@ -329,7 +267,9 @@ export default function PaperRepositoryPage({
             allPageSelected={allPageSelected}
             onToggleAllPage={handleToggleAllPage}
             onTogglePaper={handleTogglePaper}
-            onViewDetails={setViewerPaper}
+            onViewDetails={(paper) =>
+              navigate(`/projects/${projectId}/papers/${paper.id}`)
+            }
             onPageChange={setPageNumber}
             onPageSizeChange={setPageSize}
             onUploadPdf={onUploadPdf}
@@ -354,7 +294,6 @@ export default function PaperRepositoryPage({
               isSubmitting={isAdding}
             />
           )}
-        </div>
       </div>
 
       <div id="review-process-panel">
@@ -432,14 +371,6 @@ export default function PaperRepositoryPage({
           setIsNameFilterModalOpen(false);
         }}
         isLoading={isCreatingFilter}
-      />
-
-      <PaperViewerModal
-        paper={viewerPaper}
-        isOpen={!!viewerPaper}
-        onClose={() => setViewerPaper(null)}
-        onApplyMetadataSuggestion={onApplyMetadataSuggestion}
-        isApplyingMetadataSuggestion={isApplyingMetadataSuggestion}
       />
 
       <ReviewProcessRail

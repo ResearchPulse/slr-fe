@@ -9,7 +9,6 @@ import {
   FiDatabase,
   FiChevronRight,
   FiFilter,
-  FiSettings,
 } from "react-icons/fi";
 import Button from "../ui/Button";
 import Modal from "../ui/Modal";
@@ -67,77 +66,76 @@ export default function ManageFiltersModal({
       title="Manage Filter Collections"
       description="Edit, clone or remove your saved filter configurations"
       size="xl"
-      className="max-w-5xl"
-      bodyClassName="p-0 overflow-hidden flex min-h-0"
+      className="h-[min(82dvh,44rem)] max-w-4xl sm:h-[min(76vh,44rem)]"
+      headerClassName="items-center px-5 py-3 sm:px-5 sm:py-3"
+      descriptionClassName="text-[13px] leading-5"
+      bodyClassName="flex min-h-0 overflow-hidden p-0 sm:p-0"
     >
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden md:flex-row">
+        <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden md:flex-row">
           {/* Left Sidebar: Filter List */}
-          <div className="flex max-h-52 w-full shrink-0 flex-col border-b border-border bg-bg-primary/30 md:max-h-none md:w-80 md:border-b-0 md:border-r">
-            <div className="p-4 border-b border-border">
+          <div className="flex max-h-48 w-full shrink-0 flex-col border-b border-border bg-bg-primary/30 md:max-h-none md:w-1/4 md:min-w-56 md:max-w-64 md:border-b-0 md:border-r">
+            <div className="shrink-0 border-b border-border px-3 py-3">
               <div className="relative">
-                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary w-4 h-4" />
+                <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary" aria-hidden="true" />
                 <input
                   type="text"
                   placeholder="Search collections..."
                   aria-label="Search collections"
-                  className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-9 pr-4 text-sm text-text-primary outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                  className="h-10 w-full rounded-lg border border-border bg-surface-white pl-9 pr-3 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-muted focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 motion-reduce:transition-none"
                 />
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
+            <div className="min-h-0 flex-1 space-y-1 overflow-y-auto p-2.5 custom-scrollbar">
               {savedFilters.map((filter) => (
                 <button
                   key={filter.id}
                   onClick={() => handleSelectFilter(filter.id)}
-                  className={`w-full flex min-h-11 items-center justify-between rounded-xl p-3 motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
+                  aria-pressed={activeFilterId === filter.id}
+                  className={`flex min-h-12 w-full items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 ${
                     activeFilterId === filter.id
-                      ? "bg-surface-white border-2 border-accent shadow-sm"
-                      : "border-2 border-transparent hover:bg-bg-secondary/50"
+                      ? "border-primary/25 bg-primary-light"
+                      : "border-transparent hover:border-border/70 hover:bg-surface-white"
                   }`}
                 >
-                  <div className="text-left overflow-hidden">
+                  <div className="min-w-0 flex-1 overflow-hidden">
                     <div
-                      className={`text-sm font-bold truncate ${activeFilterId === filter.id ? "text-accent" : "text-text-primary"}`}
+                      className={`truncate text-sm font-semibold ${activeFilterId === filter.id ? "text-primary" : "text-text-primary"}`}
                     >
                       {filter.name}
                     </div>
-                    <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mt-0.5">
+                    <div className="mt-1 text-[11px] leading-4 text-text-secondary">
                       {new Date(filter.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  {activeFilterId === filter.id ? (
-                    <div className="w-2 h-2 rounded-full bg-accent" />
-                  ) : (
-                    <FiChevronRight className="w-4 h-4 text-text-secondary/50" />
-                  )}
+                  <FiChevronRight className={`h-4 w-4 shrink-0 transition-colors motion-reduce:transition-none ${activeFilterId === filter.id ? "text-primary" : "text-text-secondary/60"}`} aria-hidden="true" />
                 </button>
               ))}
               {savedFilters.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-12 text-center px-4">
-                  <div className="w-12 h-12 bg-bg-secondary rounded-xl flex items-center justify-center mb-4 text-text-secondary/50">
-                    <FiFilter className="w-6 h-6" />
+                <div className="flex flex-col items-center justify-center px-4 py-8 text-center">
+                  <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary">
+                    <FiFilter className="h-5 w-5" />
                   </div>
-                  <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">
-                    No collections
+                  <p className="text-xs font-semibold text-text-primary">
+                    No saved collections
                   </p>
+                  <p className="mt-1 text-xs text-text-secondary">Save a filter view to manage it here.</p>
                 </div>
               )}
             </div>
           </div>
 
           {/* Right Content: Filter Details/Editor */}
-          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-surface-white p-4 custom-scrollbar sm:p-6 lg:p-8">
+          <div className="min-h-0 min-w-0 flex-1 overflow-y-auto bg-surface-white p-4 custom-scrollbar sm:p-5 lg:p-6">
             {!activeFilterId ? (
-              <div className="flex h-full flex-col items-center justify-center text-center">
-                <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full border border-border bg-bg-secondary sm:mb-6 sm:h-20 sm:w-20">
-                  <FiSettings className="h-8 w-8 text-text-muted sm:h-10 sm:w-10" />
+              <div className="flex h-full min-h-52 flex-col items-center justify-center px-4 text-center">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light text-primary">
+                  <FiFilter className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <h4 className="text-base font-semibold tracking-wide text-text-primary sm:text-lg">
+                <h4 className="text-[15px] font-semibold text-text-primary">
                   Select a collection
                 </h4>
-                <p className="mt-2 max-w-xs text-sm text-text-secondary">
-                  Choose a saved filter from the collection list to view and
-                  edit its details.
+                <p className="mt-1.5 max-w-xs text-[13px] leading-5 text-text-secondary">
+                  Choose a collection to view its filters or save a new copy.
                 </p>
               </div>
             ) : isLoadingDetail ? (
@@ -145,10 +143,10 @@ export default function ManageFiltersModal({
                 <LoadingSpinner size="lg" />
               </div>
             ) : draft ? (
-              <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-1 motion-safe:duration-150 motion-reduce:animate-none">
+              <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-1 motion-safe:duration-150 motion-reduce:animate-none">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-2xl font-black text-text-primary tracking-tight">
+                    <h4 className="text-xl font-semibold tracking-tight text-text-primary">
                       {draft.name}
                     </h4>
                     <p className="text-xs font-black text-text-secondary uppercase tracking-widest mt-1">
@@ -164,7 +162,7 @@ export default function ManageFiltersModal({
                         <Button
                           size="sm"
                           variant="danger"
-                          className="min-h-11"
+                          className="min-h-9"
                           onClick={() => onDelete(draft.id)}
                           isLoading={isDeleting}
                         >
@@ -173,7 +171,7 @@ export default function ManageFiltersModal({
                         <Button
                           size="sm"
                           variant="secondary"
-                          className="min-h-11"
+                          className="min-h-9"
                           onClick={() => setIsConfirmingDelete(null)}
                         >
                           Cancel
@@ -183,7 +181,7 @@ export default function ManageFiltersModal({
                       <Button
                         size="sm"
                         variant="outline"
-                        className="min-h-11 rounded-xl border-error/20 text-error hover:bg-error/5"
+                        className="min-h-9 rounded-lg border-error/20 text-error hover:bg-error/5"
                         onClick={() => setIsConfirmingDelete(draft.id)}
                       >
                         <FiTrash2 className="w-4 h-4 mr-2" />
@@ -206,7 +204,7 @@ export default function ManageFiltersModal({
                         onChange={(e) =>
                           setDraft({ ...draft, name: e.target.value })
                         }
-                        className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+                        className="min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-10 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                       />
                     </div>
                   </div>
@@ -223,7 +221,7 @@ export default function ManageFiltersModal({
                           setDraft({ ...draft, searchText: e.target.value })
                         }
                         placeholder="All papers"
-                        className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+                        className="min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-10 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
                       />
                     </div>
                   </div>
@@ -235,7 +233,7 @@ export default function ManageFiltersModal({
                   </h5>
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
                     {/* Years */}
-                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
+                    <div className="flex items-center justify-between rounded-lg border border-border bg-bg-primary p-3">
                       <div className="flex items-center gap-3">
                         <FiCalendar className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
@@ -261,7 +259,7 @@ export default function ManageFiltersModal({
                             })
                           }
                           placeholder="Start"
-                          className="min-h-11 w-16 rounded-xl border border-border bg-surface-white px-2 text-xs text-text-primary outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                          className="min-h-9 w-16 rounded-lg border border-border bg-surface-white px-2 text-xs text-text-primary outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                         <span className="text-text-secondary font-bold">-</span>
                         <input
@@ -282,13 +280,13 @@ export default function ManageFiltersModal({
                             })
                           }
                           placeholder="End"
-                          className="min-h-11 w-16 rounded-xl border border-border bg-surface-white px-2 text-xs text-text-primary outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
+                          className="min-h-9 w-16 rounded-lg border border-border bg-surface-white px-2 text-xs text-text-primary outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20"
                         />
                       </div>
                     </div>
 
                     {/* Source */}
-                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
+                    <div className="flex items-center justify-between rounded-lg border border-border bg-bg-primary p-3">
                       <div className="flex items-center gap-3">
                         <FiDatabase className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
@@ -307,7 +305,7 @@ export default function ManageFiltersModal({
                           })
                         }
                         aria-label="Search source"
-                        className="min-h-11 max-w-[55%] bg-transparent text-xs font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                        className="min-h-9 max-w-[55%] bg-transparent text-xs font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
                         <option value="all">All Search Sources</option>
                         {metadata?.searchSources.map((s) => (
@@ -318,7 +316,7 @@ export default function ManageFiltersModal({
                       </Select>
                     </div>
 
-                    <div className="bg-bg-primary rounded-xl p-4 border border-border flex items-center justify-between">
+                    <div className="flex items-center justify-between rounded-lg border border-border bg-bg-primary p-3">
                       <div className="flex items-center gap-3">
                         <FiDatabase className="text-text-secondary" />
                         <span className="text-xs font-bold text-text-secondary">
@@ -337,7 +335,7 @@ export default function ManageFiltersModal({
                           })
                         }
                         aria-label="Paper source"
-                        className="min-h-11 max-w-[55%] bg-transparent text-xs font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                        className="min-h-9 max-w-[55%] bg-transparent text-xs font-semibold text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                       >
                         <option value="all">All Paper Sources</option>
                         {metadata?.paperSources?.map((source) => (
@@ -350,7 +348,7 @@ export default function ManageFiltersModal({
 
                     {/* DOI/FullText Toggles */}
                     <div className="col-span-1 grid grid-cols-1 gap-3 sm:grid-cols-3 sm:gap-4 md:col-span-2">
-                      <div className="p-4 bg-bg-primary rounded-xl border border-border">
+                      <div className="rounded-lg border border-border bg-bg-primary p-3">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           DOI Status
                         </div>
@@ -366,14 +364,14 @@ export default function ManageFiltersModal({
                               },
                             })
                           }
-                          className="min-h-11 w-full bg-transparent text-xs font-semibold text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                          className="min-h-9 w-full bg-transparent text-xs font-semibold text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                         >
                           <option value="all">Any Status</option>
                           <option value="has">Has DOI</option>
                           <option value="missing">Missing DOI</option>
                         </Select>
                       </div>
-                      <div className="p-4 bg-bg-primary rounded-xl border border-border">
+                      <div className="rounded-lg border border-border bg-bg-primary p-3">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest mb-2">
                           Full Text
                         </div>
@@ -389,14 +387,14 @@ export default function ManageFiltersModal({
                               },
                             })
                           }
-                          className="min-h-11 w-full bg-transparent text-xs font-semibold text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
+                          className="min-h-9 w-full bg-transparent text-xs font-semibold text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
                         >
                           <option value="all">Any Status</option>
                           <option value="has">Has PDF</option>
                           <option value="missing">Missing PDF</option>
                         </Select>
                       </div>
-                      <label htmlFor="filter-only-unused" className="flex min-h-11 cursor-pointer items-center justify-between rounded-xl border border-border bg-bg-primary p-4">
+                      <label htmlFor="filter-only-unused" className="flex min-h-10 cursor-pointer items-center justify-between rounded-lg border border-border bg-bg-primary p-3">
                         <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                           Unused Only
                         </div>
@@ -420,7 +418,7 @@ export default function ManageFiltersModal({
                   </div>
                 </div>
 
-                <div className="pt-6 border-t border-border flex justify-end gap-3">
+                <div className="flex justify-end gap-3 border-t border-border pt-4">
                   <Button
                     variant="secondary"
                     onClick={() => onSaveAsNew(draft)}

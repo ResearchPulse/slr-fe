@@ -571,7 +571,7 @@ function FullTextMissing({
             Upload full text PDF
           </p>
           <p className="text-sm text-text-secondary">
-            Select a PDF file up to 20 MB. The file will be uploaded and linked
+            Select one PDF file up to 1 MB. The file will be uploaded and linked
             to this paper.
           </p>
           <button

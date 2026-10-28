@@ -14,11 +14,6 @@ interface HeroNavProps {
   isLeader?: boolean;
 }
 
-/**
- * HeroNav Component
- * A premium, hero-style navigation bar for switching between Paper Library, Deduplication, and Search Sources.
- * Features glassmorphism, smooth transitions, and matches the project's design system.
- */
 export default function HeroNav({
   activeTab,
   onChange,
@@ -51,39 +46,43 @@ export default function HeroNav({
   });
 
   return (
-    <nav className="w-full">
-      <div className="grid grid-cols-2 gap-1 rounded-lg border border-border bg-surface-white p-1 sm:flex sm:items-center sm:gap-1.5">
-        {navItems.map((item) => {
-          const isActive = activeTab === item.id;
-          const Icon = item.icon;
+    <nav aria-label="Paper repository sections" className="w-full border-b border-border">
+      <div className="overflow-x-auto overscroll-x-contain">
+        <div className="flex w-max min-w-full items-stretch gap-5 sm:gap-7">
+          {navItems.map((item) => {
+            const isActive = activeTab === item.id;
+            const Icon = item.icon;
 
-          return (
-            <button
-              key={item.id}
-              onClick={() => onChange(item.id)}
-              className={`
-                group relative flex min-h-11 min-w-0 items-center justify-center gap-1.5 rounded-md px-2 py-2
-                transition-colors duration-200 sm:flex-1 sm:gap-2 sm:rounded-md sm:px-3 sm:py-2
-                ${
+            return (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => onChange(item.id)}
+                className={`group inline-flex min-h-10 shrink-0 items-center justify-start gap-2 px-1 py-2 text-[13px] font-medium whitespace-nowrap transition-colors duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50 motion-reduce:transition-none ${
                   isActive
-                    ? "bg-primary-light text-primary-hover"
-                    : "text-text-secondary hover:bg-bg-primary hover:text-text-primary"
-                }
-              `}
-              aria-current={isActive ? "page" : undefined}
-            >
-              <Icon
-                aria-hidden="true"
-                className={`h-4 w-4 shrink-0 transition-transform duration-200 sm:h-5 sm:w-5 ${isActive ? "scale-105" : "group-hover:scale-105"}`}
-              />
+                    ? "text-accent"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+                aria-current={isActive ? "page" : undefined}
+              >
+                <Icon
+                  aria-hidden="true"
+                  className="h-4 w-4 shrink-0 transition-colors duration-150 ease-out motion-reduce:transition-none"
+                />
 
-              <span className="min-w-0 truncate text-xs font-medium normal-case tracking-normal sm:text-[13px]">
-                {item.label}
-              </span>
-
-            </button>
-          );
-        })}
+                <span className="relative truncate">
+                  {item.label}
+                  <span
+                    aria-hidden="true"
+                    className={`absolute inset-x-0 -bottom-2 h-0.5 origin-left rounded-full bg-accent transition-transform duration-200 ease-out motion-reduce:transition-none ${
+                      isActive ? "scale-x-100" : "scale-x-0"
+                    }`}
+                  />
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );

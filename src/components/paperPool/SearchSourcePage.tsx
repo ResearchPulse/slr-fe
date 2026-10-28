@@ -144,7 +144,7 @@ export default function SearchSourcePage({
   }
 
   return (
-    <div className={`px-4 ${hideHeader ? "" : "pb-20"}`}>
+    <div className={hideHeader ? "" : "px-4 pb-20"}>
       {!hideHeader && (
         <div className="mb-8">
           <h1 className="text-3xl font-black text-text-primary mb-2">
@@ -157,23 +157,23 @@ export default function SearchSourcePage({
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3 lg:gap-5">
         {/* Add Source Section */}
         {canEditSources && (
           <div className="md:col-span-1">
-            <div className="bg-surface-white rounded-xl p-6 shadow-none border border-border sticky top-24">
-              <h3 className="text-lg font-bold text-text-primary mb-4 flex items-center gap-2">
-                <FiPlus className="text-accent" />
+            <div className="sticky top-24 rounded-xl border border-border bg-surface-white p-4 shadow-none">
+              <h3 className="mb-3 flex items-center gap-2 text-base font-semibold text-text-primary">
+                <FiPlus className="h-4 w-4 text-accent" aria-hidden="true" />
                 Add Source
               </h3>
-              <p className="text-sm text-text-secondary mb-6">
+              <p className="mb-4 text-[13px] leading-5 text-text-secondary">
                 Choose a source from the available master list to add to your
                 project.
               </p>
 
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <div>
-                  <label className="text-xs font-black uppercase tracking-widest text-text-secondary mb-2 block">
+                  <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wide text-text-secondary">
                     Select Master Source
                   </label>
                   <Select
@@ -200,10 +200,10 @@ export default function SearchSourcePage({
                 </Button>
               </div>
 
-              <div className="mt-8 p-4 bg-primary-light rounded-xl border border-accent/20">
-                <div className="flex gap-3">
-                  <FiInfo className="text-accent shrink-0 mt-1" />
-                  <p className="text-xs leading-relaxed text-text-secondary">
+              <div className="mt-5 rounded-lg border border-primary/15 bg-primary-light p-3">
+                <div className="flex items-start gap-2.5">
+                  <FiInfo className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden="true" />
+                  <p className="text-xs leading-5 text-text-secondary">
                     Adding a source here allows you to associate imported papers
                     with their original database.
                   </p>
@@ -216,14 +216,14 @@ export default function SearchSourcePage({
         {/* List Section */}
         <div
           className={
-            canEditSources ? "md:col-span-2 space-y-4" : "md:col-span-3 space-y-4"
+            canEditSources ? "md:col-span-2 space-y-3" : "md:col-span-3 space-y-3"
           }
         >
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-              <FiSearch className="text-accent" />
+          <div className="mb-0 flex items-center justify-between">
+            <h3 className="flex items-center gap-2 text-base font-semibold text-text-primary">
+              <FiSearch className="h-4 w-4 text-accent" aria-hidden="true" />
               Search Strategies
-              <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
                 {sources.length}
               </span>
             </h3>
@@ -235,7 +235,7 @@ export default function SearchSourcePage({
                 onClick={handleSave}
                 disabled={isUpserting}
                 aria-busy={isUpserting}
-                className="rounded-xl px-5 text-sm"
+                className="min-h-9 rounded-lg px-4 text-[13px]"
               >
                 {isUpserting ? (
                   <>
@@ -258,15 +258,15 @@ export default function SearchSourcePage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-surface-white border-2 border-dashed border-border rounded-xl p-12 text-center"
+                className="rounded-xl border border-dashed border-border bg-surface-white p-7 text-center sm:p-8"
               >
-                <div className="w-16 h-16 bg-bg-primary rounded-xl flex items-center justify-center mx-auto mb-4">
-                  <FiAlertCircle className="h-8 w-8 text-text-secondary" />
+                <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-bg-primary">
+                  <FiAlertCircle className="h-5 w-5 text-text-secondary" aria-hidden="true" />
                 </div>
-                <h4 className="text-lg font-bold text-text-primary mb-1">
+                <h4 className="mb-1 text-sm font-semibold text-text-primary">
                   No sources added yet
                 </h4>
-                <p className="text-text-secondary max-w-xs mx-auto">
+                <p className="mx-auto max-w-xs text-[13px] leading-5 text-text-secondary">
                   Add search sources to keep track of where your papers came
                   from.
                 </p>
@@ -287,10 +287,10 @@ export default function SearchSourcePage({
                       animate={{ opacity: 1, x: 0 }}
                       exit={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.95 }}
                       layout={!prefersReducedMotion}
-                      className="group flex items-center justify-between rounded-xl border border-border bg-surface-white p-4 transition-colors hover:border-primary/30"
+                      className="group flex items-center justify-between rounded-xl border border-border bg-surface-white p-3 transition-colors hover:border-primary/30"
                     >
-                      <div className="flex items-center gap-4 flex-1 min-w-0">
-                        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary-light font-bold text-accent transition-colors group-hover:bg-primary group-hover:text-white motion-reduce:transition-none">
+                      <div className="flex min-w-0 flex-1 items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light font-semibold text-accent transition-colors group-hover:bg-primary group-hover:text-white motion-reduce:transition-none">
                           {source.name.charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -326,7 +326,7 @@ export default function SearchSourcePage({
                             setConfiguringSourceIndex(index);
                             setIsStrategyDrawerOpen(true);
                           }}
-                          className={`flex min-h-11 items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
+                          className={`flex min-h-9 items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
                             hasStrategy
                               ? "bg-primary-light text-accent hover:bg-accent/10"
                               : "bg-bg-primary text-text-secondary hover:bg-bg-secondary"
@@ -345,7 +345,7 @@ export default function SearchSourcePage({
                           <button
                             type="button"
                             onClick={() => handleRemoveSource(index)}
-                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-tertiary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-tertiary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                             title="Remove source"
                             aria-label="Remove source"
                           >

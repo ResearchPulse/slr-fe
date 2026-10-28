@@ -93,17 +93,17 @@ export default function CrossrefWorksExplorer({
   };
 
   return (
-    <div className="mt-8 space-y-6 sm:mt-12 sm:space-y-8">
-      <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-end lg:gap-6">
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary-light text-accent border border-accent/30 rounded-full text-[10px] font-black uppercase tracking-widest">
+    <div className="mt-6 space-y-4 sm:mt-8 sm:space-y-5">
+      <div className="flex flex-col justify-between gap-3 lg:flex-row lg:items-end lg:gap-5">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-primary-light px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-primary">
             <FiBookOpen className="w-3 h-3" />
             Crossref Explorer
           </div>
-          <h2 className="text-2xl font-black text-text-primary uppercase tracking-tight">
+          <h2 className="text-lg font-bold tracking-tight text-text-primary">
             Query Academic <span className="text-accent">Works</span>
           </h2>
-          <p className="text-sm text-text-secondary font-medium max-w-xl">
+          <p className="max-w-xl text-[13px] leading-5 text-text-secondary">
             Directly search the Crossref database for papers. Explore metadata
             and import them into your project repository.
           </p>
@@ -113,7 +113,7 @@ export default function CrossrefWorksExplorer({
           onSubmit={handleSearch}
           className="flex w-full items-center gap-3 lg:w-auto"
         >
-          <div className="group relative min-w-0 flex-1 lg:w-[340px] lg:flex-none">
+          <div className="group relative min-w-0 flex-1 lg:w-[300px] lg:flex-none">
             <FiSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary transition-colors group-focus-within:text-primary motion-reduce:transition-none" aria-hidden="true" />
             <Input
               type="text"
@@ -122,13 +122,13 @@ export default function CrossrefWorksExplorer({
               onChange={(e) =>
                 setLocalParams({ ...localParams, query: e.target.value })
               }
-              className="h-11 min-h-11 w-full rounded-[10px] pl-10 pr-3.5 transition-[border-color,box-shadow] hover:border-primary/40"
+              className="h-9 min-h-9 w-full rounded-lg pl-9 pr-3 text-[13px] transition-[border-color,box-shadow] hover:border-primary/40"
             />
           </div>
           <Button
             type="submit"
             isLoading={isLoading}
-            className="h-11 min-h-11 shrink-0 rounded-[10px] px-6 shadow-none hover:shadow-none"
+            className="h-9 min-h-9 shrink-0 rounded-lg px-4 text-[13px] shadow-none hover:shadow-none"
           >
             Search
           </Button>
@@ -136,7 +136,7 @@ export default function CrossrefWorksExplorer({
       </div>
 
       {/* Results Grid */}
-      <div className="flex min-w-0 flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:gap-8">
+      <div className="flex min-w-0 flex-col items-stretch gap-4 lg:flex-row lg:items-start lg:gap-5">
         {/* Advanced Filters Sidebar */}
         <CrossrefFilterSidebar
           localParams={localParams}
@@ -151,7 +151,7 @@ export default function CrossrefWorksExplorer({
         />
 
         {/* Results List */}
-        <div className="flex-1 space-y-4 relative min-h-[400px]">
+        <div className="relative min-h-[300px] flex-1 space-y-3">
           {/* Refreshing Overlay */}
           <AnimatePresence>
             {isFetching && !isLoading && (
@@ -198,15 +198,15 @@ export default function CrossrefWorksExplorer({
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-xl border border-dashed border-border bg-surface-white p-6 text-center sm:p-10 lg:p-20"
+                className="rounded-xl border border-dashed border-border bg-surface-white p-6 text-center sm:p-8 lg:p-10"
               >
-                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-xl border border-accent/20 bg-primary-light sm:mb-5 sm:h-16 sm:w-16 lg:mb-6 lg:h-20 lg:w-20">
-                  <FiSearch className="h-7 w-7 text-accent/50 sm:h-8 sm:w-8 lg:h-10 lg:w-10" aria-hidden="true" />
+                <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-primary-light text-primary">
+                  <FiSearch className="h-6 w-6" aria-hidden="true" />
                 </div>
-                <h4 className="mb-2 text-base font-semibold text-text-primary sm:text-lg lg:text-xl">
+                <h4 className="mb-1.5 text-sm font-semibold text-text-primary">
                   No works found
                 </h4>
-                <p className="mx-auto max-w-xs text-sm text-text-secondary">
+                <p className="mx-auto max-w-xs text-[13px] leading-5 text-text-secondary">
                   Try adjusting your search query or filters to find academic
                   works.
                 </p>
@@ -219,7 +219,7 @@ export default function CrossrefWorksExplorer({
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    className="group flex flex-col items-start gap-4 rounded-xl border border-border bg-surface-white p-4 transition-[border-color,box-shadow] hover:border-accent/40 hover:shadow-sm motion-reduce:transition-none md:flex-row md:items-center"
+                    className="group flex flex-col items-start gap-3 rounded-xl border border-border bg-surface-white p-3 transition-[border-color,box-shadow] hover:border-accent/40 hover:shadow-sm motion-reduce:transition-none md:flex-row md:items-center"
                   >
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
@@ -272,7 +272,7 @@ export default function CrossrefWorksExplorer({
                             : "View metadata details"
                         }
                         aria-busy={loadingDetailDoi === work.DOI || undefined}
-                        className="flex h-10 w-10 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
+                        className="flex h-9 w-9 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary transition-colors hover:bg-primary hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none"
                         title={loadingDetailDoi === work.DOI ? "Loading metadata details" : "View Metadata Detail"}
                       >
                         {loadingDetailDoi === work.DOI ? (
@@ -287,7 +287,7 @@ export default function CrossrefWorksExplorer({
                           isLoading={isImportingByDoi}
                           disabled={work.isImported}
                           className={cn(
-                            "h-10 rounded-xl px-4 flex items-center gap-2 text-xs font-black uppercase tracking-widest",
+                            "h-9 rounded-lg px-3 flex items-center gap-2 text-xs font-semibold",
                             work.isImported
                               ? "bg-bg-secondary text-text-secondary cursor-not-allowed border-border shadow-none"
                               : "",
