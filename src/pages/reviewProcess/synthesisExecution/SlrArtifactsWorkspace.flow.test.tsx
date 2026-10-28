@@ -56,12 +56,22 @@ describe("SlrArtifactsWorkspace", () => {
     });
   });
 
-  it("switches artifacts with named tabs and loads the chosen one", async () => {
+  const chooseArtifact = async (name: RegExp) => {
+    fireEvent.click(await screen.findByRole("button", { name: "Artifact" }));
+    fireEvent.click(await screen.findByRole("option", { name }));
+  };
+
+  it("switches artifacts from the dropdown and loads the chosen one", async () => {
     renderWorkspace();
-    expect(await screen.findByRole("tab", { name: /A8\s*Evidence Gap Map/ })).toBeTruthy();
-    fireEvent.click(screen.getByRole("tab", { name: /A8\s*Evidence Gap Map/ }));
+    await chooseArtifact(/A8 · Evidence Gap Map/);
     await waitFor(() => expect(slrArtifactsService.getArtifact).toHaveBeenCalledWith("p1", RUN_ID, "A8"));
-    expect(screen.getByRole("tab", { name: /A8/ }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("button", { name: "Artifact" }).textContent).toContain("A8 · Evidence Gap Map");
+  });
+
+  it("steps through artifacts with the previous and next buttons", async () => {
+    renderWorkspace();
+    fireEvent.click(await screen.findByRole("button", { name: "Next artifact" }));
+    await waitFor(() => expect(slrArtifactsService.getArtifact).toHaveBeenCalledWith("p1", RUN_ID, "A4"));
   });
 
   it("rejects with a note and shows the recorded history", async () => {
@@ -139,7 +149,7 @@ describe("SlrArtifactsWorkspace", () => {
       warning_count: 0,
     });
     renderWorkspace();
-    fireEvent.click(await screen.findByRole("tab", { name: /A3/ }));
+    await chooseArtifact(/A3 · Scientific Argument Graph/);
     const textarea = await screen.findByLabelText("A3 graph JSON");
     expect((textarea as HTMLTextAreaElement).value).not.toContain("metadata");
 
