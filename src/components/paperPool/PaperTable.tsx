@@ -80,7 +80,7 @@ export default function PaperTable({
   const [paperPendingDelete, setPaperPendingDelete] = useState<PaperPoolItem | null>(null);
   if (isLoading && papers.length === 0) {
     return (
-      <div className="flex min-h-[340px] items-center justify-center rounded-xl border border-border bg-white">
+      <div className="flex min-h-[400px] items-center justify-center rounded-xl border border-border bg-white">
         <div className="flex flex-col items-center gap-3">
           <LoadingSpinner size="lg" />
           <p className="text-sm text-text-secondary motion-safe:animate-pulse motion-reduce:animate-none">
@@ -94,7 +94,7 @@ export default function PaperTable({
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm">
       {/* Table Header / Toolbar */}
-      <div className="flex flex-col gap-3 border-b border-border bg-bg-secondary/70 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+      <div className="flex flex-col gap-3 border-b border-border bg-bg-secondary/70 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex items-center gap-3">
           <span className="text-sm font-semibold text-text-primary">
             {totalCount.toLocaleString()}{" "}
@@ -133,22 +133,22 @@ export default function PaperTable({
           minHeight: papers.length === 0 ? "180px" : "0",
         }}
       >
-        <table className="w-full min-w-[1072px] table-fixed border-collapse">
+        <table className="w-full min-w-[1280px] table-fixed border-collapse">
           <colgroup>
-            {isLeader && <col className="w-10" />}
-            <col className="w-24" />
-            <col className="w-[320px]" />
-            <col className="w-[72px]" />
-            <col className="w-28" />
-            <col className="w-28" />
-            <col className="w-[200px] lg:w-40" />
-            <col className="w-[136px]" />
-            <col className="w-[72px] lg:w-16" />
+            {isLeader && <col className="w-12" />}
+            <col className="w-[112px]" />
+            <col className="w-[360px]" />
+            <col className="w-[88px]" />
+            <col className="w-[116px]" />
+            <col className="w-[128px]" />
+            <col className="w-[128px]" />
+            <col className="w-[148px]" />
+            <col className="w-[152px]" />
           </colgroup>
           <thead className="sticky top-0 z-10 border-b border-border bg-white">
             <tr className="text-left">
               {isLeader && (
-                <th className="w-10 px-2.5 py-2.5">
+                <th className="w-12 px-4 py-3.5 sm:px-5">
                   <div className="flex items-center">
                     <Checkbox
                       checked={allPageSelected}
@@ -161,30 +161,30 @@ export default function PaperTable({
               )}
               <th
                 className={`whitespace-nowrap ${
-                  isLeader ? "px-2.5" : "px-3"
-                } py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary`}
+                  isLeader ? "px-3" : "px-4 sm:px-5"
+                } py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary`}
               >
                 Paper ID
               </th>
-              <th className="w-[320px] max-w-[320px] whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="w-[360px] max-w-[360px] whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Title & Authors
               </th>
-              <th className="whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Year
               </th>
-              <th className="whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 DOI
               </th>
-              <th className="whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Source
               </th>
-              <th className="whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Full Text
               </th>
-              <th className="whitespace-nowrap px-2.5 py-2.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-3 py-3.5 text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Status
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 text-right text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
+              <th className="whitespace-nowrap px-5 py-3.5 text-right text-[10px] font-semibold uppercase tracking-wider text-text-secondary">
                 Actions
               </th>
             </tr>
@@ -214,7 +214,7 @@ export default function PaperTable({
               <tr>
                 <td
                   colSpan={isLeader ? 9 : 8}
-                  className="px-4 py-7 sm:py-8"
+                  className="px-5 py-8 sm:py-10"
                 >
                   <div className="flex flex-col items-center justify-center text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-xl bg-bg-secondary text-text-secondary ring-1 ring-inset ring-border/70">
@@ -248,7 +248,7 @@ export default function PaperTable({
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col gap-3 border-t border-border bg-bg-secondary/50 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
+      <div className="flex flex-col gap-3 border-t border-border bg-bg-secondary/50 px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="text-xs text-text-secondary">
           Showing page{" "}
           <span className="font-semibold text-text-primary">{pageNumber}</span> of{" "}
@@ -258,7 +258,7 @@ export default function PaperTable({
           <Button
             size="sm"
             variant="outline"
-            className="min-h-11 rounded-lg px-3 text-xs font-medium lg:min-h-10"
+            className="min-h-11 rounded-xl px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber - 1)}
             disabled={pageNumber <= 1 || isFetching}
           >
@@ -270,7 +270,7 @@ export default function PaperTable({
           <Button
             size="sm"
             variant="outline"
-            className="min-h-11 rounded-lg px-3 text-xs font-medium lg:min-h-10"
+            className="min-h-11 rounded-xl px-3 text-xs font-medium"
             onClick={() => onPageChange(pageNumber + 1)}
             disabled={pageNumber >= totalPages || isFetching}
           >

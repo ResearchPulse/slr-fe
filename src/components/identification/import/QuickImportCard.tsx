@@ -1,4 +1,3 @@
-import Select from "../../ui/Select";
 // Quick Import Card - SECONDARY ENTRY PATH
 import { useState } from "react";
 import { FiAlertCircle, FiUpload, FiX } from "react-icons/fi";
@@ -171,7 +170,7 @@ export default function QuickImportCard({
           <label className="block text-sm font-medium text-text-primary mb-2">
             Database Source <span className="text-error">*</span>
           </label>
-          <Select
+          <select
             value={selectedSource}
             onChange={(e) => setSelectedSource(e.target.value)}
             className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -182,7 +181,7 @@ export default function QuickImportCard({
                 {source}
               </option>
             ))}
-          </Select>
+          </select>
         </div>
 
         {/* Optional Strategy Selector */}
@@ -193,7 +192,7 @@ export default function QuickImportCard({
               (optional)
             </span>
           </label>
-          <Select
+          <select
             value={selectedStrategyId}
             onChange={(e) => setSelectedStrategyId(e.target.value)}
             className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -206,7 +205,7 @@ export default function QuickImportCard({
                 {new Date(strategy.executedAt).toLocaleDateString()}
               </option>
             ))}
-          </Select>
+          </select>
           {availableStrategies.length === 0 && (
             <p className="text-xs text-text-secondary mt-1">
               No strategies available. Create one first for better organization.

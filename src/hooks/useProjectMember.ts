@@ -36,10 +36,10 @@ export const useProjectMember = (projectId: string | undefined) => {
     : typeof membership?.role === "number"
       ? membership.role
       : undefined;
-  const namedRoleNumber = roleNames[String(membership?.roleText || membership?.role).toUpperCase()];
   const normalizedRole = membership
-    ? membership.isLeader === true ? 1
-      : namedRoleNumber ?? (rawRoleNumber === 1 ? 1 : rawRoleNumber === 2 || rawRoleNumber === 3 ? 3 : 3)
+    ? rawRoleNumber === 1 ? 1 : rawRoleNumber === 2 || rawRoleNumber === 3
+      ? 3
+      : roleNames[String(membership.roleText || membership.role).toUpperCase()] || 3
     : null;
   const member = membership && normalizedRole !== null
     ? {

@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiChevronLeft } from "react-icons/fi";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
@@ -380,6 +380,18 @@ export default function TemplateManager() {
   if (showEditor) {
     return (
       <div className="min-h-full bg-bg-primary">
+        <div className="bg-surface-white border-b border-border px-5 sm:px-8 py-4 sticky top-0 z-10">
+          <button
+            onClick={() => {
+              setShowEditor(false);
+              setSelectedTemplateId(null);
+            }}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 font-medium text-primary transition-colors hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
+          >
+            <FiChevronLeft className="w-5 h-5" />
+            Back to templates
+          </button>
+        </div>
         <TemplateCustoimzer
           template={selectedTemplate}
           onSave={async (data) => {
@@ -401,6 +413,9 @@ export default function TemplateManager() {
     <div className="mx-auto max-w-[1600px] space-y-6 pb-2">
       <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          <p className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-accent">
+            Review configuration
+          </p>
           <h1 className="mb-1 text-[28px] font-semibold tracking-tight text-text-primary">
             Checklist Templates
           </h1>

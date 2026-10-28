@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useId, useLayoutEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 import { createPortal } from "react-dom";
 import { FiX } from "react-icons/fi";
@@ -13,9 +13,6 @@ interface ModalProps {
   size?: "sm" | "md" | "lg" | "xl";
   className?: string;
   bodyClassName?: string;
-  headerClassName?: string;
-  footerClassName?: string;
-  descriptionClassName?: string;
   description?: React.ReactNode;
   closeOnOutsideClick?: boolean;
   closeOnEsc?: boolean;
@@ -31,9 +28,6 @@ export const Modal: React.FC<ModalProps> = ({
   size = "md",
   className,
   bodyClassName,
-  headerClassName,
-  footerClassName,
-  descriptionClassName,
   description,
   closeOnOutsideClick = true,
   closeOnEsc = true,
@@ -150,7 +144,7 @@ export const Modal: React.FC<ModalProps> = ({
     <div
       className={cn(
         "fixed inset-0 z-(--z-index-modal) flex overflow-hidden",
-        mode === "drawer"? "justify-end" : "items-center justify-center p-4 sm:p-6"
+        mode === "drawer" ? "justify-end" : "items-center justify-center p-4 sm:p-6"
       )}
       onClick={handleBackdropClick}
     >
@@ -169,7 +163,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClick={(e) => e.stopPropagation()}
         className={cn(
           "relative z-10 flex w-full flex-col overflow-hidden bg-surface-white shadow-[0_16px_48px_rgba(18,35,49,0.16)] transform-gpu will-change-transform",
-          mode === "drawer"
+          mode === "drawer" 
             ? cn(
                 "h-full max-h-screen rounded-none transition-transform duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
                 isEntered ? "translate-x-0" : "translate-x-full",
@@ -189,13 +183,13 @@ export const Modal: React.FC<ModalProps> = ({
         aria-describedby={description ? descriptionId : undefined}
       >
         {/* Header Section */}
-        <div className={cn("flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 pb-3 pt-4 sm:gap-4 sm:px-6 sm:pb-4 sm:pt-6", headerClassName)}>
+        <div className="flex shrink-0 items-start justify-between gap-3 border-b border-border px-4 pb-3 pt-4 sm:gap-4 sm:px-6 sm:pb-4 sm:pt-6">
           <div className="min-w-0 flex-1 space-y-1">
             <div id={titleId} className="break-words text-[18px] font-semibold leading-snug text-text-primary">
               {title}
             </div>
             {description && (
-              <div id={descriptionId} className={cn("text-sm text-text-secondary", descriptionClassName)}>{description}</div>
+              <div id={descriptionId} className="text-sm text-text-secondary">{description}</div>
             )}
           </div>
           <button
@@ -216,7 +210,7 @@ export const Modal: React.FC<ModalProps> = ({
 
         {/* Footer Section */}
         {footer && (
-          <div className={cn("flex shrink-0 items-center justify-end gap-3 border-t border-border bg-bg-secondary px-4 py-3 sm:px-6 sm:py-4", footerClassName)}>
+          <div className="flex shrink-0 items-center justify-end gap-3 border-t border-border bg-bg-secondary px-4 py-3 sm:px-6 sm:py-4">
             {footer}
           </div>
         )}

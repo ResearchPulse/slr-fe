@@ -16,6 +16,7 @@ import {
   buildAuditLogFileName,
   downloadFile,
   filterAuditLogs,
+  formatRangeLabel,
   sortAuditLogs,
 } from "./auditLogs/utils";
 import AuditLogFilters from "./auditLogs/components/AuditLogFilters";
@@ -180,6 +181,8 @@ const AuditLogPage: React.FC = () => {
     );
   };
 
+  const activeRangeLabel = formatRangeLabel(filters.startDate, filters.endDate);
+
   if (isPageLoading) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center bg-bg-primary">
@@ -194,46 +197,53 @@ const AuditLogPage: React.FC = () => {
   }
 
   return (
-    <div className="mx-auto max-w-[1600px] space-y-4 pb-2">
-      <div className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="max-w-[1600px] mx-auto space-y-6 pb-2">
+      <div className="flex flex-col gap-5 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-[26px] font-semibold tracking-tight text-text-primary">
+          <h1 className="text-[28px] font-semibold tracking-tight text-text-primary">
             Audit Logs
           </h1>
-          <p className="mt-1 text-[13px] text-text-secondary">
+          <p className="mt-1 text-sm text-text-secondary">
             Review recorded actions across the system.
           </p>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setIsExportOpen(true)}
-          className="inline-flex h-10 min-h-10 items-center gap-2 self-start rounded-lg bg-primary px-4 text-[13px] font-semibold text-text-on-primary transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 sm:self-auto"
-        >
-          <FiDownload className="w-4 h-4" />
-          Export
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="mr-2 text-sm text-text-secondary">
+            Range: <span className="text-text-primary">{activeRangeLabel}</span>
+          </span>
+          <button
+            type="button"
+            onClick={() => setIsExportOpen(true)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-accent px-4 text-sm font-medium text-white transition-colors motion-reduce:transition-none hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
+          >
+            <FiDownload className="w-4 h-4" />
+            Export
+          </button>
+
+        </div>
       </div>
 
-      <AuditLogTable
-        toolbar={
-          <AuditLogFilters
-            searchTerm={filters.searchTerm}
-            users={users}
-            selectedUser={filters.user}
-            selectedActionType={filters.actionType}
-            selectedStatus={filters.status}
-            startDate={filters.startDate}
-            endDate={filters.endDate}
-            onSearchTermChange={(value) => handleFilterUpdate("searchTerm", value)}
-            onSelectedUserChange={(value) => handleFilterUpdate("user", value)}
-            onSelectedActionTypeChange={(value) => handleFilterUpdate("actionType", value)}
-            onSelectedStatusChange={(value) => handleFilterUpdate("status", value)}
-            onStartDateChange={(value) => handleFilterUpdate("startDate", value)}
-            onEndDateChange={(value) => handleFilterUpdate("endDate", value)}
-            onReset={handleResetFilters}
-          />
+      <AuditLogFilters
+        searchTerm={filters.searchTerm}
+        users={users}
+        selectedUser={filters.user}
+        selectedActionType={filters.actionType}
+        selectedStatus={filters.status}
+        startDate={filters.startDate}
+        endDate={filters.endDate}
+        onSearchTermChange={(value) => handleFilterUpdate("searchTerm", value)}
+        onSelectedUserChange={(value) => handleFilterUpdate("user", value)}
+        onSelectedActionTypeChange={(value) =>
+          handleFilterUpdate("actionType", value)
         }
+        onSelectedStatusChange={(value) => handleFilterUpdate("status", value)}
+        onStartDateChange={(value) => handleFilterUpdate("startDate", value)}
+        onEndDateChange={(value) => handleFilterUpdate("endDate", value)}
+        onReset={handleResetFilters}
+      />
+
+      <AuditLogTable
         logs={pageLogs}
         isLoading={isLoading}
         totalCount={totalCount}

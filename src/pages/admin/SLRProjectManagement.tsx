@@ -21,7 +21,6 @@ import Tooltip from "../../components/ui/Tooltip";
 import Select from "../../components/ui/Select";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
-import DataTableToolbar from "../../components/ui/DataTableToolbar";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import ProjectFormModal from "../../components/admin/slr-projects/ProjectFormModal";
 import ProjectMembersModal from "../../components/admin/slr-projects/ProjectMembersModal";
@@ -154,29 +153,93 @@ const SLRProjectManagement: React.FC = () => {
   return (
     <div className="mx-auto max-w-[1600px] space-y-6 pb-2">
       {/* Page Header */}
-      <div className="flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-5 border-b border-border pb-6 xl:flex-row xl:items-start xl:justify-between">
         <div className="min-w-0">
-          <h1 className="text-[26px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[28px]">
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-accent">Project management</p>
+          <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
             SLR Projects
           </h1>
-          <p className="mt-1 max-w-2xl text-[14px] leading-5 text-text-secondary">
+          <p className="mt-1.5 max-w-2xl text-[14px] leading-6 text-text-secondary">
             Manage and monitor systematic literature review workflows across the
             system.
           </p>
         </div>
 
+        <div className="flex w-full flex-col gap-3 xl:w-auto xl:min-w-[590px]">
+          <div className="flex flex-col gap-2.5 sm:flex-row sm:flex-wrap xl:justify-end">
+          <div className="group relative min-w-0 flex-1 sm:min-w-[230px]">
+            <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
+            <input
+              type="text"
+              placeholder="Search projects..."
+              className="h-11 w-full rounded-xl border border-border bg-white py-2.5 pl-10 pr-10 text-[13px] text-text-secondary outline-none transition focus:border-accent focus:ring-4 focus:ring-accent/[0.08]"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPageNumber(1);
+              }}
+            />
+            {searchTerm && (
+              <button
+                onClick={() => {
+                  setSearchTerm("");
+                  setPageNumber(1);
+                }}
+                type="button"
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-text-muted transition-colors hover:text-accent"
+              >
+                <FiX size={16} />
+              </button>
+            )}
+          </div>
+          <Tooltip content="Filter project list by status" position="bottom">
+            <Select
+              className="w-full sm:w-[170px]"
+              value={statusFilter || ""}
+              onChange={(e) => {
+                setStatusFilter((e.target.value as ProjectStatus) || undefined);
+                setPageNumber(1);
+              }}
+              options={[
+                { value: "", label: "All Statuses" },
+                { value: "Draft", label: "Draft" },
+                { value: "Active", label: "Active" },
+                { value: "Completed", label: "Completed" },
+              ]}
+            />
+          </Tooltip>
+          <Tooltip
+            content="Download project report as Excel (XLSX)"
+            position="bottom"
+          >
+            <Button
+              variant="secondary"
+              className="h-11 gap-2"
+              onClick={handleExportClick}
+              disabled={isExporting}
+            >
+              {isExporting ? <LoadingSpinner size="sm" /> : <FiDownload size={16} />}
+              {isExporting ? "Exporting..." : "Export"}
+            </Button>
+          </Tooltip>
+          </div>
         <Tooltip
           content="Launch a new Systematic Literature Review project"
           position="left"
         >
           <Button
-            className="h-10 w-full shrink-0 gap-2 sm:w-fit"
+            className="h-11 w-full gap-2 sm:ml-auto sm:w-fit"
             onClick={handleCreateProjectClick}
           >
-            <FiPlus size={18} className="transition-transform duration-200" />
+            <FiPlus
+              size={20}
+              className="transition-transform duration-200"
+            />
             Create new project
           </Button>
         </Tooltip>
+        </div>
       </div>
 
       {/* Error State */}
@@ -189,67 +252,7 @@ const SLRProjectManagement: React.FC = () => {
       )}
 
       {/* Table Container */}
-      <div className="overflow-hidden rounded-xl border border-border bg-white">
-        <DataTableToolbar
-          search={<div className="group relative w-full min-w-0 sm:max-w-[340px] sm:flex-1">
-            <FiSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
-            <input
-              type="text"
-              aria-label="Search projects"
-              placeholder="Search projects..."
-              className="h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-9 pr-10 text-[13px] text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
-              value={searchTerm}
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                setPageNumber(1);
-              }}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => {
-                  setSearchTerm("");
-                  setPageNumber(1);
-                }}
-                type="button"
-                aria-label="Clear project search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 rounded p-1 text-text-muted transition-colors hover:text-accent"
-              >
-                <FiX size={16} />
-              </button>
-            )}
-          </div>}
-          filterPlacement="left"
-          filters={<div className="w-full sm:w-[180px]">
-            <Tooltip content="Filter project list by status" position="bottom">
-              <Select
-                className="h-10 w-full rounded-lg px-3"
-                value={statusFilter || ""}
-                onChange={(event) => {
-                  setStatusFilter((event.target.value as ProjectStatus) || undefined);
-                  setPageNumber(1);
-                }}
-                options={[
-                  { value: "", label: "All statuses" },
-                  { value: "Draft", label: "Draft" },
-                  { value: "Active", label: "Active" },
-                  { value: "Completed", label: "Completed" },
-                ]}
-              />
-            </Tooltip>
-          </div>}
-          actions={<Tooltip content="Download project report as Excel (XLSX)" position="bottom">
-            <Button
-              variant="secondary"
-              size="sm"
-              className="h-10 gap-2"
-              onClick={handleExportClick}
-              disabled={isExporting}
-            >
-              {isExporting ? <LoadingSpinner size="sm" /> : <FiDownload size={15} />}
-              {isExporting ? "Exporting..." : "Export"}
-            </Button>
-          </Tooltip>}
-        />
+      <div className="overflow-hidden lg:rounded-xl lg:border lg:border-border lg:bg-white lg:shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
         <div className="space-y-3 p-3 lg:hidden">
           {isLoading ? (
             Array.from({ length: 3 }, (_, index) => (
@@ -318,11 +321,11 @@ const SLRProjectManagement: React.FC = () => {
         </div>
 
         <div className="hidden overflow-x-auto no-scrollbar lg:block">
-          <table className="w-full min-w-[980px] table-fixed border-collapse text-left">
+          <table className="w-full min-w-[1080px] table-fixed border-collapse text-left">
             <colgroup>
-              <col className="w-[9%]" />
-              <col className="w-[36%]" />
-              <col className="w-[17%]" />
+              <col className="w-[11%]" />
+              <col className="w-[33%]" />
+              <col className="w-[18%]" />
               <col className="w-[11%]" />
               <col className="w-[11%]" />
               <col className="w-[16%]" />
@@ -391,7 +394,7 @@ const SLRProjectManagement: React.FC = () => {
                         {project.code}
                       </span>
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="max-w-xs px-5 py-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <Tooltip content={project.title}>
@@ -615,6 +618,10 @@ const SLRProjectManagement: React.FC = () => {
             </Tooltip>
           </div>
         </div>
+      </div>
+
+      <div className="px-1 text-center text-[10px] text-text-muted lg:hidden">
+        Scroll the table horizontally to see all columns.
       </div>
 
       {/* Delete Confirmation Modal */}

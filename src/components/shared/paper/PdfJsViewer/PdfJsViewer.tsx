@@ -1,4 +1,3 @@
-import Select from "../../../ui/Select";
 import {
   useCallback,
   useEffect,
@@ -721,7 +720,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
             >
               <ZoomOut className="h-4 w-4" />
             </button>
-            <Select
+            <select
               value={activeZoomPercent}
               aria-label="Zoom percentage"
               onChange={(event) => updateZoom(Number(event.target.value) / 100)}
@@ -735,7 +734,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                   {level}%
                 </option>
               ))}
-            </Select>
+            </select>
             <button
               type="button"
               onClick={() => updateZoom(zoom + 0.1)}

@@ -1,4 +1,4 @@
-import React, { useLayoutEffect, useState } from "react";
+import React, { useState } from "react";
 import Sidebar, { type SidebarItem } from "../../components/ui/Sidebar";
 import AdminHeader from "../../components/admin/AdminHeader";
 import Drawer from "../../components/ui/Drawer";
@@ -15,7 +15,6 @@ import {
   FiCpu,
   FiClipboard,
   FiBell,
-  FiKey,
 } from "react-icons/fi";
 import { SiTask } from "react-icons/si";
 import { MdChecklist } from "react-icons/md";
@@ -29,11 +28,6 @@ const AdminDashboard: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-
-  useLayoutEffect(() => {
-    document.body.classList.add("admin-density");
-    return () => document.body.classList.remove("admin-density");
-  }, []);
 
   const handleLogout = () => {
     dispatch(logout());
@@ -55,7 +49,6 @@ const AdminDashboard: React.FC = () => {
     },
     { icon: FiUsers, label: "Users Management", path: "/admin/users", group: "Management" },
     { icon: FiCpu, label: "AI Agents", path: "/admin/agents", group: "Management" },
-    { icon: FiKey, label: "Repository API", path: "/admin/repository-api", group: "Management" },
     {
       icon: MdChecklist,
       label: "Checklist Templates",
@@ -163,7 +156,7 @@ const AdminDashboard: React.FC = () => {
           <AdminHeader onMenuClick={() => setIsMobileMenuOpen(true)} />
 
           {/* Dynamic Content */}
-          <main className="custom-scrollbar flex-1 overflow-y-auto px-5 py-7 sm:px-7 lg:px-8 lg:py-8">
+          <main className="no-scrollbar flex-1 overflow-y-auto px-5 py-7 sm:px-7 lg:px-9 lg:py-8">
             <Outlet />
           </main>
         </div>

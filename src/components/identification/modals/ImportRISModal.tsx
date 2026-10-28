@@ -1,4 +1,3 @@
-import Select from "../../ui/Select";
 // Import RIS Modal - Dual Mode (from-strategy OR quick-import)
 import { useState } from "react";
 import { FiX, FiUpload, FiLock, FiLoader } from "react-icons/fi";
@@ -239,7 +238,7 @@ export default function ImportRISModal({
                 <span className="text-error">*</span>
               )}
             </label>
-            <Select
+            <select
               value={selectedSource}
               onChange={(e) => setSelectedSource(e.target.value)}
               className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -251,7 +250,7 @@ export default function ImportRISModal({
                   {source.label}
                 </option>
               ))}
-            </Select>
+            </select>
           </div>
         )}
 
@@ -264,7 +263,7 @@ export default function ImportRISModal({
                 (optional)
               </span>
             </label>
-            <Select
+            <select
               value={selectedStrategyId}
               onChange={(e) => setSelectedStrategyId(e.target.value)}
               className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -277,7 +276,7 @@ export default function ImportRISModal({
                   {new Date(strategy.executedAt).toLocaleDateString()}
                 </option>
               ))}
-            </Select>
+            </select>
           </div>
         )}
 

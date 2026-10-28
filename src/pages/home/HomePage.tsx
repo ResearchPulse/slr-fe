@@ -1,15 +1,15 @@
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import type { ReactNode } from "react";
 import {
+  FiArrowDown,
   FiArrowRight,
   FiArrowUpRight,
-  FiBookOpen,
+  FiBarChart2,
   FiCheck,
   FiCheckCircle,
-  FiClipboard,
+  FiClock,
   FiDatabase,
   FiFileText,
   FiFilter,
@@ -18,482 +18,347 @@ import {
   FiSearch,
   FiShield,
   FiUsers,
+  FiZap,
 } from "react-icons/fi";
 import type { RootState } from "../../redux/store";
-import scrollCraftRuntimeUrl from "./vendor/scrollcraft.js?url";
-import "./home.css";
 
-gsap.registerPlugin(ScrollTrigger);
-
-interface ScrollCraftInstance {
-  destroy: () => void;
-}
-
-declare global {
-  interface Window {
-    ScrollCraft?: {
-      mount: (root: HTMLElement) => ScrollCraftInstance;
-    };
-  }
-}
-
-let scrollCraftRuntime: Promise<void> | null = null;
-
-function loadScrollCraftRuntime(): Promise<void> {
-  if (window.ScrollCraft) return Promise.resolve();
-  if (scrollCraftRuntime) return scrollCraftRuntime;
-
-  scrollCraftRuntime = new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    script.src = scrollCraftRuntimeUrl;
-    script.async = true;
-    script.dataset.scrollCraftRuntime = "true";
-    script.onload = () => resolve();
-    script.onerror = () => {
-      scrollCraftRuntime = null;
-      reject(new Error("Scroll Craft runtime failed to load"));
-    };
-    document.head.appendChild(script);
-  });
-
-  return scrollCraftRuntime;
-}
-
-const workflowSteps = [
-  { number: "01", title: "Set the protocol", detail: "Define the review question and eligibility criteria.", icon: FiClipboard },
-  { number: "02", title: "Identify records", detail: "Import search results and retain their source context.", icon: FiSearch },
-  { number: "03", title: "Select studies", detail: "Screen titles, abstracts, and full-text reports.", icon: FiFilter },
-  { number: "04", title: "Extract evidence", detail: "Capture study findings in a shared data structure.", icon: FiDatabase },
-  { number: "05", title: "Assess quality", detail: "Appraise included studies with review criteria.", icon: FiCheckCircle },
-  { number: "06", title: "Synthesize", detail: "Compare findings and prepare review outputs.", icon: FiGitMerge },
+const workflow = [
+  { number: "01", title: "Search", detail: "Collect studies from multiple sources.", icon: FiSearch },
+  { number: "02", title: "Screen", detail: "Review and classify relevant records.", icon: FiFilter },
+  { number: "03", title: "Extract", detail: "Capture structured research evidence.", icon: FiFileText },
+  { number: "04", title: "Report", detail: "Build a clear, reproducible report.", icon: FiBarChart2 },
 ];
 
-function ResearchPaperPreview() {
+const metrics = [
+  { value: "1,248", label: "Records identified", color: "bg-[#0B84D4]" },
+  { value: "214", label: "Duplicates removed", color: "bg-[#57A9D9]" },
+  { value: "812", label: "Studies screened", color: "bg-[#7AB99D]" },
+  { value: "64", label: "Studies included", color: "bg-[#2E9B68]" },
+];
+
+function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <div className="landing-hero-art" aria-label="Illustrative research workspace preview">
-      <div className="landing-hero-art__wash" aria-hidden="true" />
-      <div className="landing-hero-art__source" data-sc-parallax="-0.14" aria-hidden="true">
-        <span>PROTOCOL</span>
-        <i />
-        <i />
-        <i />
-      </div>
-      <article className="landing-paper-sheet">
-        <div className="landing-paper-sheet__topline">
-          <span><FiFileText aria-hidden="true" /> ILLUSTRATIVE STUDY RECORD</span>
-          <span>RECORD · PROTOCOL</span>
-        </div>
-        <h2>Study record in context</h2>
-        <p className="landing-paper-sheet__citation">Title, authors, publication details and source</p>
-        <div className="landing-paper-sheet__abstract">
-          <span>REVIEW CONTEXT</span>
-          <p>
-            Compare each study with protocol criteria, then keep the decision,
-            rationale, and extracted findings connected to the source record.
-          </p>
-        </div>
-        <div className="landing-paper-sheet__footer">
-          <span><FiCheck aria-hidden="true" /> Decision rationale</span>
-          <span><FiBookOpen aria-hidden="true" /> Source-linked evidence</span>
-        </div>
-      </article>
-      <div className="landing-hero-art__annotation" data-sc-parallax="0.12">
-        <span className="landing-hero-art__annotation-mark"><FiLayers aria-hidden="true" /></span>
-        <span><b>Evidence field</b><small>Structured for comparison</small></span>
-      </div>
-      <p className="landing-hero-art__caption">Illustrative interface · no project data</p>
-    </div>
+    <p className="mb-4 inline-flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.17em] text-primary">
+      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+      {children}
+    </p>
   );
 }
 
-function WorkflowTimeline() {
+function ProductPreview() {
   return (
-    <>
-    <ol className="landing-workflow">
-      {workflowSteps.map((step) => {
-        const Icon = step.icon;
-        return (
-          <li key={step.number} className="landing-workflow__step">
-            <div className="landing-workflow__marker">
-              <span>{step.number}</span>
-              <Icon aria-hidden="true" />
-            </div>
-            <h3>{step.title}</h3>
-            <p>{step.detail}</p>
-          </li>
-        );
-      })}
-    </ol>
-    <p className="landing-workflow__note"><FiGitMerge aria-hidden="true" /> Source records, criteria, decisions and findings move through one documented review path.</p>
-    </>
-  );
-}
-
-function ScreeningPreview() {
-  return (
-    <div className="landing-screening-preview">
-      <div className="landing-screening-preview__paper">
-        <div className="landing-preview-label"><FiFileText aria-hidden="true" /> ILLUSTRATIVE REVIEW STATE</div>
-        <h3>Study eligibility</h3>
-        <p>Review the source record against the saved inclusion criteria.</p>
-        <div className="landing-preview-quote">
-          <span>CRITERION</span>
-          <p>Population and study design align with the review scope.</p>
-        </div>
-      </div>
-      <div className="landing-reviewers" aria-label="Reviewer collaboration capabilities">
-        <div className="landing-reviewer">
-          <span className="landing-reviewer__label"><FiUsers aria-hidden="true" /> REVIEW WORKSPACE</span>
-          <strong><FiCheckCircle aria-hidden="true" /> Independent decisions</strong>
-          <small>Each reviewer records a rationale</small>
-        </div>
-        <div className="landing-reviewer landing-reviewer--pending">
-          <span className="landing-reviewer__label"><FiGitMerge aria-hidden="true" /> RESOLUTION</span>
-          <strong><FiFileText aria-hidden="true" /> Conflict history</strong>
-          <small>Consensus remains traceable</small>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ExtractionPreview() {
-  const fields = [
-    ["Study design", "Design and method"],
-    ["Population", "Population and context"],
-    ["Main finding", "Finding linked to source"],
-  ];
-
-  return (
-    <div className="landing-extraction-preview">
-      <div className="landing-extraction-preview__head">
-        <span><FiDatabase aria-hidden="true" /> ILLUSTRATIVE EXTRACTION</span>
-        <span>FIELD · EVIDENCE</span>
-      </div>
-      {fields.map(([field, description]) => (
-        <div className="landing-extraction-preview__row" key={field}>
-          <span>{field}</span>
-          <span>{description}</span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function EvidenceSpine() {
-  return (
-    <section className="landing-evidence-act" data-sc-act="pin" data-sc-span="2.1" aria-labelledby="evidence-spine-title">
-      <div className="landing-evidence-stage" data-sc-stage>
-        <div className="landing-evidence-stage__inner">
-          <div className="landing-evidence-copy">
-            <h2 id="evidence-spine-title">Separate studies.<br /><span>One connected review.</span></h2>
-            <p>Keep each decision, extracted field and source connected as the review takes shape.</p>
-            <div className="landing-evidence-legend">
-              <span><i className="landing-legend-dot landing-legend-dot--source" /> Source record</span>
-              <span><i className="landing-legend-dot landing-legend-dot--decision" /> Review decision</span>
-              <span><i className="landing-legend-dot landing-legend-dot--evidence" /> Extracted evidence</span>
+    <div className="relative mx-auto w-full max-w-[570px] px-2 sm:px-0">
+      <div className="relative overflow-hidden rounded-xl border border-border bg-white">
+        <div className="flex items-center justify-between border-b border-[#E8EEF2] bg-[#FBFCFD] px-5 py-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#E7F3FB] text-primary"><FiLayers size={14} /></div>
+            <div>
+              <p className="text-[11px] font-bold text-text-primary">SLRS workspace</p>
+              <p className="text-[9px] text-[#8A9AA5]">PROJECT OVERVIEW</p>
             </div>
           </div>
-          <div className="landing-evidence-visual" aria-label="Illustration of records connecting to a traceable evidence path">
-            <svg className="landing-evidence-path" viewBox="0 0 700 420" fill="none" aria-hidden="true">
-              <path className="landing-evidence-path__line" pathLength="1" d="M105 93 C196 93 174 205 270 205 S350 105 425 142 S486 280 590 302" />
-              <path className="landing-evidence-path__line landing-evidence-path__line--branch" pathLength="1" d="M116 323 C194 323 206 208 270 205" />
-            </svg>
-            <div className="landing-evidence-fragment landing-evidence-fragment--source">
-              <span><FiFileText aria-hidden="true" /> SOURCE</span>
-              <b>Study record</b>
-              <small>Metadata and abstract</small>
+          <span className="rounded-full border border-[#D5EBDD] bg-[#F0F8F3] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-[#37835D]">Active review</span>
+        </div>
+
+        <div className="border-b border-[#E8EEF2] bg-[#F7F9FA] px-5 py-2 text-[9px] font-semibold tracking-wide text-[#647381] sm:px-6">
+          Illustrative interface preview · sample project data
+        </div>
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <p className="mb-1 text-[9px] font-bold uppercase tracking-[0.16em] text-[#8797A2]">AI in Healthcare Review</p>
+              <h2 className="text-[17px] font-bold tracking-[-0.03em] text-text-primary sm:text-[19px]">Review progress</h2>
             </div>
-            <div className="landing-evidence-fragment landing-evidence-fragment--decision">
-              <span><FiFilter aria-hidden="true" /> DECISION</span>
-              <b>Eligibility review</b>
-              <small>Criteria and rationale</small>
+            <div className="text-right">
+              <span className="text-[23px] font-bold tracking-[-0.04em] text-text-primary">72%</span>
+              <p className="text-[9px] text-[#8797A2]">overall completion</p>
             </div>
-            <div className="landing-evidence-fragment landing-evidence-fragment--review">
-              <span><FiUsers aria-hidden="true" /> REVIEW</span>
-              <b>Reviewer input</b>
-              <small>Independent and attributable</small>
-            </div>
-            <div className="landing-evidence-fragment landing-evidence-fragment--evidence">
-              <span><FiDatabase aria-hidden="true" /> EVIDENCE</span>
-              <b>Structured finding</b>
-              <small>Linked back to the source</small>
-            </div>
-            <div className="landing-evidence-endpoint"><FiGitMerge aria-hidden="true" /><span>Review record</span></div>
           </div>
-          <p className="landing-evidence-stage__note">Criteria <span>→</span> decision <span>→</span> extracted evidence <span>→</span> reporting</p>
+
+          <div className="mt-4 h-2 overflow-hidden rounded-full bg-[#EAF0F4]">
+            <div className="h-full w-[72%] rounded-full bg-primary" />
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {[
+              ["Identification", "Complete", "done"],
+              ["Screening", "Complete", "done"],
+              ["Assessment", "In progress", "current"],
+              ["Synthesis", "Upcoming", "next"],
+            ].map(([name, state, kind], index) => (
+              <div key={name} className={`rounded-xl border p-2.5 ${kind === "current" ? "border-[#A8D4EF] bg-[#F2F9FD]" : "border-[#E9EEF1] bg-white"}`}>
+                <div className="mb-2 flex items-center gap-1.5">
+                  <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold ${kind === "done" ? "bg-[#E6F4EC] text-[#36845C]" : kind === "current" ? "bg-[#DCEFFA] text-primary" : "bg-[#F0F3F5] text-[#98A6AE]"}`}>
+                    {kind === "done" ? <FiCheck size={10} /> : `0${index + 1}`}
+                  </span>
+                  <span className="text-[8px] font-bold uppercase tracking-wide text-[#9AA8B1]">Stage {index + 1}</span>
+                </div>
+                <p className="text-[10px] font-bold text-text-primary">{name}</p>
+                <p className={`mt-0.5 text-[9px] ${kind === "current" ? "text-primary" : "text-[#8A9AA5]"}`}>{state}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
+            {metrics.map((metric) => (
+              <div key={metric.label} className="rounded-xl bg-[#F7F9FA] px-3 py-2.5">
+                <div className="mb-1.5 flex items-center gap-1.5">
+                  <span className={`h-1.5 w-1.5 rounded-full ${metric.color}`} />
+                  <span className="text-[8px] font-semibold leading-tight text-[#7E8E99]">{metric.label}</span>
+                </div>
+                <p className="text-[17px] font-bold tracking-[-0.03em] text-text-primary">{metric.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center justify-between border-t border-[#E8EEF2] bg-[#FBFCFD] px-5 py-3">
+          <div className="flex -space-x-2">
+            {[["A", "bg-[#DCEFFA] text-[#2475A5]"], ["M", "bg-[#E6F2E9] text-[#4D8561]"], ["J", "bg-[#F8EBD9] text-[#9B7138]"]].map(([letter, style]) => (
+              <span key={letter} className={`flex h-6 w-6 items-center justify-center rounded-full border-2 border-white text-[8px] font-bold ${style}`}>{letter}</span>
+            ))}
+          </div>
+          <p className="text-[9px] text-[#81919C]">Updated a few minutes ago</p>
+          <span className="inline-flex items-center gap-1 text-[9px] font-bold text-primary">Open project <FiArrowUpRight size={11} /></span>
         </div>
       </div>
-    </section>
+      <div className="absolute -left-7 bottom-12 hidden items-center gap-2 rounded-xl border border-border bg-white px-3 py-2.5 sm:flex">
+        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#EDF7F1] text-[#32835B]"><FiCheckCircle size={15} /></span>
+        <span><b className="block text-[10px] text-text-primary">PRISMA aligned</b><small className="text-[9px] text-text-secondary">Decision trail preserved</small></span>
+      </div>
+    </div>
   );
 }
 
-function MethodologyScene() {
-  return (
-    <section id="about" className="landing-methodology" data-sc-act="flow" aria-labelledby="methodology-title">
-      <div className="landing-methodology__copy">
-        <h2 id="methodology-title">A review you can follow.</h2>
-        <p>Carry the question and eligibility criteria through screening, appraisal and reporting. Preserve the context behind decisions as evidence is compared.</p>
-        <a href="https://www.prisma-statement.org/" target="_blank" rel="noreferrer" className="landing-text-link">
-          PRISMA 2020 reporting support <FiArrowUpRight aria-hidden="true" />
-        </a>
-        <p className="landing-methodology__disclaimer">PRISMA is a reporting guideline. SLRS is not affiliated with or endorsed by the PRISMA Group.</p>
-        <ul className="landing-methodology__details">
-          <li><FiCheck aria-hidden="true" /><span><b>Criteria are set before screening.</b> Apply a consistent scope from title review through full text.</span></li>
-          <li><FiCheck aria-hidden="true" /><span><b>Reviewer decisions remain attributable.</b> Keep rationale and conflict resolution in view.</span></li>
-          <li><FiCheck aria-hidden="true" /><span><b>Evidence stays connected to its source.</b> Compare structured findings in their study context.</span></li>
-        </ul>
-      </div>
-      <div className="landing-methodology__visual">
-        <div className="landing-methodology__visual-head">
-          <span><FiShield aria-hidden="true" /> TRACEABLE REVIEW</span>
-          <span>PRISMA 2020</span>
-        </div>
-        <ol className="landing-report-flow">
-          <li><span className="landing-report-flow__node"><FiSearch aria-hidden="true" /></span><span><b>Identify</b><small>Sources and records</small></span></li>
-          <li><span className="landing-report-flow__node"><FiFilter aria-hidden="true" /></span><span><b>Screen</b><small>Eligibility decisions</small></span></li>
-          <li><span className="landing-report-flow__node"><FiLayers aria-hidden="true" /></span><span><b>Assess</b><small>Included study evidence</small></span></li>
-          <li><span className="landing-report-flow__node"><FiBookOpen aria-hidden="true" /></span><span><b>Report</b><small>Review flow and outputs</small></span></li>
-        </ol>
-        <p className="landing-methodology__caption">A reporting pathway, without sample counts.</p>
-      </div>
-    </section>
-  );
+function AppPreview({ children }: { children: ReactNode }) {
+  return <div className="mt-5 rounded-xl border border-border bg-white p-3">{children}</div>;
 }
 
 export default function HomePage() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const startPath = isAuthenticated ? "/projects" : "/auth/signin";
-  const landingRef = useRef<HTMLDivElement>(null);
+  const pageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    let active = true;
-    let instance: ScrollCraftInstance | undefined;
-    const root = landingRef.current;
-    if (!root) return undefined;
+    const page = pageRef.current;
+    if (!page) return;
 
-    const media = gsap.matchMedia(root);
-    media.add({
-      reducedMotion: "(prefers-reduced-motion: reduce)",
-      desktop: "(min-width: 768px)",
-    }, ({ conditions }) => {
-      if (conditions?.reducedMotion) return undefined;
+    const targets = page.querySelectorAll<HTMLElement>(".scroll-reveal, .scroll-pop");
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false;
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      targets.forEach((target) => { target.dataset.scrollReveal = "visible"; });
+      return;
+    }
 
-      const hero = gsap.timeline({ defaults: { ease: "power3.out" } });
-      hero
-        .fromTo(".landing-hero__message .landing-eyebrow", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.3 }, 0)
-        .fromTo(".landing-hero__message h1", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.42 }, 0.04)
-        .fromTo(".landing-hero__description", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.32 }, 0.14)
-        .fromTo(".landing-hero__actions > *", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.28, stagger: 0.04 }, 0.22)
-        .fromTo(".landing-hero__proof > *", { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.26, stagger: 0.04 }, 0.3)
-        .fromTo(".landing-hero__visual", { autoAlpha: 0, x: 26, y: 14, scale: 0.985 }, { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.72 }, 0.04);
-
-      gsap.fromTo(".landing-workflow__step",
-        { autoAlpha: 0, y: 26 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.62,
-          stagger: 0.1,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".landing-workflow", start: "top 76%", once: true },
-        },
-      );
-      gsap.fromTo(".landing-workflow",
-        { "--line-progress": 0 },
-        {
-          "--line-progress": 1,
-          duration: 0.85,
-          ease: "power2.out",
-          scrollTrigger: { trigger: ".landing-workflow", start: "top 76%", once: true },
-        },
-      );
-
-      const capabilities = gsap.timeline({
-        scrollTrigger: { trigger: ".landing-capability-grid", start: "top 78%", once: true },
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        (entry.target as HTMLElement).dataset.scrollReveal = "visible";
+        observer.unobserve(entry.target);
       });
-      capabilities
-        .fromTo(".landing-capability-main", { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" })
-        .fromTo(".landing-capability-secondary", { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" }, "-=0.52")
-        .fromTo(".landing-capability-note", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.52, stagger: 0.1, ease: "power3.out" }, "-=0.28");
+    }, { threshold: 0.12, rootMargin: "0px 0px -24px 0px" });
 
-      const evidence = gsap.timeline({
-        scrollTrigger: conditions?.desktop
-          ? { trigger: ".landing-evidence-act", start: "top 64px", end: "bottom bottom", scrub: 0.35, invalidateOnRefresh: true }
-          : { trigger: ".landing-evidence-act", start: "top 78%", once: true },
-      });
-      if (conditions?.desktop) {
-        evidence
-          .fromTo(".landing-evidence-path__line", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.72, stagger: 0.04, ease: "none" }, 0.08)
-          .fromTo(".landing-evidence-fragment", { autoAlpha: 0.25, y: 22, scale: 0.965 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.24, stagger: 0.13, ease: "none" }, 0)
-          .fromTo(".landing-evidence-endpoint", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: "none" }, 0.82);
-      } else {
-        evidence
-          .fromTo(".landing-evidence-fragment", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.52, stagger: 0.08, ease: "power2.out" })
-          .fromTo(".landing-evidence-path__line", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.65, stagger: 0.06, ease: "power2.out" }, "-=0.18");
-      }
-
-      const methodology = gsap.timeline({
-        scrollTrigger: { trigger: ".landing-methodology", start: "top 76%", once: true },
-      });
-      methodology
-        .fromTo(".landing-methodology__copy", { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: "power3.out" })
-        .fromTo(".landing-methodology__visual", { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" }, "-=0.48")
-        .fromTo(".landing-report-flow", { "--line-progress": 0 }, { "--line-progress": 1, duration: 0.62, ease: "power2.out" }, "-=0.34")
-        .fromTo(".landing-report-flow__node", { scale: 0.86 }, { scale: 1, duration: 0.42, stagger: 0.09, ease: "power3.out" }, "-=0.22");
-
-      gsap.fromTo(".landing-close-scene__copy, .landing-close-scene__path",
-        { autoAlpha: 0, y: 22 },
-        {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.72,
-          stagger: 0.16,
-          ease: "power3.out",
-          scrollTrigger: { trigger: ".landing-close-scene", start: "top 82%", once: true },
-        },
-      );
-
-      return undefined;
+    targets.forEach((target) => {
+      target.dataset.scrollReveal = "pending";
+      observer.observe(target);
     });
 
-    void loadScrollCraftRuntime()
-      .then(() => {
-        if (active && landingRef.current && window.ScrollCraft) {
-          instance = window.ScrollCraft.mount(landingRef.current);
-          requestAnimationFrame(() => ScrollTrigger.refresh());
-        }
-      })
-      .catch(() => {
-        // The full page remains visible and readable if the optional motion runtime fails.
-      });
-
-    return () => {
-      active = false;
-      instance?.destroy();
-      media.revert();
-    };
+    return () => observer.disconnect();
   }, []);
 
   return (
-    <div ref={landingRef} className="landing-page">
-      <section className="landing-hero" data-sc-act="flow" aria-labelledby="landing-title">
-        <div className="landing-shell landing-hero__grid">
-          <div className="landing-hero__copy">
-            <div className="landing-hero__message">
-              <p className="landing-eyebrow">SYSTEMATIC REVIEW WORKSPACE</p>
-              <h1 id="landing-title">A clearer way to review <span>research.</span></h1>
-              <p className="landing-hero__description">
-                Plan the review, assess source records, and keep screening decisions and extracted findings connected in one collaborative workspace.
-              </p>
-            </div>
-            <div className="landing-hero__actions">
-              <button type="button" onClick={() => navigate(startPath)} className="landing-button landing-button--primary">
-                Start a Review <FiArrowRight aria-hidden="true" />
-              </button>
-              <a href="#workflow" className="landing-button landing-button--secondary">
-                Explore Workflow <FiArrowUpRight aria-hidden="true" />
-              </a>
-            </div>
-            <div className="landing-hero__proof">
-              <span><FiCheckCircle aria-hidden="true" /> PRISMA reporting support</span>
-              <span><FiShield aria-hidden="true" /> Traceable decisions</span>
-            </div>
-          </div>
-          <div className="landing-hero__visual">
-            <ResearchPaperPreview />
-          </div>
-        </div>
-      </section>
-
-      <section id="workflow" className="landing-workflow-scene" data-sc-act="flow" aria-labelledby="workflow-title">
-        <div className="landing-shell">
-          <div className="landing-section-heading">
-            <div>
-              <h2 id="workflow-title">From question to evidence.</h2>
-            </div>
-          <p>Follow the question from protocol to synthesis, with source records and decisions carried across each stage.</p>
-          </div>
-          <WorkflowTimeline />
-        </div>
-      </section>
-
-      <section id="features" className="landing-capability-scene" data-sc-act="flow" aria-labelledby="capabilities-title">
-        <div className="landing-shell">
-          <div className="landing-section-heading landing-section-heading--compact">
-            <div>
-              <h2 id="capabilities-title">Decisions stay with the evidence.</h2>
-            </div>
-            <p>Review together, resolve differences, and keep study data structured.</p>
-          </div>
-          <div className="landing-capability-grid">
-            <article className="landing-capability-main">
-              <div className="landing-capability-main__heading">
-                <span className="landing-icon-tile"><FiFilter aria-hidden="true" /></span>
-                <h3>Independent review with a clear route to resolution.</h3>
-            <p>Reviewers screen independently, record a reason for each decision, and resolve disagreement through a traceable consensus process.</p>
-              </div>
-              <ScreeningPreview />
-            </article>
-            <article className="landing-capability-secondary">
-              <div className="landing-capability-secondary__heading">
-                <span className="landing-icon-tile"><FiDatabase aria-hidden="true" /></span>
-                <div><h3>Structured study evidence.</h3></div>
-              </div>
-              <p>Use shared fields to compare findings and connect each value to its source.</p>
-              <ExtractionPreview />
-            </article>
-            <div className="landing-capability-note">
-              <span><FiUsers aria-hidden="true" /> Collaboration</span>
-              <p>Keep each reviewer decision and rationale visible when a paper reaches consensus or adjudication.</p>
-            </div>
-            <div className="landing-capability-note">
-              <span><FiShield aria-hidden="true" /> Quality assessment</span>
-              <p>Assess the quality of included studies and consider those appraisals alongside the extracted findings.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <EvidenceSpine />
-
-      <MethodologyScene />
-
-      <section className="landing-close-scene" data-sc-act="flow" aria-labelledby="landing-close-title">
-        <div className="landing-shell landing-close-scene__inner">
-          <div className="landing-close-scene__copy">
-            <p className="landing-eyebrow"><FiLayers aria-hidden="true" /> YOUR NEXT REVIEW</p>
-            <h2 id="landing-close-title">Bring your evidence into focus.</h2>
-            <p className="landing-close-scene__description">
-              Begin with a clear research question, then keep study records, screening decisions, and findings connected as your team moves toward synthesis.
+    <div ref={pageRef} className="overflow-hidden bg-bg-primary text-text-primary">
+      <section className="relative border-b border-border bg-bg-secondary">
+        <div className="relative mx-auto grid max-w-[1280px] items-center gap-12 px-5 py-16 sm:px-8 sm:py-20 lg:min-h-[650px] lg:grid-cols-[0.92fr_1.08fr] lg:gap-12 lg:px-12 lg:py-20">
+          <div className="relative z-10 max-w-[570px]">
+            <Eyebrow>PRISMA-based research workflow</Eyebrow>
+            <h1 aria-label="Systematic Literature Review System" className="text-[42px] font-bold leading-[1.06] tracking-[-0.03em] text-text-primary sm:text-[54px] lg:text-[62px]">
+              Systematic Literature<br />
+              <span className="text-primary">Review System</span>
+            </h1>
+            <p className="mt-6 max-w-[490px] text-[15px] leading-7 text-[#607482] sm:text-[16px]">
+              Plan, screen, extract, and report research evidence through one structured and reproducible workflow.
             </p>
-            <p className="landing-close-scene__note"><FiShield aria-hidden="true" /> A documented path from review criteria to research outputs.</p>
-            <div className="landing-close-scene__actions">
-              <button type="button" onClick={() => navigate(startPath)} className="landing-button landing-button--primary">
-                Start a Review <FiArrowRight aria-hidden="true" />
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <button type="button" onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-6 text-[12px] font-bold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none">
+                Start a Review <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
               </button>
-              <button type="button" onClick={() => navigate("/projects")} className="landing-button landing-button--secondary">
+              <button type="button" onClick={() => navigate("/projects")} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-surface-white px-6 text-[12px] font-bold text-text-primary transition-colors hover:border-primary/40 hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none">
                 View Projects <FiArrowUpRight aria-hidden="true" />
               </button>
             </div>
+            <div className="mt-7 space-y-2.5 text-[11px] font-semibold text-[#728592]">
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <span className="inline-flex items-center gap-1.5 text-[#37835D]"><FiCheckCircle size={14} /> Built around PRISMA 2020</span>
+                <span className="hidden h-1 w-1 rounded-full bg-[#A7B6BF] sm:block" />
+                <span>Transparent by design</span>
+              </div>
+              <span className="inline-flex items-center gap-1.5 text-[#718592]"><FiUsers size={13} className="text-primary" /> For project leaders, researchers, and reviewers</span>
+            </div>
           </div>
-          <div className="landing-close-scene__path" role="group" aria-labelledby="landing-close-path-title">
-            <p id="landing-close-path-title" className="landing-close-scene__path-title">One connected review</p>
-            <ol>
-              <li>
-                <span className="landing-close-scene__path-node"><FiClipboard aria-hidden="true" /></span>
-                <span><b>Set the scope</b><small>Question and eligibility criteria</small></span>
-              </li>
-              <li>
-                <span className="landing-close-scene__path-node"><FiFilter aria-hidden="true" /></span>
-                <span><b>Review the studies</b><small>Records, decisions, and rationale</small></span>
-              </li>
-              <li>
-                <span className="landing-close-scene__path-node"><FiGitMerge aria-hidden="true" /></span>
-                <span><b>Bring findings together</b><small>Evidence ready for synthesis</small></span>
-              </li>
-            </ol>
+          <div className="relative py-2 sm:px-5 lg:py-8"><ProductPreview /></div>
+        </div>
+      </section>
+
+      <section id="workflow" className="scroll-reveal scroll-mt-24 py-20 sm:py-24">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-[650px] text-center">
+            <Eyebrow>Workflow</Eyebrow>
+            <h2 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-text-primary sm:text-[40px]">A structured path from search to synthesis</h2>
+            <p className="mt-4 text-[14px] leading-6 text-[#6A7D89] sm:text-[15px]">Keep every review stage transparent, traceable, and reproducible.</p>
+          </div>
+          <div className="relative mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+            <div className="absolute left-[12%] right-[12%] top-[31px] hidden h-px bg-[#C9DDE9] lg:block" />
+            {workflow.map((step, index) => (
+              <div key={step.number} className={`scroll-pop group relative px-0 lg:px-3${index > 0 ? ` scroll-pop-delay-${index}` : ""}`}>
+                <div className="relative flex min-h-[188px] flex-col rounded-xl border border-border bg-white p-5 transition-colors duration-200 hover:border-primary/40 sm:p-6 lg:mx-2">
+                  <div className="relative z-10 mb-5 flex items-center justify-between">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#D9EAF4] bg-[#EFF7FB] text-primary transition group-hover:bg-primary group-hover:text-white"><step.icon size={19} /></span>
+                    <span className="text-[11px] font-bold tracking-[0.15em] text-[#9BAAB3]">{step.number}</span>
+                  </div>
+                  <h3 className="text-[17px] font-bold text-text-primary">{step.title}</h3>
+                  <p className="mt-2 max-w-[230px] text-[12px] leading-5 text-[#72838E]">{step.detail}</p>
+                  {index < workflow.length - 1 && <span className="absolute -right-3 top-[26px] z-20 hidden h-6 w-6 items-center justify-center rounded-full border border-border bg-bg-primary text-text-secondary lg:flex"><FiArrowRight size={12} /></span>}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-6 flex items-center justify-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-[#8A9AA4]"><FiGitMerge className="text-primary" /> One connected PRISMA workflow</div>
+        </div>
+      </section>
+
+      <section id="features" className="scroll-reveal scroll-mt-24 border-y border-[#E2EAF0] bg-[#F0F5F8] py-20 sm:py-24">
+        <div className="mx-auto max-w-[1280px] px-5 sm:px-8 lg:px-12">
+          <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div className="max-w-[650px]">
+              <Eyebrow>Capabilities</Eyebrow>
+              <h2 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-text-primary sm:text-[40px]">Everything your research team needs</h2>
+            </div>
+            <p className="max-w-[410px] text-[13px] leading-6 text-[#6A7D89]">One workspace for managing systematic reviews from protocol definition to final evidence synthesis.</p>
+          </div>
+
+          <div className="grid auto-rows-[minmax(190px,auto)] gap-4 md:grid-cols-2 lg:grid-cols-6">
+            <article className="scroll-pop group relative overflow-hidden rounded-xl border border-border bg-white p-6 transition-colors hover:border-primary/40 md:col-span-2 lg:col-span-3 lg:row-span-2">
+              <div className="flex items-start justify-between gap-4">
+                <div><span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-primary"><FiZap size={17} /></span><h3 className="mt-4 text-[18px] font-bold text-text-primary">Smart screening</h3><p className="mt-1 max-w-[330px] text-[12px] leading-5 text-text-secondary">Move through records efficiently, with reviewers making and owning each decision.</p></div>
+                <span className="rounded-full bg-[#F0F7FB] px-2.5 py-1 text-[9px] font-bold uppercase tracking-wider text-primary">Reviewer-led</span>
+              </div>
+              <AppPreview>
+                <div className="flex items-center justify-between gap-3"><span className="text-[9px] font-bold uppercase tracking-wider text-[#96A5AE]">Title & abstract · Paper 142</span><span className="inline-flex items-center gap-1 text-[9px] font-semibold text-[#39835D]"><FiCheckCircle size={11} /> Assigned to you</span></div>
+                <p className="mt-2 text-[11px] font-bold leading-5 text-[#263F50]">Transformer-based approaches for clinical natural language processing</p>
+                <div className="mt-3 flex items-center justify-between gap-3 border-t border-[#EDF1F3] pt-3"><span className="text-[9px] text-[#84949E]">Relevance indicators · 4 criteria matched</span><span className="rounded-md bg-[#EAF5FB] px-2 py-1 text-[9px] font-bold text-primary">High relevance</span></div>
+                <div className="mt-3 flex gap-2"><span className="flex-1 rounded-lg border border-[#CDE4D5] bg-[#F4FAF6] py-2 text-center text-[10px] font-bold text-[#37835D]">Include</span><span className="flex-1 rounded-lg border border-[#E4E9EC] bg-[#FAFBFC] py-2 text-center text-[10px] font-bold text-[#71828D]">Exclude</span></div>
+              </AppPreview>
+            </article>
+
+            <article className="scroll-pop scroll-pop-delay-1 group overflow-hidden rounded-xl border border-border bg-white p-6 transition-colors hover:border-primary/40 md:col-span-1 lg:col-span-3">
+              <div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light text-primary-hover"><FiUsers size={17} /></span><div><h3 className="text-[17px] font-bold text-text-primary">Team collaboration</h3><p className="mt-1 text-[11px] leading-5 text-text-secondary">Coordinate independent reviews and resolve differences with context.</p></div></div>
+              <AppPreview>
+                <div className="grid grid-cols-[1fr_auto] gap-x-3 gap-y-2 text-[10px]"><span className="text-[#657985]">Reviewer A</span><span className="rounded-md bg-[#EDF7F1] px-2 py-1 font-bold text-[#37835D]">Include</span><span className="text-[#657985]">Reviewer B</span><span className="rounded-md bg-[#FBF3E6] px-2 py-1 font-bold text-[#A17630]">Exclude</span></div>
+                <div className="mt-3 flex items-center justify-between border-t border-[#EDF1F3] pt-2.5"><span className="inline-flex items-center gap-1.5 text-[9px] font-bold text-[#A17630]"><FiGitMerge size={12} /> Conflict detected</span><span className="inline-flex items-center gap-1 text-[9px] font-bold text-primary">Review decision <FiArrowRight size={11} /></span></div>
+              </AppPreview>
+            </article>
+
+            <article className="scroll-pop scroll-pop-delay-2 group overflow-hidden rounded-xl border border-border bg-white p-6 transition-colors hover:border-primary/40 md:col-span-1 lg:col-span-3">
+              <div className="flex items-start gap-3"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-success/10 text-success"><FiDatabase size={17} /></span><div><h3 className="text-[17px] font-bold text-text-primary">Structured extraction</h3><p className="mt-1 text-[11px] leading-5 text-text-secondary">Capture study findings in consistent, review-ready evidence tables.</p></div></div>
+              <AppPreview>
+                <div className="flex items-center justify-between border-b border-[#EDF1F3] pb-2 text-[9px] font-bold uppercase tracking-wide text-[#94A2AA]"><span>Evidence matrix</span><span>3 studies</span></div>
+                <div className="mt-2 grid grid-cols-[1fr_1.3fr_1fr] gap-2 text-[9px]"><span className="font-semibold text-[#73848E]">Study</span><span className="font-semibold text-[#73848E]">Key finding</span><span className="font-semibold text-[#73848E]">Outcome</span><span className="truncate text-[#526977]">Chen et al. · 2024</span><span className="truncate text-[#526977]">Improved clinical...</span><span className="text-[#37835D]">Positive</span></div>
+              </AppPreview>
+            </article>
+
+            <article className="scroll-pop scroll-pop-delay-1 group rounded-xl border border-border bg-white p-5 transition-colors hover:border-primary/40 lg:col-span-2">
+              <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary"><FiClock size={16} /></span><h3 className="text-[15px] font-bold text-text-primary">Audit trail</h3></div>
+              <p className="mt-3 text-[11px] leading-5 text-[#72838E]">Decisions stay connected to their reviewer, date, and rationale.</p>
+              <div className="mt-4 flex items-center gap-2 rounded-lg bg-[#F7F9FA] px-3 py-2 text-[9px] text-[#71828D]"><FiCheckCircle className="text-[#37835D]" /> Decision recorded <span className="ml-auto">10:42 AM</span></div>
+            </article>
+
+            <article className="scroll-pop scroll-pop-delay-2 group rounded-xl border border-border bg-white p-5 transition-colors hover:border-primary/40 lg:col-span-2">
+              <div className="flex items-center gap-3"><span className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-light text-primary"><FiLayers size={16} /></span><h3 className="text-[15px] font-bold text-text-primary">PRISMA ready</h3></div>
+              <p className="mt-3 text-[11px] leading-5 text-[#72838E]">Track records through each stage and prepare transparent reporting.</p>
+              <div className="mt-4 flex items-center gap-1.5 text-[9px] font-bold text-[#68808F]"><span className="rounded bg-[#EDF5F9] px-2 py-1">Identified</span><FiArrowRight /><span className="rounded bg-[#EDF5F9] px-2 py-1">Screened</span><FiArrowRight /><span className="rounded bg-[#EAF5EF] px-2 py-1 text-[#37835D]">Included</span></div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section className="scroll-reveal py-20 sm:py-24">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-10 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:px-12">
+          <div>
+            <Eyebrow>Review progress</Eyebrow>
+            <h2 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-text-primary sm:text-[40px]">See your review at a glance</h2>
+            <p className="mt-4 max-w-[430px] text-[14px] leading-6 text-[#6A7D89]">Follow the evidence from identification to inclusion, with a clear view of what has moved and what remains.</p>
+            <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[#DCE8EE] bg-white px-3 py-2 text-[10px] font-semibold text-[#6C808C]"><FiShield className="text-primary" /> Traceable review decisions</div>
+          </div>
+          <div className="rounded-xl border border-border bg-white p-5 sm:p-7">
+            <div className="mb-3 rounded-lg bg-[#F7F9FA] px-3 py-2 text-[9px] font-semibold tracking-wide text-[#647381]">Illustrative interface preview · sample project data</div>
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.15em] text-text-secondary">Example systematic review</p><h3 className="mt-1 text-[16px] font-bold text-text-primary">PRISMA flow summary</h3></div><span className="rounded-lg border border-border bg-bg-primary px-3 py-2 text-[9px] font-semibold text-text-secondary">All sources <span className="ml-1 text-text-secondary">⌄</span></span></div>
+            <div className="grid gap-6 md:grid-cols-[1fr_0.9fr] md:items-center">
+              <div className="grid grid-cols-2 gap-3">
+                {metrics.map((metric) => <div key={metric.label} className="rounded-xl border border-border bg-surface-white p-4"><p className="text-[23px] font-bold tracking-[-0.02em] text-text-primary">{metric.value}</p><p className="mt-1 text-[10px] leading-4 text-text-secondary">{metric.label}</p></div>)}
+              </div>
+              <div className="flex flex-col items-center" aria-label="PRISMA study selection funnel">
+                {[
+                  { label: "Records identified", value: "1,248", width: "w-full", tone: "bg-[#DCEFFA] text-[#236F9D]" },
+                  { label: "After duplicates", value: "1,034", width: "w-[84%]", tone: "bg-[#CDE6F4] text-[#236F9D]" },
+                  { label: "Full text assessed", value: "146", width: "w-[67%]", tone: "bg-[#DDEFE5] text-[#397C58]" },
+                  { label: "Studies included", value: "64", width: "w-[49%]", tone: "bg-[#CBE6D5] text-[#31744F]" },
+                ].map((stage, i) => (
+                  <Fragment key={stage.label}>
+                    <div
+                      className={`${stage.width} ${stage.tone} flex items-center justify-between rounded-lg px-3 py-2.5 transition hover:scale-[1.02]`}
+                    >
+                      <span className="text-[9px] font-semibold">{stage.label}</span>
+                      <span className="text-[11px] font-extrabold">{stage.value}</span>
+                    </div>
+                    {i < 3 && <FiArrowDown className="my-1 text-[16px] text-text-primary" />}
+                  </Fragment>
+                ))}
+              </div>
+            </div>
+            <div className="mt-5 flex items-center gap-2 border-t border-[#EDF1F3] pt-4 text-[9px] text-[#82929C]"><FiCheckCircle className="text-[#37835D]" /> Counts stay linked to decisions made across the review</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" className="scroll-reveal scroll-mt-24 border-y border-[#E2EAF0] bg-[#F0F5F8] py-20 sm:py-24">
+        <div className="mx-auto grid max-w-[1280px] items-center gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:px-12">
+          <div className="relative">
+            <div className="relative rounded-xl border border-border bg-white p-5 sm:p-6">
+              <div className="flex items-center justify-between border-b border-[#E9EEF1] pb-4"><div><p className="text-[9px] font-bold uppercase tracking-[0.15em] text-[#8B9AA3]">Screening decision</p><h3 className="mt-1 text-[13px] font-bold text-[#173247]">Paper #142</h3></div><span className="rounded-full bg-[#FBF3E6] px-2.5 py-1 text-[9px] font-bold text-[#A17630]">Needs resolution</span></div>
+              <p className="py-4 text-[12px] font-semibold leading-5 text-[#334C5B]">“Transformer-based approaches for clinical NLP”</p>
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between rounded-xl border border-[#E9EEF1] bg-[#FCFDFD] px-3.5 py-3"><span className="flex items-center gap-2.5"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#EAF3F8] text-[9px] font-bold text-[#477BA2]">RA</span><span><b className="block text-[10px] text-[#405866]">Reviewer A</b><small className="text-[9px] text-[#91A0A9]">Independent review</small></span></span><span className="rounded-md bg-[#EDF7F1] px-2.5 py-1 text-[9px] font-bold text-[#37835D]">Include</span></div>
+                <div className="flex items-center justify-between rounded-xl border border-[#E9EEF1] bg-[#FCFDFD] px-3.5 py-3"><span className="flex items-center gap-2.5"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-[#F3EDF8] text-[9px] font-bold text-[#80669B]">RB</span><span><b className="block text-[10px] text-[#405866]">Reviewer B</b><small className="text-[9px] text-[#91A0A9]">Independent review</small></span></span><span className="rounded-md bg-[#F3F4F5] px-2.5 py-1 text-[9px] font-bold text-[#778790]">Exclude</span></div>
+              </div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-[#F5F8FA] p-3"><span className="inline-flex items-center gap-2 text-[10px] font-bold text-[#A17630]"><FiGitMerge aria-hidden="true" /> Conflict · decision history saved</span><button type="button" onClick={() => navigate(startPath)} className="inline-flex min-h-11 items-center gap-1.5 rounded-lg bg-primary px-3 text-[9px] font-bold text-white transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none">Resolve decision <FiArrowRight aria-hidden="true" /></button></div>
+              <div className="mt-4 flex items-center gap-2 text-[9px] text-[#84949E]"><FiClock /> Both reviewers' decisions remain independent until resolution.</div>
+            </div>
+          </div>
+
+          <div>
+            <Eyebrow>Team review</Eyebrow>
+            <h2 className="text-[32px] font-bold leading-tight tracking-[-0.03em] text-text-primary sm:text-[40px]">Designed for collaborative evidence review</h2>
+            <p className="mt-4 max-w-[490px] text-[14px] leading-6 text-[#6A7D89]">Coordinate reviewers, compare screening decisions, resolve conflicts, and keep a transparent record of every decision.</p>
+            <ul className="mt-7 space-y-3">
+              {["Independent screening", "Conflict resolution", "Decision history"].map((item) => <li key={item} className="flex items-center gap-3 text-[13px] font-semibold text-[#405967]"><span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#E5F2F9] text-primary"><FiCheck size={13} /></span>{item}</li>)}
+            </ul>
+            <button type="button" onClick={() => navigate("/projects")} className="group mt-8 inline-flex min-h-11 items-center gap-2 rounded-lg text-[11px] font-bold uppercase tracking-[0.12em] text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2 motion-reduce:transition-none">Explore your projects <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-1 motion-reduce:transition-none" /></button>
+          </div>
+        </div>
+      </section>
+
+      <section className="scroll-reveal px-5 py-16 sm:px-8 sm:py-20 lg:px-12">
+        <div className="relative mx-auto max-w-[1280px] overflow-hidden rounded-xl bg-[#12354A] px-6 py-12 text-center sm:px-12 sm:py-14">
+          <div className="pointer-events-none absolute -right-4 top-1/2 hidden -translate-y-1/2 items-center gap-3 opacity-[0.13] lg:flex">{workflow.map((stage, i) => <div key={stage.number} className="flex items-center gap-3"><span className="flex h-10 w-10 items-center justify-center rounded-full border border-white text-[10px] font-bold text-white">{stage.number}</span>{i < workflow.length - 1 && <span className="h-px w-12 bg-white" />}</div>)}</div>
+          <div className="relative mx-auto max-w-[620px]">
+            <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-[#86C4E8]">Make your next review clearer</p>
+            <h2 className="text-[30px] font-bold leading-tight tracking-[-0.03em] text-white sm:text-[38px]">Ready to start your next review?</h2>
+            <p className="mx-auto mt-4 max-w-[500px] text-[13px] leading-6 text-white/70">Create a structured review project and guide your team through the PRISMA workflow.</p>
+            <div className="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+              <button type="button" onClick={() => navigate(startPath)} className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white px-5 text-[11px] font-bold text-[#12354A] transition-colors hover:bg-[#EFF8FC] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#12354A] motion-reduce:transition-none">Start a Review <FiArrowRight aria-hidden="true" className="transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" /></button>
+              <button type="button" onClick={() => navigate("/projects")} className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/25 px-5 text-[11px] font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 motion-reduce:transition-none">View Projects <FiArrowUpRight aria-hidden="true" /></button>
+            </div>
           </div>
         </div>
       </section>

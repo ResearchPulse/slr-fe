@@ -72,7 +72,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
     <button
       type="button"
       onClick={() => handleSort(field)}
-      className="inline-flex min-h-8 items-center gap-1.5 text-left font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
+      className="inline-flex min-h-11 items-center gap-1.5 text-left font-medium text-text-secondary transition-colors motion-reduce:transition-none hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-2"
     >
       {label}
       {sortField === field && (sortOrder === "asc" ? <FiArrowUp size={13} /> : <FiArrowDown size={13} />)}
@@ -86,24 +86,16 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
 
   return (
     <>
-      <div className="hidden lg:block">
-        <Table className="w-full min-w-[1280px] table-fixed">
-          <colgroup>
-            <col className="w-[36%]" />
-            <col className="w-[10%]" />
-            <col className="w-[12%]" />
-            <col className="w-[14%]" />
-            <col className="w-[14%]" />
-            <col className="w-[14%]" />
-          </colgroup>
+      <div className="hidden overflow-x-auto lg:block">
+        <Table className="w-full min-w-[1120px] table-fixed">
           <TableHeader className="bg-bg-primary">
             <TableRow className="cursor-default hover:bg-transparent">
-              <TableHead className="px-4 py-2.5 text-xs font-semibold normal-case tracking-normal">Project</TableHead>
-              <TableHead className="px-4 py-2.5 text-center text-xs font-semibold normal-case tracking-normal">Status</TableHead>
-              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
-              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
-              <TableHead className="px-4 py-2.5 text-left text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
-              <TableHead className="px-4 py-2.5 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
+          <TableHead className="w-[30%] px-5 py-3 text-xs font-semibold normal-case tracking-normal">Project</TableHead>
+              <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Status</TableHead>
+              <TableHead className="w-[11%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Your role</TableHead>
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal">Leader</TableHead>
+              <TableHead className="w-[16%] px-4 py-3 text-xs font-semibold normal-case tracking-normal"><SortLabel label="Dates" field="modifiedAt" /></TableHead>
+          <TableHead className="w-[16%] px-4 py-3 text-right text-xs font-semibold normal-case tracking-normal">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -113,30 +105,30 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                 onClick={() => { if (!isDeletedView) onView(project.id); }}
                 className={`group bg-surface-white transition-colors motion-reduce:transition-none hover:bg-bg-primary/60 ${isDeletedView ? "cursor-default" : "cursor-pointer"}`}
               >
-                <TableCell className="px-4 py-2.5">
-                  <div className="block min-w-0 truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
+                <TableCell className="px-5 py-4">
+                  <div className="truncate text-sm font-semibold text-text-primary group-hover:text-accent" title={project.title}>
                     {project.title}
                   </div>
-                  <div className="mt-1 flex min-w-0 items-center gap-2 overflow-hidden text-xs text-text-secondary">
+                  <div className="mt-1 flex min-w-0 items-center gap-2 text-xs text-text-secondary">
                     <span className="shrink-0 font-mono text-accent">{project.code}</span>
                     <span aria-hidden="true">·</span>
-                    <span className="min-w-0 truncate">{project.domain}</span>
+                    <span className="truncate">{project.domain}</span>
                   </div>
                 </TableCell>
-                <TableCell className="px-4 py-2.5 text-center">
+                <TableCell className="px-4 py-4">
                   <span className={cn("inline-flex rounded-md border px-2 py-1 text-xs font-medium", statusClass(project.statusText))}>
                     {project.statusText}
                   </span>
                 </TableCell>
-                <TableCell className="px-4 py-2.5 text-left text-sm text-text-primary">
+                <TableCell className="px-4 py-4 text-sm text-text-primary">
                   {getProjectRoleLabel(project.role ?? project.roleText)}
                 </TableCell>
-                <TableCell className="px-4 py-2.5">
+                <TableCell className="px-4 py-4">
                   <span className="block truncate text-sm text-text-primary" title={project.leader?.fullName}>
                     {project.leader?.fullName || "—"}
                   </span>
                 </TableCell>
-                <TableCell className="px-4 py-2.5 text-xs leading-[18px] text-text-secondary">
+                <TableCell className="px-4 py-4 text-xs leading-5 text-text-secondary">
                   {isDeletedView ? (
                     <div>Deleted {formatDate(project.deletedAt || "")}</div>
                   ) : (
@@ -146,8 +138,8 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                     </>
                   )}
                 </TableCell>
-                <TableCell className="px-4 py-2.5 text-right">
-                  <div className="flex items-center justify-end gap-1">
+                <TableCell className="px-4 py-4">
+                  <div className="flex items-center justify-end gap-1.5">
                     {isDeletedView && onRestore ? (
                       <Button
                         type="button"
@@ -163,7 +155,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                       <button
                         type="button"
                         onClick={(event) => handleChecklist(event, project.id)}
-                        className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg text-text-secondary transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors motion-reduce:transition-none hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         title="Open checklists"
                         aria-label={`Open checklists for ${project.title}`}
                       >
@@ -177,7 +169,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                             type="button"
                             disabled={busyProjectId === project.id}
                             onClick={(event) => { event.stopPropagation(); onDelete(project); }}
-                            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-lg text-text-secondary transition-colors motion-reduce:transition-none hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50"
+                            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors motion-reduce:transition-none hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error disabled:opacity-50"
                             title="Move project to deleted projects"
                             aria-label={`Delete project ${project.title}`}
                           >
@@ -187,7 +179,7 @@ const ProjectTable: React.FC<ProjectTableProps> = ({
                         <button
                           type="button"
                           onClick={(event) => { event.stopPropagation(); onView(project.id); }}
-                          className="inline-flex min-h-9 items-center gap-1 rounded-lg px-2 text-xs font-medium text-accent transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                          className="inline-flex min-h-11 items-center gap-1 rounded-xl px-2 text-xs font-medium text-accent transition-colors motion-reduce:transition-none hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                         >
                           <FiEye size={15} /> View
                         </button>

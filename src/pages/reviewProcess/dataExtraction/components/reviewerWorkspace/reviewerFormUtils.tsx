@@ -1,4 +1,3 @@
-import Select from "../../../../../components/ui/Select";
 import {
   FieldTypeEnum,
   type ExtractedValueDto,
@@ -221,7 +220,7 @@ export function renderInputControl(
     const selectedValue = typeof value === "string" ? value : "";
 
     return (
-      <Select
+      <select
         id={controlId}
         disabled={disabled}
         value={selectedValue}
@@ -240,7 +239,7 @@ export function renderInputControl(
             {option.value}
           </option>
         ))}
-      </Select>
+      </select>
     );
   }
 

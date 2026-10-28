@@ -91,11 +91,12 @@ const Dropdown: React.FC<DropdownProps> = ({
         <div
           id={contentId}
           className={cn(
-            "dropdown-scroll-area absolute z-(--z-index-dropdown) ui-popover-enter max-h-72 overflow-y-auto rounded-xl border border-border focus:outline-none",
+            "absolute z-(--z-index-dropdown) ui-popover-enter rounded-xl focus:outline-none",
             !contentClassName?.includes("bg-") && "bg-surface-white",
             !contentClassName?.includes("w-") && "w-56",
-            !contentClassName?.includes("shadow-") &&
-              "shadow-[0_8px_24px_rgba(18,35,49,0.10)]",
+            !contentClassName?.includes("shadow-") && "shadow-lg",
+            !contentClassName?.includes("ring-") &&
+              "ring-1 ring-black ring-opacity-5",
             !contentClassName?.includes("p-") && "py-1",
             alignments[align],
             positions[position],
@@ -123,7 +124,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
   return (
     <button
       className={cn(
-        "flex min-h-11 w-full items-center px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
+        "flex min-h-11 w-full items-center px-4 py-2 text-left text-sm text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
         className,
       )}
       type={props.type ?? "button"}

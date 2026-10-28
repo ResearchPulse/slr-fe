@@ -27,7 +27,6 @@ import FormField from "../../components/ui/FormField";
 import Button from "../../components/ui/Button";
 import LoadingSpinner from "../../components/ui/LoadingSpinner";
 import Select from "../../components/ui/Select";
-import DataTableToolbar from "../../components/ui/DataTableToolbar";
 import { motion, AnimatePresence } from "framer-motion";
 
 const MasterSourcePage: React.FC = () => {
@@ -126,6 +125,7 @@ const MasterSourcePage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col gap-5 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-accent">System configuration</p>
           <h1 className="text-[28px] font-semibold tracking-[-0.04em] text-text-primary sm:text-[32px]">
             Search Sources
           </h1>
@@ -139,35 +139,36 @@ const MasterSourcePage: React.FC = () => {
         </Button>
       </div>
 
+      {/* Filter Bar */}
+      <div className="flex flex-col gap-3 rounded-xl border border-border bg-white p-3.5 sm:flex-row sm:items-center">
+        <div className="group relative min-w-0 flex-1">
+          <FiSearch className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
+          <input
+            type="text"
+            placeholder="Search by name or URL..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="min-h-11 w-full rounded-xl border border-border bg-bg-primary py-2.5 pl-10 pr-4 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow,background-color] focus:border-primary focus:bg-surface-white focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+          />
+        </div>
+        <div className="flex w-full items-center gap-2 sm:w-auto">
+          <FiFilter className="ml-1 h-4 w-4 shrink-0 text-text-muted" />
+          <Select
+            aria-label="Filter by source status"
+            className="w-full sm:w-[180px]"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            options={[
+              { value: "all", label: "All statuses" },
+              { value: "active", label: "Active only" },
+              { value: "inactive", label: "Inactive only" },
+            ]}
+          />
+        </div>
+      </div>
+
       {/* Data Table */}
-      <div className="overflow-hidden rounded-xl border border-border bg-white">
-        <DataTableToolbar
-          search={<div className="group relative w-full min-w-0 sm:max-w-[340px]">
-            <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent" />
-            <input
-              type="text"
-              placeholder="Search by name or URL..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-9 pr-3 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow,background-color] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
-            />
-          </div>}
-          filterPlacement="right"
-          filters={<div className="flex w-full items-center gap-2 sm:w-auto">
-            <FiFilter aria-hidden="true" className="h-4 w-4 shrink-0 text-text-muted" />
-            <Select
-              aria-label="Filter by source status"
-              className="h-10 min-h-10 w-full rounded-lg px-3 sm:w-[180px]"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              options={[
-                { value: "all", label: "All statuses" },
-                { value: "active", label: "Active only" },
-                { value: "inactive", label: "Inactive only" },
-              ]}
-            />
-          </div>}
-        />
+      <div className="overflow-hidden rounded-xl border border-border bg-white shadow-[0_2px_8px_rgba(23,50,71,0.025)]">
         {isLoading ? (
           <div className="flex min-h-[250px] flex-col items-center justify-center gap-3 text-text-secondary">
             <LoadingSpinner size="lg" />
@@ -262,19 +263,19 @@ const MasterSourcePage: React.FC = () => {
               </colgroup>
               <thead>
                 <tr className="border-b border-border bg-bg-primary">
-                  <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                  <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Source Name
                   </th>
-                  <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                  <th className="px-5 py-4 text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Base URL
                   </th>
-                  <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                  <th className="px-5 py-4 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Status
                   </th>
-                  <th className="px-4 py-3 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                  <th className="px-5 py-4 text-center text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Usage
                   </th>
-                  <th className="px-4 py-3 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
+                  <th className="px-5 py-4 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-text-muted">
                     Actions
                   </th>
                 </tr>
@@ -290,7 +291,7 @@ const MasterSourcePage: React.FC = () => {
                       transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.16 }}
                       className="transition-colors motion-reduce:transition-none hover:bg-bg-primary"
                     >
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex min-w-0 items-center gap-3">
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary-light text-[13px] font-semibold text-accent">
                             {source.sourceName.charAt(0).toUpperCase()}
@@ -300,7 +301,7 @@ const MasterSourcePage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="min-w-0 px-4 py-3">
+                      <td className="min-w-0 px-5 py-4">
                         <a
                           href={source.baseUrl}
                           target="_blank"
@@ -313,7 +314,7 @@ const MasterSourcePage: React.FC = () => {
                           <FiExternalLink className="h-3.5 w-3.5 shrink-0 opacity-0 transition-opacity group-hover:opacity-100" />
                         </a>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex justify-center">
                           <span
                             className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ring-1 ring-inset ${
@@ -326,7 +327,7 @@ const MasterSourcePage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-center">
+                      <td className="px-5 py-4 text-center">
                         <div className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
                           <span className="text-[13px] font-semibold leading-none text-text-secondary">
                             {source.usageCount || 0}
@@ -336,14 +337,14 @@ const MasterSourcePage: React.FC = () => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-5 py-4">
                         <div className="flex items-center justify-end gap-1">
                           <button
                             type="button"
                             onClick={() => toggleStatus(source.id)}
                             title={source.isActive ? "Deactivate" : "Activate"}
                             aria-label={source.isActive ? "Deactivate source" : "Activate source"}
-                            className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                               source.isActive
                                 ? "text-success hover:bg-success/10"
                                 : "text-text-muted hover:bg-bg-primary"
@@ -359,7 +360,7 @@ const MasterSourcePage: React.FC = () => {
                             type="button"
                             onClick={() => handleOpenModal(source)}
                             aria-label={`Edit ${source.sourceName}`}
-                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-accent transition-colors motion-reduce:transition-none hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-accent transition-colors motion-reduce:transition-none hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             title="Edit"
                           >
                             <FiEdit2 className="h-[17px] w-[17px]" />
@@ -368,7 +369,7 @@ const MasterSourcePage: React.FC = () => {
                             type="button"
                             onClick={() => setDeleteId(source.id)}
                             aria-label={`Delete ${source.sourceName}`}
-                            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-error transition-colors motion-reduce:transition-none hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-error transition-colors motion-reduce:transition-none hover:bg-error/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                             title="Delete"
                           >
                             <FiTrash2 className="h-[17px] w-[17px]" />

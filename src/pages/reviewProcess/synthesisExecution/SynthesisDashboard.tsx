@@ -1,7 +1,6 @@
 import {
   ArrowRight,
   BarChart3,
-  FileSearch,
   Lightbulb,
   Link2,
   PencilLine,
@@ -14,12 +13,9 @@ interface SynthesisDashboardProps {
   finalizedFindingCount: number;
   evidenceCount: number;
   isReadOnly?: boolean;
-  /** True once every RQ finding is finalized, so the project-wide A1–A10 package can be generated. */
-  isSynthesisComplete?: boolean;
   onNavigateToThematic: () => void;
   onNavigateToDescriptiveCharts: () => void;
   onNavigateToRqReporting: () => void;
-  onNavigateToArtifacts?: () => void;
 }
 
 function statusLabel(
@@ -141,11 +137,9 @@ export default function SynthesisDashboard({
   finalizedFindingCount,
   evidenceCount,
   isReadOnly = false,
-  isSynthesisComplete = false,
   onNavigateToThematic,
   onNavigateToDescriptiveCharts,
   onNavigateToRqReporting,
-  onNavigateToArtifacts,
 }: SynthesisDashboardProps) {
   const completedAt = statusDate(workspace.process.completedAt, "Not completed");
 
@@ -230,19 +224,6 @@ export default function SynthesisDashboard({
             icon={<PencilLine className="h-4 w-4" aria-hidden="true" />}
             onClick={onNavigateToRqReporting}
           />
-          {onNavigateToArtifacts ? (
-            <ActionCard
-              title="SLR Artifacts (A1–A10)"
-              description="Generate and review the project-wide evidence package built from all synthesized papers."
-              meta={
-                isSynthesisComplete
-                  ? "Synthesis complete · ready to generate"
-                  : `Finalize RQ findings first (${finalizedFindingCount} / ${workspace.findings.length})`
-              }
-              icon={<FileSearch className="h-4 w-4" aria-hidden="true" />}
-              onClick={onNavigateToArtifacts}
-            />
-          ) : null}
         </div>
       </section>
 

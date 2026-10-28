@@ -1,4 +1,3 @@
-import Select from "../ui/Select";
 import React, { useRef, useState } from "react";
 import {
   FiUpload,
@@ -463,10 +462,10 @@ export default function PaperImportModal({
                 <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-2 ml-1">
                   Associate with Search Source (Optional)
                 </label>
-                <Select value={pdfSourceId} onChange={(e) => setPdfSourceId(e.target.value)} className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none">
+                <select value={pdfSourceId} onChange={(e) => setPdfSourceId(e.target.value)} className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none">
                   <option value="">Unspecified source</option>
                   {sourceOptions.map((source) => <option key={source.value} value={source.value}>{source.label}</option>)}
-                </Select>
+                </select>
               </div>
             </form>
           )}
@@ -570,7 +569,7 @@ export default function PaperImportModal({
                 <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-3 ml-1">
                   Associate with Search Source (Optional)
                 </label>
-                <Select
+                <select
                   value={selectedSourceId}
                   onChange={(e) => setSelectedSourceId(e.target.value)}
                   className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -581,7 +580,7 @@ export default function PaperImportModal({
                       {source.label}
                     </option>
                   ))}
-                </Select>
+                </select>
               </div>
 
             </form>
@@ -687,7 +686,7 @@ export default function PaperImportModal({
                 <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-3 ml-1">
                   Associate with Search Source (Optional)
                 </label>
-                <Select
+                <select
                   value={bibSourceId}
                   onChange={(e) => setBibSourceId(e.target.value)}
                   className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -698,7 +697,7 @@ export default function PaperImportModal({
                       {source.label}
                     </option>
                   ))}
-                </Select>
+                </select>
               </div>
 
             </form>
@@ -741,7 +740,7 @@ export default function PaperImportModal({
                   <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-3 ml-1">
                     Associate with Search Source (Optional)
                   </label>
-                  <Select
+                  <select
                     value={doiSourceId}
                     onChange={(e) => setDoiSourceId(e.target.value)}
                     className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -752,7 +751,7 @@ export default function PaperImportModal({
                         {source.label}
                       </option>
                     ))}
-                  </Select>
+                  </select>
                 </div>
               </div>
 
@@ -855,7 +854,7 @@ export default function PaperImportModal({
                   <label className="block text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-3 ml-1">
                     Target Search Source
                   </label>
-                  <Select
+                  <select
                     value={crossrefSourceId}
                     onChange={(e) => setCrossrefSourceId(e.target.value)}
                     className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -866,7 +865,7 @@ export default function PaperImportModal({
                         {source.label}
                       </option>
                     ))}
-                  </Select>
+                  </select>
                 </div>
               </div>
 

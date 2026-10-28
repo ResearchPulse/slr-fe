@@ -63,7 +63,7 @@ export default function UserSearchSection({
         </p>
       )}
 
-      <div className="dropdown-scroll-area max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
+      <div className="max-h-[280px] overflow-y-auto pr-2 -mr-2 space-y-2 custom-scrollbar relative">
         {isSearching && (
           <div className="absolute inset-0 bg-surface-white/50 backdrop-blur-[1px] z-10 flex items-center justify-center rounded-xl">
             <LoadingSpinner size="sm" />

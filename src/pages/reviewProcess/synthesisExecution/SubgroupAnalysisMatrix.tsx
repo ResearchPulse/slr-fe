@@ -1,4 +1,3 @@
-import Select from "../../../components/ui/Select";
 import { useMemo, useState } from "react";
 import type {
   SynthesisThemeDto,
@@ -137,7 +136,7 @@ export default function SubgroupAnalysisMatrix({
         >
           Analyze by Field
         </label>
-        <Select
+        <select
           id="subgroup-field-select"
           value={selectedGroupId}
           onChange={(e) => setSelectedGroupId(e.target.value)}
@@ -148,7 +147,7 @@ export default function SubgroupAnalysisMatrix({
               {group.fieldName}
             </option>
           ))}
-        </Select>
+        </select>
       </div>
 
       {selectedGroup && (

@@ -64,7 +64,6 @@ import { dataExtractionConductingService } from "../../../../services/dataExtrac
 import ExtractionStatusBadge from "./ExtractionStatusBadge";
 import AssignReviewersModal from "./AssignReviewersModal";
 import WorkloadSummaryCard from "./WorkloadSummaryCard";
-import SlrArtifactsHandoffBanner from "./SlrArtifactsHandoffBanner";
 
 interface DataExtractionDashboardProps {
   ws: UseDataExtractionWorkspaceReturn;
@@ -774,7 +773,6 @@ export default function DataExtractionDashboard({
       </header>
 
       <div className="mx-auto max-w-[1520px] space-y-5 px-4 py-5 sm:px-6 lg:px-8">
-        <SlrArtifactsHandoffBanner projectId={ws.projectId} statuses={tasks.map((task) => task.status)} />
 
         {ws.isCurrentUserLeader && (
           <div className="mb-5 space-y-4">

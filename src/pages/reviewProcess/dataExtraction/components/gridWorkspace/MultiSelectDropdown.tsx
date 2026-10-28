@@ -149,7 +149,7 @@ export default function MultiSelectDropdown({
               width: `${dropdownPosition.width}px`,
             }}
           >
-            <div className="dropdown-scroll-area max-h-48 overflow-y-auto p-1">
+            <div className="max-h-48 overflow-y-auto p-1">
               {/* Select All Option */}
               <label className="flex items-center gap-2 rounded px-2 py-1.5 hover:bg-bg-secondary cursor-pointer">
                 <input

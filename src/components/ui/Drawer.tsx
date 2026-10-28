@@ -218,8 +218,8 @@ const Drawer: React.FC<DrawerProps> = ({
         >
           {!hideHeader && (
             <div className="sticky top-0 z-10 flex shrink-0 items-start justify-between border-b border-border bg-surface-white px-6 py-5">
-              <div className="min-w-0 flex-1 space-y-1 pr-4">
-                <div id={titleId} className="min-w-0 text-[18px] font-semibold leading-snug text-text-primary">
+              <div className="flex-1 space-y-1 pr-4">
+                <div id={titleId} className="text-[18px] font-semibold leading-snug text-text-primary">
                   {title}
                 </div>
                 {description && (

@@ -33,8 +33,8 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
     previousGroup = item.group || previousGroup;
 
     const commonClasses = cn(
-      "group relative flex min-h-10 w-full items-center gap-2.5 overflow-hidden rounded-lg px-2.5 py-1.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
-      isCollapsed && "justify-center gap-0 px-2",
+      "group relative flex min-h-11 w-full items-center gap-3 overflow-hidden rounded-lg px-3 py-2.5 text-left transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary motion-reduce:transition-none",
+      isCollapsed && "justify-center px-2",
       isActive
         ? "bg-primary-light text-accent"
         : "text-text-secondary hover:bg-surface-white hover:text-text-primary",
@@ -62,7 +62,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
     return (
       <React.Fragment key={item.path || item.label}>
         {showGroup && !isCollapsed && (
-          <p className="px-2.5 pb-0.5 pt-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted first:pt-1">{item.group}</p>
+          <p className="px-3 pb-1 pt-5 text-[10px] font-semibold uppercase tracking-[0.12em] text-text-muted first:pt-1">{item.group}</p>
         )}
         {itemNode}
       </React.Fragment>
@@ -70,15 +70,16 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
   };
 
   return (
-    <aside className={cn("relative z-30 flex shrink-0 flex-col border-r border-border bg-bg-secondary transition-[width] duration-200 ease-out motion-reduce:transition-none", isCollapsed ? "w-16" : "w-[216px]", className)}>
-      <div className="flex h-[64px] shrink-0 items-center justify-center border-b border-border px-2">
-        <Link to="/admin" className="flex min-h-10 w-full min-w-0 items-center justify-center overflow-hidden" aria-label="SLRS Admin overview">
+    <aside className={cn("relative z-30 flex shrink-0 flex-col border-r border-border bg-bg-secondary transition-[width] duration-200 ease-out motion-reduce:transition-none", isCollapsed ? "w-[76px]" : "w-[252px]", className)}>
+      <div className={cn("flex h-[72px] shrink-0 items-center border-b border-border", isCollapsed ? "justify-center px-2" : "px-6")}>
+        <Link to="/admin" className="flex min-h-11 min-w-0 flex-col justify-center" aria-label="SLRS Admin overview">
           <img
             src={isCollapsed ? "/brand/logo-mark.png" : "/brand/logo-horizontal.png"}
             alt="SLRS"
-            className="block h-8 max-w-full w-auto select-none object-contain object-left"
+            className={cn("w-auto select-none", isCollapsed ? "h-8" : "h-7")}
             draggable={false}
           />
+          {!isCollapsed && <span className="mt-1.5 block whitespace-nowrap text-[9px] font-medium uppercase tracking-[0.1em] text-text-muted">Systematic Literature Review System</span>}
         </Link>
       </div>
 
@@ -88,17 +89,17 @@ const Sidebar: React.FC<SidebarProps> = ({ items, footerItems, isCollapsed, onTo
         aria-expanded={!isCollapsed}
         aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
         title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-        className="absolute -right-3 top-[52px] z-40 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
+        className="absolute -right-3 top-[60px] z-40 flex h-11 w-11 items-center justify-center rounded-full border border-border bg-surface-white text-text-secondary shadow-sm transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
       >
         {isCollapsed ? <FiChevronRight size={13} /> : <FiChevronLeft size={13} />}
       </button>
 
-      <nav aria-label="Admin navigation" className={cn("custom-scrollbar flex-1 overflow-y-auto py-3", isCollapsed ? "space-y-0.5 px-2.5" : "space-y-0.5 px-3")}>
+      <nav aria-label="Admin navigation" className={cn("no-scrollbar flex-1 overflow-y-auto py-4", isCollapsed ? "space-y-1 px-3" : "space-y-1 px-3.5")}>
         {items.map(renderItem)}
       </nav>
 
       {footerItems && footerItems.length > 0 && (
-        <div className={cn("shrink-0 border-t border-border py-2", isCollapsed ? "space-y-0.5 px-2.5" : "space-y-0.5 px-3")}>
+        <div className={cn("shrink-0 border-t border-border py-3", isCollapsed ? "space-y-1 px-3" : "space-y-1 px-3.5")}>
           {footerItems.map(renderItem)}
         </div>
       )}

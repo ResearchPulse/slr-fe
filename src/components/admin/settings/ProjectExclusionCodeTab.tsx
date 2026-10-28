@@ -240,7 +240,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
               <article key={item.id} className="space-y-3 rounded-xl border border-border bg-surface-white p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-md border border-border bg-bg-primary px-1 py-0 font-mono text-xs text-text-secondary">
+                    <span className="inline-flex rounded-md border border-border bg-bg-primary px-2.5 py-1 font-mono text-xs text-text-secondary">
                       {item.code}
                     </span>
                     <h3 className="mt-2 break-words text-sm font-semibold text-text-primary">{item.name}</h3>
@@ -280,24 +280,18 @@ const ProjectExclusionCodeTab: React.FC = () => {
 
         <div className="hidden flex-1 overflow-x-auto md:block">
           <Table className="min-w-[620px]">
-            <colgroup>
-              <col className="w-[120px]" />
-              <col />
-              <col className="w-[140px]" />
-              <col className="w-[110px]" />
-            </colgroup>
             <TableHeader className="bg-bg-primary">
               <TableRow>
-                <TableHead className="px-5 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
+                <TableHead className="w-[120px] px-5 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Code
                 </TableHead>
                 <TableHead className="px-5 py-3 text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Name
                 </TableHead>
-                <TableHead className="px-5 py-3 text-center text-xs font-semibold normal-case tracking-normal text-text-secondary">
+                <TableHead className="w-[140px] px-5 py-3 text-center text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Status
                 </TableHead>
-                <TableHead className="px-5 py-3 text-right text-xs font-semibold normal-case tracking-normal text-text-secondary">
+                <TableHead className="w-[110px] px-5 py-3 text-right text-xs font-semibold normal-case tracking-normal text-text-secondary">
                   Actions
                 </TableHead>
               </TableRow>
@@ -320,17 +314,17 @@ const ProjectExclusionCodeTab: React.FC = () => {
                     key={item.id}
                     className="group hover:bg-bg-primary/70 transition-colors"
                   >
-                    <TableCell className="px-5 py-2.5">
-                      <span className="inline-flex h-7 min-w-7 items-center justify-center rounded-md border border-border bg-bg-primary px-1 py-0 font-mono text-xs text-text-secondary">
+                    <TableCell className="px-5 py-4">
+                      <span className="inline-flex rounded-md border border-border bg-bg-primary px-2.5 py-1 font-mono text-xs text-text-secondary">
                         {item.code}
                       </span>
                     </TableCell>
-                    <TableCell className="px-5 py-2.5">
+                    <TableCell className="px-5 py-4">
                       <div className="text-sm text-text-primary">
                         {item.name}
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-2.5 text-center">
+                    <TableCell className="px-5 py-4 text-center">
                       <div className="flex justify-center">
                         <Switch
                           checked={item.isActive}
@@ -341,7 +335,7 @@ const ProjectExclusionCodeTab: React.FC = () => {
                         />
                       </div>
                     </TableCell>
-                    <TableCell className="px-5 py-2.5 text-right">
+                    <TableCell className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-1">
                         <ActionButton
                           icon={FiTrash2}

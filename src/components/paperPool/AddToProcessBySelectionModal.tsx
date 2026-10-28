@@ -147,7 +147,7 @@ export default function AddToProcessBySelectionModal({
             </span>
           </div>
 
-          <div className="dropdown-scroll-area grid max-h-[min(52vh,420px)] grid-cols-1 gap-3 overflow-y-auto pr-1 custom-scrollbar">
+          <div className="grid max-h-[min(52vh,420px)] grid-cols-1 gap-3 overflow-y-auto pr-1 custom-scrollbar">
             {processSnapshots.map((process) => (
               <ReviewProcessCard
                 key={process.processId}

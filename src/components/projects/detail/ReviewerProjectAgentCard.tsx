@@ -1,4 +1,3 @@
-import Select from "../../ui/Select";
 import { useEffect, useMemo, useState } from "react";
 import { FiCopy, FiEye, FiUserPlus } from "react-icons/fi";
 import { isAxiosError } from "axios";
@@ -147,7 +146,7 @@ export default function ReviewerProjectAgentCard({
         ) : (
           <>
             <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-              <Select
+              <select
                 aria-label="Choose reviewer extraction agent"
                 value={selectedAgentId}
                 onChange={(event) => setSelectedAgentId(event.target.value)}
@@ -159,7 +158,7 @@ export default function ReviewerProjectAgentCard({
                     {agent.name}{agent.description ? ` — ${agent.description}` : ""}
                   </option>
                 ))}
-              </Select>
+              </select>
               <button
                 type="button"
                 disabled={isBusy || !selectedAgentId || selectedAgentId === connected?.agent.id}

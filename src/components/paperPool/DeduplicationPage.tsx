@@ -1,4 +1,4 @@
-import { RefreshCw, ScanSearch, ShieldCheck } from "lucide-react";
+import { AlertTriangle, RefreshCw, ScanSearch, ShieldCheck } from "lucide-react";
 import Button from "../ui/Button";
 import DeduplicationTabContent from "./deduplication/DeduplicationTabContent";
 import type { DuplicateResolution } from "../../types/deduplication";
@@ -41,10 +41,10 @@ export default function DeduplicationPage({
     }
   };
   return (
-    <div className="flex flex-col gap-5">
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-4">
+      <section className="flex flex-col gap-4 rounded-xl border border-border bg-surface-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary-light text-accent">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary-light text-accent">
             <ShieldCheck className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="min-w-0">
@@ -52,22 +52,20 @@ export default function DeduplicationPage({
               Deduplication
             </h2>
             <p className="mt-0.5 text-sm text-text-secondary">
-              Identify and review duplicate research records.
+              Find matching records and review duplicate pairs.
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2 sm:justify-end">
-          <span
+          <div
             role="status"
             aria-label={`${pendingDuplicates.length} pending duplicate pairs`}
-            className="text-sm text-text-secondary"
+            className="inline-flex min-h-9 items-center gap-2 rounded-lg border border-warning/25 bg-warning/5 px-3 text-sm font-medium text-warning"
           >
-            <strong className="font-semibold tabular-nums text-text-primary">
-              {pendingDuplicates.length}
-            </strong>{" "}
-            pending
-          </span>
+            <AlertTriangle className="h-4 w-4" aria-hidden="true" />
+            <span>{pendingDuplicates.length} pending</span>
+          </div>
           {isLeader && (
             <Button
               variant="primary"
@@ -89,22 +87,27 @@ export default function DeduplicationPage({
             className="normal-case tracking-normal"
           >
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
-            <span>Refresh</span>
+            <span className="sm:hidden">Refresh</span>
+            <span className="hidden sm:inline">Refresh queue</span>
           </Button>
         </div>
       </section>
 
       {/* Main Content */}
-      <DeduplicationTabContent
-        duplicatePairs={duplicatePairs}
-        pendingDuplicates={pendingDuplicates}
-        onResolveDuplicate={handleResolveDuplicate}
-        isLoading={isLoading}
-        isResolving={isResolving}
-        error={error}
-        onRefetch={onRefetch}
-        canEdit={isLeader}
-      />
+      <div className="overflow-hidden rounded-xl border border-border bg-surface-white">
+        <DeduplicationTabContent
+          duplicatePairs={duplicatePairs}
+          pendingDuplicates={pendingDuplicates}
+          onResolveDuplicate={handleResolveDuplicate}
+          onRunDeduplication={runDeduplication}
+          isRunningDeduplication={isRunningDeduplication}
+          isLoading={isLoading}
+          isResolving={isResolving}
+          error={error}
+          onRefetch={onRefetch}
+          canEdit={isLeader}
+        />
+      </div>
     </div>
   );
 }

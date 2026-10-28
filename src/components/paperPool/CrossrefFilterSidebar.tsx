@@ -1,4 +1,3 @@
-import Select from "../ui/Select";
 import React from "react";
 import {
   FiFilter,
@@ -137,7 +136,7 @@ export default function CrossrefFilterSidebar({
             <FiList className="w-3 h-3" />
             Results Limit
           </label>
-          <Select
+          <select
             value={localParams.rows}
             onChange={(e) =>
               setLocalParams({ ...localParams, rows: parseInt(e.target.value) })
@@ -148,7 +147,7 @@ export default function CrossrefFilterSidebar({
             <option value={20}>20 Results per page</option>
             <option value={50}>50 Results per page</option>
             <option value={100}>100 Results per page</option>
-          </Select>
+          </select>
         </div>
 
         {/* Sorting */}
@@ -158,7 +157,7 @@ export default function CrossrefFilterSidebar({
               <FiZap className="w-3 h-3" />
               Sort By
             </label>
-            <Select
+            <select
               value={localParams.sort || "relevance"}
               onChange={(e) =>
                 setLocalParams({ ...localParams, sort: e.target.value })
@@ -170,7 +169,7 @@ export default function CrossrefFilterSidebar({
               <option value="published">Publication Date</option>
               <option value="issued">Issued Date</option>
               <option value="references-count">References Count</option>
-            </Select>
+            </select>
           </div>
 
           <div className="space-y-3">
@@ -219,7 +218,7 @@ export default function CrossrefFilterSidebar({
             <FiTarget className="w-3 h-3" />
             Import Destination
           </label>
-          <Select
+          <select
             value={selectedSourceId}
             onChange={(e) => setSelectedSourceId(e.target.value)}
             className="w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none"
@@ -230,7 +229,7 @@ export default function CrossrefFilterSidebar({
                 {s.label}
               </option>
             ))}
-          </Select>
+          </select>
           <p className="text-[9px] text-text-secondary px-1 italic">
             Imported papers will be associated with this search source.
           </p>

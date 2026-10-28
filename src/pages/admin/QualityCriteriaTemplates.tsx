@@ -55,10 +55,11 @@ export default function QualityCriteriaTemplates() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-[1600px] space-y-6 pb-8">
+    <div className="mx-auto max-w-5xl space-y-6 pb-8">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-semibold text-text-primary">Quality assessment criteria</h1>
+          <p className="text-xs font-bold uppercase tracking-widest text-accent">System configuration</p>
+          <h1 className="mt-2 text-3xl font-semibold text-text-primary">Quality assessment criteria</h1>
           <p className="mt-2 max-w-2xl text-sm text-text-secondary">
             Templates that project leaders can start from when they set up the Quality Assessment phase. Applying a
             template copies its questions into the project, so changing a template here does not alter projects that

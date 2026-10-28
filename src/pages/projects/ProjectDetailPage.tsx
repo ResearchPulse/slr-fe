@@ -670,7 +670,7 @@ export default function ProjectDetailPage() {
   };
 
   return (
-    <div className="mx-auto max-w-[1560px] px-4 py-4 sm:px-5 lg:px-6 lg:py-5">
+    <div className="mx-auto max-w-[1480px] px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
       {/* ── Top Area: Project Header + Settings ───────────────────────────── */}
       <ProjectHeader
         project={projectForHeader ?? project}

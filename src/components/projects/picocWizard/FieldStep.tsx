@@ -329,7 +329,7 @@ const FieldStep: React.FC<FieldStepProps> = ({ projectId, draft, update }) => {
           {browseLoading ? (
             <p role="status" aria-live="polite" aria-busy="true" className="flex items-center gap-2 py-2 text-sm text-text-secondary"><FiLoader aria-hidden className="motion-safe:animate-spin motion-reduce:animate-none" /> Searching OpenAlex…</p>
           ) : browseItems.length ? (
-            <ul aria-label={`OpenAlex ${browseLevel} results`} className="dropdown-scroll-area grid max-h-72 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
+            <ul aria-label={`OpenAlex ${browseLevel} results`} className="grid max-h-72 gap-2 overflow-y-auto pr-1 md:grid-cols-2">
               {browseItems.map((item) => (
                 <li key={item.id}>
                   <button type="button" onClick={() => pick(item)} className="flex min-h-11 w-full items-center justify-between gap-3 rounded-lg border border-border bg-surface-white px-3 py-2.5 text-left text-sm transition-colors hover:border-primary/40 hover:bg-primary-light/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30">

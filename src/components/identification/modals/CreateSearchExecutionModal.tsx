@@ -5,7 +5,7 @@ import Button from "../../ui/Button";
 import Modal from "../../ui/Modal";
 import type { CreateSearchExecutionRequest } from "../../../types/identification";
 import FormField from "../../ui/FormField";
-import DatePicker from "../../ui/DatePicker";
+import CalendarDatePicker from "../../projects/detail/CalendarDatePicker";
 
 interface CreateSearchExecutionModalProps {
   identificationProcessId: string;
@@ -166,14 +166,18 @@ export default function CreateSearchExecutionModal({
         </div>
 
         {/* Executed Date */}
-        {mode === "create" && <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <DatePicker
-            label="Executed Date"
-            value={formData.executedAt}
-            onChange={(executedAt) => setFormData({ ...formData, executedAt })}
-            disabled={isSubmitting}
-            required
-          />
+        {mode === "create" && <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-text-primary mb-2">
+              Executed Date <span className="text-error">*</span>
+            </label>
+            <CalendarDatePicker
+              label="Executed Date"
+              value={formData.executedAt}
+              onChange={(executedAt) => setFormData({ ...formData, executedAt })}
+              disabled={isSubmitting}
+            />
+          </div>
         </div>}
 
         {/* Notes */}

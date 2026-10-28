@@ -87,7 +87,7 @@ const TableHead: React.FC<TableHeadProps> = ({
   return (
     <th
       className={cn(
-        "px-4 py-3 align-middle text-left text-[11px] font-semibold text-text-secondary uppercase tracking-[0.12em]",
+        "px-4 py-3 text-left text-[11px] font-semibold text-text-secondary uppercase tracking-[0.12em]",
         className,
       )}
       {...props}

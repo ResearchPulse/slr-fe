@@ -20,7 +20,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       "/admin/projects": "SLR Projects",
       "/admin/users": "Users Management",
       "/admin/agents": "AI Agents",
-      "/admin/repository-api": "Repository API Access",
       "/admin/templates": "Checklist Templates",
       "/admin/quality-criteria": "Quality Criteria",
       "/admin/master-sources": "Search Sources",
@@ -39,7 +38,6 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
       "/admin/templates": "Templates",
       "/admin/quality-criteria": "Criteria",
       "/admin/master-sources": "Sources",
-      "/admin/repository-api": "Repository API",
       "/admin/settings": "Settings",
     };
 
@@ -51,14 +49,14 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onMenuClick }) => {
   };
 
   return (
-    <header className="sticky top-0 z-20 flex h-[64px] shrink-0 items-center justify-between border-b border-border bg-white/95 px-4 backdrop-blur-sm sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 flex h-[72px] shrink-0 items-center justify-between border-b border-border bg-white/95 px-5 backdrop-blur-sm sm:px-7 lg:px-9">
       <div className="flex min-w-0 items-center gap-3.5">
         <button
           onClick={onMenuClick}
           className="-ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-primary lg:hidden"
           aria-label="Toggle Menu"
         >
-          <FiMenu className="h-[18px] w-[18px]" />
+          <FiMenu className="h-5 w-5" />
         </button>
         <div className="min-w-0">
           <p className="hidden text-[9px] font-bold uppercase tracking-[0.13em] text-text-muted sm:block">Admin workspace</p>

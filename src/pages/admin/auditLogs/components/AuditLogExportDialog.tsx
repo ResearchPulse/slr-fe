@@ -4,11 +4,11 @@ import {
   FiDownload,
 } from "react-icons/fi";
 import Modal from "../../../../components/ui/Modal";
-import DatePicker from "../../../../components/ui/DatePicker";
 import { cn } from "../../../../utils/cn";
 import type { AuditLogExportFormat } from "../../../../types/auditLog";
 import { EXPORT_FORMAT_OPTIONS } from "../constants";
 import { formatRangeLabel } from "../utils";
+import { DatePickerField } from "./AuditLogFilters";
 
 interface ExportRequest {
   format: AuditLogExportFormat;
@@ -170,8 +170,8 @@ const AuditLogExportDialog: React.FC<AuditLogExportDialogProps> = ({
             <span className="text-xs text-text-secondary">{formatRangeLabel(startDate, endDate)}</span>
           </div>
           <div className="grid gap-3 sm:grid-cols-2">
-            <DatePicker label="Start date" value={startDate} onChange={setStartDate} />
-            <DatePicker label="End date" value={endDate} onChange={setEndDate} />
+            <DatePickerField label="Start date" value={startDate} onChange={setStartDate} />
+            <DatePickerField label="End date" value={endDate} onChange={setEndDate} />
           </div>
           <p className="mt-2 text-xs text-text-secondary">
             The file is generated in your browser and downloaded to your device.

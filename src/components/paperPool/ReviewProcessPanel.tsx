@@ -125,7 +125,7 @@ export default function ReviewProcessPanel({
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-3">
           {processes.map((process) => {
             const status = statusPresentation(process.statusText);
             const progress = Math.min(100, Math.max(0, process.progressPercent || 0));

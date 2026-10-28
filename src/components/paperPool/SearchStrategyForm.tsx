@@ -1,4 +1,3 @@
-import Select from "../ui/Select";
 import { useState, useMemo, useEffect } from "react";
 import {
   FiX,
@@ -720,7 +719,7 @@ export default function SearchStrategyForm({
                 placeholder="Year To"
                 className="min-h-11 w-full rounded-xl border border-border bg-surface-white px-4 text-sm text-text-primary outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-75 motion-reduce:transition-none"
               />
-              <Select
+              <select
                 value={strategy.filters.language}
                 onChange={(e) =>
                   setStrategy({
@@ -737,8 +736,8 @@ export default function SearchStrategyForm({
                     {lang}
                   </option>
                 ))}
-              </Select>
-              <Select
+              </select>
+              <select
                 value={strategy.filters.studyType}
                 onChange={(e) =>
                   setStrategy({
@@ -755,7 +754,7 @@ export default function SearchStrategyForm({
                     {type}
                   </option>
                 ))}
-              </Select>
+              </select>
             </div>
           </section>
         </div>

@@ -1,5 +1,4 @@
 import Button from "../ui/Button";
-import Select from "../ui/Select";
 import { useState, useEffect } from "react";
 import { useSearchSources } from "../../hooks/useSearchSources";
 import { useProjectMember } from "../../hooks/useProjectMember";
@@ -176,18 +175,18 @@ export default function SearchSourcePage({
                   <label className="text-xs font-black uppercase tracking-widest text-text-secondary mb-2 block">
                     Select Master Source
                   </label>
-                  <Select
-                    aria-label="Select master source"
+                  <select
                     value={selectedMasterId}
                     onChange={(e) => setSelectedMasterId(e.target.value)}
-                    placeholder="Select a source..."
-                    options={availableMasterSources.map((source) => ({
-                      value: source.id,
-                      label: source.name,
-                    }))}
-                    containerClassName="w-full"
-                    className="w-full"
-                  />
+                    className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary"
+                  >
+                    <option value="">Select a source...</option>
+                    {availableMasterSources.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <Button

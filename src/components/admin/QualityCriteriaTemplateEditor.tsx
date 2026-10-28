@@ -3,7 +3,6 @@ import { FiPlus, FiTrash2 } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 import Modal from "../ui/Modal";
 import Button from "../ui/Button";
-import { cn } from "../../utils/cn";
 import { toastError } from "../../utils/toast";
 import type {
   QualityCriteriaTemplate,
@@ -45,12 +44,12 @@ const toDraft = (template: QualityCriteriaTemplate | null): TemplateDraft =>
         name: template.name,
         description: template.description,
         source: template.source ?? "",
-        criteria: template.criteria.map((criterion) => newCriterion(criterion.question, criterion.weight)),
+        criteria: template.criteria.map((c) => newCriterion(c.question, c.weight)),
       }
     : { name: "", description: "", source: "", criteria: [newCriterion()] };
 
 const inputClass =
-  "h-10 min-h-0 w-full rounded-lg border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20";
+  "min-h-11 w-full rounded-xl border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20";
 
 export default function QualityCriteriaTemplateEditor({
   isOpen,
@@ -68,7 +67,7 @@ export default function QualityCriteriaTemplateEditor({
   const updateCriterion = (key: string, changes: Partial<CriterionDraft>) =>
     setDraft((prev) => ({
       ...prev,
-      criteria: prev.criteria.map((criterion) => (criterion.key === key ? { ...criterion, ...changes } : criterion)),
+      criteria: prev.criteria.map((c) => (c.key === key ? { ...c, ...changes } : c)),
     }));
 
   const handleSave = () => {
@@ -77,11 +76,11 @@ export default function QualityCriteriaTemplateEditor({
       toastError("The template needs a name.");
       return;
     }
-    if (draft.criteria.length === 0 || draft.criteria.some((criterion) => !criterion.question.trim())) {
+    if (draft.criteria.length === 0 || draft.criteria.some((c) => !c.question.trim())) {
       toastError("Fill in every question or remove the empty ones.");
       return;
     }
-    if (draft.criteria.some((criterion) => !(criterion.weight >= MIN_WEIGHT && criterion.weight <= MAX_WEIGHT))) {
+    if (draft.criteria.some((c) => !(c.weight >= MIN_WEIGHT && c.weight <= MAX_WEIGHT))) {
       toastError(`Weights must be between ${MIN_WEIGHT} and ${MAX_WEIGHT}.`);
       return;
     }
@@ -89,7 +88,7 @@ export default function QualityCriteriaTemplateEditor({
       name,
       description: draft.description.trim(),
       source: draft.source.trim() || null,
-      criteria: draft.criteria.map((criterion) => ({ question: criterion.question.trim(), weight: criterion.weight })),
+      criteria: draft.criteria.map((c) => ({ question: c.question.trim(), weight: c.weight })),
     });
   };
 
@@ -97,129 +96,128 @@ export default function QualityCriteriaTemplateEditor({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="lg"
-      className="w-[min(900px,calc(100vw-32px))] max-w-none max-h-[88vh]"
-      bodyClassName="p-5 sm:p-6"
-      headerClassName="px-5 py-4 sm:px-6 sm:py-4"
-      footerClassName="px-5 py-3 sm:px-6 sm:py-3"
-      descriptionClassName="text-[13px] leading-5"
-      title={<span className="text-[20px]">{template ? "Edit system template" : "New system template"}</span>}
+      size="xl"
+      title={template ? "Edit system template" : "New system template"}
       description="System templates are offered to every project leader as a starting point for their quality criteria."
       footer={
         <>
-          <Button variant="outline" onClick={onClose} className="h-10 rounded-lg px-4" disabled={isSaving}>
+          <Button variant="secondary" onClick={onClose} className="rounded-xl px-6">
             Cancel
           </Button>
-          <Button variant="primary" onClick={handleSave} isLoading={isSaving} disabled={isSaving} className="h-10 rounded-lg px-4">
+          <Button variant="primary" onClick={handleSave} isLoading={isSaving} disabled={isSaving} className="rounded-xl px-8">
             {template ? "Save changes" : "Create template"}
           </Button>
         </>
       }
     >
-      <div className="flex flex-col gap-4">
-        <div className="space-y-1.5">
-          <label htmlFor="qct-name" className="block text-xs font-semibold text-text-secondary">Template name</label>
+      <div className="flex flex-col gap-4 py-2 pr-1">
+        <div>
+          <label htmlFor="qct-name" className="mb-1 block text-xs font-bold uppercase tracking-wider text-text-secondary">
+            Name
+          </label>
           <input
             id="qct-name"
             value={draft.name}
             maxLength={200}
-            onChange={(event) => setDraft({ ...draft, name: event.target.value })}
+            onChange={(e) => setDraft({ ...draft, name: e.target.value })}
             placeholder="e.g. Checklist for empirical software engineering studies"
             className={inputClass}
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="qct-description" className="block text-xs font-semibold text-text-secondary">Description</label>
+        <div>
+          <label htmlFor="qct-description" className="mb-1 block text-xs font-bold uppercase tracking-wider text-text-secondary">
+            Description
+          </label>
           <textarea
             id="qct-description"
             value={draft.description}
             maxLength={1000}
             rows={2}
-            onChange={(event) => setDraft({ ...draft, description: event.target.value })}
+            onChange={(e) => setDraft({ ...draft, description: e.target.value })}
             placeholder="When should a project use this checklist?"
-            className="min-h-[64px] w-full resize-y rounded-lg border border-border bg-surface-white px-3 py-2 text-sm text-text-primary outline-none transition-colors motion-reduce:transition-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+            className={`${inputClass} resize-none`}
           />
         </div>
 
-        <div className="space-y-1.5">
-          <label htmlFor="qct-source" className="block text-xs font-semibold text-text-secondary">Source</label>
-          <input
+        <div>
+          <label htmlFor="qct-source" className="mb-1 block text-xs font-bold uppercase tracking-wider text-text-secondary">
+            Source
+          </label>
+          <textarea
             id="qct-source"
-            type="text"
             value={draft.source}
             maxLength={500}
-            onChange={(event) => setDraft({ ...draft, source: event.target.value })}
+            rows={2}
+            onChange={(e) => setDraft({ ...draft, source: e.target.value })}
             placeholder="Citation or link of the published checklist these questions come from"
-            className={inputClass}
+            className={`${inputClass} resize-none`}
           />
-          <p className="text-xs leading-4 text-text-secondary">
-            Leaders see this beside the template. Leave it empty only if the origin is unknown.
+          <p className="mt-1 text-xs text-text-secondary">
+            Leaders see this next to the template. Leave it empty only if the origin is unknown.
           </p>
         </div>
 
-        <section className="border-t border-border pt-4" aria-labelledby="qct-questions-heading">
-          <div className="mb-3 flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between">
-            <h2 id="qct-questions-heading" className="flex items-center gap-2 text-sm font-semibold text-text-primary">
-              Questions
-              <span className="rounded-full bg-bg-secondary px-2 py-0.5 text-xs font-medium text-text-secondary">{draft.criteria.length}</span>
-            </h2>
-            <p className="text-xs leading-4 text-text-secondary">Weight multiplies the points (Yes = 1, Unclear = 0.5, No = 0).</p>
+        <div>
+          <div className="mb-2 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+              Questions ({draft.criteria.length})
+            </span>
+            <span className="text-xs leading-4 text-text-secondary">Weight multiplies the points of a question (Yes = 1, Unclear = 0.5, No = 0)</span>
           </div>
 
-          <div className="space-y-2">
-            <div className="grid grid-cols-[1.25rem_minmax(0,1fr)_76px_2.25rem] items-center gap-2 px-2 text-[11px] font-medium text-text-secondary">
-              <span aria-hidden="true" />
-              <span>Question</span>
-              <span className="text-center">Weight</span>
-              <span aria-hidden="true" />
-            </div>
+          <div className="space-y-3">
             {draft.criteria.map((criterion, index) => (
-              <div key={criterion.key} className="grid grid-cols-[1.25rem_minmax(0,1fr)_76px_2.25rem] items-center gap-2 rounded-lg border border-border bg-surface-white p-2">
-                <span className="text-center text-xs font-medium tabular-nums text-text-muted" aria-hidden="true">{index + 1}</span>
-                <input
+              <div key={criterion.key} className="grid grid-cols-[1.5rem_minmax(0,1fr)] items-start gap-x-3 gap-y-2 rounded-xl border border-border bg-surface-white p-3 sm:flex">
+                <span className="mt-2 flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border border-border bg-bg-secondary text-[10px] font-black text-text-secondary">
+                  {index + 1}
+                </span>
+                <textarea
                   aria-label={`Question ${index + 1}`}
-                  type="text"
                   value={criterion.question}
                   maxLength={1000}
-                  onChange={(event) => updateCriterion(criterion.key, { question: event.target.value })}
+                  rows={2}
+                  onChange={(e) => updateCriterion(criterion.key, { question: e.target.value })}
                   placeholder="Enter assessment question..."
-                  className={cn(inputClass, "min-w-0 px-2.5")}
+                  className={`${inputClass} col-start-2 min-w-0 resize-none sm:flex-1`}
                 />
-                <input
-                  type="number"
-                  aria-label={`Weight of question ${index + 1}`}
-                  min={MIN_WEIGHT}
-                  max={MAX_WEIGHT}
-                  step={0.5}
-                  value={criterion.weight}
-                  onChange={(event) => updateCriterion(criterion.key, { weight: Number(event.target.value) })}
-                  className={cn(inputClass, "w-[76px] px-2 text-center")}
-                />
-                <button
-                  type="button"
-                  onClick={() => setDraft((prev) => ({ ...prev, criteria: prev.criteria.filter((item) => item.key !== criterion.key) }))}
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none"
-                  title="Remove question"
-                  aria-label={`Remove question ${index + 1}`}
-                >
-                  <FiTrash2 className="h-4 w-4" />
-                </button>
+                <div className="col-start-2 flex min-w-0 items-center justify-end gap-3 sm:ml-auto sm:shrink-0">
+                  <div className="flex items-center gap-2 sm:block sm:w-20">
+                    <input
+                      type="number"
+                      aria-label={`Weight of question ${index + 1}`}
+                      min={MIN_WEIGHT}
+                      max={MAX_WEIGHT}
+                      step={0.5}
+                      value={criterion.weight}
+                      onChange={(e) => updateCriterion(criterion.key, { weight: Number(e.target.value) })}
+                      className={`${inputClass} w-20 px-2 text-center`}
+                    />
+                    <span className="text-[10px] uppercase tracking-wider text-text-secondary sm:mt-1 sm:block sm:text-center">Weight</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setDraft((prev) => ({ ...prev, criteria: prev.criteria.filter((c) => c.key !== criterion.key) }))}
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-error/10 hover:text-error focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none"
+                    title="Remove question"
+                    aria-label={`Remove question ${index + 1}`}
+                  >
+                    <FiTrash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          <Button
+          <button
             type="button"
-            variant="secondary"
-            size="sm"
             onClick={() => setDraft((prev) => ({ ...prev, criteria: [...prev.criteria, newCriterion()] }))}
-            className="mt-3 h-10 gap-1.5 rounded-lg px-3 normal-case tracking-normal"
+            className="mt-3 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border py-3 text-xs font-black uppercase tracking-widest text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light/30 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 motion-reduce:transition-none"
           >
             <FiPlus className="h-4 w-4" />
-            Add Question
-          </Button>
-        </section>
+            Add question
+          </button>
+        </div>
       </div>
     </Modal>
   );
