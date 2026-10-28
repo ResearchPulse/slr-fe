@@ -42,17 +42,17 @@ export default function CrossrefFilterSidebar({
 }: CrossrefFilterSidebarProps) {
   if (isCollapsed) {
     return (
-      <aside className="flex h-fit w-full items-center justify-between rounded-xl border border-border bg-surface-white px-2 py-2 motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-16 lg:flex-col lg:justify-start lg:px-0 lg:py-6">
+      <aside className="flex h-fit w-full items-center justify-between rounded-xl border border-border bg-surface-white px-2 py-2 motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-14 lg:flex-col lg:justify-start lg:px-0 lg:py-4">
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-accent/30 bg-primary-light text-accent transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none lg:mb-8"
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-accent/30 bg-primary-light text-accent transition-colors hover:bg-accent/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none lg:mb-5"
           title="Expand Explorer Filters"
           aria-label="Expand Explorer Filters"
         >
           <FiChevronRight className="h-5 w-5" aria-hidden="true" />
         </button>
-        <div className="hidden flex-col gap-6 text-text-secondary/50 lg:flex">
+        <div className="hidden flex-col gap-4 text-text-secondary/50 lg:flex">
           <FiFilter className="w-5 h-5" />
           <FiUser className="w-5 h-5" />
           <FiType className="w-5 h-5" />
@@ -64,18 +64,18 @@ export default function CrossrefFilterSidebar({
   }
 
   return (
-    <aside className="flex h-fit w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-80">
+    <aside className="flex h-fit w-full flex-col overflow-hidden rounded-xl border border-border bg-surface-white motion-safe:transition-[width] motion-safe:duration-300 motion-reduce:transition-none lg:sticky lg:top-24 lg:max-h-[calc(100vh-8rem)] lg:w-72">
       {/* Header */}
-      <div className="px-6 py-6 border-b border-border flex items-center justify-between bg-primary-light/30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary-light border border-accent/30 rounded-xl flex items-center justify-center text-accent">
-            <FiFilter className="w-5 h-5" />
+      <div className="flex items-center justify-between border-b border-border bg-primary-light/30 px-4 py-3.5">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg border border-primary/15 bg-primary-light text-primary">
+            <FiFilter className="h-4 w-4" aria-hidden="true" />
           </div>
           <div>
-            <h3 className="text-sm font-black text-text-primary uppercase tracking-widest">
+            <h3 className="text-xs font-semibold text-text-primary">
               Explorer
             </h3>
-            <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">
+            <p className="text-[10px] text-text-secondary">
               Refine Search
             </p>
           </div>
@@ -83,23 +83,23 @@ export default function CrossrefFilterSidebar({
         <button
           type="button"
           onClick={onToggleCollapse}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
           title="Collapse Explorer Filters"
           aria-label="Collapse Explorer Filters"
         >
-          <FiChevronLeft className="w-5 h-5" />
+          <FiChevronLeft className="h-4 w-4" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-6 space-y-8">
+      <div className="flex-1 space-y-5 overflow-y-auto p-4 custom-scrollbar">
         {/* Author Query */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+        <div className="space-y-2">
+          <label className="px-0.5 text-[11px] font-semibold text-text-secondary">
             Author
           </label>
           <div className="relative group">
-            <FiUser className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50 transition-colors group-focus-within:text-accent motion-reduce:transition-none" />
+            <FiUser className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary/60 transition-colors group-focus-within:text-primary motion-reduce:transition-none" />
             <input
               type="text"
               placeholder="e.g. Kitchenham"
@@ -107,18 +107,18 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryAuthor: e.target.value })
               }
-              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+              className="h-10 min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-9 pr-3 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
         </div>
 
         {/* Title Keywords */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1">
+        <div className="space-y-2">
+          <label className="px-0.5 text-[11px] font-semibold text-text-secondary">
             Title Keywords
           </label>
           <div className="relative group">
-            <FiType className="absolute left-4 top-1/2 -translate-y-1/2 text-text-secondary/50 transition-colors group-focus-within:text-accent motion-reduce:transition-none" />
+            <FiType className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-secondary/60 transition-colors group-focus-within:text-primary motion-reduce:transition-none" />
             <input
               type="text"
               placeholder="e.g. Software Quality"
@@ -126,14 +126,14 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, queryTitle: e.target.value })
               }
-              className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-11 pr-4 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+              className="h-10 min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-9 pr-3 text-[13px] text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
             />
           </div>
         </div>
 
         {/* Results Limit */}
-        <div className="space-y-3">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1 flex items-center gap-2">
+        <div className="space-y-2">
+          <label className="flex items-center gap-2 px-0.5 text-[11px] font-semibold text-text-secondary">
             <FiList className="w-3 h-3" />
             Results Limit
           </label>
@@ -142,7 +142,7 @@ export default function CrossrefFilterSidebar({
             onChange={(e) =>
               setLocalParams({ ...localParams, rows: parseInt(e.target.value) })
             }
-            className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary cursor-pointer appearance-none"
+            className="h-10 min-h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-surface-white px-3 py-2 text-[13px] text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value={10}>10 Results per page</option>
             <option value={20}>20 Results per page</option>
@@ -152,9 +152,9 @@ export default function CrossrefFilterSidebar({
         </div>
 
         {/* Sorting */}
-        <div className="space-y-6 pt-6 border-t border-border">
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1 flex items-center gap-2">
+        <div className="space-y-5 border-t border-border pt-4">
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 px-0.5 text-[11px] font-semibold text-text-secondary">
               <FiZap className="w-3 h-3" />
               Sort By
             </label>
@@ -163,7 +163,7 @@ export default function CrossrefFilterSidebar({
               onChange={(e) =>
                 setLocalParams({ ...localParams, sort: e.target.value })
               }
-              className="rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none w-full text-text-primary cursor-pointer appearance-none"
+              className="h-10 min-h-10 w-full cursor-pointer appearance-none rounded-lg border border-border bg-surface-white px-3 py-2 text-[13px] text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
             >
               <option value="relevance">Relevance</option>
               <option value="is-referenced-by-count">Citation Count</option>
@@ -173,8 +173,8 @@ export default function CrossrefFilterSidebar({
             </Select>
           </div>
 
-          <div className="space-y-3">
-            <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1 flex items-center gap-2">
+          <div className="space-y-2">
+            <label className="flex items-center gap-2 px-0.5 text-[11px] font-semibold text-text-secondary">
               {localParams.order === "asc" ? (
                 <FiArrowUp className="w-3 h-3" />
               ) : (
@@ -182,14 +182,14 @@ export default function CrossrefFilterSidebar({
               )}
               Sort Order
             </label>
-            <div className="flex bg-bg-primary p-1 rounded-xl">
+            <div className="flex rounded-lg bg-bg-primary p-1">
               <button
                 type="button"
                 onClick={() =>
                   setLocalParams({ ...localParams, order: "desc" })
                 }
                 className={cn(
-                  "min-h-11 flex-1 rounded-xl py-2 text-[10px] font-black uppercase tracking-widest motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
+                  "min-h-9 flex-1 rounded-md py-1.5 text-[10px] font-semibold uppercase tracking-wide motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
                   localParams.order === "desc" || !localParams.order
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -201,7 +201,7 @@ export default function CrossrefFilterSidebar({
                 type="button"
                 onClick={() => setLocalParams({ ...localParams, order: "asc" })}
                 className={cn(
-                  "min-h-11 flex-1 rounded-xl py-2 text-[10px] font-black uppercase tracking-widest motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
+                  "min-h-9 flex-1 rounded-md py-1.5 text-[10px] font-semibold uppercase tracking-wide motion-safe:transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50",
                   localParams.order === "asc"
                     ? "bg-surface-white text-accent shadow-sm"
                     : "text-text-secondary hover:text-text-secondary",
@@ -214,15 +214,15 @@ export default function CrossrefFilterSidebar({
         </div>
 
         {/* Target Source */}
-        <div className="space-y-3 pt-6 border-t border-border">
-          <label className="text-[10px] font-black text-text-secondary uppercase tracking-widest px-1 flex items-center gap-2">
+        <div className="space-y-2 border-t border-border pt-4">
+          <label className="flex items-center gap-2 px-0.5 text-[11px] font-semibold text-text-secondary">
             <FiTarget className="w-3 h-3" />
             Import Destination
           </label>
           <Select
             value={selectedSourceId}
             onChange={(e) => setSelectedSourceId(e.target.value)}
-            className="w-full rounded-xl border border-border bg-surface-white px-4 py-2.5 text-sm text-text-primary focus:border-accent focus:ring-2 focus:ring-accent/20 outline-none"
+            className="h-10 min-h-10 w-full rounded-lg border border-border bg-surface-white px-3 py-2 text-[13px] text-text-primary outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
           >
             <option value="">Select source to import to...</option>
             {availableSources.map((s) => (
@@ -231,18 +231,18 @@ export default function CrossrefFilterSidebar({
               </option>
             ))}
           </Select>
-          <p className="text-[9px] text-text-secondary px-1 italic">
+          <p className="px-1 text-[11px] leading-4 text-text-secondary">
             Imported papers will be associated with this search source.
           </p>
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="p-6 bg-bg-primary/50 border-t border-border">
+      <div className="border-t border-border bg-bg-primary/50 p-4">
         <Button
           onClick={onSearch}
           isLoading={isLoading}
-          className="w-full py-4 bg-accent hover:bg-primary-hover text-white rounded-xl font-black uppercase tracking-widest text-[10px] shadow-sm flex items-center justify-center gap-2"
+          className="min-h-10 w-full rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white shadow-none hover:bg-primary-hover hover:shadow-none"
         >
           <FiRefreshCw />
           Apply Explorer Filters

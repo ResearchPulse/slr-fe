@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
+import { FiSearch, FiUpload } from "react-icons/fi";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import DeletePaperModal from "./DeletePaperModal";
 import Button from "../ui/Button";
@@ -25,6 +26,10 @@ interface PaperTableProps {
   isLoading: boolean;
   isFetching: boolean;
   totalCount: number;
+  searchText?: string;
+  onSearchTextChange?: (value: string) => void;
+  filterControl?: ReactNode;
+  onImport?: () => void;
   pageNumber: number;
   totalPages: number;
   pageSize: number;
@@ -56,6 +61,10 @@ export default function PaperTable({
   isLoading,
   isFetching,
   totalCount,
+  searchText = "",
+  onSearchTextChange,
+  filterControl,
+  onImport,
   pageNumber,
   totalPages,
   pageSize,
@@ -78,25 +87,13 @@ export default function PaperTable({
   canUploadPdf = false,
 }: PaperTableProps) {
   const [paperPendingDelete, setPaperPendingDelete] = useState<PaperPoolItem | null>(null);
-  if (isLoading && papers.length === 0) {
-    return (
-      <div className="flex min-h-[340px] items-center justify-center rounded-xl border border-border bg-white">
-        <div className="flex flex-col items-center gap-3">
-          <LoadingSpinner size="lg" />
-          <p className="text-sm text-text-secondary motion-safe:animate-pulse motion-reduce:animate-none">
-            Loading paper library...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+    <div className="flex h-full flex-col overflow-hidden rounded-xl border border-border bg-white">
       {/* Table Header / Toolbar */}
-      <div className="flex flex-col gap-3 border-b border-border bg-bg-secondary/70 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-        <div className="flex items-center gap-3">
-          <span className="text-sm font-semibold text-text-primary">
+      <div className="flex flex-col gap-3 border-b border-border bg-white px-3 py-3 sm:px-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <span className="shrink-0 text-sm font-semibold text-text-primary">
             {totalCount.toLocaleString()}{" "}
             <span className="font-normal text-text-secondary">Results</span>
           </span>
@@ -106,23 +103,34 @@ export default function PaperTable({
               Refreshing
             </div>
           )}
+          {onSearchTextChange && (
+            <label className="group relative min-w-0 w-full sm:w-[240px] lg:w-[280px]">
+              <span className="sr-only">Search papers by title, DOI, or authors</span>
+              <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted transition-colors group-focus-within:text-accent motion-reduce:transition-none" />
+              <input
+                type="search"
+                aria-label="Search papers by title, DOI, or authors"
+                value={searchText}
+                onChange={(event) => onSearchTextChange(event.target.value)}
+                placeholder="Search title, DOI, authors..."
+                className="h-10 w-full rounded-lg border border-border bg-surface-white pl-9 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] placeholder:text-text-muted focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+              />
+            </label>
+          )}
         </div>
-        <div className="flex items-center justify-between gap-3 sm:justify-end">
-          <label className="whitespace-nowrap text-xs font-medium text-text-secondary">
-            Rows per page:
-          </label>
-          <Select
-            aria-label="Rows per page"
-            className="w-[88px] min-w-[88px] shrink-0"
-            value={pageSize}
-            onChange={(e) => onPageSizeChange(Number(e.target.value))}
-            options={[
-              { value: "20", label: "20" },
-              { value: "25", label: "25" },
-              { value: "50", label: "50" },
-              { value: "100", label: "100" },
-            ]}
-          />
+        <div className="flex flex-wrap items-center justify-between gap-2 sm:justify-end">
+          {isLeader && onImport && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="min-h-10 rounded-lg border-border px-3 text-xs hover:border-accent hover:bg-accent hover:text-text-on-primary"
+              onClick={onImport}
+            >
+              <FiUpload className="h-4 w-4" aria-hidden="true" />
+              Import Papers
+            </Button>
+          )}
+          {filterControl}
         </div>
       </div>
 
@@ -190,6 +198,16 @@ export default function PaperTable({
             </tr>
           </thead>
           <tbody className="divide-y divide-border/60">
+            {isLoading && papers.length === 0 && (
+              <tr>
+                <td colSpan={isLeader ? 9 : 8} className="px-4 py-12">
+                  <div className="flex items-center justify-center gap-3 text-sm text-text-secondary" role="status" aria-live="polite">
+                    <LoadingSpinner size="sm" />
+                    <span>Loading paper library...</span>
+                  </div>
+                </td>
+              </tr>
+            )}
             {papers.map((paper) => (
               <PaperRow
                 key={paper.id}
@@ -249,10 +267,30 @@ export default function PaperTable({
 
       {/* Pagination */}
       <div className="flex flex-col gap-3 border-t border-border bg-bg-secondary/50 px-3.5 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:px-4">
-        <div className="text-xs text-text-secondary">
-          Showing page{" "}
-          <span className="font-semibold text-text-primary">{pageNumber}</span> of{" "}
-          <span className="font-semibold text-text-primary">{totalPages}</span>
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+          <div className="text-xs text-text-secondary">
+            Showing page{" "}
+            <span className="font-semibold text-text-primary">{pageNumber}</span> of{" "}
+            <span className="font-semibold text-text-primary">{totalPages}</span>
+          </div>
+          <div className="flex min-h-10 items-center gap-2">
+            <label htmlFor="paper-rows-per-page" className="whitespace-nowrap text-xs font-medium text-text-secondary">
+              Rows per page
+            </label>
+            <Select
+              id="paper-rows-per-page"
+              aria-label="Rows per page"
+              className="w-[76px] min-w-[76px] shrink-0"
+              value={pageSize}
+              onChange={(e) => onPageSizeChange(Number(e.target.value))}
+              options={[
+                { value: "20", label: "20" },
+                { value: "25", label: "25" },
+                { value: "50", label: "50" },
+                { value: "100", label: "100" },
+              ]}
+            />
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button

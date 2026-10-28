@@ -154,7 +154,7 @@ const Header: React.FC = () => {
         onClickCapture={handleHeaderInteraction}
         onKeyDownCapture={handleHeaderInteraction}
       >
-        <div className="mx-auto h-full w-full max-w-[1360px] px-5 sm:px-8 lg:px-10 xl:px-12">
+        <div className="mx-auto h-full w-full px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-full">
             {/* Left Side: Logo & Desktop Nav */}
             <div className="flex items-center gap-2 lg:gap-8 xl:gap-12">
@@ -179,7 +179,7 @@ const Header: React.FC = () => {
 
               {/* Desktop Navigation */}
               <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
-                {navLinks.map((link) => {
+                {(location.pathname === "/" ? navLinks : []).map((link) => {
                   const isActive = link.path === "/projects"
                     ? location.pathname.startsWith("/projects")
                     : location.hash === link.path.slice(1);

@@ -12,6 +12,7 @@ import {
   FiGitBranch,
   FiExternalLink,
   FiUploadCloud,
+  FiZap,
 } from "react-icons/fi";
 import { toastError, toastSuccess } from "../../utils/toast";
 import { LoadingSpinner } from "../../components/ui/LoadingSpinner";
@@ -19,14 +20,16 @@ import Button from "../../components/ui/Button";
 import type { ScreeningPaper } from "../reviewProcess/studySelection/titleAbstractScreening/types";
 import { usePaperDetails } from "../../hooks/usePaperDetails";
 import {
-  usePaperReferences,
   usePaperCitations,
   usePaperGraph,
 } from "../../hooks/usePaperDiscovery";
+import { usePaperSpecificCandidates } from "../../hooks/useSnowballCandidates";
+import type { PaperNodeDto } from "../../types/studySelection";
 
 import { cn } from "../../utils/cn";
 import {
   PaperHeroHeader,
+  PaperInfoSummary,
   ContentSection,
   PublicationInfoCard,
   IdentifierSection,
@@ -39,6 +42,8 @@ import PdfJsViewer from "../../components/shared/paper/PdfJsViewer/PdfJsViewer";
 import CitationGraphModal from "../reviewProcess/studySelection/titleAbstractScreening/components/graph/CitationGraphModal";
 import UploadFullTextPdfModal from "../reviewProcess/studySelection/components/UploadFullTextPdfModal";
 import { useProjectMember } from "../../hooks/useProjectMember";
+import { usePaperActions } from "../../hooks/usePaperActions";
+import MetadataSuggestionModal from "../reviewProcess/studySelection/components/MetadataSuggestionModal";
 
 export default function PaperDetailsPage() {
   const { projectId, paperId } = useParams<{
@@ -51,10 +56,15 @@ export default function PaperDetailsPage() {
   const [graphDepth, setGraphDepth] = useState(1);
   const [minConfidence, setMinConfidence] = useState(0.1);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isSuggestionModalOpen, setIsSuggestionModalOpen] = useState(false);
 
   const queryClient = useQueryClient();
   const { member } = useProjectMember(projectId || "");
   const isLeader = member?.isLeader ?? false;
+  const {
+    applyMetadataSuggestion,
+    isApplyingMetadataSuggestion,
+  } = usePaperActions();
 
   const {
     data: paper,
@@ -63,8 +73,22 @@ export default function PaperDetailsPage() {
   } = usePaperDetails(paperId);
 
   // Discovery Hooks
-  const { data: references = [], isLoading: isReferencesLoading } =
-    usePaperReferences(paperId);
+  const { data: candidateResponse, isLoading: isLoadingCandidates } =
+    usePaperSpecificCandidates(paperId || "", { pageNumber: 1, pageSize: 100 });
+  const snowballingReferences = useMemo<PaperNodeDto[]>(
+    () =>
+      (candidateResponse?.items ?? []).map((candidate) => ({
+        id: candidate.candidateId,
+        title: candidate.title || candidate.rawReference || "Untitled reference",
+        year: candidate.publicationYear
+          ? Number.parseInt(candidate.publicationYear, 10) || null
+          : null,
+        authors: candidate.authors || null,
+        doi: candidate.doi || null,
+        citationCount: 0,
+      })),
+    [candidateResponse?.items],
+  );
   const { data: citations = [], isLoading: isCitationsLoading } =
     usePaperCitations(paperId);
   const { data: citationGraph, isLoading: isGraphLoading } = usePaperGraph(
@@ -89,8 +113,7 @@ export default function PaperDetailsPage() {
     return section?.coordinates || null;
   }, [activeSection, paper]);
 
-  const isDiscoveryLoading =
-    isReferencesLoading || isCitationsLoading || isGraphLoading;
+  const isDiscoveryLoading = isCitationsLoading || isGraphLoading;
 
   // ---- Mutation: Upload Full-Text PDF ----
   const uploadMutation = useMutation({
@@ -118,6 +141,16 @@ export default function PaperDetailsPage() {
       );
     },
   });
+
+  const handleApplySuggestion = async (selectedFields: string[]) => {
+    if (!paper?.extractionSuggestion || !paperId) return;
+    await applyMetadataSuggestion(
+      paperId,
+      paper.extractionSuggestion.sourceMetadataId,
+      selectedFields,
+    );
+    setIsSuggestionModalOpen(false);
+  };
 
   // Adapt API metadata to the shared paper viewer model.
   const adaptedPaper = useMemo<ScreeningPaper | null>(() => {
@@ -149,7 +182,7 @@ export default function PaperDetailsPage() {
       journalIssn: paper.journalIssn ?? null,
       journalEIssn: paper.journalEIssn ?? null,
       md5: paper.md5 ?? null,
-      referenceCount: references?.length || 0,
+      referenceCount: candidateResponse?.totalCount ?? snowballingReferences.length,
       citationCount: citations?.length || 0,
       screeningStatus: "pending",
       finalDecision: null,
@@ -162,7 +195,7 @@ export default function PaperDetailsPage() {
       resolution: null,
       fullTextSections: paper.fullTextSections ?? null,
     };
-  }, [paper, references, citations]);
+  }, [paper, candidateResponse?.totalCount, snowballingReferences.length, citations]);
 
   const isFieldUpdated = () => false; // No suggestions view in this standalone page for now
 
@@ -221,8 +254,8 @@ export default function PaperDetailsPage() {
               <h2 className="text-sm font-black text-text-primary uppercase tracking-tight">
                 Paper Details
               </h2>
-              <p className="text-[10px] text-text-secondary font-bold uppercase tracking-widest">
-                Project ID: {projectId?.substring(0, 8)}...
+              <p className="max-w-[min(70vw,64rem)] truncate text-xs text-text-secondary">
+                {paper?.title || "Viewing detailed paper information"}
               </p>
             </div>
           </div>
@@ -242,6 +275,27 @@ export default function PaperDetailsPage() {
           </div>
         </div>
       </div>
+
+      {paper.extractionSuggestion && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-primary/15 bg-primary-light px-4 py-3 sm:px-6">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-primary">
+              <FiZap className="h-4 w-4" aria-hidden="true" />
+            </span>
+            <p className="text-sm font-semibold text-text-primary">
+              AI metadata suggestions available
+            </p>
+          </div>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={() => setIsSuggestionModalOpen(true)}
+            className="min-h-9 rounded-lg px-3 text-xs"
+          >
+            Review suggestions
+          </Button>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto">
@@ -279,7 +333,7 @@ export default function PaperDetailsPage() {
               onClick={() => setActiveTab("references")}
               icon={<FiList className="w-4 h-4" />}
               label="References"
-              count={references?.length}
+              count={candidateResponse?.totalCount ?? snowballingReferences.length}
               className="min-w-0 gap-1 px-2 text-[10px] tracking-normal md:gap-2 md:px-4 md:text-[11px] md:tracking-widest"
             />
             <TabButton
@@ -310,6 +364,7 @@ export default function PaperDetailsPage() {
           <div className="space-y-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300 motion-reduce:animate-none">
             {activeTab === "abstract" && (
               <>
+                {adaptedPaper && <PaperInfoSummary paper={adaptedPaper} />}
                 <ContentSection
                   paper={paper}
                   isFieldUpdated={isFieldUpdated}
@@ -326,7 +381,23 @@ export default function PaperDetailsPage() {
                   />
                 </div>
 
-                <SystemMetadataCollapse paper={adaptedPaper!} />
+                <SystemMetadataCollapse
+                  paper={adaptedPaper!}
+                  extras={{
+                    importedAt: paper.importedAt ?? null,
+                    createdAt: paper.createdAt ?? null,
+                    modifiedAt: paper.modifiedAt ?? paper.updatedAt ?? null,
+                    pdfFileName: paper.pdfFileName ?? paper.pdf?.fileName ?? null,
+                    pdfSizeBytes: paper.pdf?.sizeBytes ?? null,
+                    pdfUrl: paper.pdfUrl ?? null,
+                    pdfProcessingStatus: paper.pdf?.processingStatus ?? null,
+                    fullTextStatus: paper.pdf?.fullText?.status ?? null,
+                    extractionError: paper.pdf?.processingError?.message ?? null,
+                    sectionCount: paper.pdf?.fullText?.sectionCount ?? null,
+                    referenceCount: paper.pdf?.fullText?.referenceCount ?? null,
+                    figureCount: paper.pdf?.fullText?.figureCount ?? null,
+                  }}
+                />
               </>
             )}
 
@@ -336,8 +407,8 @@ export default function PaperDetailsPage() {
                   Cited References
                 </h2>
                 <PaperNodeList
-                  nodes={references}
-                  isLoading={isDiscoveryLoading}
+                  nodes={snowballingReferences}
+                  isLoading={isLoadingCandidates}
                   emptyLabel="No references found."
                 />
               </div>
@@ -435,6 +506,34 @@ export default function PaperDetailsPage() {
               extractWithGrobid: options?.extractWithGrobid,
             });
           }}
+        />
+      )}
+
+      {paper.extractionSuggestion && (
+        <MetadataSuggestionModal
+          isOpen={isSuggestionModalOpen}
+          isApplying={isApplyingMetadataSuggestion}
+          currentMetadata={{
+            title: paper.title,
+            authors: paper.authors ?? "",
+            abstract: paper.abstract ?? "",
+            doi: paper.doi ?? "",
+            journal: paper.journal ?? "",
+            volume: paper.volume ?? "",
+            issue: paper.issue ?? "",
+            pages: paper.pages ?? "",
+            keywords: paper.keywords ?? "",
+            year: paper.publicationYear?.toString(),
+            publishedDate: paper.publicationDate ?? "",
+            issn: paper.journalIssn ?? "",
+            eissn: paper.journalEIssn ?? "",
+            language: paper.language ?? "",
+            md5: paper.md5 ?? "",
+            publisher: paper.publisher,
+          }}
+          suggestion={paper.extractionSuggestion as any}
+          onApply={handleApplySuggestion}
+          onClose={() => setIsSuggestionModalOpen(false)}
         />
       )}
     </div>

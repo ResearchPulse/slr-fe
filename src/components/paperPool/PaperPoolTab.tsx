@@ -31,7 +31,6 @@ import DeduplicationPage from "./DeduplicationPage";
 import SearchSourcePage from "./SearchSourcePage";
 import SnowballingCandidatesPage from "./snowballing/SnowballingCandidatesPage";
 import PaperStatisticsDashboard from "./statistics/PaperStatisticsDashboard";
-import HeroNav from "./HeroNav";
 import CreateProcessModal from "../reviewProcess/CreateProcessModal";
 import PoolWorkflowStepper from "./PoolWorkflowStepper";
 import SetupSummaryView from "../../pages/projects/aiSetupWizard/components/SetupSummaryView";
@@ -210,7 +209,6 @@ export default function PaperPoolTab({
   const [pageNumber, setPageNumber] = useState(1);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [selectedPaperIds, setSelectedPaperIds] = useState<string[]>([]);
-  const [viewerPaper, setViewerPaper] = useState<PaperPoolItem | null>(null);
   const [insertResult, setInsertResult] =
     useState<SelectionInsertResult | null>(null);
   const [isAdding, setIsAdding] = useState(false);
@@ -228,7 +226,6 @@ export default function PaperPoolTab({
     useState(false);
   const [isAddToProcessByFilterOpen, setIsAddToProcessByFilterOpen] =
     useState(false);
-  const [isFilterPanelCollapsed, setIsFilterPanelCollapsed] = useState(false);
   const [isCreateProcessModalOpen, setIsCreateProcessModalOpen] =
     useState(false);
   const { stepId } = useParams();
@@ -368,30 +365,7 @@ export default function PaperPoolTab({
           },
         ];
       case 3:
-        return [
-          ...(isLeader
-            ? [
-                {
-                  label: "Open Import Modal",
-                  primary: (papersPage?.totalCount ?? 0) === 0,
-                  onClick: () => {
-                    // setActiveTab("library");
-                    setIsImportModalOpen(true);
-                  },
-                },
-              ]
-            : []),
-          ...((papersPage?.totalCount ?? 0) > 0
-            ? [
-                {
-                  label: "Next: Review Processes",
-                  primary: true,
-                  onClick: () => setWorkflowStep(4),
-                  icon: FiChevronRight,
-                },
-              ]
-            : []),
-        ];
+        return [];
       case 4:
         return [
           {
@@ -707,6 +681,8 @@ export default function PaperPoolTab({
         actions={workflowActions}
         isCompleted={isStepCompleted}
         isLeader={isLeader}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
 
       {workflowStep === 1 && (
@@ -733,13 +709,13 @@ export default function PaperPoolTab({
       )}
 
       {workflowStep === 2 && (
-        <div className="w-full space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
-          <div className="bg-surface-white rounded-xl border border-border p-10 shadow-none shadow-slate-200/50">
-            <div className="mb-8 pb-8 border-b border-border">
-              <h2 className="text-2xl font-black text-text-primary mb-2 uppercase tracking-tight">
+        <div className="w-full space-y-5 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-150 motion-reduce:animate-none">
+          <div className="rounded-xl border border-border bg-surface-white p-5 shadow-none sm:p-6">
+            <div className="mb-5 border-b border-border pb-4">
+              <h2 className="mb-1 text-xl font-bold tracking-tight text-text-primary">
                 Search <span className="text-accent">Strategy</span> Planning
               </h2>
-              <p className="text-text-secondary font-medium">
+              <p className="text-sm text-text-secondary">
                 Define the academic databases and sources for your search.
               </p>
             </div>
@@ -747,13 +723,13 @@ export default function PaperPoolTab({
           </div>
 
           {!hasSearchSources && (
-            <div className="flex items-center gap-4 rounded-xl border border-warning/20 bg-warning/10 p-6 text-warning" role="alert">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-warning/10">
-                <FiAlertCircle className="w-6 h-6" />
+            <div className="flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/10 p-4 text-warning" role="alert">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-warning/10">
+                <FiAlertCircle className="h-5 w-5" />
               </div>
               <div>
-                <p className="font-bold">Search sources required</p>
-                <p className="text-sm opacity-80 font-medium">
+                <p className="text-sm font-semibold">Search sources required</p>
+                <p className="text-[13px] leading-5 opacity-80">
                   You must add at least one search source to proceed to the
                   paper repository.
                 </p>
@@ -765,12 +741,6 @@ export default function PaperPoolTab({
 
       {workflowStep >= 3 && (
         <>
-          <HeroNav
-            activeTab={activeTab}
-            onChange={setActiveTab}
-            isLeader={isLeader}
-          />
-
           {activeTab === "library" ? (
             <>
               <PaperRepositoryPage
@@ -794,8 +764,6 @@ export default function PaperPoolTab({
                   setFilters(DEFAULT_FILTERS);
                   setPageNumber(1);
                 }}
-                isFilterPanelCollapsed={isFilterPanelCollapsed}
-                setIsFilterPanelCollapsed={setIsFilterPanelCollapsed}
                 selectedPaperIds={selectedPaperIds}
                 setSelectedPaperIds={setSelectedPaperIds}
                 savedFilters={savedFilters}
@@ -814,8 +782,6 @@ export default function PaperPoolTab({
                 selectedSavedFilterMatchedCount={
                   selectedSavedFilterMatchedCount
                 }
-                viewerPaper={viewerPaper}
-                setViewerPaper={setViewerPaper}
                 isManageFiltersOpen={isManageFiltersOpen}
                 setIsManageFiltersOpen={setIsManageFiltersOpen}
                 isNameFilterModalOpen={isNameFilterModalOpen}

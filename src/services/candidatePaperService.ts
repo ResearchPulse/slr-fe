@@ -108,8 +108,8 @@ export const candidatePaperService = {
    * Extracts references from a paper's full-text PDF and populates the candidate pool.
    * POST /api/papers/{paperId}/extract-references
    */
-  async extractReferences(paperId: string): Promise<ApiResponse<undefined>> {
-    const response = await api.post<ApiResponse<undefined>>(
+  async extractReferences(paperId: string): Promise<ApiResponse<{ found: number; added: number }>> {
+    const response = await api.post<ApiResponse<{ found: number; added: number }>>(
       `/papers/${paperId}/extract-references`,
     );
     return response.data;

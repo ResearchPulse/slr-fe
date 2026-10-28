@@ -37,12 +37,19 @@ const ReferenceExtractionButton: React.FC<ReferenceExtractionButtonProps> = ({
   const handleExtract = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent row click in table
     try {
-      await extractReferencesMutation.mutateAsync(paperId);
-      toast.success(
-        "References extracted successfully. Candidates added to the Snowballing pool.",
-      );
+      const result = await extractReferencesMutation.mutateAsync(paperId);
+      const { found, added } = result.data;
+      if (found === 0) {
+        toast("No references were found in this paper.");
+      } else if (added === 0) {
+        toast.success("References found, but they are already in the Snowballing pool.");
+      } else {
+        toast.success(
+          `${found} references found; ${added} new candidates added to the Snowballing pool.`,
+        );
+      }
       setIsConfirmModalOpen(false);
-      setSuccess(true);
+      setSuccess(found > 0);
       onSuccess?.();
     } catch (error) {
       toast.error(

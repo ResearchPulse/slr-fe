@@ -83,8 +83,8 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
   return (
     <div className="flex flex-col h-full bg-bg-secondary/50 overflow-hidden">
       {/* Top Stats Bar */}
-      <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8">
-        <div className="mb-6 grid grid-cols-1 gap-3 sm:mb-8 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      <div className="w-full min-w-0 px-4 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6">
+        <div className="mb-4 grid grid-cols-1 gap-3 sm:mb-5 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
           <div className="rounded-xl border border-border bg-surface-white p-4 sm:p-5">
             <div className="mb-3 flex items-center gap-3">
               <div className="rounded-lg bg-primary-light p-2 text-primary">
@@ -230,22 +230,22 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-border bg-bg-secondary/30">
-                  <th className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                  <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                     Source Paper
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary">
+                  <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary">
                     Year
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
+                  <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
                     Detected
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
+                  <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
                     Suggested
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
+                  <th className="px-4 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-center">
                     Dups
                   </th>
-                  <th className="px-8 py-4 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">
+                  <th className="px-5 py-3 text-[10px] font-black uppercase tracking-widest text-text-secondary text-right">
                     Actions
                   </th>
                 </tr>
@@ -257,7 +257,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                     onClick={() => onPaperClick(paper.id)}
                     className="group cursor-pointer transition-colors hover:bg-bg-secondary/50 motion-reduce:transition-none"
                   >
-                    <td className="px-8 py-5">
+                    <td className="px-5 py-4">
                       <div className="flex items-start gap-4">
                         <div className="w-10 h-10 rounded-xl bg-bg-secondary flex items-center justify-center text-text-secondary group-hover:bg-primary/10 group-hover:text-primary transition-colors shrink-0">
                           <FileText className="w-5 h-5" />
@@ -274,12 +274,12 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-4">
                       <span className="text-sm font-bold text-text-secondary">
                         {paper.publicationYear}
                       </span>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-4 text-center">
                       <button
                         type="button"
                         onClick={(event) => {
@@ -293,7 +293,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                         <span className="font-medium">Detected</span>
                       </button>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center gap-1.5">
                         <ShieldCheck
                           className={cn(
@@ -315,7 +315,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                         </span>
                       </div>
                     </td>
-                    <td className="px-6 py-5 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div className="flex items-center justify-center gap-1.5">
                         <AlertCircle
                           className={cn(
@@ -337,7 +337,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-5 text-right">
+                    <td className="px-5 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <ReferenceExtractionButton
                           paperId={paper.id}
@@ -370,7 +370,7 @@ const SnowballingPaperList: React.FC<SnowballingPaperListProps> = ({
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col gap-3 border-t border-border bg-surface-white px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="flex flex-col gap-3 border-t border-border bg-surface-white px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
                 Showing {papers.length} of {response?.totalCount || 0} papers

@@ -532,13 +532,13 @@ export default function ProjectDetailPage() {
       return (
         <div>
           {/* Review Processes Section */}
-          <div className="mb-6 border-b border-border">
-            <nav className="flex gap-6">
+          <div className="mb-4 border-b border-border">
+            <nav className="flex items-end gap-5">
               <button
                 type="button"
                 aria-current={activeMainSection === "overview" ? "page" : undefined}
                 onClick={() => setActiveMainSection("overview")}
-                className={`-mb-px min-h-11 border-b-2 pb-3 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                className={`-mb-px min-h-9 border-b-2 px-1 pb-0 text-base font-semibold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   activeMainSection === "overview"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"
@@ -551,7 +551,7 @@ export default function ProjectDetailPage() {
                 type="button"
                 aria-current={activeMainSection === "paper-pool" ? "page" : undefined}
                 onClick={() => setActiveMainSection("paper-pool")}
-                className={`-mb-px min-h-11 border-b-2 pb-3 text-sm font-medium transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                className={`-mb-px min-h-9 border-b-2 px-1 pb-0 text-base font-semibold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
                   activeMainSection === "paper-pool"
                     ? "text-accent border-accent"
                     : "text-text-secondary border-transparent hover:text-text-primary"

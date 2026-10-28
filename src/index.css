@@ -628,6 +628,38 @@ select:focus {
   display: none;
 }
 
+/* Smaller scrollbar for modal bodies so the scroll track stays unobtrusive. */
+.modal-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  overscroll-behavior-y: contain;
+}
+
+.modal-scroll-area::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.modal-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.modal-scroll-area::-webkit-scrollbar-thumb {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: var(--color-border);
+  background-clip: padding-box;
+}
+
+.modal-scroll-area:hover::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+  background-clip: padding-box;
+}
+
+.modal-scroll-area::-webkit-scrollbar-button {
+  display: none;
+}
+
 /* Compact scrollbars for dropdowns and scrollable option lists. */
 .dropdown-scroll-area {
   scrollbar-width: thin;

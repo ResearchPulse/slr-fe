@@ -32,7 +32,7 @@ interface UploadFullTextPdfModalProps {
   onSubmit: (file: File, options: UploadPdfOptions) => Promise<unknown>;
 }
 
-const MAX_PDF_SIZE_BYTES = 20 * 1024 * 1024;
+const MAX_PDF_SIZE_BYTES = 1 * 1024 * 1024;
 
 export default function UploadFullTextPdfModal({
   isOpen,
@@ -57,7 +57,7 @@ export default function UploadFullTextPdfModal({
     }
 
     if (file.size > MAX_PDF_SIZE_BYTES) {
-      toastError("File size exceeds 20 MB.");
+      toastError("File size exceeds 1 MB.");
       return;
     }
 
@@ -92,6 +92,7 @@ export default function UploadFullTextPdfModal({
       title="Upload Full Text PDF"
       description="Upload the paper PDF and enhance missing metadata with AI extraction."
       size="lg"
+      bodyClassName="modal-scroll-area"
       closeOnOutsideClick={!isUploading}
       closeOnEsc={!isUploading}
     >
@@ -170,7 +171,7 @@ export default function UploadFullTextPdfModal({
                   Choose a PDF to upload
                 </p>
                 <p className="mt-1 max-w-md text-sm text-text-secondary">
-                  Select the full-text article PDF. Maximum file size: 20 MB.
+                  Select one full-text article PDF. Maximum file size: 1 MB.
                 </p>
               </button>
             )}
