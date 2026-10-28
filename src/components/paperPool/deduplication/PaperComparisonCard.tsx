@@ -87,46 +87,42 @@ export default function PaperComparisonCard({
   const ABSTRACT_TRUNCATE = 150;
   const abstractIsLong = paper.abstract.length > ABSTRACT_TRUNCATE;
 
-  const cardBorderClass =
+  const cardSurfaceClass =
     outcome === "kept"
-      ? "border-success/30 bg-success/5"
+      ? "bg-success/5"
       : outcome === "removed"
-        ? "border-border bg-surface-white/30 opacity-60"
+        ? "opacity-60"
         : isResolved
-          ? "border-border bg-bg-primary opacity-70"
-          : "border-border bg-surface-white";
+          ? "bg-bg-primary/40 opacity-70"
+          : "bg-transparent";
 
   return (
     <div
-      className={`relative border rounded-xl p-4 transition-colors motion-reduce:transition-none ${cardBorderClass}`}
+      className={`relative min-w-0 p-4 transition-colors motion-reduce:transition-none ${cardSurfaceClass}`}
     >
-      {/* Resolution outcome badge */}
-      {outcome && (
-        <div
-          className={`absolute -top-3 left-1/2 -translate-x-1/2 flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold shadow-none ${
-            outcome === "kept"
-              ? "bg-success/10 text-success border border-success/20"
-              : "bg-error/10 text-error border border-error/20"
-          }`}
-        >
-          {outcome === "kept" ? (
-            <>
-              <FiCheckCircle className="w-3 h-3" /> Not Duplicate
-            </>
-          ) : (
-            <>
-              <FiXCircle className="w-3 h-3" /> Duplicate Removed
-            </>
-          )}
-        </div>
-      )}
-
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="mb-3 flex min-h-5 items-center justify-between gap-2">
         <span className={`text-xs font-bold ${labelColor}`}>{label}</span>
-        <span className="text-xs font-bold text-text-secondary">
-          {side === "original" ? "Original" : "Duplicate"}
-        </span>
+        <div className="flex items-center gap-2">
+          {outcome && (
+            <span
+              className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                outcome === "kept"
+                  ? "bg-success/10 text-success"
+                  : "bg-error/10 text-error"
+              }`}
+            >
+              {outcome === "kept" ? (
+                <><FiCheckCircle className="h-3 w-3" /> Kept</>
+              ) : (
+                <><FiXCircle className="h-3 w-3" /> Removed</>
+              )}
+            </span>
+          )}
+          <span className="text-xs font-medium text-text-secondary">
+            {side === "original" ? "Original" : "Duplicate"}
+          </span>
+        </div>
       </div>
 
       <div className="space-y-3">

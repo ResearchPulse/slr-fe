@@ -1,23 +1,14 @@
-// Enhanced Deduplication Progress Banner with metrics, ETA, and animated progress
-
 import { useMemo } from "react";
-import { FiClock, FiTrendingUp, FiRefreshCw } from "react-icons/fi";
-import Button from "../../ui/Button";
+import { FiClock } from "react-icons/fi";
 import { estimateRemainingTime } from "../../../pages/reviewProcess/identification/utils";
-import { SIMILARITY_THRESHOLDS } from "../../../pages/reviewProcess/identification/constants";
 import type { DuplicatePair } from "../../../types/deduplication";
 
 interface DeduplicationProgressBannerProps {
   duplicatePairs: DuplicatePair[];
   pendingCount: number;
   resolvedCount: number;
-  /** Timestamp when user started resolving (first resolution in this session) */
   sessionStartTime: number | null;
-  /** Number resolved in this session (for ETA calculation) */
   sessionResolvedCount: number;
-  onRunDeduplication?: () => void;
-  isRunningDeduplication?: boolean;
-  canEdit?: boolean;
 }
 
 export default function DeduplicationProgressBanner({
@@ -26,144 +17,72 @@ export default function DeduplicationProgressBanner({
   resolvedCount,
   sessionStartTime,
   sessionResolvedCount,
-  onRunDeduplication,
-  isRunningDeduplication = false,
-  canEdit = true,
 }: DeduplicationProgressBannerProps) {
   const total = duplicatePairs.length;
-  const progressPercent =
-    total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
-
-  const stats = useMemo(() => {
-    const highConfidence = duplicatePairs.filter(
-      (p) =>
-        p.status === "pending" &&
-        p.similarityScore >= SIMILARITY_THRESHOLDS.HIGH,
-    ).length;
-
-    const eta = estimateRemainingTime(
-      sessionResolvedCount,
-      total,
-      sessionStartTime,
-    );
-
-    return { highConfidence, eta };
-  }, [duplicatePairs, sessionResolvedCount, total, sessionStartTime]);
+  const progressPercent = total > 0 ? Math.round((resolvedCount / total) * 100) : 0;
+  const eta = useMemo(
+    () => estimateRemainingTime(sessionResolvedCount, total, sessionStartTime),
+    [sessionResolvedCount, total, sessionStartTime],
+  );
 
   return (
-    <div className="mb-6 rounded-xl border border-border bg-surface-white p-4 sm:p-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        {/* Metrics row */}
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-4 sm:gap-8">
-          <MetricBlock value={total} label="Total pairs" />
-          <Divider />
-          <MetricBlock
-            value={resolvedCount}
-            label="Resolved"
-            className="text-success"
-            emoji="✓"
-          />
-          <MetricBlock
-            value={pendingCount}
-            label="Pending"
-            className="text-warning"
-            emoji="⏳"
-          />
-          <Divider />
+    <section
+      aria-label="Duplicate review progress"
+      className="grid grid-cols-2 items-center gap-y-4 rounded-xl border border-border bg-surface-white px-4 py-4 sm:grid-cols-[repeat(3,minmax(0,1fr))_minmax(220px,1.45fr)] sm:gap-0 sm:px-5"
+    >
+      <Metric value={total} label="Total pairs" />
+      <Metric value={resolvedCount} label="Resolved" tone="success" />
+      <Metric value={pendingCount} label="Pending" tone="warning" />
 
-          {/* Progress bar */}
-          <div>
-            <div className="text-sm text-text-primary font-medium mb-2 flex items-center gap-2">
-              <FiTrendingUp className="w-3.5 h-3.5" />
-              Progress
-            </div>
-            <div className="h-3 w-full overflow-hidden rounded-full bg-bg-secondary sm:w-48">
-              <div
-                className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-            <div className="flex items-center justify-between mt-1">
-              <span className="text-xs text-text-secondary">
-                {progressPercent}% complete
-              </span>
-              {stats.eta && (
-                <span className="text-xs text-text-secondary flex items-center gap-1">
-                  <FiClock className="w-3 h-3" />
-                  {stats.eta} remaining
-                </span>
-              )}
-            </div>
-          </div>
+      <div className="col-span-2 border-t border-border pt-3 sm:col-span-1 sm:ml-5 sm:border-t-0 sm:pl-5 sm:pt-0">
+        <div className="mb-2 flex items-center justify-between gap-3 text-xs">
+          <span className="font-medium text-text-primary">Review progress</span>
+          <span className="tabular-nums text-text-secondary">{progressPercent}%</span>
         </div>
-
-        {canEdit && onRunDeduplication && (
-          <Button
-            size="md"
-            className="flex items-center gap-2 shadow-none ml-auto"
-            onClick={onRunDeduplication}
-            disabled={isRunningDeduplication}
-            isLoading={isRunningDeduplication}
-          >
-            <FiRefreshCw aria-hidden="true" className="w-4 h-4" />
-            Run Deduplication
-          </Button>
+        <div
+          className="h-2 overflow-hidden rounded-full bg-bg-secondary"
+          role="progressbar"
+          aria-label="Review progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={progressPercent}
+        >
+          <div
+            className="h-full rounded-full bg-primary transition-[width] duration-300 ease-out motion-reduce:transition-none"
+            style={{ width: `${progressPercent}%` }}
+          />
+        </div>
+        {eta && pendingCount > 0 && (
+          <p className="mt-1.5 flex items-center gap-1 text-xs text-text-secondary">
+            <FiClock aria-hidden="true" className="h-3 w-3" />
+            About {eta} remaining at this pace
+          </p>
         )}
       </div>
-
-      {/* Contextual tips */}
-      {pendingCount > 0 && (
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-border pt-4">
-          <p className="text-sm text-text-primary">
-            <span className="font-semibold">💡 Tip:</span> Use keyboard
-            shortcuts{" "}
-            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
-              1
-            </kbd>{" "}
-            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
-              2
-            </kbd>{" "}
-            for faster review.{" "}
-            <kbd className="px-1.5 py-0.5 bg-surface-white border border-border rounded text-xs font-mono">
-              N
-            </kbd>{" "}
-            jumps to next unresolved pair.
-          </p>
-          {stats.highConfidence > 0 && (
-            <span className="rounded-full bg-error/10 px-2.5 py-1 text-xs font-medium text-error">
-              {stats.highConfidence} high-confidence pending
-            </span>
-          )}
-        </div>
-      )}
-    </div>
+    </section>
   );
 }
 
-// --- Sub-components ---
-
-function MetricBlock({
+function Metric({
   value,
   label,
-  className = "text-text-primary",
-  emoji,
+  tone = "default",
 }: {
   value: number;
   label: string;
-  className?: string;
-  emoji?: string;
+  tone?: "default" | "success" | "warning";
 }) {
+  const valueColor =
+    tone === "success"
+      ? "text-success"
+      : tone === "warning"
+        ? "text-warning"
+        : "text-text-primary";
+
   return (
-    <div>
-      <div className={`text-3xl font-bold ${className}`}>{value}</div>
-      <div className="text-sm text-text-secondary">
-        {emoji && <span className="mr-1">{emoji}</span>}
-        {label}
-      </div>
+    <div className="min-w-0 sm:border-r sm:border-border sm:px-4 first:sm:pl-0">
+      <p className={`text-xl font-semibold leading-6 tabular-nums ${valueColor}`}>{value}</p>
+      <p className="mt-1 text-xs text-text-secondary">{label}</p>
     </div>
   );
-}
-
-function Divider() {
-  return <div className="hidden h-10 w-px bg-border sm:block" />;
 }

@@ -597,9 +597,139 @@ select:focus {
   text-decoration-color: currentColor;
 }
 
-/* Let the browser render scrollbars with its native platform affordance. */
+/* Slim, low-contrast scrollbars for dense workspaces without hiding scroll affordance. */
 .custom-scrollbar {
   scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: var(--color-border);
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+  background-clip: padding-box;
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
+}
+
+/* Compact scrollbars for dropdowns and scrollable option lists. */
+.dropdown-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  overscroll-behavior-y: contain;
+}
+
+.dropdown-scroll-area:hover {
+  scrollbar-color: var(--color-text-muted) transparent;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: var(--color-border);
+}
+
+.dropdown-scroll-area:hover::-webkit-scrollbar-thumb {
+  background: var(--color-text-muted);
+}
+
+.dropdown-scroll-area::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+.soft-checkbox {
+  appearance: none;
+  position: relative;
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 5px;
+  background: var(--color-surface-white);
+  cursor: pointer;
+  transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.soft-checkbox::after {
+  position: absolute;
+  top: 2px;
+  left: 5px;
+  width: 5px;
+  height: 9px;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  content: "";
+  opacity: 0;
+  transform: rotate(45deg) scale(0.65);
+  transition: opacity 120ms ease, transform 150ms ease;
+}
+
+.soft-checkbox:hover:not(:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.soft-checkbox:checked {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.soft-checkbox:checked::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+.soft-checkbox:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(0 113 188 / 18%);
+}
+
+.soft-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soft-checkbox,
+  .soft-checkbox::after {
+    transition: none;
+  }
+}
+
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
 .selection-action-tabs {
@@ -643,8 +773,26 @@ select:focus {
   transform-origin: top right;
 }
 
+@keyframes header-account-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.header-account-menu-enter {
+  animation: header-account-menu-enter 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  transform-origin: top right;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .ui-popover-enter {
+  .ui-popover-enter,
+  .header-account-menu-enter {
     animation: none;
   }
 }
@@ -662,6 +810,75 @@ select:focus {
 .ui-section-enter {
   animation: ui-section-enter 180ms cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Admin-only compact density. Body scope also reaches menus and dialogs rendered in portals. */
+body.admin-density {
+  --spacing: 0.2125rem;
+  --spacing-page: clamp(1rem, 2.2vw, 1.75rem);
+  --spacing-section: 1.25rem;
+  --spacing-card: 1rem;
+  --radius-control: 0.65rem;
+  --radius-card: 0.65rem;
+  --radius-panel: 0.85rem;
+  --radius-xs: 0.2rem;
+  --radius-sm: 0.35rem;
+  --radius-md: 0.45rem;
+  --radius-lg: 0.55rem;
+  --radius-xl: 0.65rem;
+  --radius-2xl: 0.8rem;
+  --radius-3xl: 1rem;
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 0.9rem;
+  --text-sm: 0.8125rem;
+  --text-sm--line-height: 1.15rem;
+  --text-base: 0.875rem;
+  --text-base--line-height: 1.3rem;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.45rem;
+  --text-xl: 1.125rem;
+  --text-xl--line-height: 1.6rem;
+  --text-2xl: 1.25rem;
+  --text-2xl--line-height: 1.75rem;
+  --text-3xl: 1.5rem;
+  --text-3xl--line-height: 2rem;
+  --text-4xl: 1.75rem;
+  --text-4xl--line-height: 2.25rem;
+  --text-5xl: 2rem;
+  --text-5xl--line-height: 2.5rem;
+  font-size: 14px;
+}
+
+/* Keep common legacy pixel utilities on the same compact type and control scale. */
+body.admin-density [class*="text-[12px]"] { font-size: 11px; }
+body.admin-density [class*="text-[13px]"] { font-size: 12px; }
+body.admin-density [class*="text-[14px]"] { font-size: 13px; }
+body.admin-density [class*="text-[15px]"] { font-size: 14px; }
+body.admin-density [class*="text-[16px]"] { font-size: 14px; }
+body.admin-density [class*="text-[18px]"] { font-size: 16px; }
+body.admin-density [class*="text-[20px]"] { font-size: 18px; }
+body.admin-density [class*="text-[22px]"] { font-size: 19px; }
+body.admin-density [class*="text-[24px]"] { font-size: 20px; }
+body.admin-density [class*="text-[28px]"] { font-size: 24px; }
+body.admin-density [class*="text-[30px]"] { font-size: 25px; }
+body.admin-density [class*="text-[31px]"] { font-size: 26px; }
+body.admin-density [class*="text-[32px]"] { font-size: 27px; }
+body.admin-density [class*="text-[34px]"] { font-size: 28px; }
+body.admin-density [class*="text-[36px]"] { font-size: 30px; }
+
+body.admin-density [class*="min-h-[44px]"] { min-height: 40px; }
+body.admin-density [class*="h-[72px]"] { height: 64px; }
+body.admin-density [class*="min-h-[72px]"] { min-height: 64px; }
+body.admin-density [class*="h-[64px]"] { height: 64px; }
+body.admin-density [class*="min-h-[64px]"] { min-height: 64px; }
+body.admin-density [class*="h-[56px]"] { height: 48px; }
+body.admin-density [class*="min-h-[56px]"] { min-height: 48px; }
+body.admin-density [class*="h-[52px]"] { height: 44px; }
+body.admin-density [class*="min-h-[52px]"] { min-height: 44px; }
+body.admin-density [class*="h-[48px]"] { height: 42px; }
+body.admin-density [class*="min-h-[48px]"] { min-height: 42px; }
+body.admin-density [class*="h-[44px]"] { height: 38px; }
+body.admin-density [class*="min-h-[40px]"] { min-height: 36px; }
+body.admin-density [class*="h-[40px]"] { height: 36px; }
 
 @media (prefers-reduced-motion: reduce) {
   .ui-section-enter {

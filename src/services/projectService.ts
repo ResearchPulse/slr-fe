@@ -289,6 +289,7 @@ class ProjectService {
       role: number | string;
       roleNumber?: number;
       roleText: string;
+      isLeader?: boolean;
     }>
   > => {
     const response = await api.get<
@@ -296,6 +297,7 @@ class ProjectService {
         role: number | string;
         roleNumber?: number;
         roleText: string;
+        isLeader?: boolean;
       }>
     >(`${this.endpoint}/${projectId}/my-membership`);
 

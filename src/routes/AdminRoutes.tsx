@@ -12,6 +12,7 @@ import TemplateManager from "../pages/admin/TemplateManager";
 import MyProfilePage from "../pages/profile/MyProfilePage";
 import AgentManagement from "../pages/admin/AgentManagement";
 import QualityCriteriaTemplates from "../pages/admin/QualityCriteriaTemplates";
+import RepositoryApiClientsPage from "../pages/admin/RepositoryApiClientsPage";
 import LoadingSpinner from "../components/ui/LoadingSpinner";
 
 const NotificationCenterPage = lazy(() => import("../pages/notifications/NotificationCenterPage"));
@@ -34,6 +35,7 @@ function AdminRoutes() {
           <Route path="projects" element={<SLRProjectManagement />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="agents" element={<AgentManagement />} />
+          <Route path="repository-api" element={<RepositoryApiClientsPage />} />
           <Route path="master-sources" element={<MasterSourcePage />} />
           <Route path="settings" element={<SystemSettings />} />
           <Route path="templates" element={<TemplateManager />} />

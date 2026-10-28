@@ -204,7 +204,7 @@ const ThirdReviewerAssignment: React.FC<ThirdReviewerAssignmentProps> = ({
                 </div>
               </div>
 
-              <div className="max-h-52 overflow-y-auto p-1 custom-scrollbar">
+              <div className="dropdown-scroll-area max-h-52 overflow-y-auto p-1 custom-scrollbar">
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
                     <LoadingSpinner size="sm" />

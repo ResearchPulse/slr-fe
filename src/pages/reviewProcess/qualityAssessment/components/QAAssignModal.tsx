@@ -116,7 +116,7 @@ export function QAAssignModal({
             />
           </div>
 
-          <div className="max-h-[400px] space-y-2 overflow-y-auto pr-1">
+          <div className="dropdown-scroll-area max-h-[400px] space-y-2 overflow-y-auto pr-1">
             {filteredMembers.length > 0 ? (
               filteredMembers.map((member) => {
                 const isAlreadyAssigned = assignedUserIds.includes(

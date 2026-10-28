@@ -76,7 +76,7 @@ export default function NotificationDropdown({
         </button>
       </header>
 
-      <div className="min-h-0 max-h-[min(26rem,65vh)] shrink overflow-y-auto">
+      <div className="dropdown-scroll-area min-h-0 max-h-[min(26rem,65vh)] shrink overflow-y-auto pr-1">
         {isLoading ? (
           <div className="space-y-4 p-5" aria-label="Loading notifications">
             {[0, 1, 2].map((item) => (

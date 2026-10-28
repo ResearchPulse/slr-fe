@@ -424,6 +424,10 @@ export default function SynthesisPhaseWorkspace() {
               finalizedFindingCount={workspace.finalizedFindingCount}
               evidenceCount={workspace.evidenceCount}
               isReadOnly={isReadOnly}
+              isSynthesisComplete={workspace.allFindingsFinalized}
+              onNavigateToArtifacts={() =>
+                navigate(`${synthesisBasePath}/artifacts`)
+              }
               onNavigateToThematic={() =>
                 navigate(`${synthesisBasePath}/thematic-analysis`)
               }

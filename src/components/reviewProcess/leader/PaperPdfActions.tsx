@@ -32,6 +32,7 @@ interface PaperPdfActionsProps {
   studySelectionProcessId?: string;
   isLeader?: boolean;
   canUploadPdf?: boolean;
+  compact?: boolean;
 }
 
 const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
@@ -45,6 +46,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
   pdfRequired = false,
   isLeader = false,
   canUploadPdf = false,
+  compact = false,
 }) => {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isConfirmNotRetrievedOpen, setIsConfirmNotRetrievedOpen] =
@@ -162,7 +164,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
   };
 
   return (
-    <div className="flex items-center gap-1.5">
+    <div className={cn("flex items-center", compact ? "w-max flex-nowrap gap-0.5" : "flex-wrap gap-1.5")}>
       {(isLeader || canUploadPdf) && (
         <button
           onClick={(e) => {
@@ -179,7 +181,8 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
           }
           aria-busy={isUploadingPdf}
           className={cn(
-            "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
+            "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none",
+            compact && "lg:min-h-8 lg:min-w-8",
             !paper.pdfUrl
               ? "text-warning bg-warning/10 border-warning/20 hover:bg-warning/15 shadow-none"
               : "text-text-secondary hover:text-accent hover:bg-primary-light border-transparent hover:border-primary/30",
@@ -209,7 +212,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
             rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
             aria-label="Open PDF"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+            className={cn("inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none", compact && "lg:min-h-8 lg:min-w-8")}
             title="Open PDF"
           >
             <FiFileText aria-hidden="true" className="w-4 h-4" />
@@ -221,7 +224,7 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               : {})}
             onClick={(e) => e.stopPropagation()}
             aria-label="Download PDF"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
+            className={cn("inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-transparent text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary-light hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none", compact && "lg:min-h-8 lg:min-w-8")}
             title="Download PDF"
           >
             <FiDownload aria-hidden="true" className="w-4 h-4" />
@@ -229,21 +232,19 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
         </>
       )}
 
-      {isLeader && (
-        <div className="flex items-center gap-1">
+      {isLeader && hasPdf && (
           <button
             onClick={handleRemovePdf}
             disabled={isActionDisabled}
             aria-label={isPending ? "Removing PDF" : "Remove PDF"}
             aria-busy={isPending}
             className={cn(
-              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-xl border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none",
-              !hasPdf
-                ? "text-text-secondary bg-bg-secondary border-border"
-                : "text-text-secondary hover:text-error hover:bg-surface-white border-transparent hover:border-error/20",
+              "inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-error/30 motion-reduce:transition-none",
+              compact && "lg:min-h-8 lg:min-w-8",
+              "text-text-secondary hover:text-error hover:bg-surface-white border-transparent hover:border-error/20",
               isActionDisabled && "opacity-50 cursor-not-allowed",
             )}
-            title={hasPdf ? "Remove PDF" : "No PDF to remove"}
+            title="Remove PDF"
           >
             {isPending ? (
               <FiLoader aria-hidden="true" className="h-4 w-4 motion-safe:animate-spin motion-reduce:animate-none" />
@@ -251,7 +252,6 @@ const PaperPdfActions: React.FC<PaperPdfActionsProps> = ({
               <FiTrash2 aria-hidden="true" className="w-4 h-4" />
             )}
           </button>
-        </div>
       )}
 
       {isUploadModalOpen && (

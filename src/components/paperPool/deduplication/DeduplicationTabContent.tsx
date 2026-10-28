@@ -42,8 +42,6 @@ interface DeduplicationTabContentProps {
   isResolving?: boolean;
   /** Refetch duplicate pairs from the API */
   onRefetch?: () => void;
-  onRunDeduplication?: () => void;
-  isRunningDeduplication?: boolean;
   canEdit?: boolean;
 }
 
@@ -57,8 +55,6 @@ export default function DeduplicationTabContent({
   error = null,
   isResolving = false,
   onRefetch,
-  onRunDeduplication,
-  isRunningDeduplication = false,
   canEdit = true,
 }: DeduplicationTabContentProps) {
   const [internalSelectedDuplicate, setInternalSelectedDuplicate] =
@@ -100,7 +96,6 @@ export default function DeduplicationTabContent({
     (d) => d.status === "resolved",
   ).length;
   const unresolvedCount = pendingDuplicates.length;
-  const totalCount = duplicatePairs.length;
 
   // --- Safety check: low-confidence cancel needs confirmation ---
   const needsConfirmation = useCallback(
@@ -221,7 +216,7 @@ export default function DeduplicationTabContent({
 
   // --- Render ---
   return (
-    <div ref={containerRef} className="flex min-h-[460px] flex-col">
+    <div ref={containerRef} className="flex flex-col gap-5">
       {/* Loading state */}
       {isLoading && duplicatePairs.length === 0 && (
         <div className="flex flex-col items-center justify-center py-16">
@@ -257,47 +252,16 @@ export default function DeduplicationTabContent({
       {/* Main content (only when not loading initial and no error) */}
       {!isLoading && !error && (
         <>
-          <div className="flex flex-col gap-4 border-b border-border px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-            <div>
-              <h2 className="text-base font-semibold text-text-primary sm:text-lg">
-                Duplicate review queue
-              </h2>
-              <p className="mt-1 text-sm text-text-secondary">
-                Compare flagged papers and record a decision for each pair.
-              </p>
-            </div>
-            <dl className="flex flex-wrap items-center gap-2 text-xs">
-              <div className="inline-flex items-center gap-2 rounded-lg bg-bg-secondary px-3 py-2">
-                <dt className="text-text-secondary">Total</dt>
-                <dd className="font-semibold tabular-nums text-text-primary">{totalCount}</dd>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-lg bg-warning/10 px-3 py-2">
-                <dt className="text-warning">Pending</dt>
-                <dd className="font-semibold tabular-nums text-warning">{unresolvedCount}</dd>
-              </div>
-              <div className="inline-flex items-center gap-2 rounded-lg bg-success/10 px-3 py-2">
-                <dt className="text-success">Resolved</dt>
-                <dd className="font-semibold tabular-nums text-success">{resolvedCount}</dd>
-              </div>
-            </dl>
-          </div>
-
-          {/* Progress Banner (always visible when pairs exist) */}
-          {duplicatePairs.length > 0 && (
-            <DeduplicationProgressBanner
-              duplicatePairs={duplicatePairs}
-              pendingCount={pendingDuplicates.length}
-              resolvedCount={resolvedCount}
-              sessionStartTime={sessionStartTime}
-              sessionResolvedCount={sessionResolvedCount}
-              onRunDeduplication={onRunDeduplication}
-              isRunningDeduplication={isRunningDeduplication}
-              canEdit={canEdit}
-            />
-          )}
+          <DeduplicationProgressBanner
+            duplicatePairs={duplicatePairs}
+            pendingCount={unresolvedCount}
+            resolvedCount={resolvedCount}
+            sessionStartTime={sessionStartTime}
+            sessionResolvedCount={sessionResolvedCount}
+          />
 
           {duplicatePairs.length > 0 ? (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid min-h-[540px] grid-cols-1 overflow-hidden rounded-xl border border-border bg-surface-white lg:grid-cols-[minmax(280px,0.58fr)_minmax(0,1fr)]">
               {/* Left Panel: Queue */}
               <DuplicateQueuePanel
                 duplicatePairs={duplicatePairs}
@@ -307,22 +271,21 @@ export default function DeduplicationTabContent({
 
               {/* Right Panel: Comparison */}
               {selectedDuplicate ? (
-                <div className="lg:col-span-2">
-                  <div className="bg-surface-white border border-border rounded-xl p-6">
+                <div className="min-w-0 p-4 sm:p-5 lg:p-6">
                     {/* Header with undo */}
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
+                    <div className="mb-4 flex flex-col gap-3 border-b border-border pb-4 sm:flex-row sm:items-start sm:justify-between">
+                      <div className="min-w-0">
                         <h3 className="font-semibold text-text-primary">
                           Compare & Resolve
                         </h3>
                         {selectedConfidence && (
-                          <div className="mt-1.5">
+                          <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
                             <p className="text-xs text-text-secondary">
                               Similarity: {selectedDuplicate.similarityScore}% -{" "}
                               <span
                                 className={
                                   selectedConfidence === "high"
-                                    ? "text-error"
+                                    ? "text-accent"
                                     : selectedConfidence === "medium"
                                       ? "text-warning"
                                       : "text-text-secondary"
@@ -335,19 +298,14 @@ export default function DeduplicationTabContent({
                                     : "Possible Duplicate"}
                               </span>
                             </p>
-                            <p className="text-xs text-text-secondary mt-0.5">
+                            <p className="text-xs text-text-secondary">
                               Method:{" "}
                               {selectedDuplicate.methodText || "Not available"}
-                            </p>
-                            <p className="text-xs text-text-secondary mt-0.5">
-                              Notes:{" "}
-                              {selectedDuplicate.deduplicationNotes ||
-                                "No notes"}
                             </p>
                           </div>
                         )}
                       </div>
-                      <div className="flex items-center gap-6">
+                      <div className="flex shrink-0 items-center gap-3">
                         <Switch
                           checked={showDiffs}
                           onChange={setShowDiffs}
@@ -366,10 +324,16 @@ export default function DeduplicationTabContent({
                       </div>
                     </div>
 
+                    {selectedDuplicate.deduplicationNotes && (
+                      <p className="mb-4 rounded-lg bg-bg-primary px-3 py-2 text-xs leading-5 text-text-secondary">
+                        {selectedDuplicate.deduplicationNotes}
+                      </p>
+                    )}
+
                     {/* Low-similarity warning */}
                     {selectedDuplicate.similarityScore <
                       SIMILARITY_THRESHOLDS.LOW_WARNING && (
-                      <div className="flex items-start gap-2 p-3 mb-4 bg-warning/10 border border-warning/20 rounded-xl">
+                      <div className="mb-4 flex items-start gap-2 rounded-lg bg-warning/10 p-3">
                         <FiAlertTriangle className="w-4 h-4 text-warning mt-0.5 shrink-0" />
                         <p className="text-xs text-warning">
                           Low similarity score (
@@ -382,7 +346,7 @@ export default function DeduplicationTabContent({
 
                     {/* Confirmation overlay */}
                     {confirmingDecision && (
-                      <div className="mb-4 p-4 bg-surface-white border-2 border-border rounded-xl">
+                      <div className="mb-4 rounded-lg bg-error/5 p-4">
                         <div className="flex items-start gap-3">
                           <FiAlertTriangle className="w-5 h-5 text-error mt-0.5 shrink-0" />
                           <div className="flex-1">
@@ -419,7 +383,7 @@ export default function DeduplicationTabContent({
                     )}
 
                     {/* Side-by-side comparison cards */}
-                    <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+                    <div className="mb-5 grid grid-cols-1 divide-y divide-border xl:grid-cols-2 xl:divide-x xl:divide-y-0">
                       <PaperComparisonCard
                         label="PAPER A"
                         labelColor="text-accent"
@@ -443,11 +407,11 @@ export default function DeduplicationTabContent({
                     </div>
 
                     {/* Decision Controls */}
-                    <div className="border-t border-border pt-6">
-                      <p className="text-sm text-text-secondary text-center mb-4">
+                    <div className="border-t border-border pt-4">
+                      <p className="mb-3 text-sm text-text-secondary">
                         Do these papers represent the same study?
                       </p>
-                      <div className="flex flex-col sm:flex-row items-stretch justify-center gap-4">
+                      <div className="flex flex-col items-stretch gap-2 sm:flex-row">
                         <Button
                           variant="danger"
                           className="flex-1"
@@ -475,7 +439,7 @@ export default function DeduplicationTabContent({
                           Keep Both (Not Duplicates)
                         </Button>
                       </div>
-                      <div className="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-text-secondary">
+                      <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-text-secondary">
                         <span>Shortcuts:</span>
                         <kbd className="px-2 py-1 bg-bg-secondary border border-border rounded font-mono">
                           1
@@ -496,15 +460,14 @@ export default function DeduplicationTabContent({
                         <span>Next unresolved</span>
                       </div>
                     </div>
-                  </div>
                 </div>
               ) : (
                 // No pair selected placeholder
-              <div className="lg:col-span-2 flex min-h-[420px] items-center justify-center rounded-lg bg-bg-primary px-6 py-10 sm:px-10">
-                  <div className="text-center">
-                    <FiLayers className="w-12 h-12 text-text-secondary mx-auto mb-3" />
+              <div className="flex min-h-[360px] items-center justify-center border-t border-border bg-bg-primary/50 px-6 py-10 lg:min-h-0 lg:border-l lg:border-t-0 sm:px-10">
+                  <div className="max-w-sm text-center">
+                    <FiLayers className="mx-auto mb-3 h-9 w-9 text-accent/70" />
                     <p className="text-text-secondary font-medium">
-                      Select a duplicate pair to compare
+                      Select a duplicate pair to review
                     </p>
                     <p className="text-sm text-text-secondary mt-1">
                       Use ↑↓ keys or click a pair in the queue to begin
@@ -515,32 +478,18 @@ export default function DeduplicationTabContent({
             </div>
           ) : (
             // Empty state: no duplicates at all
-            <div className="flex min-h-[420px] flex-col items-center justify-center px-5 py-12 text-center sm:px-8">
-              <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary-light text-accent">
+            <div className="flex min-h-[260px] flex-col items-center justify-center rounded-xl border border-border bg-surface-white px-5 py-10 text-center sm:px-8">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light text-accent">
                 <Check size={25} strokeWidth={2.25} aria-hidden="true" />
               </div>
               <h3 className="text-lg font-semibold text-text-primary sm:text-xl">
                 No duplicate pairs to review
               </h3>
-              <p className="mt-2 max-w-md text-sm leading-6 text-text-secondary">
+              <p className="mt-1.5 max-w-md text-sm leading-6 text-text-secondary">
                 {canEdit
-                  ? "Run a duplicate check to compare imported papers. Any matching pairs will appear here."
+                  ? "No matching records were found. Run a duplicate check again after adding or updating papers."
                   : "There are no duplicate pairs in the review queue right now."}
               </p>
-              {canEdit && onRunDeduplication && (
-                <Button
-                  onClick={onRunDeduplication}
-                  isLoading={isRunningDeduplication}
-                  className="mt-6 normal-case tracking-normal"
-                >
-                  <FiRefreshCw className="h-4 w-4" aria-hidden="true" />
-                  Run duplicate check
-                </Button>
-              )}
-              <div className="mt-8 flex flex-wrap justify-center gap-x-6 gap-y-2 border-t border-border pt-4 text-xs text-text-secondary">
-                <span>Matches by DOI</span>
-                <span>Matches by normalized title</span>
-              </div>
             </div>
           )}
         </>

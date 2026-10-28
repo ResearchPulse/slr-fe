@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import Button from "../../ui/Button";
+import DatePicker from "../../ui/DatePicker";
 import { toDateInputValue } from "../../../utils/dateUtils";
-import CalendarDatePicker from "./CalendarDatePicker";
 
 interface ProjectTimetableTabProps {
   projectId: string;
@@ -77,14 +77,8 @@ export default function ProjectTimetableTab({
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block text-sm text-text-secondary">
-          Start date
-          <CalendarDatePicker label="Start date" value={formStartDate} onChange={setFormStartDate} disabled={!isLeader || isSaving} />
-        </label>
-        <label className="block text-sm text-text-secondary">
-          End date
-          <CalendarDatePicker label="End date" value={formEndDate} onChange={setFormEndDate} disabled={!isLeader || isSaving} />
-        </label>
+        <DatePicker label="Start date" value={formStartDate} onChange={setFormStartDate} disabled={!isLeader || isSaving} />
+        <DatePicker label="End date" value={formEndDate} onChange={setFormEndDate} disabled={!isLeader || isSaving} />
       </div>
 
       {hasInvalidRange && (

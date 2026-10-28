@@ -711,7 +711,7 @@ const StuSePaperStatisticPage: React.FC = () => {
                       contentClassName="z-(--z-index-dropdown) flex max-h-60 w-full max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-xl border border-border bg-surface-white shadow-2xl sm:w-[340px]"
                     >
                       <div
-                        className="overflow-y-auto custom-scrollbar p-1 max-h-60"
+                        className="dropdown-scroll-area overflow-y-auto custom-scrollbar p-1 max-h-60"
                         onScroll={(e) => {
                           const { scrollTop, scrollHeight, clientHeight } =
                             e.currentTarget;

@@ -1,3 +1,4 @@
+import Select from "../../../../components/ui/Select";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { FiInfo } from "react-icons/fi";
 import { QUERY_KEYS } from "../../../../constants/queryKeys";
@@ -57,7 +58,7 @@ export default function PrismaSourceClassification({ projectId }: PrismaSourceCl
           <li key={source.sourceId ?? source.name} className="flex flex-wrap items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
             <span className="min-w-0 text-sm font-medium text-text-primary">{source.name}</span>
             {canEdit ? (
-              <select
+              <Select
                 aria-label={`PRISMA source group for ${source.name}`}
                 value={source.prismaSourceGroup ?? ""}
                 disabled={!source.sourceId || classify.isPending}
@@ -70,7 +71,7 @@ export default function PrismaSourceClassification({ projectId }: PrismaSourceCl
                 <option value="">Unclassified</option>
                 <option value="DATABASES_AND_REGISTERS">Databases and registers</option>
                 <option value="OTHER_METHODS">Other methods</option>
-              </select>
+              </Select>
             ) : (
               <span className="text-xs text-text-secondary">
                 {source.prismaSourceGroup === "DATABASES_AND_REGISTERS" ? "Databases and registers" : source.prismaSourceGroup === "OTHER_METHODS" ? "Other methods" : "Unclassified"}

@@ -1,3 +1,4 @@
+import Select from "../../ui/Select";
 // Duplicate Pairs Queue Panel — left sidebar with filtering, sorting, search
 
 import { useMemo, useState, useCallback } from "react";
@@ -108,18 +109,18 @@ export default function DuplicateQueuePanel({
   ];
 
   return (
-    <div className="lg:col-span-1 flex flex-col min-h-0">
+    <div className="flex min-h-0 flex-col border-b border-border lg:border-b-0 lg:border-r">
       {/* Header */}
-      <div className="flex items-center justify-between mb-3">
+      <div className="flex items-center justify-between px-4 pb-3 pt-4 sm:px-5">
         <h3 className="font-semibold text-text-primary">
           Duplicate Pairs
-          <span className="ml-2 text-sm font-normal text-text-secondary">
-            ({filteredPairs.length})
+          <span className="ml-2 text-xs font-normal text-text-secondary">
+            {filteredPairs.length}
           </span>
         </h3>
         <button
           onClick={() => setShowFilters((prev) => !prev)}
-          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-colors ${
+          className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg transition-colors ${
             showFilters
               ? "bg-primary-light text-accent"
               : "text-text-secondary hover:text-text-secondary hover:bg-bg-secondary"
@@ -133,20 +134,20 @@ export default function DuplicateQueuePanel({
       </div>
 
       {/* Search */}
-      <div className="relative mb-3">
-        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+      <div className="relative px-4 pb-3 sm:px-5">
+        <FiSearch className="absolute left-7 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search by paper title..."
-          className="min-h-11 w-full rounded-xl border border-border bg-surface-white py-2.5 pl-9 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
+          className="min-h-10 w-full rounded-lg border border-border bg-surface-white py-2 pl-9 pr-3 text-sm text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
         />
       </div>
 
       {/* Filter & Sort controls */}
       {showFilters && (
-        <div className="space-y-2 mb-3 p-3 bg-bg-primary rounded-xl border border-border">
+        <div className="mx-4 mb-3 space-y-2 rounded-lg bg-bg-primary p-3 sm:mx-5">
           {/* Filter pills */}
           <div className="flex flex-wrap gap-1.5">
             {FILTER_BUTTONS.map(({ key, label, count }) => (
@@ -166,7 +167,7 @@ export default function DuplicateQueuePanel({
           </div>
 
           {/* Sort */}
-          <select
+          <Select
             value={sort}
             onChange={(e) => setSort(e.target.value as DuplicateSortType)}
             className="min-h-10 w-full rounded-xl border border-border bg-surface-white px-3 py-1.5 text-xs text-text-primary outline-none transition-[border-color,box-shadow] focus:border-primary focus:ring-2 focus:ring-primary/20 motion-reduce:transition-none"
@@ -174,33 +175,39 @@ export default function DuplicateQueuePanel({
             <option value="similarity-desc">Highest similarity first</option>
             <option value="similarity-asc">Lowest similarity first</option>
             <option value="newest">Newest first</option>
-          </select>
+          </Select>
         </div>
       )}
 
       {/* Pairs list */}
-      <div className="space-y-2 overflow-y-auto flex-1 pr-1">
+      <div className="max-h-[440px] flex-1 overflow-y-auto px-2 pb-2 sm:px-3 lg:max-h-[620px]">
         {filteredPairs.length > 0 ? (
           filteredPairs.map((pair) => {
             const isSelected = selectedPair?.id === pair.id;
             const isResolved = pair.status === "resolved";
             const confidence = getConfidenceLevel(pair.similarityScore);
             const confidenceInfo = CONFIDENCE_LABELS[confidence];
+            const confidenceColor =
+              confidence === "high"
+                ? "text-accent"
+                : confidence === "medium"
+                  ? "text-warning"
+                  : "text-text-secondary";
 
             return (
               <button
                 key={pair.id}
                 onClick={() => onSelectPair(pair)}
-                className={`w-full rounded-xl border-2 p-3.5 text-left transition-[border-color,background-color] group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 motion-reduce:transition-none ${
+                className={`group w-full border-0 border-b border-border border-l-2 px-3 py-3 text-left transition-[border-color,background-color] duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/40 motion-reduce:transition-none ${
                   isSelected
-                    ? "border-accent bg-primary-light shadow-none"
+                    ? "border-l-accent bg-primary-light/70"
                     : isResolved
-                      ? "border-border bg-bg-primary hover:border-border"
-                      : "border-border hover:border-border bg-surface-white"
+                      ? "border-l-transparent bg-bg-primary/50 hover:bg-bg-primary"
+                      : "border-l-transparent bg-surface-white hover:bg-bg-primary/60"
                 }`}
               >
                 {/* Top row: score + confidence + status */}
-                <div className="flex items-center justify-between mb-2">
+                <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2 gap-y-1">
                   <div className="flex items-center gap-2">
                     <div
                       className={`w-14 h-1.5 rounded-full ${getSimilarityColor(pair.similarityScore)}`}
@@ -211,24 +218,24 @@ export default function DuplicateQueuePanel({
                       {pair.similarityScore}%
                     </span>
                   </div>
-                  <div>
-                    <span className="text-xs px-2 py-0.5 bg-primary-light text-accent rounded-full font-medium">
+                  <div className="ml-auto">
+                    <span className="rounded-full bg-primary-light px-2 py-0.5 text-[11px] font-medium text-accent">
                       {pair.methodText}
                     </span>
                   </div>
                   {isResolved ? (
                     pair.resolvedDecision === "cancel" ? (
-                      <span className="text-xs px-2 py-0.5 bg-error/10 text-error rounded-full font-medium">
+                      <span className="rounded-full bg-error/10 px-2 py-0.5 text-[11px] font-medium text-error">
                         Duplicate Removed
                       </span>
                     ) : (
-                      <span className="text-xs px-2 py-0.5 bg-success/10 text-success rounded-full font-medium">
+                      <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
                         Not Duplicate
                       </span>
                     )
                   ) : (
                     <span
-                      className={`text-xs font-medium ${confidenceInfo.color}`}
+                      className={`text-[11px] font-medium ${confidenceColor}`}
                     >
                       {confidenceInfo.label}
                     </span>
@@ -237,7 +244,7 @@ export default function DuplicateQueuePanel({
 
                 {/* Paper title (Original) */}
                 <p
-                  className={`text-sm font-medium line-clamp-2 mb-1.5 ${
+                  className={`mb-2 line-clamp-2 text-sm font-medium ${
                     isResolved ? "text-text-secondary" : "text-text-primary"
                   }`}
                 >
@@ -246,11 +253,11 @@ export default function DuplicateQueuePanel({
 
                 {/* Source badges */}
                 <div className="flex items-center gap-1.5 text-xs">
-                  <span className="px-2 py-0.5 bg-primary-light text-accent rounded">
+                  <span className="max-w-[45%] truncate rounded bg-primary-light px-2 py-0.5">
                     {pair.originalPaper.source}
                   </span>
                   <span className="text-text-secondary">vs</span>
-                  <span className="px-2 py-0.5 bg-bg-secondary text-text-secondary rounded">
+                  <span className="max-w-[45%] truncate rounded bg-bg-secondary px-2 py-0.5 text-text-secondary">
                     {pair.duplicatePaper.source}
                   </span>
                 </div>

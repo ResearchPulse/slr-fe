@@ -1,3 +1,4 @@
+import Select from "../../../../../components/ui/Select";
 import { useState, useRef, useEffect, forwardRef } from "react";
 import {
   FiSearch,
@@ -223,7 +224,7 @@ export default function PaperQueue({
           <span className="text-[10px] text-text-secondary font-bold uppercase tracking-wider">
             Show
           </span>
-          <select
+          <Select
             value={pagination.pageSize}
             onChange={(e) => onPageSizeChange(Number(e.target.value))}
             className="min-h-11 rounded-lg border border-border bg-surface-white px-2 text-xs font-medium text-text-secondary outline-none transition-colors focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
@@ -233,7 +234,7 @@ export default function PaperQueue({
                 {size}
               </option>
             ))}
-          </select>
+          </Select>
         </div>
       </div>
     </div>

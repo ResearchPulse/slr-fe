@@ -1,3 +1,4 @@
+import Select from "../../ui/Select";
 import React, { useLayoutEffect, useState } from "react";
 import { Modal } from "../../ui/Modal";
 import Button from "../../ui/Button";
@@ -248,7 +249,7 @@ const QualityAssessmentCriteriaModal: React.FC<
             <BookMarked className="w-4 h-4" />
             Start from
           </label>
-          <select
+          <Select
             id="qa-template"
             value={selectedTemplateId}
             onChange={(e) => handleSelectTemplate(e.target.value)}
@@ -264,7 +265,7 @@ const QualityAssessmentCriteriaModal: React.FC<
             {ownTemplates.length > 0 && (
               <optgroup label="My templates">{renderTemplateOptions(ownTemplates)}</optgroup>
             )}
-          </select>
+          </Select>
           {selectedTemplate ? (
             <div className="mt-2 space-y-1 text-xs text-text-secondary">
               {selectedTemplate.description && <p>{selectedTemplate.description}</p>}

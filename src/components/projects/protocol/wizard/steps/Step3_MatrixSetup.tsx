@@ -1,3 +1,4 @@
+import Select from "../../../../ui/Select";
 import { useEffect, useState } from "react";
 import {
   FiPlus,
@@ -152,7 +153,7 @@ export default function Step3_MatrixSetup({
       {researchQuestions.length > 0 && (
         <div className="rounded-xl border border-border bg-surface-white p-4">
           <Label htmlFor="matrix_rq">Target Research Question (Optional)</Label>
-          <select
+          <Select
             id="matrix_rq"
             value={selectedRQ || ""}
             onChange={(e) => setSelectedRQ(e.target.value || null)}
@@ -166,7 +167,7 @@ export default function Step3_MatrixSetup({
                   : rq.questionText}
               </option>
             ))}
-          </select>
+          </Select>
           <p className="text-xs text-text-secondary mt-2">
             Link this matrix to a Research Question to track which extraction
             data addresses each RQ.
