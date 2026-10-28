@@ -227,7 +227,7 @@ export default function ProjectListPage() {
             )}
             filters={!showDeletedProjects ? (
               <div className="w-full min-w-0 sm:w-auto">
-                <div className="hidden items-center gap-2 lg:flex">
+                <div className="hidden items-center gap-3 lg:flex">
                   <Select
                     aria-label="Filter projects by role"
                     value={roleFilter}

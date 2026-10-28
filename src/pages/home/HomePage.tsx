@@ -1,14 +1,15 @@
-import { Fragment } from "react";
+import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { gsap } from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   FiArrowRight,
   FiArrowUpRight,
   FiBookOpen,
   FiCheck,
   FiCheckCircle,
-  FiCheckSquare,
-  FiClock,
+  FiClipboard,
   FiDatabase,
   FiFileText,
   FiFilter,
@@ -19,258 +20,244 @@ import {
   FiUsers,
 } from "react-icons/fi";
 import type { RootState } from "../../redux/store";
-import ScrollReveal from "./ScrollReveal";
+import scrollCraftRuntimeUrl from "./vendor/scrollcraft.js?url";
 import "./home.css";
 
-const contentWidth = "mx-auto w-full max-w-[1360px] px-5 sm:px-8 lg:px-10 xl:px-12";
+gsap.registerPlugin(ScrollTrigger);
+
+interface ScrollCraftInstance {
+  destroy: () => void;
+}
+
+declare global {
+  interface Window {
+    ScrollCraft?: {
+      mount: (root: HTMLElement) => ScrollCraftInstance;
+    };
+  }
+}
+
+let scrollCraftRuntime: Promise<void> | null = null;
+
+function loadScrollCraftRuntime(): Promise<void> {
+  if (window.ScrollCraft) return Promise.resolve();
+  if (scrollCraftRuntime) return scrollCraftRuntime;
+
+  scrollCraftRuntime = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = scrollCraftRuntimeUrl;
+    script.async = true;
+    script.dataset.scrollCraftRuntime = "true";
+    script.onload = () => resolve();
+    script.onerror = () => {
+      scrollCraftRuntime = null;
+      reject(new Error("Scroll Craft runtime failed to load"));
+    };
+    document.head.appendChild(script);
+  });
+
+  return scrollCraftRuntime;
+}
 
 const workflowSteps = [
-  {
-    number: "01",
-    title: "Set the protocol",
-    detail: "Question and criteria",
-    icon: FiFileText,
-  },
-  {
-    number: "02",
-    title: "Identify records",
-    detail: "Search and import",
-    icon: FiSearch,
-  },
-  {
-    number: "03",
-    title: "Select studies",
-    detail: "Screen title to full text",
-    icon: FiFilter,
-  },
-  {
-    number: "04",
-    title: "Extract evidence",
-    detail: "Structured study data",
-    icon: FiDatabase,
-  },
-  {
-    number: "05",
-    title: "Assess quality",
-    detail: "Review study quality",
-    icon: FiCheckSquare,
-  },
-  {
-    number: "06",
-    title: "Synthesize findings",
-    detail: "Themes and PRISMA flow",
-    icon: FiLayers,
-  },
+  { number: "01", title: "Set the protocol", detail: "Define the review question and eligibility criteria.", icon: FiClipboard },
+  { number: "02", title: "Identify records", detail: "Import search results and retain their source context.", icon: FiSearch },
+  { number: "03", title: "Select studies", detail: "Screen titles, abstracts, and full-text reports.", icon: FiFilter },
+  { number: "04", title: "Extract evidence", detail: "Capture study findings in a shared data structure.", icon: FiDatabase },
+  { number: "05", title: "Assess quality", detail: "Appraise included studies with review criteria.", icon: FiCheckCircle },
+  { number: "06", title: "Synthesize", detail: "Compare findings and prepare review outputs.", icon: FiGitMerge },
 ];
 
-const prismaFlow = [
-  ["Records identified", "1,248"],
-  ["Duplicates removed", "214"],
-  ["Records screened", "1,034"],
-  ["Reports sought for retrieval", "160"],
-  ["Reports not retrieved", "14"],
-  ["Reports assessed for eligibility", "146"],
-  ["Reports excluded", "82"],
-  ["Studies included", "64"],
-];
-
-function HeroResearchPreview() {
+function ResearchPaperPreview() {
   return (
-    <div className="landing-page__hero-frame rounded-2xl border p-4 sm:p-6 lg:p-7">
-      <article className="landing-page__paper relative z-10 rounded-xl border border-border bg-white p-5 sm:p-6">
-        <div className="flex items-center justify-between gap-3 border-b border-border pb-3">
-          <span className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary"><FiFileText aria-hidden="true" className="text-primary" /> RESEARCH PAPER</span>
-          <span className="text-xs text-text-secondary">[1] · 2024</span>
+    <div className="landing-hero-art" aria-label="Illustrative research workspace preview">
+      <div className="landing-hero-art__wash" aria-hidden="true" />
+      <div className="landing-hero-art__source" data-sc-parallax="-0.14" aria-hidden="true">
+        <span>PROTOCOL</span>
+        <i />
+        <i />
+        <i />
+      </div>
+      <article className="landing-paper-sheet">
+        <div className="landing-paper-sheet__topline">
+          <span><FiFileText aria-hidden="true" /> ILLUSTRATIVE STUDY RECORD</span>
+          <span>RECORD · PROTOCOL</span>
         </div>
-        <h2 className="mt-4 text-lg font-semibold leading-6 text-text-primary sm:text-xl">Machine learning for clinical decision support</h2>
-        <p className="mt-2 text-xs text-text-secondary">A. Chen, M. Patel · Journal of Medical Systems</p>
-        <div className="mt-4">
-          <p className="text-xs font-semibold text-text-primary">ABSTRACT</p>
-          <p className="mt-1.5 text-sm leading-6 text-text-secondary">
-            This review evaluates machine learning applications in clinical settings. <span className="landing-evidence-highlight rounded-sm bg-blue-100 px-0.5 text-text-primary">Decision support improved diagnostic consistency</span> across the included studies.
+        <h2>Study record in context</h2>
+        <p className="landing-paper-sheet__citation">Title, authors, publication details and source</p>
+        <div className="landing-paper-sheet__abstract">
+          <span>REVIEW CONTEXT</span>
+          <p>
+            Compare each study with protocol criteria, then keep the decision,
+            rationale, and extracted findings connected to the source record.
           </p>
         </div>
-        <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-border pt-3 text-xs text-text-secondary">
-          <span className="rounded-md bg-primary-light px-2 py-1 text-primary">Clinical decision support</span>
-          <span className="rounded-md bg-bg-secondary px-2 py-1">Evidence excerpt · [1]</span>
+        <div className="landing-paper-sheet__footer">
+          <span><FiCheck aria-hidden="true" /> Decision rationale</span>
+          <span><FiBookOpen aria-hidden="true" /> Source-linked evidence</span>
         </div>
       </article>
-      <div className="landing-page__flow-card relative z-20 ml-auto -mt-3 w-[92%] rounded-xl border border-border bg-white px-4 py-3 sm:w-[84%] sm:px-5">
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-xs font-semibold text-text-primary">Review flow</p>
-          <span className="text-[10px] text-text-secondary">Illustrative</span>
-        </div>
-        <div className="mt-2 grid grid-cols-[1fr_auto_1fr_auto_1fr] items-center gap-2 text-center">
-          {[["1,248", "identified"], ["146", "assessed"], ["64", "included"]].map(([value, label], index) => (
-            <Fragment key={label}>
-              {index > 0 && <span aria-hidden="true" className="landing-flow-connector h-px w-4 origin-left bg-blue-200 sm:w-7" />}
-              <div>
-                <p className="text-sm font-semibold tabular-nums text-primary">{value}</p>
-                <p className="text-[10px] text-text-secondary">{label}</p>
-              </div>
-            </Fragment>
-          ))}
-        </div>
+      <div className="landing-hero-art__annotation" data-sc-parallax="0.12">
+        <span className="landing-hero-art__annotation-mark"><FiLayers aria-hidden="true" /></span>
+        <span><b>Evidence field</b><small>Structured for comparison</small></span>
       </div>
+      <p className="landing-hero-art__caption">Illustrative interface · no project data</p>
     </div>
   );
 }
 
 function WorkflowTimeline() {
   return (
-    <div className="relative mt-10">
-      <div aria-hidden="true" className="landing-timeline-line absolute left-[8.3%] right-[8.3%] top-[18px] hidden h-px origin-left bg-border xl:block" />
-      <ol className="grid gap-x-7 sm:grid-cols-2 xl:grid-cols-6">
-        {workflowSteps.map((step, index) => {
-          const Icon = step.icon;
-          return (
-            <li key={step.number} className="group relative border-t border-border py-4 xl:border-t-0 xl:pt-0 xl:text-center">
-              <ScrollReveal delay={index * 70}>
-                <div className="mb-2 flex items-center gap-3 xl:justify-center">
-                  <span className="relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-border bg-white text-[11px] font-semibold text-primary transition-colors group-hover:bg-primary-light">
-                    {step.number}
-                  </span>
-                  <span className="flex h-8 w-8 items-center justify-center rounded-md bg-primary-light text-primary xl:hidden">
-                    <Icon aria-hidden="true" size={15} />
-                  </span>
-                </div>
-                <Icon aria-hidden="true" className="mx-auto mb-3 hidden text-primary xl:block" size={17} />
-                <h3 className="text-sm font-semibold text-text-primary">{step.title}</h3>
-                <p className="mt-1.5 text-xs leading-5 text-text-secondary">{step.detail}</p>
-              </ScrollReveal>
-            </li>
-          );
-        })}
-      </ol>
-    </div>
+    <>
+    <ol className="landing-workflow">
+      {workflowSteps.map((step) => {
+        const Icon = step.icon;
+        return (
+          <li key={step.number} className="landing-workflow__step">
+            <div className="landing-workflow__marker">
+              <span>{step.number}</span>
+              <Icon aria-hidden="true" />
+            </div>
+            <h3>{step.title}</h3>
+            <p>{step.detail}</p>
+          </li>
+        );
+      })}
+    </ol>
+    <p className="landing-workflow__note"><FiGitMerge aria-hidden="true" /> Source records, criteria, decisions and findings move through one documented review path.</p>
+    </>
   );
 }
 
-function CapabilityShowcase() {
+function ScreeningPreview() {
   return (
-    <div className="mt-8 grid gap-4 lg:grid-cols-12">
-      <ScrollReveal className="lg:col-span-7">
-      <article className="rounded-xl border border-border bg-white p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-base font-semibold text-text-primary">Study screening</h3>
-            <p className="mt-1 text-sm text-text-secondary">Eligibility criteria stay beside the evidence.</p>
-          </div>
-          <FiFilter aria-hidden="true" className="mt-1 shrink-0 text-primary" />
+    <div className="landing-screening-preview">
+      <div className="landing-screening-preview__paper">
+        <div className="landing-preview-label"><FiFileText aria-hidden="true" /> ILLUSTRATIVE REVIEW STATE</div>
+        <h3>Study eligibility</h3>
+        <p>Review the source record against the saved inclusion criteria.</p>
+        <div className="landing-preview-quote">
+          <span>CRITERION</span>
+          <p>Population and study design align with the review scope.</p>
         </div>
-        <div className="mt-4 rounded-lg bg-bg-primary p-4">
-          <p className="text-[11px] font-semibold text-text-secondary">ABSTRACT · RECORD SR-042</p>
-          <p className="mt-2 text-sm leading-6 text-text-primary">The intervention was associated with <span className="landing-evidence-highlight rounded-sm bg-primary-light px-0.5">improved diagnostic consistency</span> in clinical settings.</p>
-          <div className="mt-3 flex flex-wrap gap-2 text-xs">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-success"><FiCheck aria-hidden="true" /> Include · Reviewer 1</span>
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-2.5 py-1 text-text-secondary"><FiClock aria-hidden="true" /> Pending · Reviewer 2</span>
-          </div>
+      </div>
+      <div className="landing-reviewers" aria-label="Reviewer collaboration capabilities">
+        <div className="landing-reviewer">
+          <span className="landing-reviewer__label"><FiUsers aria-hidden="true" /> REVIEW WORKSPACE</span>
+          <strong><FiCheckCircle aria-hidden="true" /> Independent decisions</strong>
+          <small>Each reviewer records a rationale</small>
         </div>
-      </article>
-      </ScrollReveal>
-
-      <ScrollReveal className="lg:col-span-5" delay={70}>
-      <article className="rounded-xl border border-border bg-white p-5 sm:p-6">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h3 className="text-base font-semibold text-text-primary">Evidence extraction</h3>
-            <p className="mt-1 text-sm text-text-secondary">Structured fields keep findings comparable.</p>
-          </div>
-          <FiDatabase aria-hidden="true" className="mt-1 shrink-0 text-primary" />
+        <div className="landing-reviewer landing-reviewer--pending">
+          <span className="landing-reviewer__label"><FiGitMerge aria-hidden="true" /> RESOLUTION</span>
+          <strong><FiFileText aria-hidden="true" /> Conflict history</strong>
+          <small>Consensus remains traceable</small>
         </div>
-        <div className="mt-4 overflow-hidden rounded-lg border border-border">
-          <div className="grid grid-cols-[0.8fr_1.2fr] bg-bg-secondary px-3 py-2 text-[11px] font-semibold text-text-secondary"><span>FIELD</span><span>EVIDENCE</span></div>
-          {[["Design", "Retrospective cohort"], ["Population", "Clinical settings"], ["Outcome", "Diagnostic consistency"]].map(([field, value]) => (
-            <div key={field} className="grid grid-cols-[0.8fr_1.2fr] border-t border-border px-3 py-2 text-xs"><span className="text-text-secondary">{field}</span><span className="text-text-primary">{value}</span></div>
-          ))}
-        </div>
-      </article>
-      </ScrollReveal>
-
-      <ScrollReveal className="lg:col-span-4" delay={120}>
-      <article className="rounded-xl border border-border bg-white p-5 sm:p-6">
-        <h3 className="text-base font-semibold text-text-primary">Reviewer collaboration</h3>
-        <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm"><span className="text-text-secondary">Independent decisions</span><FiUsers aria-hidden="true" className="shrink-0 text-primary" /></div>
-        <p className="mt-2 text-xs leading-5 text-text-secondary">Compare judgments and route disagreements for resolution.</p>
-      </article>
-      </ScrollReveal>
-      <ScrollReveal className="lg:col-span-4" delay={180}>
-      <article className="rounded-xl border border-border bg-white p-5 sm:p-6">
-        <h3 className="text-base font-semibold text-text-primary">Quality assessment</h3>
-        <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm"><span className="text-text-secondary">Review criteria</span><FiShield aria-hidden="true" className="shrink-0 text-primary" /></div>
-        <p className="mt-2 text-xs leading-5 text-text-secondary">Record study-level scores against your assessment framework.</p>
-      </article>
-      </ScrollReveal>
-      <ScrollReveal className="lg:col-span-4" delay={240}>
-      <article className="rounded-xl border border-border bg-white p-5 sm:p-6">
-        <h3 className="text-base font-semibold text-text-primary">Synthesis & reporting</h3>
-        <div className="mt-3 flex items-center justify-between gap-3 border-t border-border pt-3 text-sm"><span className="text-text-secondary">Evidence groups · PRISMA</span><FiGitMerge aria-hidden="true" className="shrink-0 text-primary" /></div>
-        <p className="mt-2 text-xs leading-5 text-text-secondary">Connect extracted findings to themes and study flow.</p>
-      </article>
-      </ScrollReveal>
+      </div>
     </div>
   );
 }
 
-function MethodologyPanel() {
-  const items = [
-    ["Criteria recorded", "Eligibility rules stay available during screening."],
-    ["Independent decisions", "Reviewer submissions remain attributable."],
-    ["Resolution history", "Conflicts and outcomes remain connected."],
+function ExtractionPreview() {
+  const fields = [
+    ["Study design", "Design and method"],
+    ["Population", "Population and context"],
+    ["Main finding", "Finding linked to source"],
   ];
 
   return (
-    <div className="rounded-xl border border-border bg-white p-5 sm:p-6">
-      <div className="flex items-center gap-2 text-sm font-semibold text-text-primary">
-        <FiShield aria-hidden="true" className="text-primary" /> Traceable decisions
+    <div className="landing-extraction-preview">
+      <div className="landing-extraction-preview__head">
+        <span><FiDatabase aria-hidden="true" /> ILLUSTRATIVE EXTRACTION</span>
+        <span>FIELD · EVIDENCE</span>
       </div>
-      <ol className="mt-4 divide-y divide-border">
-        {items.map(([title, description], index) => (
-          <li key={title} className="grid grid-cols-[1.5rem_1fr] gap-3 py-3 first:pt-0 last:pb-0">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-primary-light text-[10px] font-semibold text-primary">{index + 1}</span>
-            <div>
-              <p className="text-sm font-medium text-text-primary">{title}</p>
-              <p className="mt-0.5 text-xs leading-5 text-text-secondary">{description}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
+      {fields.map(([field, description]) => (
+        <div className="landing-extraction-preview__row" key={field}>
+          <span>{field}</span>
+          <span>{description}</span>
+        </div>
+      ))}
     </div>
   );
 }
 
-function ProgressPreview() {
+function EvidenceSpine() {
   return (
-    <div className="rounded-xl border border-border bg-white">
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border px-4 py-3.5 sm:px-5">
-        <div>
-          <p className="text-sm font-semibold text-text-primary">PRISMA flow summary</p>
-          <p className="mt-1 text-xs text-text-secondary">Illustrative sample values</p>
-        </div>
-        <span className="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary"><FiBookOpen aria-hidden="true" className="text-primary" /> PRISMA 2020</span>
-      </div>
-      <div className="px-4 pt-3 sm:px-5">
-        <div
-          role="img"
-          aria-label="Illustrative flow: 64 studies included from 146 assessed reports"
-          className="h-1.5 overflow-hidden rounded-full bg-primary-light"
-        >
-          <span className="landing-prisma-fill block h-full w-[43.8%] rounded-full bg-primary" />
-        </div>
-        <p className="mt-1 text-right text-[10px] text-text-secondary">64 of 146 assessed reports included</p>
-      </div>
-      <dl className="divide-y divide-border px-4 sm:px-5">
-        {prismaFlow.map(([label, value], index) => (
-          <div key={label} className={`flex min-h-10 items-center justify-between gap-4 py-2 ${[1, 4, 6].includes(index) ? "pl-4 sm:pl-6" : ""}`}>
-            <dt className="text-sm text-text-secondary">{label}</dt>
-            <dd className="shrink-0 font-mono text-sm font-semibold tabular-nums text-text-primary">{value}</dd>
+    <section className="landing-evidence-act" data-sc-act="pin" data-sc-span="2.1" aria-labelledby="evidence-spine-title">
+      <div className="landing-evidence-stage" data-sc-stage>
+        <div className="landing-evidence-stage__inner">
+          <div className="landing-evidence-copy">
+            <h2 id="evidence-spine-title">Separate studies.<br /><span>One connected review.</span></h2>
+            <p>Keep each decision, extracted field and source connected as the review takes shape.</p>
+            <div className="landing-evidence-legend">
+              <span><i className="landing-legend-dot landing-legend-dot--source" /> Source record</span>
+              <span><i className="landing-legend-dot landing-legend-dot--decision" /> Review decision</span>
+              <span><i className="landing-legend-dot landing-legend-dot--evidence" /> Extracted evidence</span>
+            </div>
           </div>
-        ))}
-      </dl>
-      <div className="border-t border-border bg-bg-primary px-4 py-2.5 text-xs leading-5 text-text-secondary sm:px-5">
-        Sample counts show the path from search to inclusion.
+          <div className="landing-evidence-visual" aria-label="Illustration of records connecting to a traceable evidence path">
+            <svg className="landing-evidence-path" viewBox="0 0 700 420" fill="none" aria-hidden="true">
+              <path className="landing-evidence-path__line" pathLength="1" d="M105 93 C196 93 174 205 270 205 S350 105 425 142 S486 280 590 302" />
+              <path className="landing-evidence-path__line landing-evidence-path__line--branch" pathLength="1" d="M116 323 C194 323 206 208 270 205" />
+            </svg>
+            <div className="landing-evidence-fragment landing-evidence-fragment--source">
+              <span><FiFileText aria-hidden="true" /> SOURCE</span>
+              <b>Study record</b>
+              <small>Metadata and abstract</small>
+            </div>
+            <div className="landing-evidence-fragment landing-evidence-fragment--decision">
+              <span><FiFilter aria-hidden="true" /> DECISION</span>
+              <b>Eligibility review</b>
+              <small>Criteria and rationale</small>
+            </div>
+            <div className="landing-evidence-fragment landing-evidence-fragment--review">
+              <span><FiUsers aria-hidden="true" /> REVIEW</span>
+              <b>Reviewer input</b>
+              <small>Independent and attributable</small>
+            </div>
+            <div className="landing-evidence-fragment landing-evidence-fragment--evidence">
+              <span><FiDatabase aria-hidden="true" /> EVIDENCE</span>
+              <b>Structured finding</b>
+              <small>Linked back to the source</small>
+            </div>
+            <div className="landing-evidence-endpoint"><FiGitMerge aria-hidden="true" /><span>Review record</span></div>
+          </div>
+          <p className="landing-evidence-stage__note">Criteria <span>→</span> decision <span>→</span> extracted evidence <span>→</span> reporting</p>
+        </div>
       </div>
-    </div>
+    </section>
+  );
+}
+
+function MethodologyScene() {
+  return (
+    <section id="about" className="landing-methodology" data-sc-act="flow" aria-labelledby="methodology-title">
+      <div className="landing-methodology__copy">
+        <h2 id="methodology-title">A review you can follow.</h2>
+        <p>Carry the question and eligibility criteria through screening, appraisal and reporting. Preserve the context behind decisions as evidence is compared.</p>
+        <a href="https://www.prisma-statement.org/" target="_blank" rel="noreferrer" className="landing-text-link">
+          PRISMA 2020 reporting support <FiArrowUpRight aria-hidden="true" />
+        </a>
+        <p className="landing-methodology__disclaimer">PRISMA is a reporting guideline. SLRS is not affiliated with or endorsed by the PRISMA Group.</p>
+        <ul className="landing-methodology__details">
+          <li><FiCheck aria-hidden="true" /><span><b>Criteria are set before screening.</b> Apply a consistent scope from title review through full text.</span></li>
+          <li><FiCheck aria-hidden="true" /><span><b>Reviewer decisions remain attributable.</b> Keep rationale and conflict resolution in view.</span></li>
+          <li><FiCheck aria-hidden="true" /><span><b>Evidence stays connected to its source.</b> Compare structured findings in their study context.</span></li>
+        </ul>
+      </div>
+      <div className="landing-methodology__visual">
+        <div className="landing-methodology__visual-head">
+          <span><FiShield aria-hidden="true" /> TRACEABLE REVIEW</span>
+          <span>PRISMA 2020</span>
+        </div>
+        <ol className="landing-report-flow">
+          <li><span className="landing-report-flow__node"><FiSearch aria-hidden="true" /></span><span><b>Identify</b><small>Sources and records</small></span></li>
+          <li><span className="landing-report-flow__node"><FiFilter aria-hidden="true" /></span><span><b>Screen</b><small>Eligibility decisions</small></span></li>
+          <li><span className="landing-report-flow__node"><FiLayers aria-hidden="true" /></span><span><b>Assess</b><small>Included study evidence</small></span></li>
+          <li><span className="landing-report-flow__node"><FiBookOpen aria-hidden="true" /></span><span><b>Report</b><small>Review flow and outputs</small></span></li>
+        </ol>
+        <p className="landing-methodology__caption">A reporting pathway, without sample counts.</p>
+      </div>
+    </section>
   );
 }
 
@@ -278,163 +265,236 @@ export default function HomePage() {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const startPath = isAuthenticated ? "/projects" : "/auth/signin";
+  const landingRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let active = true;
+    let instance: ScrollCraftInstance | undefined;
+    const root = landingRef.current;
+    if (!root) return undefined;
+
+    const media = gsap.matchMedia(root);
+    media.add({
+      reducedMotion: "(prefers-reduced-motion: reduce)",
+      desktop: "(min-width: 768px)",
+    }, ({ conditions }) => {
+      if (conditions?.reducedMotion) return undefined;
+
+      const hero = gsap.timeline({ defaults: { ease: "power3.out" } });
+      hero
+        .fromTo(".landing-hero__message .landing-eyebrow", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.3 }, 0)
+        .fromTo(".landing-hero__message h1", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: 0.42 }, 0.04)
+        .fromTo(".landing-hero__description", { autoAlpha: 0, y: 12 }, { autoAlpha: 1, y: 0, duration: 0.32 }, 0.14)
+        .fromTo(".landing-hero__actions > *", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.28, stagger: 0.04 }, 0.22)
+        .fromTo(".landing-hero__proof > *", { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.26, stagger: 0.04 }, 0.3)
+        .fromTo(".landing-hero__visual", { autoAlpha: 0, x: 26, y: 14, scale: 0.985 }, { autoAlpha: 1, x: 0, y: 0, scale: 1, duration: 0.72 }, 0.04);
+
+      gsap.fromTo(".landing-workflow__step",
+        { autoAlpha: 0, y: 26 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.62,
+          stagger: 0.1,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".landing-workflow", start: "top 76%", once: true },
+        },
+      );
+      gsap.fromTo(".landing-workflow",
+        { "--line-progress": 0 },
+        {
+          "--line-progress": 1,
+          duration: 0.85,
+          ease: "power2.out",
+          scrollTrigger: { trigger: ".landing-workflow", start: "top 76%", once: true },
+        },
+      );
+
+      const capabilities = gsap.timeline({
+        scrollTrigger: { trigger: ".landing-capability-grid", start: "top 78%", once: true },
+      });
+      capabilities
+        .fromTo(".landing-capability-main", { autoAlpha: 0, x: -24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" })
+        .fromTo(".landing-capability-secondary", { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" }, "-=0.52")
+        .fromTo(".landing-capability-note", { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 0.52, stagger: 0.1, ease: "power3.out" }, "-=0.28");
+
+      const evidence = gsap.timeline({
+        scrollTrigger: conditions?.desktop
+          ? { trigger: ".landing-evidence-act", start: "top 64px", end: "bottom bottom", scrub: 0.35, invalidateOnRefresh: true }
+          : { trigger: ".landing-evidence-act", start: "top 78%", once: true },
+      });
+      if (conditions?.desktop) {
+        evidence
+          .fromTo(".landing-evidence-path__line", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.72, stagger: 0.04, ease: "none" }, 0.08)
+          .fromTo(".landing-evidence-fragment", { autoAlpha: 0.25, y: 22, scale: 0.965 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.24, stagger: 0.13, ease: "none" }, 0)
+          .fromTo(".landing-evidence-endpoint", { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.18, ease: "none" }, 0.82);
+      } else {
+        evidence
+          .fromTo(".landing-evidence-fragment", { autoAlpha: 0, y: 16 }, { autoAlpha: 1, y: 0, duration: 0.52, stagger: 0.08, ease: "power2.out" })
+          .fromTo(".landing-evidence-path__line", { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.65, stagger: 0.06, ease: "power2.out" }, "-=0.18");
+      }
+
+      const methodology = gsap.timeline({
+        scrollTrigger: { trigger: ".landing-methodology", start: "top 76%", once: true },
+      });
+      methodology
+        .fromTo(".landing-methodology__copy", { autoAlpha: 0, x: -20 }, { autoAlpha: 1, x: 0, duration: 0.7, ease: "power3.out" })
+        .fromTo(".landing-methodology__visual", { autoAlpha: 0, x: 24 }, { autoAlpha: 1, x: 0, duration: 0.72, ease: "power3.out" }, "-=0.48")
+        .fromTo(".landing-report-flow", { "--line-progress": 0 }, { "--line-progress": 1, duration: 0.62, ease: "power2.out" }, "-=0.34")
+        .fromTo(".landing-report-flow__node", { scale: 0.86 }, { scale: 1, duration: 0.42, stagger: 0.09, ease: "power3.out" }, "-=0.22");
+
+      gsap.fromTo(".landing-close-scene__copy, .landing-close-scene__path",
+        { autoAlpha: 0, y: 22 },
+        {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.72,
+          stagger: 0.16,
+          ease: "power3.out",
+          scrollTrigger: { trigger: ".landing-close-scene", start: "top 82%", once: true },
+        },
+      );
+
+      return undefined;
+    });
+
+    void loadScrollCraftRuntime()
+      .then(() => {
+        if (active && landingRef.current && window.ScrollCraft) {
+          instance = window.ScrollCraft.mount(landingRef.current);
+          requestAnimationFrame(() => ScrollTrigger.refresh());
+        }
+      })
+      .catch(() => {
+        // The full page remains visible and readable if the optional motion runtime fails.
+      });
+
+    return () => {
+      active = false;
+      instance?.destroy();
+      media.revert();
+    };
+  }, []);
 
   return (
-    <div className="landing-page bg-white text-text-primary">
-      <section className="border-b border-border bg-white">
-        <div className={`${contentWidth} grid items-center gap-10 py-10 sm:py-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-14 lg:py-16`}>
-          <div className="max-w-[600px]">
-            <ScrollReveal>
-              <p className="mb-3 text-[11px] font-semibold tracking-[0.08em] text-primary">SYSTEMATIC REVIEW WORKSPACE</p>
-            </ScrollReveal>
-            <ScrollReveal delay={70}>
-              <h1 className="text-balance text-[38px] font-semibold leading-[1.12] tracking-[-0.025em] text-text-primary sm:text-[46px] xl:text-[50px]">
-                A clearer way to review <span className="text-primary">research.</span>
-              </h1>
-            </ScrollReveal>
-            <ScrollReveal delay={140}>
-              <p className="mt-4 max-w-[50ch] text-base leading-7 text-text-secondary sm:text-[17px]">
-                Organize, evaluate, and synthesize scientific literature in one collaborative workspace.
+    <div ref={landingRef} className="landing-page">
+      <section className="landing-hero" data-sc-act="flow" aria-labelledby="landing-title">
+        <div className="landing-shell landing-hero__grid">
+          <div className="landing-hero__copy">
+            <div className="landing-hero__message">
+              <p className="landing-eyebrow">SYSTEMATIC REVIEW WORKSPACE</p>
+              <h1 id="landing-title">A clearer way to review <span>research.</span></h1>
+              <p className="landing-hero__description">
+                Plan the review, assess source records, and keep screening decisions and extracted findings connected in one collaborative workspace.
               </p>
-            </ScrollReveal>
-            <ScrollReveal delay={210}>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={() => navigate(startPath)}
-                className="landing-page__button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
+            </div>
+            <div className="landing-hero__actions">
+              <button type="button" onClick={() => navigate(startPath)} className="landing-button landing-button--primary">
                 Start a Review <FiArrowRight aria-hidden="true" />
               </button>
-              <a
-                href="#workflow"
-                className="landing-page__button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-white px-5 text-sm font-semibold text-text-primary hover:bg-bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-              >
-                Explore the Workflow <FiArrowUpRight aria-hidden="true" />
+              <a href="#workflow" className="landing-button landing-button--secondary">
+                Explore Workflow <FiArrowUpRight aria-hidden="true" />
               </a>
             </div>
-            </ScrollReveal>
-            <ScrollReveal delay={270}>
-            <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-xs text-text-secondary">
-              <span className="inline-flex items-center gap-2"><FiCheckCircle aria-hidden="true" className="text-primary" /> PRISMA reporting support</span>
-              <span className="inline-flex items-center gap-2"><FiShield aria-hidden="true" className="text-primary" /> Traceable decisions</span>
+            <div className="landing-hero__proof">
+              <span><FiCheckCircle aria-hidden="true" /> PRISMA reporting support</span>
+              <span><FiShield aria-hidden="true" /> Traceable decisions</span>
             </div>
-            </ScrollReveal>
           </div>
-          <div className="min-w-0 lg:pl-2">
-            <ScrollReveal delay={140}>
-              <HeroResearchPreview />
-            </ScrollReveal>
+          <div className="landing-hero__visual">
+            <ResearchPaperPreview />
           </div>
         </div>
       </section>
 
-      <section id="workflow" className="landing-page__soft-section scroll-mt-20 py-10 sm:py-12 lg:py-14">
-        <div className={contentWidth}>
-          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-end">
-            <ScrollReveal>
-              <h2 className="text-balance text-[26px] font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-[32px]">
-                From research question to evidence
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal delay={70}>
-              <p className="max-w-[42ch] text-sm leading-5 text-text-secondary">A connected workflow for systematic reviews.</p>
-            </ScrollReveal>
+      <section id="workflow" className="landing-workflow-scene" data-sc-act="flow" aria-labelledby="workflow-title">
+        <div className="landing-shell">
+          <div className="landing-section-heading">
+            <div>
+              <h2 id="workflow-title">From question to evidence.</h2>
+            </div>
+          <p>Follow the question from protocol to synthesis, with source records and decisions carried across each stage.</p>
           </div>
-          <ScrollReveal delay={100}>
-            <WorkflowTimeline />
-          </ScrollReveal>
+          <WorkflowTimeline />
         </div>
       </section>
 
-      <section id="features" className="scroll-mt-20 border-y border-border bg-white py-10 sm:py-12 lg:py-14">
-        <div className={contentWidth}>
-          <ScrollReveal>
-            <h2 className="text-balance text-[26px] font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-[32px]">Evidence, decisions, and synthesis in context</h2>
-          </ScrollReveal>
-          <CapabilityShowcase />
+      <section id="features" className="landing-capability-scene" data-sc-act="flow" aria-labelledby="capabilities-title">
+        <div className="landing-shell">
+          <div className="landing-section-heading landing-section-heading--compact">
+            <div>
+              <h2 id="capabilities-title">Decisions stay with the evidence.</h2>
+            </div>
+            <p>Review together, resolve differences, and keep study data structured.</p>
+          </div>
+          <div className="landing-capability-grid">
+            <article className="landing-capability-main">
+              <div className="landing-capability-main__heading">
+                <span className="landing-icon-tile"><FiFilter aria-hidden="true" /></span>
+                <h3>Independent review with a clear route to resolution.</h3>
+            <p>Reviewers screen independently, record a reason for each decision, and resolve disagreement through a traceable consensus process.</p>
+              </div>
+              <ScreeningPreview />
+            </article>
+            <article className="landing-capability-secondary">
+              <div className="landing-capability-secondary__heading">
+                <span className="landing-icon-tile"><FiDatabase aria-hidden="true" /></span>
+                <div><h3>Structured study evidence.</h3></div>
+              </div>
+              <p>Use shared fields to compare findings and connect each value to its source.</p>
+              <ExtractionPreview />
+            </article>
+            <div className="landing-capability-note">
+              <span><FiUsers aria-hidden="true" /> Collaboration</span>
+              <p>Keep each reviewer decision and rationale visible when a paper reaches consensus or adjudication.</p>
+            </div>
+            <div className="landing-capability-note">
+              <span><FiShield aria-hidden="true" /> Quality assessment</span>
+              <p>Assess the quality of included studies and consider those appraisals alongside the extracted findings.</p>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="about" className="scroll-mt-20 border-y border-border bg-white py-10 sm:py-12 lg:py-14">
-        <div className={`${contentWidth} grid items-center gap-8 lg:grid-cols-2 lg:gap-14`}>
-          <div className="max-w-[520px]">
-            <ScrollReveal>
-              <h2 className="text-balance text-[26px] font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-[32px]">Transparent by design.</h2>
-            </ScrollReveal>
-            <ScrollReveal delay={70}>
-              <p className="mt-3 max-w-[48ch] text-sm leading-6 text-text-secondary">Keep eligibility criteria, reviewer decisions, and resolution history connected throughout the review.</p>
-            </ScrollReveal>
-            <ScrollReveal delay={120}>
-            <a href="https://www.prisma-statement.org/" target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-9 items-center gap-2 text-sm font-semibold text-primary hover:text-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2">
-              PRISMA 2020 reporting support <FiArrowUpRight aria-hidden="true" />
-            </a>
-            <p className="mt-2 text-xs leading-5 text-text-secondary">PRISMA is a reporting guideline; SLRS is not affiliated with or endorsed by the PRISMA Group.</p>
-            </ScrollReveal>
-          </div>
-          <ScrollReveal delay={100}>
-            <MethodologyPanel />
-          </ScrollReveal>
-        </div>
-      </section>
+      <EvidenceSpine />
 
-      <section className="border-t border-border bg-white py-10 sm:py-12 lg:py-14">
-        <div className={`${contentWidth} grid items-center gap-6 lg:grid-cols-[0.65fr_1.35fr] lg:gap-12`}>
-          <div className="max-w-[400px]">
-            <ScrollReveal>
-              <p className="mb-2 text-[11px] font-semibold tracking-[0.08em] text-primary">REVIEW PROGRESS</p>
-              <h2 className="text-balance text-[26px] font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-[32px]">Follow the evidence flow.</h2>
-            </ScrollReveal>
-            <ScrollReveal delay={70}>
-              <p className="mt-3 text-sm leading-6 text-text-secondary">See how records move from identification through eligibility to inclusion.</p>
-            </ScrollReveal>
-            <ScrollReveal delay={120}>
-              <dl className="mt-6 grid grid-cols-3 divide-x divide-border rounded-lg border border-border bg-bg-primary px-3 py-3 sm:px-4">
-                {[["1,248", "identified"], ["146", "assessed"], ["64", "included"]].map(([value, label]) => (
-                  <div key={label} className="min-w-0 px-2 first:pl-0 last:pr-0 sm:px-3">
-                    <dd className="text-lg font-semibold tabular-nums tracking-tight text-text-primary sm:text-xl">{value}</dd>
-                    <dt className="mt-0.5 text-[11px] leading-4 text-text-secondary sm:text-xs">{label}</dt>
-                  </div>
-                ))}
-              </dl>
-            </ScrollReveal>
-          </div>
-          <ScrollReveal delay={100}>
-            <ProgressPreview />
-          </ScrollReveal>
-        </div>
-      </section>
+      <MethodologyScene />
 
-      <section className="landing-page__cta border-y py-9 sm:py-11">
-        <div className={`${contentWidth} flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-center`}>
-          <div className="max-w-[720px]">
-            <ScrollReveal>
-              <h2 className="text-balance text-[24px] font-semibold leading-tight tracking-[-0.02em] text-text-primary sm:text-[30px]">
-                Ready to begin your review?
-              </h2>
-            </ScrollReveal>
-            <ScrollReveal delay={70}>
-              <p className="mt-2 text-sm leading-6 text-text-secondary">Bring your review team and evidence into one workspace.</p>
-            </ScrollReveal>
+      <section className="landing-close-scene" data-sc-act="flow" aria-labelledby="landing-close-title">
+        <div className="landing-shell landing-close-scene__inner">
+          <div className="landing-close-scene__copy">
+            <p className="landing-eyebrow"><FiLayers aria-hidden="true" /> YOUR NEXT REVIEW</p>
+            <h2 id="landing-close-title">Bring your evidence into focus.</h2>
+            <p className="landing-close-scene__description">
+              Begin with a clear research question, then keep study records, screening decisions, and findings connected as your team moves toward synthesis.
+            </p>
+            <p className="landing-close-scene__note"><FiShield aria-hidden="true" /> A documented path from review criteria to research outputs.</p>
+            <div className="landing-close-scene__actions">
+              <button type="button" onClick={() => navigate(startPath)} className="landing-button landing-button--primary">
+                Start a Review <FiArrowRight aria-hidden="true" />
+              </button>
+              <button type="button" onClick={() => navigate("/projects")} className="landing-button landing-button--secondary">
+                View Projects <FiArrowUpRight aria-hidden="true" />
+              </button>
+            </div>
           </div>
-          <ScrollReveal delay={120}>
-          <div className="flex w-full shrink-0 flex-col gap-2.5 sm:w-auto sm:flex-row">
-            <button
-              type="button"
-              onClick={() => navigate(startPath)}
-              className="landing-page__button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-semibold text-white hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              Start a Review <FiArrowRight aria-hidden="true" />
-            </button>
-            <button
-              type="button"
-              onClick={() => navigate("/projects")}
-              className="landing-page__button inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-white px-5 text-sm font-semibold text-text-primary hover:bg-primary-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              View Projects <FiArrowUpRight aria-hidden="true" />
-            </button>
+          <div className="landing-close-scene__path" role="group" aria-labelledby="landing-close-path-title">
+            <p id="landing-close-path-title" className="landing-close-scene__path-title">One connected review</p>
+            <ol>
+              <li>
+                <span className="landing-close-scene__path-node"><FiClipboard aria-hidden="true" /></span>
+                <span><b>Set the scope</b><small>Question and eligibility criteria</small></span>
+              </li>
+              <li>
+                <span className="landing-close-scene__path-node"><FiFilter aria-hidden="true" /></span>
+                <span><b>Review the studies</b><small>Records, decisions, and rationale</small></span>
+              </li>
+              <li>
+                <span className="landing-close-scene__path-node"><FiGitMerge aria-hidden="true" /></span>
+                <span><b>Bring findings together</b><small>Evidence ready for synthesis</small></span>
+              </li>
+            </ol>
           </div>
-          </ScrollReveal>
         </div>
       </section>
     </div>

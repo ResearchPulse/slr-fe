@@ -270,7 +270,7 @@ const Header: React.FC = () => {
 
                     {/* Profile Dropdown Menu */}
                     {showUserDropdown && (
-                      <div id="header-user-menu" className="ui-popover-enter absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl bg-surface-white p-1.5 shadow-[0_8px_24px_rgba(18,35,49,0.12)]">
+                      <div id="header-user-menu" className="header-account-menu-enter absolute right-0 z-(--z-index-dropdown) mt-3 w-[248px] rounded-xl border border-border/80 bg-surface-white p-1.5 shadow-[0_12px_28px_-10px_rgba(18,35,49,0.22)]">
                         <div className="flex items-center gap-3 px-3 py-3">
                           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-sm font-bold text-white">
                             {user?.name ? getUserInitials(user.name) : "U"}
