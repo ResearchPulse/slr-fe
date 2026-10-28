@@ -5,27 +5,32 @@ import type { ScreeningPaper } from "../../../../../pages/reviewProcess/studySel
 interface PublicationInfoCardProps {
   paper: ScreeningPaper;
   isFieldUpdated: (f: string) => boolean;
+  variant?: "card" | "embedded";
 }
 
 export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
   paper,
   isFieldUpdated,
+  variant = "card",
 }) => {
   const fields = [
     {
       label: "Journal",
       value: paper.journal,
       isUpdated: isFieldUpdated("Journal"),
+      wide: true,
     },
     {
       label: "Conference",
       value: paper.conferenceName,
       isUpdated: isFieldUpdated("Conference"),
+      wide: true,
     },
     {
       label: "Publisher",
       value: paper.publisher,
       isUpdated: isFieldUpdated("Publisher"),
+      wide: true,
     },
     {
       label: "Volume",
@@ -50,17 +55,17 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
   if (fields.length === 0) return null;
 
   return (
-    <div className="bg-surface-white rounded-xl border border-border p-5 shadow-none">
-      <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-4">
+    <section className={variant === "embedded" ? "px-4 py-4 sm:px-5" : "rounded-xl border border-border bg-surface-white p-4 sm:p-5"}>
+      <h2 className="mb-3 text-sm font-semibold text-text-primary">
         Publication Details
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-4">
+      <dl className={`grid gap-x-4 gap-y-3 ${variant === "embedded" ? "grid-cols-2" : "grid-cols-1 sm:grid-cols-2"}`}>
         {fields.map((field) => (
-          <div key={field.label} className="space-y-1">
+          <div key={field.label} className={`min-w-0 space-y-0.5 ${variant === "embedded" && "wide" in field && field.wide ? "col-span-2" : ""}`}>
             <div className="flex items-center gap-2">
-              <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
+              <dt className="text-[11px] font-medium text-text-secondary">
                 {field.label}
-              </span>
+              </dt>
               {field.isUpdated && (
                 <div className="group/spark relative flex items-center">
                   <Sparkles className="w-2.5 h-2.5 text-accent" />
@@ -70,12 +75,12 @@ export const PublicationInfoCard: React.FC<PublicationInfoCardProps> = ({
                 </div>
               )}
             </div>
-            <p className="text-sm font-bold text-text-primary break-words">
+            <dd className="break-words text-sm font-medium leading-5 text-text-primary">
               {field.value || "N/A"}
-            </p>
+            </dd>
           </div>
         ))}
-      </div>
-    </div>
+      </dl>
+    </section>
   );
 };
