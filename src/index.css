@@ -723,6 +723,15 @@ select:focus {
   }
 }
 
+.scrollbar-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 .selection-action-tabs {
   container-name: selection-action-tabs;
   container-type: inline-size;

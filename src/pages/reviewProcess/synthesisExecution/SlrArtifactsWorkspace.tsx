@@ -28,7 +28,7 @@ import { ARTIFACT_NAMES } from "./slrArtifacts/artifactMeta";
 import ArtifactReviewPanel, { readReviews } from "./slrArtifacts/ArtifactReviewPanel";
 import GenerateOptionsPanel from "./slrArtifacts/GenerateOptionsPanel";
 import A3ValidationPanel from "./slrArtifacts/A3ValidationPanel";
-
+import PaperAiAnalysisWorkspace from "./aiAnalysis/PaperAiAnalysisWorkspace";
 const dateText = (value: unknown) => typeof value === "string" ? new Date(value).toLocaleString() : "—";
 
 function isForbiddenError(error: unknown): boolean {
@@ -52,6 +52,7 @@ export default function SlrArtifactsWorkspace({ projectId }: { projectId: string
   const queryClient = useQueryClient();
   const { member } = useProjectMember(projectId);
   const isLeader = member?.isLeader ?? false;
+  const [workspaceMode, setWorkspaceMode] = useState<"artifacts" | "paper-ai">("artifacts");
   const [artifactType, setArtifactType] = useState<SlrArtifactType>("A1");
   const [selectedRunId, setSelectedRunId] = useState<string | null>(null);
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
@@ -83,8 +84,8 @@ export default function SlrArtifactsWorkspace({ projectId }: { projectId: string
   const currentRun = useMemo(() => runs.find((run) => run.run_id === runId), [runs, runId]);
   const selectedLabel = artifact ? asText(artifact.title, ARTIFACT_NAMES[artifactType]) : ARTIFACT_NAMES[artifactType];
 
-  if (runsQuery.isLoading) return <div className="flex min-h-56 items-center justify-center"><LoadingSpinner /></div>;
-  if (runsQuery.error) return isForbiddenError(runsQuery.error)
+  if (workspaceMode === "artifacts" && runsQuery.isLoading) return <div className="flex min-h-56 items-center justify-center"><LoadingSpinner /></div>;
+  if (workspaceMode === "artifacts" && runsQuery.error) return isForbiddenError(runsQuery.error)
     ? <PermissionDeniedState />
     : <QueryErrorState title="Artifacts unavailable" message={getErrorMessage(runsQuery.error, "Unable to load artifact runs.")} onRetry={() => void runsQuery.refetch()} retryLabel="Retry" />;
 
@@ -94,9 +95,14 @@ export default function SlrArtifactsWorkspace({ projectId }: { projectId: string
   };
 
   return <div className="space-y-5" aria-label="SLR artifacts workspace">
-    <header className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border bg-surface-white p-5"><div className="max-w-3xl"><div className="flex items-center gap-2 text-primary"><FileSearch className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-wide">Evidence synthesis</span></div><h2 className="mt-2 text-xl font-semibold text-text-primary">SLR artifacts</h2><p className="mt-1 text-sm leading-6 text-text-secondary">Generate a versioned A1–A10 package from the project corpus. Each view keeps its source links, validation status and review state.</p></div>{isLeader && !isOptionsOpen && <Button onClick={openOptions}><RefreshCw className="h-4 w-4" />Generate A1–A10</Button>}</header>
-    {isLeader && isOptionsOpen && <GenerateOptionsPanel projectId={projectId} isSubmitting={generateMutation.isPending} submitError={generateMutation.error ? getErrorMessage(generateMutation.error, "Could not generate the artifacts.") : null} onSubmit={(options) => generateMutation.mutate(options)} onCancel={() => setIsOptionsOpen(false)} />}
+    <header className="flex flex-wrap items-start justify-between gap-4 rounded-xl border border-border bg-surface-white p-5"><div className="max-w-3xl"><div className="flex items-center gap-2 text-primary"><FileSearch className="h-5 w-5" /><span className="text-xs font-semibold uppercase tracking-wide">Evidence synthesis</span></div><h2 className="mt-2 text-xl font-semibold text-text-primary">SLR artifacts</h2><p className="mt-1 text-sm leading-6 text-text-secondary">Generate a versioned A1–A10 package or inspect per-paper IMRaD, Toulmin, and AIF analyses.</p></div>{workspaceMode === "artifacts" && isLeader && !isOptionsOpen && <Button onClick={openOptions}><RefreshCw className="h-4 w-4" />Generate A1–A10</Button>}</header>
+    {workspaceMode === "artifacts" && isLeader && isOptionsOpen && <GenerateOptionsPanel projectId={projectId} isSubmitting={generateMutation.isPending} submitError={generateMutation.error ? getErrorMessage(generateMutation.error, "Could not generate the artifacts.") : null} onSubmit={(options) => generateMutation.mutate(options)} onCancel={() => setIsOptionsOpen(false)} />}
     {reviewMutation.error && <ErrorBanner message={getErrorMessage(reviewMutation.error, "Could not save the review decision.")} />}
+    <div role="tablist" aria-label="Synthesis analysis views" className="flex flex-wrap gap-2">
+      <button type="button" role="tab" aria-selected={workspaceMode === "artifacts"} onClick={() => setWorkspaceMode("artifacts")} className={`rounded-lg border px-4 py-2 text-sm font-medium ${workspaceMode === "artifacts" ? "border-primary bg-primary/5 text-primary" : "border-border bg-surface-white text-text-secondary"}`}>A1–A10 artifacts</button>
+      <button type="button" role="tab" aria-selected={workspaceMode === "paper-ai"} onClick={() => setWorkspaceMode("paper-ai")} className={`rounded-lg border px-4 py-2 text-sm font-medium ${workspaceMode === "paper-ai" ? "border-primary bg-primary/5 text-primary" : "border-border bg-surface-white text-text-secondary"}`}>IMRaD · Toulmin · AIF</button>
+    </div>
+    {workspaceMode === "paper-ai" ? <PaperAiAnalysisWorkspace projectId={projectId} /> : <>
     <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-surface-white p-4">
       <label className="min-w-56 flex-1 text-xs font-medium text-text-secondary">Generation run<Select value={runId ?? ""} onChange={(event) => setSelectedRunId(event.target.value || null)} disabled={!runs.length} className="mt-1 block h-11 w-full rounded-lg border border-border bg-surface-white px-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30">{runs.map((run) => <option key={run.run_id} value={run.run_id}>{dateText(run.generated_at)} · {run.run_id}</option>)}</Select></label>
     </div>
@@ -115,5 +121,6 @@ export default function SlrArtifactsWorkspace({ projectId }: { projectId: string
         : <p role="alert" className="text-sm text-warning">Source quotes could not be loaded: {getErrorMessage(corpusQuery.error, "corpus unavailable")}</p>)}
       <ArtifactReviewPanel key={`${runId}-${artifactType}`} canReview={isLeader} reviewStatus={reviewStatus} validationStatus={validationStatus} reviews={readReviews(metadata)} isSubmitting={reviewMutation.isPending} onReview={(decision, note) => reviewMutation.mutate({ decision, note })} />
     </div> : <Empty title="Artifact is empty" detail="The selected artifact has no stored payload." />}
+    </>}
   </div>;
 }
