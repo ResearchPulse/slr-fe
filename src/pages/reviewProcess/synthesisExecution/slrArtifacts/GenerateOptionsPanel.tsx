@@ -24,7 +24,7 @@ const CONTEXT_GROUPS: Array<{ value: SlrContextGroupBy; label: string }> = [
   { value: "context", label: "Context" },
 ];
 
-const controlClass = "mt-1 block h-11 w-full rounded-lg border border-border bg-surface-white px-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
+const controlClass = "mt-1 block h-10 w-full rounded-lg border border-border bg-surface-white px-3 text-sm text-text-primary focus:outline-none focus:ring-2 focus:ring-primary/30";
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: ReactNode }) {
   return <label className="block text-xs font-medium text-text-secondary">{label}{children}{hint && <span className="mt-1 block font-normal text-text-muted">{hint}</span>}</label>;
@@ -73,12 +73,12 @@ export default function GenerateOptionsPanel({ projectId, isSubmitting, submitEr
   };
 
   const error = validationError ?? submitError;
-  return <section aria-label="Generate options" className="space-y-4 rounded-xl border border-border bg-surface-white p-5">
-    <div><h3 className="font-semibold text-text-primary">Generation options</h3><p className="mt-1 text-sm text-text-secondary">Defaults work for most projects. Change them only to focus the package on one question or to configure the evidence gap map.</p></div>
+  return <section aria-label="Generate options" className="space-y-4 rounded-xl border border-border bg-surface-white p-4">
+    <h3 className="font-semibold text-text-primary">Generation options</h3>
     {corpusQuery.isLoading && <p className="text-sm text-text-muted" role="status">Reading the project corpus…</p>}
     {corpusQuery.error != null && <p role="alert" className="text-sm text-warning">Project fields could not be loaded ({getErrorMessage(corpusQuery.error, "corpus unavailable")}). You can still generate with the defaults.</p>}
-    <div className="grid gap-4 md:grid-cols-2">
-      <Field label="A3 argument graph" hint="AI mode needs a configured AI provider; the server reports it if one is missing.">
+    <div className="grid gap-3 md:grid-cols-2">
+      <Field label="A3 argument graph" hint="AI mode needs a configured AI provider.">
         <select className={controlClass} value={state.a3Mode} onChange={(event) => set("a3Mode", event.target.value === "ai" ? "ai" : "deterministic")}>
           <option value="deterministic">Deterministic (from extracted evidence)</option>
           <option value="ai">AI-assisted</option>
@@ -90,40 +90,44 @@ export default function GenerateOptionsPanel({ projectId, isSubmitting, submitEr
           {(corpus?.research_questions ?? []).map((question) => <option key={question.rq_id} value={question.rq_id}>{question.code ? `${question.code} · ` : ""}{question.question}</option>)}
         </select>
       </Field>
-      <Field label="A5 grouping" hint="How studies are grouped in Context–Conditions–Outcomes.">
-        <select className={controlClass} value={state.contextGroupBy} onChange={(event) => set("contextGroupBy", event.target.value as SlrContextGroupBy)}>
-          {CONTEXT_GROUPS.map((group) => <option key={group.value} value={group.value}>{group.label}</option>)}
-        </select>
-      </Field>
-      <Field label="Sparse threshold (1–20)" hint="A gap map cell with at most this many studies counts as sparse.">
-        <input type="number" min={1} max={20} step={1} className={controlClass} value={state.sparseThreshold} onChange={(event) => set("sparseThreshold", event.target.value)} />
-      </Field>
-      <Field label="Gap map rows">
-        <select className={controlClass} value={state.gapRows} onChange={(event) => set("gapRows", event.target.value)} disabled={!choices.length}>
-          <option value="">Not configured</option>
-          {choices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
-        </select>
-      </Field>
-      <Field label="Gap map columns">
-        <select className={controlClass} value={state.gapColumns} onChange={(event) => set("gapColumns", event.target.value)} disabled={!choices.length}>
-          <option value="">Not configured</option>
-          {choices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
-        </select>
-      </Field>
     </div>
-    {fields.length > 0 && <details className="rounded-lg border border-border/70 p-3">
-      <summary className="cursor-pointer text-sm font-medium text-text-primary">Advanced: field roles ({fields.length} fields)</summary>
-      <p className="mt-2 text-xs text-text-muted">Leave a field on Automatic unless the detected role is wrong. Excluding a field removes it from the synthesis.</p>
+    <details className="group rounded-lg border border-border/70 px-3 py-2">
+      <summary className="cursor-pointer text-sm font-medium text-text-primary">More options <span className="font-normal text-text-muted">· A5 grouping, gap map, field roles</span></summary>
       <div className="mt-3 grid gap-3 md:grid-cols-2">
-        {fields.map((field) => <Field key={field.id} label={field.label}>
-          <select className={controlClass} value={state.fieldRoles[field.id] ?? ""} onChange={(event) => set("fieldRoles", { ...state.fieldRoles, [field.id]: event.target.value })}>
-            <option value="">Automatic</option>
-            <option value={EXCLUDE_FIELD}>Exclude from synthesis</option>
-            {SLR_FIELD_ROLES.map((role) => <option key={role} value={role}>{role.replace(/_/g, " ")}</option>)}
+        <Field label="A5 grouping">
+          <select className={controlClass} value={state.contextGroupBy} onChange={(event) => set("contextGroupBy", event.target.value as SlrContextGroupBy)}>
+            {CONTEXT_GROUPS.map((group) => <option key={group.value} value={group.value}>{group.label}</option>)}
           </select>
-        </Field>)}
+        </Field>
+        <Field label="Sparse threshold (1–20)">
+          <input type="number" min={1} max={20} step={1} className={controlClass} value={state.sparseThreshold} onChange={(event) => set("sparseThreshold", event.target.value)} />
+        </Field>
+        <Field label="Gap map rows">
+          <select className={controlClass} value={state.gapRows} onChange={(event) => set("gapRows", event.target.value)} disabled={!choices.length}>
+            <option value="">Not configured</option>
+            {choices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Gap map columns">
+          <select className={controlClass} value={state.gapColumns} onChange={(event) => set("gapColumns", event.target.value)} disabled={!choices.length}>
+            <option value="">Not configured</option>
+            {choices.map((choice) => <option key={choice.value} value={choice.value}>{choice.label}</option>)}
+          </select>
+        </Field>
       </div>
-    </details>}
+      {fields.length > 0 && <div className="mt-4 border-t border-border/70 pt-3">
+        <p className="text-xs font-medium text-text-secondary">Field roles <span className="font-normal text-text-muted">· leave on Automatic unless a detected role is wrong</span></p>
+        <div className="mt-2 grid gap-3 md:grid-cols-2">
+          {fields.map((field) => <Field key={field.id} label={field.label}>
+            <select className={controlClass} value={state.fieldRoles[field.id] ?? ""} onChange={(event) => set("fieldRoles", { ...state.fieldRoles, [field.id]: event.target.value })}>
+              <option value="">Automatic</option>
+              <option value={EXCLUDE_FIELD}>Exclude from synthesis</option>
+              {SLR_FIELD_ROLES.map((role) => <option key={role} value={role}>{role.replace(/_/g, " ")}</option>)}
+            </select>
+          </Field>)}
+        </div>
+      </div>}
+    </details>
     {error && <p role="alert" className="rounded-lg border border-error/30 bg-error/5 p-3 text-sm text-text-secondary">{error}</p>}
     <div className="flex flex-wrap justify-end gap-2">
       <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>Cancel</Button>
