@@ -53,12 +53,19 @@ export const Modal: React.FC<ModalProps> = ({
     onCloseRef.current = onClose;
   }, [onClose]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!isOpen) return;
 
     setIsEntered(false);
-    const frame = window.requestAnimationFrame(() => setIsEntered(true));
-    return () => window.cancelAnimationFrame(frame);
+    let secondFrame = 0;
+    const firstFrame = window.requestAnimationFrame(() => {
+      // Let the initial hidden/offset state reach a paint before starting the transition.
+      secondFrame = window.requestAnimationFrame(() => setIsEntered(true));
+    });
+    return () => {
+      window.cancelAnimationFrame(firstFrame);
+      if (secondFrame) window.cancelAnimationFrame(secondFrame);
+    };
   }, [isOpen]);
 
   // Close on Escape key
@@ -175,10 +182,10 @@ export const Modal: React.FC<ModalProps> = ({
                 isEntered ? "translate-x-0" : "translate-x-full",
               )
             : cn(
-                "max-h-[calc(100dvh-2rem)] rounded-xl transition-[opacity,transform] duration-200 ease-out motion-reduce:transition-none",
+                "max-h-[calc(100dvh-2rem)] rounded-xl transition-[opacity,transform,translate] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none",
                 isEntered
-                  ? "translate-y-0 scale-100 opacity-100"
-                  : "translate-y-2 scale-[0.985] opacity-0",
+                  ? "translate-y-0 opacity-100"
+                  : "-translate-y-8 opacity-0",
               ),
           sizeStyles[size],
           className,
@@ -210,7 +217,7 @@ export const Modal: React.FC<ModalProps> = ({
         </div>
 
         {/* Body Section */}
-        <div className={cn("flex-1 overflow-y-auto p-4 sm:p-6", bodyClassName)}>
+        <div className={cn("modal-scroll-area flex-1 overflow-y-auto p-4 sm:p-6", bodyClassName)}>
           {children}
         </div>
 

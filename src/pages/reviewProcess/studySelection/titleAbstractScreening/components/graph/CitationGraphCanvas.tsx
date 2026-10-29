@@ -1,14 +1,11 @@
-import React, { useMemo, useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import CytoscapeComponent from "react-cytoscapejs";
 import cytoscape from "cytoscape";
 import fcose from "cytoscape-fcose";
-import { GitBranch, BoxSelect, RefreshCw } from "lucide-react";
+import { GitBranch } from "lucide-react";
 import type { CitationGraphDto } from "../../../../../../types/studySelection";
 
-// Register fcose layout
 cytoscape.use(fcose);
-
-type LayoutMode = "timeline" | "radial";
 
 interface CitationGraphCanvasProps {
   data: CitationGraphDto;
@@ -24,66 +21,33 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
   onNodeClick,
 }) => {
   const cyRef = useRef<cytoscape.Core | null>(null);
-  const [layoutMode, setLayoutMode] = useState<LayoutMode>("timeline");
-  const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth);
-
-  // Cache for radial positions to prevent re-calculating on every mode switch
   const radialPositionsRef = useRef<Record<string, cytoscape.Position>>({});
+  const hasInitializedSelectionRef = useRef(false);
+  const previousSelectedPaperIdRef = useRef<string | null>(null);
+  const [isCyReady, setIsCyReady] = useState(false);
 
-  // Reset cache if data changes
-  useEffect(() => {
-    radialPositionsRef.current = {};
-  }, [data]);
-
-  useEffect(() => {
-    const updateViewportWidth = () => setViewportWidth(window.innerWidth);
-    window.addEventListener("resize", updateViewportWidth);
-    return () => window.removeEventListener("resize", updateViewportWidth);
-  }, []);
-
-  // Memoize elements with Manual Timeline positions in the data
-  // These positions are used exclusively for 'timeline' mode via the preset layout
   const elements = useMemo(() => {
     if (!data.nodes.length) return [];
 
     const currentYear = new Date().getFullYear();
-    const validYears = data.nodes
-      .map((n) => n.year)
-      .filter((y) => y && y > 0) as number[];
-
-    const minYear =
-      validYears.length > 0 ? Math.min(...validYears) : currentYear - 5;
-    const maxYear =
-      validYears.length > 0 ? Math.max(...validYears) : currentYear;
-
-    const yearSpan = Math.max(1, maxYear - minYear);
-    const yearSpacing = Math.min(
-      300,
-      (viewportWidth < 768 ? 180 : 640) / yearSpan,
-    );
-    const ySpacing = viewportWidth < 768 ? 64 : 100;
-    const yearCountMap: Record<number, number> = {};
+    const oldestScaleYear = currentYear - 30;
 
     const nodes = data.nodes.map((node) => {
-      let year = node.year && node.year > 0 ? node.year : minYear;
-      if (node.id === rootPaperId) year = Math.max(year, maxYear);
-
-      const x = (year - minYear) * yearSpacing;
-      const stackIndex = yearCountMap[year] || 0;
-      yearCountMap[year] = stackIndex + 1;
-      const y = stackIndex * ySpacing;
+      const hasYear = Number.isFinite(node.year) && !!node.year && node.year > 0;
+      const year = hasYear ? node.year! : oldestScaleYear;
+      const yearProgress = hasYear
+        ? Math.max(0, Math.min(1, (year - oldestScaleYear) / 30))
+        : 0;
 
       return {
         data: {
           id: node.id,
-          label: `${node.title.length > 30 ? node.title.substring(0, 27) + "..." : node.title}\n(${year})`,
+          label: `${node.title.length > 38 ? `${node.title.substring(0, 35)}...` : node.title}\n(${hasYear ? year : "Year unavailable"})`,
           fullTitle: node.title,
-          year: year,
+          year,
+          yearProgress,
           isRoot: node.id === rootPaperId,
-          timelinePos: { x, y }, // Store timeline position in scratch data
         },
-        // IMPORTANT: We don't set 'position' here to keep the elements object stable.
-        // We'll apply positions manually or via layout-specific methods.
       };
     });
 
@@ -97,9 +61,8 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
     }));
 
     return [...nodes, ...edges];
-  }, [data, rootPaperId, viewportWidth]);
+  }, [data, rootPaperId]);
 
-  // Stable Stylesheet with conditional classes for edges
   const stylesheet = useMemo<
     NonNullable<React.ComponentProps<typeof CytoscapeComponent>["stylesheet"]>
   >(
@@ -107,334 +70,239 @@ const CitationGraphCanvas: React.FC<CitationGraphCanvasProps> = ({
       {
         selector: "node",
         style: {
-          "background-color": "#ffffff",
-          "border-width": 2,
-          "border-color": "#3b82f6",
-          width: 42,
-          height: 42,
+          "background-color": "mapData(yearProgress, 0, 1, #E2F0FE, #0071BC)",
+          "border-width": 0,
+          width: "mapData(yearProgress, 0, 1, 34, 52)",
+          height: "mapData(yearProgress, 0, 1, 34, 52)",
           label: "data(label)",
-          "font-size": "10px",
+          "font-size": 10,
           "text-valign": "bottom",
           "text-halign": "center",
-          "text-margin-y": 8,
-          color: "#4b5563",
-          "transition-property":
-            "background-color border-color border-width width height opacity",
-          "transition-duration": 300,
+          "text-margin-y": 7,
+          color: "#647381",
+          "font-family": "Manrope, sans-serif",
+          "transition-property": "background-color border-color border-width width height opacity",
+          "transition-duration": 200,
           "text-wrap": "wrap",
-          "text-max-width": "100px",
+          "text-max-width": "112px",
         },
       },
       {
         selector: "node[?isRoot]",
         style: {
           "background-color": "#0071BC",
-          "border-color": "#005F9E",
-          "border-width": 4,
+          "border-width": 0,
           width: 58,
           height: 58,
           color: "#122331",
-          "font-weight": "bold",
+          "font-weight": 700,
         },
       },
       {
         selector: "node.selected",
         style: {
-          "border-width": 6,
-          "border-color": "#0071BC",
-          "background-color": "#F0F7FC",
+          "font-weight": 700,
         },
       },
       {
         selector: "edge",
         style: {
-          width: 1.5,
-          "line-color": "#cbd5e1",
-          opacity: 0.5,
-          "curve-style": "bezier", // Default
+          width: 1.25,
+          "line-color": "#b8c9d5",
+          opacity: 0.55,
+          "curve-style": "bezier",
           "target-arrow-shape": "triangle",
-          "target-arrow-color": "#cbd5e1",
+          "target-arrow-color": "#b8c9d5",
           "target-arrow-fill": "filled",
-          "arrow-scale": 1,
+          "arrow-scale": 0.8,
           "transition-property": "line-color opacity width",
-          "transition-duration": 300,
-        },
-      },
-      {
-        selector: "edge.timeline-curve",
-        style: {
-          "curve-style": "taxi",
-          "taxi-direction": "horizontal",
-          "taxi-turn": 40,
+          "transition-duration": 180,
         },
       },
       {
         selector: "node.highlight",
         style: {
-          "border-color": "#2563eb",
-          "border-width": 3,
+          "font-weight": 700,
         },
       },
       {
         selector: "node.semitransparent",
-        style: {
-          opacity: 0.15,
-        },
+        style: { opacity: 0.22 },
       },
       {
         selector: "edge.highlight",
         style: {
-          opacity: 1,
-          width: 3,
-          "line-color": "#3b82f6",
-          "target-arrow-color": "#3b82f6",
+          opacity: 0.9,
+          width: 2.25,
+          "line-color": "#5a9bc5",
+          "target-arrow-color": "#5a9bc5",
         },
       },
       {
         selector: "edge.semitransparent",
-        style: {
-          opacity: 0.05,
-        },
+        style: { opacity: 0.12 },
       },
     ],
     [],
-  ); // No dependencies for maximum stability
+  );
 
-  // Centralized Layout Trigger logic
-  const triggerLayout = (
-    mode: LayoutMode,
-    forceRegenerateRadial: boolean = false,
-  ) => {
+  const runRadialLayout = (animate: boolean) => {
     const cy = cyRef.current;
-    if (!cy) return;
+    if (!cy || cy.nodes().empty()) return;
+
     const prefersReducedMotion = window.matchMedia?.(
       "(prefers-reduced-motion: reduce)",
     ).matches ?? false;
-    const animationDuration = prefersReducedMotion ? 0 : 800;
-
-    if (mode === "timeline") {
-      cy.edges().removeClass("bezier").addClass("timeline-curve");
-
-      cy.layout({
-        name: "preset",
-        animate: true,
-        animationDuration,
-        fit: true,
-        padding: viewportWidth < 768 ? 24 : 64,
-        positions: (nodeId: string) =>
-          cy.getElementById(nodeId).data("timelinePos"),
-      }).run();
-    } else {
-      cy.edges().removeClass("timeline-curve");
-
-      const hasCache = Object.keys(radialPositionsRef.current).length > 0;
-
-      if (hasCache && !forceRegenerateRadial) {
-        // Use cached radial positions
-        cy.layout({
+    const shouldAnimate = animate && !prefersReducedMotion;
+    const cachedPositions = radialPositionsRef.current;
+    const hasCachedPositions = Object.keys(cachedPositions).length > 0;
+    const layout = hasCachedPositions
+      ? cy.layout({
           name: "preset",
-          animate: true,
-          animationDuration,
+          positions: (nodeId: string) => cachedPositions[nodeId],
+          animate: shouldAnimate,
+          animationDuration: shouldAnimate ? 450 : 0,
           fit: true,
-          padding: viewportWidth < 768 ? 24 : 64,
-          positions: (nodeId: string) => radialPositionsRef.current[nodeId],
-        }).run();
-      } else {
-        // Run full fcose engine
-        const layout = cy.layout({
+          padding: 72,
+        })
+      : cy.layout({
           name: "fcose",
-          animate: true,
-          animationDuration: prefersReducedMotion ? 0 : 1200,
+          animate: shouldAnimate,
+          animationDuration: shouldAnimate ? 850 : 0,
           fit: true,
-          padding: viewportWidth < 768 ? 24 : 64,
+          padding: 72,
           nodeDimensionsIncludeLabels: true,
-          nodeSeparation: 120,
+          nodeSeparation: 110,
           idealEdgeLength: (edge: cytoscape.EdgeSingular) =>
-            120 / (edge.data("weight") || 0.5),
-          randomize: forceRegenerateRadial, // Randomize only on force refresh
+            112 / Math.max(edge.data("weight") || 0.5, 0.25),
+          randomize: true,
         } as cytoscape.LayoutOptions);
 
-        layout.on("layoutstop", () => {
-          // Cache the results
-          cy.nodes().forEach((node) => {
-            radialPositionsRef.current[node.id()] = { ...node.position() };
-          });
-        });
-
-        layout.run();
-      }
-    }
+    layout.one("layoutstop", () => {
+      radialPositionsRef.current = {};
+      cy.nodes().forEach((node) => {
+        radialPositionsRef.current[node.id()] = { ...node.position() };
+      });
+    });
+    layout.run();
   };
 
-  // 1. Initial Load: Apply elements and start in timeline mode
   useEffect(() => {
     const cy = cyRef.current;
-    if (!cy || !elements.length) return;
+    if (!cy || !isCyReady) return;
 
     cy.elements().remove();
-    cy.add(elements);
-
-    // Clear cache whenever data truly changes
+    if (elements.length) cy.add(elements);
     radialPositionsRef.current = {};
+    runRadialLayout(false);
+  }, [elements, isCyReady]);
 
-    triggerLayout("timeline");
-  }, [elements]);
-
-  // 2. Mode Toggle: Switch positions without re-adding elements
-  useEffect(() => {
-    triggerLayout(layoutMode);
-  }, [layoutMode]);
-
-  // Handle Selection & Highlighting
   useEffect(() => {
     const cy = cyRef.current;
-    if (!cy) return;
+    if (!cy || !isCyReady) return;
 
+    const shouldAnimateSelection =
+      hasInitializedSelectionRef.current &&
+      previousSelectedPaperIdRef.current !== selectedPaperId;
+    hasInitializedSelectionRef.current = true;
+    previousSelectedPaperIdRef.current = selectedPaperId ?? null;
     cy.elements().removeClass("semitransparent highlight selected");
 
-    if (selectedPaperId) {
+    if (!selectedPaperId) return;
+    const selectedNode = cy.getElementById(selectedPaperId);
+    if (!selectedNode.length) return;
+
+    selectedNode.addClass("selected");
+    cy.elements().addClass("semitransparent");
+    const neighborhood = selectedNode.neighborhood().add(selectedNode);
+    neighborhood.removeClass("semitransparent").addClass("highlight");
+    selectedNode.connectedEdges().removeClass("semitransparent").addClass("highlight");
+
+    if (shouldAnimateSelection) {
       const prefersReducedMotion = window.matchMedia?.(
         "(prefers-reduced-motion: reduce)",
       ).matches ?? false;
-      const selectedNode = cy.getElementById(selectedPaperId);
-      if (selectedNode.length > 0) {
-        selectedNode.addClass("selected");
-        cy.elements().addClass("semitransparent");
-
-        const neighborhood = selectedNode.neighborhood();
-        neighborhood.add(selectedNode).removeClass("semitransparent");
-        neighborhood.addClass("highlight");
-        selectedNode
-          .connectedEdges()
-          .removeClass("semitransparent")
-          .addClass("highlight");
-
-        cy.animate({
-          center: { eles: selectedNode },
-          zoom: {
-            level: Math.max(cy.zoom(), 0.8),
-            position: selectedNode.position(),
-          },
-          duration: prefersReducedMotion ? 0 : 250,
-          easing: "ease-in-out-cubic",
-        });
-      }
+      cy.animate({
+        center: { eles: selectedNode },
+        zoom: {
+          level: Math.max(cy.zoom(), 0.8),
+          position: selectedNode.position(),
+        },
+        duration: prefersReducedMotion ? 0 : 220,
+        easing: "ease-in-out-cubic",
+      });
     }
-  }, [selectedPaperId]);
+  }, [selectedPaperId, isCyReady, elements]);
+
+  useEffect(() => {
+    const cy = cyRef.current;
+    if (!cy || !isCyReady) return;
+
+    const resizeGraph = () => {
+      requestAnimationFrame(() => {
+        cy.resize();
+        cy.fit(cy.elements(), 72);
+      });
+    };
+    window.addEventListener("resize", resizeGraph);
+    return () => window.removeEventListener("resize", resizeGraph);
+  }, [isCyReady]);
 
   const handleCyReady = (cy: cytoscape.Core) => {
     cyRef.current = cy;
+    setIsCyReady(true);
 
-    cy.on("tap", "node", (e) => {
-      const id = e.target.id();
-      if (onNodeClick) onNodeClick(id);
+    cy.on("tap", "node", (event) => onNodeClick?.(event.target.id()));
+    cy.on("tap", (event) => {
+      if (event.target === cy) onNodeClick?.(null);
     });
-
-    cy.on("tap", (e) => {
-      if (e.target === cy) if (onNodeClick) onNodeClick(null);
-    });
-
-    cy.on("mouseover", "node", (e) => {
+    cy.on("mouseover", "node", (event) => {
       if (selectedPaperId) return;
-      const node = e.target;
-      const neighborhood = node.neighborhood().add(node);
+      const node = event.target;
       cy.elements().addClass("semitransparent");
-      neighborhood.removeClass("semitransparent");
-      node
-        .connectedEdges()
-        .removeClass("semitransparent")
-        .addClass("highlight");
+      node.neighborhood().add(node).removeClass("semitransparent").addClass("highlight");
+      node.connectedEdges().removeClass("semitransparent").addClass("highlight");
     });
-
     cy.on("mouseout", "node", () => {
-      if (selectedPaperId) return;
-      cy.elements().removeClass("semitransparent highlight");
+      if (!selectedPaperId) cy.elements().removeClass("semitransparent highlight");
     });
   };
 
   return (
-    <div className="w-full h-full bg-bg-secondary relative group">
+    <div className="group relative h-full min-h-0 w-full overflow-hidden rounded-xl bg-transparent">
       <CytoscapeComponent
         elements={[]}
         style={{ width: "100%", height: "100%" }}
         stylesheet={stylesheet}
         cy={handleCyReady}
-        className="transition-opacity duration-150 motion-reduce:transition-none"
       />
 
-      {/* Primary Mode Switcher */}
-      <div className="absolute left-3 right-3 top-3 z-20 flex w-fit max-w-[calc(100%-1.5rem)] flex-wrap items-center rounded-xl border border-border bg-surface-white/90 p-1 shadow-none backdrop-blur-md sm:left-4 sm:right-auto sm:top-4">
-        <button
-          type="button"
-          onClick={() => setLayoutMode("timeline")}
-          aria-pressed={layoutMode === "timeline"}
-          className={`flex min-h-11 items-center gap-1.5 rounded-xl px-2 sm:gap-2 sm:px-3 text-[10px] sm:text-[11px] font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-            layoutMode === "timeline"
-              ? "bg-primary text-white shadow-none"
-              : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
-          }`}
-        >
-          <GitBranch className="h-4 w-4" />
-          <span className="sm:hidden">Timeline</span>
-          <span className="hidden sm:inline">Timeline Flow</span>
-        </button>
-        <button
-          type="button"
-          onClick={() => setLayoutMode("radial")}
-          aria-pressed={layoutMode === "radial"}
-          className={`flex min-h-11 items-center gap-1.5 rounded-xl px-2 sm:gap-2 sm:px-3 text-[10px] sm:text-[11px] font-bold transition-colors motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-            layoutMode === "radial"
-              ? "bg-primary text-white shadow-none"
-              : "text-text-secondary hover:text-text-primary hover:bg-bg-secondary"
-          }`}
-        >
-          <BoxSelect className="h-4 w-4" />
-          <span className="sm:hidden">Radial</span>
-          <span className="hidden sm:inline">Radial Cluster</span>
-        </button>
-
-        {layoutMode === "radial" && (
-          <div className="mx-1 h-4 w-[1px] bg-border" />
-        )}
-
-        {layoutMode === "radial" && (
-          <button
-            type="button"
-            onClick={() => triggerLayout("radial", true)}
-            title="Regenerate Radial Layout"
-            aria-label="Regenerate radial layout"
-            className="flex min-h-11 min-w-11 items-center justify-center rounded-xl text-text-secondary transition-colors hover:bg-primary-light hover:text-accent motion-reduce:transition-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
-          >
-            <RefreshCw className="h-4 w-4" />
-          </button>
-        )}
+      <div className="absolute right-3 top-3 z-20 w-52 rounded-lg border border-border/70 bg-surface-white/90 px-3 py-2 backdrop-blur-sm sm:right-4 sm:top-4">
+        <p className="text-[11px] font-semibold text-text-primary">Publication year</p>
+        <div className="mt-2" role="img" aria-label="Publication year color scale: earlier papers are lighter and recent papers are darker">
+          <div className="grid h-2.5 grid-cols-3 overflow-hidden rounded-full">
+            <span className="bg-[#E2F0FE]" />
+            <span className="bg-[#3994E2]" />
+            <span className="bg-[#0071BC]" />
+          </div>
+          <div className="mt-1 flex justify-between text-[10px] text-text-secondary">
+            <span>Earlier</span>
+            <span>Recent</span>
+          </div>
+        </div>
       </div>
 
       {data.nodes.length === 0 && (
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center px-5 pt-16 text-center">
-          <div className="max-w-sm rounded-xl border border-border bg-surface-white/95 p-5 shadow-sm">
-            <GitBranch className="mx-auto mb-2 h-6 w-6 text-text-secondary" aria-hidden="true" />
+          <div className="max-w-sm text-text-secondary">
+            <GitBranch className="mx-auto mb-2 h-6 w-6" aria-hidden="true" />
             <p className="text-sm font-semibold text-text-primary">No citation data available</p>
-            <p className="mt-1 text-xs leading-relaxed text-text-secondary">
+            <p className="mt-1 text-xs leading-relaxed">
               This paper has no citation network to display yet.
             </p>
           </div>
         </div>
       )}
-
-      {/* Help Legend - Autohide */}
-      <div className="pointer-events-none absolute bottom-6 left-6 hidden translate-y-1 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-y-0 group-hover:opacity-100 motion-reduce:transition-none sm:block">
-        <div className="px-4 py-2 bg-text-primary/90 text-surface-white backdrop-blur rounded-xl shadow-2xl flex items-center gap-3 border border-surface-white/10">
-          <div
-            className={`h-2 w-2 rounded-full ${layoutMode === "timeline" ? "bg-accent" : "bg-purple-400"}`}
-          />
-          <span className="text-[11px] font-medium tracking-wide">
-            {layoutMode === "timeline"
-              ? "Chronological Mapping: Papers are sorted by publication year (Left to Right)."
-              : "Influence Mapping: Papers are clustered by citation strength and connectivity."}
-          </span>
-        </div>
-      </div>
     </div>
   );
 };

@@ -375,6 +375,10 @@
   --ui-enter-x: -0.5rem;
 }
 
+@utility slide-in-from-left-4 {
+  --ui-enter-x: -1rem;
+}
+
 @utility zoom-in {
   --ui-enter-scale: 0.95;
 }
@@ -400,6 +404,48 @@ html {
   color: var(--color-text-primary);
   scroll-behavior: smooth;
   scroll-padding-top: 64px;
+}
+
+html,
+body,
+#root {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(100 115 129 / 32%) transparent;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+#root::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track,
+#root::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb,
+#root::-webkit-scrollbar-thumb {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background: rgb(100 115 129 / 32%);
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover,
+#root::-webkit-scrollbar-thumb:hover {
+  background: rgb(100 115 129 / 52%);
+  background-clip: padding-box;
+}
+
+html::-webkit-scrollbar-button,
+body::-webkit-scrollbar-button,
+#root::-webkit-scrollbar-button {
+  display: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

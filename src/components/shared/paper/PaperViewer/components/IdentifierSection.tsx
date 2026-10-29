@@ -6,11 +6,13 @@ import type { ScreeningPaper } from "../../../../../pages/reviewProcess/studySel
 interface IdentifierSectionProps {
   paper: ScreeningPaper;
   isFieldUpdated: (f: string) => boolean;
+  variant?: "card" | "embedded";
 }
 
 export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
   paper,
   isFieldUpdated,
+  variant = "card",
 }) => {
   const identifiers = [
     {
@@ -42,25 +44,25 @@ export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
   if (identifiers.length === 0) return null;
 
   return (
-    <div className="bg-surface-white rounded-xl border border-border p-6 shadow-none">
-      <h2 className="text-xs font-black text-text-secondary uppercase tracking-[0.2em] mb-6">
+    <section className={variant === "embedded" ? "px-4 py-4 sm:px-5" : "rounded-xl border border-border bg-surface-white p-4 sm:p-5"}>
+      <h2 className="mb-3 text-sm font-semibold text-text-primary">
         Unique Identifiers
       </h2>
-      <div className="space-y-4">
+      <dl className="space-y-2.5">
         {identifiers.map((item) => (
           <div
             key={item.label}
-            className="flex items-center justify-between group/item"
+            className="group/item flex min-w-0 items-center justify-between gap-2"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-bg-secondary flex items-center justify-center text-text-secondary group-hover/item:bg-primary-light group-hover/item:text-accent transition-colors">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-bg-secondary text-text-secondary transition-colors group-hover/item:text-primary motion-reduce:transition-none">
                 {item.icon}
               </div>
-              <div className="space-y-0.5">
+              <div className="min-w-0 space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] font-black text-text-secondary uppercase tracking-widest">
+                  <dt className="text-[11px] font-medium text-text-secondary">
                     {item.label}
-                  </span>
+                  </dt>
                   {item.isUpdated && (
                     <div className="group/spark relative flex items-center">
                       <Sparkles className="w-2.5 h-2.5 text-accent" />
@@ -70,16 +72,16 @@ export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
                     </div>
                   )}
                 </div>
-                <p className="text-xs font-mono font-bold text-text-secondary truncate max-w-[200px]">
+                <dd className="break-all text-xs font-mono text-text-primary">
                   {item.value}
-                </p>
+                </dd>
               </div>
             </div>
             {item.label === "DOI" && (
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(item.value!)}
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-text-secondary opacity-100 transition-colors hover:bg-bg-secondary hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/30 sm:opacity-0 sm:group-hover/item:opacity-100 motion-reduce:transition-none"
+                className="inline-flex min-h-9 min-w-9 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-bg-secondary hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 motion-reduce:transition-none"
                 aria-label="Copy DOI"
                 title="Copy DOI"
               >
@@ -88,7 +90,7 @@ export const IdentifierSection: React.FC<IdentifierSectionProps> = ({
             )}
           </div>
         ))}
-      </div>
-    </div>
+      </dl>
+    </section>
   );
 };
