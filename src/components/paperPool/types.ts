@@ -88,17 +88,28 @@ export interface PaperPoolQueryParams {
 
 export interface PaperPoolApiResponse {
   id: string;
+  workId?: string;
   title: string;
   authors?: string;
   abstract?: string;
   doi?: string;
   publicationYear?: string;
   publicationYearInt?: number;
+  journal?: string;
   keywords?: string;
   source?: string;
   searchSourceId?: string;
   fullTextAvailable?: boolean;
   pdfUrl?: string;
+  pdfFileName?: string;
+  metadataFile?: {
+    fileName?: string;
+    url?: string;
+    sizeBytes?: number;
+    checksum?: string;
+    updatedAt?: string;
+  } | null;
+  metadataUrl?: string;
   fullTextRetrievalStatus?: number;
   fullTextRetrievalStatusText?: string;
   pdfProcessingStatus?: PdfProcessingStatus | null;

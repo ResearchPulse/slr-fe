@@ -6,7 +6,7 @@ import Input from "../../components/ui/Input";
 import Modal from "../../components/ui/Modal";
 import Button from "../../components/ui/Button";
 
-type Scope = "repository:read" | "analysis:read" | "artifacts:download";
+type Scope = "repository:read" | "repository:write" | "project:read" | "project:write" | "analysis:read" | "analysis:write" | "artifacts:download";
 type Client = {
   clientId: string;
   displayName: string;
@@ -23,7 +23,11 @@ type Draft = Pick<Client, "clientId" | "displayName" | "scopes" | "allowedProjec
 
 const SCOPE_OPTIONS: { value: Scope; label: string; description: string }[] = [
   { value: "repository:read", label: "Read repository", description: "Search works and read metadata, taxonomy, and artifact manifests." },
+  { value: "repository:write", label: "Import to shared repository", description: "Upload a paper directly to the system-wide repository without linking it to a project." },
+  { value: "project:read", label: "List projects", description: "List only the projects selected below." },
+  { value: "project:write", label: "Upload to projects", description: "Upload PDFs only to the projects selected below." },
   { value: "analysis:read", label: "Read analyses", description: "List analysis runs and their saved metadata." },
+  { value: "analysis:write", label: "Upload project analyses", description: "Submit Paper Fetcher analysis runs only to the projects selected below." },
   { value: "artifacts:download", label: "Download artifacts", description: "Download PDFs and analysis files. Requires the corresponding read scope." },
 ];
 const errorText = (error: unknown) => isAxiosError(error) ? error.response?.data?.error?.message || error.message : "Request failed";
@@ -35,7 +39,7 @@ function ProjectPermissions({ projects, value, onChange }: { projects: Project[]
   return (
     <fieldset className="min-w-0 w-full space-y-3">
       <legend className="text-sm font-semibold text-text-primary">Project access</legend>
-      <p className="text-xs leading-5 text-text-secondary">Choose which project-scoped works this client can read. Restricted works still require an explicit project grant.</p>
+      <p className="text-xs leading-5 text-text-secondary">Project permissions apply to project listing, PDF upload, and analysis upload. Project-scoped reads are limited to these projects; restricted works still require an explicit project grant.</p>
       <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-primary/20 bg-primary-light px-3 text-sm font-semibold text-text-primary">
         <input type="checkbox" checked={isAllProjects} onChange={(event) => onChange(event.target.checked ? ["*"] : [])} className="soft-checkbox" />
         All projects
@@ -52,7 +56,7 @@ function ProjectPermissions({ projects, value, onChange }: { projects: Project[]
           ))}
         </div>
       )}
-      <p className="text-[11px] text-text-muted">No projects selected means access to system-wide works only.</p>
+      <p className="text-[11px] text-text-muted">No projects selected means project scopes cannot access project records; system-wide repository works remain available under repository scopes.</p>
     </fieldset>
   );
 }

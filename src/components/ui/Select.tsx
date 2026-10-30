@@ -315,7 +315,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             className,
           )}
         >
-          <span className={cn(!selectedOption && "text-text-secondary")}>
+          <span className={cn("min-w-0 flex-1 truncate", !selectedOption && "text-text-secondary")}>
             {selectedOption?.label ?? placeholder ?? "Select an option"}
           </span>
           <ChevronDown

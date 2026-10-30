@@ -79,6 +79,7 @@ interface PdfUploadSignature {
   signature: string;
   folder: string;
   publicId: string;
+  type?: "authenticated";
   baseName: string;
   fileName: string;
   expectedPublicId: string;
@@ -103,6 +104,7 @@ function uploadPdfToCloudinary(
     form.append('signature', signature.signature);
     form.append('folder', signature.folder);
     form.append('public_id', signature.publicId);
+    if (signature.type) form.append('type', signature.type);
 
     const request = new XMLHttpRequest();
     request.open('POST', signature.uploadUrl);
