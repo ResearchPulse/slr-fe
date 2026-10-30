@@ -38,17 +38,20 @@ interface PdfJsViewerProps {
   fileUrl: string;
   documentTitle?: string;
   coordinateStr?: string | null;
+  highlightQueries?: Array<{ text: string; page?: number; role?: string }>;
   sections?: ParsedSectionDto[] | null;
   activeSection?: string | null;
   onSectionSelect?: (sectionTitle: string) => void;
   onPageLoad?: (pageIndex: number, viewport: pdfjsLib.PageViewport) => void;
   scale?: number;
   allowDownload?: boolean;
+  initialFitMode?: "width" | "page";
 }
 
 export interface PdfJsViewerRef {
   scrollToHighlight: (area: HighlightArea) => void;
   scrollToPage: (pageIndex: number) => void;
+  scrollToFirstHighlight: () => void;
 }
 
 interface OutlineEntry {
@@ -69,6 +72,114 @@ type FitMode = "free" | "width" | "page";
 
 const ZOOM_LEVELS = [50, 75, 100, 125, 150, 175, 200, 250, 300];
 const EMPTY_SECTIONS: ParsedSectionDto[] = [];
+const EMPTY_HIGHLIGHT_QUERIES: Array<{ text: string; page?: number; role?: string }> = [];
+
+const quoteHighlightClass = (role?: string) => {
+  switch (role?.toLocaleLowerCase()) {
+    case "claim": return "border-emerald-600/70 bg-emerald-300/45 shadow-[0_0_0_1px_rgba(5,150,105,0.16)]";
+    case "ground": return "border-sky-600/70 bg-sky-300/45 shadow-[0_0_0_1px_rgba(2,132,199,0.16)]";
+    case "warrant": return "border-violet-600/70 bg-violet-300/45 shadow-[0_0_0_1px_rgba(124,58,237,0.16)]";
+    case "backing": return "border-teal-600/70 bg-teal-300/45 shadow-[0_0_0_1px_rgba(13,148,136,0.16)]";
+    case "qualifier": return "border-amber-600/70 bg-amber-300/50 shadow-[0_0_0_1px_rgba(217,119,6,0.16)]";
+    case "rebuttal": return "border-rose-600/70 bg-rose-300/45 shadow-[0_0_0_1px_rgba(225,29,72,0.16)]";
+    case "reason": return "border-indigo-600/70 bg-indigo-300/45 shadow-[0_0_0_1px_rgba(79,70,229,0.16)]";
+    default: return "border-amber-500/70 bg-amber-300/45 shadow-[0_0_0_1px_rgba(245,158,11,0.16)]";
+  }
+};
+
+type SearchablePdfTextItem = { str: string; transform: number[]; width: number; height: number; dir: string };
+
+function normalizePdfSearchText(value: string): string {
+  return Array.from(value.normalize("NFKC").toLocaleLowerCase())
+    .map((character) => /[\p{L}\p{N}]/u.test(character) ? character : " ")
+    .join("")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function findQuoteAreas(items: SearchablePdfTextItem[], query: string, pageIndex: number, viewport: pdfjsLib.PageViewport, queryIndex: number): HighlightArea[] {
+  const stream: string[] = [];
+  const positions: Array<{ itemIndex: number; characterIndex: number }> = [];
+  const appendSpace = (itemIndex: number, characterIndex: number) => {
+    if (stream.length && stream[stream.length - 1] !== " ") {
+      stream.push(" ");
+      positions.push({ itemIndex, characterIndex });
+    }
+  };
+
+  items.forEach((item, itemIndex) => {
+    if (itemIndex) appendSpace(itemIndex, -1);
+    Array.from(item.str).forEach((rawCharacter, characterIndex) => {
+      Array.from(rawCharacter.normalize("NFKC").toLocaleLowerCase()).forEach((character) => {
+        if (/[\p{L}\p{N}]/u.test(character)) {
+          stream.push(character);
+          positions.push({ itemIndex, characterIndex });
+        } else {
+          appendSpace(itemIndex, characterIndex);
+        }
+      });
+    });
+  });
+  while (stream[stream.length - 1] === " ") {
+    stream.pop();
+    positions.pop();
+  }
+
+  const normalizedQuery = normalizePdfSearchText(query);
+  if (normalizedQuery.length < 18 || !stream.length) return [];
+  const compactPositions = positions.filter((_, index) => stream[index] !== " ");
+  const candidates = [
+    { text: stream.join(""), positions, query: normalizedQuery },
+    { text: stream.filter((character) => character !== " ").join(""), positions: compactPositions, query: normalizedQuery.replaceAll(" ", "") },
+  ];
+
+  for (const candidate of candidates) {
+    const matches: HighlightArea[] = [];
+    let fromIndex = 0;
+    let matchIndex = candidate.text.indexOf(candidate.query, fromIndex);
+    while (matchIndex !== -1 && matches.length < 40) {
+      const ranges = new Map<number, { start: number; end: number }>();
+      candidate.positions.slice(matchIndex, matchIndex + candidate.query.length).forEach(({ itemIndex, characterIndex }) => {
+        if (characterIndex < 0) return;
+        const range = ranges.get(itemIndex);
+        if (range) {
+          range.start = Math.min(range.start, characterIndex);
+          range.end = Math.max(range.end, characterIndex + 1);
+        } else {
+          ranges.set(itemIndex, { start: characterIndex, end: characterIndex + 1 });
+        }
+      });
+
+      ranges.forEach((range, itemIndex) => {
+        if (matches.length >= 40) return;
+        const item = items[itemIndex];
+        const characters = Array.from(item.str);
+        if (!characters.length) return;
+        const matrix = pdfjsLib.Util.transform(viewport.transform, item.transform as [number, number, number, number, number, number]);
+        const fullWidth = Math.abs(item.width * viewport.scale);
+        const fullHeight = Math.max(Math.abs(item.height * viewport.scale), Math.hypot(matrix[0], matrix[1]) * 0.75, 5);
+        const startRatio = Math.max(0, Math.min(1, range.start / characters.length));
+        const endRatio = Math.max(startRatio, Math.min(1, range.end / characters.length));
+        const leftRatio = item.dir === "rtl" ? 1 - endRatio : startRatio;
+        const widthRatio = Math.max(0.035, endRatio - startRatio);
+        const width = Math.max(3, fullWidth * widthRatio);
+        matches.push({
+          id: `quote-${queryIndex}-${pageIndex}-${itemIndex}-${matchIndex}`,
+          pageIndex,
+          left: matrix[4] + fullWidth * leftRatio,
+          top: matrix[5] - fullHeight * 0.92,
+          width,
+          height: fullHeight * 1.18,
+          kind: "quote",
+        });
+      });
+      fromIndex = matchIndex + candidate.query.length;
+      matchIndex = candidate.text.indexOf(candidate.query, fromIndex);
+    }
+    if (matches.length) return matches;
+  }
+  return [];
+}
 
 const getSectionPageIndex = (section: ParsedSectionDto) => {
   const firstCoordinate = section.coordinates?.split(";")[0];
@@ -149,12 +260,14 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       fileUrl,
       documentTitle,
       coordinateStr,
+      highlightQueries,
       sections = EMPTY_SECTIONS,
       activeSection,
       onSectionSelect,
       onPageLoad,
       scale = 1.25,
       allowDownload = true,
+      initialFitMode,
     },
     ref,
   ) => {
@@ -169,7 +282,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       >
     >({});
     const [zoom, setZoom] = useState(scale);
-    const [fitMode, setFitMode] = useState<FitMode>("free");
+    const [fitMode, setFitMode] = useState<FitMode>(initialFitMode ?? "free");
     const [activePage, setActivePage] = useState(1);
     const [pageInput, setPageInput] = useState("1");
     const [navigationMode, setNavigationMode] = useState<NavigationMode>(null);
@@ -180,17 +293,24 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     const [searchResultIndex, setSearchResultIndex] = useState(0);
     const [isSearching, setIsSearching] = useState(false);
     const [hasSearched, setHasSearched] = useState(false);
+    const [quoteHighlights, setQuoteHighlights] = useState<HighlightArea[]>([]);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [thumbnailRoot, setThumbnailRoot] = useState<HTMLDivElement | null>(null);
 
     const viewerRef = useRef<HTMLDivElement>(null);
-    const lastCoordinateStrRef = useRef(coordinateStr);
+    const textContentCacheRef = useRef(new Map<number, SearchablePdfTextItem[]>());
+    const lastHighlightKeyRef = useRef("");
     const containerRef = useRef<HTMLDivElement>(null);
     const pageRefs = useRef<Record<number, HTMLDivElement | null>>({});
     const highlightRefs = useRef<Record<string, HTMLDivElement | null>>({});
+    const pendingPageRef = useRef<number | null>(null);
+    const pendingFirstHighlightRef = useRef(false);
     const activePdf = loadedUrl === fileUrl ? pdf : null;
     const normalizedSections = sections ?? [];
-    const highlights = usePdfHighlights(coordinateStr, pageInfoMap);
+    const queryList = highlightQueries ?? EMPTY_HIGHLIGHT_QUERIES;
+    const coordinateHighlights = usePdfHighlights(coordinateStr, pageInfoMap);
+    const highlightQueryKey = queryList.map((query) => `${query.role ?? ""}:${query.page ?? ""}:${query.text}`).join("\u001f");
+    const highlights = useMemo(() => [...coordinateHighlights, ...quoteHighlights], [coordinateHighlights, quoteHighlights]);
 
     const sectionEntries = useMemo<OutlineEntry[]>(
       () =>
@@ -223,6 +343,8 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
 
     const scrollToPage = useCallback(
       (pageIndex: number) => {
+        if (!Number.isFinite(pageIndex) || pageIndex < 0) return;
+        pendingPageRef.current = pageIndex;
         const target = pageRefs.current[pageIndex];
         const container = containerRef.current;
         if (!target || !container) return;
@@ -232,6 +354,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           container.getBoundingClientRect().top -
           12;
         container.scrollTo({ top, behavior: "smooth" });
+        pendingPageRef.current = null;
         setActivePage(pageIndex + 1);
         setPageInput(String(pageIndex + 1));
       },
@@ -251,17 +374,51 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         container.scrollTo({ top, behavior: "smooth" });
       },
       scrollToPage,
+      scrollToFirstHighlight: () => {
+        const area = quoteHighlights.find((item) => item.kind === "quote");
+        const element = area ? highlightRefs.current[area.id] : null;
+        const container = containerRef.current;
+        if (!element || !container) {
+          pendingFirstHighlightRef.current = true;
+          return;
+        }
+        pendingFirstHighlightRef.current = false;
+        const top = container.scrollTop + element.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientHeight / 2;
+        container.scrollTo({ top, behavior: "smooth" });
+      },
     }));
 
     useEffect(() => {
+      const pendingPage = pendingPageRef.current;
+      if (pendingPage === null || !pageInfoMap[pendingPage]) return;
+      scrollToPage(pendingPage);
+    }, [pageInfoMap, scrollToPage]);
+
+    useEffect(() => {
+      if (!pendingFirstHighlightRef.current || !quoteHighlights.length) return;
+      const area = quoteHighlights.find((item) => item.kind === "quote");
+      const element = area ? highlightRefs.current[area.id] : null;
+      const container = containerRef.current;
+      if (!element || !container) return;
+      pendingFirstHighlightRef.current = false;
+      const top = container.scrollTop + element.getBoundingClientRect().top - container.getBoundingClientRect().top - container.clientHeight / 2;
+      container.scrollTo({ top, behavior: "smooth" });
+    }, [quoteHighlights]);
+
+    useEffect(() => {
       let isMounted = true;
+      textContentCacheRef.current.clear();
       setError(null);
       setPdf(null);
       setLoadedUrl(null);
       setNumPages(0);
       setPageInfoMap({});
+      pendingPageRef.current = null;
+      pendingFirstHighlightRef.current = false;
       setActivePage(1);
       setPageInput("1");
+      setFitMode(initialFitMode ?? "free");
+      setZoom(scale);
       setOutline([]);
       setNavigationMode(null);
       setIsSearchOpen(false);
@@ -269,6 +426,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
       setSearchPages([]);
       setSearchResultIndex(0);
       setHasSearched(false);
+      setQuoteHighlights([]);
 
       const loadingTask = pdfjsLib.getDocument(fileUrl);
       const loadPdf = async () => {
@@ -328,7 +486,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         isMounted = false;
         void loadingTask.destroy();
       };
-    }, [fileUrl]);
+    }, [fileUrl, initialFitMode, scale]);
 
     useEffect(() => {
       if (!activePdf) return;
@@ -355,6 +513,68 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         cancelled = true;
       };
     }, [activePdf, numPages, onPageLoad, zoom]);
+
+    useEffect(() => {
+      if (!activePdf || !numPages || Object.keys(pageInfoMap).length !== numPages || !queryList.length) {
+        setQuoteHighlights([]);
+        return;
+      }
+      let cancelled = false;
+      setQuoteHighlights([]);
+      const findHighlights = async () => {
+        const queries = queryList.filter((query) => normalizePdfSearchText(query.text).length >= 18);
+        const allPageIndexes = Array.from({ length: numPages }, (_, index) => index);
+        const areas: HighlightArea[] = [];
+        const cache = textContentCacheRef.current;
+
+        for (const [queryIndex, query] of queries.entries()) {
+          if (cancelled) return;
+          const preferredPageIndex = typeof query.page === "number" && query.page >= 1 && query.page <= numPages
+            ? query.page - 1
+            : -1;
+          const candidatePages = preferredPageIndex >= 0
+            ? [preferredPageIndex, ...allPageIndexes.filter((pageIndex) => pageIndex !== preferredPageIndex)]
+            : allPageIndexes;
+
+          for (const pageIndex of candidatePages) {
+            if (cancelled) return;
+            let items = cache.get(pageIndex);
+            if (!items) {
+              try {
+                const page = await activePdf.getPage(pageIndex + 1);
+                const content = await page.getTextContent();
+                items = content.items.flatMap((item) => {
+                  if (!("str" in item) || !("transform" in item)) return [];
+                  return [{
+                    str: item.str,
+                    transform: item.transform,
+                    width: item.width,
+                    height: item.height,
+                    dir: item.dir,
+                  }];
+                });
+                cache.set(pageIndex, items);
+              } catch {
+                continue;
+              }
+            }
+            const viewport = pageInfoMap[pageIndex]?.viewport;
+            if (!viewport) continue;
+            const matches = findQuoteAreas(items, query.text, pageIndex, viewport, queryIndex);
+            if (matches.length) {
+              areas.push(...matches.map((match) => ({ ...match, role: query.role })));
+              break;
+            }
+          }
+        }
+
+        if (!cancelled) setQuoteHighlights(areas);
+      };
+      void findHighlights();
+      return () => {
+        cancelled = true;
+      };
+    }, [activePdf, highlightQueryKey, numPages, pageInfoMap, queryList]);
 
     useEffect(() => {
       const container = containerRef.current;
@@ -457,8 +677,9 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     }, [numPages, pageInfoMap]);
 
     useEffect(() => {
-      if (lastCoordinateStrRef.current === coordinateStr) return;
-      lastCoordinateStrRef.current = coordinateStr;
+      const highlightKey = `${fileUrl}\u001e${coordinateStr ?? ""}\u001e${highlightQueryKey}\u001e${highlights.map((highlight) => highlight.id).join(",")}`;
+      if (lastHighlightKeyRef.current === highlightKey) return;
+      lastHighlightKeyRef.current = highlightKey;
       if (!highlights.length) return;
       const timer = window.setTimeout(() => {
         const element = highlightRefs.current[highlights[0].id];
@@ -472,7 +693,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
         container.scrollTo({ top, behavior: "smooth" });
       }, 100);
       return () => window.clearTimeout(timer);
-    }, [coordinateStr, highlights]);
+    }, [coordinateStr, fileUrl, highlightQueryKey, highlights]);
 
     useEffect(() => {
       if (fitMode === "free" || !activePdf) return;
@@ -652,10 +873,10 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
     return (
       <div
         ref={viewerRef}
-        className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-bg-secondary text-text-primary"
+        className="pdf-viewer-container flex h-full min-h-0 w-full flex-col overflow-hidden bg-bg-secondary text-text-primary"
       >
-        <header className="z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-white px-3 py-2 shadow-sm sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
-          <div className="flex min-w-0 flex-1 items-center gap-2 lg:max-w-[23%]">
+        <header className="pdf-reader-toolbar z-10 flex shrink-0 flex-wrap items-center gap-2 border-b border-border bg-surface-white px-3 py-2 shadow-sm sm:px-4 lg:h-14 lg:flex-nowrap lg:py-0">
+          <div className="pdf-reader-title flex min-w-0 flex-1 items-center gap-2 lg:max-w-[23%]">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
               <FileText className="h-4 w-4" />
             </span>
@@ -669,7 +890,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
             </div>
           </div>
 
-          <div className="flex min-w-0 flex-wrap items-center justify-center gap-1.5 lg:flex-1">
+          <div className="pdf-reader-controls flex min-w-0 flex-wrap items-center justify-start gap-1.5 lg:flex-none">
             <button
               type="button"
               onClick={() => handleScrollToPage(activePage - 1)}
@@ -750,24 +971,24 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               onClick={() => fitDocument("width")}
               title="Fit width"
               aria-label="Fit width"
-              className={cn("reader-text-button", fitMode === "width" && "reader-control-active")}
+              className={cn("reader-text-button pdf-reader-fit-control", fitMode === "width" && "reader-control-active")}
             >
               <ChevronsLeftRight className="h-3.5 w-3.5" />
-              <span>Fit width</span>
+              <span className="pdf-reader-fit-label">Fit width</span>
             </button>
             <button
               type="button"
               onClick={() => fitDocument("page")}
               title="Fit page"
               aria-label="Fit page"
-              className={cn("reader-text-button", fitMode === "page" && "reader-control-active")}
+              className={cn("reader-text-button pdf-reader-fit-control", fitMode === "page" && "reader-control-active")}
             >
               <BookOpen className="h-3.5 w-3.5" />
-              <span>Fit page</span>
+              <span className="pdf-reader-fit-label">Fit page</span>
             </button>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1">
+          <div className="pdf-reader-actions flex shrink-0 items-center gap-1">
             <button
               type="button"
               onClick={() => {
@@ -790,7 +1011,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               title="Toggle document outline"
               aria-label="Toggle document outline"
               aria-pressed={navigationMode === "outline"}
-              className={cn("reader-icon-button", navigationMode === "outline" && "reader-control-active")}
+              className={cn("reader-icon-button pdf-reader-hide-compact", navigationMode === "outline" && "reader-control-active")}
             >
               <ListTree className="h-4 w-4" />
             </button>
@@ -803,7 +1024,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               title="Toggle page thumbnails"
               aria-label="Toggle page thumbnails"
               aria-pressed={navigationMode === "thumbnails"}
-              className={cn("reader-icon-button", navigationMode === "thumbnails" && "reader-control-active")}
+              className={cn("reader-icon-button pdf-reader-hide-compact", navigationMode === "thumbnails" && "reader-control-active")}
             >
               <Grid2X2 className="h-4 w-4" />
             </button>
@@ -826,7 +1047,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
               rel="noopener noreferrer"
               title="Open PDF in a new tab"
               aria-label="Open PDF in a new tab"
-              className="reader-icon-button"
+              className="reader-icon-button pdf-reader-hide-compact"
             >
               <ExternalLink className="h-4 w-4" />
             </a>
@@ -836,7 +1057,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                 download
                 title="Download PDF"
                 aria-label="Download PDF"
-                className="reader-icon-button hidden sm:inline-flex"
+                className="reader-icon-button pdf-reader-hide-compact hidden sm:inline-flex"
               >
                 <Download className="h-4 w-4" />
               </a>
@@ -991,7 +1212,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
                           ref={(element) => {
                             highlightRefs.current[highlight.id] = element;
                           }}
-                          className="absolute rounded-sm border border-primary/40 bg-primary/25 transition-opacity duration-300 motion-reduce:transition-none"
+                          className={cn("absolute rounded-sm border transition-opacity duration-300 motion-reduce:transition-none", highlight.kind === "quote" ? quoteHighlightClass(highlight.role) : "border-primary/40 bg-primary/25")}
                           style={{
                             left: highlight.left,
                             top: highlight.top,
@@ -1011,6 +1232,7 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           </div>
         </div>
         <style>{`
+          .pdf-viewer-container { container-type: inline-size; }
           .reader-icon-button { display: inline-flex; height: 2.75rem; min-height: 2.75rem; width: 2.75rem; min-width: 2.75rem; flex-shrink: 0; align-items: center; justify-content: center; border-radius: var(--radius-control); color: var(--color-text-secondary); transition: color 150ms, background-color 150ms, border-color 150ms; }
           .reader-icon-button:hover:not(:disabled) { background: var(--color-bg-secondary); color: var(--color-text-primary); }
           .reader-icon-button:disabled { cursor: not-allowed; opacity: 0.35; }
@@ -1018,6 +1240,34 @@ const PdfJsViewer = forwardRef<PdfJsViewerRef, PdfJsViewerProps>(
           .reader-text-button { display: inline-flex; min-height: 2.75rem; align-items: center; gap: 0.35rem; white-space: nowrap; border-radius: var(--radius-control); padding: 0 0.65rem; color: var(--color-text-secondary); font-size: 0.7rem; font-weight: 500; transition: color 150ms, background-color 150ms; }
           .reader-text-button:hover { background: var(--color-bg-secondary); color: var(--color-text-primary); }
           .reader-control-active { background: var(--color-primary-light); color: var(--color-primary-hover); }
+          @container (max-width: 1100px) {
+            .pdf-reader-toolbar { flex-wrap: nowrap; gap: 0.375rem; padding-inline: 0.625rem; }
+            .pdf-reader-title { display: none; }
+            .pdf-reader-controls { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; justify-content: flex-start; gap: 0.125rem; }
+            .pdf-reader-actions { flex: 0 0 auto; gap: 0; margin-left: 0; }
+          }
+          @container (max-width: 900px) { .pdf-reader-hide-compact { display: none !important; } }
+          @container (max-width: 760px) {
+            .pdf-reader-toolbar { flex-wrap: nowrap; gap: 0.25rem; padding-inline: 0.5rem; }
+            .pdf-reader-controls { flex: 0 1 auto; min-width: 0; flex-wrap: nowrap; justify-content: flex-start; gap: 0.125rem; }
+            .pdf-reader-actions { flex: 0 0 auto; gap: 0; }
+            .pdf-reader-toolbar .reader-icon-button { height: 2.125rem; min-height: 2.125rem; width: 2.125rem; min-width: 2.125rem; }
+            .pdf-reader-toolbar form { flex-shrink: 0; gap: 0.125rem; }
+            .pdf-reader-toolbar form input { height: 2.125rem; width: 2.25rem; }
+            .pdf-reader-toolbar select { flex: 0 0 3.25rem; height: 2.125rem; max-width: 3.25rem; padding-inline: 0.25rem; }
+            .pdf-reader-fit-control { flex-shrink: 0; min-height: 2.125rem; gap: 0; padding-inline: 0.375rem; }
+            .pdf-reader-fit-label { display: none; }
+          }
+          @container (max-width: 460px) {
+            .pdf-reader-toolbar { height: auto; min-height: 0; flex-wrap: wrap; row-gap: 0; padding-block: 0.375rem; }
+            .pdf-reader-controls { order: 2; flex: 1 1 100%; justify-content: space-between; }
+            .pdf-reader-actions { order: 1; flex: 1 1 auto; justify-content: flex-end; margin-left: 0; }
+            .pdf-reader-toolbar .reader-icon-button { height: 1.75rem; min-height: 1.75rem; width: 1.75rem; min-width: 1.75rem; }
+            .pdf-reader-toolbar form input { height: 1.75rem; width: 2rem; }
+            .pdf-reader-toolbar select { flex-basis: 2.875rem; height: 1.75rem; max-width: 2.875rem; }
+            .pdf-reader-fit-control { min-height: 1.75rem; padding-inline: 0.25rem; }
+            .pdf-reader-toolbar > .pdf-reader-controls > span { display: none; }
+          }
           @media (prefers-reduced-motion: reduce) { .reader-icon-button, .reader-text-button { transition: none; } }
         `}</style>
       </div>

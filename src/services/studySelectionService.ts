@@ -221,6 +221,7 @@ export const studySelectionService = {
           signature: string;
           folder: string;
           publicId: string;
+          type?: "authenticated";
           baseName: string;
           fileName: string;
         };
@@ -240,6 +241,7 @@ export const studySelectionService = {
         cldFormData.append("signature", sigData.signature);
         cldFormData.append("folder", sigData.folder);
         cldFormData.append("public_id", sigData.publicId);
+        if (sigData.type) cldFormData.append("type", sigData.type);
 
         const cldRes = await fetch(sigData.uploadUrl, {
           method: "POST",

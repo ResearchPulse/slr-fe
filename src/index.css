@@ -5,6 +5,7 @@
    ===================================================== */
 
 @import "tailwindcss";
+@import "@xyflow/react/dist/style.css";
 
 @theme {
   /* =====================================================
@@ -211,6 +212,7 @@
   --color-zinc-950: #0B1720;
 
   /* Shared shape and spacing tokens for app-level layouts. */
+  --radius-sm: 0.35rem;
   --radius-control: 0.75rem;
   --radius-card: 0.75rem;
   --radius-panel: 1rem;
@@ -749,7 +751,7 @@ select:focus {
   flex: 0 0 18px;
   margin: 0;
   border: 1px solid var(--color-border);
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   background: var(--color-surface-white);
   cursor: pointer;
   transition: background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
@@ -961,5 +963,89 @@ body.admin-density [class*="h-[40px]"] { height: 36px; }
 @media (prefers-reduced-motion: reduce) {
   .ui-section-enter {
     animation: none;
+  }
+}
+
+.paper-flow-graph .react-flow__node,
+.paper-flow-graph .react-flow__edge {
+  transition: opacity 180ms ease, filter 180ms ease;
+}
+
+.paper-flow-graph .paper-node-current {
+  animation: paper-node-arrive 520ms ease-out both;
+}
+
+.paper-flow-graph .paper-edge-travel-forward .react-flow__edge-path {
+  stroke-dasharray: 6 8;
+  animation-duration: 520ms;
+  animation-timing-function: linear;
+  animation-iteration-count: 1;
+  animation-fill-mode: both;
+}
+
+.paper-flow-graph .paper-edge-travel-forward .react-flow__edge-path { animation-name: paper-edge-travel-forward; }
+
+@keyframes paper-node-arrive {
+  0% { filter: drop-shadow(0 0 0 rgb(0 113 188 / 0%)); }
+  45% { filter: drop-shadow(0 0 8px rgb(0 113 188 / 38%)); }
+  100% { filter: drop-shadow(0 0 0 rgb(0 113 188 / 0%)); }
+}
+
+@keyframes paper-edge-travel-forward {
+  from { stroke-dashoffset: 14; }
+  to { stroke-dashoffset: -14; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .paper-flow-graph .react-flow__node,
+  .paper-flow-graph .react-flow__edge,
+  .paper-flow-graph .paper-node-current,
+  .paper-flow-graph .react-flow__edge-path {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.research-workspace {
+  isolation: isolate;
+}
+
+.research-workspace-resize-handle {
+  position: relative;
+  touch-action: none;
+  cursor: col-resize;
+  background: transparent;
+  outline: none;
+}
+
+.research-workspace-resize-handle::after {
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  width: 1px;
+  content: "";
+  background: var(--color-border);
+  transform: scaleX(1);
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.research-workspace-resize-handle:hover::after,
+.research-workspace-resize-handle:focus-visible::after,
+.research-workspace-resize-handle:active::after {
+  transform: scaleX(3);
+  background: var(--color-primary);
+}
+
+@media (max-width: 767px) {
+  .research-workspace-stage {
+    height: min(68vh, 760px) !important;
+    min-height: 420px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .research-workspace-stage,
+  .research-workspace-resize-handle::after {
+    transition: none !important;
   }
 }

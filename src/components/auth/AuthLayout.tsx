@@ -15,7 +15,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({ children }) => {
 
   return (
     <div className="min-h-screen w-full bg-bg-primary text-text-primary">
-      <main className="mx-auto grid min-h-screen w-full max-w-[1600px] grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(430px,0.85fr)]">
+      <main className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-[minmax(0,1.15fr)_minmax(430px,0.85fr)]">
         <section className="relative hidden min-h-screen flex-col justify-between overflow-hidden bg-[#12354A] px-12 py-10 text-white lg:flex xl:px-20 xl:py-14">
           <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-44 h-[520px] w-[520px] rounded-full border border-white/10" />
           <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 h-[360px] w-[360px] rounded-full border border-white/10" />

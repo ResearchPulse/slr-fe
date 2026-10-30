@@ -15,6 +15,8 @@ export interface HighlightArea {
   top: number;
   width: number;
   height: number;
+  kind?: "coordinate" | "quote";
+  role?: string;
 }
 
 /**
@@ -35,8 +37,8 @@ export const usePdfHighlights = (
         return { page, x, y, width: w, height: h };
       });
 
-    const transformedAreas: HighlightArea[] = rawCoords
-      .map((coord, idx) => {
+    const transformedAreas = rawCoords
+      .map((coord, idx): HighlightArea | null => {
         const pageIndex = coord.page - 1;
         const pageInfo = pageInfoMap[pageIndex];
 
@@ -69,6 +71,7 @@ export const usePdfHighlights = (
           top: rect[1],
           width: Math.abs(rect[2] - rect[0]),
           height: Math.abs(rect[3] - rect[1]),
+          kind: "coordinate" as const,
         };
       })
       .filter((area): area is HighlightArea => area !== null);

@@ -41,7 +41,7 @@ export interface LocatedAiEvidence {
   section: string | null;
   quote_is_exact: boolean;
   quote_match_method?: "EXACT" | "NORMALIZED" | "ELLIPSIS_EXPANDED" | "UNVERIFIED";
-  source_location: { section: string | null; paragraph: number | null; char_start?: number; char_end?: number };
+  source_location: { section: string | null; paragraph: number | null; page?: number; char_start?: number; char_end?: number };
   human_review?: EvidenceHumanReview;
 }
 
@@ -75,6 +75,8 @@ export interface PaperAiAnalysisResult {
     qualifier: string | null;
     rebuttal: AiComponent | null;
   }>;
+  craftOfResearch?: unknown;
+  craft_of_research?: unknown;
   aif_graph: { artifact_id: string; artifact_type: "A3"; schema_version: string; title: string; nodes: Array<Record<string, unknown>>; edges: Array<Record<string, unknown>>; extensions: Record<string, unknown> };
   limitations: string[];
   human_review?: HumanReviewAudit & { decision: HumanReviewDecision; evidence_reviewed_count: number; evidence_count: number; edge_reviewed_count: number; edge_count: number };
